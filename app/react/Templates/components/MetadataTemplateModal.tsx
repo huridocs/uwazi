@@ -26,23 +26,23 @@ const MetadataTemplateModal = ({
         <Modal isOpen={isOpen} type="content" className="">
           <Modal.Header>
             <h1>
-              <Translate>Add thesaurus</Translate>
+              <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
             </h1>
-            <Translate>
+            <Translate translationKey="Add thesaurus description">
               After creation you can go into Settings -&gt; Thesauri to add items
             </Translate>
           </Modal.Header>
 
           <Modal.Body>
-            <Translate>Thesaurus</Translate>
+            <Translate translationKey="Thesaurus">Thesaurus</Translate>
           </Modal.Body>
 
           <Modal.Footer>
             <button type="button" className="" onClick={onCancel}>
-              <Translate>Cancel</Translate>
+              <Translate translationKey="Cancel">Cancel</Translate>
             </button>
             <button type="button" className="" onClick={onSave}>
-              <Translate>Save</Translate>
+              <Translate translationKey="Save">Save</Translate>
             </button>
           </Modal.Footer>
         </Modal>
@@ -53,20 +53,20 @@ const MetadataTemplateModal = ({
         <Modal isOpen={isOpen} type="content" className="">
           <Modal.Header>
             <h1>
-              <Translate>Add relation type</Translate>
+              <Translate translationKey="Add connection">Add relation type</Translate>
             </h1>
           </Modal.Header>
 
           <Modal.Body>
-            <Translate>Relation type</Translate>
+            <Translate translationKey="Add connection">Relation type</Translate>
           </Modal.Body>
 
           <Modal.Footer>
             <button type="button" className="" onClick={onCancel}>
-              <Translate>Cancel</Translate>
+              <Translate translationKey="Cancel">Cancel</Translate>
             </button>
             <button type="button" className="" onClick={onSave}>
-              <Translate>Save</Translate>
+              <Translate translationKey="Save">Save</Translate>
             </button>
           </Modal.Footer>
         </Modal>

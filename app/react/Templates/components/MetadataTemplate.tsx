@@ -282,10 +282,10 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
             {environment === 'template' && (
               <>
                 <button type="button" onClick={() => this.openModal('thesaurus')}>
-                  New thesaurus
+                  <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
                 </button>
                 <button type="button" onClick={() => this.openModal('relationship')}>
-                  New relation type
+                  <Translate translationKey="Add connection">Add relation type</Translate>
                 </button>
               </>
             )}
