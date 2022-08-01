@@ -7,10 +7,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field, Form } from 'react-redux-form';
 import { Icon } from 'UI';
-
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -26,9 +24,9 @@ import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
-
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
+import { MetadataTemplateModal, MetadataTemplateModalTypes } from './MetadataTemplateModal';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -47,10 +45,15 @@ interface MetadataTemplateProps {
   _id?: string;
 }
 
+type MetadataTemplateState = {
+  modalIsOpen: boolean;
+  modalType: MetadataTemplateModalTypes;
+};
+
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
   template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
-class MetadataTemplate extends Component<MetadataTemplateProps> {
+class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplateState> {
   static propTypes: any;
 
   static contextTypes = {
@@ -89,8 +92,12 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   constructor(props: MetadataTemplateProps) {
     super(props);
+    this.state = { modalIsOpen: false, modalType: 'relationship' };
     this.onSubmit = this.onSubmit.bind(this);
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.modalCancel = this.modalCancel.bind(this);
+    this.modalSave = this.modalSave.bind(this);
   }
 
   onSubmit = async (_template: TemplateSchema) => {
@@ -119,6 +126,19 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
 
   onSubmitFailed() {
     this.props.notify(t('System', 'The template contains errors', null, false), 'danger');
+  }
+
+  openModal(type: MetadataTemplateModalTypes) {
+    this.setState({ modalType: type });
+    this.setState({ modalIsOpen: true });
+  }
+
+  modalCancel() {
+    this.setState({ modalIsOpen: false });
+  }
+
+  modalSave() {
+    this.setState({ modalIsOpen: false });
   }
 
   confirmAndSaveTemplate(
@@ -233,6 +253,12 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                   )}
                 </ul>
               )}
+              <MetadataTemplateModal
+                isOpen={this.state.modalIsOpen}
+                type={this.state.modalType}
+                saveAction={this.modalSave}
+                cancelAction={this.modalCancel}
+              />
             </>
           )}
 
@@ -253,6 +279,16 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 <Translate>Save</Translate>
               </span>
             </button>
+            {environment === 'template' && (
+              <>
+                <button type="button" onClick={() => this.openModal('thesaurus')}>
+                  New thesaurus
+                </button>
+                <button type="button" onClick={() => this.openModal('relationship')}>
+                  New relation type
+                </button>
+              </>
+            )}
           </div>
         </Form>
       </div>
