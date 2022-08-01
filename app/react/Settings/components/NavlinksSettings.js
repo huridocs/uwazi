@@ -1,8 +1,8 @@
 import { DragDropContext } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import HTML5Backend from 'react-dnd-html5-backend';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
