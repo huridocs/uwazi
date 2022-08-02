@@ -1,26 +1,18 @@
 import React from 'react';
 import Modal from 'app/Layout/Modal';
 import { Translate } from 'app/I18N';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { useForm } from 'react-hook-form';
 
 type MetadataTemplateModalTypes = 'thesaurus' | 'relationship';
+type saveActionData = { thesaurus?: ThesaurusSchema; relationship?: { name: string } };
 
 interface MetadataTemplateModalProps {
   isOpen: boolean;
   type: MetadataTemplateModalTypes;
-  saveAction: () => void;
+  saveAction: (data: saveActionData) => void;
   cancelAction: () => void;
 }
-
-const modalFooter = (cancelFunction: () => void, saveFunction: () => void) => (
-  <Modal.Footer>
-    <button type="button" className="" onClick={cancelFunction}>
-      <Translate translationKey="Cancel">Cancel</Translate>
-    </button>
-    <button type="button" className="" onClick={saveFunction}>
-      <Translate translationKey="Save">Save</Translate>
-    </button>
-  </Modal.Footer>
-);
 
 const MetadataTemplateModal = ({
   isOpen,
@@ -28,8 +20,43 @@ const MetadataTemplateModal = ({
   saveAction,
   cancelAction,
 }: MetadataTemplateModalProps) => {
+  const { register, handleSubmit, errors } = useForm({
+    mode: 'onSubmit',
+  });
+
   const onCancel = () => cancelAction();
-  const onSave = () => saveAction();
+
+  const onSave = (data: saveActionData) => {
+    saveAction(data);
+  };
+
+  const modalForm = (label: string | object | null | undefined) => (
+    <form>
+      <Modal.Body>
+        <label htmlFor={`${type}Input`}>{label}</label>
+        <input
+          type="text"
+          name={type}
+          id={`${type}Input`}
+          ref={register({
+            required: true,
+          })}
+        />
+        {errors[type] && errors[type].type === 'required' && (
+          <Translate translationKey="Required property">Required property</Translate>
+        )}
+      </Modal.Body>
+
+      <Modal.Footer>
+        <button type="button" className="" onClick={onCancel}>
+          <Translate translationKey="Cancel">Cancel</Translate>
+        </button>
+        <button type="button" className="" onClick={handleSubmit(onSave)}>
+          <Translate translationKey="Save">Save</Translate>
+        </button>
+      </Modal.Footer>
+    </form>
+  );
 
   switch (type) {
     case 'thesaurus':
@@ -44,12 +71,7 @@ const MetadataTemplateModal = ({
             </Translate>
           </Modal.Header>
 
-          <Modal.Body>
-            <Translate translationKey="Thesaurus">Thesaurus</Translate>
-            <input type="text" />
-          </Modal.Body>
-
-          {modalFooter(onCancel, onSave)}
+          {modalForm(<Translate translationKey="Thesaurus">Thesaurus</Translate>)}
         </Modal>
       );
 
@@ -62,12 +84,7 @@ const MetadataTemplateModal = ({
             </h3>
           </Modal.Header>
 
-          <Modal.Body>
-            <Translate translationKey="Add connection">Relation type</Translate>
-            <input type="text" />
-          </Modal.Body>
-
-          {modalFooter(onCancel, onSave)}
+          {modalForm(<Translate translationKey="Relationship">Relationship</Translate>)}
         </Modal>
       );
 
@@ -76,5 +93,5 @@ const MetadataTemplateModal = ({
   }
 };
 
-export type { MetadataTemplateModalTypes, MetadataTemplateModalProps };
+export type { MetadataTemplateModalTypes, MetadataTemplateModalProps, saveActionData };
 export { MetadataTemplateModal };

@@ -26,7 +26,11 @@ import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
-import { MetadataTemplateModal, MetadataTemplateModalTypes } from './MetadataTemplateModal';
+import {
+  MetadataTemplateModal,
+  MetadataTemplateModalTypes,
+  saveActionData,
+} from './MetadataTemplateModal';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -137,7 +141,15 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     this.setState({ modalIsOpen: false });
   }
 
-  modalSave() {
+  modalSave(data: saveActionData) {
+    if (this.state.modalType === 'relationship' && data.relationship) {
+      const { relationship } = data;
+      console.log('saving rel with: ', relationship);
+    }
+    if (this.state.modalType === 'thesaurus' && data.thesaurus) {
+      const { thesaurus } = data;
+      console.log('saving thes with: ', thesaurus);
+    }
     this.setState({ modalIsOpen: false });
   }
 
