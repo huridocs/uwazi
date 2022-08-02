@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import { fs } from 'api/files';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
 import { spawn } from 'child-process-promise';
