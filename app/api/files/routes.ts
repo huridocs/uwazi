@@ -4,7 +4,6 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
-import { uploadsPath, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
@@ -38,7 +37,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(uploadsPath),
+    uploadMiddleware('document'),
     async (req, res) => {
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
@@ -59,7 +58,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(customUploadsPath),
+    uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
       files
@@ -74,7 +73,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(attachmentsPath),
+    uploadMiddleware('attachment'),
     activitylogMiddleware,
     (req, res, next) => {
       files

@@ -1,9 +1,12 @@
 import path from 'path';
-import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
+import { fs, generateFileName } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
-import multer, { StorageEngine } from 'multer';
 import { errorLog } from 'api/log/errorLog';
 import { tenants } from 'api/tenants';
+
+import multer from 'multer';
+import { FileType } from 'shared/types/fileType';
+import { _storeFile } from './storage';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -12,18 +15,6 @@ const defaultStorage = multer.diskStorage({
     cb(null, generateFileName(file));
   },
 });
-
-const move = async (req: Request, filePath: pathFunction) => {
-  if (!req.file) {
-    return;
-  }
-  const oldPath = path.join(req.file.destination, req.file.filename);
-  const newPath = filePath(req.file.filename);
-  await fs.copyFile(oldPath, newPath);
-  await deleteFile(oldPath);
-  req.file.destination = filePath();
-  req.file.path = filePath(req.file.filename);
-};
 
 const processOriginalFileName = (req: Request) => {
   if (req.body.filename) {
@@ -39,7 +30,7 @@ const processOriginalFileName = (req: Request) => {
 };
 
 const singleUpload =
-  (filePath?: pathFunction, storage: multer.StorageEngine = defaultStorage) =>
+  (type?: FileType['type'], storage: multer.StorageEngine = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await new Promise<void>((resolve, reject) => {
@@ -48,14 +39,15 @@ const singleUpload =
           reject(err);
         });
       });
-      // req.file.filename = req.file.key;
-
       if (req.file) {
         req.file.originalname = processOriginalFileName(req);
       }
-
-      if (filePath) {
-        await move(req, filePath);
+      if (type) {
+        await _storeFile(
+          req.file.filename,
+          fs.createReadStream(path.join(req.file.destination, req.file.filename)),
+          type
+        );
       }
       next();
     } catch (e) {
@@ -78,30 +70,18 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
 };
 
 /**
- * accepts a single file and moves it to the path provided by path function
- * @param pathFunction is optional, when undefined the file will be stored on the os tmp default dir
+ * accepts a single file and stores it based on type
+ * @param type is optional, when undefined the file will be stored on the os tmp default dir
  */
-const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
-  // const s3 = new S3Client({
-  //   apiVersion: 'latest',
-  //   region: 'greenhost',
-  //   endpoint: 'https://store.greenhost.net',
-  //   credentials: { accessKeyId: '', secretAccessKey: '' }});
-  // const _storage = multerS3({
-  //   s3: s3,
-  //   contentType: multerS3.AUTO_CONTENT_TYPE,
-  //   bucket: 'uwazi-development',
-  //   key(_req: Request, file: Express.Multer.File, cb: multerCallback) {
-  //     cb(null, generateFileName(file));
-  //   },
-  // })
-  return singleUpload(filePath, storage);
-};
+const uploadMiddleware = (type?: FileType['type']) => singleUpload(type, defaultStorage);
 
 /**
  * accepts multiple files and places them in req.files array
  * files will not be stored on disk and will be on a buffer on each element of the array.
  */
 uploadMiddleware.multiple = () => multipleUpload;
+
+uploadMiddleware.customStorage = (storage: multer.StorageEngine, type?: FileType['type']) =>
+  singleUpload(type, storage);
 
 export { uploadMiddleware };
