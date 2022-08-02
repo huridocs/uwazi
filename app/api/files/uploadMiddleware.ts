@@ -3,7 +3,6 @@ import { fs, generateFileName } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import { errorLog } from 'api/log/errorLog';
 import { tenants } from 'api/tenants';
-
 import multer from 'multer';
 import { FileType } from 'shared/types/fileType';
 import { storeFile } from './storage';
