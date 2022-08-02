@@ -11,6 +11,17 @@ interface MetadataTemplateModalProps {
   cancelAction: () => void;
 }
 
+const modalFooter = (cancelFunction: () => void, saveFunction: () => void) => (
+  <Modal.Footer>
+    <button type="button" className="" onClick={cancelFunction}>
+      <Translate translationKey="Cancel">Cancel</Translate>
+    </button>
+    <button type="button" className="" onClick={saveFunction}>
+      <Translate translationKey="Save">Save</Translate>
+    </button>
+  </Modal.Footer>
+);
+
 const MetadataTemplateModal = ({
   isOpen,
   type,
@@ -23,11 +34,11 @@ const MetadataTemplateModal = ({
   switch (type) {
     case 'thesaurus':
       return (
-        <Modal isOpen={isOpen} type="content" className="">
+        <Modal isOpen={isOpen} type="content" className="metadata-template-modal">
           <Modal.Header>
-            <h1>
+            <h3>
               <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
-            </h1>
+            </h3>
             <Translate translationKey="Add thesaurus description">
               After creation you can go into Settings -&gt; Thesauri to add items
             </Translate>
@@ -35,40 +46,28 @@ const MetadataTemplateModal = ({
 
           <Modal.Body>
             <Translate translationKey="Thesaurus">Thesaurus</Translate>
+            <input type="text" />
           </Modal.Body>
 
-          <Modal.Footer>
-            <button type="button" className="" onClick={onCancel}>
-              <Translate translationKey="Cancel">Cancel</Translate>
-            </button>
-            <button type="button" className="" onClick={onSave}>
-              <Translate translationKey="Save">Save</Translate>
-            </button>
-          </Modal.Footer>
+          {modalFooter(onCancel, onSave)}
         </Modal>
       );
 
     case 'relationship':
       return (
-        <Modal isOpen={isOpen} type="content" className="">
+        <Modal isOpen={isOpen} type="content" className="metadata-template-modal">
           <Modal.Header>
-            <h1>
+            <h3>
               <Translate translationKey="Add connection">Add relation type</Translate>
-            </h1>
+            </h3>
           </Modal.Header>
 
           <Modal.Body>
             <Translate translationKey="Add connection">Relation type</Translate>
+            <input type="text" />
           </Modal.Body>
 
-          <Modal.Footer>
-            <button type="button" className="" onClick={onCancel}>
-              <Translate translationKey="Cancel">Cancel</Translate>
-            </button>
-            <button type="button" className="" onClick={onSave}>
-              <Translate translationKey="Save">Save</Translate>
-            </button>
-          </Modal.Footer>
+          {modalFooter(onCancel, onSave)}
         </Modal>
       );
 
@@ -77,5 +76,5 @@ const MetadataTemplateModal = ({
   }
 };
 
-export type { MetadataTemplateModalTypes };
+export type { MetadataTemplateModalTypes, MetadataTemplateModalProps };
 export { MetadataTemplateModal };
