@@ -5,7 +5,7 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { UserSchema } from 'shared/types/userType';
 import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 
-type FileAttachments = {
+export type FileAttachments = {
   originalname: string;
   buffer: Buffer;
   mimetype: string;
@@ -56,13 +56,14 @@ const saveEntity = async (
     socketEmiter
   );
 
-  const [entityWithAttachments] = await entities.getUnrestrictedWithDocuments(
-    {
-      sharedId: updatedEntity.sharedId,
-      language: updatedEntity.language,
-    },
-    '+permissions'
-  );
+  const [entityWithAttachments]: EntityWithFilesSchema[] =
+    await entities.getUnrestrictedWithDocuments(
+      {
+        sharedId: updatedEntity.sharedId,
+        language: updatedEntity.language,
+      },
+      '+permissions'
+    );
 
   return { entity: entityWithAttachments, errors: fileSaveErrors };
 };

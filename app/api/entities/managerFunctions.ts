@@ -10,12 +10,13 @@ import { FileType } from 'shared/types/fileType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
+import { FileAttachments } from './entitySavingManager';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
-  newAttachments: FileType[] = [],
-  newDocuments: FileType[] = []
+  newAttachments: FileAttachments[] = [],
+  newDocuments: FileAttachments[] = []
 ) => {
   const attachments: FileType[] = [];
   const documents: FileType[] = [];
@@ -108,8 +109,8 @@ const filterRenamedFiles = (entity: EntityWithFilesSchema, entityFiles: WithId<F
 const processFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
-  fileAttachments: FileType[] | undefined,
-  documentAttachments: FileType[] | undefined
+  fileAttachments: FileAttachments[] | undefined,
+  documentAttachments: FileAttachments[] | undefined
 ) => {
   const { attachments, documents } = await prepareNewFiles(
     entity,
