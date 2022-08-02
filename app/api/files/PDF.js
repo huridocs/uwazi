@@ -66,14 +66,6 @@ class PDF extends EventEmitter {
     return Promise.resolve(response);
   }
 
-  async deleteThumbnail(documentId) {
-    try {
-      await fs.unlink(`${this.getThumbnailPath(documentId)}.jpg`);
-    } catch (err) {
-      errorLog.error(`Thumbnail deletion error for: ${this.getThumbnailPath(documentId)}`);
-    }
-  }
-
   generateFileInfo(conversion) {
     return {
       ...this.file,
