@@ -1,7 +1,7 @@
 .entity-viewer {
   position: relative;
   width: 100%;
-  height: calc(100% - 100px);
+  height: 100%;
   padding: 15px;
   background: $c-white;
   transition: all 500ms;
@@ -9,12 +9,16 @@
   //overflow-y: scroll;
   overflow: auto;
 
-  @media (min-width: 1024px) {
+  &.with-header {
     height: calc(100% - 51px);
+  }
 
-    &.with-footer {
-      height: calc(100% - #{$FooterHeight} - 51px);
-    }
+  &.with-footer {
+    height: calc(100% - #{$FooterHeight});
+  }
+
+  &.with-header.with-footer {
+    height: calc(100% - #{$FooterHeight} - 51px);
   }
 
   @media (min-width: 1024px) {

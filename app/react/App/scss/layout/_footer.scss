@@ -166,12 +166,18 @@ footer {
   background-color: #fff;
   position: fixed;
 
+  &.remove-nesting {
+    margin-left: -15px;
+  }
+
   &.remove-extra-nesting {
     margin-left: -30px;
   }
 
   &.with-sidepanel {
-    width: calc(100% - 400px);
+    @media (min-width: 1024px) {
+      width: calc(100% - 400px);
+    }
   }
 }
 
@@ -229,7 +235,10 @@ footer {
     .btn-cluster.sm-order-1 {
       order: unset;
     }
+  }
 
+  .entity-footer,
+  .settings-footer {
     .btn {
       &.btn-extra-padding {
         padding-left: 50px;
