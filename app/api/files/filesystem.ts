@@ -69,18 +69,6 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
-const deleteUploadedFiles = async (files: FileType[]) =>
-  deleteFiles(
-    files
-      .filter(f => f.filename)
-      .map(({ filename = '', type }) => {
-        if (type === 'custom') {
-          return customUploadsPath(filename);
-        }
-        return uploadsPath(filename);
-      })
-  );
-
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
@@ -139,7 +127,6 @@ const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
 
 export {
   setupTestUploadedPaths,
-  deleteUploadedFiles,
   createDirIfNotExists,
   deleteFiles,
   deleteFile,

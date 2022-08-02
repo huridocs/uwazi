@@ -1,13 +1,13 @@
 import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
+import { errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
-import { attachmentsPath, customUploadsPath, uploadsPath } from './filesystem';
-import { errorLog } from 'api/log';
+import { attachmentsPath, customUploadsPath, deleteFile, uploadsPath } from './filesystem';
 
 type FileTypes = NonNullable<FileType['type']>;
 
@@ -85,7 +85,7 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
   }
 };
 
-export const readableFile = async (filename: string, type: FileTypes): Promise<Readable> => {
+export const readableFile = async (filename: string, type: FileTypes) => {
   if (tenants.current().featureFlags?.s3Storage) {
     return readFromS3(filename, type);
   }
@@ -94,6 +94,12 @@ export const readableFile = async (filename: string, type: FileTypes): Promise<R
 
 export const fileContents = async (filename: string, type: FileTypes) =>
   streamToBuffer(await readableFile(filename, type));
+
+export const removeFile = async (filename: string, type: FileTypes) =>
+  deleteFile(paths[type](filename));
+
+export const removeFiles = async (files: FileType[]) =>
+  Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
   try {

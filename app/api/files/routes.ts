@@ -10,11 +10,11 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 import { readableFile, fileExists } from './storage';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
