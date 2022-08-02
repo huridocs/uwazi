@@ -1,6 +1,13 @@
 import { groupBy } from 'lodash';
 import { WithId } from 'api/odm';
-import { attachmentsPath, uploadsPath, files as filesAPI, storeFile } from 'api/files';
+import {
+  attachmentsPath,
+  uploadsPath,
+  files as filesAPI,
+  storeFile,
+  _storeFile,
+  generateFileName,
+} from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
@@ -11,6 +18,7 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
 import { FileAttachments } from './entitySavingManager';
+import { Readable } from 'stream';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -25,10 +33,13 @@ const prepareNewFiles = async (
 
   if (newAttachments.length) {
     await Promise.all(
-      newAttachments.map(async (file: FileType) => {
-        const savedFile = await storeFile(attachmentsPath, file, true);
+      newAttachments.map(async file => {
+        // const savedFile = await storeFile(attachmentsPath, file, true);
+        const filename = generateFileName(file);
+        await _storeFile(filename, Readable.from(file.buffer), 'attachment');
         attachments.push({
-          ...savedFile,
+          ...file,
+          filename,
           entity: updatedEntity.sharedId,
           type: TypeOfFile.attachment,
         });
