@@ -100,8 +100,8 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     this.onSubmit = this.onSubmit.bind(this);
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
     this.openModal = this.openModal.bind(this);
-    this.modalCancel = this.modalCancel.bind(this);
-    this.modalSave = this.modalSave.bind(this);
+    this.modalOnCancel = this.modalOnCancel.bind(this);
+    this.modalOnSave = this.modalOnSave.bind(this);
   }
 
   onSubmit = async (_template: TemplateSchema) => {
@@ -137,11 +137,11 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     this.setState({ modalIsOpen: true });
   }
 
-  modalCancel() {
+  modalOnCancel() {
     this.setState({ modalIsOpen: false });
   }
 
-  modalSave(data: saveActionData) {
+  modalOnSave(data: saveActionData) {
     if (this.state.modalType === 'relationship' && data.relationship) {
       const { relationship } = data;
       console.log('saving rel with: ', relationship);
@@ -268,8 +268,8 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
               <MetadataTemplateModal
                 isOpen={this.state.modalIsOpen}
                 type={this.state.modalType}
-                saveAction={this.modalSave}
-                cancelAction={this.modalCancel}
+                saveFunction={this.modalOnSave}
+                cancelFunction={this.modalOnCancel}
               />
             </>
           )}

@@ -10,24 +10,24 @@ type saveActionData = { thesaurus?: ThesaurusSchema; relationship?: { name: stri
 interface MetadataTemplateModalProps {
   isOpen: boolean;
   type: MetadataTemplateModalTypes;
-  saveAction: (data: saveActionData) => void;
-  cancelAction: () => void;
+  saveFunction: (data: saveActionData) => void;
+  cancelFunction: () => void;
 }
 
 const MetadataTemplateModal = ({
   isOpen,
   type,
-  saveAction,
-  cancelAction,
+  saveFunction,
+  cancelFunction,
 }: MetadataTemplateModalProps) => {
   const { register, handleSubmit, errors } = useForm({
     mode: 'onSubmit',
   });
 
-  const onCancel = () => cancelAction();
+  const onCancel = () => cancelFunction();
 
   const onSave = (data: saveActionData) => {
-    saveAction(data);
+    saveFunction(data);
   };
 
   const modalForm = (label: string | object | null | undefined) => (
