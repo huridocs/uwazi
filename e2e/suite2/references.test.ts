@@ -35,43 +35,48 @@ describe('Entities', () => {
     await expect(page).toClick('.item-document:nth-child(1) .view-doc');
   });
 
-  it('should create a new reference to a document', async () => {
-    await selectText('.textLayer > span:nth-child(1)');
+  it(
+    'should create a new reference to a document',
+    async () => {
+      await selectText('.textLayer > span:nth-child(1) > span');
 
-    await expect(page).toClick('.connect-to-p');
+      await expect(page).toClick('.connect-to-p');
 
-    await expect(page).toClick('.side-panel .connections-list li:first-child');
+      await expect(page).toClick('.side-panel .connections-list li:first-child');
 
-    await expect(page).toFill(
-      'aside div.search-box > div > input',
-      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
-      { delay: 5 }
-    );
+      await expect(page).toFill(
+        'aside div.search-box > div > input',
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
+        { delay: 5 }
+      );
 
-    await expect(page).toClick('.side-panel .item .item-name', {
-      text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
-    });
+      await expect(page).toClick('.side-panel .item .item-name', {
+        text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
+      });
 
-    await expect(page).toClick('.side-panel > .sidepanel-footer > .btn-success');
+      await expect(page).toClick('.side-panel > .sidepanel-footer > .btn-success');
 
-    await page.waitForSelector('.show-target-document');
-    await selectText('.textLayer > span:nth-child(9)');
+      await page.waitForSelector('.show-target-document');
+      await selectText('.textLayer > span:nth-child(9)');
 
-    await expect(page).toClick('.btn.btn-success', {
-      text: 'Save',
-    });
+      await expect(page).toClick('.btn.btn-success', {
+        text: 'Save',
+      });
 
-    await expect(page).toMatchElement('.side-panel.is-active .item-snippet', {
-      text: 'Uwazi Heroes Investigation',
-    });
-  });
+      // await new Promise(resolve => setTimeout(resolve, 60 * 1000 * 30));
+      await expect(page).toMatchElement('.side-panel.is-active .item-snippet', {
+        text: 'Urna Semper',
+      });
+    },
+    60 * 1000 * 50
+  );
 
   it('should delete de created reference', async () => {
     await expect(page).toClick('.side-panel .references .item-actions .delete');
     await expect(page).toClick('button', { text: 'Accept' });
 
     await expect(page).not.toMatchElement('.side-panel.is-active .item-snippet', {
-      text: 'Uwazi Heroes Investigation',
+      text: 'Urna Semper',
     });
   });
 
