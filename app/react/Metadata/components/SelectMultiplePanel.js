@@ -14,7 +14,6 @@ import SidePanel from 'app/Layout/SidePanel';
 import Immutable from 'immutable';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import Export from 'app/Library/components/ExportButton';
 import MetadataForm from './MetadataForm';
 import comonTemplate from '../helpers/comonTemplate';
 
@@ -28,7 +27,7 @@ const sortedTemplates = createSelector(
 
 const commonTemplate = createSelector(sortedTemplates, s => s.entitiesSelected, comonTemplate);
 
-export class SelectMultiplePanel extends Component {
+class SelectMultiplePanel extends Component {
   constructor(props) {
     super(props);
     this.close = this.close.bind(this);
@@ -145,41 +144,42 @@ export class SelectMultiplePanel extends Component {
         roles={['admin', 'editor']}
         orWriteAccessTo={this.props.entitiesSelected.toJS()}
       >
-        <button
-          type="button"
-          onClick={this.cancel}
-          className="cancel-edit-metadata btn btn-primary"
-        >
-          <Icon icon="times" />
-          <span className="btn-label">{t('System', 'Cancel')}</span>
-        </button>
-        <button type="submit" form="multiEdit" className="btn btn-success">
-          <Icon icon="save" />
-          <span className="btn-label">{t('System', 'Save')}</span>
-        </button>
+        <div className="btn-cluster content-right">
+          <button
+            type="button"
+            onClick={this.cancel}
+            className="cancel-edit-metadata btn btn-default"
+          >
+            <span className="btn-label">{t('System', 'Cancel')}</span>
+          </button>
+          <button type="submit" form="multiEdit" className="btn btn-success">
+            <span className="btn-label">{t('System', 'Save')}</span>
+          </button>
+        </div>
       </NeedAuthorization>
     );
   }
 
   renderListButtons() {
     return (
-      <>
-        <NeedAuthorization
-          roles={['admin', 'editor']}
-          orWriteAccessTo={this.props.entitiesSelected.toJS()}
-        >
-          <button type="button" onClick={this.edit} className="edit btn btn-primary">
+      <NeedAuthorization
+        roles={['admin', 'editor']}
+        orWriteAccessTo={this.props.entitiesSelected.toJS()}
+      >
+        <div className="btn-cluster">
+          <button type="button" onClick={this.edit} className="edit btn btn-default">
             <Icon icon="pencil-alt" />
             <span className="btn-label">{t('System', 'Edit')}</span>
           </button>
+          <ShareButton sharedIds={this.sharedIds()} storeKey={this.props.storeKey} />
+        </div>
+        <div className="btn-cluster content-right">
           <button type="button" className="delete btn btn-danger" onClick={this.delete}>
             <Icon icon="trash-alt" />
             <span className="btn-label">{t('System', 'Delete')}</span>
           </button>
-          <ShareButton sharedIds={this.sharedIds()} storeKey={this.props.storeKey} />
-        </NeedAuthorization>
-        <Export storeKey={this.props.storeKey} />
-      </>
+        </div>
+      </NeedAuthorization>
     );
   }
 
@@ -219,7 +219,7 @@ export class SelectMultiplePanel extends Component {
           {!editing && this.renderList()}
           {editing && this.renderEditingForm()}
         </div>
-        <div className="sidepanel-footer">
+        <div className="sidepanel-footer content-mixed">
           {!editing && this.renderListButtons()}
           {editing && this.renderEditingButtons()}
         </div>
@@ -258,7 +258,7 @@ SelectMultiplePanel.contextTypes = {
   confirm: PropTypes.func,
 };
 
-export const mapStateToProps = (_state, props) => ({
+const mapStateToProps = (_state, props) => ({
   template: commonTemplate(props),
   open: props.entitiesSelected.size > 1,
   editing: Object.keys(props.state || {}).length > 0,
@@ -275,5 +275,7 @@ function mapDispatchToProps(dispatch, props) {
     wrapDispatch(dispatch, props.storeKey)
   );
 }
+
+export { SelectMultiplePanel, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);

@@ -217,8 +217,12 @@ $c-sidebar: $c-white;
   font-size: $f-size-sm;
   margin-bottom: $FooterHeight;
 
+  &.without-footer {
+    margin-bottom: 0;
+  }
+
   &.footer-extra-row {
-    margin-bottom: calc(#{$FooterHeight} * 2);
+    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
   }
 
   // & > *:last-child {

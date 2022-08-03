@@ -89,17 +89,14 @@ footer {
 /* ----------------------------------------- */
 
 .entity-footer,
+.library-footer,
 .settings-footer,
 .sidepanel-footer {
-  height: $FooterHeight;
+  min-height: $FooterHeight;
   border-top: 1px solid #ddd;
-  padding: 10px 16px;
+  padding: 10px 16px 0;
   bottom: 0;
-  z-index: 1;
-
-  &.extra-row {
-    height: calc(#{$FooterHeight} * 2);
-  }
+  z-index: 2;
 
   &.content-mixed {
     display: flex;
@@ -109,12 +106,17 @@ footer {
 
   .footer-extra-row {
     width: 100%;
-    padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px dashed #ccc;
   }
 
   .btn-cluster {
+    &.lg-margin-left-12 {
+      @media (min-width: 1024px) {
+        margin-left: 12px;
+      }
+    }
+
     &.content-right {
       text-align: right;
       margin-left: auto;
@@ -131,6 +133,7 @@ footer {
 
   .btn {
     padding: 4px 8px;
+    margin-bottom: 11px;
     color: $c-black;
 
     &.btn-danger,
@@ -161,6 +164,7 @@ footer {
 }
 
 .entity-footer,
+.library-footer,
 .settings-footer {
   width: 100%;
   background-color: #fff;
@@ -185,7 +189,9 @@ footer {
   margin-left: -15px;
 
   &.with-sidepanel {
-    width: calc(#{$SettingsContentWidth} - 400px);
+    @media (min-width: 1024px) {
+      width: calc(#{$SettingsContentWidth} - 400px);
+    }
   }
 }
 
@@ -205,12 +211,9 @@ footer {
 
 @media (max-width: 1023px) {
   .entity-footer,
+  .library-footer,
   .settings-footer,
   .sidepanel-footer {
-    &.sm-extra-row {
-      height: calc(#{$FooterHeight} * 2);
-    }
-
     .sm-footer-extra-row {
       width: 100%;
       padding-bottom: 10px;
@@ -230,6 +233,7 @@ footer {
   }
 
   .entity-footer,
+  .library-footer,
   .settings-footer,
   .sidepanel-footer {
     .btn-cluster.sm-order-1 {
@@ -238,6 +242,7 @@ footer {
   }
 
   .entity-footer,
+  .library-footer,
   .settings-footer {
     .btn {
       &.btn-extra-padding {

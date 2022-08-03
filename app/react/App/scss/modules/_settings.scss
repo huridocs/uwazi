@@ -116,7 +116,7 @@
   }
 
   &.footer-extra-row {
-    margin-bottom: calc(#{$FooterHeight} * 2);
+    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
   }
 
   .panel-heading {
@@ -169,7 +169,7 @@
 @media (max-width: 1023px) {
   .settings-content {
     &.sm-footer-extra-row {
-      margin-bottom: calc(#{$FooterHeight} * 2);
+      margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
     }
   }
 }

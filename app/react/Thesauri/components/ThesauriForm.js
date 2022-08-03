@@ -39,7 +39,7 @@ function sanitizeThesauri(thesaurus) {
   return sanitizedThesauri;
 }
 
-export class ThesauriForm extends Component {
+class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
       name: {
@@ -196,11 +196,11 @@ export class ThesauriForm extends Component {
                 iconHandle
               />
             </div>
-            <div className="settings-footer sm-extra-row content-mixed">
+            <div className="settings-footer content-mixed">
               <div className="btn-cluster">
                 <BackButton to="/settings/dictionaries" className="btn-plain" />
               </div>
-              <div className="btn-cluster sm-order-1 sm-footer-extra-row">
+              <div className="btn-cluster lg-margin-left-12 sm-order-1 sm-footer-extra-row">
                 <button type="button" className="btn btn-default" onClick={this.props.addGroup}>
                   <Icon icon="plus" />
                   <span className="btn-label">
@@ -262,7 +262,7 @@ ThesauriForm.propTypes = {
   new: PropTypes.bool,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     thesauri: state.thesauri.data,
     thesauris: state.thesauris,
@@ -287,5 +287,7 @@ function bindActions(dispatch) {
     dispatch
   );
 }
+
+export { ThesauriForm, mapStateToProps };
 
 export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);

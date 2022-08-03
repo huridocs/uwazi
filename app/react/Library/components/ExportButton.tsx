@@ -54,7 +54,7 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
         <button
           type="button"
           onClick={this.props.user.get('_id') ? this.export : this.showModal}
-          className={`btn btn-primary btn-export ${this.props.processing ? 'btn-disabled' : ''}`}
+          className={`btn btn-default btn-export ${this.props.processing ? 'btn-disabled' : ''}`}
         >
           {!this.props.processing ? (
             <Icon icon="export-csv" transform="up-0.1" />

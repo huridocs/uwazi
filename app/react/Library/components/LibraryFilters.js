@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import { hideFilters } from 'app/Entities/actions/uiActions';
-import { LibrarySidePanelButtons } from 'app/Library/components/LibrarySidePanelButtons';
 
 export class LibraryFilters extends Component {
   reset() {
@@ -19,10 +18,7 @@ export class LibraryFilters extends Component {
   render() {
     return (
       <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
-        <div className="sidepanel-footer">
-          <LibrarySidePanelButtons storeKey={this.props.storeKey} />
-        </div>
-        <div className="sidepanel-body">
+        <div className="sidepanel-body without-footer">
           <div className="sidepanel-title">
             <div>{t('System', 'Filters configuration')}</div>
             <div className="filter-buttons">
