@@ -254,4 +254,50 @@ describe('connections', () => {
       ],
     ]);
   });
+
+  it('should handle a larger set of actions all at once', async () => {
+    await connections.clickEdit();
+    await connections.removeHub(1);
+    await connections.moveRelationship(2, 1, 1, 2, 2);
+    await connections.clickRemoveRelationship(2, 1, 1);
+    await connections.clickRemoveRelationship(2, 2, 1);
+    await connections.clickRemoveRelationship(2, 2, 2);
+    await connections.addHub('Court');
+    await connections.addHub('Court');
+    await connections.addNewRelTypeToHub(3, 'Firmantes');
+    await connections.addNewRelTypeToHub(3, 'País');
+    await connections.addNewRelTypeToHub(4, 'País');
+    await connections.addNewConnection(3, 1, 'Manuel Banchi Gundián');
+    await connections.addNewConnection(3, 1, 'Marco Monroy Cabra');
+    await connections.addNewConnection(3, 2, 'Ecuador');
+    await connections.addNewConnection(3, 2, 'Guyana');
+    await connections.addNewConnection(3, 2, 'Paraguay');
+    await connections.addNewConnection(4, 1, 'Suriname');
+    await connections.addNewConnection(4, 1, 'Uruguay');
+    await connections.clickSave();
+    await connections.reloadPage();
+    const relations = await connections.readRelations();
+    expect(relations).toEqual([
+      [
+        'Court',
+        {
+          País: ['Tracy Robinson', 'Colombia'],
+          Firmantes: ['Margarette May Macaulay'],
+        },
+      ],
+      [
+        'Court',
+        {
+          Firmantes: ['Manuel Banchi Gundián', 'Marco Monroy Cabra'],
+          País: ['Ecuador', 'Guyana', 'Paraguay'],
+        },
+      ],
+      [
+        'Court',
+        {
+          País: ['Suriname', 'Uruguay'],
+        },
+      ],
+    ]);
+  });
 });
