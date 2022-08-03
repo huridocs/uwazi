@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
@@ -79,5 +80,25 @@ describe('connections', () => {
     await expect(page).not.toMatchElement(
       '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div > div.rightRelationship'
     );
+  });
+
+  it('should search for "Artavia Murillo y otros" and find it', async () => {
+    await expect(page).toClick('#app > div.content > header > h1.logotype > div > a', {
+      text: 'Uwazi',
+    });
+    await expect(page).toFill('input[name="library.search.searchTerm"]', 'Artavia Murillo y otros');
+    await expect(page).toClick('form > .input-group > svg[data-icon="search"]');
+    await expect(page).toClick(
+      '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group.item-group-zoom-0 > div:nth-child(1) > div.item-actions > div > a'
+    );
+  });
+  it('should add "Court" relationType to "Artavia Murillo y otros"', async () => {
+    await expect(page).toClick('#tab-connections');
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button'
+    );
+    // await expect(page).toClick(
+    //   '##rw_10_input > div.rw-widget-input.rw-widget-picker.rw-widget-container > span > button'
+    // );
   });
 });
