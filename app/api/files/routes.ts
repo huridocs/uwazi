@@ -12,7 +12,6 @@ import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { tenants } from 'api/tenants';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
