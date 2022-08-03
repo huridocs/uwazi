@@ -345,7 +345,7 @@ describe('MetadataTemplate', () => {
       );
     });
 
-    it('should save the thesaurus with the title and empty values', () => {
+    it('should save a new thesaurus with the title and empty values', () => {
       const component = shallow(<MetadataTemplate {...props} saveThesaurus={jest.fn()} />);
       component.setState({ modalType: 'thesaurus' });
       component.instance().modalOnSave({ thesaurus: 'My new thesaurus' });
@@ -353,6 +353,16 @@ describe('MetadataTemplate', () => {
       expect(component.instance().props.saveThesaurus).toHaveBeenCalledWith({
         name: 'My new thesaurus',
         values: [],
+      });
+    });
+
+    it('should save a new relationship type with the correct format', () => {
+      const component = shallow(<MetadataTemplate {...props} saveRelationType={jest.fn()} />);
+      component.instance().modalOnSave({ relationship: 'My new relation type' });
+
+      expect(component.instance().props.saveRelationType).toHaveBeenCalledWith({
+        name: 'My new relation type',
+        properties: [],
       });
     });
   });

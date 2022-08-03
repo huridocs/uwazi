@@ -9,6 +9,7 @@ import { actions as formActions, Control, Field, Form } from 'react-redux-form';
 import { Icon } from 'UI';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { ClientPropertySchema } from 'app/istore';
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -20,11 +21,11 @@ import {
   saveTemplate,
   countByTemplate,
 } from 'app/Templates/actions/templateActions';
+import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
+import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
-import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
-import { ClientPropertySchema } from 'app/istore';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
 import {
@@ -37,6 +38,7 @@ interface MetadataTemplateProps {
   notify(message: any, type: any): any;
   saveTemplate(data: any): any;
   saveThesaurus(data: any): any;
+  saveRelationType(data: any): any;
   backUrl?: any;
   commonProperties?: any;
   connectDropTarget?: any;
@@ -71,6 +73,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     /* eslint-disable react/default-props-match-prop-types */
     saveTemplate,
     saveThesaurus,
+    saveRelationType,
     environment: 'template',
     /* eslint-enable react/default-props-match-prop-types */
     savingTemplate: false,
@@ -146,8 +149,11 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
 
   modalOnSave(data: saveActionData) {
     if (this.state.modalType === 'relationship' && data.relationship) {
-      const { relationship } = data;
-      console.log('saving rel with: ', relationship);
+      const relationship = {
+        name: data.relationship,
+        properties: [],
+      };
+      this.props.saveRelationType(relationship);
     }
     if (this.state.modalType === 'thesaurus' && data.thesaurus) {
       const thesaurus = { name: data.thesaurus, values: [] };
@@ -399,6 +405,7 @@ function mapDispatchToProps(dispatch: any) {
       setErrors: formActions.setErrors,
       notify: notificationActions.notify,
       saveThesaurus,
+      saveRelationType,
     },
     dispatch
   );
