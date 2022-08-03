@@ -48,7 +48,7 @@ describe('MetadataFormButtons', () => {
     it('should not show the button if prop not true', () => {
       props.includeViewButton = false;
       render();
-      expect(component.find(I18NLink)).toBeUndefined();
+      expect(component.find(I18NLink).length).toBe(0);
     });
   });
 
