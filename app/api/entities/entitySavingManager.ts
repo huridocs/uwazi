@@ -1,17 +1,18 @@
 import { set } from 'lodash';
-import { generateFileName } from 'api/files';
 import entities from 'api/entities/entities';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { UserSchema } from 'shared/types/userType';
 import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 
-export type FileAttachments = {
+export type FileAttachment = {
   originalname: string;
-  buffer: Buffer;
   mimetype: string;
   size: number;
   fieldname: string;
   encoding?: string;
+  destination: string;
+  filename: string;
+  path: string;
 };
 
 const saveEntity = async (
@@ -21,16 +22,13 @@ const saveEntity = async (
     language,
     files: reqFiles,
     socketEmiter,
-  }: { user: UserSchema; language: string; socketEmiter?: Function; files?: FileAttachments[] }
+  }: { user: UserSchema; language: string; socketEmiter?: Function; files?: FileAttachment[] }
 ) => {
   const { attachments, documents } = (reqFiles || []).reduce(
-    (acum, file) => {
-      const namedFile = { ...file, filename: generateFileName(file) };
-      return set(acum, file.fieldname, namedFile);
-    },
+    (acum, file) => set(acum, file.fieldname, file),
     {
-      attachments: [] as FileAttachments[],
-      documents: [] as FileAttachments[],
+      attachments: [] as FileAttachment[],
+      documents: [] as FileAttachment[],
     }
   );
 

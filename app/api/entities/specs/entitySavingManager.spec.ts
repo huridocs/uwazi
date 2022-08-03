@@ -1,30 +1,33 @@
 /* eslint-disable max-lines */
-import { ObjectId } from 'mongodb';
-import db from 'api/utils/testing_db';
-import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
-import { errorLog } from 'api/log';
+import * as os from 'os';
 import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
 import * as processDocumentApi from 'api/files/processDocument';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { errorLog } from 'api/log';
+import { search } from 'api/search';
+import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
+import { writeFile } from 'fs/promises';
+import { ObjectId } from 'mongodb';
+import path from 'path';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
 import waitForExpect from 'wait-for-expect';
+import entities from '../entities';
 import {
+  anotherTextFile,
   editorUser,
   entity1Id,
   entity2Id,
+  entity3Id,
+  entity3textFile,
   fixtures,
+  mainPdfFile,
+  mainPdfFileId,
+  pdfFile,
   template1Id,
   template2Id,
   textFile,
-  anotherTextFile,
-  pdfFile,
-  entity3Id,
-  mainPdfFile,
-  entity3textFile,
-  mainPdfFileId,
 } from './entitySavingManagerFixtures';
-import entities from '../entities';
 
 const validPdfString = `
 %PDF-1.0
@@ -32,8 +35,31 @@ const validPdfString = `
 trailer<</Root 1 0 R>>
 `;
 
+const tmpDir = (filename: string) => path.join(os.tmpdir(), filename);
+
 describe('entitySavingManager', () => {
+  const file = {
+    originalname: 'sampleFile.txt',
+    mimetype: 'text/plain',
+    size: 12,
+    filename: 'generatedFileName.txt',
+    path: tmpDir('generatedFileName.txt'),
+    destination: tmpDir(''),
+  };
+
+  const newMainPdfDocument = {
+    originalname: 'myNewFile.pdf',
+    mimetype: 'application/pdf',
+    size: 12,
+    filename: 'generatedPDFFileName.pdf',
+    path: tmpDir('generatedPDFFileName.pdf'),
+    destination: tmpDir(''),
+    fieldname: 'documents[0]',
+  };
+
   beforeAll(async () => {
+    await writeFile(file.path!, 'sample content');
+    await writeFile(newMainPdfDocument.path!, validPdfString);
     jest.spyOn(search, 'indexEntities').mockImplementation(jest.fn());
   });
 
@@ -48,23 +74,6 @@ describe('entitySavingManager', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-
-  const buffer = Buffer.from('sample content');
-
-  const file = {
-    originalname: 'sampleFile.txt',
-    mimetype: 'text/plain',
-    size: 12,
-    buffer,
-  };
-
-  const newMainPdfDocument = {
-    originalname: 'myNewFile.pdf',
-    mimetype: 'application/pdf',
-    size: 12,
-    buffer: Buffer.from(validPdfString),
-    fieldname: 'documents[0]',
-  };
 
   describe('saveEntity', () => {
     const reqData = { user: editorUser, language: 'en', socketEmiter: () => {} };
@@ -252,17 +261,23 @@ describe('entitySavingManager', () => {
         originalname: 'image.jpg',
         mimetype: 'image/jpeg',
         size: 12,
-        buffer,
+        filename: 'generatedNewImageName.jpg',
+        path: tmpDir('generatedNewImageName.jpg'),
+        destination: tmpDir(''),
       };
 
       const newPdfFile = {
         originalname: 'pdf.pdf',
-        mimetype: 'text/pdf',
+        mimetype: 'application/pdf',
         size: 12,
-        buffer,
+        filename: 'generatedNewPDF.pdf',
+        path: tmpDir('generatedNewPDF.pdf'),
+        destination: tmpDir(''),
       };
 
       it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
+        await writeFile(newImageFile.path!, 'sample content');
+        await writeFile(newPdfFile.path!, validPdfString);
         const entity = {
           title: 'newEntity',
           template: template2Id,
