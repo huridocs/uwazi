@@ -12,8 +12,8 @@ describe('DistributedLoopLock', () => {
   let pendingTasks;
 
   beforeAll(async () => {
-    redisServer = new RedisServer();
-    await redisServer.start();
+    redisServer = new RedisServer(6397);
+    redisServer.start();
   });
 
   afterAll(async () => {
@@ -43,8 +43,14 @@ describe('DistributedLoopLock', () => {
   }
 
   it('should run one task at a time', async () => {
-    const nodeOne = new DistributedLoop('my_locked_task', task, { delayTimeBetweenTasks: 0 });
-    const nodeTwo = new DistributedLoop('my_locked_task', task, { delayTimeBetweenTasks: 0 });
+    const nodeOne = new DistributedLoop('my_locked_task', task, {
+      delayTimeBetweenTasks: 0,
+      port: 6397,
+    });
+    const nodeTwo = new DistributedLoop('my_locked_task', task, {
+      delayTimeBetweenTasks: 0,
+      port: 6397,
+    });
     await nodeOne.start();
     await nodeTwo.start();
     await waitForExpect(async () => {
@@ -69,6 +75,7 @@ describe('DistributedLoopLock', () => {
     const nodeOne = new DistributedLoop('my_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
     await nodeOne.start();
 
@@ -130,10 +137,12 @@ describe('DistributedLoopLock', () => {
     const nodeOne = new DistributedLoop('my_long_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
     const nodeTwo = new DistributedLoop('my_long_locked_task', task, {
       retryDelay: 20,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
 
     await nodeOne.start();
@@ -153,10 +162,12 @@ describe('DistributedLoopLock', () => {
     const nodeOne = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
     const nodeTwo = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
 
     await nodeOne.start();
@@ -179,6 +190,7 @@ describe('DistributedLoopLock', () => {
     const nodeOne = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 500,
       delayTimeBetweenTasks: 0,
+      port: 6397,
     });
 
     await nodeOne.start();
@@ -207,11 +219,13 @@ describe('DistributedLoopLock', () => {
       maxLockTime: 50,
       delayTimeBetweenTasks: 50,
       retryDelay: 20,
+      port: 6397,
     });
     const nodeTwo = new DistributedLoop('my_locked_task', task, {
       maxLockTime: 50,
       delayTimeBetweenTasks: 50,
       retryDelay: 20,
+      port: 6397,
     });
 
     await nodeOne.start();
