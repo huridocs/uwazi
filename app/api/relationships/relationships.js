@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks';
+
 import { fromJS } from 'immutable';
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
@@ -230,10 +232,22 @@ export default {
   },
 
   async bulk(bulkData, language) {
+    // console.log('bulk------------------------------------------------------------');
+    // const start = performance.now();
     const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
+    // const saves = [await this.save(bulkData.save, language)];
+    // console.log('saves', saves);
     const deletions = await Promise.all(
       bulkData.delete.map(reference => this.delete(reference, language))
     );
+    // const deletions = await this.delete(
+    //   { _id: { $in: bulkData.delete.map(r => r._id) } },
+    //   language
+    // );
+    // console.log('deletions', deletions);
+    // const end = performance.now();
+    // console.log('bulk time:', end - start);
+    // return saves.concat(deletions);
     return saves.concat(deletions);
   },
 
@@ -285,6 +299,7 @@ export default {
   },
 
   async save(_relationships, language, updateEntities = true) {
+    console.log('save------------------------------------------------------------');
     if (!language) {
       throw createError('Language cant be undefined');
     }
@@ -310,6 +325,7 @@ export default {
 
     if (updateEntities) {
       const touchedHubs = Array.from(new Set(relationships.map(r => r.hub)));
+      console.log('touchedHubs', touchedHubs)
       for (let i = 0; i < touchedHubs.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         await this.updateEntitiesMetadataByHub(touchedHubs[i], language);
@@ -497,6 +513,7 @@ export default {
   },
 
   async delete(relationQuery, _language, updateMetdata = true) {
+    console.log('delete------------------------------------------------------------');
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
@@ -504,6 +521,8 @@ export default {
     const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
     const relationsToDelete = await model.get(relationQuery, 'hub');
     const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
+
+    console.log('hubs affected', hubsAffected)
 
     const { languages } = await settings.get();
     const entitiesAffected = await model.db.aggregate([
