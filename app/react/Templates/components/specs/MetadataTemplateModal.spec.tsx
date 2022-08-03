@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { MetadataTemplateModal, MetadataTemplateModalProps } from '../MetadataTemplateModal';
 
@@ -34,12 +34,14 @@ describe('Metadata template modal', () => {
 
   it('should render the modal for new relation types', async () => {
     render(componentProps);
+
     expect(await screen.findByText('Add relation type')).toBeInTheDocument();
   });
 
   it('should render the modal for new thesauri', async () => {
     componentProps.type = 'thesaurus';
     render(componentProps);
+
     expect(await screen.findByText('Add thesaurus')).toBeInTheDocument();
   });
 
@@ -47,15 +49,14 @@ describe('Metadata template modal', () => {
     render(componentProps);
     const button = await screen.findByText('Save');
     fireEvent.click(button.parentElement!);
+
     expect(await screen.findByText('Required property')).toBeInTheDocument();
   });
 
   it('should call the cancel function when canceling', async () => {
     const cancelSpy = jest.fn();
     componentProps.cancelFunction = cancelSpy;
-
     render(componentProps);
-
     const button = await screen.findByText('Cancel');
     fireEvent.click(button.parentElement!);
 
@@ -65,16 +66,15 @@ describe('Metadata template modal', () => {
   it('should call the acccept function when accepting', async () => {
     const saveSpy = jest.fn();
     componentProps.saveFunction = saveSpy;
-
     render(componentProps);
 
-    const button = await screen.findByText('Save');
-    const input = await screen.findByRole('textbox');
+    await act(async () => {
+      const button = await screen.findByText('Save');
+      const input = await screen.findByRole('textbox');
+      fireEvent.change(input, { target: { value: 'New relation type name' } });
+      fireEvent.click(button.parentElement!);
+    });
 
-    fireEvent.change(input, { target: { value: 'New relation type name' } });
-
-    fireEvent.click(button.parentElement!);
-
-    expect(saveSpy).toHaveBeenCalledWith({ data: { relationship: 'New relation type name' } });
+    expect(saveSpy).toHaveBeenCalledWith({ relationship: 'New relation type name' });
   });
 });
