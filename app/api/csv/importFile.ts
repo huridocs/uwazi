@@ -1,4 +1,4 @@
-import { fs } from 'api/files';
+import { fs, storeFile } from 'api/files';
 import path from 'path';
 
 import { generateFileName, fileFromReadStream, uploadsPath } from 'api/files/filesystem';
@@ -29,13 +29,14 @@ export class ImportFile {
     return fs.createReadStream(this.filePath);
   }
 
-  async extractFile(fileName: string, destination: string | undefined = undefined) {
+  async extractFile(fileName: string) {
     const generatedName = generateFileName({ originalname: fileName });
 
-    await fileFromReadStream(generatedName, await this.readStream(fileName), destination);
+    await fileFromReadStream(generatedName, await this.readStream(fileName), '/tmp');
 
     return {
-      destination: destination || uploadsPath(),
+      destination: '/tmp',
+      path: `/tmp/${generatedName}`,
       originalname: fileName,
       filename: generatedName,
     };

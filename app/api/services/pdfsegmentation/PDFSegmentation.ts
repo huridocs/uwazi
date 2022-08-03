@@ -1,5 +1,5 @@
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
-import { uploadsPath, fileFromReadStream, createDirIfNotExists, fileContents } from 'api/files';
+import { uploadsPath, createDirIfNotExists, fileContents, storeFile } from 'api/files';
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { filesModel } from 'api/files/filesModel';
@@ -150,7 +150,7 @@ class PDFSegmentation {
     await createDirIfNotExists(folderPath);
     const xmlname = PDFSegmentation.getXMLNAme(filename);
 
-    await fileFromReadStream(xmlname, fileStream, folderPath);
+    await storeFile(`${PDFSegmentation.SERVICE_NAME}/${xmlname}`, fileStream, 'document');
   };
 
   saveSegmentation = async (filename: string, data: any) => {

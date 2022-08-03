@@ -73,7 +73,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   }
 
   const newFileName = generateFileName(originalFile);
-  await fileFromReadStream(newFileName, fileStream);
+  // await fileFromReadStream(newFileName, fileStream);
   return processDocument(
     originalFile.entity!,
     {

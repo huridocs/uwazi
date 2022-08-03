@@ -9,10 +9,11 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
 import { EntitySchema } from 'shared/types/entityType';
 import { ensure } from 'shared/tsUtils';
-import { attachmentsPath, files } from 'api/files';
+import { attachmentsPath, files, storeFile } from 'api/files';
 import { generateID } from 'shared/IDGenerator';
 
 import typeParsers from './typeParsers';
+import { createReadStream } from 'fs';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) =>
   typeParsers[prop.type]
@@ -86,12 +87,14 @@ const importEntity = async (
   if (toImportEntity.file && entity.sharedId) {
     const file = await importFile.extractFile(toImportEntity.file);
     await processDocument(entity.sharedId, file);
+    await storeFile(file.filename, createReadStream(file.path), 'document');
   }
 
   if (attachments && entity.sharedId) {
     await attachments.split('|').reduce(async (promise: Promise<any>, attachment) => {
       await promise;
-      const attachmentFile = await importFile.extractFile(attachment, attachmentsPath());
+      const attachmentFile = await importFile.extractFile(attachment);
+      await storeFile(attachmentFile.filename, createReadStream(attachmentFile.path), 'attachment');
       return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
     }, Promise.resolve());
   }
