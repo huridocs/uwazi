@@ -1,6 +1,6 @@
 import { groupBy } from 'lodash';
 import { WithId } from 'api/odm';
-import { files as filesAPI, _storeFile, fs } from 'api/files';
+import { files as filesAPI, storeFile, fs } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
@@ -26,7 +26,7 @@ const prepareNewFiles = async (
   if (newAttachments.length) {
     await Promise.all(
       newAttachments.map(async file => {
-        await _storeFile(file.filename, fs.createReadStream(file.path), 'attachment');
+        await storeFile(file.filename, fs.createReadStream(file.path), 'attachment');
         attachments.push({
           ...file,
           entity: updatedEntity.sharedId,
@@ -39,7 +39,7 @@ const prepareNewFiles = async (
   if (newDocuments.length) {
     await Promise.all(
       newDocuments.map(async doc => {
-        await _storeFile(doc.filename, fs.createReadStream(doc.path), 'document');
+        await storeFile(doc.filename, fs.createReadStream(doc.path), 'document');
         documents.push({
           ...doc,
           entity: updatedEntity.sharedId,

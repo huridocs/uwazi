@@ -6,7 +6,7 @@ import { tenants } from 'api/tenants';
 
 import multer from 'multer';
 import { FileType } from 'shared/types/fileType';
-import { _storeFile } from './storage';
+import { storeFile } from './storage';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -43,7 +43,7 @@ const singleUpload =
         req.file.originalname = processOriginalFileName(req);
       }
       if (type) {
-        await _storeFile(
+        await storeFile(
           req.file.filename,
           fs.createReadStream(path.join(req.file.destination, req.file.filename)),
           type

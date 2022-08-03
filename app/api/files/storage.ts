@@ -101,7 +101,7 @@ export const removeFile = async (filename: string, type: FileTypes) =>
 export const removeFiles = async (files: FileType[]) =>
   Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
 
-export const _storeFile = async (filename: string, file: Readable, type: FileTypes) => {
+export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
   file.pipe(createWriteStream(paths[type](filename)));
   return new Promise(resolve => file.on('close', resolve));
 };
