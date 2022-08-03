@@ -1,4 +1,4 @@
-import { Application, Request } from 'express';
+import { Application } from 'express';
 
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -12,7 +12,6 @@ import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
-import { tenants } from 'api/tenants';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 import { readableFile, fileExists } from './storage';
@@ -35,19 +34,6 @@ const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType
   return fileList.filter(f => !f.entity || allowedSharedIds.has(f.entity));
 };
 
-const processOriginalFileName = (req: Request) => {
-  if (req.body.filename) {
-    return req.body.filename;
-  }
-
-  errorLog.debug(
-    // eslint-disable-next-line max-len
-    `[${tenants.current.name}] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include a 'filename' field in the body instead.`
-  );
-
-  return req.file?.originalname;
-};
-
 export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
@@ -56,10 +42,7 @@ export default (app: Application) => {
     async (req, res) => {
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
-        const savedFile = await processDocument(req.body.entity, {
-          ...req.file,
-          originalname: processOriginalFileName(req),
-        });
+        const savedFile = await processDocument(req.body.entity, req.file);
         res.json(savedFile);
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
@@ -97,7 +80,6 @@ export default (app: Application) => {
       files
         .save({
           ...req.file,
-          originalname: processOriginalFileName(req),
           ...req.body,
           type: 'attachment',
         })
