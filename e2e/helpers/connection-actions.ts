@@ -66,7 +66,7 @@ const addNewConnection = async (hubNumber: number, typeGroupNumber: number, sear
   // await page.evaluate('window.scrollBy(0, 200);');
   // await page.screenshot({ path: `./__temp_screenshots/${searchTerm}_1.png` });
   await expect(page).toClick(
-    `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new`
+    `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new svg`
   );
   const boxSelector = 'aside.is-active div.sidepanel-body div.search-box input';
   const input = await page.$(boxSelector);
