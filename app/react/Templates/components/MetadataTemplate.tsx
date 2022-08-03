@@ -23,6 +23,7 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
+import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
 import { ClientPropertySchema } from 'app/istore';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
@@ -35,6 +36,7 @@ import {
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
   saveTemplate(data: any): any;
+  saveThesaurus(data: any): any;
   backUrl?: any;
   commonProperties?: any;
   connectDropTarget?: any;
@@ -68,6 +70,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     notify,
     /* eslint-disable react/default-props-match-prop-types */
     saveTemplate,
+    saveThesaurus,
     environment: 'template',
     /* eslint-enable react/default-props-match-prop-types */
     savingTemplate: false,
@@ -147,8 +150,8 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
       console.log('saving rel with: ', relationship);
     }
     if (this.state.modalType === 'thesaurus' && data.thesaurus) {
-      const { thesaurus } = data;
-      console.log('saving thes with: ', thesaurus);
+      const thesaurus = { name: data.thesaurus, values: [] };
+      this.props.saveThesaurus(thesaurus);
     }
     this.setState({ modalIsOpen: false });
   }
@@ -390,7 +393,13 @@ const mapStateToProps = (
 
 function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
-    { inserted, addProperty, setErrors: formActions.setErrors, notify: notificationActions.notify },
+    {
+      inserted,
+      addProperty,
+      setErrors: formActions.setErrors,
+      notify: notificationActions.notify,
+      saveThesaurus,
+    },
     dispatch
   );
 }

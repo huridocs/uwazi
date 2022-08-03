@@ -320,6 +320,43 @@ describe('MetadataTemplate', () => {
     });
   });
 
+  describe('thesauri and relation types', () => {
+    it('should open the modal for creating new thesauri or relation', () => {
+      let component = shallow(<MetadataTemplate {...props} />);
+
+      const newThesaurusButton = component.find({ children: 'Add thesaurus' }).parent();
+      newThesaurusButton.simulate('click');
+      expect(component.find('MetadataTemplateModal').props()).toEqual(
+        expect.objectContaining({
+          isOpen: true,
+          type: 'thesaurus',
+        })
+      );
+
+      component = shallow(<MetadataTemplate {...props} />);
+
+      const newRelationButton = component.find({ children: 'Add relation type' }).parent();
+      newRelationButton.simulate('click');
+      expect(component.find('MetadataTemplateModal').props()).toEqual(
+        expect.objectContaining({
+          isOpen: true,
+          type: 'relationship',
+        })
+      );
+    });
+
+    it('should save the thesaurus with the title and empty values', () => {
+      const component = shallow(<MetadataTemplate {...props} saveThesaurus={jest.fn()} />);
+      component.setState({ modalType: 'thesaurus' });
+      component.instance().modalOnSave({ thesaurus: 'My new thesaurus' });
+
+      expect(component.instance().props.saveThesaurus).toHaveBeenCalledWith({
+        name: 'My new thesaurus',
+        values: [],
+      });
+    });
+  });
+
   describe('mapStateToProps', () => {
     it('should select next available template color as defaultColor for new template', () => {
       const template = { data: {}, uiState: Immutable.fromJS({}) };
