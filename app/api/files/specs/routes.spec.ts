@@ -286,7 +286,7 @@ describe('files routes', () => {
 
   describe('POST/files/upload/*', () => {
     describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
-      it.each(['Hello, world.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+      it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
         'should accept the filename %s in a field',
         async filename => {
           const response = await request(app)
