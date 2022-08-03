@@ -81,19 +81,17 @@ class MetadataFormButtons extends Component {
         </div>
         <div className="btn-cluster content-right">
           {entityBeingEdited && (
-            <button
-              type="button"
-              disabled={uploadFileprogress !== undefined}
-              onClick={() => this.props.resetForm(this.props.formStatePath)}
-              className="cancel-edit-metadata btn btn-default btn-extra-padding"
-            >
-              <span className="btn-label">
-                <Translate>Cancel</Translate>
-              </span>
-            </button>
-          )}
-          {entityBeingEdited && (
             <>
+              <button
+                type="button"
+                disabled={uploadFileprogress !== undefined}
+                onClick={() => this.props.resetForm(this.props.formStatePath)}
+                className="cancel-edit-metadata btn btn-default btn-extra-padding"
+              >
+                <span className="btn-label">
+                  <Translate>Cancel</Translate>
+                </span>
+              </button>
               <button
                 type="submit"
                 form={formName}

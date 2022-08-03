@@ -43,15 +43,12 @@ describe('MetadataFormButtons', () => {
     it('should include a visible view button with the correct link', () => {
       const link = component.find(I18NLink);
       expect(link.props().to).toBe('entity/shId');
-      expect(link.parent().props().if).toBe(true);
     });
 
     it('should not show the button if prop not true', () => {
       props.includeViewButton = false;
       render();
-      const link = component.find(I18NLink);
-
-      expect(link.parent().props().if).toBe(false);
+      expect(component.find(I18NLink)).toBeUndefined();
     });
   });
 
@@ -77,6 +74,7 @@ describe('MetadataFormButtons', () => {
 
   describe('save', () => {
     it('should have a submit button that submits the formName passed', () => {
+      props.entityBeingEdited = true;
       render();
       const submit = component.find('button[type="submit"]');
       expect(submit.props().form).toBe(props.formName);
@@ -85,6 +83,7 @@ describe('MetadataFormButtons', () => {
     it.each(['.cancel-edit-metadata', 'button[type="submit"]', '.copy-from-btn'])(
       'should disable cancel, edit, and copy from buttons if its processing files',
       selector => {
+        props.entityBeingEdited = true;
         props.uploadFileprogress = 10;
         render();
         const button = component.find(selector);
@@ -110,6 +109,8 @@ describe('MetadataFormButtons', () => {
     });
 
     it('should reset the form', () => {
+      props.entityBeingEdited = true;
+      render();
       component.find('.cancel-edit-metadata').simulate('click');
       expect(props.resetForm).toHaveBeenCalledWith(props.formStatePath);
     });
@@ -121,6 +122,8 @@ describe('MetadataFormButtons', () => {
     });
 
     it('should call the callback', () => {
+      props.entityBeingEdited = true;
+      render();
       component.find('.copy-from-btn').simulate('click');
       expect(props.copyFrom).toHaveBeenCalled();
     });
