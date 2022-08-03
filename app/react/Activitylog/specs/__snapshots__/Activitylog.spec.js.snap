@@ -2,11 +2,15 @@
 
 exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = `
 <div
-  className="activity-log"
+  className="settings-content without-footer"
 >
-  <Connect(ActivitylogForm)>
-    <Connect(ActivityLogList) />
-  </Connect(ActivitylogForm)>
+  <div
+    className="activity-log"
+  >
+    <Connect(ActivitylogForm)>
+      <Connect(ActivityLogList) />
+    </Connect(ActivitylogForm)>
+  </div>
 </div>
 `;
 

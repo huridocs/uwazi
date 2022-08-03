@@ -96,77 +96,99 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
         />
       </div>
       <div
-        className="settings-footer"
+        className="settings-footer content-mixed"
       >
-        <BackButton
-          to="/settings/dictionaries"
-        />
-        <button
-          className="btn btn-primary"
-          onClick={[Function]}
-          type="button"
+        <div
+          className="btn-cluster"
         >
-          <Connect(Icon)
-            icon="plus"
+          <BackButton
+            className="btn-plain"
+            to="/settings/dictionaries"
           />
-          <span
-            className="btn-label"
-          >
-            <Connect(Translate)>
-              Add group
-            </Connect(Translate)>
-          </span>
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={[Function]}
-          type="button"
-        >
-          <Connect(Icon)
-            icon="sort-alpha-down"
-          />
-          <span
-            className="btn-label"
-          >
-            <Connect(Translate)>
-              Sort
-            </Connect(Translate)>
-          </span>
-        </button>
-        <SelectFileButton
-          onFileImported={[Function]}
+        </div>
+        <div
+          className="btn-cluster lg-margin-left-12 sm-order-1 sm-footer-extra-row"
         >
           <button
-            className="btn btn-primary import-template"
+            className="btn btn-default"
+            onClick={[Function]}
             type="button"
           >
             <Connect(Icon)
-              icon="upload"
+              icon="plus"
             />
             <span
               className="btn-label"
             >
               <Connect(Translate)>
-                Import
+                Add group
               </Connect(Translate)>
             </span>
           </button>
-        </SelectFileButton>
-        <button
-          className="btn btn-success save-template"
-          type="submit"
-        >
-          <Connect(Icon)
-            icon="save"
-          />
-          <span
-            className="btn-label"
+          <button
+            className="btn btn-default"
+            onClick={[Function]}
+            type="button"
           >
-            <Connect(Translate)>
-              Save
-            </Connect(Translate)>
-          </span>
-        </button>
+            <Connect(Icon)
+              icon="sort-alpha-down"
+            />
+            <span
+              className="btn-label"
+            >
+              <Connect(Translate)>
+                Sort
+              </Connect(Translate)>
+            </span>
+          </button>
+          <SelectFileButton
+            onFileImported={[Function]}
+          >
+            <button
+              className="btn btn-default import-template"
+              type="button"
+            >
+              <Connect(Icon)
+                icon="upload"
+              />
+              <span
+                className="btn-label"
+              >
+                <Connect(Translate)>
+                  Import
+                </Connect(Translate)>
+              </span>
+            </button>
+          </SelectFileButton>
+        </div>
+        <div
+          className="btn-cluster content-right"
+        >
+          <Connect(I18NLink)
+            className="btn btn-default btn-extra-padding"
+            to="/settings/dictionaries"
+          >
+            <span
+              className="btn-label"
+            >
+              <Connect(Translate)>
+                Cancel
+              </Connect(Translate)>
+            </span>
+          </Connect(I18NLink)>
+          <button
+            className="btn btn-success btn-extra-padding save-template"
+            type="submit"
+          >
+            <span
+              className="btn-label"
+            >
+              <Connect(Translate)>
+                Save
+              </Connect(Translate)>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </Connect(Form)>
