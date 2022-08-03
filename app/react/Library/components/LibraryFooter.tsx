@@ -38,14 +38,14 @@ const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: Librar
         <PDFUploadButton storeKey={storeKey} />
       </NeedAuthorization>
       <NeedAuthorization roles={['admin', 'editor']}>
-        <button className="btn btn-default" type="button" onClick={showImportPanel}>
+        <button className="btn btn-default sm-order-1" type="button" onClick={showImportPanel}>
           <Icon icon="import-csv" transform="up-0.2" />
           <span className="btn-label">
             <Translate>Import CSV</Translate>
           </span>
         </button>
       </NeedAuthorization>
-      <Export storeKey={storeKey} />
+      <Export className="sm-order-1" storeKey={storeKey} />
     </div>
   </div>
 );

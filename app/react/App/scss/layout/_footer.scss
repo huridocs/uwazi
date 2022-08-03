@@ -111,6 +111,9 @@ footer {
   }
 
   .btn-cluster {
+    display: flex;
+    flex-wrap: wrap;
+
     &.lg-margin-left-12 {
       @media (min-width: 1024px) {
         margin-left: 12px;
@@ -126,7 +129,8 @@ footer {
       margin-right: 12px;
     }
 
-    &.sm-order-1 {
+    &.sm-order-1,
+    .sm-order-1 {
       order: -1;
     }
   }
@@ -216,7 +220,6 @@ footer {
   .sidepanel-footer {
     .sm-footer-extra-row {
       width: 100%;
-      padding-bottom: 10px;
       margin-bottom: 10px;
       border-bottom: 1px dashed #ccc;
     }
@@ -236,7 +239,8 @@ footer {
   .library-footer,
   .settings-footer,
   .sidepanel-footer {
-    .btn-cluster.sm-order-1 {
+    .btn-cluster.sm-order-1,
+    .btn-cluster .sm-order-1 {
       order: unset;
     }
   }
