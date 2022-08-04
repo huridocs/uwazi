@@ -86,6 +86,53 @@ describe('Metadata', () => {
       await expect(page).toClick('.alert.alert-success');
     });
 
+    it('should create a thesaurus from the template editor', async () => {
+      await expect(page).toClick('a', { text: 'Templates' });
+      await expect(page).toClick('a', { text: 'My edited template' });
+      await expect(page).toClick('button', { text: 'Add thesaurus' });
+      await expect(page).toFill('#thesaurusInput', 'My new dictionary');
+      await expect(page).toClick('.modal-footer > button', { text: 'Save' });
+      await expect(page).toClick('.alert.alert-success');
+    });
+
+    it('should create a relation type from the template editor', async () => {
+      await expect(page).toClick('a', { text: 'Templates' });
+      await expect(page).toClick('a', { text: 'My edited template' });
+      await expect(page).toClick('button', { text: 'Add connection' });
+      await expect(page).toFill('#relationshipInput', 'My new relation type');
+      await expect(page).toClick('.modal-footer > button', { text: 'Save' });
+      await expect(page).toClick('.alert.alert-success');
+    });
+
+    it('should check that the new thesaurus and relation are listed', async () => {
+      await expect(page).toClick('a', { text: 'Thesauri' });
+      await expect(page).toMatch('My new dictionary');
+      await expect(page).toClick('a', { text: 'Relationship types' });
+      await expect(page).toMatch('My new relation type');
+    });
+
+    it('should use the new thesaurus and relation type', async () => {
+      await expect(page).toClick('a', { text: 'Templates' });
+      await expect(page).toClick('a', { text: 'My edited template' });
+      await expect(page).toClick('li.list-group-item:nth-child(3) > button:nth-child(1)');
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(5) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toSelect('select.form-control', 'My new dictionary');
+      await expect(page).toClick('li.list-group-item:nth-child(5) > button:nth-child(1)');
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(6) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toSelect(
+        'div.form-group:nth-child(2) > select:nth-child(2)',
+        'My new relation type'
+      );
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('.alert.alert-success');
+    });
+
     it('should go back to Template then delete the created template', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
       await page.waitForSelector(
