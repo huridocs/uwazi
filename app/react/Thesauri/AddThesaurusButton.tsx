@@ -17,8 +17,8 @@ const AddThesaurusButton = () => {
 
   return (
     <>
-      <button type="button" className="btn btn-default" onClick={() => setOpen(true)}>
-        <Icon icon="plus" />
+      <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
+        <Icon icon="book" />
         <span className="btn-label">
           <Translate translationKey="Thesaurus">Thesaurus</Translate>
         </span>

@@ -171,7 +171,13 @@
   white-space: nowrap;
   z-index: 4;
   @media (min-width: 1024px) {
-    right: calc((100% - 200px) / 2);
+    right: calc((100% - 400px) / 2);
+  }
+
+  &.clustered {
+    @media (min-width: 1024px) {
+      right: calc((100% - 200px) / 2);
+    }
   }
 
   .btn {

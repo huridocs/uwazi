@@ -238,7 +238,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             </>
           )}
 
-          <div className="settings-footer">
+          <div className={`settings-footer ${environment === 'template' && 'clustered'}`}>
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <Icon icon="arrow-left" directionAware />
               <span className="btn-label">

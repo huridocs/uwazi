@@ -17,10 +17,10 @@ const AddRelationTypeButton = () => {
 
   return (
     <>
-      <button type="button" className="btn btn-default" onClick={() => setOpen(true)}>
-        <Icon icon="plus" />
+      <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
+        <Icon icon="exchange-alt" />
         <span className="btn-label">
-          <Translate translationKey="Relation type">Relation type</Translate>
+          <Translate translationKey="Relation type">Relation</Translate>
         </span>
       </button>
 
