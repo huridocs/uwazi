@@ -1,16 +1,8 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import * as connections from '../helpers/connection-actions';
 import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import { sleep } from 'shared/tsUtils';
-
-const logSelector = async (selector: string) => {
-  const element = await (await (await page.$(selector))?.getProperty('outerHTML'))?.jsonValue();
-  console.log(element);
-};
 
 describe('connections', () => {
   beforeAll(async () => {

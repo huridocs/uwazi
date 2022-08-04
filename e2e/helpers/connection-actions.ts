@@ -63,9 +63,6 @@ const clickRemoveTypeGroup = async (hubNumber: number, typeGroupNumber: number) 
   );
 
 const addNewConnection = async (hubNumber: number, typeGroupNumber: number, searchTerm: string) => {
-  // console.log(searchTerm);
-  // await page.evaluate('window.scrollBy(0, 200);');
-  // await page.screenshot({ path: `./__temp_screenshots/${searchTerm}_1.png` });
   await expect(page).toClick(
     `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new svg`
   );
@@ -73,13 +70,7 @@ const addNewConnection = async (hubNumber: number, typeGroupNumber: number, sear
   const input = await page.$(boxSelector);
   await input?.click({ clickCount: 3 });
   await page.type(boxSelector, searchTerm);
-  // await sleep(500); // <----------------------------------------- resolve this----!!!!!
-  // await logSelector(
-  //   'aside.is-active div.sidepanel-body div.search-box + div div.item-group div.item:first-child'
-  // );
-  // await page.screenshot({ path: `./__temp_screenshots/${searchTerm}_2.png` });
   await expect(page).toClick('.sidepanel-body .item-name', { text: searchTerm });
-  // console.log('complete');
 };
 
 const relationSelector = (hubNumber: number, typeGroupNumber: number, relationNumber: number) =>

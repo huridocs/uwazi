@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 import { performance } from 'perf_hooks';
 import { fromJS } from 'immutable';
 import _ from 'lodash';
@@ -234,28 +232,12 @@ export default {
     return model.get({ sharedId });
   },
 
-  // async bulk(bulkData, language) {
-  //   // const start = performance.now();
-  //   const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
-  //   const deletions = await Promise.all(
-  //     bulkData.delete.map(reference => this.delete(reference, language))
-  //   );
-  //   // const end = performance.now();
-  //   // console.log('bulk time:', end - start);
-  //   return saves.concat(deletions);
-  // },
-
   async bulk(bulkData, language) {
-    // const start = performance.now();
     const saves = await this.save(bulkData.save, language);
-    // console.log('saves', saves);
     const deletions = await this.delete(
       { _id: { $in: bulkData.delete.map(r => r._id) } },
       language
     );
-    // console.log('deletions', deletions);
-    // const end = performance.now();
-    // console.log('bulk time:', end - start);
     return { saves, deletions };
   },
 
