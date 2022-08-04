@@ -206,7 +206,13 @@ describe('PDFSegmentation', () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
       await segmentPdfs.segmentPdfs();
       segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
-      await fs.rmdir(segmentationFolder, { recursive: true });
+      try {
+        await fs.rmdir(segmentationFolder, { recursive: true });
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
 
@@ -230,8 +236,15 @@ describe('PDFSegmentation', () => {
 
     afterEach(async () => {
       await segmentationExternalService.stop();
-      await fs.rmdir(segmentationFolder, { recursive: true });
+      try {
+        await fs.rmdir(segmentationFolder, { recursive: true });
+      } catch (e) {
+        if (e.code !== 'ENOENT') {
+          throw e;
+        }
+      }
     });
+
     it('should store the segmentation', async () => {
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
