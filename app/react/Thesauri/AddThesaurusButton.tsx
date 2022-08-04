@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
+import { saveThesaurus } from './actions/thesauriActions';
 
-const AddThesaurusButton = () => {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    {
+      thesaurusSave: saveThesaurus,
+    },
+    dispatch
+  );
+
+const connector = connect(null, mapDispatchToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+
+const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm({
     mode: 'onSubmit',
   });
 
-  const onSave = () => {
+  const onSave = (data: { thesaurus: string }) => {
+    const thesaurus = {
+      name: data.thesaurus,
+      values: [],
+    };
+    thesaurusSave(thesaurus);
     setOpen(false);
   };
 
@@ -72,4 +92,5 @@ const AddThesaurusButton = () => {
   );
 };
 
-export { AddThesaurusButton };
+const container = connector(AddThesaurusButton);
+export { container as AddThesaurusButton };

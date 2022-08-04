@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
+import { saveRelationType } from './actions/relationTypeActions';
 
-const AddRelationTypeButton = () => {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators(
+    {
+      relationTypeSave: saveRelationType,
+    },
+    dispatch
+  );
+
+const connector = connect(null, mapDispatchToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+
+const AddRelationTypeButton = ({ relationTypeSave }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm({
     mode: 'onSubmit',
   });
 
-  const onSave = () => {
+  const onSave = (data: { relationtype: string }) => {
+    const relation = {
+      name: data.relationtype,
+      properties: [],
+    };
+    relationTypeSave(relation);
     setOpen(false);
   };
 
@@ -67,4 +87,5 @@ const AddRelationTypeButton = () => {
   );
 };
 
-export { AddRelationTypeButton };
+const container = connector(AddRelationTypeButton);
+export { container as AddRelationTypeButton };
