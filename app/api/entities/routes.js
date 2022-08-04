@@ -6,6 +6,7 @@ import { saveEntity } from 'api/entities/entitySavingManager';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
+import date from '../utils/date';
 import needsAuthorization from '../auth/authMiddleware';
 import { parseQuery, validation } from '../utils';
 
@@ -22,7 +23,47 @@ async function updateThesauriWithEntity(entity, req) {
   req.sockets.emitToCurrentTenant('thesauriChange', templateTransformed);
 }
 
+function coerceValues(value, type, locale) {
+  let dateSeconds = '';
+  switch (type) {
+    case 'date':
+      dateSeconds = date.dateToSeconds(value, locale);
+      if (Number.isNaN(dateSeconds)) {
+        return { success: false };
+      }
+      return { success: true, value: dateSeconds };
+    default:
+      throw Error('Unsupported type');
+  }
+}
+
 export default app => {
+  app.post(
+    '/api/entities/coerce_value',
+    needsAuthorization(['admin']),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            value: { type: 'string' },
+            type: { type: 'string' },
+            locale: { type: 'string' },
+          },
+        },
+      },
+    }),
+    async (req, res, next) => {
+      const { value, type, locale } = req.body;
+      try {
+        const coerced = coerceValues(value, type, locale);
+        return res.json(coerced);
+      } catch (e) {
+        return next(e);
+      }
+    }
+  );
   app.post(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
