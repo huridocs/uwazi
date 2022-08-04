@@ -27,7 +27,12 @@ const JoiDeprecatedValidation = (schema, propTovalidate, req, next) => {
 
 const ajvValidation = async (ajvInstance, schema, req, next) => {
   try {
-    const validator = wrapValidator(ajvInstance.compile({ ...schema, $async: true }));
+    // do not create a new schema based of this one, this creates a memory leak
+    // https://ajv.js.org/guide/managing-schemas.html#using-ajv-instance-cache
+    // eslint-disable-next-line no-param-reassign
+    schema.$async = true;
+    //
+    const validator = wrapValidator(ajvInstance.compile(schema));
     await validator(req);
     next();
   } catch (e) {
