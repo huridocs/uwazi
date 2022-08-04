@@ -1,6 +1,9 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
 import { performance } from 'perf_hooks';
-
 import { fromJS } from 'immutable';
+import _ from 'lodash';
+
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
@@ -231,53 +234,74 @@ export default {
     return model.get({ sharedId });
   },
 
+  // async bulk(bulkData, language) {
+  //   // const start = performance.now();
+  //   const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
+  //   const deletions = await Promise.all(
+  //     bulkData.delete.map(reference => this.delete(reference, language))
+  //   );
+  //   // const end = performance.now();
+  //   // console.log('bulk time:', end - start);
+  //   return saves.concat(deletions);
+  // },
+
   async bulk(bulkData, language) {
-    // console.log('bulk------------------------------------------------------------');
     // const start = performance.now();
-    const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
-    // const saves = [await this.save(bulkData.save, language)];
+    console.log(bulkData.save)
+    const saves = await this.save(bulkData.save, language);
     // console.log('saves', saves);
-    const deletions = await Promise.all(
-      bulkData.delete.map(reference => this.delete(reference, language))
+    const deletions = await this.delete(
+      { _id: { $in: bulkData.delete.map(r => r._id) } },
+      language
     );
-    // const deletions = await this.delete(
-    //   { _id: { $in: bulkData.delete.map(r => r._id) } },
-    //   language
-    // );
     // console.log('deletions', deletions);
     // const end = performance.now();
     // console.log('bulk time:', end - start);
-    // return saves.concat(deletions);
     return saves.concat(deletions);
   },
 
-  async prepareRelationshipsToSave(_relationships, language) {
-    const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
+  arrangeRelationshipGroups(_relationships) {
+    if (!Array.isArray(_relationships)) return [_relationships];
 
-    await validateConnectionSchema(rel);
+    const [groups, ungrouped] = _.partition(_relationships, relOrGroup =>
+      Array.isArray(relOrGroup)
+    );
+
+    if (ungrouped.length) groups.push(ungrouped);
+
+    return groups;
+  },
+
+  async prepareRelationshipsToSave(_relationships, language) {
+    const rels = this.arrangeRelationshipGroups(_relationships);
+    const relsFlat = rels.flat();
+    await validateConnectionSchema(relsFlat);
 
     const existingEntities = new Set(
       (
         await entities.get({
-          sharedId: { $in: rel.map(r => r.entity) },
+          sharedId: { $in: relsFlat.map(r => r.entity) },
           language,
         })
       ).map(r => r.sharedId)
     );
 
-    let relationships = rel.filter(r => existingEntities.has(r.entity));
+    const relationships = rels.map(_group => {
+      let group = _group.filter(r => existingEntities.has(r.entity));
+      if (group.length === 1 && !group[0].hub) {
+        throw createError('Single relationships must have a hub');
+      }
+      if (!(group.every(r => !r.hub) || group.every(r => !!r.hub))) {
+        throw createError('In a group, either all relationships must have a hub or none of them.');
+      }
+      if (group.length && !group[0].hub) {
+        const newHub = generateID();
+        group = group.map(r => ({ ...r, hub: r.hub || newHub }));
+      }
+      return group;
+    });
 
-    if (relationships.length === 1 && !relationships[0].hub) {
-      throw createError('Single relationships must have a hub');
-    }
-    if (!(relationships.every(r => !r.hub) || relationships.every(r => !!r.hub))) {
-      throw createError('Either all relationships must have a hub or none of them.');
-    }
-    if (relationships.length && !relationships[0].hub) {
-      const newHub = generateID();
-      relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
-    }
-    return { relationships };
+    return relationships.flat();
   },
 
   async appendRelatedEntityData(savedRelationships, language) {
@@ -299,12 +323,11 @@ export default {
   },
 
   async save(_relationships, language, updateEntities = true) {
-    console.log('save------------------------------------------------------------');
     if (!language) {
       throw createError('Language cant be undefined');
     }
 
-    const { relationships } = await this.prepareRelationshipsToSave(_relationships, language);
+    const relationships = await this.prepareRelationshipsToSave(_relationships, language);
 
     if (relationships.length === 0) {
       return [];
@@ -321,11 +344,10 @@ export default {
       )
     );
 
-    const result = this.appendRelatedEntityData(savedRelationships, language);
+    const result = await this.appendRelatedEntityData(savedRelationships, language);
 
     if (updateEntities) {
       const touchedHubs = Array.from(new Set(relationships.map(r => r.hub)));
-      console.log('touchedHubs', touchedHubs)
       for (let i = 0; i < touchedHubs.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         await this.updateEntitiesMetadataByHub(touchedHubs[i], language);
@@ -513,7 +535,6 @@ export default {
   },
 
   async delete(relationQuery, _language, updateMetdata = true) {
-    console.log('delete------------------------------------------------------------');
     if (!relationQuery) {
       return Promise.reject(createError('Cant delete without a condition'));
     }
@@ -521,8 +542,6 @@ export default {
     const unique = (elem, pos, arr) => arr.indexOf(elem) === pos;
     const relationsToDelete = await model.get(relationQuery, 'hub');
     const hubsAffected = relationsToDelete.map(r => r.hub).filter(unique);
-
-    console.log('hubs affected', hubsAffected)
 
     const { languages } = await settings.get();
     const entitiesAffected = await model.db.aggregate([
