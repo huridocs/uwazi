@@ -7,9 +7,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field, Form } from 'react-redux-form';
 import { Icon } from 'UI';
+
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { ClientPropertySchema } from 'app/istore';
+
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -21,24 +22,19 @@ import {
   saveTemplate,
   countByTemplate,
 } from 'app/Templates/actions/templateActions';
-import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
-import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { COLORS } from 'app/utils/colors';
+import { ClientPropertySchema } from 'app/istore';
+import { AddThesaurusButton } from 'app/Thesauri/AddThesaurusButton';
+import { AddRelationTypeButton } from 'app/RelationTypes/AddRelationTypeButton';
+
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';
-import {
-  MetadataTemplateModal,
-  MetadataTemplateModalTypes,
-  saveActionData,
-} from './MetadataTemplateModal';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
   saveTemplate(data: any): any;
-  saveThesaurus(data: any): any;
-  saveRelationType(data: any): any;
   backUrl?: any;
   commonProperties?: any;
   connectDropTarget?: any;
@@ -53,15 +49,10 @@ interface MetadataTemplateProps {
   _id?: string;
 }
 
-type MetadataTemplateState = {
-  modalIsOpen: boolean;
-  modalType: MetadataTemplateModalTypes;
-};
-
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
   template.data.color ? template.data.color : COLORS[allTemplates.size % COLORS.length];
 
-class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplateState> {
+class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
 
   static contextTypes = {
@@ -72,8 +63,6 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
     notify,
     /* eslint-disable react/default-props-match-prop-types */
     saveTemplate,
-    saveThesaurus,
-    saveRelationType,
     environment: 'template',
     /* eslint-enable react/default-props-match-prop-types */
     savingTemplate: false,
@@ -102,12 +91,8 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
 
   constructor(props: MetadataTemplateProps) {
     super(props);
-    this.state = { modalIsOpen: false, modalType: 'relationship' };
     this.onSubmit = this.onSubmit.bind(this);
     this.onSubmitFailed = this.onSubmitFailed.bind(this);
-    this.openModal = this.openModal.bind(this);
-    this.modalOnCancel = this.modalOnCancel.bind(this);
-    this.modalOnSave = this.modalOnSave.bind(this);
   }
 
   onSubmit = async (_template: TemplateSchema) => {
@@ -136,30 +121,6 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
 
   onSubmitFailed() {
     this.props.notify(t('System', 'The template contains errors', null, false), 'danger');
-  }
-
-  openModal(type: MetadataTemplateModalTypes) {
-    this.setState({ modalType: type });
-    this.setState({ modalIsOpen: true });
-  }
-
-  modalOnCancel() {
-    this.setState({ modalIsOpen: false });
-  }
-
-  modalOnSave(data: saveActionData) {
-    if (this.state.modalType === 'relationship' && data.relationship) {
-      const relationship = {
-        name: data.relationship,
-        properties: [],
-      };
-      this.props.saveRelationType(relationship);
-    }
-    if (this.state.modalType === 'thesaurus' && data.thesaurus) {
-      const thesaurus = { name: data.thesaurus, values: [] };
-      this.props.saveThesaurus(thesaurus);
-    }
-    this.setState({ modalIsOpen: false });
   }
 
   confirmAndSaveTemplate(
@@ -274,12 +235,6 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
                   )}
                 </ul>
               )}
-              <MetadataTemplateModal
-                isOpen={this.state.modalIsOpen}
-                type={this.state.modalType}
-                saveFunction={this.modalOnSave}
-                cancelFunction={this.modalOnCancel}
-              />
             </>
           )}
 
@@ -302,12 +257,8 @@ class MetadataTemplate extends Component<MetadataTemplateProps, MetadataTemplate
             </button>
             {environment === 'template' && (
               <>
-                <button type="button" onClick={() => this.openModal('thesaurus')}>
-                  <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
-                </button>
-                <button type="button" onClick={() => this.openModal('relationship')}>
-                  <Translate translationKey="Add connection">Add relation type</Translate>
-                </button>
+                <AddThesaurusButton />
+                <AddRelationTypeButton />
               </>
             )}
           </div>
@@ -399,14 +350,7 @@ const mapStateToProps = (
 
 function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
-    {
-      inserted,
-      addProperty,
-      setErrors: formActions.setErrors,
-      notify: notificationActions.notify,
-      saveThesaurus,
-      saveRelationType,
-    },
+    { inserted, addProperty, setErrors: formActions.setErrors, notify: notificationActions.notify },
     dispatch
   );
 }

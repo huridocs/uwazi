@@ -132,7 +132,7 @@ describe('MetadataTemplate', () => {
 
       props.savingTemplate = true;
       component = shallow(<MetadataTemplate {...props} />);
-      expect(component.find('button[type="submit"]').props().disabled).toBe(true);
+      expect(component.find('button').props().disabled).toBe(true);
     });
 
     it('should render the template name field', () => {
@@ -316,53 +316,6 @@ describe('MetadataTemplate', () => {
         backend.simulateDrop();
 
         expect(actions.inserted).toHaveBeenCalledWith(index);
-      });
-    });
-  });
-
-  describe('thesauri and relation types', () => {
-    it('should open the modal for creating new thesauri or relation', () => {
-      let component = shallow(<MetadataTemplate {...props} />);
-
-      const newThesaurusButton = component.find({ children: 'Add thesaurus' }).parent();
-      newThesaurusButton.simulate('click');
-      expect(component.find('MetadataTemplateModal').props()).toEqual(
-        expect.objectContaining({
-          isOpen: true,
-          type: 'thesaurus',
-        })
-      );
-
-      component = shallow(<MetadataTemplate {...props} />);
-
-      const newRelationButton = component.find({ children: 'Add relation type' }).parent();
-      newRelationButton.simulate('click');
-      expect(component.find('MetadataTemplateModal').props()).toEqual(
-        expect.objectContaining({
-          isOpen: true,
-          type: 'relationship',
-        })
-      );
-    });
-
-    it('should save a new thesaurus with the title and empty values', () => {
-      const component = shallow(<MetadataTemplate {...props} saveThesaurus={jest.fn()} />);
-      component.setState({ modalType: 'thesaurus' });
-      component.instance().modalOnSave({ thesaurus: 'My new thesaurus' });
-
-      expect(component.instance().props.saveThesaurus).toHaveBeenCalledWith({
-        name: 'My new thesaurus',
-        values: [],
-      });
-    });
-
-    it('should save a new relationship type with the correct format', () => {
-      const component = shallow(<MetadataTemplate {...props} saveRelationType={jest.fn()} />);
-      component.instance().modalOnSave({ relationship: 'My new relation type' });
-
-      expect(component.instance().props.saveRelationType).toHaveBeenCalledWith({
-        name: 'My new relation type',
-        properties: [],
       });
     });
   });
