@@ -13,7 +13,7 @@ import { t, Translate } from 'app/I18N';
 import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
-import { ConnectionsGroups, ResetSearch } from 'app/ConnectionsList';
+import { ConnectionsGroups } from 'app/ConnectionsList';
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
@@ -370,13 +370,6 @@ class DocumentSidePanel extends Component {
               </div>
             )}
           </NeedAuthorization>
-
-          {this.props.tab === 'connections' && (
-            <div className="sidepanel-footer">
-              <ResetSearch />
-            </div>
-          )}
-
           <div className="sidepanel-body">
             <Tabs selectedTab={this.props.tab || 'metadata'}>
               <TabContent for="text-search" className="text-search">
