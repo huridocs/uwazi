@@ -33,10 +33,10 @@ describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeEach(async () => {
-    spyOn(search, 'delete').and.returnValue(Promise.resolve());
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
-    spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'bulkIndex').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'bulkDelete').and.callFake(async () => Promise.resolve());
     await db.setupFixturesAndContext(fixtures);
   });
 
@@ -1352,7 +1352,7 @@ describe('entities', () => {
 
   describe('deleteMultiple()', () => {
     it('should delete() all the given entities', done => {
-      spyOn(entities, 'delete').and.returnValue(Promise.resolve());
+      spyOn(entities, 'delete').and.callFake(async () => Promise.resolve());
       entities
         .deleteMultiple(['id1', 'id2'])
         .then(() => {
@@ -1389,7 +1389,7 @@ describe('entities', () => {
   describe('removeLanguage()', () => {
     it('should delete all entities from the language', async () => {
       spyOn(search, 'deleteLanguage');
-      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
+      spyOn(entities, 'createThumbnail').and.callFake(async () => Promise.resolve());
       await entities.addLanguage('ab');
       await entities.removeLanguage('ab');
       const newEntities = await entities.get({ language: 'ab' });

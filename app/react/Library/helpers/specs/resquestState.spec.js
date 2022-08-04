@@ -41,7 +41,7 @@ describe('static requestState()', () => {
       user: Immutable.fromJS({}),
     };
 
-    spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
+    spyOn(searchAPI, 'search').and.callFake(async () => Promise.resolve(documents));
   });
 
   it('should request the documents passing search object on the store', async () => {

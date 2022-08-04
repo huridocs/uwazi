@@ -10,8 +10,8 @@ describe('relationships routes', () => {
 
   beforeEach(done => {
     routes = instrumentRoutes(relationshipsRroutes);
-    spyOn(relationships, 'save').and.returnValue(Promise.resolve());
-    spyOn(relationships, 'delete').and.returnValue(Promise.resolve());
+    spyOn(relationships, 'save').and.callFake(async () => Promise.resolve());
+    spyOn(relationships, 'delete').and.callFake(async () => Promise.resolve());
     db.clearAllAndLoad({}).then(done);
   });
 
@@ -46,7 +46,7 @@ describe('relationships routes', () => {
         language: 'es',
       };
 
-      spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
+      spyOn(entities, 'updateMetdataFromRelationships').and.callFake(async () => Promise.resolve());
 
       await routes.post('/api/relationships/bulk', req);
       expect(relationships.save).toHaveBeenCalledWith({ _id: 1 }, req.language);
@@ -83,7 +83,7 @@ describe('relationships routes', () => {
           user,
         };
 
-        spyOn(relationships, 'getByDocument').and.returnValue(Promise.resolve('byDocument'));
+        spyOn(relationships, 'getByDocument').and.callFake(async () => Promise.resolve('byDocument'));
 
         const response = await routes.get('/api/references/by_document/', req);
         expect(relationships.getByDocument).toHaveBeenCalledWith(
@@ -118,7 +118,7 @@ describe('relationships routes', () => {
 
   describe('GET search', () => {
     beforeEach(() => {
-      spyOn(relationships, 'search').and.returnValue(Promise.resolve('search results'));
+      spyOn(relationships, 'search').and.callFake(async () => Promise.resolve('search results'));
     });
 
     it('should have a validation schema', () => {
@@ -145,7 +145,7 @@ describe('relationships routes', () => {
 
   describe('/references/count_by_relationtype', () => {
     it('should return the number of relationships using a relationtype', async () => {
-      spyOn(relationships, 'countByRelationType').and.returnValue(Promise.resolve(2));
+      spyOn(relationships, 'countByRelationType').and.callFake(async () => Promise.resolve(2));
       const req = { query: { relationtypeId: 'abc1' } };
       const result = await routes.get('/api/references/count_by_relationtype', req);
       expect(result).toBe(2);

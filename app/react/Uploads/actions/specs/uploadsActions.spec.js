@@ -306,7 +306,7 @@ describe('uploadsActions', () => {
 
     describe('deleteCustomUpload', () => {
       it('should delete the upload and remove it locally on success', done => {
-        spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: [{ _id: 'deleted' }] }));
+        spyOn(api, 'delete').and.callFake(async () => Promise.resolve({ json: [{ _id: 'deleted' }] }));
 
         const expectedActions = [basicActions.remove('customUploads', { _id: 'deleted' })];
 

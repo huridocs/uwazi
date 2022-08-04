@@ -80,7 +80,7 @@ describe('OCR service', () => {
   }
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setUp(FIXTURES);
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;

@@ -200,7 +200,7 @@ describe('Viewer uiActions', () => {
 
   describe('scrollToToc', () => {
     it('should scroll do the pageof the toc, with an offset to the toc position', async () => {
-      spyOn(scroller, 'to').and.returnValue(Promise.resolve());
+      spyOn(scroller, 'to').and.callFake(async () => Promise.resolve());
       await actions.scrollToToc({
         text: 'The hammer to fall',
         selectionRectangles: [

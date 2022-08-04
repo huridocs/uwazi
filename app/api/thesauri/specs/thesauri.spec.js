@@ -17,7 +17,7 @@ import {
 
 describe('thesauri', () => {
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
@@ -94,8 +94,8 @@ describe('thesauri', () => {
   describe('delete()', () => {
     let templatesCountSpy;
     beforeEach(() => {
-      templatesCountSpy = spyOn(templates, 'countByThesauri').and.returnValue(Promise.resolve(0));
-      spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+      templatesCountSpy = spyOn(templates, 'countByThesauri').and.callFake(async () => Promise.resolve(0));
+      spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
     });
 
     it('should delete a thesauri', done =>
@@ -119,7 +119,7 @@ describe('thesauri', () => {
 
     describe('when the dictionary is in use', () => {
       it('should return an error in the response', done => {
-        templatesCountSpy.and.returnValue(Promise.resolve(1));
+        templatesCountSpy.and.callFake(async () => Promise.resolve(1));
         thesauri
           .delete(dictionaryId)
           .then(catchErrors(done))
@@ -133,7 +133,7 @@ describe('thesauri', () => {
 
   describe('save', () => {
     beforeEach(() => {
-      spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
+      spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
     });
 
     it('should create a thesauri', async () => {
@@ -158,7 +158,7 @@ describe('thesauri', () => {
           },
         ],
       };
-      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
       const response = await thesauri.save(data);
       expect(translations.addContext).toHaveBeenCalledWith(
         response._id,
@@ -192,7 +192,7 @@ describe('thesauri', () => {
 
     describe('when passing _id', () => {
       it('should edit an existing one', done => {
-        spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+        spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
         const data = { _id: dictionaryId, name: 'changed name' };
         return thesauri
           .save(data)

@@ -18,9 +18,9 @@ describe('Languages', () => {
       languages: Immutable.fromJS(currentLanguages),
       setDefaultLanguage: jasmine
         .createSpy('setDefaultLanguage')
-        .and.returnValue(Promise.resolve('ok')),
-      addLanguage: jasmine.createSpy('addLanguage').and.returnValue(Promise.resolve('ok')),
-      deleteLanguage: jasmine.createSpy('deleteLanguage').and.returnValue(Promise.resolve('ok')),
+        .and.callFake(async () => Promise.resolve('ok')),
+      addLanguage: jasmine.createSpy('addLanguage').and.callFake(async () => Promise.resolve('ok')),
+      deleteLanguage: jasmine.createSpy('deleteLanguage').and.callFake(async () => Promise.resolve('ok')),
       locale: 'es',
     };
     context = { confirm: jasmine.createSpy('confirm') };

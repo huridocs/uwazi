@@ -17,11 +17,11 @@ describe('EntityTypesList', () => {
         { _id: 3, name: 'Judge', isEntity: true },
       ]),
       notify: jasmine.createSpy('notify'),
-      deleteTemplate: jasmine.createSpy('deleteTemplate').and.returnValue(Promise.resolve()),
-      setAsDefault: jasmine.createSpy('setAsDefault').and.returnValue(Promise.resolve()),
+      deleteTemplate: jasmine.createSpy('deleteTemplate').and.callFake(async () => Promise.resolve()),
+      setAsDefault: jasmine.createSpy('setAsDefault').and.callFake(async () => Promise.resolve()),
       checkTemplateCanBeDeleted: jasmine
         .createSpy('checkTemplateCanBeDeleted')
-        .and.returnValue(Promise.resolve()),
+        .and.callFake(async () => Promise.resolve()),
     };
 
     context = {

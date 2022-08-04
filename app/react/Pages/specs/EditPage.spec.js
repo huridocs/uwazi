@@ -12,7 +12,7 @@ describe('EditPage', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(PagesAPI, 'getById').and.returnValue(Promise.resolve(page));
+    spyOn(PagesAPI, 'getById').and.callFake(async () => Promise.resolve(page));
     RouteHandler.renderedFromServer = true;
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
     component = shallow(<EditPage />, { context });

@@ -122,7 +122,7 @@ describe('MetadataTemplate', () => {
       entityViewPage: 'aPageSharedId',
       environment: 'template',
     };
-    spyOn(pagesApi, 'get').and.returnValue(Promise.resolve({}));
+    spyOn(pagesApi, 'get').and.callFake(async () => Promise.resolve({}));
   });
 
   describe('render()', () => {
