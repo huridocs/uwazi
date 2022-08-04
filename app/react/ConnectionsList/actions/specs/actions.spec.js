@@ -37,7 +37,9 @@ describe('ConnectionsList actions', () => {
     spyOn(referencesAPI, 'getGroupedByConnection').and.returnValue(
       Promise.resolve(groupedConnections)
     );
-    spyOn(prioritySortingCriteria, 'get').and.callFake(async () => Promise.resolve('prioritySorting'));
+    spyOn(prioritySortingCriteria, 'get').and.callFake(async () =>
+      Promise.resolve('prioritySorting')
+    );
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(formActions, 'merge').and.callFake((scope, sort) => `merge: ${scope} with: ${sort}`);
     spyOn(formActions, 'change').and.callFake(

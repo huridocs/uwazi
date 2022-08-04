@@ -17,7 +17,9 @@ describe('EntityTypesList', () => {
         { _id: 3, name: 'Judge', isEntity: true },
       ]),
       notify: jasmine.createSpy('notify'),
-      deleteTemplate: jasmine.createSpy('deleteTemplate').and.callFake(async () => Promise.resolve()),
+      deleteTemplate: jasmine
+        .createSpy('deleteTemplate')
+        .and.callFake(async () => Promise.resolve()),
       setAsDefault: jasmine.createSpy('setAsDefault').and.callFake(async () => Promise.resolve()),
       checkTemplateCanBeDeleted: jasmine
         .createSpy('checkTemplateCanBeDeleted')

@@ -30,7 +30,9 @@ describe('Login', () => {
     formDispatch = jasmine.createSpy('formDispatch');
     props = {
       login: jasmine.createSpy('login').and.callFake(async () => Promise.resolve()),
-      recoverPassword: jasmine.createSpy('recoverPassword').and.callFake(async () => Promise.resolve()),
+      recoverPassword: jasmine
+        .createSpy('recoverPassword')
+        .and.callFake(async () => Promise.resolve()),
       notify: jasmine.createSpy('notify'),
       reloadThesauris: jasmine.createSpy('reloadThesauris'),
       change: jasmine.createSpy('change'),

@@ -20,7 +20,9 @@ describe('Languages', () => {
         .createSpy('setDefaultLanguage')
         .and.callFake(async () => Promise.resolve('ok')),
       addLanguage: jasmine.createSpy('addLanguage').and.callFake(async () => Promise.resolve('ok')),
-      deleteLanguage: jasmine.createSpy('deleteLanguage').and.callFake(async () => Promise.resolve('ok')),
+      deleteLanguage: jasmine
+        .createSpy('deleteLanguage')
+        .and.callFake(async () => Promise.resolve('ok')),
       locale: 'es',
     };
     context = { confirm: jasmine.createSpy('confirm') };

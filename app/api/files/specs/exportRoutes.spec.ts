@@ -23,8 +23,8 @@ function assertDownloaded(res: any) {
 
 function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
   expect(mockCall[0]).toEqual(searchResults);
-  expect(mockCall[1]).toEqual(types);
-  expect(mockCall[2] instanceof Writable).toBe(true);
+  expect(mockCall[1] instanceof Writable).toBe(true);
+  expect(mockCall[2]).toEqual(types);
   expect(mockCall[3]).toEqual(options);
 }
 

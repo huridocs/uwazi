@@ -11,7 +11,9 @@ describe('ThesaurisList', () => {
 
   beforeEach(() => {
     props = {
-      deleteThesaurus: jasmine.createSpy('deleteThesaurus').and.callFake(async () => Promise.resolve()),
+      deleteThesaurus: jasmine
+        .createSpy('deleteThesaurus')
+        .and.callFake(async () => Promise.resolve()),
       checkThesaurusCanBeDeleted: jasmine
         .createSpy('checkThesaurusCanBeDeleted')
         .and.callFake(async () => Promise.resolve()),
