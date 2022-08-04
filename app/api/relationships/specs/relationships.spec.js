@@ -211,7 +211,8 @@ describe('relationships', () => {
 
   describe('bulk()', () => {
     const cleanSnapshot = _value => {
-      const [[_savedItem], ...deletes] = _value;
+      const { saves, deletions } = _value;
+      const [_savedItem] = saves;
       const savedItem = {
         ..._savedItem,
         _id: _savedItem._id.equals(connectionID5) ? 'connectionID5' : _savedItem._id,
@@ -228,7 +229,7 @@ describe('relationships', () => {
           : savedItem.entityData.template,
       };
 
-      return [[savedItem], ...deletes];
+      return [[savedItem], deletions];
     };
 
     it('should save or delete the relationships', async () => {
@@ -399,8 +400,7 @@ describe('relationships', () => {
         });
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fdescribe('when saving grouped input', () => {
+    describe('when saving grouped input', () => {
       const entity3Expected = {
         template,
         type: 'entity',

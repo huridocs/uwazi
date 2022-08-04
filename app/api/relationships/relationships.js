@@ -247,7 +247,6 @@ export default {
 
   async bulk(bulkData, language) {
     // const start = performance.now();
-    console.log(bulkData.save)
     const saves = await this.save(bulkData.save, language);
     // console.log('saves', saves);
     const deletions = await this.delete(
@@ -257,11 +256,11 @@ export default {
     // console.log('deletions', deletions);
     // const end = performance.now();
     // console.log('bulk time:', end - start);
-    return saves.concat(deletions);
+    return { saves, deletions };
   },
 
   arrangeRelationshipGroups(_relationships) {
-    if (!Array.isArray(_relationships)) return [_relationships];
+    if (!Array.isArray(_relationships)) return [[_relationships]];
 
     const [groups, ungrouped] = _.partition(_relationships, relOrGroup =>
       Array.isArray(relOrGroup)

@@ -90,14 +90,14 @@ describe('connections', () => {
       [
         'Court',
         {
-          'No Label': ['Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015'],
+          '': ['Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015'],
         },
       ],
       [
         'Court',
         {
           País: ['Bolivia', 'Brazil', 'Chile', 'Colombia'],
-          Firmantes: ['Máximo Cisneros Sánchez', 'Margarette May Macaulay', 'Tracy Robinson'],
+          Firmantes: ['Tracy Robinson', 'Máximo Cisneros Sánchez', 'Margarette May Macaulay'],
         },
       ],
     ]);

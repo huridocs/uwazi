@@ -14,6 +14,7 @@ const clickEdit = async () => {
 
 const clickSave = async () => {
   await expect(page).toClick('button.btn-success');
+  await page.waitForXPath("//*[@class='alert-text' and contains(., 'Relationships saved')]");
 };
 
 const hubSelector = (hubNumber: number | 'first' | 'last') => {
