@@ -187,8 +187,8 @@ const thesauri = {
     const _entities = await entities.getByTemplate(
       template._id,
       language,
-      onlyPublished,
-      preloadOptionsLimit
+      preloadOptionsLimit,
+      onlyPublished
     );
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, {

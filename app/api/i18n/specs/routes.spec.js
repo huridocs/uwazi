@@ -10,7 +10,9 @@ const mockSocketIo = () => ({
 
 describe('i18n translations routes', () => {
   let routes;
-  const mockRequest = new Promise(resolve => resolve({ translations: 'response' }));
+  const mockRequest = new Promise(resolve => {
+    resolve({ translations: 'response' });
+  });
 
   beforeEach(() => {
     routes = instrumentRoutes(i18nRoutes);

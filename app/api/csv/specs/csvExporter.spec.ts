@@ -451,7 +451,7 @@ describe('csvExporter', () => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
       exporter
-        .export(searchResults, [], writeMock)
+        .export(searchResults, writeMock, [])
         .then(() => {
           const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
           expect(exported).toEqual(csvExample);

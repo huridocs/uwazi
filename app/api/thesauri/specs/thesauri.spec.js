@@ -94,7 +94,9 @@ describe('thesauri', () => {
   describe('delete()', () => {
     let templatesCountSpy;
     beforeEach(() => {
-      templatesCountSpy = spyOn(templates, 'countByThesauri').and.callFake(async () => Promise.resolve(0));
+      templatesCountSpy = spyOn(templates, 'countByThesauri').and.callFake(async () => {
+        Promise.resolve(0);
+      });
       spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
     });
 

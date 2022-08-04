@@ -82,9 +82,9 @@ describe('relationships routes', () => {
           language: 'es',
           user,
         };
-
-        spyOn(relationships, 'getByDocument').and.callFake(async () => Promise.resolve('byDocument'));
-
+        spyOn(relationships, 'getByDocument').and.callFake(async () =>
+          Promise.resolve('byDocument')
+        );
         const response = await routes.get('/api/references/by_document/', req);
         expect(relationships.getByDocument).toHaveBeenCalledWith(
           'documentId',

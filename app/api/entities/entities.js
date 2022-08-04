@@ -155,23 +155,17 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   );
 }
 
-function getEntityTemplate(doc, language) {
-  return new Promise(resolve => {
-    if (!doc.sharedId && !doc.template) {
-      return resolve(null);
+async function getEntityTemplate(doc, language) {
+  let template = null;
+  if (doc.template) {
+    template = await templates.getById(doc.template);
+  } else if (doc.sharedId) {
+    const storedDoc = await this.getById(doc.sharedId, language);
+    if (storedDoc) {
+      template = await templates.getById(storedDoc.template);
     }
-
-    if (doc.template) {
-      return templates.getById(doc.template).then(resolve);
-    }
-
-    return this.getById(doc.sharedId, language).then(storedDoc => {
-      if (!storedDoc) {
-        return null;
-      }
-      return templates.getById(storedDoc.template).then(resolve);
-    });
-  });
+  }
+  return template;
 }
 
 const uniqueMetadataObject = (elem, pos, arr) =>
@@ -517,7 +511,7 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, onlyPublished = true, limit) {
+  getByTemplate(template, language, limit, onlyPublished = true) {
     const query = {
       template,
       language,

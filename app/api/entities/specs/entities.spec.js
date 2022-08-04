@@ -499,7 +499,9 @@ describe('entities', () => {
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' }, false);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => {
+        setTimeout(resolve, 3000);
+      });
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
@@ -879,7 +881,7 @@ describe('entities', () => {
     });
 
     it('should return all entities (including unpublished) if required', async () => {
-      const docs = await entities.getByTemplate(templateId, 'en', false);
+      const docs = await entities.getByTemplate(templateId, 'en', null, false);
       expect(docs.length).toBe(7);
       expect(docs.map(d => d.title)).toEqual([
         'shared2title',
@@ -898,7 +900,7 @@ describe('entities', () => {
         role: 'collaborator',
         groups: [],
       });
-      const docs = await entities.getByTemplate(templateId, 'en', false);
+      const docs = await entities.getByTemplate(templateId, 'en', null, false);
       expect(docs.length).toBe(4);
       expect(docs[0].title).toBe('Unpublished entity');
       expect(docs[1].title).toBe('Batman finishes');

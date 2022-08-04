@@ -70,7 +70,7 @@ export default (app: Application) => {
         const fileStream = fs.createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
-        await exporter.export(results, req.query.types, fileStream, exporterOptions);
+        await exporter.export(results, fileStream, req.query.types, exporterOptions);
 
         res.download(temporalFilePath, generateExportFileName(site_name), () => {
           //eslint-disable-next-line @typescript-eslint/no-floating-promises
