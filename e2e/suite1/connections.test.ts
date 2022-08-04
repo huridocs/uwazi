@@ -92,13 +92,103 @@ describe('connections', () => {
       '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group.item-group-zoom-0 > div:nth-child(1) > div.item-actions > div > a'
     );
   });
+
   it('should add "Court" relationType to "Artavia Murillo y otros"', async () => {
     await expect(page).toClick('#tab-connections');
     await expect(page).toClick(
       '#app > div.content > div > div > div.sidepanel-footer > span > button'
     );
-    // await expect(page).toClick(
-    //   '##rw_10_input > div.rw-widget-input.rw-widget-picker.rw-widget-container > span > button'
-    // );
+    await expect(page).toFill(
+      '#rw_10_input > div.rw-widget-input.rw-widget-picker.rw-widget-container > div > input',
+      'Court'
+    );
+  });
+
+  it('should add an entity to the court relation type', async () => {
+    await expect(page).toFill(
+      '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div.search-box > div > input',
+      'leo valladares la'
+    );
+
+    await expect(page).toClick(
+      '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div:nth-child(2) > div > div:nth-child(1)'
+    );
+
+    await expect(page).toClick('.alert.alert-success');
+
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success'
+    );
+
+    await expect(page).toClick('.alert.alert-success');
+  });
+
+  it('should add another entity to the court relation type', async () => {
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button'
+    );
+
+    await page.evaluate(
+      'document.querySelector("#app > div.content > div > div > main").scrollTo(0,400)'
+    );
+
+    await page.evaluate(
+      'document.querySelector("#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div:nth-child(2) > div.rightRelationshipAdd > button").click()'
+    );
+
+    await expect(page).toFill(
+      '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div.search-box > div > input',
+      'R'
+    );
+
+    await expect(page).toClick(
+      '#app > div.content > div > div > aside.side-panel.create-reference.is-active > div.sidepanel-body > div:nth-child(2) > div > div:nth-child(2)'
+    );
+
+    await expect(page).toClick('.alert.alert-success');
+
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success'
+    );
+
+    await expect(page).toClick('.alert.alert-success');
+  });
+
+  it('should render the relationships added after reload', async () => {
+    await page.reload();
+    await disableTransitions();
+    await expect(page).toClick('#tab-connections');
+
+    const entities = await page.$$(
+      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div:nth-child(1) > div.rightRelationship'
+    );
+    expect(entities.length).toEqual(2);
+  });
+
+  it('should remove an entity from relationships that were added', async () => {
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button'
+    );
+
+    await expect(page).toClick(
+      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div:nth-child(1) > div:nth-child(3) > div.removeEntity > button'
+    );
+    await expect(page).toClick(
+      '#app > div.content > div > div > div.sidepanel-footer > span > button.btn.btn-success'
+    );
+  });
+
+  it('should render connections from "Leo Valladares Lanza" side', async () => {
+    await expect(page).toClick(
+      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div:nth-child(2) > div.rightRelationship > div > div > div.item-actions > div > a'
+    );
+
+    await expect(page).toMatchElement('#tabpanel-info > div');
+    await expect(page).toClick('#tab-connections');
+
+    const relationships = await page.$$(
+      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div:nth-child(1) > div.rightRelationship'
+    );
+    expect(relationships.length).toEqual(1);
   });
 });
