@@ -43,15 +43,17 @@ const MetadataTemplateModal = ({
           })}
         />
         {errors[type] && errors[type].type === 'required' && (
-          <Translate translationKey="Required property">Required property</Translate>
+          <p className="error">
+            <Translate translationKey="This field is required">This field is required</Translate>
+          </p>
         )}
       </Modal.Body>
 
       <Modal.Footer>
-        <button type="button" className="" onClick={onCancel}>
+        <button type="button" className="btn" onClick={onCancel}>
           <Translate translationKey="Cancel">Cancel</Translate>
         </button>
-        <button type="button" className="" onClick={handleSubmit(onSave)}>
+        <button type="button" className="btn btn-success" onClick={handleSubmit(onSave)}>
           <Translate translationKey="Save">Save</Translate>
         </button>
       </Modal.Footer>
@@ -66,9 +68,11 @@ const MetadataTemplateModal = ({
             <h3>
               <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
             </h3>
-            <Translate translationKey="Add thesaurus description">
-              After creation you can go into Settings -&gt; Thesauri to add items
-            </Translate>
+            <p className="description">
+              <Translate translationKey="Add thesaurus description">
+                After creation you can go into Settings -&gt; Thesauri to add items
+              </Translate>
+            </p>
           </Modal.Header>
 
           {modalForm(<Translate translationKey="Thesaurus">Thesaurus</Translate>)}

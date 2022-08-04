@@ -50,7 +50,7 @@ describe('Metadata template modal', () => {
     const button = await screen.findByText('Save');
     fireEvent.click(button.parentElement!);
 
-    expect(await screen.findByText('Required property')).toBeInTheDocument();
+    expect(await screen.findByText('This field is required')).toBeInTheDocument();
   });
 
   it('should call the cancel function when canceling', async () => {

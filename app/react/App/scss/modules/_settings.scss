@@ -508,6 +508,34 @@
 }
 
 .metadata-template-modal {
+  border-radius: 6px;
+
+  h3 {
+    margin-top: 10px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid $c-grey-light;
+  }
+
+  .description {
+    color: $c-grey-dark;
+  }
+
+  .error {
+    margin-top: 5px;
+    font-weight: bold;
+    color: $c-type-0;
+  }
+
   .modal-footer {
     text-align: left;
   }
