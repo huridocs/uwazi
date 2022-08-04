@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
-import { saveRelationType } from './actions/relationTypeActions';
+import { saveRelationType } from '../actions/relationTypeActions';
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(

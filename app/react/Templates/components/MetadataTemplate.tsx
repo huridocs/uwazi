@@ -24,10 +24,10 @@ import {
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import { AddThesaurusButton } from 'app/Thesauri/components/AddThesaurusButton';
+import { AddRelationTypeButton } from 'app/RelationTypes/components/AddRelationTypeButton';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
-import { AddThesaurusButton } from 'app/Thesauri/AddThesaurusButton';
-import { AddRelationTypeButton } from 'app/RelationTypes/AddRelationTypeButton';
 
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import validator from './ValidateTemplate';

@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
-import { saveThesaurus } from './actions/thesauriActions';
+import { saveThesaurus } from '../actions/thesauriActions';
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
