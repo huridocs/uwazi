@@ -96,7 +96,7 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
         />
       </div>
       <div
-        className="settings-footer content-mixed"
+        className="settings-footer"
       >
         <div
           className="btn-cluster"

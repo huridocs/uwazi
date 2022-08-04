@@ -219,7 +219,7 @@ class SelectMultiplePanel extends Component {
           {!editing && this.renderList()}
           {editing && this.renderEditingForm()}
         </div>
-        <div className="sidepanel-footer content-mixed">
+        <div className="sidepanel-footer">
           {!editing && this.renderListButtons()}
           {editing && this.renderEditingButtons()}
         </div>

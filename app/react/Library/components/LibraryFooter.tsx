@@ -24,10 +24,14 @@ interface LibraryFooterActions {
 type LibraryFooterProps = LibraryFooterActions & LibraryFooterOwnProps;
 
 const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: LibraryFooterProps) => (
-  <div className="library-footer content-mixed with-sidepanel remove-nesting">
+  <div className="library-footer with-sidepanel remove-nesting">
     <div className="btn-cluster">
       <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-        <button className="btn btn-success" type="button" onClick={() => newEntity(storeKey)}>
+        <button
+          className="btn btn-default btn-footer-hover-success"
+          type="button"
+          onClick={() => newEntity(storeKey)}
+        >
           <Icon icon="plus" />
           <span className="btn-label">
             <Translate>Create entity</Translate>

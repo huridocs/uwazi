@@ -102,7 +102,7 @@ export const UserGroupSidePanel = ({
           </div>
         </form>
       </div>
-      <div className="sidepanel-footer content-mixed">
+      <div className="sidepanel-footer">
         {userGroup._id && (
           <div className="btn-cluster">
             <ConfirmButton

@@ -124,7 +124,7 @@ class RelationshipMetadata extends Component {
           </button>
         )}
         <div className="sidepanel-body">{this.renderBody()}</div>
-        <div className="sidepanel-footer content-mixed">
+        <div className="sidepanel-footer">
           {!this.state.copyFrom && (
             <MetadataFormButtons
               data={Immutable.fromJS(this.props.entity)}

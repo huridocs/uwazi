@@ -185,7 +185,7 @@ class EntityViewer extends Component {
         {user.get('_id') && (
           <>
             <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
-              <div className={`entity-footer content-mixed ${panelOpen ? 'with-sidepanel' : ''}`}>
+              <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
                 <MetadataFormButtons
                   includeViewButton={false}
                   delete={this.deleteEntity}
@@ -198,7 +198,7 @@ class EntityViewer extends Component {
             </ShowIf>
 
             <ShowIf if={selectedTab === 'connections'}>
-              <div className={`entity-footer content-mixed ${panelOpen ? 'with-sidepanel' : ''}`}>
+              <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
                 <RelationshipsFormButtons />
               </div>
             </ShowIf>

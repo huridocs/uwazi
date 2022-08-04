@@ -96,13 +96,12 @@ footer {
   border-top: 1px solid #ddd;
   padding: 10px 16px 0;
   bottom: 0;
+  background-color: #fff;
   z-index: 2;
 
-  &.content-mixed {
-    display: flex;
-    align-content: flex-end;
-    flex-wrap: wrap;
-  }
+  display: flex;
+  align-content: flex-end;
+  flex-wrap: wrap;
 
   .footer-extra-row {
     width: 100%;
@@ -120,13 +119,17 @@ footer {
       }
     }
 
+    .btn {
+      margin-right: 12px;
+    }
+
     &.content-right {
       text-align: right;
       margin-left: auto;
-    }
 
-    .btn:not(:last-child) {
-      margin-right: 12px;
+      .btn:last-child {
+        margin-right: 0;
+      }
     }
 
     &.sm-order-1,
@@ -165,13 +168,25 @@ footer {
   .btn-label {
     padding: 0 5px;
   }
+
+  &:hover {
+    .btn.btn-footer-hover-success {
+      color: #fff;
+      background-color: #5cb85c;
+      border-color: #4cae4c;
+
+      &:hover {
+        background-color: #449d44;
+        border-color: #398439;
+      }
+    }
+  }
 }
 
 .entity-footer,
 .library-footer,
 .settings-footer {
   width: 100%;
-  background-color: #fff;
   position: fixed;
 
   &.remove-nesting {

@@ -368,7 +368,7 @@
     flex: 1;
 
     form,
-    div:not(.settings-footer),
+    div:not(.settings-footer):not(.btn-cluster),
     label,
     textarea {
       height: 100%;

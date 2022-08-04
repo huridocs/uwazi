@@ -186,7 +186,7 @@ export const UserSidePanel = ({
         </form>
         <PermissionsList isOpen={permissionsModalOpened} onClose={togglePermissionList} />
       </div>
-      <div className="sidepanel-footer content-mixed">
+      <div className="sidepanel-footer">
         {user._id && (
           <>
             <div className="footer-extra-row">

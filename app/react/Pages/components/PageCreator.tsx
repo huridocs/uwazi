@@ -158,7 +158,7 @@ class PageCreator extends Component<mappedProps> {
               </div>
             </div>
           </div>
-          <div className="settings-footer content-mixed">
+          <div className="settings-footer">
             <div className="btn-cluster">
               <BackButton to={backUrl} className="btn-plain" />
             </div>

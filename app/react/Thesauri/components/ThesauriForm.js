@@ -196,7 +196,7 @@ class ThesauriForm extends Component {
                 iconHandle
               />
             </div>
-            <div className="settings-footer content-mixed">
+            <div className="settings-footer">
               <div className="btn-cluster">
                 <BackButton to="/settings/dictionaries" className="btn-plain" />
               </div>

@@ -216,6 +216,11 @@ $c-sidebar: $c-white;
   overflow-x: hidden;
   font-size: $f-size-sm;
   margin-bottom: $FooterHeight;
+  padding-bottom: $FooterHeight;
+
+  @media (min-width: 1024px) {
+    padding-bottom: 0;
+  }
 
   &.without-footer {
     margin-bottom: 0;

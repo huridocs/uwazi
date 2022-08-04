@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import ShowIf from 'app/App/ShowIf';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
 import { resetSearch } from '../actions/actions';
@@ -15,8 +15,10 @@ class ResetSearch extends Component {
     return (
       <ShowIf if={Boolean(connectionsGroups.size)}>
         <button type="button" onClick={this.props.resetSearch} className="btn btn-default">
-          <Icon icon="sync" />
-          <span className="btn-label">{t('System', 'Reset')}</span>
+          <Icon icon="times" />
+          <span className="btn-label">
+            <Translate>Clear Filters</Translate>
+          </span>
         </button>
       </ShowIf>
     );

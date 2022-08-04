@@ -256,7 +256,7 @@ class FiltersForm extends Component {
               </div>
             </div>
           </div>
-          <div className="settings-footer content-mixed">
+          <div className="settings-footer">
             <div className="btn-cluster">
               <button type="button" onClick={this.addGroup.bind(this)} className="btn btn-default">
                 <Icon icon="plus" />
