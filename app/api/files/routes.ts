@@ -78,7 +78,11 @@ export default (app: Application) => {
     activitylogMiddleware,
     (req, res, next) => {
       files
-        .save({ ...req.file, ...req.body, type: 'attachment' })
+        .save({
+          ...req.file,
+          ...req.body,
+          type: 'attachment',
+        })
         .then(saved => {
           res.json(saved);
         })
