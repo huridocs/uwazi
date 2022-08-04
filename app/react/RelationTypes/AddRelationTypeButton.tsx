@@ -40,7 +40,7 @@ const AddRelationTypeButton = ({ relationTypeSave }: mappedProps) => {
       <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
         <Icon icon="exchange-alt" />
         <span className="btn-label">
-          <Translate translationKey="Relation type">Relation</Translate>
+          <Translate translationKey="Relation">Relation</Translate>
         </span>
       </button>
 
