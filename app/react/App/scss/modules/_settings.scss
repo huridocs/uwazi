@@ -178,6 +178,15 @@
     @media (min-width: 1024px) {
       right: calc((100% - 200px) / 2);
     }
+
+    .btn {
+      margin-bottom: 25px;
+    }
+
+    span {
+      line-height: 1;
+      white-space: normal;
+    }
   }
 
   .btn {

@@ -40,7 +40,7 @@ const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
       <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
         <Icon icon="book" />
         <span className="btn-label">
-          <Translate translationKey="Thesaurus">Thesaurus</Translate>
+          <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
         </span>
       </button>
 

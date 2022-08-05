@@ -89,7 +89,7 @@ describe('Metadata', () => {
     it('should create a thesaurus from the template editor', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'My edited template' });
-      await expect(page).toClick('button', { text: 'Thesaurus' });
+      await expect(page).toClick('button', { text: 'Add thesaurus' });
       await expect(page).toFill('#thesaurusInput', 'My new dictionary');
       await expect(page).toClick('.modal-footer > button', { text: 'Save' });
       await expect(page).toClick('.alert.alert-success');
@@ -98,7 +98,7 @@ describe('Metadata', () => {
     it('should create a relation type from the template editor', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'My edited template' });
-      await expect(page).toClick('button', { text: 'Relation' });
+      await expect(page).toClick('button', { text: 'Add relation type' });
       await expect(page).toFill('#relationtypeInput', 'My new relation type');
       await expect(page).toClick('.modal-footer > button', { text: 'Save' });
       await expect(page).toClick('.alert.alert-success');

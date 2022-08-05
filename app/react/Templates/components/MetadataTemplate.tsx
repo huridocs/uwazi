@@ -245,6 +245,12 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 <Translate>Back</Translate>
               </span>
             </I18NLink>
+            {environment === 'template' && (
+              <>
+                <AddThesaurusButton />
+                <AddRelationTypeButton />
+              </>
+            )}
             <button
               type="submit"
               className="btn btn-success save-template"
@@ -255,12 +261,6 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 <Translate>Save</Translate>
               </span>
             </button>
-            {environment === 'template' && (
-              <>
-                <AddThesaurusButton />
-                <AddRelationTypeButton />
-              </>
-            )}
           </div>
         </Form>
       </div>
