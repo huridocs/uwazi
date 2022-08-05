@@ -8,11 +8,10 @@ const newKeyValues = [
   { key: 'Relation', value: 'Relation' },
   { key: 'This field is required', value: 'This field is required' },
   {
-    key: 'After creation you can go into Settings -> Thesauri to add items',
+    key: 'Add thesaurus modal description',
     value: 'After creation you can go into Settings -> Thesauri to add items',
   },
   { key: 'Thesaurus', value: 'Thesaurus' },
-  { key: 'This field is required', value: 'This field is required' },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
