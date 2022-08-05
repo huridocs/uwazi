@@ -98,7 +98,7 @@
     "import/order": ["warn"],
     "import/named": ["warn"],
     "import/no-cycle": ["warn"],
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
 
     //react
     "react/static-property-placement": "off",
@@ -116,7 +116,10 @@
     "react/jsx-wrap-multilines": ["off"], // handled by prettier,
     "react/jsx-curly-brace-presence": ["warn"],
     "react/jsx-curly-newline": "off",
-    "react/require-default-props": ["warn", { "forbidDefaultForRequired": false, "ignoreFunctionalComponents": true }],
+    "react/require-default-props": [
+      "warn",
+      { "forbidDefaultForRequired": false, "ignoreFunctionalComponents": true }
+    ],
     "react/forbid-prop-types": ["warn"],
     "react/jsx-no-bind": ["warn"],
     "react/sort-comp": ["warn"],
@@ -134,7 +137,10 @@
     "react/no-access-state-in-setstate": ["warn"],
     "react/jsx-pascal-case": ["warn"],
     "react/default-props-match-prop-types": ["error", { "allowRequiredDefaults": true }],
-
+    "react/function-component-definition": [
+      2,
+      { "namedComponents": "arrow-function", "unnamedComponents": "arrow-function" }
+    ],
     //jsx-a11y
     "jsx-a11y/anchor-is-valid": ["warn"],
     "jsx-a11y/label-has-for": ["off"],
