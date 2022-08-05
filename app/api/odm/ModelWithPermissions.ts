@@ -100,7 +100,7 @@ function checkPermissionAccess<T>(
 
 const filterPermissionsData = <T>(
   data: EnforcedWithId<WithPermissions<T>>[] = [],
-  user: DataType<UserSchema> | undefined
+  user: DataType<UserSchema> | undefined = undefined
 ) => {
   let filteredData = data;
   if (user && !['admin', 'editor'].includes(user.role)) {

@@ -80,7 +80,7 @@ function getFixturesFactory() {
       type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
       filename: string,
       language: string = 'en',
-      originalname?: string,
+      originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
     ): FileType => ({
       _id: idMapper(`${id}`),

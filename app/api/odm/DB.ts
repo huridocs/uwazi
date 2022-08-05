@@ -7,7 +7,7 @@ let connection: Connection;
 mongoose.set('useCreateIndex', true);
 
 const DB = {
-  async connect(uri: string = config.DBHOST, auth?: ConnectionOptions) {
+  async connect(uri: string = config.DBHOST, auth: ConnectionOptions = {}) {
     connection = await mongoose.createConnection(uri, {
       ...auth,
       useUnifiedTopology: true,

@@ -32,7 +32,6 @@ export class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
-    this.firstRender = true;
     this.state = { copyFrom: false, copyFromProps: [] };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);

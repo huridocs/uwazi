@@ -50,11 +50,15 @@ const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
 
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
-    prop: 'label',
-    outKey: 'label',
-    filterBy: 'id',
-  });
+  const updatedLabels = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'label',
+      filterBy: 'id',
+    },
+    currentProperties,
+    newProperties
+  );
   if (current.name !== thesauri.name) {
     updatedLabels[current.name] = thesauri.name;
   }
@@ -87,11 +91,15 @@ async function updateOptionsInEntities(current, thesauri) {
     )
   );
 
-  const updatedIds = getUpdatedNames(currentProperties, newProperties, {
-    prop: 'label',
-    outKey: 'id',
-    filterBy: 'id',
-  });
+  const updatedIds = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'id',
+      filterBy: 'id',
+    },
+    currentProperties,
+    newProperties
+  );
   const toUpdate = [];
 
   Object.keys(updatedIds).forEach(id => {

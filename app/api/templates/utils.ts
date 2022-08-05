@@ -105,8 +105,6 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
   }, []);
 
 function getUpdatedNames(
-  oldProperties: PropertyOrThesaurusSchema[] = [],
-  newProperties: PropertyOrThesaurusSchema[],
   {
     prop,
     outKey,
@@ -115,7 +113,9 @@ function getUpdatedNames(
     prop: 'name' | 'label';
     outKey: 'name' | 'label' | 'id';
     filterBy: 'id' | '_id';
-  }
+  },
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[] = []
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
   flattenProperties(oldProperties).forEach(property => {

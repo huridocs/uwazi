@@ -157,7 +157,7 @@ export default {
     sharedId,
     language,
     unpublished = true,
-    file,
+    file = undefined,
     onlyTextReferences = false,
     unrestricted = true
   ) {
