@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-
 import { files } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
 import * as storage from 'api/files/storage';
@@ -17,6 +16,7 @@ import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
 import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
 import { fixtures, fixturesFactory } from './fixtures/fixtures';
 import { cleanupRecordsOfFiles } from '../ocrRecords';
+import { Readable } from 'stream';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -34,9 +34,7 @@ class Mocks {
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
-      'filesApi.fileFromReadStream': jest
-        .spyOn(filesApi, 'fileFromReadStream')
-        .mockResolvedValue(''),
+      'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(''),
       'filesApi.generateFileName': jest
         .spyOn(filesApi, 'generateFileName')
         .mockReturnValue('generatedUwaziFilename'),
@@ -63,11 +61,19 @@ class Mocks {
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
 
     fetchMock.mock('end:/info', '{ "supported_languages": ["en", "es"] }');
-    fetchMock.mock('protocol://link/to/result/file', {
-      body: 'resultFileContent',
-      status: 200,
-      headers: { 'Content-Type': 'some/mimetype' },
-    });
+    // fetchMock.mock('protocol://link/to/result/file', {
+    //   body: Readable.from(Buffer.from('resultFileContent')),
+    //   status: 200,
+    //   headers: { 'Content-Type': 'some/mimetype' },
+    // });
+
+    fetchMock.mock(
+      'protocol://link/to/result/file',
+      new Response(Readable.from(Buffer.from('resultFileContent')), {
+        headers: { 'Content-Type': 'some/mimetype' },
+        size: 17,
+      })
+    );
   }
 
   release() {
@@ -111,6 +117,7 @@ describe('OcrManager', () => {
     beforeAll(async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await ocrManager.addToQueue(sourceFile);
+      await storage.removeFile('generatedUwaziFilename', 'document');
     });
 
     describe('when creating a new task', () => {
@@ -150,6 +157,7 @@ describe('OcrManager', () => {
     describe('when there are results', () => {
       beforeAll(async () => {
         mocks.jestMocks['date.now'].mockReturnValue(1001);
+        mocks.jestMocks['storage.storeFile'].mockRestore();
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
@@ -157,26 +165,25 @@ describe('OcrManager', () => {
         expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
-      it('should save the file with a generated filename', () => {
+      it('should save the file with a generated filename', async () => {
         expect(filesApi.generateFileName).toHaveBeenCalled();
-        expect(filesApi.fileFromReadStream).toHaveBeenCalledWith(
-          'generatedUwaziFilename',
-          Buffer.from('resultFileContent')
+        mocks.jestMocks['storage.fileContents'].mockRestore();
+        expect((await storage.fileContents('generatedUwaziFilename', 'document')).toString()).toBe(
+          'resultFileContent'
         );
       });
 
       it('should run the file processing', async () => {
         expect(processDocumentApi.processDocument).toHaveBeenCalledWith(
           'parentEntity',
-          {
+          expect.objectContaining({
             destination: 'file_path',
             filename: 'generatedUwaziFilename',
             language: 'eng',
             mimetype: 'some/mimetype',
             originalname: 'ocr_sourceFileOriginalName.pdf',
-            size: 17,
             type: 'document',
-          },
+          }),
           false
         );
       });
@@ -285,7 +292,7 @@ describe('OcrManager', () => {
 
       const records = await OcrModel.get({});
       expect(records).toHaveLength(3);
-      expect(filesApi.fileFromReadStream).not.toHaveBeenCalled();
+      expect(storage.storeFile).not.toHaveBeenCalled();
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
   });

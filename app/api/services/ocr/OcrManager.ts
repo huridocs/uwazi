@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { files, uploadsPath, fileContents } from 'api/files';
+import { files, uploadsPath, fileContents, storeFile } from 'api/files';
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import settings from 'api/settings/settings';
@@ -73,7 +73,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   }
 
   const newFileName = generateFileName(originalFile);
-  // await fileFromReadStream(newFileName, fileStream);
+  await storeFile(newFileName, fileStream, 'document');
   return processDocument(
     originalFile.entity!,
     {
