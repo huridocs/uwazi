@@ -31,7 +31,7 @@ jobs:
           - 27017/tcp
     steps:
       - name: Checkout reposistory
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - name: Setup Nodejs
