@@ -3,6 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
+import { IStore } from 'app/istore';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
 import { saveRelationType } from '../actions/relationTypeActions';
@@ -15,11 +16,15 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
     dispatch
   );
 
-const connector = connect(null, mapDispatchToProps);
+const mapStateToProps = (state: IStore) => ({
+  relationTypes: state.relationTypes,
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const AddRelationTypeButton = ({ relationTypeSave }: mappedProps) => {
+const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm({
@@ -34,6 +39,9 @@ const AddRelationTypeButton = ({ relationTypeSave }: mappedProps) => {
     relationTypeSave(relation);
     setOpen(false);
   };
+
+  const isNotDuplicated = (value: string) =>
+    !relationTypes?.find(relationType => relationType?.get('name') === value);
 
   return (
     <>
@@ -62,13 +70,23 @@ const AddRelationTypeButton = ({ relationTypeSave }: mappedProps) => {
               id="relationtypeInput"
               ref={register({
                 required: true,
+                validate: {
+                  duplicated: value => isNotDuplicated(value),
+                },
               })}
             />
-            {errors.relationtype && errors.relationtype.type === 'required' && (
+
+            {errors.relationtype?.type === 'required' && (
               <p className="error">
                 <Translate translationKey="This field is required">
                   This field is required
                 </Translate>
+              </p>
+            )}
+
+            {errors.relationtype?.type === 'duplicated' && (
+              <p className="error">
+                <Translate translationKey="Duplicated name">Duplicated name</Translate>
               </p>
             )}
           </Modal.Body>

@@ -30,6 +30,11 @@ interface EntityDisplayState {
   filters: IImmutable<{ documentTypes: [] }>;
 }
 
+interface RelationTypesType {
+  _id: string;
+  name: string;
+}
+
 export interface ClientPropertySchema extends PropertySchema {
   localID?: string;
   inserting?: boolean;
@@ -159,4 +164,5 @@ export interface IStore {
     formState: any;
   };
   pages: IImmutable<PageType>;
+  relationTypes: IImmutable<RelationTypesType[]>;
 }

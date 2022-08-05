@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import Immutable from 'immutable';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { AddRelationTypeButton } from '../AddRelationTypeButton';
@@ -9,7 +10,16 @@ import * as relationTypeActions from '../../actions/relationTypeActions';
 
 describe('Add relation type button', () => {
   const render = () => {
-    const store = { ...defaultState };
+    const store = {
+      ...defaultState,
+      relationTypes: Immutable.fromJS([
+        {
+          _id: '62ed4e49e92138e9c879680a',
+          name: 'Existing relation type',
+          properties: [],
+        },
+      ]),
+    };
     renderConnectedContainer(<AddRelationTypeButton />, () => store);
   };
 
@@ -42,6 +52,18 @@ describe('Add relation type button', () => {
       });
 
       expect(screen.getByText('This field is required')).toBeInTheDocument();
+    });
+
+    it('should display an error if the thesaurus name already exists', async () => {
+      await waitFor(async () => {
+        fireEvent.change(await screen.findByRole('textbox'), {
+          target: { value: 'Existing relation type' },
+        });
+
+        fireEvent.click(screen.getByText('Save').parentElement!);
+      });
+
+      expect(screen.getByText('Duplicated name')).toBeInTheDocument();
     });
 
     it('should save with the correct format and close the modal', async () => {
