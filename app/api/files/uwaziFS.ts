@@ -1,10 +1,9 @@
 //eslint-disable-next-line node/no-restricted-import
-import fs from 'fs';
-
-const { createWriteStream, createReadStream } = fs;
+import { createReadStream, createWriteStream } from 'fs';
+import fs from 'fs/promises';
 
 const uwaziFS = {
-  ...fs.promises,
+  ...fs,
   createWriteStream,
   createReadStream,
 };
