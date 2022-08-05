@@ -96,8 +96,13 @@ export interface ClientFile extends FileType {
   fileLocalID?: string;
 }
 
+export interface ClientBlobFile extends FileType {
+  data: string;
+  originalFile: File;
+}
+
 export interface ClientEntitySchema extends EntitySchema {
-  documents?: ClientFile[];
+  documents?: (ClientFile | ClientBlobFile)[];
   attachments?: ClientFile[];
 }
 

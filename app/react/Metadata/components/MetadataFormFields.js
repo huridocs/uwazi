@@ -287,7 +287,7 @@ class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, model, showSubset, storeKey } = this.props;
+    const { thesauris, template, model, showSubset, storeKey, locale } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
@@ -333,6 +333,7 @@ class MetadataFormFields extends Component {
                           fieldId={property._id}
                           fieldType={property.type}
                           model={`${model}.metadata.${property.name}`}
+                          locale={locale}
                         />
                       )}
                     {this.getField(property, `.metadata.${property.name}`, thesauris, model)}

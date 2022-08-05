@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 import superagent from 'superagent';
+import fetchMock from 'fetch-mock';
+
 import { APIURL } from 'app/config';
 import { readFileAsBase64, saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import { contentForFiles } from './fixtures';
@@ -14,7 +16,9 @@ describe('saveEntityWithFiles', () => {
     spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
 
     jest.spyOn(mockUpload, 'end').mockImplementation(cb => {
-      const response: Partial<superagent.Response> = { body: { title: 'entity1' } };
+      const response: Partial<superagent.Response> = {
+        body: { entity: { title: 'entity1', sharedId: 'entity1' } },
+      };
       cb?.(null, response as superagent.Response);
     });
     spyOn(superagent, 'post').and.returnValue(mockUpload);
@@ -23,6 +27,15 @@ describe('saveEntityWithFiles', () => {
   };
 
   const dispatch = jasmine.createSpy('dispatch');
+
+  const mockedRevokeObjectURL: jest.Mock = jest.fn();
+  beforeAll(() => {
+    URL.revokeObjectURL = mockedRevokeObjectURL;
+  });
+
+  afterAll(() => {
+    mockedRevokeObjectURL.mockReset();
+  });
 
   it.each`
     fileContent              | fileName          | fileType                | fileSize
@@ -43,6 +56,7 @@ describe('saveEntityWithFiles', () => {
     const entity = {
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       attachments: [
         {
           _id: 'file_id',
@@ -59,6 +73,7 @@ describe('saveEntityWithFiles', () => {
     const expectedEntityJson = JSON.stringify({
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       attachments: [
         {
           _id: 'file_id',
@@ -69,6 +84,7 @@ describe('saveEntityWithFiles', () => {
           originalname: 'existing file',
         },
       ],
+      documents: [],
     });
 
     const mockUpload = mockSuperAgent();
@@ -78,14 +94,16 @@ describe('saveEntityWithFiles', () => {
     expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
 
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
-    expect(updatedEntity).toEqual({ title: 'entity1' });
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 
   it('should save the entity without files', async () => {
     const entity = {
       _id: 'entity1',
       title: 'entity1',
+      sharedId: 'entity1',
       metadata: { data: [{ value: 'string' }] },
+      documents: [],
     };
 
     const mockUpload = mockSuperAgent();
@@ -93,6 +111,35 @@ describe('saveEntityWithFiles', () => {
 
     expect(mockUpload.field).toHaveBeenLastCalledWith('entity', JSON.stringify(entity));
 
-    expect(updatedEntity).toEqual({ title: 'entity1' });
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
+  });
+
+  it('should save the entity with added documents', async () => {
+    const file = new File([Buffer.from('pdf').toString('base64')], 'document.pdf', {
+      type: 'application/pdf',
+    });
+
+    const entity = {
+      _id: 'entity1',
+      sharedId: 'entity1',
+      title: 'entity1',
+      attachments: [],
+      documents: [{ data: 'blob:http://localhost:3000/blob/file_id', originalFile: file }],
+    };
+
+    const expectedEntityJson = JSON.stringify({
+      _id: 'entity1',
+      sharedId: 'entity1',
+      title: 'entity1',
+      attachments: [],
+      documents: [],
+    });
+
+    const mockUpload = mockSuperAgent();
+    fetchMock.mock('blob:http://localhost:3000/blob/file_id', { blob: {} });
+    const updatedEntity = await saveEntityWithFiles(entity, dispatch);
+    expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
+    expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
+    expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 });

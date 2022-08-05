@@ -13,7 +13,7 @@ import {
   fixturesMissingPdf,
 } from 'api/services/pdfsegmentation/specs/fixtures';
 
-import { fs, fileExists } from 'api/files';
+import { fs, fileExists, fileContents } from 'api/files';
 import path from 'path';
 
 import { tenants } from 'api/tenants/tenantContext';
@@ -26,6 +26,16 @@ import { SegmentationModel } from '../segmentationModel';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+
+const deleteFolder = async (folderPath: string) => {
+  try {
+    await fs.rm(folderPath, { recursive: true });
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+  }
+};
 
 describe('PDFSegmentation', () => {
   let segmentPdfs: PDFSegmentation;
@@ -206,9 +216,7 @@ describe('PDFSegmentation', () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
       await segmentPdfs.segmentPdfs();
       segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
-      if (await fileExists(segmentationFolder)) {
-        await fs.rmdir(segmentationFolder, { recursive: true });
-      }
+      await deleteFolder(segmentationFolder);
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
 
@@ -232,11 +240,9 @@ describe('PDFSegmentation', () => {
 
     afterEach(async () => {
       await segmentationExternalService.stop();
-
-      if (await fileExists(segmentationFolder)) {
-        await fs.rmdir(segmentationFolder, { recursive: true });
-      }
+      await deleteFolder(segmentationFolder);
     });
+
     it('should store the segmentation', async () => {
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
@@ -273,13 +279,13 @@ describe('PDFSegmentation', () => {
         task: 'segmentation',
         success: true,
       });
-      const fileContents = await fs.readFile(
-        path.join(segmentationFolder, 'documentA.xml'),
-        'utf8'
-      );
-      expect(await fileExists(path.join(segmentationFolder, 'documentA.xml'))).toBe(true);
-      const xml = '<description>Cold shrimps soup</description>';
-      expect(fileContents.includes(xml)).toBe(true);
+      await tenants.run(async () => {
+        const fileContent = await fileContents('segmentation/documentA.xml', 'document');
+        const xml = '<description>Cold shrimps soup</description>';
+        expect(fileContent.includes(xml)).toBe(true);
+
+        expect(await fileExists('segmentation/documentA.xml', 'document')).toBe(true);
+      }, 'tenantOne');
     });
 
     describe('if the segmentation fails', () => {

@@ -1,5 +1,5 @@
 import { Application, Request, Response, NextFunction } from 'express';
-import { uploadsPath, fileExists } from 'api/files/filesystem';
+import { fileExists } from 'api/files';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { isOcrEnabled, ocrManager, getOcrStatus } from 'api/services/ocr/OcrManager';
 import { files } from './files';
@@ -29,7 +29,7 @@ const fileFromRequest = async (request: Request) => {
     filename: request.params.filename,
   });
 
-  if (!file || !(await fileExists(uploadsPath(file.filename)))) {
+  if (!file?.filename || !(await fileExists(file.filename, 'document'))) {
     throw createError('file not found', 404);
   }
 

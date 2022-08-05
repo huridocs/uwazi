@@ -312,6 +312,44 @@ describe('documentsReducer', () => {
     });
   });
 
+  describe('UPLOADS_COMPLETE', () => {
+    it('should update the state with the uploaded documents', () => {
+      const currentState = Immutable.fromJS({
+        rows: [
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [{ filename: 'My PDF.pdf', entity: 'shared1', status: 'processing' }],
+          },
+        ],
+      });
+
+      const newState = documentsReducer(currentState, {
+        type: uploadTypes.UPLOADS_COMPLETE,
+        doc: 'shared1',
+        files: [
+          { filename: 'My new PDF.pdf', entity: 'shared1', status: 'failed' },
+          { filename: 'My PDF.pdf', entity: 'shared1', status: 'ready' },
+        ],
+      });
+
+      expect(newState.toJS()).toEqual({
+        rows: [
+          {
+            title: '1',
+            _id: 1,
+            sharedId: 'shared1',
+            documents: [
+              { filename: 'My new PDF.pdf', entity: 'shared1', status: 'failed' },
+              { filename: 'My PDF.pdf', entity: 'shared1', status: 'ready' },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
   describe('Attachments', () => {
     const initialDocumentsState = {
       rows: [

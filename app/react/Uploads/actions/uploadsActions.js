@@ -92,7 +92,8 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .field('entity', docId)
-        .attach('file', file, file.name)
+        .field('filename', file.name)
+        .attach('file', file)
         .on('progress', data => {
           dispatch({
             type: types.UPLOAD_PROGRESS,
@@ -185,11 +186,19 @@ export function uploadDocument(docId, file) {
 export function documentProcessed(sharedId, __reducerKey) {
   return dispatch => {
     EntitiesApi.get(new RequestParams({ sharedId })).then(([doc]) => {
+      dispatch({ type: types.UPLOAD_PROGRESS, doc: sharedId, progress: 100 });
       dispatch({ type: libraryTypes.UPDATE_DOCUMENT, doc, __reducerKey });
       dispatch({ type: libraryTypes.UNSELECT_ALL_DOCUMENTS, __reducerKey });
       dispatch({ type: libraryTypes.SELECT_DOCUMENT, doc, __reducerKey });
+      dispatch({
+        type: types.UPLOADS_COMPLETE,
+        doc: sharedId,
+        files: doc.documents,
+        __reducerKey: 'library',
+      });
       dispatch(basicActions.update('entityView/entity', doc));
       dispatch(basicActions.update('viewer/doc', doc));
+      dispatch({ type: types.BATCH_UPLOAD_COMPLETE, doc: sharedId });
     });
   };
 }

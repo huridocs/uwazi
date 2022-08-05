@@ -3,6 +3,7 @@ import fetchMock from 'fetch-mock';
 
 import { files } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
+import * as storage from 'api/files/storage';
 import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';
@@ -30,8 +31,8 @@ class Mocks {
   constructor() {
     this.jestMocks = {
       'filesApi.uploadsPath': jest.spyOn(filesApi, 'uploadsPath').mockReturnValue('file_path'),
-      'filesApi.readFile': jest
-        .spyOn(filesApi, 'readFile')
+      'storage.fileContents': jest
+        .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
       'filesApi.fileFromReadStream': jest
         .spyOn(filesApi, 'fileFromReadStream')
