@@ -49,7 +49,7 @@ describe('export routes', () => {
       await testingEnvironment.setUp(fixtures);
 
       exportMock = jest.fn().mockImplementation(
-        async (_searchResults: SearchResults, _types: string[] = [], writeStream: Writable) =>
+        async (_searchResults: SearchResults, writeStream: Writable, _types: string[] = []) =>
           new Promise(resolve => {
             writeStream.write('content');
             writeStream.on('finish', resolve);

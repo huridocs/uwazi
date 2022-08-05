@@ -12,6 +12,9 @@ import ThesauriFormField from './ThesauriFormField';
 export class ThesauriFormGroup extends Component {
   constructor(props) {
     super(props);
+    this.focus = () => {
+      this.groupInput.focus();
+    };
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
     this.removeGroup = this.removeGroup.bind(this);
