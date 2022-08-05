@@ -50,7 +50,7 @@ const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
             <Translate translationKey="Add thesaurus">Add thesaurus</Translate>
           </h3>
           <p className="description">
-            <Translate translationKey="Add thesaurus description">
+            <Translate translationKey="Add thesaurus modal description">
               After creation you can go into Settings -&gt; Thesauri to add items
             </Translate>
           </p>
