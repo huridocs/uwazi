@@ -4,8 +4,13 @@ import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
+import { IStore } from 'app/istore';
 import { Icon } from 'UI';
 import { saveThesaurus } from '../actions/thesauriActions';
+
+const mapStateToProps = (state: IStore) => ({
+  thesauri: state.thesauris,
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
@@ -15,11 +20,11 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
     dispatch
   );
 
-const connector = connect(null, mapDispatchToProps);
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
+const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm({
@@ -34,6 +39,11 @@ const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
     thesaurusSave(thesaurus);
     setOpen(false);
   };
+
+  const isNotDuplicated = (value: string) =>
+    !thesauri?.find(
+      thesaurus => thesaurus?.get('type') !== 'template' && thesaurus?.get('name') === value
+    );
 
   return (
     <>
@@ -67,13 +77,23 @@ const AddThesaurusButton = ({ thesaurusSave }: mappedProps) => {
               id="thesaurusInput"
               ref={register({
                 required: true,
+                validate: {
+                  duplicated: value => isNotDuplicated(value),
+                },
               })}
             />
-            {errors.thesaurus && errors.thesaurus.type === 'required' && (
+
+            {errors.thesaurus?.type === 'required' && (
               <p className="error">
                 <Translate translationKey="This field is required">
                   This field is required
                 </Translate>
+              </p>
+            )}
+
+            {errors.thesaurus?.type === 'duplicated' && (
+              <p className="error">
+                <Translate translationKey="Duplicated name">Duplicated name</Translate>
               </p>
             )}
           </Modal.Body>
