@@ -27,6 +27,16 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
+const deleteFolder = async (folderPath: string) => {
+  try {
+    await fs.rm(folderPath, { recursive: true });
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+  }
+};
+
 describe('PDFSegmentation', () => {
   let segmentPdfs: PDFSegmentation;
 
@@ -206,7 +216,7 @@ describe('PDFSegmentation', () => {
       await fixturer.clearAllAndLoad(dbOne, fixturesOneFile);
       await segmentPdfs.segmentPdfs();
       segmentationFolder = path.join(tenantOne.uploadedDocuments, 'segmentation');
-      await fs.rmdir(segmentationFolder, { recursive: true });
+      await deleteFolder(segmentationFolder);
       segmentationExternalService = new ExternalDummyService(1235);
       await segmentationExternalService.start();
 
@@ -230,8 +240,9 @@ describe('PDFSegmentation', () => {
 
     afterEach(async () => {
       await segmentationExternalService.stop();
-      await fs.rmdir(segmentationFolder, { recursive: true });
+      await deleteFolder(segmentationFolder);
     });
+
     it('should store the segmentation', async () => {
       await segmentPdfs.processResults({
         tenant: tenantOne.name,
