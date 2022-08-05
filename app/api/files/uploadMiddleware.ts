@@ -2,6 +2,8 @@ import path from 'path';
 import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
+import { errorLog } from 'api/log/errorLog';
+import { tenants } from 'api/tenants';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -23,6 +25,19 @@ const move = async (req: Request, filePath: pathFunction) => {
   req.file.path = filePath(req.file.filename);
 };
 
+const processOriginalFileName = (req: Request) => {
+  if (req.body.filename) {
+    return req.body.filename;
+  }
+
+  errorLog.debug(
+    // eslint-disable-next-line max-len
+    `[${tenants.current.name}] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include a 'filename' field in the body instead.`
+  );
+
+  return req.file?.originalname;
+};
+
 const singleUpload =
   (filePath?: pathFunction, storage: multer.StorageEngine = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +49,10 @@ const singleUpload =
         });
       });
       // req.file.filename = req.file.key;
+
+      if (req.file) {
+        req.file.originalname = processOriginalFileName(req);
+      }
 
       if (filePath) {
         await move(req, filePath);
