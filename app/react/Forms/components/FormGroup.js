@@ -10,8 +10,9 @@ const mapProps = {
   },
 };
 
-function controlComponent(className, props) {
-  return <div className={`${className} ${props.className}`}>{props.children}</div>;
+function controlComponent(className) {
+  // eslint-disable-next-line react/prop-types
+  return props => <div className={`${className} ${props.className}`}>{props.children}</div>;
 }
 
 export class FormGroup extends Component {
@@ -21,7 +22,7 @@ export class FormGroup extends Component {
       return (
         <Control.custom
           model={this.props.model}
-          component={controlComponent(className, this.props)}
+          component={controlComponent(className)}
           mapProps={mapProps}
         >
           {this.props.children}

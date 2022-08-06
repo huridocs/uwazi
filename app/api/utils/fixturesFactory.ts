@@ -146,7 +146,7 @@ function getFixturesFactory() {
       };
     },
 
-    user: (username: string, role: UserRole, email?: string, password?: string): UserSchema => ({
+    user: (username: string, role?: UserRole, email?: string, password?: string): UserSchema => ({
       username,
       _id: idMapper(username),
       role: role || UserRole.COLLABORATOR,
