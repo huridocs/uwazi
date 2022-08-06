@@ -140,8 +140,8 @@ const notIncludedIn =
 
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
-  newProperties: PropertyOrThesaurusSchema[],
-  filterBy: 'id' | '_id',
+  newProperties: PropertyOrThesaurusSchema[] = [],
+  filterBy: 'id' | '_id' = '_id',
   prop: 'name' | 'label' | 'id' = 'name'
 ) {
   return flattenProperties(oldProperties)
@@ -163,7 +163,7 @@ const propertyUpdater = async (
   updateFunction: (
     array: ExtractedMetadataSchema[],
     property: PropertySchema
-  ) => ExtractedMetadataSchema[]
+  ) => ExtractedMetadataSchema[] = () => []
 ) =>
   modifiedProperties.reduce(async (previousPromise: Promise<void>, property) => {
     await previousPromise;
