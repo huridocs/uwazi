@@ -12,6 +12,9 @@ export type Tenant = {
   customUploads: string;
   temporalFiles: string;
   activityLogs: string;
+  featureFlags?: {
+    s3Storage?: boolean;
+  };
 };
 
 class Tenants {

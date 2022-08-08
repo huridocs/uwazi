@@ -53,6 +53,20 @@ export default function ui(state = initialState, action = {}) {
     }
   }
 
+  if (action.type === uploadTypes.UPLOADS_COMPLETE) {
+    const docIndex = state
+      .get('selectedDocuments')
+      .findIndex(doc => doc.get('sharedId') === action.doc);
+
+    if (docIndex >= 0) {
+      const doc = state.get('selectedDocuments').get(docIndex).toJS();
+      return state.setIn(
+        ['selectedDocuments', docIndex],
+        Immutable.fromJS({ ...doc, documents: action.files })
+      );
+    }
+  }
+
   if (action.type === types.SELECT_DOCUMENTS) {
     return action.docs.reduce((_state, doc) => {
       const alreadySelected = _state

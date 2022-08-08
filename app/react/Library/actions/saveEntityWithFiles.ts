@@ -1,11 +1,13 @@
 import superagent from 'superagent';
 import { Dispatch } from 'redux';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { groupBy } from 'lodash';
+import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
+import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
+import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
-import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 
-export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
+const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
     const reader = new FileReader();
 
@@ -17,22 +19,37 @@ export const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
     reader.readAsDataURL(file);
   });
 
-export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) =>
-  new Promise((resolve, reject) => {
-    const [attachments, supportingFiles] = entity.attachments
-      ? entity.attachments.reduce(
-          (accumulator, attachmentInfo) => {
-            const { serializedFile, ...attachment } = attachmentInfo;
-            accumulator[0].push(attachment);
-            if (serializedFile) {
-              accumulator[1].push(constructFile(attachmentInfo));
-            }
-            return accumulator;
-          },
-          [[], []] as [ClientFile[], File[]]
-        )
-      : [[], []];
+const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispatch<{}>) => {
+  const [attachments, supportingFiles] = entity.attachments
+    ? entity.attachments.reduce(
+        (accumulator, attachmentInfo) => {
+          const { serializedFile, ...attachment } = attachmentInfo;
+          accumulator[0].push(attachment);
+          if (serializedFile) {
+            accumulator[1].push(constructFile(attachmentInfo));
+          }
+          return accumulator;
+        },
+        [[], []] as [ClientFile[], File[]]
+      )
+    : [[], []];
 
+  const { oldDocuments = [], newDocuments = [] } = groupBy(entity.documents || [], document =>
+    document._id !== undefined ? 'oldDocuments' : 'newDocuments'
+  );
+  const entityToSave = { ...entity, documents: oldDocuments };
+
+  const addedDocuments = await Promise.all(
+    (newDocuments as ClientBlobFile[]).map(async file => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      const blob = await fetch(file.data).then(async r => r.blob());
+      const newDocument = new File([blob], file.originalFile.name, { type: blob.type });
+      URL.revokeObjectURL(file.data);
+      return newDocument;
+    })
+  );
+
+  return new Promise((resolve, reject) => {
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
@@ -40,7 +57,7 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       .field(
         'entity',
         JSON.stringify({
-          ...entity,
+          ...entityToSave,
           ...(attachments.length > 0 && { attachments }),
         })
       );
@@ -61,8 +78,23 @@ export const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?:
       request.attach(`attachments[${index}]`, file);
     });
 
+    addedDocuments.forEach((file, index) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      request.attach(`documents[${index}]`, file);
+    });
+
     return request.end((err, res) => {
       if (err) return reject(err);
+
+      if (dispatch && addedDocuments.length) {
+        dispatch({
+          type: uploadsActionTypes.NEW_UPLOAD_DOCUMENT,
+          doc: res.body.entity.sharedId,
+        });
+      }
       return resolve(res.body);
     });
   });
+};
+
+export { readFileAsBase64, saveEntityWithFiles };
