@@ -24,6 +24,8 @@ import {
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import { AddThesaurusButton } from 'app/Thesauri/components/AddThesaurusButton';
+import { AddRelationshipTypeButton } from 'app/RelationTypes/components/AddRelationshipTypeButton';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 
@@ -245,6 +247,12 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                 </span>
               </I18NLink>
             </div>
+            {environment === 'template' && (
+              <div className="btn-cluster lg-margin-left-12 sm-order-1 sm-footer-extra-row">
+                <AddThesaurusButton />
+                <AddRelationshipTypeButton />
+              </div>
+            )}
             <div className="btn-cluster content-right">
               <I18NLink to={this.props.backUrl} className="btn btn-default btn-extra-padding">
                 <span className="btn-label">
