@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import urljoin from 'url-join';
 import { files, uploadsPath, fileContents, storeFile } from 'api/files';
-import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
+import { generateFileName } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';

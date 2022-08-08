@@ -6,11 +6,11 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import * as filesystem from 'api/files/filesystem';
 import { EntitySchema } from 'shared/types/entityType';
+import { uploadsPath } from 'api/files/filesystem';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
-import { deleteFiles, uploadsPath } from 'api/files/filesystem';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));

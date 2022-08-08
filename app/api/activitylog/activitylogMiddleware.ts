@@ -1,6 +1,5 @@
 import { storeFile } from 'api/files';
 import date from 'api/utils/date';
-import createError from 'api/utils/Error';
 import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
 import activitylog from './activitylog';

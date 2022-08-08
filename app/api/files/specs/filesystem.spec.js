@@ -1,6 +1,6 @@
 import { testingTenants } from 'api/utils/testingTenants';
 import { uwaziFS as fs } from '../uwaziFS';
-import { deleteFiles, fileExistsOnPath, storeFile, activityLogPath } from '../filesystem';
+import { deleteFiles, fileExistsOnPath, activityLogPath } from '../filesystem';
 
 describe('files', () => {
   beforeEach(async () => {
