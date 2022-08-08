@@ -95,19 +95,23 @@ describe('Metadata', () => {
       await expect(page).toClick('.alert.alert-success');
     });
 
-    it('should create a thesaurus and relation type from the template editor', async () => {
+    it('should create a thesaurus and relationship type from the template editor', async () => {
       await createFromModal('Add thesaurus', '#thesaurusInput', 'My new dictionary');
-      await createFromModal('Add relation type', '#relationtypeInput', 'My new relation type');
+      await createFromModal(
+        'Add relationship type',
+        '#relationshipTypeInput',
+        'My new relationship type'
+      );
     });
 
-    it('should check that the new thesaurus and relation are listed', async () => {
+    it('should check that the new thesaurus and relationship are listed', async () => {
       await expect(page).toClick('a', { text: 'Thesauri' });
       await expect(page).toMatch('My new dictionary');
       await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toMatch('My new relation type');
+      await expect(page).toMatch('My new relationship type');
     });
 
-    it('should use the new thesaurus and relation type', async () => {
+    it('should use the new thesaurus and relationship type', async () => {
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'My edited template' });
       await expect(page).toClick('li.list-group-item:nth-child(3) > button:nth-child(1)');
@@ -123,7 +127,7 @@ describe('Metadata', () => {
       );
       await expect(page).toSelect(
         'div.form-group:nth-child(2) > select:nth-child(2)',
-        'My new relation type'
+        'My new relationship type'
       );
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('.alert.alert-success');

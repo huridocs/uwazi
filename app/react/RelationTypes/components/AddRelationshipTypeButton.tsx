@@ -11,63 +11,63 @@ import { saveRelationType } from '../actions/relationTypeActions';
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     {
-      relationTypeSave: saveRelationType,
+      relationshipTypeSave: saveRelationType,
     },
     dispatch
   );
 
 const mapStateToProps = (state: IStore) => ({
-  relationTypes: state.relationTypes,
+  relationshipTypes: state.relationTypes,
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps) => {
+const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm({
     mode: 'onSubmit',
   });
 
-  const onSave = (data: { relationtype: string }) => {
-    const relation = {
-      name: data.relationtype,
+  const onSave = (data: { relationshipType: string }) => {
+    const relationship = {
+      name: data.relationshipType,
       properties: [],
     };
-    relationTypeSave(relation);
+    relationshipTypeSave(relationship);
     setOpen(false);
   };
 
   const isNotDuplicated = (value: string) =>
-    !relationTypes?.find(relationType => relationType?.get('name') === value);
+    !relationshipTypes?.find(type => type?.get('name') === value);
 
   return (
     <>
       <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
         <Icon icon="exchange-alt" />
         <span className="btn-label">
-          <Translate translationKey="Add relation type">Add relation type</Translate>
+          <Translate translationKey="Add relationship type">Add relationship type</Translate>
         </span>
       </button>
 
-      <Modal isOpen={open} type="content" className="new-relationType-modal">
+      <Modal isOpen={open} type="content" className="new-relationshipType-modal">
         <Modal.Header>
           <h3>
-            <Translate translationKey="Add relation type">Add relation type</Translate>
+            <Translate translationKey="Add relationship type">Add relationship type</Translate>
           </h3>
         </Modal.Header>
 
         <form>
           <Modal.Body>
-            <label htmlFor="relationtypeInput">
-              <Translate translationKey="Relation">Relation</Translate>
+            <label htmlFor="relationshipTypeInput">
+              <Translate translationKey="Relationship">Relationship</Translate>
             </label>
             <input
               type="text"
-              name="relationtype"
-              id="relationtypeInput"
+              name="relationshipType"
+              id="relationshipTypeInput"
               ref={register({
                 required: true,
                 validate: {
@@ -77,7 +77,7 @@ const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps)
               autoComplete="off"
             />
 
-            {errors.relationtype?.type === 'required' && (
+            {errors.relationshipType?.type === 'required' && (
               <p className="error" role="alert">
                 <Translate translationKey="This field is required">
                   This field is required
@@ -85,7 +85,7 @@ const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps)
               </p>
             )}
 
-            {errors.relationtype?.type === 'duplicated' && (
+            {errors.relationshipType?.type === 'duplicated' && (
               <p className="error" role="alert">
                 <Translate translationKey="Duplicated name">Duplicated name</Translate>
               </p>
@@ -106,5 +106,5 @@ const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps)
   );
 };
 
-const container = connector(AddRelationTypeButton);
-export { container as AddRelationTypeButton };
+const container = connector(AddRelationshipTypeButton);
+export { container as AddRelationshipTypeButton };

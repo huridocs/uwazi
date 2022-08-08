@@ -4,8 +4,8 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
-  { key: 'Add relation type', value: 'Add relation type' },
-  { key: 'Relation', value: 'Relation' },
+  { key: 'Add relationship type', value: 'Add relationship type' },
+  { key: 'Relationship', value: 'Relationship' },
   { key: 'This field is required', value: 'This field is required' },
   {
     key: 'Add thesaurus modal description',

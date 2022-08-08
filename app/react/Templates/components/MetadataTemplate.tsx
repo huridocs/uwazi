@@ -25,7 +25,7 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
 import { AddThesaurusButton } from 'app/Thesauri/components/AddThesaurusButton';
-import { AddRelationTypeButton } from 'app/RelationTypes/components/AddRelationTypeButton';
+import { AddRelationshipTypeButton } from 'app/RelationTypes/components/AddRelationshipTypeButton';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 
@@ -248,7 +248,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             {environment === 'template' && (
               <>
                 <AddThesaurusButton />
-                <AddRelationTypeButton />
+                <AddRelationshipTypeButton />
               </>
             )}
             <button

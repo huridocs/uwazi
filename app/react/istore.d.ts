@@ -30,7 +30,7 @@ interface EntityDisplayState {
   filters: IImmutable<{ documentTypes: [] }>;
 }
 
-interface RelationTypesType {
+interface RelationshipTypesType {
   _id: string;
   name: string;
 }
@@ -164,5 +164,5 @@ export interface IStore {
     formState: any;
   };
   pages: IImmutable<PageType>;
-  relationTypes: IImmutable<RelationTypesType[]>;
+  relationTypes: IImmutable<RelationshipTypesType[]>;
 }
