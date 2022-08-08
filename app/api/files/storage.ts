@@ -7,9 +7,15 @@ import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
-import { attachmentsPath, customUploadsPath, deleteFile, uploadsPath } from './filesystem';
+import {
+  activityLogPath,
+  attachmentsPath,
+  customUploadsPath,
+  deleteFile,
+  uploadsPath,
+} from './filesystem';
 
-type FileTypes = NonNullable<FileType['type']>;
+type FileTypes = NonNullable<FileType['type']> | 'activitylog';
 
 let s3ClientInstance: S3Client;
 const s3instance = () => {
@@ -30,6 +36,7 @@ const paths: { [k in FileTypes]: (filename: string) => string } = {
   document: uploadsPath,
   thumbnail: uploadsPath,
   attachment: attachmentsPath,
+  activitylog: activityLogPath,
 };
 
 const streamToBuffer = async (stream: Readable): Promise<Buffer> =>

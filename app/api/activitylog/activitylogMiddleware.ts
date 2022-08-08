@@ -1,8 +1,10 @@
-import { fs, activityLogPath } from 'api/files';
+import { storeFile } from 'api/files';
 import date from 'api/utils/date';
 import createError from 'api/utils/Error';
 import { tenants } from 'api/tenants';
+import { Readable } from 'stream';
 import activitylog from './activitylog';
+import { NextFunction, Request, Response } from 'express';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [
@@ -25,7 +27,7 @@ export const BODY_REQUIRED_ENDPOINTS = [
   '/api/public',
 ];
 
-function mustBeLogged(baseurl, method, body) {
+function mustBeLogged(baseurl: string, method: string, body: { [k: string]: any }) {
   const isLoggedRequest =
     baseurl.includes('/api/') &&
     !ignoredMethods.includes(method) &&
@@ -34,8 +36,8 @@ function mustBeLogged(baseurl, method, body) {
   return isLoggedRequest && validBody;
 }
 
-const createEntry = req => {
-  const { url, method, params, query, body, user = {} } = req;
+const createEntry = (req: Request, url: string) => {
+  const { method, params, query, body, user = {} } = req;
   const expireAt = date.addYearsToCurrentDate(1);
   const bodyLog = { ...body };
   if (bodyLog.password) bodyLog.password = '*****';
@@ -52,16 +54,19 @@ const createEntry = req => {
   };
 };
 
-export default (req, _res, next) => {
+export default (req: Request, _res: Response, next: NextFunction) => {
   try {
     const { url, method, body = {} } = req;
-    const baseurl = url.split('?').shift();
+    const baseurl = url.split('?').shift() || '';
     if (mustBeLogged(baseurl, method, body)) {
-      const entry = createEntry({ ...req, url: baseurl });
-      activitylog.save(entry);
-      fs.appendFile(
-        activityLogPath(`${tenants.current().name}_activity.log`),
-        `${JSON.stringify(entry)}\r\n`
+      const entry = createEntry(req, baseurl);
+      // eslint-disable-next-line no-void
+      void activitylog.save(entry);
+      // eslint-disable-next-line no-void
+      void storeFile(
+        `${tenants.current().name}_activity.log`,
+        Readable.from([JSON.stringify(entry)]),
+        'activitylog'
       );
     }
     next();
