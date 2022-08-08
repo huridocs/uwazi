@@ -7,6 +7,7 @@ import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Readable } from 'stream';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError';
@@ -16,7 +17,6 @@ import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
 import { mockTaskManagerImpl } from '../../tasksmanager/specs/TaskManagerImplementationMocker';
 import { fixtures, fixturesFactory } from './fixtures/fixtures';
 import { cleanupRecordsOfFiles } from '../ocrRecords';
-import { Readable } from 'stream';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -61,14 +61,10 @@ class Mocks {
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
 
     fetchMock.mock('end:/info', '{ "supported_languages": ["en", "es"] }');
-    // fetchMock.mock('protocol://link/to/result/file', {
-    //   body: Readable.from(Buffer.from('resultFileContent')),
-    //   status: 200,
-    //   headers: { 'Content-Type': 'some/mimetype' },
-    // });
 
     fetchMock.mock(
       'protocol://link/to/result/file',
+      //@ts-ignore
       new Response(Readable.from(Buffer.from('resultFileContent')), {
         headers: { 'Content-Type': 'some/mimetype' },
         size: 17,
@@ -106,6 +102,12 @@ describe('OcrManager', () => {
 
     ocrManager = new OcrManager();
     ocrManager.start();
+  });
+
+  beforeEach(() => {
+    mocks.jestMocks['storage.fileContents'] = jest
+      .spyOn(storage, 'fileContents')
+      .mockResolvedValue(Buffer.from('file_content'));
   });
 
   afterAll(async () => {
@@ -258,6 +260,7 @@ describe('OcrManager', () => {
 
     it('should throw an error when an ocr model is already in queue', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
       await files.save({ _id: fixturesFactory.id('sourceFile'), type: 'document' });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
@@ -287,6 +290,7 @@ describe('OcrManager', () => {
     it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
+      mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
 
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 

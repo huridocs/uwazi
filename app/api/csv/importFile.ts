@@ -1,7 +1,7 @@
-import { fs, storeFile } from 'api/files';
+import { fs } from 'api/files';
 import path from 'path';
 
-import { generateFileName, fileFromReadStream, uploadsPath } from 'api/files/filesystem';
+import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
 
