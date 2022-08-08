@@ -55,24 +55,18 @@ const createEntry = (req: Request, url: string) => {
 };
 
 export default (req: Request, _res: Response, next: NextFunction) => {
-  try {
-    const { url, method, body = {} } = req;
-    const baseurl = url.split('?').shift() || '';
-    if (mustBeLogged(baseurl, method, body)) {
-      const entry = createEntry(req, baseurl);
-      // eslint-disable-next-line no-void
-      void activitylog.save(entry);
-      // eslint-disable-next-line no-void
-      void storeFile(
-        `${tenants.current().name}_activity.log`,
-        Readable.from([JSON.stringify(entry)]),
-        'activitylog'
-      );
-    }
-    next();
-  } catch (e) {
-    //this is due to Jest returning false for ==> e instanceof Error
-    //https://github.com/facebook/jest/issues/11808
-    next(createError(e.message));
+  const { url, method, body = {} } = req;
+  const baseurl = url.split('?').shift() || '';
+  if (mustBeLogged(baseurl, method, body)) {
+    const entry = createEntry(req, baseurl);
+    // eslint-disable-next-line no-void
+    void activitylog.save(entry);
+    // eslint-disable-next-line no-void
+    void storeFile(
+      `${tenants.current().name}_activity.log`,
+      Readable.from([JSON.stringify(entry)]),
+      'activitylog'
+    );
   }
+  next();
 };
