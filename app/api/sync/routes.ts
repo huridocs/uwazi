@@ -5,7 +5,7 @@ import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath, customUploadsPath, uploadMiddleware, deleteUploadedFiles } from 'api/files';
+import { uploadsPath, customUploadsPath, uploadMiddleware, removeFile } from 'api/files';
 import { TranslationType } from 'shared/translationType';
 import { updateMapping } from 'api/search/entitiesIndex';
 
@@ -55,7 +55,7 @@ const deleteFromIndex = async (req: Request) => {
 const deleteFile = async (fileId: string) => {
   const file: WithId<FileType> | undefined = await models.files.getById(fileId);
   if (file) {
-    await deleteUploadedFiles([file]);
+    await removeFile(file.filename || '', file.type || 'document');
     await deleteFileFromIndex(file);
   }
   return file;

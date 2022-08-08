@@ -1,4 +1,3 @@
-import { deleteUploadedFiles } from 'api/files/filesystem';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import entities from 'api/entities';
@@ -7,6 +6,7 @@ import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { filesModel } from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
+import { removeFiles } from './storage';
 
 export const files = {
   async save(_file: FileType, index = true) {
@@ -30,7 +30,7 @@ export const files = {
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
-      await deleteUploadedFiles(toDeleteFiles);
+      await removeFiles(toDeleteFiles);
       await search.indexEntities(
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'
