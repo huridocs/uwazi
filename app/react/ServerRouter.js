@@ -232,7 +232,7 @@ function handleRoute(res, renderProps, req) {
     });
 }
 
-const allowedRoute = (user = {}, url) => {
+const allowedRoute = (user = {}, url = '') => {
   const isAdmin = user.role === 'admin';
   const isAuthenticatedUser = ['editor', 'collaborator'].includes(user.role);
   const authRoutes = ['/uploads', '/settings/account'];
