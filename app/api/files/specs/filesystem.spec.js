@@ -1,6 +1,7 @@
 import { testingTenants } from 'api/utils/testingTenants';
-import { uwaziFS as fs } from '../uwaziFS';
 import { deleteFiles, fileExistsOnPath, activityLogPath } from '../filesystem';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 describe('files', () => {
   beforeEach(async () => {

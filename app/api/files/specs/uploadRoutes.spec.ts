@@ -4,7 +4,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
-import { fs, uploadsPath, customUploadsPath, storage } from 'api/files';
+import { uploadsPath, customUploadsPath, storage } from 'api/files';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
@@ -13,6 +13,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures, templateId, importTemplate } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

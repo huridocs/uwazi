@@ -17,7 +17,8 @@ import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 
 import * as setupSockets from 'api/socketio/setupSockets';
-import { fs } from '..';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { files } from '../files';
 import { ocrRoutes } from '../ocrRoutes';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
@@ -119,9 +120,7 @@ describe('OCR service', () => {
     beforeEach(async () => {
       setSupportedLang(['en']);
       jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
-      const resultTestFile = fs.createReadStream(
-        path.join(__dirname, `uploads/${fileNameToProcess}`)
-      );
+      const resultTestFile = createReadStream(path.join(__dirname, `uploads/${fileNameToProcess}`));
       fetchMock.mock(
         'protocol://link/to/result/file',
         {

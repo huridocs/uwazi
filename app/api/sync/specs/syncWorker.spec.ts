@@ -20,6 +20,7 @@ import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';

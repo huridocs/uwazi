@@ -95,7 +95,11 @@ const importEntity = async (
     await attachments.split('|').reduce(async (promise: Promise<any>, attachment) => {
       await promise;
       const attachmentFile = await importFile.extractFile(attachment);
-      await storage.storeFile(attachmentFile.filename, createReadStream(attachmentFile.path), 'attachment');
+      await storage.storeFile(
+        attachmentFile.filename,
+        createReadStream(attachmentFile.path),
+        'attachment'
+      );
       return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
     }, Promise.resolve());
   }

@@ -5,6 +5,7 @@ import { errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
+// eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
 import {
@@ -103,8 +104,7 @@ const readableFile = async (filename: string, type: FileTypes) => {
 const fileContents = async (filename: string, type: FileTypes) =>
   streamToBuffer(await readableFile(filename, type));
 
-const removeFile = async (filename: string, type: FileTypes) =>
-  deleteFile(paths[type](filename));
+const removeFile = async (filename: string, type: FileTypes) => deleteFile(paths[type](filename));
 
 const removeFiles = async (files: FileType[]) =>
   Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));

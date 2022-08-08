@@ -87,9 +87,9 @@ describe('storage with s3 feature active', () => {
           Body: Buffer.from('already uploaded content', 'utf-8'),
         })
       );
-      await expect((await storage.fileContents('already_uploaded.txt', 'document')).toString()).toMatch(
-        'already uploaded content'
-      );
+      await expect(
+        (await storage.fileContents('already_uploaded.txt', 'document')).toString()
+      ).toMatch('already uploaded content');
     });
   });
 

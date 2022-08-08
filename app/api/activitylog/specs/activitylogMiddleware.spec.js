@@ -1,10 +1,12 @@
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
-import { fs, deleteFile } from 'api/files';
+import { deleteFile } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 describe('activitylogMiddleware', () => {
   let req;

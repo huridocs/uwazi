@@ -1,11 +1,13 @@
 import path from 'path';
-import { fs, generateFileName } from 'api/files';
+import { generateFileName } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import { errorLog } from 'api/log/errorLog';
 import { tenants } from 'api/tenants';
 import multer from 'multer';
 import { FileType } from 'shared/types/fileType';
 import { storage } from './storage';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -46,7 +48,7 @@ const singleUpload =
       if (type) {
         await storage.storeFile(
           req.file.filename,
-          fs.createReadStream(path.join(req.file.destination, req.file.filename)),
+          createReadStream(path.join(req.file.destination, req.file.filename)),
           type
         );
       }

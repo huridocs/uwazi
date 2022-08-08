@@ -7,13 +7,14 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { errorLog } from 'api/log';
-import { fs, setupTestUploadedPaths, storage } from 'api/files';
+import { setupTestUploadedPaths, storage } from 'api/files';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
 import mailer from 'api/utils/mailer';
 
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
+import fs from 'fs/promises';
 
 jest.mock(
   '../../auth/authMiddleware.ts',

@@ -1,5 +1,4 @@
 /*eslint-disable max-lines*/
-import { fs } from 'api/files';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -14,6 +13,8 @@ import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import { errorLog } from '../../log';
 import { createDirIfNotExists, deleteFiles } from '../filesystem';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>

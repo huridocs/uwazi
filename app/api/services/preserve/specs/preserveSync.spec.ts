@@ -1,7 +1,6 @@
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { storage } from 'api/files/storage';
-import { uwaziFS } from 'api/files/uwaziFS';
 import { errorLog } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
@@ -17,6 +16,10 @@ import { URL } from 'url';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -39,8 +42,8 @@ const mockVault = async (evidences: any[], token: string = '', isoDate = '') => 
   return Promise.all(
     downloads.map(async download => {
       const tmpName = generateFileName({ originalname: 'test' });
-      await uwaziFS.writeFile(path.join('/tmp', tmpName), 'content');
-      const file = uwaziFS.createReadStream(path.join('/tmp', tmpName));
+      await fs.writeFile(path.join('/tmp', tmpName), 'content');
+      const file = createReadStream(path.join('/tmp', tmpName));
 
       // @ts-ignore
       const fileResponse = new Response(file, {
