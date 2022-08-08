@@ -420,7 +420,7 @@ describe('relationships', () => {
           [
             [
               { entity: 'entity3', hub: hub1 },
-              { entity: 'entity4', hub: hub1 },
+              { entity: 'entity4', hub: hub2 },
             ],
             [{ entity: 'entity3' }, { entity: 'entity4' }],
           ],
@@ -436,7 +436,7 @@ describe('relationships', () => {
           {
             _id: expect.anything(),
             entity: 'entity4',
-            hub: hub1,
+            hub: hub2,
             entityData: entity4Expected,
           },
           {
