@@ -11,7 +11,6 @@ import { uploadsPath } from 'api/files/filesystem';
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
-import { deleteFiles, uploadsPath } from 'api/files/filesystem';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));
