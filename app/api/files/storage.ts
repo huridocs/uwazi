@@ -15,7 +15,7 @@ import {
   uploadsPath,
 } from './filesystem';
 
-type FileTypes = NonNullable<FileType['type']> | 'activitylog';
+type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3ClientInstance: S3Client;
 const s3instance = () => {
@@ -34,6 +34,7 @@ const s3instance = () => {
 const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
   document: uploadsPath,
+  segmentation: filename => uploadsPath(`segmentation/${filename}`),
   thumbnail: uploadsPath,
   attachment: attachmentsPath,
   activitylog: activityLogPath,

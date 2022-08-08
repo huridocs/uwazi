@@ -150,7 +150,7 @@ class PDFSegmentation {
     await createDirIfNotExists(folderPath);
     const xmlname = PDFSegmentation.getXMLNAme(filename);
 
-    await storeFile(`${PDFSegmentation.SERVICE_NAME}/${xmlname}`, fileStream, 'document');
+    await storeFile(xmlname, fileStream, 'segmentation');
   };
 
   saveSegmentation = async (filename: string, data: any) => {
