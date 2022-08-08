@@ -1,8 +1,7 @@
-import { createMongoInstance as checkMongoVersion } from './api/utils/createMongoInstance.js';
-import { downloadRedis } from './api/utils/downloadRedis.js';
-
 module.exports = async () => {
-  const mongod = await checkMongoVersion();
+  const { createMongoInstance } = await import('./api/utils/createMongoInstance.js');
+  const { downloadRedis } = await import('./api/utils/downloadRedis.js');
+  const mongod = await createMongoInstance();
   await mongod.stop();
   downloadRedis();
 };

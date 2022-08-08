@@ -85,6 +85,8 @@
     "max-lines-per-function": "off",
     "max-statements": ["warn", { "max": 10 }, { "ignoreTopLevelFunctions": true }],
 
+    "no-restricted-exports": ["warn"],
+
     //import
     "import/no-duplicates": ["warn"],
     "import/no-default-export": ["warn"],
