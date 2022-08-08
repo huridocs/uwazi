@@ -18,6 +18,27 @@ import './styles/menu.scss';
 class NavlinksSettings extends Component {
   componentDidMount() {
     this.props.loadLinks(this.props.collection.get('links').toJS());
+    this.firstLoad = true;
+  }
+
+  // TEST!!!
+  componentDidUpdate(previousProps) {
+    if (this.firstLoad) {
+      this.firstLoad = false;
+      return;
+    }
+
+    this.focusOnNewElement(previousProps);
+  }
+
+  // TEST!!!
+  focusOnNewElement(previousProps) {
+    const { links } = this.props;
+    const previousLinks = previousProps.links;
+    const hasNewBlock = links.length > previousLinks.length;
+    if (hasNewBlock) {
+      this.blockReferences[this.blockReferences.length - 1].focus();
+    }
   }
 
   render() {
@@ -26,6 +47,8 @@ class NavlinksSettings extends Component {
     const hostname = isClient ? window.location.origin : '';
 
     const payload = { _id: collection.get('_id'), _rev: collection.get('_rev'), links };
+
+    this.blockReferences = [];
 
     return (
       <div className="settings-content">
@@ -69,6 +92,7 @@ class NavlinksSettings extends Component {
                     id={link.localID || link._id}
                     link={link}
                     sortLink={this.props.sortLink}
+                    blockReferences={this.blockReferences}
                   />
                 ))}
               </ul>
