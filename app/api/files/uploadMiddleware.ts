@@ -5,7 +5,7 @@ import { errorLog } from 'api/log/errorLog';
 import { tenants } from 'api/tenants';
 import multer from 'multer';
 import { FileType } from 'shared/types/fileType';
-import { storeFile } from './storage';
+import { storage } from './storage';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -31,11 +31,11 @@ const processOriginalFileName = (req: Request) => {
 };
 
 const singleUpload =
-  (type?: FileType['type'], storage: multer.StorageEngine = defaultStorage) =>
+  (type?: FileType['type'], tmpStorage: multer.StorageEngine = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await new Promise<void>((resolve, reject) => {
-        multer({ storage }).single('file')(req, res, err => {
+        multer({ storage: tmpStorage }).single('file')(req, res, err => {
           if (!err) resolve();
           reject(err);
         });
@@ -44,7 +44,7 @@ const singleUpload =
         req.file.originalname = processOriginalFileName(req);
       }
       if (type) {
-        await storeFile(
+        await storage.storeFile(
           req.file.filename,
           fs.createReadStream(path.join(req.file.destination, req.file.filename)),
           type
@@ -82,7 +82,7 @@ const uploadMiddleware = (type?: FileType['type']) => singleUpload(type, default
  */
 uploadMiddleware.multiple = () => multipleUpload;
 
-uploadMiddleware.customStorage = (storage: multer.StorageEngine, type?: FileType['type']) =>
-  singleUpload(type, storage);
+uploadMiddleware.customStorage = (tmpStorage: multer.StorageEngine, type?: FileType['type']) =>
+  singleUpload(type, tmpStorage);
 
 export { uploadMiddleware };

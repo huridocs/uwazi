@@ -12,7 +12,7 @@ import { config } from 'api/config';
 import { testingTenants } from 'api/utils/testingTenants';
 import { Readable } from 'stream';
 import { setupTestUploadedPaths, streamToString } from '../filesystem';
-import { fileContents } from '../storage';
+import { storage } from '../storage';
 
 let s3: S3Client;
 
@@ -65,7 +65,7 @@ describe('storage with s3 feature active', () => {
     });
 
     it('should store it on the s3 bucket and then return it as a readable', async () => {
-      await expect((await fileContents('test_s3_file.txt', 'document')).toString()).toMatch(
+      await expect((await storage.fileContents('test_s3_file.txt', 'document')).toString()).toMatch(
         'test content'
       );
 
@@ -87,7 +87,7 @@ describe('storage with s3 feature active', () => {
           Body: Buffer.from('already uploaded content', 'utf-8'),
         })
       );
-      await expect((await fileContents('already_uploaded.txt', 'document')).toString()).toMatch(
+      await expect((await storage.fileContents('already_uploaded.txt', 'document')).toString()).toMatch(
         'already uploaded content'
       );
     });
@@ -102,7 +102,7 @@ describe('storage with s3 feature active', () => {
       });
       await setupTestUploadedPaths();
 
-      await expect((await fileContents('test_s3_file.txt', 'document')).toString()).toMatch(
+      await expect((await storage.fileContents('test_s3_file.txt', 'document')).toString()).toMatch(
         'test content'
       );
 

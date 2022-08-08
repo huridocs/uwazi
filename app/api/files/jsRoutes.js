@@ -9,13 +9,13 @@ import cors from 'cors';
 import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
-import { storeFile } from './storage';
+import { storage } from './storage';
 import { uploadMiddleware } from './uploadMiddleware';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));
   if (file) {
-    await storeFile(file.filename, fs.createReadStream(file.path), 'document');
+    await storage.storeFile(file.filename, fs.createReadStream(file.path), 'document');
     await processDocument(entitySharedId, file);
     await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
     req.emitToSessionSocket('documentProcessed', entitySharedId);

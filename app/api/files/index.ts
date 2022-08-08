@@ -1,5 +1,5 @@
 export * from './filesystem';
-export * from './storage';
+export { storage } from './storage';
 
 export { PDF } from './PDF';
 export { files } from './files';

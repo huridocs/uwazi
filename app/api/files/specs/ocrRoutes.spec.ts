@@ -3,7 +3,7 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import { fileExists } from 'api/files';
+import { storage } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
@@ -156,9 +156,9 @@ describe('OCR service', () => {
 
       expect(record.status).toBe(OcrStatus.READY);
       expect(originalFile.type).toBe('attachment');
-      expect(await fileExists(originalFile.filename!, 'document')).toBe(true);
+      expect(await storage.fileExists(originalFile.filename!, 'document')).toBe(true);
       expect(resultFile.type).toBe('document');
-      expect(await fileExists(resultFile.filename!, 'document')).toBe(true);
+      expect(await storage.fileExists(resultFile.filename!, 'document')).toBe(true);
       expect(resultFile.language).toBe(originalFile.language);
 
       const connectionsForOrigFile = await relationships.get({

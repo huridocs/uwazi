@@ -4,7 +4,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
-import { fs, uploadsPath, customUploadsPath, fileExists } from 'api/files';
+import { fs, uploadsPath, customUploadsPath, storage } from 'api/files';
 import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
@@ -46,7 +46,7 @@ describe('upload routes', () => {
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [upload] = await files.get({ entity: 'sharedId1' }, '+fullText');
-      expect(await fileExists(upload.filename!, 'document')).toBe(true);
+      expect(await storage.fileExists(upload.filename!, 'document')).toBe(true);
     }, 10000);
 
     it('should process and reindex the document after upload', async () => {

@@ -93,28 +93,28 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
   }
 };
 
-export const readableFile = async (filename: string, type: FileTypes) => {
+const readableFile = async (filename: string, type: FileTypes) => {
   if (tenants.current().featureFlags?.s3Storage) {
     return readFromS3(filename, type);
   }
   return createReadStream(paths[type](filename));
 };
 
-export const fileContents = async (filename: string, type: FileTypes) =>
+const fileContents = async (filename: string, type: FileTypes) =>
   streamToBuffer(await readableFile(filename, type));
 
-export const removeFile = async (filename: string, type: FileTypes) =>
+const removeFile = async (filename: string, type: FileTypes) =>
   deleteFile(paths[type](filename));
 
-export const removeFiles = async (files: FileType[]) =>
+const removeFiles = async (files: FileType[]) =>
   Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
 
-export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
+const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
   file.pipe(createWriteStream(paths[type](filename)));
   return new Promise(resolve => file.on('close', resolve));
 };
 
-export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
+const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
   try {
     await access(paths[type](filename));
   } catch (err) {
@@ -126,4 +126,13 @@ export const fileExists = async (filename: string, type: FileTypes): Promise<boo
     }
   }
   return true;
+};
+
+export const storage = {
+  readableFile,
+  fileContents,
+  removeFile,
+  removeFiles,
+  storeFile,
+  fileExists,
 };

@@ -1,6 +1,6 @@
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
-import { fileExists } from 'api/files/storage';
+import { storage } from 'api/files/storage';
 import { uwaziFS } from 'api/files/uwaziFS';
 import { errorLog } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
@@ -236,7 +236,7 @@ describe('preserveSync', () => {
           .flat();
         await attachments.reduce(async (promise, attachment) => {
           await promise;
-          expect(await fileExists(attachment.filename!, 'attachment')).toBe(true);
+          expect(await storage.fileExists(attachment.filename!, 'attachment')).toBe(true);
         }, Promise.resolve());
       }, tenantName);
     });
