@@ -85,21 +85,6 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
     );
   }
 
-  renderEditingButtons() {
-    return (
-      <button
-        type="button"
-        onClick={() => this.props.selectedDocumentsChanged()}
-        className="cancel-edit-metadata btn btn-primary"
-      >
-        <Icon icon="times" />
-        <span className="btn-label">
-          <Translate>Discard</Translate>
-        </span>
-      </button>
-    );
-  }
-
   renderButtons(canBePublished: boolean) {
     return (
       <StateSelector isPristine={selectIsPristine}>
