@@ -74,10 +74,11 @@ const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps)
                   duplicated: value => isNotDuplicated(value),
                 },
               })}
+              autoComplete="off"
             />
 
             {errors.relationtype?.type === 'required' && (
-              <p className="error">
+              <p className="error" role="alert">
                 <Translate translationKey="This field is required">
                   This field is required
                 </Translate>
@@ -85,7 +86,7 @@ const AddRelationTypeButton = ({ relationTypeSave, relationTypes }: mappedProps)
             )}
 
             {errors.relationtype?.type === 'duplicated' && (
-              <p className="error">
+              <p className="error" role="alert">
                 <Translate translationKey="Duplicated name">Duplicated name</Translate>
               </p>
             )}

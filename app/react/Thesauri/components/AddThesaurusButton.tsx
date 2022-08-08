@@ -81,10 +81,11 @@ const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
                   duplicated: value => isNotDuplicated(value),
                 },
               })}
+              autoComplete="off"
             />
 
             {errors.thesaurus?.type === 'required' && (
-              <p className="error">
+              <p className="error" role="alert">
                 <Translate translationKey="This field is required">
                   This field is required
                 </Translate>
@@ -92,7 +93,7 @@ const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
             )}
 
             {errors.thesaurus?.type === 'duplicated' && (
-              <p className="error">
+              <p className="error" role="alert">
                 <Translate translationKey="Duplicated name">Duplicated name</Translate>
               </p>
             )}
