@@ -1,6 +1,5 @@
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
-import { fs } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import settings from 'api/settings';
@@ -11,11 +10,13 @@ import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
 import { storage } from './storage';
 import { uploadMiddleware } from './uploadMiddleware';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));
   if (file) {
-    await storage.storeFile(file.filename, fs.createReadStream(file.path), 'document');
+    await storage.storeFile(file.filename, createReadStream(file.path), 'document');
     await processDocument(entitySharedId, file);
     await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
     req.emitToSessionSocket('documentProcessed', entitySharedId);
