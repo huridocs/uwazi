@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-import express from 'express';
-import RedisSMQ, { QueueMessage } from 'rsmq';
-import Redis, { RedisClient } from 'redis';
-import { Server } from 'http';
 import bodyParser from 'body-parser';
-import { uploadMiddleware } from 'api/files';
+import express from 'express';
+import { Server } from 'http';
+import multer from 'multer';
+import Redis, { RedisClient } from 'redis';
+import RedisSMQ, { QueueMessage } from 'rsmq';
 import { ResultsMessage } from '../TaskManager';
 
 export class ExternalDummyService {
@@ -60,7 +60,7 @@ export class ExternalDummyService {
       res.send('ok');
     });
 
-    this.app.post(urls.materialsFiles, uploadMiddleware.multiple(), (req, res) => {
+    this.app.post(urls.materialsFiles, multer().any(), (req, res) => {
       if (req.files.length) {
         const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);

@@ -5,7 +5,7 @@ import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath, customUploadsPath, uploadMiddleware, removeFile } from 'api/files';
+import { uploadMiddleware, removeFile } from 'api/files';
 import { TranslationType } from 'shared/translationType';
 import { updateMapping } from 'api/search/entitiesIndex';
 
@@ -105,7 +105,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload',
     needsAuthorization(['admin']),
-    uploadMiddleware(uploadsPath, storage),
+    uploadMiddleware.customStorage(storage, 'document'),
     (_req, res) => {
       res.json('ok');
     }
@@ -114,7 +114,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload/custom',
     needsAuthorization(['admin']),
-    uploadMiddleware(customUploadsPath, storage),
+    uploadMiddleware.customStorage(storage, 'custom'),
     (_req, res) => {
       res.json('ok');
     }
