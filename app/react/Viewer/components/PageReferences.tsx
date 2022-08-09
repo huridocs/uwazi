@@ -6,41 +6,50 @@ import { createSelector } from 'reselect';
 import { Highlight } from 'react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
 
-export interface PageReferencesProps {
+interface PageReferencesProps {
   references: { [key: string]: ConnectionSchema[] | undefined };
   page: string;
   activeReference: string;
   onClick: (c: ConnectionSchema) => {};
+  newSelections: any;
 }
 
-export const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
+const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
-) => (
-  <>
-    {(props.references[props.page] || []).map((r: ConnectionSchema) => {
-      const color = r._id === props.activeReference ? '#ffd84b' : '#feeeb4';
+) => {
+  if (props.newSelections.toJS().length) {
+    return props.newSelections
+      .toJS()
+      .map(selection => <Highlight textSelection={selection.selection} color="#feeeb4" />);
+  }
+  return <></>;
+  // return (
+  //   <>
+  //     {(props.references[props.page] || []).map((r: ConnectionSchema) => {
+  //       const color = r._id === props.activeReference ? '#ffd84b' : '#feeeb4';
 
-      if (!r.reference) {
-        return false;
-      }
-      const selectionRectangles = r.reference.selectionRectangles.map(
-        ({ page, ...otherProps }) => ({ regionId: page, ...otherProps })
-      );
-      const highlight = { ...r.reference, selectionRectangles };
+  //       if (!r.reference) {
+  //         return false;
+  //       }
+  //       const selectionRectangles = r.reference.selectionRectangles.map(
+  //         ({ page, ...otherProps }) => ({ regionId: page, ...otherProps })
+  //       );
+  //       const highlight = { ...r.reference, selectionRectangles };
 
-      return (
-        <div
-          data-id={r._id}
-          key={r._id?.toString()}
-          className="reference"
-          onClick={props.onClick.bind(null, r)}
-        >
-          <Highlight textSelection={highlight} color={color} />
-        </div>
-      );
-    })}
-  </>
-);
+  //       return (
+  //         <div
+  //           data-id={r._id}
+  //           key={r._id?.toString()}
+  //           className="reference"
+  //           onClick={props.onClick.bind(null, r)}
+  //         >
+  //           <Highlight textSelection={highlight} color={color} />
+  //         </div>
+  //       );
+  //     })}
+  //   </>
+  // );
+};
 
 const indexdReferencesByPage = createSelector(
   (state: IStore) =>
@@ -87,6 +96,10 @@ const indexdReferencesByPage = createSelector(
 const mapStateToProps = (state: IStore) => ({
   references: indexdReferencesByPage(state),
   activeReference: state.documentViewer.uiState.get('activeReference'),
+  newSelections: state.documentViewer.metadataExtraction.get('selections'),
 });
 
-export const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
+const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
+
+export type { PageReferencesProps };
+export { PageReferences };
