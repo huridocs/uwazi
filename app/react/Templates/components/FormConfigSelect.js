@@ -2,14 +2,15 @@ import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { orderBy } from 'lodash';
 
 import { Select } from 'app/ReactReduxForms';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { Warning } from 'app/Layout';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
-export class FormConfigSelect extends Component {
+class FormConfigSelect extends Component {
   static getDerivedStateFromProps(props, state) {
     return { warning: Boolean(state.initialContent !== props.content) };
   }
@@ -27,8 +28,14 @@ export class FormConfigSelect extends Component {
     const { index, type, labelHasError, contentRequiredError, templateId } = this.props;
     const thesauris = this.props.thesauris.toJS();
 
-    const options = thesauris.filter(
-      thesauri => thesauri._id !== templateId && thesauri.type !== 'template'
+    const options = orderBy(
+      thesauris
+        .filter(thesaurus => thesaurus._id !== templateId && thesaurus.type !== 'template')
+        .map(thesaurus => ({
+          ...thesaurus,
+          name: t(thesaurus._id, thesaurus.name, null, false),
+        })),
+      'name'
     );
 
     return (
@@ -100,4 +107,5 @@ export function mapStateToProps(state, props) {
   };
 }
 
+export { FormConfigSelect };
 export default connect(mapStateToProps)(FormConfigSelect);
