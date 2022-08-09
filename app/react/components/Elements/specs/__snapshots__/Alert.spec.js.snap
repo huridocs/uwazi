@@ -104,32 +104,3 @@ exports[`Alert show should not render if component hasnt a message 1`] = `
   className="alert-wrapper"
 />
 `;
-
-exports[`Alert show() should show the Alert 1`] = `
-<div
-  className="alert-wrapper"
->
-  <div
-    className="alert alert-info"
-  >
-    <span
-      className="alert-icon"
-    >
-      <Connect(Icon)
-        icon="info-circle"
-      />
-    </span>
-    <span
-      className="alert-message"
-    />
-    <a
-      className="alert-close"
-      onClick={[Function]}
-    >
-      <Connect(Icon)
-        icon="times"
-      />
-    </a>
-  </div>
-</div>
-`;
