@@ -16,7 +16,7 @@ describe('relationships', () => {
     await logout();
   });
 
-  it('should navigate to an entities relationships view', async () => {
+  it("should navigate to an entity's relationships view", async () => {
     await expect(page).toClick(
       '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span'
     );
@@ -69,7 +69,7 @@ describe('relationships', () => {
     await relationships.clickSave();
   });
 
-  it('should move the person between to countries to the correct group', async () => {
+  it('should move the person from countries to the correct group', async () => {
     await relationships.reloadPage();
     await relationships.clickEdit();
     await relationships.moveRelationship(2, 1, 1, 2, 2);
