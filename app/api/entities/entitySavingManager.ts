@@ -4,17 +4,6 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { UserSchema } from 'shared/types/userType';
 import { handleAttachmentInMetadataProperties, processFiles, saveFiles } from './managerFunctions';
 
-type FileAttachment = {
-  originalname: string;
-  mimetype: string;
-  size: number;
-  fieldname: string;
-  encoding?: string;
-  destination: string;
-  filename: string;
-  path: string;
-};
-
 const saveEntity = async (
   _entity: EntityWithFilesSchema,
   {
@@ -66,4 +55,15 @@ const saveEntity = async (
   return { entity: entityWithAttachments, errors: fileSaveErrors };
 };
 
-export { saveEntity, FileAttachment };
+export type FileAttachment = {
+  originalname: string;
+  mimetype: string;
+  size: number;
+  fieldname: string;
+  encoding?: string;
+  destination: string;
+  filename: string;
+  path: string;
+};
+
+export { saveEntity };
