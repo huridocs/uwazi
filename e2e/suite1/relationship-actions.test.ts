@@ -17,15 +17,11 @@ describe('relationships', () => {
   });
 
   it("should navigate to an entity's relationships view", async () => {
-    await expect(page).toClick(
-      '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span'
-    );
+    await expect(page).toClick('#filtersForm .multiselectItem-name', { text: 'Causa' });
     await expect(page).toClick('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });
-    await expect(page).toClick(
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > a'
-    );
+    await expect(page).toClick('aside.is-active .sidepanel-footer a.edit-metadata');
     await expect(page).toMatchElement('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });
