@@ -111,7 +111,7 @@ export const removeFiles = async (files: FileType[]) =>
 
 export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
   file.pipe(createWriteStream(paths[type](filename)));
-  return new Promise(resolve => file.on('close', resolve));
+  return new Promise(resolve => file.on('close', () => resolve('done')));
 };
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
