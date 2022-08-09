@@ -280,7 +280,9 @@ describe('files routes', () => {
       expect(response.status).toBe(200);
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
       expect(await fileExists(file.filename!, 'document')).toBe(true);
-      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+      expect(errorLog.debug).toHaveBeenCalledWith(
+        expect.stringMatching('[default](.*)Deprecation')
+      );
     });
   });
 
@@ -291,7 +293,7 @@ describe('files routes', () => {
         async filename => {
           const response = await request(app)
             .post(`/api/files/upload/${type}`)
-            .field('filename', filename)
+            .field('originalname', filename)
             .attach('file', path.join(__dirname, filename));
           expect(response.status).toBe(200);
           const [file]: FileType[] = await files.get({ originalname: filename, type });

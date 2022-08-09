@@ -290,7 +290,7 @@ describe('uploadsActions', () => {
         const file = getMockFile();
 
         store.dispatch(actions.uploadCustom(file)).then(() => {
-          expect(mockUpload.field).toHaveBeenCalledWith('filename', file.name);
+          expect(mockUpload.field).toHaveBeenCalledWith('originalname', file.name);
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(store.getActions()).toEqual(expectedActions);
           expect(superagent.post).toHaveBeenCalledWith(`${APIURL}files/upload/custom`);

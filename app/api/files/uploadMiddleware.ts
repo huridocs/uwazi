@@ -26,13 +26,15 @@ const move = async (req: Request, filePath: pathFunction) => {
 };
 
 const processOriginalFileName = (req: Request) => {
-  if (req.body.filename) {
-    return req.body.filename;
+  if (req.body.originalname) {
+    return req.body.originalname;
   }
 
   errorLog.debug(
-    // eslint-disable-next-line max-len
-    `[${tenants.current.name}] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include a 'filename' field in the body instead.`
+    `[${
+      tenants.current().name
+      // eslint-disable-next-line max-len
+    }] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include an 'originalname' field in the body instead.`
   );
 
   return req.file?.originalname;
@@ -81,7 +83,7 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
  * accepts a single file and moves it to the path provided by path function
  * @param pathFunction is optional, when undefined the file will be stored on the os tmp default dir
  */
-const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
+const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) =>
   // const s3 = new S3Client({
   //   apiVersion: 'latest',
   //   region: 'greenhost',
@@ -95,9 +97,7 @@ const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
   //     cb(null, generateFileName(file));
   //   },
   // })
-  return singleUpload(filePath, storage);
-};
-
+  singleUpload(filePath, storage);
 /**
  * accepts multiple files and places them in req.files array
  * files will not be stored on disk and will be on a buffer on each element of the array.
