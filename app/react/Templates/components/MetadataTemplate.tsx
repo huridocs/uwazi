@@ -24,6 +24,8 @@ import {
 } from 'app/Templates/actions/templateActions';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import RemovePropertyConfirm from 'app/Templates/components/RemovePropertyConfirm';
+import { AddThesaurusButton } from 'app/Thesauri/components/AddThesaurusButton';
+import { AddRelationshipTypeButton } from 'app/RelationTypes/components/AddRelationshipTypeButton';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 
@@ -236,13 +238,19 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             </>
           )}
 
-          <div className="settings-footer">
+          <div className={`settings-footer ${environment === 'template' && 'clustered'}`}>
             <I18NLink to={this.props.backUrl} className="btn btn-default">
               <Icon icon="arrow-left" directionAware />
               <span className="btn-label">
                 <Translate>Back</Translate>
               </span>
             </I18NLink>
+            {environment === 'template' && (
+              <>
+                <AddThesaurusButton />
+                <AddRelationshipTypeButton />
+              </>
+            )}
             <button
               type="submit"
               className="btn btn-success save-template"

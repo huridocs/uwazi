@@ -1,12 +1,11 @@
 import 'app/Templates/scss/templates.scss';
 
-import { DragDropContext } from 'react-dnd';
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
 import { resetTemplate, saveTemplate } from 'app/Templates/actions/templateActions';
 import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';

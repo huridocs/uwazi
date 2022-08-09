@@ -21,10 +21,16 @@ describe('relationTypesActions', () => {
   afterEach(() => backend.restore());
 
   describe('saveRelationType', () => {
-    it('should save the relationType and dispatch a relationTypeSaved action and a notify', done => {
+    it('should save the relationType and dispatch a relationTypeSaved action, update the store, and a notify', done => {
       const relationType = { name: 'Secret list of things', values: [] };
       const expectedActions = [
         { type: types.RELATION_TYPE_SAVED },
+        {
+          type: 'relationTypes/PUSH',
+          value: {
+            testBackendResult: 'ok',
+          },
+        },
         {
           type: notificationsTypes.NOTIFY,
           notification: { message: 'RelationType saved', type: 'success', id: 'unique_id' },
