@@ -14,10 +14,6 @@ class Alert extends Component {
     this.setState({ show: false });
   }
 
-  show() {
-    this.setState({ show: true });
-  }
-
   render() {
     const { show } = this.state;
     const { type, message } = this.props;
