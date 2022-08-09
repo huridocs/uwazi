@@ -101,16 +101,6 @@ const streamToString = async (stream: Readable): Promise<string> =>
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
 
-const storeFile: (
-  filePathFunction: pathFunction,
-  file: any,
-  overrideFilename: boolean
-) => Promise<FileType> = async (filePathFunction, file, overrideFilename = false) => {
-  const filename = (overrideFilename && file.filename) || generateFileName(file);
-  await fs.appendFile(filePathFunction(filename), file.buffer);
-  return Object.assign(file, { filename, destination: filePathFunction() });
-};
-
 const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
   try {
     await access(filePath);
@@ -138,7 +128,6 @@ export {
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  storeFile,
   testingUploadPaths,
   fileExistsOnPath,
 };

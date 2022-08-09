@@ -1,25 +1,24 @@
-import proxy from 'express-http-proxy';
-
-import cors from 'cors';
-import mailer from 'api/utils/mailer';
-import { search } from 'api/search';
-import settings from 'api/settings';
-import { processDocument } from 'api/files/processDocument';
-import { uploadsPath, storeFile } from 'api/files/filesystem';
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import { saveEntity } from 'api/entities/entitySavingManager';
-import { validation, createError } from '../utils';
+import { fs } from 'api/files';
+import { processDocument } from 'api/files/processDocument';
+import { search } from 'api/search';
+import settings from 'api/settings';
+import mailer from 'api/utils/mailer';
+import cors from 'cors';
+import proxy from 'express-http-proxy';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
+import { createError, validation } from '../utils';
+import { storeFile } from './storage';
 import { uploadMiddleware } from './uploadMiddleware';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));
   if (file) {
-    storeFile(uploadsPath, file).then(async _file => {
-      await processDocument(entitySharedId, _file);
-      await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
-      req.emitToSessionSocket('documentProcessed', entitySharedId);
-    });
+    await storeFile(file.filename, fs.createReadStream(file.path), 'document');
+    await processDocument(entitySharedId, file);
+    await search.indexEntities({ sharedId: entitySharedId }, '+fullText');
+    req.emitToSessionSocket('documentProcessed', entitySharedId);
   }
 };
 

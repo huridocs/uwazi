@@ -3,13 +3,19 @@ import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 import { errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
-import { attachmentsPath, customUploadsPath, deleteFile, uploadsPath } from './filesystem';
+import {
+  activityLogPath,
+  attachmentsPath,
+  customUploadsPath,
+  deleteFile,
+  uploadsPath,
+} from './filesystem';
 
-type FileTypes = NonNullable<FileType['type']>;
+type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3ClientInstance: S3Client;
 const s3instance = () => {
@@ -28,8 +34,10 @@ const s3instance = () => {
 const paths: { [k in FileTypes]: (filename: string) => string } = {
   custom: customUploadsPath,
   document: uploadsPath,
+  segmentation: filename => uploadsPath(`segmentation/${filename}`),
   thumbnail: uploadsPath,
   attachment: attachmentsPath,
+  activitylog: activityLogPath,
 };
 
 const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
@@ -100,6 +108,11 @@ export const removeFile = async (filename: string, type: FileTypes) =>
 
 export const removeFiles = async (files: FileType[]) =>
   Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
+
+export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
+  file.pipe(createWriteStream(paths[type](filename)));
+  return new Promise(resolve => file.on('close', resolve));
+};
 
 export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
   try {
