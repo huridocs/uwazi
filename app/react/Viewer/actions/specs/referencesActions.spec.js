@@ -128,6 +128,7 @@ describe('Viewer referencesActions', () => {
         saveConnectionDispatch = jasmine
           .createSpy('saveConnectionDispatch')
           .and.returnValue('returnValue');
+        // eslint-disable-next-line no-import-assign
         connectionsActions.saveConnection = jasmine
           .createSpy('saveConnection')
           .and.returnValue(saveConnectionDispatch);
