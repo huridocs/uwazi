@@ -1,10 +1,10 @@
-import * as connections from '../helpers/connection-actions';
+import * as relationships from '../helpers/relationship-actions';
 import disableTransitions from '../helpers/disableTransitions';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 
-describe('connections', () => {
+describe('relationships', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
@@ -16,7 +16,7 @@ describe('connections', () => {
     await logout();
   });
 
-  it('should navigate to an entities connections view', async () => {
+  it('should navigate to an entities relationships view', async () => {
     await expect(page).toClick(
       '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span'
     );
@@ -33,51 +33,51 @@ describe('connections', () => {
   });
 
   it('should remove every hub except the first one', async () => {
-    await connections.clickEdit();
-    await connections.removeHub(2);
-    await connections.removeHub(3);
-    await connections.removeHub(4);
-    await connections.removeHub(5);
-    await connections.clickSave();
+    await relationships.clickEdit();
+    await relationships.removeHub(2);
+    await relationships.removeHub(3);
+    await relationships.removeHub(4);
+    await relationships.removeHub(5);
+    await relationships.clickSave();
   });
 
   it('should add new hub with relation group "País"', async () => {
-    await connections.reloadPage();
-    await connections.clickEdit();
-    await connections.addHub('Court');
-    await connections.addNewRelTypeToHub(2, 'País');
+    await relationships.reloadPage();
+    await relationships.clickEdit();
+    await relationships.addHub('Court');
+    await relationships.addNewRelTypeToHub(2, 'País');
   });
 
   it('should add some countries', async () => {
-    await connections.addNewConnection(2, 1, 'Bolivia');
-    await connections.addNewConnection(2, 1, 'Brazil');
-    await connections.addNewConnection(2, 1, 'Tracy Robinson');
-    await connections.addNewConnection(2, 1, 'Chile');
-    await connections.addNewConnection(2, 1, 'Colombia');
+    await relationships.addNewRelationship(2, 1, 'Bolivia');
+    await relationships.addNewRelationship(2, 1, 'Brazil');
+    await relationships.addNewRelationship(2, 1, 'Tracy Robinson');
+    await relationships.addNewRelationship(2, 1, 'Chile');
+    await relationships.addNewRelationship(2, 1, 'Colombia');
   });
 
   it('should add new relation group "Firmantes"', async () => {
-    await connections.addNewRelTypeToHub(2, 'Firmantes');
+    await relationships.addNewRelTypeToHub(2, 'Firmantes');
   });
 
   it('should add some people to "Firmantes"', async () => {
-    await connections.addNewConnection(2, 2, 'Máximo Cisneros Sánchez');
-    await connections.addNewConnection(2, 2, 'Margarette May Macaulay');
+    await relationships.addNewRelationship(2, 2, 'Máximo Cisneros Sánchez');
+    await relationships.addNewRelationship(2, 2, 'Margarette May Macaulay');
   });
 
   it('should save the relations', async () => {
-    await connections.clickSave();
+    await relationships.clickSave();
   });
 
   it('should move the person between to countries to the correct group', async () => {
-    await connections.reloadPage();
-    await connections.clickEdit();
-    await connections.moveRelationship(2, 1, 1, 2, 2);
-    await connections.clickSave();
+    await relationships.reloadPage();
+    await relationships.clickEdit();
+    await relationships.moveRelationship(2, 1, 1, 2, 2);
+    await relationships.clickSave();
   });
 
   it('should render the relations properly after a save', async () => {
-    const relations = await connections.readRelations();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',
@@ -96,8 +96,8 @@ describe('connections', () => {
   });
 
   it('should render the relations properly after a reload', async () => {
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',
@@ -116,13 +116,13 @@ describe('connections', () => {
   });
 
   it('should remove Brazil and Chile, then undo the removal of Brazil', async () => {
-    await connections.clickEdit();
-    await connections.clickRemoveRelationship(2, 2, 2);
-    await connections.clickRemoveRelationship(2, 2, 3);
-    await connections.clickRemoveRelationship(2, 2, 2);
-    await connections.clickSave();
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.clickEdit();
+    await relationships.clickRemoveRelationship(2, 2, 2);
+    await relationships.clickRemoveRelationship(2, 2, 3);
+    await relationships.clickRemoveRelationship(2, 2, 2);
+    await relationships.clickSave();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',
@@ -141,15 +141,15 @@ describe('connections', () => {
   });
 
   it('should add new hub with relation group "Votos separados" with some entries', async () => {
-    await connections.clickEdit();
-    await connections.addHub('Court');
-    await connections.addNewRelTypeToHub(3, 'Votos separados');
-    await connections.addNewConnection(3, 1, 'Artavia Murillo et al');
-    await connections.addNewConnection(3, 1, 'Anzualdo Castro');
-    await connections.addNewConnection(3, 1, 'Almonacid Arellano et al');
-    await connections.clickSave();
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.clickEdit();
+    await relationships.addHub('Court');
+    await relationships.addNewRelTypeToHub(3, 'Votos separados');
+    await relationships.addNewRelationship(3, 1, 'Artavia Murillo et al');
+    await relationships.addNewRelationship(3, 1, 'Anzualdo Castro');
+    await relationships.addNewRelationship(3, 1, 'Almonacid Arellano et al');
+    await relationships.clickSave();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',
@@ -178,10 +178,10 @@ describe('connections', () => {
   });
 
   it('should render properly from the side of "Anzualdo Castro"', async () => {
-    await connections.clickEdit();
-    await connections.goToRelation(2, 1, 2);
+    await relationships.clickEdit();
+    await relationships.goToRelation(2, 1, 2);
     await expect(page).toClick('#tab-connections');
-    const relations = await connections.readRelations();
+    const relations = await relationships.readRelations();
     expect(relations[2]).toEqual([
       'Votos separados',
       {
@@ -194,11 +194,11 @@ describe('connections', () => {
   });
 
   it('should remove the "Votos separados" group from the hub on "Anzualdo Castro"', async () => {
-    await connections.clickEdit();
-    await connections.clickRemoveTypeGroup(3, 2);
-    await connections.clickSave();
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.clickEdit();
+    await relationships.clickRemoveTypeGroup(3, 2);
+    await relationships.clickSave();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations[2]).toEqual([
       'Votos separados',
       {
@@ -210,10 +210,10 @@ describe('connections', () => {
   });
 
   it('should go back to the original entity and check the updated "Votos separados"', async () => {
-    await connections.clickEdit();
-    await connections.goToRelation(3, 1, 1);
+    await relationships.clickEdit();
+    await relationships.goToRelation(3, 1, 1);
     await expect(page).toClick('#tab-connections');
-    const relations = await connections.readRelations();
+    const relations = await relationships.readRelations();
     expect(relations[1]).toEqual([
       'Court',
       {
@@ -223,13 +223,13 @@ describe('connections', () => {
   });
 
   it('should remove "País" and "Votos separados", then undo the remove on "País"', async () => {
-    await connections.clickEdit();
-    await connections.clickRemoveTypeGroup(3, 2);
-    await connections.clickRemoveTypeGroup(2, 1);
-    await connections.clickRemoveTypeGroup(3, 2);
-    await connections.clickSave();
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.clickEdit();
+    await relationships.clickRemoveTypeGroup(3, 2);
+    await relationships.clickRemoveTypeGroup(2, 1);
+    await relationships.clickRemoveTypeGroup(3, 2);
+    await relationships.clickSave();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',
@@ -248,27 +248,27 @@ describe('connections', () => {
   });
 
   it('should handle a larger set of actions all at once', async () => {
-    await connections.clickEdit();
-    await connections.removeHub(1);
-    await connections.moveRelationship(2, 1, 1, 2, 2);
-    await connections.clickRemoveRelationship(2, 1, 1);
-    await connections.clickRemoveRelationship(2, 2, 1);
-    await connections.clickRemoveRelationship(2, 2, 2);
-    await connections.addHub('Court');
-    await connections.addHub('Court');
-    await connections.addNewRelTypeToHub(3, 'Firmantes');
-    await connections.addNewRelTypeToHub(3, 'País');
-    await connections.addNewRelTypeToHub(4, 'País');
-    await connections.addNewConnection(3, 1, 'Manuel Banchi Gundián');
-    await connections.addNewConnection(3, 1, 'Marco Monroy Cabra');
-    await connections.addNewConnection(3, 2, 'Ecuador');
-    await connections.addNewConnection(3, 2, 'Guyana');
-    await connections.addNewConnection(3, 2, 'Paraguay');
-    await connections.addNewConnection(4, 1, 'Suriname');
-    await connections.addNewConnection(4, 1, 'Uruguay');
-    await connections.clickSave();
-    await connections.reloadPage();
-    const relations = await connections.readRelations();
+    await relationships.clickEdit();
+    await relationships.removeHub(1);
+    await relationships.moveRelationship(2, 1, 1, 2, 2);
+    await relationships.clickRemoveRelationship(2, 1, 1);
+    await relationships.clickRemoveRelationship(2, 2, 1);
+    await relationships.clickRemoveRelationship(2, 2, 2);
+    await relationships.addHub('Court');
+    await relationships.addHub('Court');
+    await relationships.addNewRelTypeToHub(3, 'Firmantes');
+    await relationships.addNewRelTypeToHub(3, 'País');
+    await relationships.addNewRelTypeToHub(4, 'País');
+    await relationships.addNewRelationship(3, 1, 'Manuel Banchi Gundián');
+    await relationships.addNewRelationship(3, 1, 'Marco Monroy Cabra');
+    await relationships.addNewRelationship(3, 2, 'Ecuador');
+    await relationships.addNewRelationship(3, 2, 'Guyana');
+    await relationships.addNewRelationship(3, 2, 'Paraguay');
+    await relationships.addNewRelationship(4, 1, 'Suriname');
+    await relationships.addNewRelationship(4, 1, 'Uruguay');
+    await relationships.clickSave();
+    await relationships.reloadPage();
+    const relations = await relationships.readRelations();
     expect(relations).toEqual([
       [
         'Court',

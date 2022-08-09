@@ -1,5 +1,5 @@
 import { ElementHandle } from 'puppeteer';
-import disableTransitions from '../helpers/disableTransitions';
+import disableTransitions from './disableTransitions';
 
 const reloadPage = async () => {
   await page.reload();
@@ -62,7 +62,11 @@ const clickRemoveTypeGroup = async (hubNumber: number, typeGroupNumber: number) 
     `${typeGroupSelector(hubNumber, typeGroupNumber)} .removeRightRelationshipGroup button`
   );
 
-const addNewConnection = async (hubNumber: number, typeGroupNumber: number, searchTerm: string) => {
+const addNewRelationship = async (
+  hubNumber: number,
+  typeGroupNumber: number,
+  searchTerm: string
+) => {
   await expect(page).toClick(
     `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new svg`
   );
@@ -153,7 +157,7 @@ export {
   addNewRelTypeToHub,
   typeGroupSelector,
   clickRemoveTypeGroup,
-  addNewConnection,
+  addNewRelationship,
   relationSelector,
   goToRelation,
   clickRemoveRelationship,
