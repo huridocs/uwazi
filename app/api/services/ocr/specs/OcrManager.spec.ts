@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-
 import { files } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
 import * as storage from 'api/files/storage';
@@ -8,6 +7,7 @@ import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Readable } from 'stream';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError';
@@ -34,9 +34,7 @@ class Mocks {
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
-      'filesApi.fileFromReadStream': jest
-        .spyOn(filesApi, 'fileFromReadStream')
-        .mockResolvedValue(''),
+      'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(''),
       'filesApi.generateFileName': jest
         .spyOn(filesApi, 'generateFileName')
         .mockReturnValue('generatedUwaziFilename'),
@@ -63,11 +61,15 @@ class Mocks {
     this.taskManagerMock = mockTaskManagerImpl(TaskManager as jest.Mock<TaskManager>);
 
     fetchMock.mock('end:/info', '{ "supported_languages": ["en", "es"] }');
-    fetchMock.mock('protocol://link/to/result/file', {
-      body: 'resultFileContent',
-      status: 200,
-      headers: { 'Content-Type': 'some/mimetype' },
-    });
+
+    fetchMock.mock(
+      'protocol://link/to/result/file',
+      //@ts-ignore
+      new Response(Readable.from(Buffer.from('resultFileContent')), {
+        headers: { 'Content-Type': 'some/mimetype' },
+        size: 17,
+      })
+    );
   }
 
   release() {
@@ -102,6 +104,12 @@ describe('OcrManager', () => {
     ocrManager.start();
   });
 
+  beforeEach(() => {
+    mocks.jestMocks['storage.fileContents'] = jest
+      .spyOn(storage, 'fileContents')
+      .mockResolvedValue(Buffer.from('file_content'));
+  });
+
   afterAll(async () => {
     mocks.release();
     await testingEnvironment.tearDown();
@@ -111,6 +119,7 @@ describe('OcrManager', () => {
     beforeAll(async () => {
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
       await ocrManager.addToQueue(sourceFile);
+      await storage.removeFile('generatedUwaziFilename', 'document');
     });
 
     describe('when creating a new task', () => {
@@ -150,6 +159,7 @@ describe('OcrManager', () => {
     describe('when there are results', () => {
       beforeAll(async () => {
         mocks.jestMocks['date.now'].mockReturnValue(1001);
+        mocks.jestMocks['storage.storeFile'].mockRestore();
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
@@ -157,26 +167,25 @@ describe('OcrManager', () => {
         expect(fetchMock.lastUrl()).toBe('protocol://link/to/result/file');
       });
 
-      it('should save the file with a generated filename', () => {
+      it('should save the file with a generated filename', async () => {
         expect(filesApi.generateFileName).toHaveBeenCalled();
-        expect(filesApi.fileFromReadStream).toHaveBeenCalledWith(
-          'generatedUwaziFilename',
-          Buffer.from('resultFileContent')
+        mocks.jestMocks['storage.fileContents'].mockRestore();
+        expect((await storage.fileContents('generatedUwaziFilename', 'document')).toString()).toBe(
+          'resultFileContent'
         );
       });
 
       it('should run the file processing', async () => {
         expect(processDocumentApi.processDocument).toHaveBeenCalledWith(
           'parentEntity',
-          {
+          expect.objectContaining({
             destination: 'file_path',
             filename: 'generatedUwaziFilename',
             language: 'eng',
             mimetype: 'some/mimetype',
             originalname: 'ocr_sourceFileOriginalName.pdf',
-            size: 17,
             type: 'document',
-          },
+          }),
           false
         );
       });
@@ -251,6 +260,7 @@ describe('OcrManager', () => {
 
     it('should throw an error when an ocr model is already in queue', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
+
       await files.save({ _id: fixturesFactory.id('sourceFile'), type: 'document' });
 
       const [sourceFile] = await files.get({ _id: fixturesFactory.id('sourceFile') });
@@ -280,12 +290,13 @@ describe('OcrManager', () => {
     it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
+      mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
 
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 
       const records = await OcrModel.get({});
       expect(records).toHaveLength(3);
-      expect(filesApi.fileFromReadStream).not.toHaveBeenCalled();
+      expect(storage.storeFile).not.toHaveBeenCalled();
       expect(processDocumentApi.processDocument).not.toHaveBeenCalled();
     });
   });

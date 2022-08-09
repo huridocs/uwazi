@@ -255,10 +255,8 @@ describe('files routes', () => {
       const entityId = db.id();
       await request(app)
         .post('/api/files/upload/attachment')
-        .send({
-          originalname: 'Dont bring me down - 1979',
-          entity: entityId,
-        })
+        .field('entity', entityId.toString())
+        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
         .expect(200);
 
       const [attachment] = await files.get({ entity: entityId.toString() });

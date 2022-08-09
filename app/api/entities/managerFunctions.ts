@@ -1,6 +1,6 @@
 import { groupBy } from 'lodash';
 import { WithId } from 'api/odm';
-import { attachmentsPath, uploadsPath, files as filesAPI, storeFile } from 'api/files';
+import { files as filesAPI, storeFile, fs } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
@@ -10,12 +10,13 @@ import { FileType } from 'shared/types/fileType';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
+import { FileAttachment } from './entitySavingManager';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
-  newAttachments: FileType[] = [],
-  newDocuments: FileType[] = []
+  newAttachments: FileAttachment[] = [],
+  newDocuments: FileAttachment[] = []
 ) => {
   const attachments: FileType[] = [];
   const documents: FileType[] = [];
@@ -24,10 +25,10 @@ const prepareNewFiles = async (
 
   if (newAttachments.length) {
     await Promise.all(
-      newAttachments.map(async (file: FileType) => {
-        const savedFile = await storeFile(attachmentsPath, file, true);
+      newAttachments.map(async file => {
+        await storeFile(file.filename, fs.createReadStream(file.path), 'attachment');
         attachments.push({
-          ...savedFile,
+          ...file,
           entity: updatedEntity.sharedId,
           type: TypeOfFile.attachment,
         });
@@ -37,10 +38,10 @@ const prepareNewFiles = async (
 
   if (newDocuments.length) {
     await Promise.all(
-      newDocuments.map(async (document: FileType) => {
-        const savedDocument = await storeFile(uploadsPath, document, true);
+      newDocuments.map(async doc => {
+        await storeFile(doc.filename, fs.createReadStream(doc.path), 'document');
         documents.push({
-          ...savedDocument,
+          ...doc,
           entity: updatedEntity.sharedId,
           type: TypeOfFile.document,
         });
@@ -108,8 +109,8 @@ const filterRenamedFiles = (entity: EntityWithFilesSchema, entityFiles: WithId<F
 const processFiles = async (
   entity: EntityWithFilesSchema,
   updatedEntity: EntityWithFilesSchema,
-  fileAttachments: FileType[] | undefined,
-  documentAttachments: FileType[] | undefined
+  fileAttachments: FileAttachment[] | undefined,
+  documentAttachments: FileAttachment[] | undefined
 ) => {
   const { attachments, documents } = await prepareNewFiles(
     entity,
