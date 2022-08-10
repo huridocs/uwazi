@@ -22,11 +22,15 @@ export default app => {
     needsAuthorization(),
     uploadMiddleware(),
     validation.validateRequest({
-      body: {
-        properties: {
-          context: { type: 'string' },
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            context: { type: 'string' },
+          },
+          required: ['context'],
         },
-        required: ['context'],
       },
     }),
 
