@@ -48,7 +48,7 @@ export function uploadAttachment(entity, file, storeKeys) {
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .field('entity', entity)
-      .field('filename', file.name)
+      .field('originalname', file.name)
       .attach('file', file)
       .on('progress', data => {
         dispatch({ type: types.ATTACHMENT_PROGRESS, entity, progress: Math.floor(data.percent) });
