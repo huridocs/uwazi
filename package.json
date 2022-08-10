@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.77.1",
+  "version": "1.79.0-rc3",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -164,7 +164,7 @@
     "react-datepicker": "4.8.0",
     "react-device-detect": "^2.2.2",
     "react-dnd": "2.6.0",
-    "react-dnd-html5-backend": "2.6.0",
+    "react-dnd-html5-backend": "^15.1.2",
     "react-dom": "16.13.1",
     "react-dropzone": "4.2.9",
     "react-helmet": "^6.1.0",
@@ -310,7 +310,7 @@
     "nightmare-real-mouse": "^1.1.0",
     "nightmare-upload": "^0.1.1",
     "node-polyfill-webpack-plugin": "^2.0.0",
-    "node-sass": "4.14.1",
+    "node-sass": "7.0.1",
     "nodemon": "^2.0.19",
     "plop": "^2.7.6",
     "prettier": "2.5.1",
@@ -318,7 +318,7 @@
     "react-dnd-test-backend": "15.1.1",
     "redux-mock-store": "^1.5.4",
     "rtlcss-webpack-plugin": "4.0.7",
-    "sass-loader": "10.0.2",
+    "sass-loader": "10.3.1",
     "sharp": "^0.30.6",
     "stream-mock": "^2.0.5",
     "supertest": "6.2.3",

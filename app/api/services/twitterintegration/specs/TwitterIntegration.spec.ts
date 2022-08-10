@@ -1,5 +1,6 @@
 import { testingDB } from 'api/utils/testing_db';
 import * as filesApi from 'api/files/filesystem';
+import * as storage from 'api/files/storage';
 import {
   TweetParamsType,
   TwitterIntegration,
@@ -174,7 +175,7 @@ describe('TwitterIntegration', () => {
   });
 
   it('should download and replace the images in the twitter text', async () => {
-    const fileFromReadStreamSpy = jest.spyOn(filesApi, 'fileFromReadStream').mockResolvedValue('');
+    const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
     jest.spyOn(filesApi, 'generateFileName').mockReturnValue('generatedUwaziFilename');
 
     fetchMock.mock('https://image.is', {
@@ -209,7 +210,7 @@ describe('TwitterIntegration', () => {
       originalname: 'image.is',
       type: 'attachment',
     });
-    expect(fileFromReadStreamSpy).toHaveBeenCalledWith(
+    expect(storeFileSpy).toHaveBeenCalledWith(
       'generatedUwaziFilename',
       expect.anything(),
       expect.anything()

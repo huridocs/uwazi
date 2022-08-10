@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { DropTarget } from 'react-dnd';
+import { DragDropContext, DropTarget } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import ID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';
 import DragAndDropItem from './DragAndDropItem';
