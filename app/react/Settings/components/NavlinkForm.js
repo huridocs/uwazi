@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 import { Icon } from 'UI';
-import ShowIf from 'app/App/ShowIf';
 import { Translate } from 'app/I18N';
 
 const groupStyles = {
