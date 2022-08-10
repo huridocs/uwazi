@@ -1,4 +1,6 @@
 import { fromJS } from 'immutable';
+import _ from 'lodash';
+
 import templatesAPI from 'api/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
@@ -230,40 +232,56 @@ export default {
   },
 
   async bulk(bulkData, language) {
-    const saves = await Promise.all(bulkData.save.map(reference => this.save(reference, language)));
-    const deletions = await Promise.all(
-      bulkData.delete.map(reference => this.delete(reference, language))
+    const saves = await this.save(bulkData.save, language);
+    const deletions = await this.delete(
+      { _id: { $in: bulkData.delete.map(r => r._id) } },
+      language
     );
-    return saves.concat(deletions);
+    return { saves, deletions };
+  },
+
+  arrangeRelationshipGroups(_relationships) {
+    if (!Array.isArray(_relationships)) return [[_relationships]];
+
+    const [groups, ungrouped] = _.partition(_relationships, relOrGroup =>
+      Array.isArray(relOrGroup)
+    );
+
+    if (ungrouped.length) groups.push(ungrouped);
+
+    return groups;
   },
 
   async prepareRelationshipsToSave(_relationships, language) {
-    const rel = !Array.isArray(_relationships) ? [_relationships] : _relationships;
-
-    await validateConnectionSchema(rel);
+    const rels = this.arrangeRelationshipGroups(_relationships);
+    const relsFlat = rels.flat();
+    await validateConnectionSchema(relsFlat);
 
     const existingEntities = new Set(
       (
         await entities.get({
-          sharedId: { $in: rel.map(r => r.entity) },
+          sharedId: { $in: relsFlat.map(r => r.entity) },
           language,
         })
       ).map(r => r.sharedId)
     );
 
-    let relationships = rel.filter(r => existingEntities.has(r.entity));
+    const relationships = rels.map(_group => {
+      let group = _group.filter(r => existingEntities.has(r.entity));
+      if (group.length === 1 && !group[0].hub) {
+        throw createError('Single relationships must have a hub');
+      }
+      if (!(group.every(r => !r.hub) || group.every(r => !!r.hub))) {
+        throw createError('In a group, either all relationships must have a hub or none of them.');
+      }
+      if (group.length && !group[0].hub) {
+        const newHub = generateID();
+        group = group.map(r => ({ ...r, hub: r.hub || newHub }));
+      }
+      return group;
+    });
 
-    if (relationships.length === 1 && !relationships[0].hub) {
-      throw createError('Single relationships must have a hub');
-    }
-    if (!(relationships.every(r => !r.hub) || relationships.every(r => !!r.hub))) {
-      throw createError('Either all relationships must have a hub or none of them.');
-    }
-    if (relationships.length && !relationships[0].hub) {
-      const newHub = generateID();
-      relationships = relationships.map(r => ({ ...r, hub: r.hub || newHub }));
-    }
-    return { relationships };
+    return relationships.flat();
   },
 
   async appendRelatedEntityData(savedRelationships, language) {
@@ -289,7 +307,7 @@ export default {
       throw createError('Language cant be undefined');
     }
 
-    const { relationships } = await this.prepareRelationshipsToSave(_relationships, language);
+    const relationships = await this.prepareRelationshipsToSave(_relationships, language);
 
     if (relationships.length === 0) {
       return [];
@@ -306,7 +324,7 @@ export default {
       )
     );
 
-    const result = this.appendRelatedEntityData(savedRelationships, language);
+    const result = await this.appendRelatedEntityData(savedRelationships, language);
 
     if (updateEntities) {
       const touchedHubs = Array.from(new Set(relationships.map(r => r.hub)));

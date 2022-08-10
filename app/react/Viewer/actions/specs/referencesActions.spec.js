@@ -72,18 +72,19 @@ describe('Viewer referencesActions', () => {
           documentViewer: { referencedDocuments: Immutable.fromJS([{ _id: '1' }]) },
           relationships: { list: { sharedId: 'docId' } },
         });
-        references = [
-          [
+        references = {
+          saves: [
             { _id: 'addedReference1', reference: 'reference', sourceRange: { text: 'Text' } },
             { _id: 'addedReference2', reference: 'reference' },
           ],
-        ];
+          deletions: [],
+        };
       });
 
       it('should add the reference and reload relationships', () => {
         let expectedActions = [
-          { type: types.ADD_REFERENCE, reference: references[0][1] },
-          { type: types.ADD_REFERENCE, reference: references[0][0] },
+          { type: types.ADD_REFERENCE, reference: references.saves[1] },
+          { type: types.ADD_REFERENCE, reference: references.saves[0] },
           { type: 'viewer/targetDoc/UNSET' },
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
@@ -100,8 +101,8 @@ describe('Viewer referencesActions', () => {
         store.clearActions();
 
         expectedActions = [
-          { type: types.ADD_REFERENCE, reference: references[0][1] },
-          { type: types.ADD_REFERENCE, reference: references[0][0] },
+          { type: types.ADD_REFERENCE, reference: references.saves[1] },
+          { type: types.ADD_REFERENCE, reference: references.saves[0] },
           { type: 'viewer/targetDoc/UNSET' },
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },

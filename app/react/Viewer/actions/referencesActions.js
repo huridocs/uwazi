@@ -26,15 +26,15 @@ export function addReference(references, delayActivation) {
   return (dispatch, getState) => {
     const tab = 'references';
 
-    dispatch({ type: types.ADD_REFERENCE, reference: references[0][1] });
-    dispatch({ type: types.ADD_REFERENCE, reference: references[0][0] });
+    dispatch({ type: types.ADD_REFERENCE, reference: references.saves[1] });
+    dispatch({ type: types.ADD_REFERENCE, reference: references.saves[0] });
 
     dispatch(actions.unset('viewer/targetDoc'));
     dispatch(actions.unset('viewer/targetDocHTML'));
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(reloadRelationships(getState().relationships.list.sharedId));
 
-    dispatch(uiActions.activateReference(references[0][0], tab, delayActivation));
+    dispatch(uiActions.activateReference(references.saves[0], tab, delayActivation));
   };
 }
 
