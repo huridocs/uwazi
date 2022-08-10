@@ -35,7 +35,7 @@ export default class EditTemplate extends RouteHandler {
 
   render() {
     return (
-      <div className="settings-content">
+      <div className="settings-content sm-footer-extra-row">
         <OnTemplateLoaded>
           <TemplateCreator />
         </OnTemplateLoaded>

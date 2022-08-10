@@ -16,7 +16,7 @@ export default class EditThesauri extends RouteHandler {
 
   render() {
     return (
-      <div className="settings-content">
+      <div className="settings-content sm-footer-extra-row">
         <ThesauriForm />
       </div>
     );

@@ -18,7 +18,7 @@ export default class NewTemplate extends RouteHandler {
 
   render() {
     return (
-      <div className="settings-content">
+      <div className="settings-content sm-footer-extra-row">
         <TemplateCreator />
       </div>
     );
