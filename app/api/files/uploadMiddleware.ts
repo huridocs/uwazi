@@ -17,13 +17,15 @@ const defaultStorage = multer.diskStorage({
 });
 
 const processOriginalFileName = (req: Request) => {
-  if (req.body.filename) {
-    return req.body.filename;
+  if (req.body.originalname) {
+    return req.body.originalname;
   }
 
   errorLog.debug(
-    // eslint-disable-next-line max-len
-    `[${tenants.current.name}] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include a 'filename' field in the body instead.`
+    `[${
+      tenants.current().name
+      // eslint-disable-next-line max-len
+    }] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include an 'originalname' field in the body instead.`
   );
 
   return req.file?.originalname;
