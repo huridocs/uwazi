@@ -1,7 +1,7 @@
 import { testingTenants } from 'api/utils/testingTenants';
-import { deleteFiles, fileExistsOnPath, activityLogPath } from '../filesystem';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { deleteFiles, fileExistsOnPath, activityLogPath } from '../filesystem';
 
 describe('files', () => {
   beforeEach(async () => {

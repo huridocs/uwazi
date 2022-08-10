@@ -6,12 +6,12 @@ import settings from 'api/settings';
 import mailer from 'api/utils/mailer';
 import cors from 'cors';
 import proxy from 'express-http-proxy';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 import { createError, validation } from '../utils';
 import { storage } from './storage';
 import { uploadMiddleware } from './uploadMiddleware';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
 
 const processEntityDocument = async (req, entitySharedId) => {
   const file = req.files.find(_file => _file.fieldname.includes('file'));

@@ -8,13 +8,13 @@ import request from 'supertest';
 import express from 'express';
 
 import mailer from 'api/utils/mailer';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import { errorLog } from '../../log';
 import { createDirIfNotExists, deleteFiles } from '../filesystem';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 const mockExport = jest.fn();
 jest.mock('api/csv/csvExporter', () =>

@@ -1,9 +1,9 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 
 import path from 'path';
-import migrationsModel from './migrationsModel';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import migrationsModel from './migrationsModel';
 
 const promiseInSequence = funcs =>
   funcs.reduce(

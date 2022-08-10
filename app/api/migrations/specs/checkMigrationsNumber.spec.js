@@ -1,8 +1,8 @@
 /* eslint-disable import/no-dynamic-require, global-require */
 import path from 'path';
-import { migrator } from '../migrator';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { migrator } from '../migrator';
 
 describe('Unique migrations', () => {
   it('should not repeat migration deltas', async () => {
