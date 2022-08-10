@@ -107,5 +107,4 @@ export function mapStateToProps(state, props) {
   };
 }
 
-export { FormConfigSelect };
 export default connect(mapStateToProps)(FormConfigSelect);
