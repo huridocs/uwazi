@@ -211,7 +211,8 @@ describe('relationships', () => {
 
   describe('bulk()', () => {
     const cleanSnapshot = _value => {
-      const [[_savedItem], ...deletes] = _value;
+      const { saves, deletions } = _value;
+      const [_savedItem] = saves;
       const savedItem = {
         ..._savedItem,
         _id: _savedItem._id.equals(connectionID5) ? 'connectionID5' : _savedItem._id,
@@ -228,7 +229,7 @@ describe('relationships', () => {
           : savedItem.entityData.template,
       };
 
-      return [[savedItem], ...deletes];
+      return [[savedItem], deletions];
     };
 
     it('should save or delete the relationships', async () => {
@@ -397,6 +398,182 @@ describe('relationships', () => {
           expect(error.code).toBe(500);
           done();
         });
+    });
+
+    describe('when saving grouped input', () => {
+      const entity3Expected = {
+        template,
+        type: 'entity',
+        title: 'entity3 title',
+        published: true,
+      };
+
+      const entity4Expected = {
+        template,
+        type: 'entity',
+        title: 'entity4 title',
+        published: true,
+      };
+
+      it('should save grouped input with or without existing hubs', async () => {
+        const result = await relationships.save(
+          [
+            [
+              { entity: 'entity3', hub: hub1 },
+              { entity: 'entity4', hub: hub2 },
+            ],
+            [{ entity: 'entity3' }, { entity: 'entity4' }],
+          ],
+          'en'
+        );
+        expect(result).toMatchObject([
+          {
+            _id: expect.anything(),
+            entity: 'entity3',
+            hub: hub1,
+            entityData: entity3Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity4',
+            hub: hub2,
+            entityData: entity4Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity3',
+            hub: expect.anything(),
+            entityData: entity3Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity4',
+            hub: expect.anything(),
+            entityData: entity4Expected,
+          },
+        ]);
+        expect(result[2].entityData.hub).toEqual(result[3].entityData.hub);
+      });
+
+      it('should allow mixing grouped and non-grouped input', async () => {
+        const result = await relationships.save(
+          [
+            [
+              { entity: 'entity3', hub: hub1 },
+              { entity: 'entity4', hub: hub1 },
+            ],
+            { entity: 'entity3' },
+            { entity: 'entity4' },
+          ],
+          'en'
+        );
+        expect(result).toMatchObject([
+          {
+            _id: expect.anything(),
+            entity: 'entity3',
+            hub: hub1,
+            entityData: entity3Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity4',
+            hub: hub1,
+            entityData: entity4Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity3',
+            hub: expect.anything(),
+            entityData: entity3Expected,
+          },
+          {
+            _id: expect.anything(),
+            entity: 'entity4',
+            hub: expect.anything(),
+            entityData: entity4Expected,
+          },
+        ]);
+        expect(result[2].entityData.hub).toEqual(result[3].entityData.hub);
+      });
+
+      it('should not allow mixing references with and without hubs in each group', async done => {
+        relationships
+          .save(
+            [
+              [
+                { entity: 'entity3', hub: hub1 },
+                { entity: 'entity4', hub: hub1 },
+              ],
+              [{ entity: 'entity3', hub: hub2 }, { entity: 'entity4' }],
+            ],
+            'en'
+          )
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
+        relationships
+          .save(
+            [
+              [
+                { entity: 'entity3', hub: hub1 },
+                { entity: 'entity4', hub: hub1 },
+              ],
+              { entity: 'entity3', hub: hub2 },
+              { entity: 'entity4' },
+            ],
+            'en'
+          )
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
+      });
+
+      it('should not allow groups of one reference without hub', async done => {
+        relationships
+          .save(
+            [
+              [
+                { entity: 'entity3', hub: hub1 },
+                { entity: 'entity4', hub: hub1 },
+              ],
+              [{ entity: 'entity4' }],
+            ],
+            'en'
+          )
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
+        relationships
+          .save(
+            [
+              [
+                { entity: 'entity3', hub: hub1 },
+                { entity: 'entity4', hub: hub1 },
+              ],
+              { entity: 'entity4' },
+            ],
+            'en'
+          )
+          .then(() => {
+            done.fail('Should throw an error');
+          })
+          .catch(error => {
+            expect(error.code).toBe(500);
+            done();
+          });
+      });
     });
   });
 
