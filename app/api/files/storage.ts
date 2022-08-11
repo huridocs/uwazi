@@ -129,13 +129,11 @@ export const storage = {
   },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
     const diskPassThrough = new PassThrough();
-    const bufferPassThrough = new PassThrough();
     file.pipe(diskPassThrough);
-    file.pipe(bufferPassThrough);
-    diskPassThrough.pipe(createWriteStream(paths[type](filename)));
-    await new Promise(resolve => diskPassThrough.on('close', resolve));
 
     if (tenants.current().featureFlags?.s3Storage) {
+      const bufferPassThrough = new PassThrough();
+      file.pipe(bufferPassThrough);
       const s3 = s3instance();
       await s3.send(
         new PutObjectCommand({
@@ -145,6 +143,9 @@ export const storage = {
         })
       );
     }
+
+    diskPassThrough.pipe(createWriteStream(paths[type](filename)));
+    await new Promise(resolve => diskPassThrough.on('close', resolve));
   },
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
     try {
