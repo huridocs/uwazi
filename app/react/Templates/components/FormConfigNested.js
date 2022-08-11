@@ -64,7 +64,7 @@ FormConfigNested.propTypes = {
   labelHasError: PropTypes.bool,
 };
 
-export function mapStateToProps(state, props) {
+function mapStateToProps(state, props) {
   return {
     labelHasError: checkErrorsOnLabel(state, props),
   };
@@ -74,5 +74,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ setNestedProperties }, dispatch);
 }
 
-export { FormConfigNested };
 export default connect(mapStateToProps, mapDispatchToProps)(FormConfigNested);

@@ -38,7 +38,7 @@ const checkWritePermissions = (
   return granted;
 };
 
-const checkRole = (roles: string[] = ['admin'], user: any | undefined = undefined) =>
+const checkRole = (user: any | undefined, roles: string[] = ['admin']) =>
   !!(user.get('_id') && roles.includes(user.get('role')));
 
 const NeedAuthorization: React.FC<PropTypes> = ({
@@ -48,7 +48,7 @@ const NeedAuthorization: React.FC<PropTypes> = ({
   user,
 }: PropTypes) => {
   const authorized = useMemo(
-    () => checkRole(roles, user) || checkWritePermissions(orWriteAccessTo, user),
+    () => checkRole(user, roles) || checkWritePermissions(orWriteAccessTo, user),
     [user, roles, orWriteAccessTo]
   );
 

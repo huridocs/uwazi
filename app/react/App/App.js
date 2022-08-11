@@ -22,7 +22,6 @@ import Matomo from './Matomo';
 class App extends Component {
   constructor(props, context) {
     super(props, context);
-    // change fetch to use api and test it properly
     this.state = { showmenu: false, confirmOptions: {} };
 
     this.toggleMenu = this.toggleMenu.bind(this);
