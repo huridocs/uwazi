@@ -4,7 +4,7 @@ import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import { fileContents, fileExists } from 'api/files';
+import { storage } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
@@ -78,7 +78,7 @@ class InformationExtraction {
     property: string,
     type: string
   ) => {
-    const fileContent = await fileContents(
+    const fileContent = await storage.fileContents(
       path.join(PDFSegmentation.SERVICE_NAME, xmlName),
       'document'
     );
@@ -96,7 +96,7 @@ class InformationExtraction {
     await Promise.all(
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
-        const xmlExists = await fileExists(
+        const xmlExists = await storage.fileExists(
           path.join(PDFSegmentation.SERVICE_NAME, xmlName),
           'document'
         );

@@ -1,5 +1,5 @@
 import entities from 'api/entities';
-import { files, generateFileName, storeFile } from 'api/files';
+import { files, generateFileName, storage } from 'api/files';
 import { errorLog } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
@@ -124,7 +124,7 @@ const saveEvidence =
             })
           ).body as unknown as Readable;
           if (fileStream) {
-            await storeFile(fileName, fileStream, 'attachment');
+            await storage.storeFile(fileName, fileStream, 'attachment');
 
             await files.save({
               entity: sharedId,

@@ -1,7 +1,7 @@
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { fileContents } from 'api/files';
+import { storage } from 'api/files';
 import { DataType } from 'api/odm';
 import { UpdateLog } from 'api/updatelogs';
 import { FileType } from 'shared/types/fileType';
@@ -17,7 +17,7 @@ const uploadFile = async (
     apiEndpoint = 'api/sync/upload/custom';
   }
 
-  const file = await fileContents(filename, type);
+  const file = await storage.fileContents(filename, type);
   return request.uploadFile(urljoin(url, apiEndpoint), filename, file, cookie);
 };
 
