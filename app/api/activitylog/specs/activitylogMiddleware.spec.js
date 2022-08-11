@@ -5,9 +5,9 @@ import { deleteFile } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import waitForExpect from 'wait-for-expect';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
-import waitForExpect from 'wait-for-expect';
 
 describe('activitylogMiddleware', () => {
   let req;
@@ -85,7 +85,19 @@ describe('activitylogMiddleware', () => {
       const file = await fs.readFile(
         `${tenants.current().activityLogs}/${tenants.current().name}_1000_activity.log`
       );
-      expect(file.length).toBeGreaterThan(0);
+
+      const fileContents = JSON.parse(file.toString());
+      expect(fileContents).toEqual({
+        body: '{"title":"Hi","password":"*****"}',
+        expireAt: expect.any(String),
+        method: 'POST',
+        params: '{"some":"params"}',
+        query: '{"a":"query"}',
+        time: 1000,
+        url: '/api/entities',
+        user: 123,
+        username: 'admin',
+      });
     });
   });
 
