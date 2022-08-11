@@ -131,7 +131,6 @@ export const storage = {
     const diskPassThrough = new PassThrough();
     file.pipe(diskPassThrough);
 
-
     if (tenants.current().featureFlags?.s3Storage) {
       const bufferPassThrough = new PassThrough();
       file.pipe(bufferPassThrough);
@@ -146,6 +145,7 @@ export const storage = {
     }
 
     diskPassThrough.pipe(createWriteStream(paths[type](filename)));
+    // eslint-disable-next-line no-promise-executor-return
     await new Promise(resolve => diskPassThrough.on('close', resolve));
   },
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
