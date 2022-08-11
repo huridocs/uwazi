@@ -1,7 +1,8 @@
 import path from 'path';
 import yazl from 'yazl';
-import { fs } from 'api/files';
 import { Readable } from 'stream';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
   new Promise((resolve, reject) => {

@@ -1,12 +1,19 @@
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  NoSuchKey,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 import { errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
+// eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import {
   activityLogPath,
   attachmentsPath,
@@ -93,38 +100,65 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
   }
 };
 
-export const readableFile = async (filename: string, type: FileTypes) => {
-  if (tenants.current().featureFlags?.s3Storage) {
-    return readFromS3(filename, type);
-  }
-  return createReadStream(paths[type](filename));
-};
-
-export const fileContents = async (filename: string, type: FileTypes) =>
-  streamToBuffer(await readableFile(filename, type));
-
-export const removeFile = async (filename: string, type: FileTypes) =>
-  deleteFile(paths[type](filename));
-
-export const removeFiles = async (files: FileType[]) =>
-  Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
-
-export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
-  file.pipe(createWriteStream(paths[type](filename)));
-  // eslint-disable-next-line no-promise-executor-return
-  return new Promise(resolve => file.on('close', () => resolve('')));
-};
-
-export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
-  try {
-    await access(paths[type](filename));
-  } catch (err) {
-    if (err?.code === 'ENOENT') {
-      return false;
+export const storage = {
+  async readableFile(filename: string, type: FileTypes) {
+    if (tenants.current().featureFlags?.s3Storage) {
+      return readFromS3(filename, type);
     }
-    if (err) {
-      throw err;
+    return createReadStream(paths[type](filename));
+  },
+  async fileContents(filename: string, type: FileTypes) {
+    return streamToBuffer(await this.readableFile(filename, type));
+  },
+  async removeFile(filename: string, type: FileTypes) {
+    await deleteFile(paths[type](filename));
+    if (tenants.current().featureFlags?.s3Storage) {
+      const s3 = s3instance();
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: tenants.current().name.replace('_', '-'),
+          Key: s3KeyWithPath(filename, type),
+        })
+      );
     }
-  }
-  return true;
+  },
+  async removeFiles(files: FileType[]) {
+    return Promise.all(
+      files.map(async file => deleteFile(paths[file.type || 'document'](file.filename || '')))
+    );
+  },
+  async storeFile(filename: string, file: Readable, type: FileTypes) {
+    const diskPassThrough = new PassThrough();
+    file.pipe(diskPassThrough);
+
+
+    if (tenants.current().featureFlags?.s3Storage) {
+      const bufferPassThrough = new PassThrough();
+      file.pipe(bufferPassThrough);
+      const s3 = s3instance();
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: tenants.current().name.replace('_', '-'),
+          Key: s3KeyWithPath(filename, type),
+          Body: await streamToBuffer(bufferPassThrough),
+        })
+      );
+    }
+
+    diskPassThrough.pipe(createWriteStream(paths[type](filename)));
+    await new Promise(resolve => diskPassThrough.on('close', resolve));
+  },
+  async fileExists(filename: string, type: FileTypes): Promise<boolean> {
+    try {
+      await access(paths[type](filename));
+    } catch (err) {
+      if (err?.code === 'ENOENT') {
+        return false;
+      }
+      if (err) {
+        throw err;
+      }
+    }
+    return true;
+  },
 };

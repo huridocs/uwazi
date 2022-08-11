@@ -5,13 +5,13 @@ import { search } from 'api/search';
 
 import { Request, Application } from 'express';
 import { FileType } from 'shared/types/fileType';
-import { uploadMiddleware, removeFile } from 'api/files';
+import { uploadMiddleware, storage } from 'api/files';
 import { TranslationType } from 'shared/translationType';
 import { updateMapping } from 'api/search/entitiesIndex';
 
 import { needsAuthorization } from '../auth';
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
     cb(null, file.originalname);
   },
@@ -55,7 +55,7 @@ const deleteFromIndex = async (req: Request) => {
 const deleteFile = async (fileId: string) => {
   const file: WithId<FileType> | undefined = await models.files.getById(fileId);
   if (file) {
-    await removeFile(file.filename || '', file.type || 'document');
+    await storage.removeFile(file.filename || '', file.type || 'document');
     await deleteFileFromIndex(file);
   }
   return file;
@@ -105,7 +105,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload',
     needsAuthorization(['admin']),
-    uploadMiddleware.customStorage(storage, 'document'),
+    uploadMiddleware.customStorage(diskStorage, 'document'),
     (_req, res) => {
       res.json('ok');
     }
@@ -114,7 +114,7 @@ export default (app: Application) => {
   app.post(
     '/api/sync/upload/custom',
     needsAuthorization(['admin']),
-    uploadMiddleware.customStorage(storage, 'custom'),
+    uploadMiddleware.customStorage(diskStorage, 'custom'),
     (_req, res) => {
       res.json('ok');
     }

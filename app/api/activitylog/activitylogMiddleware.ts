@@ -1,4 +1,4 @@
-import { storeFile } from 'api/files';
+import { storage } from 'api/files';
 import date from 'api/utils/date';
 import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
@@ -61,7 +61,7 @@ export default (req: Request, _res: Response, next: NextFunction) => {
     // eslint-disable-next-line no-void
     void activitylog.save(entry);
     // eslint-disable-next-line no-void
-    void storeFile(
+    void storage.storeFile(
       `${tenants.current().name}_activity.log`,
       Readable.from([JSON.stringify(entry)]),
       'activitylog'

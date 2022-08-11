@@ -1,7 +1,7 @@
 import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { EntitySchema } from 'shared/types/entityType';
 import { Readable } from 'stream';
-import { files, generateFileName, storeFile } from 'api/files';
+import { files, generateFileName, storage } from 'api/files';
 
 interface TwitterImageData {
   fileName: string;
@@ -15,7 +15,7 @@ const saveImage = async (twitterImageData: TwitterImageData, entity: EntitySchem
     throw new Error(`Error requesting for twitter image: ${twitterImageData.url}`);
   }
 
-  await storeFile(twitterImageData.fileName, fileStream, 'attachment');
+  await storage.storeFile(twitterImageData.fileName, fileStream, 'attachment');
   await files.save({
     entity: entity.sharedId,
     filename: twitterImageData.fileName,

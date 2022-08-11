@@ -7,11 +7,12 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { errorLog } from 'api/log';
-import { fs, setupTestUploadedPaths, fileExists } from 'api/files';
+import { setupTestUploadedPaths, storage } from 'api/files';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
 import mailer from 'api/utils/mailer';
-
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
 
@@ -66,13 +67,13 @@ describe('public routes', () => {
         attachment => attachment.originalname === 'attachment.txt'
       );
       expect(textAttachment).not.toBeUndefined();
-      expect(await fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
+      expect(await storage.fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
 
       const [document] = newEntity.documents!;
       expect(document).toEqual(
         expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
       );
-      expect(await fileExists(document.filename!, 'document')).toBe(true);
+      expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
     });
 
     it('should send an email', async () => {

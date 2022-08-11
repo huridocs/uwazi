@@ -10,7 +10,7 @@ import {
   uploadsPath,
   customUploadsPath,
   deleteFile,
-  fileExists,
+  storage,
 } from 'api/files';
 import { testingTenants } from 'api/utils/testingTenants';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
@@ -56,7 +56,7 @@ describe('sync', () => {
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
       expect(response.status).toBe(200);
-      expect(await fileExists('testUpload.txt', 'document')).toBeTruthy();
+      expect(await storage.fileExists('testUpload.txt', 'document')).toBeTruthy();
     });
 
     it("should allow uploading collection's custom files", async () => {
@@ -65,7 +65,7 @@ describe('sync', () => {
         .attach('file', path.join(__dirname, 'testUpload.txt'));
 
       expect(response.status).toBe(200);
-      expect(await fileExists('testUpload.txt', 'custom')).toBeTruthy();
+      expect(await storage.fileExists('testUpload.txt', 'custom')).toBeTruthy();
     });
   });
 });

@@ -4,10 +4,12 @@ import relationships from 'api/relationships';
 import entities from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { fs, fileExistsOnPath, uploadsPath } from 'api/files';
+import { fileExistsOnPath, uploadsPath } from 'api/files';
 
 import { fixtures } from './fixtures';
 import { documents } from '../documents.js';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 describe('documents', () => {
   beforeEach(done => {
