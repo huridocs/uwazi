@@ -6,10 +6,10 @@ import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
 import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema } from 'app/istore';
+import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { PageSelections } from '../PageSelections';
 
-const defaultEntityDocument = {
+const defaultEntityDocument: ClientFile = {
   _id: '62f52bddc6897a159347cf6b',
   originalname: 'Get_Started_With_Smallpdf.pdf',
   type: 'document',
@@ -59,6 +59,7 @@ describe('Page selections highlights', () => {
   };
 
   const render = (
+    file?: any | ClientFile,
     selections: {
       propertyID?: string;
       name: string;
@@ -70,7 +71,7 @@ describe('Page selections highlights', () => {
       ...defaultState,
       documentViewer: {
         doc: Immutable.fromJS({
-          defaultDoc: defaultEntityDocument,
+          defaultDoc: file || defaultEntityDocument,
         }),
         sidepanel: {
           metadata: entity,
@@ -86,6 +87,10 @@ describe('Page selections highlights', () => {
   it('should only render when editing the entity and has a document', () => {
     entity = {};
     render();
+    expect(renderResult.container.innerHTML).toBe('');
+
+    entity = { _id: 'some_id' };
+    render({});
     expect(renderResult.container.innerHTML).toBe('');
   });
 
