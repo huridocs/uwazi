@@ -10,7 +10,7 @@ import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { Icon } from 'UI';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
-import { DropdownMenu } from './DropdownMenu';
+import { NavLinks } from './NavLinks';
 
 class Menu extends Component {
   libraryUrl() {
@@ -26,43 +26,11 @@ class Menu extends Component {
     const { links, defaultLibraryView } = this.props;
     const user = this.props.user.toJS();
 
-    const navLinks = links.map((link, index) => {
-      const type = link.get('type') || 'link';
-
-      if (type === 'link') {
-        const url = link.get('url') || '/';
-        if (url.startsWith('http')) {
-          return (
-            <li key={link.get('_id')} className="menuNav-item">
-              <a
-                href={url}
-                className="btn menuNav-btn"
-                activeClassName="active-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t('Menu', link.get('title'))}
-              </a>
-            </li>
-          );
-        }
-        return (
-          <li key={link.get('_id')} className="menuNav-item">
-            <I18NLink to={url} className="btn menuNav-btn" activeClassName="active-link">
-              {t('Menu', link.get('title'))}
-            </I18NLink>
-          </li>
-        );
-      }
-
-      return <DropdownMenu link={link} position={index} key={index} />;
-    });
-
     return (
       <>
         <ul className={this.props.className}>
           <li className="menuItems" onClick={this.props.onClick}>
-            <ul className="menuNav-list">{navLinks}</ul>
+            <NavLinks links={links} />
           </li>
           <I18NMenu />
           <li className="menuActions mobile-menuActions" onClick={this.props.onClick}>
