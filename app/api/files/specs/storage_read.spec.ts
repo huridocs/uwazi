@@ -28,33 +28,33 @@ describe('storage with s3 feature active', () => {
 
     s3 = new S3Client({
       apiVersion: 'latest',
-      region: 'uwazi-development',
+      region: 'storage-read',
       forcePathStyle: true, // needed for minio
       ...config.s3,
     });
   });
 
   beforeEach(async () => {
-    await s3.send(new CreateBucketCommand({ Bucket: 'uwazi-development' }));
+    await s3.send(new CreateBucketCommand({ Bucket: 'storage-read' }));
     await s3.send(new CreateBucketCommand({ Bucket: 'another-tenant' }));
   });
 
   afterEach(async () => {
     await s3.send(
-      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+      new DeleteObjectCommand({ Bucket: 'storage-read', Key: 'uploads/test_s3_file.txt' })
     );
     await s3.send(
-      new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/already_uploaded.txt' })
+      new DeleteObjectCommand({ Bucket: 'storage-read', Key: 'uploads/already_uploaded.txt' })
     );
-    await s3.send(new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/' }));
-    await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
+    await s3.send(new DeleteObjectCommand({ Bucket: 'storage-read', Key: 'uploads/' }));
+    await s3.send(new DeleteBucketCommand({ Bucket: 'storage-read' }));
     await s3.send(new DeleteBucketCommand({ Bucket: 'another-tenant' }));
   });
 
   describe('readableFile when s3 feature active', () => {
     beforeAll(async () => {
       testingTenants.mockCurrentTenant({
-        name: 'uwazi_development',
+        name: 'storage_read',
         dbName: 'uwazi_development',
         indexName: 'index',
         featureFlags: {
@@ -71,7 +71,7 @@ describe('storage with s3 feature active', () => {
 
       await waitForExpect(async () => {
         const response = await s3.send(
-          new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+          new GetObjectCommand({ Bucket: 'storage-read', Key: 'uploads/test_s3_file.txt' })
         );
         await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
           'test content'
@@ -82,7 +82,7 @@ describe('storage with s3 feature active', () => {
     it('should return a file from s3 when it is already there', async () => {
       await s3.send(
         new PutObjectCommand({
-          Bucket: 'uwazi-development',
+          Bucket: 'storage-read',
           Key: 'uploads/already_uploaded.txt',
           Body: Buffer.from('already uploaded content', 'utf-8'),
         })
@@ -107,9 +107,7 @@ describe('storage with s3 feature active', () => {
       );
 
       await expect(async () =>
-        s3.send(
-          new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
-        )
+        s3.send(new GetObjectCommand({ Bucket: 'storage-read', Key: 'uploads/test_s3_file.txt' }))
       ).rejects.toBeInstanceOf(NoSuchKey);
     });
   });

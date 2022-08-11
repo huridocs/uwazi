@@ -1,4 +1,10 @@
-import { GetObjectCommand, NoSuchKey, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  NoSuchKey,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
 import { errorLog } from 'api/log';
@@ -105,7 +111,16 @@ export const storage = {
     return streamToBuffer(await this.readableFile(filename, type));
   },
   async removeFile(filename: string, type: FileTypes) {
-    return deleteFile(paths[type](filename));
+    await deleteFile(paths[type](filename));
+    if (tenants.current().featureFlags?.s3Storage) {
+      const s3 = s3instance();
+      await s3.send(
+        new DeleteObjectCommand({
+          Bucket: tenants.current().name.replace('_', '-'),
+          Key: s3KeyWithPath(filename, type),
+        })
+      );
+    }
   },
   async removeFiles(files: FileType[]) {
     return Promise.all(
