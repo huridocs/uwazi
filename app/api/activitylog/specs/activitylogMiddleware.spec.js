@@ -7,6 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import fs from 'fs/promises';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
+import waitForExpect from 'wait-for-expect';
 
 describe('activitylogMiddleware', () => {
   let req;
@@ -76,11 +77,16 @@ describe('activitylogMiddleware', () => {
 
   it('should save the log entry on filesystem', async () => {
     await deleteFile(`${tenants.current().activityLogs}/${tenants.current().name}_activity.log`);
+
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => 1000);
+
     activitylogMiddleware(req, res, next);
-    const file = await fs.readFile(
-      `${tenants.current().activityLogs}/${tenants.current().name}_activity.log`
-    );
-    expect(file.length).toBeGreaterThan(0);
+    await waitForExpect(async () => {
+      const file = await fs.readFile(
+        `${tenants.current().activityLogs}/${tenants.current().name}_1000_activity.log`
+      );
+      expect(file.length).toBeGreaterThan(0);
+    });
   });
 
   describe('non registered entries', () => {
