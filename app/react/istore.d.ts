@@ -154,6 +154,9 @@ export interface IStore {
         selection: { text: 'string'; selectionRectangles: SelectionRectanglesSchema[] }[];
       }[];
     }>;
+    sidepanel: {
+      metadata: ClientEntitySchema;
+    };
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;

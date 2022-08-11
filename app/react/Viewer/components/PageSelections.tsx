@@ -1,31 +1,24 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Highlight } from 'react-text-selection-handler';
-import { ClientFile, IStore } from 'app/istore';
-import { isBlobFile } from 'shared/tsUtils';
-import { IImmutable } from 'shared/types/Immutable';
+import { IStore } from 'app/istore';
 import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
 
-const mapStateToProps = (state: IStore) => {
-  const currentDocumentId = state.documentViewer.doc.get('defaultDoc')?.get('_id');
-  const entityDocuments = state.documentViewer.doc
-    .get('documents')
-    ?.filter(document => !isBlobFile(document)) as unknown as IImmutable<ClientFile[]>;
-  const entityDocument = entityDocuments.filter(
-    document => document?.get('_id') === currentDocumentId
-  );
-
-  return {
-    newSelections: state.documentViewer.metadataExtraction.get('selections'),
-    entityDocument: entityDocument.get(0),
-  };
-};
+const mapStateToProps = (state: IStore) => ({
+  newSelections: state.documentViewer.metadataExtraction.get('selections'),
+  entityDocument: state.documentViewer.doc.get('defaultDoc'),
+  isEditing: Boolean(state.documentViewer.sidepanel.metadata._id),
+});
 
 const connector = connect(mapStateToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const PageSelectionsComponent = ({ newSelections, entityDocument }: mappedProps) => {
+const PageSelectionsComponent = ({ newSelections, entityDocument, isEditing }: mappedProps) => {
+  if (!isEditing || !entityDocument?.get('_id')) {
+    return null;
+  }
+
   const currentSelections = entityDocument.toJS().extractedMetadata?.length
     ? entityDocument
         .toJS()
@@ -46,18 +39,21 @@ const PageSelectionsComponent = ({ newSelections, entityDocument }: mappedProps)
             })
           );
           const highlight = { text: selected.text, selectionRectangles: rectangles };
+
           return (
-            <Highlight
-              textSelection={highlight}
-              color={selection.isCurrent ? '#359990' : '#5cb85c'}
-            />
+            <div key={selection.propertyID || selection.name}>
+              <Highlight
+                textSelection={highlight}
+                color={selection.isCurrent ? '#359990' : '#5cb85c'}
+              />
+            </div>
           );
         })}
       </>
     );
   }
 
-  return <></>;
+  return null;
 };
 
 const container = connector(PageSelectionsComponent);
