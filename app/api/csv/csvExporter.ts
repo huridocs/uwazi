@@ -202,8 +202,8 @@ export const processEntity = (
 export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
-    types: string[] = [],
     writeStream: Writable,
+    types: string[] = [],
     options: ExporterOptions = { dateFormat: 'YYYY-MM-DD', language: 'en' }
   ): Promise<void> {
     const csvStream = csv.format({ headers: false });

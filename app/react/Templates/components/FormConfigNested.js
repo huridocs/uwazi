@@ -10,14 +10,10 @@ import ViolatedArticlesNestedProperties from './ViolatedArticlesNestedProperties
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
-export class FormConfigNested extends Component {
+class FormConfigNested extends Component {
   constructor(props) {
     super(props);
     props.setNestedProperties(props.index, Object.keys(ViolatedArticlesNestedProperties));
-  }
-
-  contentValidation() {
-    return { required: val => val.trim() !== '' };
   }
 
   render() {
@@ -68,7 +64,7 @@ FormConfigNested.propTypes = {
   labelHasError: PropTypes.bool,
 };
 
-export function mapStateToProps(state, props) {
+function mapStateToProps(state, props) {
   return {
     labelHasError: checkErrorsOnLabel(state, props),
   };

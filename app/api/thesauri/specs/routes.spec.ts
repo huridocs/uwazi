@@ -23,7 +23,7 @@ describe('Thesauri routes', () => {
   const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setTenant();
     await testingEnvironment.setFixtures(fixtures);
   });

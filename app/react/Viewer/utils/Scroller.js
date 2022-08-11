@@ -64,7 +64,7 @@ export default {
         }
       }, 25);
 
-      return timeout;
+      resolve(timeout);
     });
   },
 

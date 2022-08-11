@@ -36,9 +36,12 @@ describe('Value', () => {
     it('should render the value in the context path', () => {
       const rendered = render(
         <span>
-          <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
-            <ValueComponent path="name" />
-          </PagesContext.Provider>
+          {
+            //eslint-disable-next-line react/jsx-no-constructed-context-values
+            <PagesContext.Provider value={{ name: 'Bruce Wayne' }}>
+              <ValueComponent path="name" />
+            </PagesContext.Provider>
+          }
         </span>
       );
       expect(rendered).toMatchSnapshot();

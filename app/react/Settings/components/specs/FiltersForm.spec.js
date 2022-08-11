@@ -114,7 +114,7 @@ describe('FiltersForm', () => {
           ],
         },
       ]);
-      spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
+      spyOn(SettingsAPI, 'save').and.callFake(async () => Promise.resolve());
       instance.save();
       const expectedFilters = {
         data: {

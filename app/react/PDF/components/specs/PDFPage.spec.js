@@ -18,7 +18,7 @@ describe('PDFPage', () => {
   beforeEach(() => {
     container = document.createElement('div');
     container.className = 'document-viewer';
-    spyOn(PDFJS, 'getDocument').and.returnValue(Promise.resolve(pdfObject));
+    spyOn(PDFJS, 'getDocument').and.callFake(async () => Promise.resolve(pdfObject));
     props = {
       onLoading: jasmine.createSpy('onLoading'),
       onUnload: jasmine.createSpy('onUnload'),
@@ -86,7 +86,7 @@ describe('PDFPage', () => {
         render();
         instance.rendered = false;
         instance.pdfPageView = {
-          draw: jasmine.createSpy('draw').and.returnValue(Promise.resolve()),
+          draw: jasmine.createSpy('draw').and.callFake(async () => Promise.resolve()),
         };
         instance.renderPage();
         expect(instance.pdfPageView.draw).toHaveBeenCalled();

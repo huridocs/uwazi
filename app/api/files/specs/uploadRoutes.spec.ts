@@ -27,7 +27,7 @@ describe('upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error'); //just to avoid annoying console output
     await testingEnvironment.setUp(fixtures);

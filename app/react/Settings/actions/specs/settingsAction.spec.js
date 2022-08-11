@@ -5,7 +5,7 @@ import saveSettings from '../settingsActions';
 describe('saveSettings', () => {
   let dispatch;
   beforeEach(() => {
-    spyOn(SettingsAPI, 'save').and.returnValue(Promise.resolve());
+    spyOn(SettingsAPI, 'save').and.callFake(async () => Promise.resolve());
     dispatch = jasmine.createSpy('dispatch');
   });
 

@@ -229,7 +229,6 @@ export class TimelineViewer extends Component {
     const isCase = entity.template === caseTemplate;
 
     this.plainTemplates = this.props.templates.toJS();
-    this.plainThesauris = this.props.thesauris.toJS();
 
     fetchReferences(entity.sharedId)
       .then(references => {

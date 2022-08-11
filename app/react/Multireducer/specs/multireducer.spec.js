@@ -3,7 +3,7 @@ import multireducer from '../multireducer';
 
 describe('multireducer', () => {
   const reducerKey = 'customKey';
-  const testReducer = (state = [], action) => {
+  const testReducer = (state = [], action = '') => {
     if (action.type === 'PUSH') {
       return state.push(action.value);
     }

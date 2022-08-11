@@ -51,7 +51,7 @@ describe('relationTypesActions', () => {
 
       describe('when there is references using the relation type', () => {
         it('should showModal CantDeleteRelationType', done => {
-          spyOn(referencesAPI, 'countByRelationType').and.returnValue(Promise.resolve(2));
+          spyOn(referencesAPI, 'countByRelationType').and.callFake(async () => Promise.resolve(2));
 
           actions
             .checkRelationTypeCanBeDeleted(relationType)(dispatch)
@@ -67,7 +67,7 @@ describe('relationTypesActions', () => {
 
       describe('when there is not references using the relation type', () => {
         it('should return a rejected promise', done => {
-          spyOn(referencesAPI, 'countByRelationType').and.returnValue(Promise.resolve(0));
+          spyOn(referencesAPI, 'countByRelationType').and.callFake(async () => Promise.resolve(0));
 
           actions
             .checkRelationTypeCanBeDeleted(relationType)(dispatch)

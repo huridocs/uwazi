@@ -12,7 +12,10 @@ type PropTypes = {
   user: UserSchema;
 };
 
-const checkWritePermissions = (entities: EntitySchema[] = [], user?: any) => {
+const checkWritePermissions = (
+  entities: EntitySchema[] = [],
+  user: any | undefined = undefined
+) => {
   let granted = user !== undefined && user.has('role') && entities.length > 0;
   let i = 0;
   while (granted && i < entities.length) {
@@ -35,7 +38,7 @@ const checkWritePermissions = (entities: EntitySchema[] = [], user?: any) => {
   return granted;
 };
 
-const checkRole = (roles: string[] = ['admin'], user: any) =>
+const checkRole = (user: any | undefined, roles: string[] = ['admin']) =>
   !!(user.get('_id') && roles.includes(user.get('role')));
 
 const NeedAuthorization: React.FC<PropTypes> = ({
@@ -45,7 +48,7 @@ const NeedAuthorization: React.FC<PropTypes> = ({
   user,
 }: PropTypes) => {
   const authorized = useMemo(
-    () => checkRole(roles, user) || checkWritePermissions(orWriteAccessTo, user),
+    () => checkRole(user, roles) || checkWritePermissions(orWriteAccessTo, user),
     [user, roles, orWriteAccessTo]
   );
 

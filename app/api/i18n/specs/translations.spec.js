@@ -172,7 +172,7 @@ describe('translations', () => {
 
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
-        spyOn(thesauri, 'renameThesaurusInMetadata').and.returnValue(Promise.resolve());
+        spyOn(thesauri, 'renameThesaurusInMetadata').and.callFake(async () => Promise.resolve());
         await translations.save({
           _id: englishTranslation,
           locale: 'en',

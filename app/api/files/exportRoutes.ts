@@ -73,7 +73,7 @@ export default (app: Application) => {
         const fileStream = createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
-        await exporter.export(results, req.query.types, fileStream, exporterOptions);
+        await exporter.export(results, fileStream, req.query.types, exporterOptions);
 
         res.download(temporalFilePath, generateExportFileName(site_name), err => {
           if (err) next(err);

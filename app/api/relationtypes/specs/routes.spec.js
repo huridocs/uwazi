@@ -5,7 +5,9 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 
 describe('relationtypes routes', () => {
   let routes;
-  const mockRequest = new Promise(resolve => resolve({ relationtypes: 'response' }));
+  const mockRequest = new Promise(resolve => {
+    resolve({ relationtypes: 'response' });
+  });
 
   beforeEach(() => {
     routes = instrumentRoutes(relationtypesRoutes);
