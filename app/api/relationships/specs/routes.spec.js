@@ -49,9 +49,8 @@ describe('relationships routes', () => {
       spyOn(entities, 'updateMetdataFromRelationships').and.returnValue(Promise.resolve());
 
       await routes.post('/api/relationships/bulk', req);
-      expect(relationships.save).toHaveBeenCalledWith({ _id: 1 }, req.language);
-      expect(relationships.save).toHaveBeenCalledWith({ _id: 2 }, req.language);
-      expect(relationships.delete).toHaveBeenCalledWith({ _id: 3 }, req.language);
+      expect(relationships.save).toHaveBeenCalledWith([{ _id: 1 }, { _id: 2 }], req.language);
+      expect(relationships.delete).toHaveBeenCalledWith({ _id: { $in: [3] } }, req.language);
     });
   });
 

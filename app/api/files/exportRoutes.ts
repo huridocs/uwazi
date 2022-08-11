@@ -1,5 +1,4 @@
 import { Application, Request, Response, NextFunction } from 'express';
-import { fs } from 'api/files';
 import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
@@ -7,6 +6,10 @@ import settings from 'api/settings';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 export default (app: Application) => {
   const parseQueryProperty = (query: any, property: string) =>
@@ -67,12 +70,13 @@ export default (app: Application) => {
 
         const exporter = new CSVExporter();
 
-        const fileStream = fs.createWriteStream(temporalFilePath);
+        const fileStream = createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
         await exporter.export(results, req.query.types, fileStream, exporterOptions);
 
-        res.download(temporalFilePath, generateExportFileName(site_name), () => {
+        res.download(temporalFilePath, generateExportFileName(site_name), err => {
+          if (err) next(err);
           //eslint-disable-next-line @typescript-eslint/no-floating-promises
           removeTempFile(temporalFilePath)();
         });

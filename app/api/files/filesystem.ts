@@ -2,12 +2,14 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
-import { access } from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
+import fs, { access } from 'fs/promises';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
-import { uwaziFS as fs } from './uwaziFS';
 import { FileType } from '../../shared/types/fileType';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -86,7 +88,7 @@ const fileFromReadStream = async (
 ): Promise<FilePath> =>
   new Promise((resolve, reject) => {
     const filePath = path.join(destination || uploadsPath(), fileName);
-    const writeStream = fs.createWriteStream(filePath);
+    const writeStream = createWriteStream(filePath);
     readStream
       .pipe(writeStream)
       .on('finish', () => resolve(filePath))
@@ -100,16 +102,6 @@ const streamToString = async (stream: Readable): Promise<string> =>
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
-
-const storeFile: (
-  filePathFunction: pathFunction,
-  file: any,
-  overrideFilename: boolean
-) => Promise<FileType> = async (filePathFunction, file, overrideFilename = false) => {
-  const filename = (overrideFilename && file.filename) || generateFileName(file);
-  await fs.appendFile(filePathFunction(filename), file.buffer);
-  return Object.assign(file, { filename, destination: filePathFunction() });
-};
 
 const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
   try {
@@ -138,7 +130,6 @@ export {
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  storeFile,
   testingUploadPaths,
   fileExistsOnPath,
 };

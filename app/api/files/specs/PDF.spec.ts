@@ -1,21 +1,24 @@
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { errorLog } from 'api/log';
-import { PDF } from '../PDF.js';
-import { deleteFile, fileExistsOnPath } from '../filesystem';
+import { PDF } from '../PDF';
+import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem';
 
 describe('PDF', () => {
-  let pdf;
+  let pdf: PDF;
   const file = {
     filename: '12345.test.pdf',
     originalname: 'originalName.pdf',
     destination: __dirname,
   };
-  const thumbnailName = `${__dirname}/documentId.jpg`;
+  let thumbnailName: string;
 
   const deleteThumbnail = async () => {
-    await deleteFile(thumbnailName);
+    await deleteFile(uploadsPath(thumbnailName));
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await testingEnvironment.setTenant();
+    thumbnailName = uploadsPath('documentId.jpg');
     pdf = new PDF(file);
   });
 
@@ -24,9 +27,9 @@ describe('PDF', () => {
       const conversion = await pdf.convert();
       const pages = conversion.fullText;
 
-      expect(pages[1]).toMatch('Page[[1]] 1[[1]]');
-      expect(pages[2]).toMatch('Page[[2]] 2[[2]]');
-      expect(pages[3]).toMatch('Page[[3]] 3[[3]]');
+      expect(pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
+      expect(pages['2'].includes('Page[[2]] 2[[2]]')).toBeTruthy();
+      expect(pages['3'].includes('Page[[3]] 3[[3]]')).toBeTruthy();
     });
 
     it('should return the conversion object', async () => {
@@ -54,7 +57,7 @@ describe('PDF', () => {
         await pdf.convert();
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toMatch(/may not be a pdf/i);
+        expect(e.message.toLowerCase().includes('may not be a pdf')).toBeTruthy();
       }
     });
   });

@@ -1,19 +1,21 @@
+import { errorLog } from 'api/log';
+import { createError } from 'api/utils';
+import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
-import { spawn } from 'child-process-promise';
-import { errorLog } from 'api/log';
-import { createError } from 'api/utils';
+import { FileType } from 'shared/types/fileType';
+import { uploadsPath } from './filesystem';
 
 class PDF extends EventEmitter {
-  constructor(file) {
+  private file: FileType & { destination?: string };
+
+  private filepath: string;
+
+  constructor(file: FileType & { destination?: string }) {
     super();
     this.file = file;
     this.filepath = path.join(file.destination || '', file.filename || '');
-  }
-
-  getThumbnailPath(documentId) {
-    return path.join(path.dirname(this.filepath), documentId);
   }
 
   async extractText() {
@@ -23,14 +25,14 @@ class PDF extends EventEmitter {
       });
       const pages = result.stdout.split('\f').slice(0, -1);
       return {
-        fullText: pages.reduce(
+        fullText: pages.reduce<{ [k: string]: string }>(
           (memo, page, index) => ({
             ...memo,
             [index + 1]: page.replace(/(\S+)(\s?)/g, `$1[[${index + 1}]]$2`),
           }),
           {}
         ),
-        fullTextWithoutPages: pages.reduce(
+        fullTextWithoutPages: pages.reduce<{ [k: string]: string }>(
           (memo, page, index) => ({
             ...memo,
             [index + 1]: page,
@@ -47,8 +49,8 @@ class PDF extends EventEmitter {
     }
   }
 
-  async createThumbnail(documentId) {
-    const thumbnailPath = this.getThumbnailPath(documentId);
+  async createThumbnail(documentId: string) {
+    const thumbnailPath = uploadsPath(documentId);
     let response;
     try {
       await spawn(
@@ -65,17 +67,13 @@ class PDF extends EventEmitter {
     return Promise.resolve(response);
   }
 
-  generateFileInfo(conversion) {
-    return {
-      ...this.file,
-      language: detectLanguage(Object.values(conversion.fullTextWithoutPages).join(''), 'franc'),
-    };
-  }
-
   async convert() {
     return this.extractText().then(conversion => ({
       ...conversion,
-      ...this.generateFileInfo(conversion),
+      ...this.file,
+      language:
+        detectLanguage(Object.values(conversion.fullTextWithoutPages).join(''), 'franc') ||
+        undefined,
       processed: true,
       toc: [],
     }));

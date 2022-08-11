@@ -1,32 +1,66 @@
 /* eslint-disable max-lines */
-import { ObjectId } from 'mongodb';
-import db from 'api/utils/testing_db';
-import { search } from 'api/search';
 import { saveEntity } from 'api/entities/entitySavingManager';
-import { errorLog } from 'api/log';
-import { files as filesAPI } from 'api/files';
+import * as os from 'os';
+import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
 import * as processDocumentApi from 'api/files/processDocument';
-import { EntityWithFilesSchema } from 'shared/types/entityType';
-import { FileType } from 'shared/types/fileType';
+import { errorLog } from 'api/log';
+import { search } from 'api/search';
+import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
+// eslint-disable-next-line node/no-restricted-import
+import { writeFile } from 'fs/promises';
+import { ObjectId } from 'mongodb';
+import path from 'path';
+import { EntityWithFilesSchema } from 'shared/types/entityType';
+import waitForExpect from 'wait-for-expect';
+import entities from '../entities';
 import {
+  anotherTextFile,
   editorUser,
   entity1Id,
   entity2Id,
+  entity3Id,
+  entity3textFile,
   fixtures,
+  mainPdfFile,
+  mainPdfFileId,
+  pdfFile,
   template1Id,
   template2Id,
   textFile,
-  anotherTextFile,
-  pdfFile,
-  entity3Id,
-  mainPdfFile,
-  entity3textFile,
-  mainPdfFileId,
 } from './entitySavingManagerFixtures';
 
+const validPdfString = `
+%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+trailer<</Root 1 0 R>>
+`;
+
+const tmpDir = (filename: string) => path.join(os.tmpdir(), filename);
+
 describe('entitySavingManager', () => {
-  beforeAll(() => {
+  const file = {
+    originalname: 'sampleFile.txt',
+    mimetype: 'text/plain',
+    size: 12,
+    filename: 'generatedFileName.txt',
+    path: tmpDir('generatedFileName.txt'),
+    destination: tmpDir(''),
+  };
+
+  const newMainPdfDocument = {
+    originalname: 'myNewFile.pdf',
+    mimetype: 'application/pdf',
+    size: 12,
+    filename: 'generatedPDFFileName.pdf',
+    path: tmpDir('generatedPDFFileName.pdf'),
+    destination: tmpDir(''),
+    fieldname: 'documents[0]',
+  };
+
+  beforeAll(async () => {
+    await writeFile(file.path!, 'sample content');
+    await writeFile(newMainPdfDocument.path!, validPdfString);
     jest.spyOn(search, 'indexEntities').mockImplementation(jest.fn());
   });
 
@@ -41,23 +75,6 @@ describe('entitySavingManager', () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-
-  const buffer = Buffer.from('sample content');
-
-  const file = {
-    originalname: 'sampleFile.txt',
-    mimetype: 'text/plain',
-    size: 12,
-    buffer,
-  };
-
-  const newMainPdfDocument = {
-    encoding: '7bit',
-    originalname: 'myNewFile.pdf',
-    mimetype: 'application/pdf',
-    size: 12,
-    buffer,
-  };
 
   describe('saveEntity', () => {
     const reqData = { user: editorUser, language: 'en', socketEmiter: () => {} };
@@ -98,6 +115,14 @@ describe('entitySavingManager', () => {
             type: 'attachment',
           },
         ]);
+
+        expect(
+          await fileExistsOnPath(
+            attachmentsPath(
+              savedEntity.attachments?.find(a => a.originalname === 'sampleFile.txt')?.filename
+            )
+          )
+        ).toBe(true);
       });
     });
 
@@ -237,17 +262,23 @@ describe('entitySavingManager', () => {
         originalname: 'image.jpg',
         mimetype: 'image/jpeg',
         size: 12,
-        buffer,
+        filename: 'generatedNewImageName.jpg',
+        path: tmpDir('generatedNewImageName.jpg'),
+        destination: tmpDir(''),
       };
 
       const newPdfFile = {
         originalname: 'pdf.pdf',
-        mimetype: 'text/pdf',
+        mimetype: 'application/pdf',
         size: 12,
-        buffer,
+        filename: 'generatedNewPDF.pdf',
+        path: tmpDir('generatedNewPDF.pdf'),
+        destination: tmpDir(''),
       };
 
       it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
+        await writeFile(newImageFile.path!, 'sample content');
+        await writeFile(newPdfFile.path!, validPdfString);
         const entity = {
           title: 'newEntity',
           template: template2Id,
@@ -280,11 +311,11 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe(
+        expect(savedEntity.metadata?.image?.[0].value).toBe(
           `/api/files/${sortedSavedFiles[0].filename}`
         );
 
-        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
+        expect(savedEntity.metadata?.image?.[0].attachment).toBe(undefined);
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {
@@ -323,8 +354,8 @@ describe('entitySavingManager', () => {
 
         const savedImage = savedFiles.find(f => f.originalname === 'image.jpg');
 
-        expect(savedEntity.metadata.image[0].value).toBe(`/api/files/${savedImage!.filename}`);
-        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
+        expect(savedEntity.metadata?.image?.[0].value).toBe(`/api/files/${savedImage?.filename}`);
+        expect(savedEntity.metadata?.image?.[0].attachment).toBe(undefined);
       });
 
       it('should ignore references to non existing attachments', async () => {
@@ -353,8 +384,8 @@ describe('entitySavingManager', () => {
           expect.objectContaining({ originalname: 'pdf.pdf' }),
         ]);
 
-        expect(savedEntity.metadata.image[0].value).toBe('');
-        expect(savedEntity.metadata.image[0].attachment).toBe(undefined);
+        expect(savedEntity.metadata?.image?.[0].value).toBe('');
+        expect(savedEntity.metadata?.image?.[0].attachment).toBe(undefined);
       });
 
       it('should not fail on empty values', async () => {
@@ -377,48 +408,40 @@ describe('entitySavingManager', () => {
         });
 
         expect(savedEntity._id).not.toBeNull();
-        expect(savedEntity.metadata.text[0].value).toBe('a text');
-        expect(savedEntity.metadata.image).toEqual([]);
+        expect(savedEntity.metadata?.text?.[0].value).toBe('a text');
+        expect(savedEntity.metadata?.image).toEqual([]);
       });
     });
 
     describe('entity with main documents', () => {
       let savedEntity: EntityWithFilesSchema;
-      let expectedDocuments: FileType[];
 
-      beforeEach(() => {
-        savedEntity = {};
-        expectedDocuments = [];
-      });
-
-      const expectCheck = (entity: EntityWithFilesSchema) => {
-        expect(entity.documents).toMatchObject(expectedDocuments);
-      };
-
-      const emiter = jest
-        .fn()
-        .mockImplementation(event => event === 'documentProcessed' && expectCheck(savedEntity));
+      const emiter = jest.fn();
 
       it('should create an entity with main documents', async () => {
-        const entity = {
-          title: 'newEntity',
-          template: template1Id,
-        };
-
-        expectedDocuments = [
+        ({ entity: savedEntity } = await saveEntity(
+          { title: 'newEntity', template: template1Id },
           {
-            mimetype: 'application/pdf',
-            originalname: 'myNewFile.pdf',
-            size: 12,
-            type: 'document',
-          },
-        ];
+            ...reqData,
+            socketEmiter: emiter,
+            files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+          }
+        ));
 
-        ({ entity: savedEntity } = await saveEntity(entity, {
-          ...reqData,
-          socketEmiter: emiter,
-          files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
-        }));
+        await waitForExpect(async () => {
+          expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
+        });
+
+        const [processedEntity] = await entities.getUnrestrictedWithDocuments({
+          _id: savedEntity._id,
+        });
+        expect(processedEntity?.documents).toMatchObject([
+          { originalname: 'myNewFile.pdf', type: 'document' },
+        ]);
+
+        expect(await fileExistsOnPath(uploadsPath(processedEntity?.documents[0].filename))).toBe(
+          true
+        );
       });
 
       describe('updating an entity', () => {
@@ -430,7 +453,21 @@ describe('entitySavingManager', () => {
             template: template1Id,
           };
 
-          expectedDocuments = [
+          ({ entity: savedEntity } = await saveEntity(entity, {
+            ...reqData,
+            files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
+            socketEmiter: emiter,
+          }));
+
+          await waitForExpect(async () => {
+            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
+          });
+
+          const [processedEntity] = await entities.getUnrestrictedWithDocuments({
+            _id: savedEntity._id,
+          });
+
+          expect(processedEntity.documents).toMatchObject([
             {
               entity: 'shared3',
               mimetype: 'application/pdf',
@@ -443,13 +480,7 @@ describe('entitySavingManager', () => {
               originalname: 'myNewFile.pdf',
               type: 'document',
             },
-          ];
-
-          ({ entity: savedEntity } = await saveEntity(entity, {
-            ...reqData,
-            files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
-            socketEmiter: emiter,
-          }));
+          ]);
 
           expect(savedEntity.attachments).toMatchObject([
             {
@@ -470,14 +501,13 @@ describe('entitySavingManager', () => {
             attachments: [entity3textFile],
           };
 
-          expectedDocuments = [];
-
           ({ entity: savedEntity } = await saveEntity(entity, {
             ...reqData,
             socketEmiter: emiter,
           }));
 
           expect(savedEntity.attachments).toMatchObject([entity3textFile]);
+          expect(savedEntity.documents).toMatchObject([]);
 
           const entityFiles = await filesAPI.get({ entity: entity.sharedId });
           expect(entityFiles).toMatchObject([entity3textFile]);
@@ -499,14 +529,14 @@ describe('entitySavingManager', () => {
             socketEmiter: emiter,
           }));
 
-          expectedDocuments = [
+          expect(savedEntity.documents).toMatchObject([
             {
               filename: 'samplepdffile.pdf',
               mimetype: 'application/pdf',
               originalname: 'Renamed main pdf.pdf',
               type: 'document',
             },
-          ];
+          ]);
         });
 
         it('should not reprocess existing documents', async () => {
@@ -530,19 +560,18 @@ describe('entitySavingManager', () => {
             files: [{ ...newMainPdfDocument, fieldname: 'documents[0]' }],
           }));
 
-          expectedDocuments = [
+          await waitForExpect(async () => {
+            expect(emiter).toHaveBeenCalledWith('documentProcessed', savedEntity.sharedId);
+          });
+
+          expect(savedEntity.documents).toMatchObject([
             {
               filename: 'samplepdffile.pdf',
               mimetype: 'application/pdf',
               originalname: 'Renamed main pdf.pdf',
               type: 'document',
             },
-            {
-              mimetype: 'application/pdf',
-              originalname: 'myNewFile.pdf',
-              type: 'document',
-            },
-          ];
+          ]);
 
           expect(processDocumentApi.processDocument).not.toHaveBeenCalledWith('shared3', {
             _id: mainPdfFileId.toString(),
