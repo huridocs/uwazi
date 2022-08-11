@@ -25,7 +25,7 @@ describe('thesauri routes', () => {
     });
 
     it('should return all thesauri by default, passing user', done => {
-      spyOn(thesauri, 'get').and.returnValue(Promise.resolve('response'));
+      spyOn(thesauri, 'get').and.callFake(async () => Promise.resolve('response'));
       routes
         .get('/api/thesauris', { language: 'es', user: 'user' })
         .then(response => {
@@ -39,7 +39,7 @@ describe('thesauri routes', () => {
 
     describe('when passing id', () => {
       it('should get passing id', done => {
-        spyOn(thesauri, 'get').and.returnValue(Promise.resolve('response'));
+        spyOn(thesauri, 'get').and.callFake(async () => Promise.resolve('response'));
         const req = { query: { _id: 'id' } };
 
         routes
@@ -59,7 +59,7 @@ describe('thesauri routes', () => {
       });
 
       it('should return all dictionaries by default', done => {
-        spyOn(thesauri, 'dictionaries').and.returnValue(Promise.resolve('response'));
+        spyOn(thesauri, 'dictionaries').and.callFake(async () => Promise.resolve('response'));
         routes
           .get('/api/dictionaries')
           .then(response => {
@@ -71,7 +71,7 @@ describe('thesauri routes', () => {
       });
       describe('when passing id', () => {
         it('should get matching id', done => {
-          spyOn(thesauri, 'dictionaries').and.returnValue(Promise.resolve('response'));
+          spyOn(thesauri, 'dictionaries').and.callFake(async () => Promise.resolve('response'));
           routes
             .get('/api/dictionaries', { query: { _id: 'id' } })
             .then(response => {
@@ -91,7 +91,7 @@ describe('thesauri routes', () => {
     });
 
     it('should delete a thesauri', done => {
-      spyOn(thesauri, 'delete').and.returnValue(Promise.resolve());
+      spyOn(thesauri, 'delete').and.callFake(async () => Promise.resolve());
       const req = { query: { _id: 'abc', _rev: '123' } };
       return routes
         .delete('/api/thesauris', req)
@@ -109,7 +109,7 @@ describe('thesauri routes', () => {
     });
 
     it('should create a thesauri', done => {
-      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
       const req = { body: { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] } };
       routes
         .post('/api/thesauris', req)

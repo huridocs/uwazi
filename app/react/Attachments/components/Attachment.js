@@ -138,11 +138,6 @@ export class Attachment extends Component {
     }
   }
 
-  resetForm() {
-    const { model } = this.props;
-    this.props.resetForm(model);
-  }
-
   render() {
     const { file, model, storeKey, entity } = this.props;
     const sizeString = file.size ? filesize(file.size) : '';

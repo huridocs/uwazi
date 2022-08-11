@@ -78,7 +78,7 @@ describe('I18NActions', () => {
 
   describe('addLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'addLanguage').and.returnValue(Promise.resolve());
+      spyOn(I18NApi, 'addLanguage').and.callFake(async () => Promise.resolve());
       spyOn(SettingsAPI, 'get').and.returnValue(
         Promise.resolve({ collection: 'updated settings' })
       );
@@ -96,7 +96,7 @@ describe('I18NActions', () => {
 
   describe('deleteLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'deleteLanguage').and.returnValue(Promise.resolve());
+      spyOn(I18NApi, 'deleteLanguage').and.callFake(async () => Promise.resolve());
       spyOn(SettingsAPI, 'get').and.returnValue(
         Promise.resolve({ collection: 'updated settings' })
       );
@@ -112,7 +112,7 @@ describe('I18NActions', () => {
 
   describe('setDefaultLanguage', () => {
     it('should request the I18NApi to add a language', done => {
-      spyOn(I18NApi, 'setDefaultLanguage').and.returnValue(Promise.resolve());
+      spyOn(I18NApi, 'setDefaultLanguage').and.callFake(async () => Promise.resolve());
       actions
         .setDefaultLanguage('es')(dispatch)
         .then(() => {

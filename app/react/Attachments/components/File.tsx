@@ -136,20 +136,18 @@ class File extends Component<FileProps, FileState> {
       ? this.props.file
       : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
     return (
-      <>
-        <div className="file">
-          <div className="file-originalname">{originalname}</div>
-          {status === 'ready' && this.renderReady()}
-          {status === 'failed' && this.renderFailed()}
-          {status === 'processing' && (
-            <div>
-              <Icon icon="clock" />
-              &nbsp;
-              <Translate>Processing</Translate>
-            </div>
-          )}
-        </div>
-      </>
+      <div className="file">
+        <div className="file-originalname">{originalname}</div>
+        {status === 'ready' && this.renderReady()}
+        {status === 'failed' && this.renderFailed()}
+        {status === 'processing' && (
+          <div>
+            <Icon icon="clock" />
+            &nbsp;
+            <Translate>Processing</Translate>
+          </div>
+        )}
+      </div>
     );
   }
 

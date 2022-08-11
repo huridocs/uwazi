@@ -113,11 +113,15 @@ describe('templates utils', () => {
         { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties, {
-        prop: 'name',
-        outKey: 'name',
-        filterBy: '_id',
-      });
+      const result = getUpdatedNames(
+        {
+          prop: 'name',
+          outKey: 'name',
+          filterBy: '_id',
+        },
+        oldProperties,
+        newProperties
+      );
       expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
     });
 
@@ -145,11 +149,15 @@ describe('templates utils', () => {
         },
       ];
 
-      const result = getUpdatedNames(oldProperties, newProperties, {
-        prop: 'name',
-        outKey: 'name',
-        filterBy: 'id',
-      });
+      const result = getUpdatedNames(
+        {
+          prop: 'name',
+          outKey: 'name',
+          filterBy: 'id',
+        },
+        oldProperties,
+        newProperties
+      );
       expect(result).toEqual({ look_at_me: 'I_changed' });
     });
   });

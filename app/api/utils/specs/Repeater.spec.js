@@ -9,7 +9,9 @@ describe('Repeater', () => {
 
   function advanceTime(time) {
     jest.advanceTimersByTime(time);
-    return new Promise(resolve => setImmediate(resolve));
+    return new Promise(resolve => {
+      setImmediate(resolve);
+    });
   }
 
   afterEach(() => {

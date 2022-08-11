@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import moment from 'moment';
 
-export default function PrintDate({ utc, toLocal }) {
+const PrintDate = ({ utc, toLocal }) => {
   let date;
   if (!toLocal) {
     date = moment.utc(utc).format('ll');
@@ -12,9 +12,11 @@ export default function PrintDate({ utc, toLocal }) {
     date = moment(moment(utc).toDate()).format('ll');
   }
   return <span>{date}</span>;
-}
+};
 
 PrintDate.propTypes = {
   utc: PropTypes.number,
   toLocal: PropTypes.bool,
 };
+
+export default PrintDate;

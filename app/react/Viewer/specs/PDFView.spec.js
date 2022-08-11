@@ -63,9 +63,11 @@ describe('PDFView', () => {
   describe('when on server', () => {
     it('should always pass raw true', () => {
       props.location = { query: { raw: 'false' } };
+      // eslint-disable-next-line no-import-assign
       utils.isClient = false;
       render();
       expect(component.find(Viewer).props().raw).toBe(true);
+      // eslint-disable-next-line no-import-assign
       utils.isClient = true;
     });
   });
@@ -106,6 +108,7 @@ describe('PDFView', () => {
     });
 
     it('should modify raw to true if is server side rendered', () => {
+      // eslint-disable-next-line no-import-assign
       utils.isClient = false;
       const requestParams = new RequestParams({
         documentId: 'documentId',

@@ -10,7 +10,7 @@ const uploadFile = async (
   url: string,
   filename: string,
   type: FileType['type'] = 'document',
-  cookie: string
+  cookie: string = ''
 ) => {
   let apiEndpoint = 'api/sync/upload';
   if (type === 'custom') {

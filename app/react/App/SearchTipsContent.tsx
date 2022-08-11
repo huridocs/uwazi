@@ -1,7 +1,7 @@
 import React from 'react';
 import { t } from 'app/I18N';
 
-function SearchTipsContent() {
+const SearchTipsContent = () => {
   return (
     <ul>
       <li>
@@ -50,6 +50,6 @@ function SearchTipsContent() {
       </li>
     </ul>
   );
-}
+};
 
 export { SearchTipsContent };

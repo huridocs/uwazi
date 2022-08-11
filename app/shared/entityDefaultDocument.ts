@@ -2,10 +2,11 @@ import { FileType } from 'shared/types/fileType';
 import { language } from 'shared/languagesList';
 
 export const entityDefaultDocument = (
-  documents: Array<FileType> = [],
+  entityDocuments: Array<FileType>,
   entityLanguage: string,
   defaultLanguage: string
 ) => {
+  const documents = entityDocuments || [];
   const documentMatchingEntity = documents.find(
     (document: FileType) =>
       document.language && language(document.language, 'ISO639_1') === entityLanguage

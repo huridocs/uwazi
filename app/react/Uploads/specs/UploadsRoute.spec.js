@@ -39,7 +39,7 @@ describe('UploadsRoute', () => {
     });
     instance = component.instance();
 
-    spyOn(searchAPI, 'search').and.returnValue(Promise.resolve(documents));
+    spyOn(searchAPI, 'search').and.callFake(async () => Promise.resolve(documents));
   });
 
   describe('static requestState()', () => {

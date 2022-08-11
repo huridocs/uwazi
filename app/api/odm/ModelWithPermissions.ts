@@ -99,14 +99,14 @@ function checkPermissionAccess<T>(
 }
 
 const filterPermissionsData = <T>(
-  data: EnforcedWithId<WithPermissions<T>>[] = [],
-  user: DataType<UserSchema> | undefined
+  data?: EnforcedWithId<WithPermissions<T>>[],
+  user?: DataType<UserSchema> | undefined
 ) => {
-  let filteredData = data;
+  let filteredData = data || [];
   if (user && !['admin', 'editor'].includes(user.role)) {
-    if (data.length > 0) {
+    if (filteredData.length > 0) {
       const userIds = getUserPermissionIds(user);
-      filteredData = data.map(elem => checkPermissionAccess(elem, userIds));
+      filteredData = filteredData.map(elem => checkPermissionAccess(elem, userIds));
     }
   }
   return filteredData;

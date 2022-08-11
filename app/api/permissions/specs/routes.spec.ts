@@ -42,7 +42,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        spyOn(entitiesPermissions, 'set').and.returnValue(Promise.resolve([]));
+        spyOn(entitiesPermissions, 'set').and.callFake(async () => Promise.resolve([]));
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };

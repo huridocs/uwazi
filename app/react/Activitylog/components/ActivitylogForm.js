@@ -14,12 +14,6 @@ class ActivitylogForm extends Component {
     this.state = { query: {} };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.loadMore = this.loadMore.bind(this);
-    this.methodOptions = [
-      { label: 'POST', value: 'POST' },
-      { label: 'GET', value: 'GET' },
-      { label: 'PUT', value: 'PUT' },
-      { label: 'DELETE', value: 'DELETE' },
-    ];
   }
 
   handleSubmit(values) {

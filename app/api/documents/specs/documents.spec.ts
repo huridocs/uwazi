@@ -13,9 +13,9 @@ import fs from 'fs/promises';
 
 describe('documents', () => {
   beforeEach(done => {
-    spyOn(relationships, 'saveEntityBasedReferences').and.returnValue(Promise.resolve());
-    spyOn(search, 'delete').and.returnValue(Promise.resolve());
-    spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
+    spyOn(relationships, 'saveEntityBasedReferences').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'bulkIndex').and.callFake(async () => Promise.resolve());
     mockID();
     db.setupFixturesAndContext(fixtures).then(done).catch(catchErrors(done));
   });
@@ -40,7 +40,7 @@ describe('documents', () => {
 
   describe('save', () => {
     it('should call entities.save', done => {
-      spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'save').and.callFake(async () => Promise.resolve('result'));
       const doc = { title: 'Batman begins' };
       const user = { _id: db.id() };
       const language = 'es';
@@ -59,7 +59,7 @@ describe('documents', () => {
     });
 
     it('should not allow passing a file', done => {
-      spyOn(entities, 'save').and.returnValue(Promise.resolve('result'));
+      spyOn(entities, 'save').and.callFake(async () => Promise.resolve('result'));
       const doc = { title: 'Batman begins', file: 'file' };
       const user = { _id: db.id() };
       const language = 'es';

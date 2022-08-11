@@ -37,7 +37,7 @@ describe('files routes', () => {
   );
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);

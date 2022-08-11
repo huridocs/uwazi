@@ -57,7 +57,7 @@ describe('UsersAPI', () => {
 
   describe('get()', () => {
     it('should get all the users', async () => {
-      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: ['users'] }));
+      spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: ['users'] }));
       const request = {};
       const response = await users.get(request);
       expect(api.get).toHaveBeenCalledWith('users', request);
@@ -68,7 +68,7 @@ describe('UsersAPI', () => {
   describe('delete()', () => {
     it('should delete the user', async () => {
       const user = { _id: '1234' };
-      spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
+      spyOn(api, 'delete').and.callFake(async () => Promise.resolve({ json: 'ok' }));
       const response = await users.delete(user);
       expect(api.delete).toHaveBeenCalledWith('users', user);
       expect(response).toEqual('ok');

@@ -57,7 +57,7 @@ describe('CejilChart002', () => {
 
   describe('When no data loaded', () => {
     it('should output only the loader before loading data', () => {
-      spyOn(api, 'search').and.returnValue(Promise.resolve(null));
+      spyOn(api, 'search').and.callFake(async () => Promise.resolve(null));
       testSnapshot();
     });
   });

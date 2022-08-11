@@ -147,7 +147,7 @@ describe('Attachments actions', () => {
 
   describe('deleteAttachment', () => {
     it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', done => {
-      spyOn(api, 'delete').and.returnValue(Promise.resolve({}));
+      spyOn(api, 'delete').and.callFake(async () => Promise.resolve({}));
       mockID();
       const dispatch = jasmine.createSpy('dispatch');
       actions
