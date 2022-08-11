@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
-import { files } from 'api/files';
+import { files, storage } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
-import * as storage from 'api/files/storage';
 import * as processDocumentApi from 'api/files/processDocument';
 import { tenants } from 'api/tenants/tenantContext';
 import settings from 'api/settings/settings';

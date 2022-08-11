@@ -5,6 +5,7 @@ import { errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
+// eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
 import { Readable } from 'stream';
 import {
@@ -93,37 +94,39 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
   }
 };
 
-export const readableFile = async (filename: string, type: FileTypes) => {
-  if (tenants.current().featureFlags?.s3Storage) {
-    return readFromS3(filename, type);
-  }
-  return createReadStream(paths[type](filename));
-};
-
-export const fileContents = async (filename: string, type: FileTypes) =>
-  streamToBuffer(await readableFile(filename, type));
-
-export const removeFile = async (filename: string, type: FileTypes) =>
-  deleteFile(paths[type](filename));
-
-export const removeFiles = async (files: FileType[]) =>
-  Promise.all(files.map(async file => removeFile(file.filename || '', file.type || 'document')));
-
-export const storeFile = async (filename: string, file: Readable, type: FileTypes) => {
-  file.pipe(createWriteStream(paths[type](filename)));
-  return new Promise(resolve => file.on('close', resolve));
-};
-
-export const fileExists = async (filename: string, type: FileTypes): Promise<boolean> => {
-  try {
-    await access(paths[type](filename));
-  } catch (err) {
-    if (err?.code === 'ENOENT') {
-      return false;
+export const storage = {
+  async readableFile(filename: string, type: FileTypes) {
+    if (tenants.current().featureFlags?.s3Storage) {
+      return readFromS3(filename, type);
     }
-    if (err) {
-      throw err;
+    return createReadStream(paths[type](filename));
+  },
+  async fileContents(filename: string, type: FileTypes) {
+    return streamToBuffer(await this.readableFile(filename, type));
+  },
+  async removeFile(filename: string, type: FileTypes) {
+    return deleteFile(paths[type](filename));
+  },
+  async removeFiles(files: FileType[]) {
+    return Promise.all(
+      files.map(async file => deleteFile(paths[file.type || 'document'](file.filename || '')))
+    );
+  },
+  async storeFile(filename: string, file: Readable, type: FileTypes) {
+    file.pipe(createWriteStream(paths[type](filename)));
+    return new Promise(resolve => file.on('close', resolve));
+  },
+  async fileExists(filename: string, type: FileTypes): Promise<boolean> {
+    try {
+      await access(paths[type](filename));
+    } catch (err) {
+      if (err?.code === 'ENOENT') {
+        return false;
+      }
+      if (err) {
+        throw err;
+      }
     }
-  }
-  return true;
+    return true;
+  },
 };

@@ -13,7 +13,7 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import { readableFile, fileExists } from './storage';
+import { storage } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -184,7 +184,7 @@ export default (app: Application) => {
       if (
         !file?.filename ||
         !file?.type ||
-        !(await fileExists(file.filename, file.type)) ||
+        !(await storage.fileExists(file.filename, file.type)) ||
         !(await checkEntityPermission(file))
       ) {
         throw createError('file not found', 404);
@@ -204,7 +204,7 @@ export default (app: Application) => {
       }
 
       res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
-      (await readableFile(file.filename, file.type)).pipe(res);
+      (await storage.readableFile(file.filename, file.type)).pipe(res);
     }
   );
 
