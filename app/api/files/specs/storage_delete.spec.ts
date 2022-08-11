@@ -87,11 +87,7 @@ describe('storage with s3 feature active', () => {
 
   describe('removeFile when s3 feature is not active', () => {
     it('should remove it from disk, not from s3 bucket', async () => {
-      testingTenants.changeCurrentTenant({
-        featureFlags: {
-          s3Storage: false,
-        },
-      });
+      testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: false } });
       await storage.removeFile('file_to_be_deleted.txt', 'document');
       expect(await fileExistsOnPath(uploadsPath('file_to_be_deleted.txt'))).toBe(false);
       const s3FileContents = await s3.send(

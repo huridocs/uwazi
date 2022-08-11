@@ -13,7 +13,7 @@ import { createReadStream, createWriteStream } from 'fs';
 import { FileType } from 'shared/types/fileType';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import {
   activityLogPath,
   attachmentsPath,
@@ -128,8 +128,24 @@ export const storage = {
     );
   },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
-    file.pipe(createWriteStream(paths[type](filename)));
-    return new Promise(resolve => file.on('close', resolve));
+    const diskPassThrough = new PassThrough();
+    file.pipe(diskPassThrough);
+
+    if (tenants.current().featureFlags?.s3Storage) {
+      const bufferPassThrough = new PassThrough();
+      file.pipe(bufferPassThrough);
+      const s3 = s3instance();
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: tenants.current().name.replace('_', '-'),
+          Key: s3KeyWithPath(filename, type),
+          Body: await streamToBuffer(bufferPassThrough),
+        })
+      );
+    }
+
+    diskPassThrough.pipe(createWriteStream(paths[type](filename)));
+    await new Promise(resolve => diskPassThrough.on('close', resolve));
   },
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
     try {
