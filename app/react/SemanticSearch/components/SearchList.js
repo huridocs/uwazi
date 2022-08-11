@@ -4,15 +4,13 @@ import { connect } from 'react-redux';
 
 import SearchItem from './SearchItem';
 
-export function SearchList({ searches }) {
-  return (
-    <div className="semantic-search-list">
-      {searches.map(search => (
-        <SearchItem search={search} key={search._id} />
-      ))}
-    </div>
-  );
-}
+const SearchList = ({ searches }) => (
+  <div className="semantic-search-list">
+    {searches.map(search => (
+      <SearchItem search={search} key={search._id} />
+    ))}
+  </div>
+);
 
 SearchList.defaultProps = {
   searches: [],
@@ -29,4 +27,5 @@ SearchList.propTypes = {
   ),
 };
 
+export { SearchList };
 export default connect()(SearchList);

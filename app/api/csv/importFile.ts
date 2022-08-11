@@ -1,9 +1,10 @@
-import { fs } from 'api/files';
 import path from 'path';
 
 import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
 import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
@@ -26,7 +27,7 @@ export class ImportFile {
     if (path.extname(this.filePath) === '.zip') {
       return extractFromZip(this.filePath, fileName);
     }
-    return fs.createReadStream(this.filePath);
+    return createReadStream(this.filePath);
   }
 
   async extractFile(fileName: string) {

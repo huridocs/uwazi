@@ -19,7 +19,7 @@ describe('AccountSettings', () => {
       notify: jasmine.createSpy('notify'),
       setUser: jasmine.createSpy('setUser'),
     };
-    spyOn(UsersAPI, 'save').and.returnValue(Promise.resolve({ rev: 'rev' }));
+    spyOn(UsersAPI, 'save').and.callFake(async () => Promise.resolve({ rev: 'rev' }));
     render();
   });
 

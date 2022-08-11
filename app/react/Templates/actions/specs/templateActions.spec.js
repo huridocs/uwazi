@@ -169,7 +169,9 @@ describe('templateActions', () => {
             },
           ],
         };
-        spyOn(api, 'save').and.returnValue(Promise.resolve(actions.sanitize(originalTemplateData)));
+        spyOn(api, 'save').and.callFake(async () =>
+          Promise.resolve(actions.sanitize(originalTemplateData))
+        );
         actions.saveTemplate(originalTemplateData)(() => {});
         expect(api.save).toHaveBeenCalledWith(
           new RequestParams({
@@ -210,7 +212,9 @@ describe('templateActions', () => {
           },
         ];
         const store = mockStore({});
-        spyOn(api, 'save').and.returnValue(Promise.resolve(actions.sanitize(originalTemplateData)));
+        spyOn(api, 'save').and.callFake(async () =>
+          Promise.resolve(actions.sanitize(originalTemplateData))
+        );
         await store.dispatch(actions.saveTemplate(originalTemplateData));
 
         expect(store.getActions()).toEqual(expectedActions);

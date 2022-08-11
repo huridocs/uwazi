@@ -20,7 +20,7 @@ export type DropdownMenuProps = {
   position: number;
 };
 
-export function DropdownMenu({ link, position }: DropdownMenuProps) {
+export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
   const [showing, setShowing] = useState(false);
   const dropdownRef = useRef(null);
   const onClickOutside = useCallback(() => {
@@ -77,4 +77,4 @@ export function DropdownMenu({ link, position }: DropdownMenuProps) {
       </ul>
     </li>
   );
-}
+};

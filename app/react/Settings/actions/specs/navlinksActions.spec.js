@@ -17,7 +17,7 @@ describe('Settings/Navlinks actions', () => {
   beforeEach(() => {
     mockID();
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'save').and.returnValue(Promise.resolve({ _id: 'newId', _rev: 'newRev' }));
+    spyOn(api, 'save').and.callFake(async () => Promise.resolve({ _id: 'newId', _rev: 'newRev' }));
     spyOn(formActions, 'load').and.returnValue('ITEMS LOADED');
     spyOn(uiActions, 'editLink').and.returnValue('ITEM EDITED');
     spyOn(formActions, 'push').and.returnValue('ITEM PUSHED');

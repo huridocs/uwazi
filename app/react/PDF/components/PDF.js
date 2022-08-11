@@ -145,11 +145,6 @@ class PDF extends Component {
     }
   }
 
-  highlightReference(connection, event) {
-    event.stopPropagation();
-    this.props.highlightReference(connection);
-  }
-
   render() {
     return (
       <div

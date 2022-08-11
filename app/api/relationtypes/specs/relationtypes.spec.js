@@ -41,8 +41,8 @@ describe('relationtypes', () => {
 
   describe('save()', () => {
     beforeEach(() => {
-      spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
-      spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
+      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
+      spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
     });
 
     it('should generate names and ids for the properties', done => {
@@ -135,7 +135,7 @@ describe('relationtypes', () => {
 
     describe('delete()', () => {
       beforeEach(() => {
-        spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+        spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
       });
 
       it('should remove it from the database and return true', done => {

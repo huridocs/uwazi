@@ -22,7 +22,7 @@ describe('csvLoader languages', () => {
   beforeAll(async () => {
     await db.setupFixturesAndContext(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
 
     const { languages = [] } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });

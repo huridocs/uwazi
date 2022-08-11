@@ -54,7 +54,7 @@ describe('usergroups routes', () => {
     const groups = [{ name: 'group1' }];
 
     beforeEach(() => {
-      spyOn(userGroups, 'get').and.returnValue(Promise.resolve(groups));
+      spyOn(userGroups, 'get').and.callFake(async () => Promise.resolve(groups));
     });
 
     it('should query and return an array of existing user groups', async () => {
@@ -105,7 +105,7 @@ describe('usergroups routes', () => {
   describe('DELETE', () => {
     beforeEach(() => {
       user = { username: 'user 1', role: 'admin' };
-      spyOn(userGroups, 'delete').and.returnValue(Promise.resolve({ _id: 'user1' }));
+      spyOn(userGroups, 'delete').and.callFake(async () => Promise.resolve({ _id: 'user1' }));
     });
     it('should delete the group with the specified query', async () => {
       const response = await deleteUserGroup({ _id: 'group1' });

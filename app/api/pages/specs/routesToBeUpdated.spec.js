@@ -22,12 +22,12 @@ describe('Pages Routes (to be updated)', () => {
     });
 
     it('should need authorization', () => {
-      spyOn(pages, 'save').and.returnValue(new Promise(resolve => resolve('pages')));
+      spyOn(pages, 'save').and.callFake(async () => Promise.resolve('pages'));
       expect(routes.post('/api/pages', req)).toNeedAuthorization();
     });
 
     it('should create a new document with current user', done => {
-      spyOn(pages, 'save').and.returnValue(new Promise(resolve => resolve('document')));
+      spyOn(pages, 'save').and.callFake(async () => Promise.resolve('document'));
       routes
         .post('/api/pages', req)
         .then(document => {
@@ -45,7 +45,7 @@ describe('Pages Routes (to be updated)', () => {
         query: { sharedId: '123' },
         language: 'es',
       };
-      spyOn(pages, 'get').and.returnValue(Promise.resolve('page'));
+      spyOn(pages, 'get').and.callFake(async () => Promise.resolve('page'));
       routes
         .get('/api/pages', req)
         .then(response => {
@@ -63,7 +63,7 @@ describe('Pages Routes (to be updated)', () => {
         query: { sharedId: '123' },
         language: 'es',
       };
-      spyOn(pages, 'getById').and.returnValue(Promise.resolve('page'));
+      spyOn(pages, 'getById').and.callFake(async () => Promise.resolve('page'));
       routes
         .get('/api/page', req)
         .then(response => {
@@ -85,7 +85,7 @@ describe('Pages Routes (to be updated)', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      spyOn(pages, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
+      spyOn(pages, 'delete').and.callFake(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should have a validation schema', () => {

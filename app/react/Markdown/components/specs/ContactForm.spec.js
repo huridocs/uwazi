@@ -8,7 +8,7 @@ describe('ContactForm', () => {
   let props;
 
   beforeEach(() => {
-    spyOn(api, 'post').and.returnValue(Promise.resolve());
+    spyOn(api, 'post').and.callFake(async () => Promise.resolve());
     props = { notify: () => {} };
   });
 

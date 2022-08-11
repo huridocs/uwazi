@@ -103,6 +103,7 @@ const EntityData = ({
 }: ComponentProps) => {
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauri);
   const template = templates.find(t => t?.get('_id') === entity.get('template'));
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   let output = <></>;
 
   try {

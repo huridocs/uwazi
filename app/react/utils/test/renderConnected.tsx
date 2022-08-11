@@ -34,7 +34,7 @@ const renderConnected = (
       },
     },
   },
-  confirm?: Function
+  confirm: Function = () => {}
 ) => {
   const store: MockStore = mockStoreCreator(storeData);
   return shallow(

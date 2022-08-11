@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function ProgressBar({ max, value }) {
+const ProgressBar = ({ max, value }) => {
   const percentage = (100 * value) / max;
   return (
     <div className="uw-progress-bar--container">
@@ -13,7 +13,7 @@ function ProgressBar({ max, value }) {
       </div>
     </div>
   );
-}
+};
 
 ProgressBar.propTypes = {
   max: PropTypes.number,

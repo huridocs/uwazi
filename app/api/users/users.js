@@ -40,10 +40,7 @@ function conformRecoverText(options, _settings, domain, key, user) {
     response.html = `<p>${response.text
       .replace(new RegExp(user.username, 'g'), `<b>${user.username}</b>`)
       .replace(new RegExp(`${domain}/setpassword/${key}\\?createAccount=true`, 'g'), htmlLink)
-      .replace(
-        new RegExp('https://www.uwazi.io', 'g'),
-        '<a href="https://www.uwazi.io">https://www.uwazi.io</a>'
-      )
+      .replace(/https:\/\/www.uwazi.io/g, '<a href="https://www.uwazi.io">https://www.uwazi.io</a>')
       .replace(/\n{2,}/g, '</p><p>')
       .replace(/\n/g, '<br />')}</p>`;
   }

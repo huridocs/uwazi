@@ -77,7 +77,7 @@ describe('SearchAPI', () => {
     });
 
     it('should add permissions to the includes', async () => {
-      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: {} }));
+      spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: {} }));
       SearchApi.search();
       expect(api.get).toHaveBeenCalledWith(
         'search',

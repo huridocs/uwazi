@@ -1,8 +1,11 @@
 import { IGNORED_ENDPOINTS } from 'api/activitylog/activitylogMiddleware';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
-import { fs, deleteFile } from 'api/files';
+import { deleteFile } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+import waitForExpect from 'wait-for-expect';
 import activitylogMiddleware from '../activitylogMiddleware';
 import activitylog from '../activitylog';
 
@@ -74,11 +77,28 @@ describe('activitylogMiddleware', () => {
 
   it('should save the log entry on filesystem', async () => {
     await deleteFile(`${tenants.current().activityLogs}/${tenants.current().name}_activity.log`);
+
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => 1000);
+
     activitylogMiddleware(req, res, next);
-    const file = await fs.readFile(
-      `${tenants.current().activityLogs}/${tenants.current().name}_activity.log`
-    );
-    expect(file.length).toBeGreaterThan(0);
+    await waitForExpect(async () => {
+      const file = await fs.readFile(
+        `${tenants.current().activityLogs}/${tenants.current().name}_1000_activity.log`
+      );
+
+      const fileContents = JSON.parse(file.toString());
+      expect(fileContents).toEqual({
+        body: '{"title":"Hi","password":"*****"}',
+        expireAt: expect.any(String),
+        method: 'POST',
+        params: '{"some":"params"}',
+        query: '{"a":"query"}',
+        time: 1000,
+        url: '/api/entities',
+        user: 123,
+        username: 'admin',
+      });
+    });
   });
 
   describe('non registered entries', () => {

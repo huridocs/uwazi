@@ -1,6 +1,6 @@
 import { testingDB } from 'api/utils/testing_db';
 import * as filesApi from 'api/files/filesystem';
-import * as storage from 'api/files/storage';
+import { storage, files } from 'api/files';
 import {
   TweetParamsType,
   TwitterIntegration,
@@ -16,7 +16,6 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { tenants } from 'api/tenants';
 import fetchMock from 'fetch-mock';
-import { files } from 'api/files';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -175,7 +174,7 @@ describe('TwitterIntegration', () => {
   });
 
   it('should download and replace the images in the twitter text', async () => {
-    const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
+    const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue();
     jest.spyOn(filesApi, 'generateFileName').mockReturnValue('generatedUwaziFilename');
 
     fetchMock.mock('https://image.is', {

@@ -19,7 +19,6 @@ describe('Item', () => {
   let props;
 
   beforeEach(() => {
-    Icon.default = Icon.Icon;
     props = {
       doc: Immutable({
         type: 'entity',
