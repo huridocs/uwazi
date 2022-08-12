@@ -1,5 +1,5 @@
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { errorLog } from 'api/log';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PDF } from '../PDF';
 import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem';
 
@@ -10,23 +10,23 @@ describe('PDF', () => {
     originalname: 'originalName.pdf',
     destination: __dirname,
   };
-  let thumbnailName: string;
+  let thumbnailPath: string;
 
   const deleteThumbnail = async () => {
-    await deleteFile(uploadsPath(thumbnailName));
+    await deleteFile(thumbnailPath);
   };
 
   beforeEach(async () => {
     await testingEnvironment.setTenant();
-    thumbnailName = uploadsPath('documentId.jpg');
+    thumbnailPath = uploadsPath('documentId.jpg');
     pdf = new PDF(file);
   });
 
   describe('convert', () => {
     it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
       const conversion = await pdf.convert();
-      const pages = conversion.fullText;
 
+      const pages = conversion.fullText;
       expect(pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
       expect(pages['2'].includes('Page[[2]] 2[[2]]')).toBeTruthy();
       expect(pages['3'].includes('Page[[3]] 3[[3]]')).toBeTruthy();
@@ -34,6 +34,7 @@ describe('PDF', () => {
 
     it('should return the conversion object', async () => {
       const conversion = await pdf.convert();
+
       expect(conversion).toEqual(
         expect.objectContaining({
           totalPages: 11,
@@ -53,6 +54,7 @@ describe('PDF', () => {
         destination: __dirname,
       };
       pdf = new PDF(invalidFile);
+
       try {
         await pdf.convert();
         fail('should throw error');
@@ -69,19 +71,18 @@ describe('PDF', () => {
 
     it('should create thumbnail', async () => {
       await pdf.createThumbnail('documentId');
-      expect(await fileExistsOnPath(thumbnailName)).toBe(true);
+
+      expect(await fileExistsOnPath(thumbnailPath)).toBe(true);
     });
 
-    it('should correctly log errors, but continue with the flow', async () => {
-      spyOn(errorLog, 'error');
-      pdf = new PDF({
-        filename: '/missingpath/pdf.pdf',
-      });
+    it('should return the error when there is one', async () => {
+      errorLog.error = jest.fn();
+      pdf = new PDF({ filename: '/missingpath/pdf.pdf' });
+
       const thumbnailResponse = await pdf.createThumbnail('documentId');
+
       expect(thumbnailResponse instanceof Error).toBe(true);
-      expect(errorLog.error).toHaveBeenCalledWith(
-        'Thumbnail creation error for: /missingpath/pdf.pdf'
-      );
+      expect(await fileExistsOnPath(thumbnailPath)).toBe(false);
     });
   });
 });
