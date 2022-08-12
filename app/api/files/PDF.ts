@@ -1,3 +1,6 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
+import * as os from 'os';
 import { errorLog } from 'api/log';
 import { createError } from 'api/utils';
 import { spawn } from 'child-process-promise';
@@ -5,7 +8,7 @@ import EventEmitter from 'events';
 import path from 'path';
 import { detectLanguage } from 'shared/detectLanguage';
 import { FileType } from 'shared/types/fileType';
-import { uploadsPath } from './filesystem';
+import { storage } from './storage';
 
 class PDF extends EventEmitter {
   private file: FileType & { destination?: string };
@@ -50,19 +53,30 @@ class PDF extends EventEmitter {
   }
 
   async createThumbnail(documentId: string) {
-    const thumbnailPath = uploadsPath(documentId);
+    const thumbnailPath = path.join(os.tmpdir(), `${documentId}.jpg`);
     let response;
     try {
       await spawn(
         'pdftoppm',
-        ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', this.filepath, thumbnailPath],
+        [
+          '-f',
+          '1',
+          '-singlefile',
+          '-scale-to',
+          '320',
+          '-jpeg',
+          this.filepath,
+          path.join(os.tmpdir(), documentId),
+        ],
         { capture: ['stdout', 'stderr'] }
       );
       response = `${documentId}.jpg`;
     } catch (err) {
       response = err;
-      errorLog.error(`Thumbnail creation error for: ${this.filepath}`);
+      errorLog.error(err.stderr);
     }
+
+    await storage.storeFile(`${documentId}.jpg`, createReadStream(thumbnailPath), 'thumbnail');
 
     return Promise.resolve(response);
   }
