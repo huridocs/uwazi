@@ -1,13 +1,15 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
+import { ModelAction } from 'react-redux-form';
 import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
+import { notificationActions } from 'app/Notifications';
+import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
 import { updateSelection, updateFormField } from '../actions/metadataExtractionActions';
-import { ModelAction } from 'react-redux-form';
 
-export type OwnPropTypes = {
+type OwnPropTypes = {
   fieldName: string;
   model: string;
   fieldId?: string;
@@ -17,7 +19,7 @@ export type OwnPropTypes = {
 
 type selection = {
   text: string;
-  selectionRectangle: [];
+  selectionRectangles: SelectionRectanglesSchema;
 };
 
 const mapStateToProps = (state: IStore) => ({
@@ -35,6 +37,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, ownProps: OwnPropTypes) => {
         dis(action as ModelAction);
       },
       setSelection: selection => updateSelection(selection, fieldName, fieldId),
+      notify: notificationActions.notify,
     },
     dispatch
   );
@@ -44,23 +47,42 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const MetadataExtractorComponent = ({ selection, setSelection, updateField }: mappedProps) => {
+const MetadataExtractorComponent = ({
+  selection,
+  setSelection,
+  updateField,
+  notify,
+}: mappedProps) => {
   const onClick = async () => {
+    if (!selection.selectionRectangles?.length) {
+      notify(
+        t(
+          'System',
+          'Could not detect the area for the selected text, please try selecting again.',
+          null,
+          false
+        ),
+        'warning'
+      );
+    }
     setSelection(selection);
     updateField(selection.text);
   };
 
-  if (selection !== null) {
-    return (
-      <button type="button" onClick={onClick} className="extraction-button">
-        <span>
-          <Translate>Click to fill</Translate> <Icon icon="bullseye" />
-        </span>
-      </button>
-    );
+  if (!selection) {
+    return null;
   }
-  return null;
+
+  return (
+    <button type="button" onClick={onClick} className="extraction-button">
+      <span>
+        <Translate>Click to fill</Translate> <Icon icon="bullseye" />
+      </span>
+    </button>
+  );
 };
 
 const container = connector(MetadataExtractorComponent);
+
+export type { selection };
 export { container as MetadataExtractor };
