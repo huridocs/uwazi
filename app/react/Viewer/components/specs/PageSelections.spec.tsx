@@ -4,9 +4,8 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
-import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema, ClientFile } from 'app/istore';
+import { ClientEntitySchema, ClientFile, ExtractedMetadataSelection } from 'app/istore';
 import { PageSelections } from '../PageSelections';
 
 const defaultEntityDocument: ClientFile = {
@@ -57,21 +56,20 @@ describe('Page selections highlights', () => {
   let entity: ClientEntitySchema = {
     _id: '62f52bdcc6897a159347cf59',
   };
+  let file: any | ClientFile;
+  let selections: ExtractedMetadataSelection[];
 
-  const render = (
-    file?: any | ClientFile,
-    selections: {
-      propertyID?: string;
-      name: string;
-      timestamp: string;
-      selection: { text: 'string'; selectionRectangles: SelectionRectanglesSchema[] }[];
-    }[] = []
-  ) => {
+  beforeEach(() => {
+    file = defaultEntityDocument;
+    selections = [];
+  });
+
+  const render = () => {
     const store = {
       ...defaultState,
       documentViewer: {
         doc: Immutable.fromJS({
-          defaultDoc: file || defaultEntityDocument,
+          defaultDoc: file,
         }),
         sidepanel: {
           metadata: entity,
@@ -90,11 +88,26 @@ describe('Page selections highlights', () => {
     expect(renderResult.container.innerHTML).toBe('');
 
     entity = { _id: 'some_id' };
-    render({});
+    file = {};
+    render();
     expect(renderResult.container.innerHTML).toBe('');
   });
 
-  it('should highlight existing selections', () => {});
+  it('should highlight existing selections', () => {
+    render();
+    expect(renderResult.container.children.length).toBe(2);
+  });
 
-  it('should highligh new selections', () => {});
+  it('should highligh new selections', () => {
+    selections = [
+      {
+        propertyID: '4356fdsassda',
+        name: 'property_name',
+        timestamp: 'today',
+        selection: { text: 'new selected text', selectionRectangles: [{ top: 10, page: '1' }] },
+      },
+    ];
+    render();
+    expect(renderResult.container.children.length).toBe(3);
+  });
 });

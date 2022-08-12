@@ -44,7 +44,7 @@ const PageSelectionsComponent = ({ newSelections, entityDocument, isEditing }: m
             <div key={selection.propertyID || selection.name}>
               <Highlight
                 textSelection={highlight}
-                color={selection.isCurrent ? '#359990' : '#5cb85c'}
+                color={selection.isCurrent ? '#A3D7A3' : '#F27DA5'}
               />
             </div>
           );

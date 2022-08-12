@@ -35,6 +35,13 @@ interface RelationshipTypesType {
   name: string;
 }
 
+export interface ExtractedMetadataSelection {
+  propertyID?: string;
+  name: string;
+  timestamp: string;
+  selection: { text: string; selectionRectangles: SelectionRectanglesSchema };
+}
+
 export interface ClientPropertySchema extends PropertySchema {
   localID?: string;
   inserting?: boolean;
@@ -147,12 +154,7 @@ export interface IStore {
       activeReference: string;
     }>;
     metadataExtraction: IImmutable<{
-      selections: {
-        propertyID?: string;
-        name: string;
-        timestamp: string;
-        selection: { text: 'string'; selectionRectangles: SelectionRectanglesSchema[] }[];
-      }[];
+      selections: ExtractedMetadataSelection[];
     }>;
     sidepanel: {
       metadata: ClientEntitySchema;
