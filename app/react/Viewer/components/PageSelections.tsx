@@ -41,7 +41,7 @@ const PageSelectionsComponent = ({ newSelections, entityDocument, isEditing }: m
           const highlight = { text: selected.text, selectionRectangles: rectangles };
 
           return (
-            <div key={selection.propertyID || selection.name}>
+            <div key={selection.propertyID || selection.name} data-testid={selection.timestamp}>
               <Highlight
                 textSelection={highlight}
                 color={selection.isCurrent ? '#A3D7A3' : '#F27DA5'}

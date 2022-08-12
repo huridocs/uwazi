@@ -35,6 +35,7 @@ const defaultEntityDocument: ClientFile = {
     },
     {
       name: 'title',
+      timestamp: 'old',
       selection: {
         text: 'The title of the PDF',
         selectionRectangles: [
@@ -109,5 +110,22 @@ describe('Page selections highlights', () => {
     ];
     render();
     expect(renderResult.container.children.length).toBe(3);
+  });
+
+  it('should update old selections with the new ones', () => {
+    render();
+    selections = [
+      {
+        name: 'title',
+        timestamp: 'new',
+        selection: {
+          text: 'new selected text to replace current title',
+          selectionRectangles: [{ top: 10, page: '1' }],
+        },
+      },
+    ];
+
+    expect(renderResult.getByTestId('old')).not.toBeInTheDocument();
+    expect(renderResult.getByTestId('new')).toBeInTheDocument();
   });
 });
