@@ -35,4 +35,24 @@ const getPropertyOfSelector = async (
     .then(input => input?.getProperty(property))
     .then(input => input?.jsonValue<string>());
 
-export { getContentBySelector, mouseClick, checkStringValuesInSelectors, getPropertyOfSelector };
+const getPropertiesOfSubelements = async (
+  element: ElementHandle | Page,
+  topSelector: string,
+  subSelector: string,
+  property: string
+) =>
+  (
+    await Promise.all(
+      (
+        await element.$$(topSelector)
+      ).map(async item => getPropertyOfSelector(item, subSelector, property))
+    )
+  ).filter(s => s);
+
+export {
+  getContentBySelector,
+  mouseClick,
+  checkStringValuesInSelectors,
+  getPropertyOfSelector,
+  getPropertiesOfSubelements,
+};
