@@ -71,12 +71,11 @@ class PDF extends EventEmitter {
         { capture: ['stdout', 'stderr'] }
       );
       response = `${documentId}.jpg`;
+      await storage.storeFile(response, createReadStream(thumbnailPath), 'thumbnail');
     } catch (err) {
       response = err;
       errorLog.error(err.stderr);
     }
-
-    await storage.storeFile(`${documentId}.jpg`, createReadStream(thumbnailPath), 'thumbnail');
 
     return Promise.resolve(response);
   }

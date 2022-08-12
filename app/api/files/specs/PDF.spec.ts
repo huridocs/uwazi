@@ -82,6 +82,7 @@ describe('PDF', () => {
       const thumbnailResponse = await pdf.createThumbnail('documentId');
 
       expect(thumbnailResponse instanceof Error).toBe(true);
+      expect(await fileExistsOnPath(thumbnailPath)).toBe(false);
     });
   });
 });
