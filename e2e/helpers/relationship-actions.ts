@@ -1,5 +1,6 @@
-import { ElementHandle } from 'puppeteer';
 import disableTransitions from './disableTransitions';
+import { clearAndType } from './formActions';
+import { getPropertyOfSelector } from './selectorUtils';
 
 const reloadPage = async () => {
   await page.reload();
@@ -70,10 +71,7 @@ const addNewRelationship = async (
   await expect(page).toClick(
     `${typeGroupSelector(hubNumber, typeGroupNumber)} button.relationships-new svg`
   );
-  const boxSelector = 'aside.is-active div.sidepanel-body div.search-box input';
-  const input = await page.$(boxSelector);
-  await input?.click({ clickCount: 3 });
-  await page.type(boxSelector, searchTerm);
+  await clearAndType('aside.is-active div.sidepanel-body div.search-box input', searchTerm);
   await expect(page).toClick('.sidepanel-body .item-name', { text: searchTerm });
 };
 
@@ -113,27 +111,21 @@ const moveRelationship = async (
   );
 };
 
-const getTextOfSelector = async (element: ElementHandle, selector: string) =>
-  element
-    .$(selector)
-    .then(input => input?.getProperty('textContent'))
-    .then(input => input?.jsonValue<string>());
-
 const readRelations = async () => {
   const rels = await Promise.all(
     (
       await page.$$('div.relationshipsHub')
     ).map(async element => [
-      await getTextOfSelector(element, '.leftRelationshipType .rw-input'),
+      await getPropertyOfSelector(element, '.leftRelationshipType .rw-input', 'textContent'),
       await Promise.all(
         (
           await element.$$('.rightRelationshipsTypeGroup')
         ).map(async rightElement => [
-          await getTextOfSelector(rightElement, '.rw-input'),
+          await getPropertyOfSelector(rightElement, '.rw-input', 'textContent'),
           await Promise.all(
             (
               await rightElement.$$('.rightRelationship')
-            ).map(async rel => getTextOfSelector(rel, '.item-name'))
+            ).map(async rel => getPropertyOfSelector(rel, '.item-name', 'textContent'))
           ),
         ])
       ),
