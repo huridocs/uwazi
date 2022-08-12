@@ -1,3 +1,5 @@
+import { ElementHandle, Page } from 'puppeteer';
+
 import { scrollTo } from './formActions';
 
 const checkStringValuesInSelectors = async (
@@ -23,4 +25,14 @@ async function mouseClick(selector: string, x: number, y: number) {
   await page.mouse.click(rect.left + x, rect.top + y);
 }
 
-export { getContentBySelector, mouseClick, checkStringValuesInSelectors };
+const getPropertyOfSelector = async (
+  element: ElementHandle | Page | null,
+  selector: string,
+  property: string
+) =>
+  element
+    ?.$(selector)
+    .then(input => input?.getProperty(property))
+    .then(input => input?.jsonValue<string>());
+
+export { getContentBySelector, mouseClick, checkStringValuesInSelectors, getPropertyOfSelector };

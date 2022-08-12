@@ -1,31 +1,15 @@
-import { ElementHandle, Page } from 'puppeteer';
-
+import disableTransitions from '../helpers/disableTransitions';
+import { clearAndType } from '../helpers/formActions';
+import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
-import insertFixtures from '../helpers/insertFixtures';
-import disableTransitions from '../helpers/disableTransitions';
+import { getPropertyOfSelector } from '../helpers/selectorUtils';
 
 const sidePanelFileElementSelector = '.side-panel.is-active .filelist ul li:first-child';
 const fileNameEditInputSelector = `${sidePanelFileElementSelector} input#originalname`;
 const sidePanelAttachmentElementSelector =
   '.side-panel.is-active .attachments-list .attachment:first-child';
 const attachmentNameInputSelector = `${sidePanelAttachmentElementSelector} .attachment-name input`;
-
-const getPropertyOfSelector = async (
-  element: ElementHandle | Page | null,
-  selector: string,
-  property: string
-) =>
-  element
-    ?.$(selector)
-    .then(input => input?.getProperty(property))
-    .then(input => input?.jsonValue<string>());
-
-const cleanAndType = async (selector: string, text: string) => {
-  const input = await page.$(selector);
-  await input?.click({ clickCount: 3 });
-  await page.type(selector, text);
-};
 
 describe('connections', () => {
   beforeAll(async () => {
@@ -81,7 +65,7 @@ describe('connections', () => {
     });
 
     it('should allow changing the name of the title', async () => {
-      await cleanAndType(fileNameEditInputSelector, 'MockPDF - renamed.pdf');
+      await clearAndType(fileNameEditInputSelector, 'MockPDF - renamed.pdf');
       await expect(page).toClick(`${sidePanelFileElementSelector} button`, {
         text: 'Save',
       });
@@ -98,7 +82,7 @@ describe('connections', () => {
       await expect(page).toClick(`${sidePanelFileElementSelector} button`, {
         text: 'Edit',
       });
-      await cleanAndType(fileNameEditInputSelector, 'MockPDF - renamed a second time.pdf');
+      await clearAndType(fileNameEditInputSelector, 'MockPDF - renamed a second time.pdf');
       await expect(page).toClick(`${sidePanelFileElementSelector} button`, {
         text: 'Cancel',
       });
@@ -132,7 +116,7 @@ describe('connections', () => {
 
     it('should allow changing the name of the title', async () => {
       await page.waitForSelector('.alert-success', { hidden: true });
-      await cleanAndType(attachmentNameInputSelector, 'MockPDF_again - renamed.pdf');
+      await clearAndType(attachmentNameInputSelector, 'MockPDF_again - renamed.pdf');
       await expect(page).toClick(`${sidePanelAttachmentElementSelector} button.btn-success`);
       await page.waitForSelector('.alert-success');
       const title = await getPropertyOfSelector(
