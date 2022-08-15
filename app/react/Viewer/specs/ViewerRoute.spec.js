@@ -14,7 +14,7 @@ describe('ViewerRoute', () => {
     const entity = { _id: 1, sharedId: 'sid', documents: [{}] };
 
     beforeEach(() => {
-      spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve([entity]));
+      spyOn(EntitiesAPI, 'get').and.callFake(async () => Promise.resolve([entity]));
       spyOn(EntityView, 'requestState').and.returnValue('EntityView state');
       spyOn(PDFView, 'requestState').and.returnValue('PDFView state');
     });

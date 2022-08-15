@@ -7,6 +7,7 @@ import { Translate } from 'app/I18N';
 export class ThesauriFormField extends Component {
   constructor(props) {
     super(props);
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.focus = () => {
       this.groupInput.focus();
     };

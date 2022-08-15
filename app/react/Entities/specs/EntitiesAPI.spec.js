@@ -81,7 +81,7 @@ describe('EntitiesAPI', () => {
 
     describe('should include permissions', () => {
       it('should request for the thesauri', async () => {
-        spyOn(api, 'get').and.returnValue(Promise.resolve({ json: { rows: [] } }));
+        spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: { rows: [] } }));
         let request = new RequestParams({ _id: 'documentId' });
         await entitiesAPI.get(request);
         expect(api.get).toHaveBeenCalledWith('entities', request.add({ include: ['permissions'] }));

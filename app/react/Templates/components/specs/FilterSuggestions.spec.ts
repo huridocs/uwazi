@@ -6,7 +6,12 @@ import { FilterSuggestions } from '../FilterSuggestions';
 describe('FilterSuggestions', () => {
   let component: any;
 
-  function renderComponent(label = 'test', type = 'text', content?: any, relationType?: any) {
+  function renderComponent(
+    label = 'test',
+    type = 'text',
+    content: any = undefined,
+    relationType: any = undefined
+  ) {
     const storeState = {
       templates: Immutable.fromJS([
         {

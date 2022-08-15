@@ -53,8 +53,8 @@ describe('PDFSidePanel', () => {
   };
 
   beforeEach(() => {
-    spyOn(EntitiesAPI, 'get').and.returnValue(Promise.resolve([mocks.entityA]));
-    spyOn(api, 'get').and.returnValue(Promise.resolve({ json: [mocks.entityAFile] }));
+    spyOn(EntitiesAPI, 'get').and.callFake(async () => Promise.resolve([mocks.entityA]));
+    spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: [mocks.entityAFile] }));
   });
 
   it('should load the entity with the corresponding pdf', async () => {

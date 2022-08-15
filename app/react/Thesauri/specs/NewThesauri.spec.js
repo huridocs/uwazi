@@ -22,7 +22,7 @@ describe('NewThesauri', () => {
 
   beforeEach(() => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    spyOn(api, 'get').and.returnValue(Promise.resolve(thesauris));
+    spyOn(api, 'get').and.callFake(async () => Promise.resolve(thesauris));
     component = shallow(<NewThesauri />, { context });
   });
 

@@ -14,7 +14,7 @@ describe('CustomUploads', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(api, 'get').and.returnValue(Promise.resolve({ json: 'uploads' }));
+    spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: 'uploads' }));
     props = {
       upload: jasmine.createSpy('upload'),
       deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),

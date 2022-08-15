@@ -174,7 +174,7 @@ describe('TwitterIntegration', () => {
   });
 
   it('should download and replace the images in the twitter text', async () => {
-    const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
+    const storeFileSpy = jest.spyOn(storage, 'storeFile').mockResolvedValue();
     jest.spyOn(filesApi, 'generateFileName').mockReturnValue('generatedUwaziFilename');
 
     fetchMock.mock('https://image.is', {

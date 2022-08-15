@@ -499,7 +499,7 @@ describe('search', () => {
   describe('when the query is for geolocation', () => {
     it('should set size to 9999', done => {
       userFactory.mock(undefined);
-      spyOn(elastic, 'search').and.returnValue(Promise.resolve(result));
+      spyOn(elastic, 'search').and.callFake(async () => Promise.resolve(result));
       search.search({ searchTerm: '', geolocation: true }, 'en').then(() => {
         const elasticQuery = elastic.search.calls.argsFor(0)[0].body;
         expect(elasticQuery.size).toBe(9999);

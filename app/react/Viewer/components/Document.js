@@ -13,10 +13,13 @@ import determineDirection from '../utils/determineDirection';
 
 import { APIURL } from '../../config.js';
 
-export class Document extends Component {
+class Document extends Component {
   constructor(props) {
     super(props);
+    //TODO: remove this if this is not needed anymore
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.pages = { 1: 0 };
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.previousMostVisible = props.page;
     this.pdfLoaded = this.pdfLoaded.bind(this);
     this.onDocumentReady = this.onDocumentReady.bind(this);
@@ -117,6 +120,7 @@ export class Document extends Component {
           <Header />
           <div
             className="pages"
+            // eslint-disable-next-line react/no-unused-class-component-methods
             ref={ref => (this.pagesContainer = ref)}
             onMouseOver={this.handleOver.bind(this)}
             onClick={this.handleClick}
@@ -173,5 +177,7 @@ Document.propTypes = {
   executeOnClickHandler: PropTypes.bool,
   deactivateReference: PropTypes.func,
 };
+
+export { Document };
 
 export default Document;

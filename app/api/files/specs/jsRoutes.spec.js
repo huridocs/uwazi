@@ -47,8 +47,8 @@ describe('upload routes', () => {
   beforeEach(async done => {
     await createDirIfNotExists(directory);
     await deleteAllFiles(() => {
-      spyOn(search, 'delete').and.returnValue(Promise.resolve());
-      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+      spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
+      spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',

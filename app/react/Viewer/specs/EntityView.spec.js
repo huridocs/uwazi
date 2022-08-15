@@ -64,7 +64,7 @@ describe('EntityView', () => {
       spyOn(EntitiesAPI, 'get').and.callFake(value =>
         Promise.resolve(entities.filter(e => e.sharedId === value.data.sharedId))
       );
-      spyOn(RelationTypesAPI, 'get').and.returnValue(Promise.resolve(relationTypes));
+      spyOn(RelationTypesAPI, 'get').and.callFake(async () => Promise.resolve(relationTypes));
       spyOn(prioritySortingCriteria, 'get').and.returnValue({ sort: 'priorized' });
       spyOn(relationships, 'requestState').and.returnValue(
         Promise.resolve(['connectionsGroups', 'searchResults', 'sort', 'filters'])

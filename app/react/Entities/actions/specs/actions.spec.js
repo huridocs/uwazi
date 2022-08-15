@@ -11,8 +11,8 @@ describe('Entities actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'delete').and.returnValue(Promise.resolve());
-    spyOn(api, 'deleteMultiple').and.returnValue(Promise.resolve());
+    spyOn(api, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(api, 'deleteMultiple').and.callFake(async () => Promise.resolve());
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 

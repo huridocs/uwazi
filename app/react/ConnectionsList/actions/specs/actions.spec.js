@@ -32,12 +32,14 @@ describe('ConnectionsList actions', () => {
       { templates: [{ _id: 't2' }, { _id: 't3' }] },
     ];
 
-    spyOn(referencesAPI, 'search').and.returnValue(Promise.resolve('searchResults'));
-    spyOn(referencesAPI, 'delete').and.returnValue(Promise.resolve());
+    spyOn(referencesAPI, 'search').and.callFake(async () => Promise.resolve('searchResults'));
+    spyOn(referencesAPI, 'delete').and.callFake(async () => Promise.resolve());
     spyOn(referencesAPI, 'getGroupedByConnection').and.returnValue(
       Promise.resolve(groupedConnections)
     );
-    spyOn(prioritySortingCriteria, 'get').and.returnValue(Promise.resolve('prioritySorting'));
+    spyOn(prioritySortingCriteria, 'get').and.callFake(async () =>
+      Promise.resolve('prioritySorting')
+    );
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
     spyOn(formActions, 'merge').and.callFake((scope, sort) => `merge: ${scope} with: ${sort}`);
     spyOn(formActions, 'change').and.callFake(

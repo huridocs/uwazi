@@ -41,11 +41,9 @@ export const publicSharing = (
 );
 
 export const cookiePolicy = (
-  <>
-    <Translate>
-      This option will show a notification about the use of cookies in your instance.
-    </Translate>
-  </>
+  <Translate>
+    This option will show a notification about the use of cookies in your instance.
+  </Translate>
 );
 
 export const emails = [

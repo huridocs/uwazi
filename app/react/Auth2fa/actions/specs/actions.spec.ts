@@ -19,7 +19,7 @@ describe('Auth2fa Actions', () => {
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
     spyOn(basicActions, 'update').and.returnValue('USER UPDATED');
-    spyOn(Auth2faAPI, 'reset2fa').and.returnValue(Promise.resolve());
+    spyOn(Auth2faAPI, 'reset2fa').and.callFake(async () => Promise.resolve());
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 

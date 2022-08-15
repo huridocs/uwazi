@@ -274,7 +274,7 @@ export default {
     };
   },
 
-  inherit(property, propValue = [], thesauri, options, templates) {
+  inherit(property, propValue, thesauri, options, templates) {
     const propertyInfo = Immutable.fromJS({
       label: property.get('label'),
       name: property.get('name'),
@@ -284,7 +284,7 @@ export default {
 
     const type = propertyInfo.get('type');
     const methodType = this[type] ? type : 'default';
-    let value = propValue
+    let value = (propValue || [])
       .map(v => {
         if (v && v.inheritedValue) {
           if (
@@ -317,7 +317,7 @@ export default {
     let propType = 'inherit';
     if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
       propType = type;
-      value = this.flattenInheritedMultiValue(value, type, propValue, undefined, {
+      value = this.flattenInheritedMultiValue(value, type, propValue || [], undefined, {
         doc: options.doc,
       });
     }

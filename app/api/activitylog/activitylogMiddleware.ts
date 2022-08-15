@@ -62,7 +62,7 @@ export default (req: Request, _res: Response, next: NextFunction) => {
     void activitylog.save(entry);
     // eslint-disable-next-line no-void
     void storage.storeFile(
-      `${tenants.current().name}_activity.log`,
+      `${tenants.current().name}_${entry.time}_activity.log`,
       Readable.from([JSON.stringify(entry)]),
       'activitylog'
     );

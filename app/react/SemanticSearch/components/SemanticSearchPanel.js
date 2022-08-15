@@ -44,14 +44,6 @@ export class SemanticSearchSidePanel extends Component {
     this.props.updateSearch(updatedSearch);
   }
 
-  attachDispatch(dispatch) {
-    this.formDispatch = dispatch;
-  }
-
-  close() {
-    this.props.hideSemanticSearch();
-  }
-
   render() {
     const searches = this.props.searches.toJS();
     const { open } = this.props;

@@ -33,7 +33,7 @@ class Mocks {
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
-      'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(''),
+      'storage.storeFile': jest.spyOn(storage, 'storeFile').mockResolvedValue(),
       'filesApi.generateFileName': jest
         .spyOn(filesApi, 'generateFileName')
         .mockReturnValue('generatedUwaziFilename'),
@@ -289,7 +289,7 @@ describe('OcrManager', () => {
     it('should do nothing when record is missing', async () => {
       await OcrModel.delete({ sourceFile: fixturesFactory.id('sourceFile') });
       mocks.clearJestMocks();
-      mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue('');
+      mocks.jestMocks['storage.storeFile'] = jest.spyOn(storage, 'storeFile').mockResolvedValue();
 
       await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
 

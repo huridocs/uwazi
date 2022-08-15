@@ -27,7 +27,7 @@ describe('User Groups actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'getGroups').and.returnValue(Promise.resolve(userGroups));
+    spyOn(api, 'getGroups').and.callFake(async () => Promise.resolve(userGroups));
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
   });
 
@@ -91,7 +91,7 @@ describe('User Groups actions', () => {
 
   describe('Delete user group', () => {
     beforeEach(async () => {
-      spyOn(api, 'deleteGroup').and.returnValue(Promise.resolve(group2));
+      spyOn(api, 'deleteGroup').and.callFake(async () => Promise.resolve(group2));
       await actions.deleteUserGroup(group2)(dispatch);
     });
 

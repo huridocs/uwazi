@@ -46,7 +46,9 @@ const createServer = async (app: Application, port: number) => {
   redisServer = new RedisServer();
   redisServer.start();
   server = new Server(app);
-  await new Promise<void>(resolve => server.listen(port, resolve));
+  await new Promise<void>(resolve => {
+    server.listen(port, resolve);
+  });
   app.use(appContextMiddleware);
   app.use(multitenantMiddleware);
   config.redis.activated = true;

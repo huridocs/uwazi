@@ -23,8 +23,8 @@ function assertDownloaded(res: any) {
 
 function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
   expect(mockCall[0]).toEqual(searchResults);
-  expect(mockCall[1]).toEqual(types);
-  expect(mockCall[2] instanceof Writable).toBe(true);
+  expect(mockCall[1] instanceof Writable).toBe(true);
+  expect(mockCall[2]).toEqual(types);
   expect(mockCall[3]).toEqual(options);
 }
 
@@ -49,7 +49,7 @@ describe('export routes', () => {
       await testingEnvironment.setUp(fixtures);
 
       exportMock = jest.fn().mockImplementation(
-        async (_searchResults: SearchResults, _types: string[] = [], writeStream: Writable) =>
+        async (_searchResults: SearchResults, writeStream: Writable, _types: string[] = []) =>
           new Promise(resolve => {
             writeStream.write('content');
             writeStream.on('finish', resolve);
