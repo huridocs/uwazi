@@ -301,7 +301,7 @@ header {
   }
 
   @media (min-width: 1024px) {
-    max-width: 75%;
+    max-width: calc(100% - 300px);
   }
 }
 
@@ -315,19 +315,10 @@ header {
   list-style: none;
   padding: 0;
   margin: 0;
-
-  @media (min-width: 1024px) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    @if $theme == light {
-      color: $c-black;
-    } @else {
-      color: $c-white;
-    }
-  }
 }
 
 .menuNav-item {
+  position: relative;
   padding: 0;
   width: 100%;
   padding-bottom: 5px;
