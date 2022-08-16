@@ -16,10 +16,35 @@ const defaultParser = async (
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => [{ value: entityToImport[ensure<string>(property.name)] }];
 
+const parseDateValue = (dateValue: string, dateFormat: string) => {
+  const allowedFormats = [
+    dateFormat.toUpperCase(),
+    'LL',
+    'YYYY MM DD',
+    'YYYY/MM/DD',
+    'YYYY-MM-DD',
+    'YYYY',
+  ];
+
+  return moment.utc(dateValue, allowedFormats).unix();
+};
+
+const parseDate = (dateValue: string, dateFormat: string) => ({
+  value: parseDateValue(dateValue, dateFormat),
+});
+
+const parseDateRange = (rangeValue: string, dateFormat: string) => {
+  const [from, to] = rangeValue.split(':');
+
+  return {
+    value: {
+      from: parseDateValue(from, dateFormat),
+      to: parseDateValue(to, dateFormat),
+    },
+  };
+};
+
 export default {
-  multidaterange: defaultParser,
-  daterange: defaultParser,
-  multidate: defaultParser,
   nested: defaultParser,
   preview: defaultParser,
   image: defaultParser,
@@ -45,17 +70,35 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const allowedFormats = [
-      dateFormat.toUpperCase(),
-      'LL',
-      'YYYY MM DD',
-      'YYYY/MM/DD',
-      'YYYY-MM-DD',
-      'YYYY',
-    ];
     const date = entityToImport[ensure<string>(property.name)];
+    return [parseDate(date, dateFormat)];
+  },
 
-    return [{ value: moment.utc(date, allowedFormats).unix() }];
+  async multidate(
+    entityToImport: RawEntity,
+    property: PropertySchema,
+    dateFormat: string
+  ): Promise<MetadataObjectSchema[]> {
+    const dates = entityToImport[ensure<string>(property.name)].split('|');
+    return dates.map(date => parseDate(date, dateFormat));
+  },
+
+  async daterange(
+    entityToImport: RawEntity,
+    property: PropertySchema,
+    dateFormat: string
+  ): Promise<MetadataObjectSchema[]> {
+    const range = entityToImport[ensure<string>(property.name)];
+    return [parseDateRange(range, dateFormat)];
+  },
+
+  async multidaterange(
+    entityToImport: RawEntity,
+    property: PropertySchema,
+    dateFormat: string
+  ): Promise<MetadataObjectSchema[]> {
+    const ranges = entityToImport[ensure<string>(property.name)].split('|');
+    return ranges.map(range => parseDateRange(range, dateFormat));
   },
 
   async link(
