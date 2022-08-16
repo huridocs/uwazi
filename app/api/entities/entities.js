@@ -16,7 +16,7 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { validateEntity } from './validateEntity';
-import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
+import { deleteFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
@@ -614,20 +614,7 @@ export default {
     );
   },
 
-  async deleteFiles(deletedDocs) {
-    await files.delete({ entity: { $in: deletedDocs.map(d => d.sharedId) } });
-    const attachmentsToDelete = deletedDocs.reduce((filePaths, doc) => {
-      if (doc.attachments) {
-        doc.attachments.forEach(file =>
-          filePaths.push({ filename: path.normalize(`${file.filename}`) })
-        );
-      }
-      return filePaths;
-    }, []);
-    return deleteUploadedFiles(attachmentsToDelete);
-  },
-
-  deleteIndexes(sharedIds) {
+  async deleteIndexes(sharedIds) {
     const deleteIndexBatch = (offset, totalRows) => {
       const limit = 200;
       if (offset >= totalRows) {
@@ -643,7 +630,7 @@ export default {
     );
   },
 
-  deleteMultiple(sharedIds) {
+  async deleteMultiple(sharedIds) {
     return this.deleteIndexes(sharedIds).then(() =>
       sharedIds.reduce(
         (previousPromise, sharedId) => previousPromise.then(() => this.delete(sharedId, false)),
@@ -669,7 +656,6 @@ export default {
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
       files.delete({ entity: sharedId }),
-      this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
       Suggestions.deleteByEntityId(sharedId),
     ]);

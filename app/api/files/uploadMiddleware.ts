@@ -2,6 +2,8 @@ import path from 'path';
 import { fs, generateFileName, pathFunction, deleteFile } from 'api/files';
 import { Request, Response, NextFunction } from 'express';
 import multer, { StorageEngine } from 'multer';
+import { errorLog } from 'api/log/errorLog';
+import { tenants } from 'api/tenants';
 
 type multerCallback = (error: Error | null, destination: string) => void;
 
@@ -23,6 +25,21 @@ const move = async (req: Request, filePath: pathFunction) => {
   req.file.path = filePath(req.file.filename);
 };
 
+const processOriginalFileName = (req: Request) => {
+  if (req.body.originalname) {
+    return req.body.originalname;
+  }
+
+  errorLog.debug(
+    `[${
+      tenants.current().name
+      // eslint-disable-next-line max-len
+    }] Deprecation warning: providing the filename in the multipart header is deprecated and will stop working in the future. Include an 'originalname' field in the body instead.`
+  );
+
+  return req.file?.originalname;
+};
+
 const singleUpload =
   (filePath?: pathFunction, storage: multer.StorageEngine = defaultStorage) =>
   async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +51,10 @@ const singleUpload =
         });
       });
       // req.file.filename = req.file.key;
+
+      if (req.file) {
+        req.file.originalname = processOriginalFileName(req);
+      }
 
       if (filePath) {
         await move(req, filePath);
@@ -62,7 +83,7 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
  * accepts a single file and moves it to the path provided by path function
  * @param pathFunction is optional, when undefined the file will be stored on the os tmp default dir
  */
-const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
+const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) =>
   // const s3 = new S3Client({
   //   apiVersion: 'latest',
   //   region: 'greenhost',
@@ -76,9 +97,7 @@ const uploadMiddleware = (filePath?: pathFunction, storage?: StorageEngine) => {
   //     cb(null, generateFileName(file));
   //   },
   // })
-  return singleUpload(filePath, storage);
-};
-
+  singleUpload(filePath, storage);
 /**
  * accepts multiple files and places them in req.files array
  * files will not be stored on disk and will be on a buffer on each element of the array.

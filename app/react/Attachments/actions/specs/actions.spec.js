@@ -70,7 +70,8 @@ describe('Attachments actions', () => {
 
       store.dispatch(actions.uploadAttachment('sharedId', file, { __reducerKey: 'storeKey' }));
       expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
-      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+      expect(mockUpload.field).toHaveBeenCalledWith('originalname', file.name);
+      expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });

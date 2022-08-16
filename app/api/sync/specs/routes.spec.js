@@ -2,7 +2,7 @@ import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
 import { search } from 'api/search';
-import * as filesystem from 'api/files/filesystem';
+import * as storage from 'api/files/storage';
 
 import * as index from 'api/search/entitiesIndex';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -36,7 +36,7 @@ describe('sync', () => {
     };
     spyOn(search, 'delete');
     spyOn(search, 'indexEntities');
-    spyOn(filesystem, 'deleteUploadedFiles');
+    spyOn(storage, 'removeFile');
   });
 
   describe('POST', () => {
@@ -229,7 +229,8 @@ describe('sync', () => {
         models.files = {
           save: jasmine.createSpy('files.save'),
           delete: jasmine.createSpy('files.delete'),
-          getById: () => Promise.resolve({ entity: 'entityId' }),
+          getById: () =>
+            Promise.resolve({ entity: 'entityId', filename: 'filename', type: 'custom' }),
         };
 
         req.query = {
@@ -245,7 +246,7 @@ describe('sync', () => {
 
       it('should delete it from the file system', async () => {
         await routes.delete('/api/sync', req);
-        expect(filesystem.deleteUploadedFiles).toHaveBeenCalledWith([{ entity: 'entityId' }]);
+        expect(storage.removeFile).toHaveBeenCalledWith('filename', 'custom');
       });
     });
 

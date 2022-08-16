@@ -72,7 +72,8 @@ export default (app: Application) => {
 
         await exporter.export(results, req.query.types, fileStream, exporterOptions);
 
-        res.download(temporalFilePath, generateExportFileName(site_name), () => {
+        res.download(temporalFilePath, generateExportFileName(site_name), err => {
+          if (err) next(err);
           //eslint-disable-next-line @typescript-eslint/no-floating-promises
           removeTempFile(temporalFilePath)();
         });

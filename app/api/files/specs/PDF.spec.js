@@ -81,13 +81,4 @@ describe('PDF', () => {
       );
     });
   });
-
-  describe('deleteThumbnail', () => {
-    it('should unlink the file from the system', async () => {
-      await pdf.createThumbnail('documentId');
-      expect(await fileExistsOnPath(thumbnailName)).toBe(true);
-      await pdf.deleteThumbnail('documentId');
-      expect(await fileExistsOnPath(thumbnailName)).toBe(false);
-    });
-  });
 });

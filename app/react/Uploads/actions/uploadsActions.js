@@ -92,7 +92,8 @@ export function upload(docId, file, endpoint = 'files/upload/document') {
         .set('Accept', 'application/json')
         .set('X-Requested-With', 'XMLHttpRequest')
         .field('entity', docId)
-        .attach('file', file, file.name)
+        .field('originalname', file.name)
+        .attach('file', file)
         .on('progress', data => {
           dispatch({
             type: types.UPLOAD_PROGRESS,
