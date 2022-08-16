@@ -1,11 +1,21 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { uniqBy } from 'lodash';
 import { Highlight } from 'react-text-selection-handler';
 import { IStore } from 'app/istore';
-import { SelectionRectanglesSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, SelectionRectanglesSchema } from 'shared/types/commonTypes';
+
+interface Selection extends ExtractedMetadataSchema {
+  isCurrent?: boolean;
+}
+
+const uniqueSelections = (selections: Selection[], newSelections: Selection[]) => {
+  const result = uniqBy([...newSelections, ...selections], 'propertyID');
+  return result;
+};
 
 const mapStateToProps = (state: IStore) => ({
-  newSelections: state.documentViewer.metadataExtraction.get('selections'),
+  userSelections: state.documentViewer.metadataExtraction.get('selections'),
   entityDocument: state.documentViewer.doc.get('defaultDoc'),
   isEditing: Boolean(state.documentViewer.sidepanel.metadata._id),
 });
@@ -14,31 +24,34 @@ const connector = connect(mapStateToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const PageSelectionsComponent = ({ newSelections, entityDocument, isEditing }: mappedProps) => {
+const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: mappedProps) => {
   if (!isEditing || !entityDocument?.get('_id')) {
     return null;
   }
 
-  const currentSelections = entityDocument.toJS().extractedMetadata?.length
-    ? entityDocument
-        .toJS()
-        .extractedMetadata!.map(currentSelection => ({ ...currentSelection, isCurrent: true }))
+  const newSelections: Selection[] = userSelections.toJS();
+
+  const currentSelections: Selection[] = entityDocument.get('extractedMetadata')?.size
+    ? entityDocument.toJS().extractedMetadata!.map((currentSelection: Selection) => ({
+        ...currentSelection,
+        isCurrent: true,
+      }))
     : [];
 
-  const selections = [...currentSelections, ...newSelections.toJS()];
+  const selections = uniqueSelections(currentSelections, newSelections);
 
   if (selections.length) {
     return (
       <>
         {selections.map(selection => {
           const selected = selection.selection;
-          const rectangles = (selected.selectionRectangles as SelectionRectanglesSchema).map(
+          const rectangles = (selected?.selectionRectangles as SelectionRectanglesSchema).map(
             rectangle => ({
               regionId: rectangle.page,
               ...rectangle,
             })
           );
-          const highlight = { text: selected.text, selectionRectangles: rectangles };
+          const highlight = { text: selected?.text, selectionRectangles: rectangles };
 
           return (
             <div key={selection.propertyID || selection.name} data-testid={selection.timestamp}>

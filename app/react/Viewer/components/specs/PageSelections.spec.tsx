@@ -4,8 +4,9 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { RenderResult } from '@testing-library/react';
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { ClientEntitySchema, ClientFile, ExtractedMetadataSelection } from 'app/istore';
+import { ClientEntitySchema, ClientFile } from 'app/istore';
 import { PageSelections } from '../PageSelections';
 
 const defaultEntityDocument: ClientFile = {
@@ -20,6 +21,7 @@ const defaultEntityDocument: ClientFile = {
     {
       propertyID: '62f290a54dd69a2472936453',
       name: 'my_property',
+      timestamp: 'oldProperty',
       selection: {
         text: 'Selected text',
         selectionRectangles: [
@@ -35,7 +37,7 @@ const defaultEntityDocument: ClientFile = {
     },
     {
       name: 'title',
-      timestamp: 'old',
+      timestamp: 'oldTitle',
       selection: {
         text: 'The title of the PDF',
         selectionRectangles: [
@@ -58,7 +60,7 @@ describe('Page selections highlights', () => {
     _id: '62f52bdcc6897a159347cf59',
   };
   let file: any | ClientFile;
-  let selections: ExtractedMetadataSelection[];
+  let selections: ExtractedMetadataSchema[];
 
   beforeEach(() => {
     file = defaultEntityDocument;
@@ -66,7 +68,7 @@ describe('Page selections highlights', () => {
   });
 
   const render = () => {
-    const store = {
+    const state = {
       ...defaultState,
       documentViewer: {
         doc: Immutable.fromJS({
@@ -80,7 +82,7 @@ describe('Page selections highlights', () => {
         }),
       },
     };
-    ({ renderResult } = renderConnectedContainer(<PageSelections />, () => store));
+    ({ renderResult } = renderConnectedContainer(<PageSelections />, () => state));
   };
 
   it('should only render when editing the entity and has a document', () => {
@@ -112,20 +114,38 @@ describe('Page selections highlights', () => {
     expect(renderResult.container.children.length).toBe(3);
   });
 
-  it('should update old selections with the new ones', () => {
-    render();
+  it('should update old title selection with the new one', () => {
     selections = [
       {
         name: 'title',
-        timestamp: 'new',
+        timestamp: 'newTitle',
         selection: {
           text: 'new selected text to replace current title',
           selectionRectangles: [{ top: 10, page: '1' }],
         },
       },
     ];
+    render();
 
-    expect(renderResult.getByTestId('old')).not.toBeInTheDocument();
-    expect(renderResult.getByTestId('new')).toBeInTheDocument();
+    expect(renderResult.queryByTestId('oldTitle')).not.toBeInTheDocument();
+    expect(renderResult.getByTestId('newTitle')).toBeInTheDocument();
+  });
+
+  it('should update the selections of the property with the new one', () => {
+    selections = [
+      {
+        propertyID: '62f290a54dd69a2472936453',
+        name: 'my_property',
+        timestamp: 'newProperty',
+        selection: {
+          text: 'new selected text to replace current selected text for the property',
+          selectionRectangles: [{ top: 10, page: '1' }],
+        },
+      },
+    ];
+    render();
+
+    expect(renderResult.queryByTestId('oldProperty')).not.toBeInTheDocument();
+    expect(renderResult.getByTestId('newProperty')).toBeInTheDocument();
   });
 });

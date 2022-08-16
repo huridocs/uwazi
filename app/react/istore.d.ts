@@ -3,7 +3,7 @@ import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { PropertySchema, SelectionRectanglesSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
@@ -33,13 +33,6 @@ interface EntityDisplayState {
 interface RelationshipTypesType {
   _id: string;
   name: string;
-}
-
-export interface ExtractedMetadataSelection {
-  propertyID?: string;
-  name: string;
-  timestamp: string;
-  selection: { text: string; selectionRectangles: SelectionRectanglesSchema };
 }
 
 export interface ClientPropertySchema extends PropertySchema {
@@ -154,7 +147,7 @@ export interface IStore {
       activeReference: string;
     }>;
     metadataExtraction: IImmutable<{
-      selections: ExtractedMetadataSelection[];
+      selections: ExtractedMetadataSchema[];
     }>;
     sidepanel: {
       metadata: ClientEntitySchema;
