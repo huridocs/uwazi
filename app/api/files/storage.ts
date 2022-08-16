@@ -94,11 +94,6 @@ export const storage = {
       await s3().delete(s3KeyWithPath(filename, type));
     }
   },
-  async removeFiles(files: FileType[]) {
-    return Promise.all(
-      files.map(async file => deleteFile(paths[file.type || 'document'](file.filename || '')))
-    );
-  },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
     file.pipe(createWriteStream(paths[type](filename)));
     await new Promise(resolve => {
