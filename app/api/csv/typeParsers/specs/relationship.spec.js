@@ -64,7 +64,7 @@ describe('relationship', () => {
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
 
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await prepareExtraFixtures();
     await runScenarios();
 

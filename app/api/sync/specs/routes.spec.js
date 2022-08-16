@@ -2,7 +2,7 @@ import 'api/utils/jasmineHelpers';
 
 import { models } from 'api/odm';
 import { search } from 'api/search';
-import * as storage from 'api/files/storage';
+import { storage } from 'api/files/storage';
 
 import * as index from 'api/search/entitiesIndex';
 import instrumentRoutes from '../../utils/instrumentRoutes';

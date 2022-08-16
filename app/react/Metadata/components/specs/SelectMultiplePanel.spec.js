@@ -24,7 +24,7 @@ describe('SelectMultiplePanel', () => {
       updateEntities: jasmine.createSpy('updateEntities'),
       multipleUpdate: jasmine
         .createSpy('multipleUpdate')
-        .and.returnValue(Promise.resolve('updated entities')),
+        .and.callFake(async () => Promise.resolve('updated entities')),
       resetForm: jasmine.createSpy('resetForm'),
       loadForm: jasmine.createSpy('resetForm'),
       templates: Immutable.fromJS([]),

@@ -133,7 +133,7 @@ describe('csvExporter', () => {
     });
 
     it('should translate only the common headers', async () => {
-      spyOn(translations, 'get').and.returnValue(Promise.resolve({}));
+      spyOn(translations, 'get').and.callFake(async () => Promise.resolve({}));
       const localeTranslationsMock = spyOn(translate, 'getLocaleTranslation').and.returnValue({});
       spyOn(translate, 'getContext').and.returnValue({});
       const translateMock = jest
@@ -436,7 +436,7 @@ describe('csvExporter', () => {
 
   describe('CSVExport class', () => {
     beforeEach(() => {
-      spyOn(translations, 'get').and.returnValue(Promise.resolve());
+      spyOn(translations, 'get').and.callFake(async () => Promise.resolve());
       spyOn(translate, 'getLocaleTranslation').and.returnValue({});
       spyOn(translate, 'getContext').and.returnValue({});
       jest.spyOn(translate, 'default').mockImplementation((_context, _key, text) => text);
@@ -451,7 +451,7 @@ describe('csvExporter', () => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
       exporter
-        .export(searchResults, [], writeMock)
+        .export(searchResults, writeMock, [])
         .then(() => {
           const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
           expect(exported).toEqual(csvExample);

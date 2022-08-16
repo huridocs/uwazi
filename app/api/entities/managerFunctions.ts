@@ -1,6 +1,6 @@
 import { groupBy } from 'lodash';
 import { WithId } from 'api/odm';
-import { files as filesAPI, storeFile, fs } from 'api/files';
+import { files as filesAPI, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
@@ -11,6 +11,8 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
 import { FileAttachment } from './entitySavingManager';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -26,7 +28,7 @@ const prepareNewFiles = async (
   if (newAttachments.length) {
     await Promise.all(
       newAttachments.map(async file => {
-        await storeFile(file.filename, fs.createReadStream(file.path), 'attachment');
+        await storage.storeFile(file.filename, createReadStream(file.path), 'attachment');
         attachments.push({
           ...file,
           entity: updatedEntity.sharedId,
@@ -39,7 +41,7 @@ const prepareNewFiles = async (
   if (newDocuments.length) {
     await Promise.all(
       newDocuments.map(async doc => {
-        await storeFile(doc.filename, fs.createReadStream(doc.path), 'document');
+        await storage.storeFile(doc.filename, createReadStream(doc.path), 'document');
         documents.push({
           ...doc,
           entity: updatedEntity.sharedId,

@@ -7,6 +7,7 @@ import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
+// eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { ObjectId } from 'mongodb';
 import path from 'path';

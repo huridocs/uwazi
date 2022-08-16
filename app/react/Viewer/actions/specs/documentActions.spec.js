@@ -436,7 +436,7 @@ describe('documentActions', () => {
 
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', done => {
-        spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [

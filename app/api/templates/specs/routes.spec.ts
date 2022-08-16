@@ -42,7 +42,7 @@ describe('templates routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve());
+    spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
   });
 
   afterAll(async () => testingEnvironment.tearDown());

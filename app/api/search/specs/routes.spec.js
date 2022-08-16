@@ -22,7 +22,7 @@ describe('search routes', () => {
     });
 
     it('should return count of search using a specific template', done => {
-      spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+      spyOn(entities, 'countByTemplate').and.callFake(async () => Promise.resolve(2));
       const req = { query: { templateId: 'templateId' } };
 
       routes
@@ -37,9 +37,9 @@ describe('search routes', () => {
 
   describe('/api/search', () => {
     beforeEach(() => {
-      spyOn(search, 'search').and.returnValue(new Promise(resolve => resolve('results')));
-      spyOn(search, 'searchGeolocations').and.returnValue(
-        new Promise(resolve => resolve('geolocation results'))
+      spyOn(search, 'search').and.callFake(async () => Promise.resolve('results'));
+      spyOn(search, 'searchGeolocations').and.callFake(async () =>
+        Promise.resolve('geolocation results')
       );
     });
 
@@ -109,7 +109,7 @@ describe('search routes', () => {
     });
 
     it('should search', done => {
-      spyOn(search, 'searchSnippets').and.returnValue(new Promise(resolve => resolve('results')));
+      spyOn(search, 'searchSnippets').and.callFake(async () => Promise.resolve('results'));
       const req = {
         query: { searchTerm: 'test', id: 'id' },
         language: 'es',

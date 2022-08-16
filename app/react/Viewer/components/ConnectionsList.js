@@ -22,6 +22,8 @@ export class ConnectionsList extends Component {
     );
   }
 
+  // TODO: remove this method is it's not used anywhere
+  // eslint-disable-next-line react/no-unused-class-component-methods
   close() {
     this.props.closePanel();
     this.props.deactivateReference();

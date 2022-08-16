@@ -44,7 +44,7 @@ describe('suggestions routes', () => {
   });
   beforeEach(async () => {
     user = { username: 'user 1', role: 'admin' };
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
   });
 
   const app: Application = setUpApp(

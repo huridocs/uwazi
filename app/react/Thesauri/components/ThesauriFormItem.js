@@ -7,6 +7,7 @@ import ThesauriFormGroup from './ThesauriFormGroup';
 export class ThesauriFormItem extends Component {
   constructor(props) {
     super(props);
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.focus = () => this.groupItem && this.groupItem.focus();
   }
 

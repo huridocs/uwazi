@@ -12,6 +12,7 @@ import ThesauriFormField from './ThesauriFormField';
 export class ThesauriFormGroup extends Component {
   constructor(props) {
     super(props);
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.focus = () => {
       this.groupInput.focus();
     };

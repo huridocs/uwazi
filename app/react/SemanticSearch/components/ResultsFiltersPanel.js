@@ -34,7 +34,7 @@ const filterValue = (filter, filtersValues) =>
     ? `${(filtersValues[filter.model] * 100).toFixed(2)}%`
     : filtersValues[filter.model];
 
-export function ResultsFiltersPanel({ open, filtersValues }) {
+export const ResultsFiltersPanel = ({ open, filtersValues }) => {
   return (
     <SidePanel open={open}>
       <div className="sidepanel-body">
@@ -91,7 +91,7 @@ export function ResultsFiltersPanel({ open, filtersValues }) {
       </div>
     </SidePanel>
   );
-}
+};
 
 ResultsFiltersPanel.propTypes = {
   open: PropTypes.bool.isRequired,

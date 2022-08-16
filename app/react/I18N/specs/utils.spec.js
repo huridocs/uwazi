@@ -39,6 +39,7 @@ describe('I18NUtils', () => {
     });
 
     it('should set the cookie locale', () => {
+      // eslint-disable-next-line no-import-assign
       appUtils.isClient = true;
       utils.saveLocale('tr');
       expect(Cookie.set).toHaveBeenCalledWith('locale', 'tr', { expires: 365 * 10 });
@@ -47,6 +48,7 @@ describe('I18NUtils', () => {
     });
 
     it('should not attempt to save cookie on server', () => {
+      // eslint-disable-next-line no-import-assign
       appUtils.isClient = false;
       utils.saveLocale('tr');
       expect(Cookie.set).not.toHaveBeenCalled();

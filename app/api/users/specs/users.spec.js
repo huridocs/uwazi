@@ -151,7 +151,7 @@ describe('Users', () => {
       const domain = 'http://localhost';
 
       beforeEach(() => {
-        spyOn(users, 'recoverPassword').and.returnValue(Promise.resolve());
+        spyOn(users, 'recoverPassword').and.callFake(async () => Promise.resolve());
         jest.spyOn(random, 'default').mockReturnValue('mypass');
       });
 
@@ -485,7 +485,7 @@ describe('Users', () => {
 
   describe('recoverPassword', () => {
     it('should find the matching email create a recover password doc in the database and send an email', async done => {
-      spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
+      spyOn(mailer, 'send').and.callFake(async () => Promise.resolve('OK'));
       spyOn(Date, 'now').and.returnValue(1000);
       const key = SHA256(`test@email.com${1000}`).toString();
       const settings = await settingsModel.get();
@@ -511,7 +511,7 @@ describe('Users', () => {
     });
 
     it('should personalize the mail if recover password process is part of a newly created user', async done => {
-      spyOn(mailer, 'send').and.returnValue(Promise.resolve('OK'));
+      spyOn(mailer, 'send').and.callFake(async () => Promise.resolve('OK'));
       spyOn(Date, 'now').and.returnValue(1000);
 
       const key = SHA256(`peter@parker.com${1000}`).toString();
