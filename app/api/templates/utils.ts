@@ -105,8 +105,6 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
   }, []);
 
 function getUpdatedNames(
-  oldProperties: PropertyOrThesaurusSchema[] = [],
-  newProperties: PropertyOrThesaurusSchema[],
   {
     prop,
     outKey,
@@ -115,7 +113,9 @@ function getUpdatedNames(
     prop: 'name' | 'label';
     outKey: 'name' | 'label' | 'id';
     filterBy: 'id' | '_id';
-  }
+  },
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[] = []
 ) {
   const propertiesWithNewName: { [k: string]: string | undefined } = {};
   flattenProperties(oldProperties).forEach(property => {
@@ -140,8 +140,8 @@ const notIncludedIn =
 
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
-  newProperties: PropertyOrThesaurusSchema[],
-  filterBy: 'id' | '_id',
+  newProperties: PropertyOrThesaurusSchema[] = [],
+  filterBy: 'id' | '_id' = '_id',
   prop: 'name' | 'label' | 'id' = 'name'
 ) {
   return flattenProperties(oldProperties)
@@ -163,7 +163,7 @@ const propertyUpdater = async (
   updateFunction: (
     array: ExtractedMetadataSchema[],
     property: PropertySchema
-  ) => ExtractedMetadataSchema[]
+  ) => ExtractedMetadataSchema[] = () => []
 ) =>
   modifiedProperties.reduce(async (previousPromise: Promise<void>, property) => {
     await previousPromise;

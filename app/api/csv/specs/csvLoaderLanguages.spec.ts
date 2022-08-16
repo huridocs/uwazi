@@ -6,6 +6,7 @@ import { search } from 'api/search';
 import settings from 'api/settings';
 import * as filesystem from 'api/files/filesystem';
 import { EntitySchema } from 'shared/types/entityType';
+import { uploadsPath } from 'api/files/filesystem';
 
 import { CSVLoader } from '../csvLoader';
 import fixtures, { template1Id } from './fixtures';
@@ -19,9 +20,9 @@ describe('csvLoader languages', () => {
   const loader = new CSVLoader();
 
   beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
 
     const { languages = [] } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });
@@ -34,6 +35,7 @@ describe('csvLoader languages', () => {
       ],
       'testLanguages.zip'
     );
+
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
     spyOn(filesystem, 'generateFileName').and.callFake(file => `generatedLang${file.originalname}`);
     await loader.load(csv, template1Id, { language: 'en', user: {} });
@@ -45,14 +47,14 @@ describe('csvLoader languages', () => {
     const generatedImages = (await files.get({})).map(u => u._id.toString());
 
     await filesystem.deleteFiles([
-      filesystem.uploadsPath('generatedLang1.pdf'),
-      filesystem.uploadsPath('generatedLang2.pdf'),
-      filesystem.uploadsPath(`${generatedImages[0]}.jpg`),
-      filesystem.uploadsPath(`${generatedImages[1]}.jpg`),
-      filesystem.uploadsPath(`${generatedImages[2]}.jpg`),
-      filesystem.uploadsPath(`${generatedImages[3]}.jpg`),
-      filesystem.uploadsPath(`${generatedImages[4]}.jpg`),
-      filesystem.uploadsPath(`${generatedImages[5]}.jpg`),
+      uploadsPath('generatedLang1.pdf'),
+      uploadsPath('generatedLang2.pdf'),
+      uploadsPath(`${generatedImages[0]}.jpg`),
+      uploadsPath(`${generatedImages[1]}.jpg`),
+      uploadsPath(`${generatedImages[2]}.jpg`),
+      uploadsPath(`${generatedImages[3]}.jpg`),
+      uploadsPath(`${generatedImages[4]}.jpg`),
+      uploadsPath(`${generatedImages[5]}.jpg`),
     ]);
 
     await removeTestingZip();
@@ -83,6 +85,9 @@ describe('csvLoader languages', () => {
       'generatedLang2.pdf',
       'generatedLang1.pdf',
     ]);
+
+    expect(await filesystem.fileExistsOnPath(uploadsPath('generatedLang1.pdf'))).toBe(true);
+    expect(await filesystem.fileExistsOnPath(uploadsPath('generatedLang2.pdf'))).toBe(true);
   });
 
   it('should import attachment files', async () => {

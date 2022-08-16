@@ -18,13 +18,13 @@ describe('Settings', () => {
     const suggestions = {};
 
     beforeEach(() => {
-      spyOn(UsersAPI, 'currentUser').and.returnValue(Promise.resolve(user));
-      spyOn(ThesauriAPI, 'getThesauri').and.returnValue(Promise.resolve(dictionaries));
-      spyOn(ThesauriAPI, 'getModelStatus').and.returnValue(Promise.resolve(models));
-      spyOn(I18NApi, 'get').and.returnValue(Promise.resolve(translations));
-      spyOn(SettingsAPI, 'get').and.returnValue(Promise.resolve(settings));
-      spyOn(TemplatesAPI, 'get').and.returnValue(Promise.resolve(templates));
-      spyOn(api, 'search').and.returnValue(Promise.resolve(suggestions));
+      spyOn(UsersAPI, 'currentUser').and.callFake(async () => Promise.resolve(user));
+      spyOn(ThesauriAPI, 'getThesauri').and.callFake(async () => Promise.resolve(dictionaries));
+      spyOn(ThesauriAPI, 'getModelStatus').and.callFake(async () => Promise.resolve(models));
+      spyOn(I18NApi, 'get').and.callFake(async () => Promise.resolve(translations));
+      spyOn(SettingsAPI, 'get').and.callFake(async () => Promise.resolve(settings));
+      spyOn(TemplatesAPI, 'get').and.callFake(async () => Promise.resolve(templates));
+      spyOn(api, 'search').and.callFake(async () => Promise.resolve(suggestions));
     });
 
     it('should get the current user, and metadata', async () => {

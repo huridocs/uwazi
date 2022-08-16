@@ -41,7 +41,7 @@ describe('Activitylog routes', () => {
   });
 
   beforeEach(async () => {
-    spyOn(activitylog, 'get').and.returnValue(Promise.resolve('activitylogs'));
+    spyOn(activitylog, 'get').and.callFake(async () => Promise.resolve('activitylogs'));
   });
 
   afterAll(async () => {

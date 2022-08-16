@@ -59,81 +59,79 @@ class Menu extends Component {
     });
 
     return (
-      <>
-        <ul className={this.props.className}>
-          <li className="menuItems" onClick={this.props.onClick}>
-            <ul className="menuNav-list">{navLinks}</ul>
-          </li>
-          <I18NMenu />
-          <li className="menuActions mobile-menuActions" onClick={this.props.onClick}>
-            <ul className="menuNav-list">
-              <FeatureToggleSemanticSearch>
-                <li className="menuNav-item semantic-search">
-                  <button
-                    type="button"
-                    onClick={this.props.showSemanticSearch}
-                    className="menuNav-btn btn btn-default"
-                    aria-label={t('System', 'Semantic search', null, false)}
-                  >
-                    <Icon icon="flask" />
-                    <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
-                  </button>
-                </li>
-              </FeatureToggleSemanticSearch>
+      <ul className={this.props.className}>
+        <li className="menuItems" onClick={this.props.onClick}>
+          <ul className="menuNav-list">{navLinks}</ul>
+        </li>
+        <I18NMenu />
+        <li className="menuActions mobile-menuActions" onClick={this.props.onClick}>
+          <ul className="menuNav-list">
+            <FeatureToggleSemanticSearch>
+              <li className="menuNav-item semantic-search">
+                <button
+                  type="button"
+                  onClick={this.props.showSemanticSearch}
+                  className="menuNav-btn btn btn-default"
+                  aria-label={t('System', 'Semantic search', null, false)}
+                >
+                  <Icon icon="flask" />
+                  <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+                </button>
+              </li>
+            </FeatureToggleSemanticSearch>
+            <li className="menuNav-item">
+              <I18NLink
+                to={this.libraryUrl()}
+                className="menuNav-btn btn btn-default public-documents"
+                activeClassName="active-link"
+                aria-label={t('System', 'Library', null, false)}
+              >
+                <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
+                <span className="tab-link-label">{t('System', 'Library')}</span>
+              </I18NLink>
+            </li>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
               <li className="menuNav-item">
                 <I18NLink
-                  to={this.libraryUrl()}
-                  className="menuNav-btn btn btn-default public-documents"
+                  to="/settings/account"
+                  className="menuNav-btn btn btn-default settings-section"
                   activeClassName="active-link"
-                  aria-label={t('System', 'Library', null, false)}
+                  aria-label={t('System', 'Settings', null, false)}
                 >
-                  <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                  <span className="tab-link-label">{t('System', 'Library')}</span>
+                  <Icon icon="cog" />
+                  <span className="tab-link-label">{t('System', 'Settings')}</span>
                 </I18NLink>
               </li>
-              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-                <li className="menuNav-item">
-                  <I18NLink
-                    to="/settings/account"
-                    className="menuNav-btn btn btn-default settings-section"
-                    activeClassName="active-link"
-                    aria-label={t('System', 'Settings', null, false)}
-                  >
-                    <Icon icon="cog" />
-                    <span className="tab-link-label">{t('System', 'Settings')}</span>
-                  </I18NLink>
-                </li>
-              </NeedAuthorization>
-              <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-                <li className="menuNav-item only-mobile">
-                  <a href="/logout" className="menuNav-btn btn btn-default">
-                    <Icon icon="power-off" />
-                    <span className="tab-link-label">{t('System', 'Logout')}</span>
-                  </a>
-                </li>
-              </NeedAuthorization>
-              {(() => {
-                if (!user._id) {
-                  return (
-                    <li className="menuNav-item">
-                      <I18NLink
-                        to="/login"
-                        className="menuNav-btn btn btn-default"
-                        aria-label={t('System', 'Sign in', null, false)}
-                      >
-                        <Icon icon="power-off" />
-                        <span className="tab-link-label">{t('System', 'Sign in')}</span>
-                      </I18NLink>
-                    </li>
-                  );
-                }
+            </NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+              <li className="menuNav-item only-mobile">
+                <a href="/logout" className="menuNav-btn btn btn-default">
+                  <Icon icon="power-off" />
+                  <span className="tab-link-label">{t('System', 'Logout')}</span>
+                </a>
+              </li>
+            </NeedAuthorization>
+            {(() => {
+              if (!user._id) {
+                return (
+                  <li className="menuNav-item">
+                    <I18NLink
+                      to="/login"
+                      className="menuNav-btn btn btn-default"
+                      aria-label={t('System', 'Sign in', null, false)}
+                    >
+                      <Icon icon="power-off" />
+                      <span className="tab-link-label">{t('System', 'Sign in')}</span>
+                    </I18NLink>
+                  </li>
+                );
+              }
 
-                return null;
-              })()}
-            </ul>
-          </li>
-        </ul>
-      </>
+              return null;
+            })()}
+          </ul>
+        </li>
+      </ul>
     );
   }
 }

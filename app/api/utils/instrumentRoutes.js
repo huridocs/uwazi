@@ -20,7 +20,15 @@ const mockResponseAsWritableStream = (res, resolve) => {
   };
 };
 
-const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, runRoute = true) => {
+const executeRoute = (
+  method,
+  routePath,
+  req = {},
+  res = {},
+  next = () => {},
+  app = {},
+  runRoute = true
+) => {
   const args = app[method].calls.allArgs().find(a => a[0] === routePath);
   if (!args) {
     throw new Error(`Route ${method.toUpperCase()} ${routePath} is not defined`);
@@ -54,11 +62,11 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
     });
 
     if (!args[1]) {
-      return reject(new Error('route function has not been defined !'));
+      reject(new Error('route function has not been defined !'));
     }
 
     if (!runRoute) {
-      return resolve();
+      resolve();
     }
 
     const mockedNext = error => {
@@ -66,7 +74,7 @@ const executeRoute = (method, routePath, req = {}, res, next = () => {}, app, ru
       reject(error);
     };
 
-    return args[args.length - 1](req, res, mockedNext);
+    args[args.length - 1](req, res, mockedNext);
   });
 
   if (args) {
@@ -87,25 +95,25 @@ export default (route, io) => {
   route(app, io);
   validation.validateRequest = originalValidateRequest;
 
-  const get = (routePath, req, res = {}, next) =>
+  const get = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app);
-  const _get = (routePath, req, res = {}, next) =>
+  const _get = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app, false);
-  get.validation = (routePath, req, res = {}, next) =>
+  get.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('get', routePath, req, res, next, app, false).validation;
 
-  const post = (routePath, req, res = {}, next) =>
+  const post = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app);
-  const _post = (routePath, req, res = {}, next) =>
+  const _post = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app, false);
-  post.validation = (routePath, req, res = {}, next) =>
+  post.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('post', routePath, req, res, next, app, false).validation;
 
-  const remove = (routePath, req, res = {}, next) =>
+  const remove = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app);
-  const _remove = (routePath, req, res = {}, next) =>
+  const _remove = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app, false);
-  remove.validation = (routePath, req, res = {}, next) =>
+  remove.validation = (routePath, req, res = {}, next = () => {}) =>
     executeRoute('delete', routePath, req, res, next, app, false).validation;
 
   const instrumentedRoute = {

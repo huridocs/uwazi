@@ -2,7 +2,11 @@ import { Emitter } from '@socket.io/redis-emitter';
 import { createClient } from 'redis';
 import { config } from 'api/config';
 
-const emitSocketEvent = async (event: string, tenant: string = '', data?: string) =>
+const emitSocketEvent = async (
+  event: string,
+  tenant: string = '',
+  data: string | undefined = undefined
+) =>
   new Promise((resolve, reject) => {
     const redisClient = createClient({ host: config.redis.host, port: config.redis.port });
 

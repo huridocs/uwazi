@@ -30,7 +30,7 @@ describe('SearchText', () => {
       storeKey: 'storeKey',
       searchSnippets: jasmine
         .createSpy('searchSnippets')
-        .and.returnValue(Promise.resolve([{ page: 2 }])),
+        .and.callFake(async () => Promise.resolve([{ page: 2 }])),
       selectSnippet: jest.fn(),
       snippets: Immutable.fromJS({
         metadata: [

@@ -12,7 +12,7 @@ import entities from 'api/entities';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { errorLog } from 'api/log';
-import { fileExists } from '../storage';
+import { storage } from '../storage';
 import {
   fixtures,
   uploadId,
@@ -37,7 +37,7 @@ describe('files routes', () => {
   );
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);
@@ -161,7 +161,7 @@ describe('files routes', () => {
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
-      expect(await fileExists(file.filename!, 'custom')).toBe(false);
+      expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
@@ -255,10 +255,8 @@ describe('files routes', () => {
       const entityId = db.id();
       await request(app)
         .post('/api/files/upload/attachment')
-        .send({
-          originalname: 'Dont bring me down - 1979',
-          entity: entityId,
-        })
+        .field('entity', entityId.toString())
+        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
         .expect(200);
 
       const [attachment] = await files.get({ entity: entityId.toString() });
@@ -279,10 +277,9 @@ describe('files routes', () => {
         .attach('file', path.join(__dirname, 'test.txt'));
       expect(response.status).toBe(200);
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-      expect(await fileExists(file.filename!, 'document')).toBe(true);
-      expect(errorLog.debug).toHaveBeenCalledWith(
-        expect.stringMatching('[default](.*)Deprecation')
-      );
+
+      expect(await storage.fileExists(file.filename!, 'document')).toBe(true);
+      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 

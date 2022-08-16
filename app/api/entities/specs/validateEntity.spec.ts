@@ -15,7 +15,7 @@ import { validateEntity } from '../validateEntity';
 
 describe('validateEntity', () => {
   beforeEach(async () => {
-    spyOn(entitiesIndex, 'updateMapping').and.returnValue(Promise.resolve());
+    spyOn(entitiesIndex, 'updateMapping').and.callFake(async () => Promise.resolve());
     //@ts-ignore
     await db.setupFixturesAndContext(fixtures);
   });

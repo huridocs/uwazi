@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import path from 'path';
-import { PDF } from 'api/files/PDF';
+import { spawn } from 'child-process-promise';
 import { config } from 'api/config';
 
 export default {
@@ -17,9 +17,18 @@ export default {
     while (await cursor.hasNext()) {
       const doc = await cursor.next();
       if (doc.file && doc.file.filename) {
-        await new PDF({
-          filename: path.join(config.defaultTenant.uploadedDocuments, doc.file.filename),
-        }).createThumbnail(doc._id.toString());
+        const documentId = doc._id.toString();
+        const filePath = path.join(config.defaultTenant.uploadedDocuments, doc.file.filename);
+        const thumbnailPath = path.join(config.defaultTenant.uploadedDocuments, documentId);
+        try {
+          await spawn(
+            'pdftoppm',
+            ['-f', '1', '-singlefile', '-scale-to', '320', '-jpeg', filePath, thumbnailPath],
+            { capture: ['stdout', 'stderr'] }
+          );
+        } catch (err) {
+          process.stdout.write(`Thumbnail creation error for: ${documentId}\r`);
+        }
         process.stdout.write(`processed -> ${index}\r`);
         index += 1;
       }

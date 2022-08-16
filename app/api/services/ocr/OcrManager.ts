@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import urljoin from 'url-join';
-import { files, uploadsPath, fileContents } from 'api/files';
-import { generateFileName, fileFromReadStream } from 'api/files/filesystem';
+import { files, uploadsPath, storage } from 'api/files';
+import { generateFileName } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import settings from 'api/settings/settings';
 import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
@@ -73,7 +73,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   }
 
   const newFileName = generateFileName(originalFile);
-  await fileFromReadStream(newFileName, fileStream);
+  await storage.storeFile(newFileName, fileStream, 'document');
   return processDocument(
     originalFile.entity!,
     {
@@ -195,7 +195,7 @@ class OcrManager {
 
     await validateTaskIsAdmissible(file, settingsValues);
 
-    const fileContent = await fileContents(file.filename, 'document');
+    const fileContent = await storage.fileContents(file.filename, 'document');
     const tenant = tenants.current();
 
     await request.uploadFile(

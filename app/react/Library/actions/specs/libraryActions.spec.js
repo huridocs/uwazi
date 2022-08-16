@@ -344,7 +344,7 @@ describe('libraryActions', () => {
     describe('saveDocument', () => {
       it('should save the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsApi, 'save').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'save').and.callFake(async () => Promise.resolve('response'));
         const doc = { name: 'doc' };
 
         const expectedActions = [
@@ -408,7 +408,7 @@ describe('libraryActions', () => {
     describe('deleteDocument', () => {
       it('should delete the document and dispatch a notification on success', done => {
         mockID();
-        spyOn(documentsApi, 'delete').and.returnValue(Promise.resolve('response'));
+        spyOn(documentsApi, 'delete').and.callFake(async () => Promise.resolve('response'));
         const doc = { sharedId: 'sharedId', name: 'doc' };
 
         const expectedActions = [
@@ -459,7 +459,7 @@ describe('libraryActions', () => {
     describe('getDocumentReferences', () => {
       it('should set the library sidepanel references', done => {
         mockID();
-        spyOn(referencesAPI, 'get').and.returnValue(Promise.resolve('referencesResponse'));
+        spyOn(referencesAPI, 'get').and.callFake(async () => Promise.resolve('referencesResponse'));
 
         const expectedActions = [
           { type: 'library.sidepanel.references/SET', value: 'referencesResponse' },

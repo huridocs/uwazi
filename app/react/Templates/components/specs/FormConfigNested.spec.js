@@ -1,6 +1,6 @@
 import FormConfigNested from 'app/Templates/components/FormConfigNested';
 import { Field } from 'react-redux-form';
-import { renderConnected } from '../../../utils/test/renderConnected.tsx';
+import { renderConnected } from 'app/utils/test/renderConnected';
 
 describe('FormConfigNested', () => {
   let props;

@@ -34,7 +34,7 @@ describe('csvLoader zip file', () => {
       ],
       'test.zip'
     );
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(filesystem, 'generateFileName').and.callFake(file => `generated${file.originalname}`);
     await loader.load(zip, template1Id);
     imported = await files.get({ type: 'document' }, '+fullText');

@@ -4,7 +4,6 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
-import { uploadsPath, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
@@ -14,7 +13,7 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
-import { readableFile, fileExists } from './storage';
+import { storage } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -38,7 +37,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(uploadsPath),
+    uploadMiddleware('document'),
     async (req, res) => {
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
@@ -59,7 +58,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(customUploadsPath),
+    uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
       files
@@ -74,7 +73,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(attachmentsPath),
+    uploadMiddleware('attachment'),
     activitylogMiddleware,
     (req, res, next) => {
       files
@@ -185,7 +184,7 @@ export default (app: Application) => {
       if (
         !file?.filename ||
         !file?.type ||
-        !(await fileExists(file.filename, file.type)) ||
+        !(await storage.fileExists(file.filename, file.type)) ||
         !(await checkEntityPermission(file))
       ) {
         throw createError('file not found', 404);
@@ -205,7 +204,7 @@ export default (app: Application) => {
       }
 
       res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
-      (await readableFile(file.filename, file.type)).pipe(res);
+      (await storage.readableFile(file.filename, file.type)).pipe(res);
     }
   );
 

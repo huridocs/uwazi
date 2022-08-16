@@ -8,8 +8,8 @@ import fixtures from './fixtures.js';
 
 describe('settings', () => {
   beforeEach(done => {
-    spyOn(translations, 'updateContext').and.returnValue(Promise.resolve('ok'));
-    spyOn(Suggestions, 'deleteByProperty').and.returnValue(Promise.resolve('ok'));
+    spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve('ok'));
+    spyOn(Suggestions, 'deleteByProperty').and.callFake(async () => Promise.resolve('ok'));
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -295,7 +295,7 @@ describe('settings', () => {
           },
         ],
       };
-      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
       spyOn(settings, 'save');
       await settings.removeTemplateFromFilters('123');
       expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
@@ -308,8 +308,8 @@ describe('settings', () => {
     };
 
     it('should update a filter name', async () => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
-      spyOn(settings, 'save').and.returnValue(Promise.resolve('updatedSettings'));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
+      spyOn(settings, 'save').and.callFake(async () => Promise.resolve('updatedSettings'));
 
       const updatedFilter = await settings.updateFilterName('123', 'The dark knight');
 
@@ -320,8 +320,8 @@ describe('settings', () => {
     });
 
     it('should do nothing when filter does not exist', async () => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve(_settings));
-      spyOn(settings, 'save').and.returnValue(Promise.resolve('updatedSettings'));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
+      spyOn(settings, 'save').and.callFake(async () => Promise.resolve('updatedSettings'));
 
       const updatedFilter = await settings.updateFilterName('321', 'Filter not present');
 

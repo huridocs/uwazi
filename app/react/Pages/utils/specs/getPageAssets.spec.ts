@@ -21,7 +21,7 @@ describe('getPageAssets', () => {
       metadata: /*non-metadata-object*/ { content: 'originalContent' },
     };
 
-    spyOn(PagesAPI, 'getById').and.returnValue(Promise.resolve(page));
+    spyOn(PagesAPI, 'getById').and.callFake(async () => Promise.resolve(page));
 
     spyOn(pageItemLists, 'generate').and.returnValue({
       content: 'parsedContent',

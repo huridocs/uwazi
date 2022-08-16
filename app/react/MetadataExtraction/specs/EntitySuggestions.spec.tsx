@@ -53,7 +53,9 @@ describe('EntitySuggestions', () => {
 
   describe('Render table', () => {
     beforeEach(async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+        Promise.resolve(suggestionsData)
+      );
     });
 
     describe('Metadata property', () => {
@@ -118,7 +120,9 @@ describe('EntitySuggestions', () => {
 
   describe('Pagination', () => {
     beforeEach(async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+        Promise.resolve(suggestionsData)
+      );
       await act(async () => renderComponent());
     });
 
@@ -150,7 +154,9 @@ describe('EntitySuggestions', () => {
 
   describe('State filter', () => {
     beforeEach(async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+        Promise.resolve(suggestionsData)
+      );
     });
     it('should retrieve suggestions data when state filter changed', async () => {
       await act(async () => {
@@ -212,7 +218,9 @@ describe('EntitySuggestions', () => {
     it('should train the model', async () => {
       await renderComponent();
       const trainingButton = screen.getByText('Find suggestions').parentElement!;
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+        Promise.resolve(suggestionsData)
+      );
       spyOn(SuggestionsAPI, 'trainModel').and.returnValue(
         Promise.resolve({ message: '', status: 'ready' })
       );
@@ -239,7 +247,9 @@ describe('EntitySuggestions', () => {
     describe('text property', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
-        spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+        spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+          Promise.resolve(suggestionsData)
+        );
         await act(async () => renderComponent());
         const rows = screen.getAllByRole('row');
         const acceptButton = within(rows[1]).getByLabelText('Accept suggestion');
@@ -334,7 +344,9 @@ describe('EntitySuggestions', () => {
 
   describe('Saving entity', () => {
     it('should update the state in the entity table', async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(Promise.resolve(suggestionsData));
+      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
+        Promise.resolve(suggestionsData)
+      );
       await act(async () => renderComponent());
       const rows = screen.getAllByRole('row');
       const originalRow = within(rows[2])

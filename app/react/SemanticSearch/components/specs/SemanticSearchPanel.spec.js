@@ -117,12 +117,4 @@ describe('SemanticSearchPanel', () => {
       expect(actions.updateSearch).toHaveBeenCalledWith('search update');
     });
   });
-
-  describe('close', () => {
-    it('should hide semantic search panel', () => {
-      const component = render();
-      component.instance().close();
-      expect(actions.hideSemanticSearch).toHaveBeenCalled();
-    });
-  });
 });

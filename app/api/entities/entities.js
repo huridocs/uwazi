@@ -8,7 +8,6 @@ import date from 'api/utils/date';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import templates from 'api/templates/templates';
-import path from 'path';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
 import { unique } from 'api/utils/filters';
@@ -16,7 +15,6 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { validateEntity } from './validateEntity';
-import { deleteFiles } from '../files/filesystem';
 import model from './entitiesModel';
 import settings from '../settings';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
@@ -155,23 +153,17 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   );
 }
 
-function getEntityTemplate(doc, language) {
-  return new Promise(resolve => {
-    if (!doc.sharedId && !doc.template) {
-      return resolve(null);
+async function getEntityTemplate(doc, language) {
+  let template = null;
+  if (doc.template) {
+    template = await templates.getById(doc.template);
+  } else if (doc.sharedId) {
+    const storedDoc = await this.getById(doc.sharedId, language);
+    if (storedDoc) {
+      template = await templates.getById(storedDoc.template);
     }
-
-    if (doc.template) {
-      return templates.getById(doc.template).then(resolve);
-    }
-
-    return this.getById(doc.sharedId, language).then(storedDoc => {
-      if (!storedDoc) {
-        return null;
-      }
-      return templates.getById(storedDoc.template).then(resolve);
-    });
-  });
+  }
+  return template;
 }
 
 const uniqueMetadataObject = (elem, pos, arr) =>
@@ -517,7 +509,7 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, onlyPublished = true, limit) {
+  getByTemplate(template, language, limit, onlyPublished = true) {
     const query = {
       template,
       language,
@@ -727,24 +719,6 @@ export default {
     return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
   },
 
-  async deleteLanguageFiles(entity) {
-    const filesToDelete = [];
-    filesToDelete.push(path.normalize(filesystem.uploadsPath(`${entity._id.toString()}.jpg`)));
-    const sibilings = await this.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
-    if (entity.file) {
-      const shouldUnlinkFile = sibilings.reduce(
-        (should, sibiling) => should && !(sibiling.file.filename === entity.file.filename),
-        true
-      );
-      if (shouldUnlinkFile) {
-        filesToDelete.push(path.normalize(filesystem.uploadsPath(entity.file.filename)));
-      }
-    }
-    if (entity.file) {
-      await deleteFiles(filesToDelete);
-    }
-  },
-
   async generateNewEntitiesForLanguage(entities, language) {
     return Promise.all(
       entities.map(async _entity => {
@@ -817,9 +791,9 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get({ language: locale }, null, { skip: offset, limit })
-        .then(entities => Promise.all(entities.map(entity => this.deleteLanguageFiles(entity))))
-        .then(() => deleteFilesByLanguage(offset + limit, totalRows));
+      return this.get({ language: locale }, null, { skip: offset, limit }).then(() =>
+        deleteFilesByLanguage(offset + limit, totalRows)
+      );
     };
 
     return this.count({ language: locale })

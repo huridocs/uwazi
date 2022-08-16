@@ -12,10 +12,10 @@ describe('User actions', () => {
 
   beforeEach(() => {
     dispatch = jasmine.createSpy('dispatch');
-    spyOn(api, 'delete').and.returnValue(Promise.resolve());
-    spyOn(api, 'save').and.returnValue(Promise.resolve());
-    spyOn(api, 'new').and.returnValue(Promise.resolve({ _id: 'newUserId' }));
-    spyOn(api, 'get').and.returnValue(Promise.resolve());
+    spyOn(api, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(api, 'save').and.callFake(async () => Promise.resolve());
+    spyOn(api, 'new').and.callFake(async () => Promise.resolve({ _id: 'newUserId' }));
+    spyOn(api, 'get').and.callFake(async () => Promise.resolve());
     spyOn(basicActions, 'remove').and.returnValue('USER REMOVED');
     spyOn(basicActions, 'update').and.returnValue('USER UPDATED');
     spyOn(basicActions, 'set').and.returnValue('USERS SET');

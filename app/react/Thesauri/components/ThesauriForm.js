@@ -61,8 +61,6 @@ export class ThesauriForm extends Component {
     this.renderItem = this.renderItem.bind(this);
     this.onChange = this.onChange.bind(this);
     this.importThesaurusFile = this.importThesaurusFile.bind(this);
-    this.importFileFormRef = React.createRef();
-    this.InputElement = React.createRef();
   }
 
   componentDidMount() {
