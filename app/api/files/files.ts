@@ -30,7 +30,12 @@ export const files = {
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
-      await storage.removeFiles(toDeleteFiles);
+
+      await Promise.all(
+        toDeleteFiles.map(async ({ filename, type }) =>
+          storage.removeFile(filename || '', type || 'document')
+        )
+      );
       await search.indexEntities(
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'

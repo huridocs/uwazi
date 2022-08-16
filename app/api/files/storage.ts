@@ -7,7 +7,7 @@ import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
 import { FileType } from 'shared/types/fileType';
-import { PassThrough, Readable } from 'stream';
+import { Readable } from 'stream';
 import {
   activityLogPath,
   attachmentsPath,
@@ -94,24 +94,18 @@ export const storage = {
       await s3().delete(s3KeyWithPath(filename, type));
     }
   },
-  async removeFiles(files: FileType[]) {
-    return Promise.all(
-      files.map(async file => deleteFile(paths[file.type || 'document'](file.filename || '')))
-    );
-  },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
-    const diskPassThrough = new PassThrough();
-    file.pipe(diskPassThrough);
+    file.pipe(createWriteStream(paths[type](filename)));
+    await new Promise(resolve => {
+      file.on('close', resolve);
+    });
 
     if (tenants.current().featureFlags?.s3Storage) {
-      const bufferPassThrough = new PassThrough();
-      file.pipe(bufferPassThrough);
-      await s3().upload(s3KeyWithPath(filename, type), await streamToBuffer(bufferPassThrough));
+      await s3().upload(
+        s3KeyWithPath(filename, type),
+        await streamToBuffer(createReadStream(paths[type](filename)))
+      );
     }
-
-    diskPassThrough.pipe(createWriteStream(paths[type](filename)));
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise(resolve => diskPassThrough.on('close', resolve));
   },
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
     try {

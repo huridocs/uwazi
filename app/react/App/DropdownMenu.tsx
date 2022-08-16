@@ -3,17 +3,16 @@ import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { IImmutable } from 'shared/types/Immutable';
+import { SettingsLinkSchema } from 'shared/types/settingsType';
 
 export type ISublink = {
   title: string;
   url: string;
 };
 
-export type ILink = {
+export type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   title: string;
-  url: string;
   sublinks: [ISublink];
-  type: string;
 };
 
 export type DropdownMenuProps = {

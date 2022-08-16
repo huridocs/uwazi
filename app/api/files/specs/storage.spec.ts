@@ -226,10 +226,14 @@ describe('storage', () => {
 
     describe('when s3 feature active', () => {
       it('should store it on disk and on s3 bucket', async () => {
-        await storage.storeFile('file_created.txt', Readable.from(['content created']), 'document');
+        await storage.storeFile(
+          'file_created.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
 
         expect(await streamToString(createReadStream(uploadsPath('file_created.txt')))).toBe(
-          'content created'
+          'content created\n'
         );
         const s3File = await s3.send(
           new GetObjectCommand({
@@ -238,7 +242,7 @@ describe('storage', () => {
           })
         );
         // @ts-ignore
-        expect(await streamToString(s3File.Body)).toBe('content created');
+        expect(await streamToString(s3File.Body)).toBe('content created\n');
       });
     });
 
