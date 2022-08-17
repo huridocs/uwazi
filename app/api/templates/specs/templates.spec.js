@@ -16,6 +16,9 @@ import templates from '../templates';
 import fixtures, {
   templateToBeEditedId,
   templateToBeDeleted,
+  thesaurusTemplateId,
+  thesaurusTemplate2Id,
+  thesaurusTemplate3Id,
   templateWithContents,
   swapTemplate,
   templateToBeInherited,
@@ -452,18 +455,37 @@ describe('templates', () => {
   });
 
   describe('delete', () => {
-    it('should delete properties of other templates using this template as select/relationship', async () => {
-      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should delete properties of other templates using this template as select/relationship', async () => {
       await templates.delete({ _id: templateToBeDeleted });
 
-      const [template] = await templates.get({ name: 'thesauri template 2' });
-      expect(template.properties.length).toBe(1);
-      expect(template.properties[0].label).toBe('select2');
+      const [template1] = await templates.get({ name: 'thesauri template' });
+      expect(template1.properties.length).toBe(1);
+      expect(template1.properties[0].label).toBe('select');
 
-      const [template2] = await templates.get({ name: 'thesauri template 3' });
-      expect(template2.properties.length).toBe(2);
-      expect(template2.properties[0].label).toBe('text');
-      expect(template2.properties[1].label).toBe('text2');
+      const [template2] = await templates.get({ name: 'thesauri template 2' });
+      expect(template2.properties.length).toBe(1);
+      expect(template2.properties[0].label).toBe('select2');
+
+      const [template3] = await templates.get({ name: 'thesauri template 3' });
+      expect(template3.properties.length).toBe(2);
+      expect(template3.properties[0].label).toBe('text');
+      expect(template3.properties[1].label).toBe('text2');
+    });
+
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should remove the related metadata from entities using this template as a select/relationship', async () => {
+      await templates.delete({ _id: templateToBeDeleted });
+      const relatedEntities = await db.mongodb
+        .collection('entities')
+        .find({
+          template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
+        })
+        .toArray();
+      const titles = relatedEntities.map(e => e.title);
+      const metadatas = relatedEntities.map(e => e.metadata);
+      expect(titles).toEqual(['t1-1', 't1-2', 't1-3', 't2-1']);
+      expect(metadatas).toEqual([{ select: [] }, { select: [] }, { select: [] }, { select2: [] }]);
     });
 
     it('should delete a template when no document is using it', done => {

@@ -1,8 +1,12 @@
+/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
+const thesaurusTemplateId = db.id();
+const thesaurusTemplate2Id = db.id();
+const thesaurusTemplate3Id = db.id();
 const templateWithContents = db.id();
 const select3id = db.id();
 const select4id = db.id();
@@ -43,47 +47,62 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
-      _id: db.id(),
+      _id: thesaurusTemplateId,
       name: 'thesauri template',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.select,
           content: thesauriId1.toString(),
           label: 'select',
           name: 'select',
         },
-        { type: propertyTypes.relationship, content: templateToBeDeleted, label: 'select2' },
+        {
+          _id: db.id(),
+          type: propertyTypes.relationship,
+          content: templateToBeDeleted,
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
+        },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
-      _id: db.id(),
+      _id: thesaurusTemplate2Id,
       name: 'thesauri template 2',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.select,
           content: thesauriId1.toString(),
           label: 'select2',
           name: 'select2',
         },
-        { type: propertyTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
-      ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
-    },
-    {
-      _id: db.id(),
-      name: 'thesauri template 3',
-      properties: [
-        { type: propertyTypes.text, label: 'text' },
-        { type: propertyTypes.text, label: 'text2' },
         {
+          _id: db.id(),
           type: propertyTypes.select,
           content: templateToBeDeleted,
           label: 'selectToBeDeleted',
-          name: 'selecttobedeleted',
+          name: 'selectToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    },
+    {
+      _id: thesaurusTemplate3Id,
+      name: 'thesauri template 3',
+      properties: [
+        { _id: db.id(), type: propertyTypes.text, label: 'text' },
+        { _id: db.id(), type: propertyTypes.text, label: 'text2' },
+        {
+          _id: db.id(),
+          type: propertyTypes.select,
+          content: templateToBeDeleted,
+          label: 'selectToBeDeleted',
+          name: 'selectToBeDeleted',
+        },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
       _id: templateWithContents,
@@ -243,11 +262,56 @@ export default {
       entityView: true,
     },
   ],
+  entities: [
+    {
+      metadata: {
+        select: [],
+        relationshipToBeDeleted: [],
+      },
+      template: thesaurusTemplateId,
+      title: 't1-1',
+      language: 'en',
+      sharedId: 't1-1-sharedId',
+    },
+    {
+      metadata: {
+        select: [],
+        relationshipToBeDeleted: [],
+      },
+      template: thesaurusTemplateId,
+      title: 't1-2',
+      language: 'en',
+      sharedId: 't1-2-sharedId',
+    },
+    {
+      metadata: {
+        select: [],
+        relationshipToBeDeleted: [],
+      },
+      template: thesaurusTemplateId,
+      title: 't1-3',
+      language: 'en',
+      sharedId: 't1-3-sharedId',
+    },
+    {
+      metadata: {
+        select2: [],
+        selectToBeDeleted: [],
+      },
+      template: thesaurusTemplate2Id,
+      title: 't2-1',
+      language: 'en',
+      sharedId: 't2-1-sharedId',
+    }
+  ],
 };
 
 export {
   templateToBeEditedId,
   templateToBeDeleted,
+  thesaurusTemplateId,
+  thesaurusTemplate2Id,
+  thesaurusTemplate3Id,
   templateWithContents,
   swapTemplate,
   templateToBeInherited,
