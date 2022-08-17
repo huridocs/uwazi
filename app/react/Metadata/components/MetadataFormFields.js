@@ -33,6 +33,7 @@ import {
 import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
+import { DeleteSelectionButton } from './DeleteSelectionButton';
 
 const translateOptions = thesauri =>
   thesauri
@@ -298,36 +299,39 @@ class MetadataFormFields extends Component {
       <div>
         {fields
           .filter(p => !showSubset || showSubset.includes(p.name))
-          .map(property => (
-            <FormGroup
-              key={property.name}
-              model={`.metadata.${property.name}`}
-              className={
-                model === 'publicform' && property.type === 'generatedid'
-                  ? ' hidden '
-                  : property.type
-              }
-            >
-              <ul
-                className={`search__filter is-active ${
-                  this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
-                }`}
+          .map(property => {
+            const showIXButtons =
+              storeKey === 'documentViewer' &&
+              ['text', 'date', 'numeric', 'markdown'].includes(property.type);
+            return (
+              <FormGroup
+                key={property.name}
+                model={`.metadata.${property.name}`}
+                className={
+                  model === 'publicform' && property.type === 'generatedid'
+                    ? ' hidden '
+                    : property.type
+                }
               >
-                {this.renderLabel(property)}
-                {mlThesauri.includes(property.content) &&
-                [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
+                <ul
+                  className={`search__filter is-active ${
+                    this.props.highlightedProps.includes(property.name) ? 'highlight' : ''
+                  }`}
+                >
+                  {this.renderLabel(property)}
+                  {mlThesauri.includes(property.content) &&
+                  [propertyTypes.multiselect, propertyTypes.select].includes(property.type) ? (
+                    <li className="wide">
+                      <MultiSuggest
+                        model={`.suggestedMetadata.${property.name}`}
+                        selectModel={`.metadata.${property.name}`}
+                        propertyType={property.type}
+                      />
+                    </li>
+                  ) : null}
                   <li className="wide">
-                    <MultiSuggest
-                      model={`.suggestedMetadata.${property.name}`}
-                      selectModel={`.metadata.${property.name}`}
-                      propertyType={property.type}
-                    />
-                  </li>
-                ) : null}
-                <li className="wide">
-                  <div className="metadata-extractor-container">
-                    {storeKey === 'documentViewer' &&
-                      ['text', 'date', 'numeric', 'markdown'].includes(property.type) && (
+                    <div className="metadata-extractor-container">
+                      {showIXButtons && (
                         <MetadataExtractor
                           fieldName={property.name}
                           fieldId={property._id}
@@ -336,12 +340,19 @@ class MetadataFormFields extends Component {
                           locale={locale}
                         />
                       )}
-                    {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
-                  </div>
-                </li>
-              </ul>
-            </FormGroup>
-          ))}
+                      {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
+                      {showIXButtons && (
+                        <DeleteSelectionButton
+                          propertyName={property.name}
+                          propertyID={property._id}
+                        />
+                      )}
+                    </div>
+                  </li>
+                </ul>
+              </FormGroup>
+            );
+          })}
       </div>
     );
   }
