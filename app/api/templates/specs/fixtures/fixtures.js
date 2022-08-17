@@ -25,6 +25,22 @@ const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
 
+const languages = [
+  { key: 'en', label: 'English', default: true },
+  { key: 'es', label: 'Spanish' },
+  { key: 'pt', label: 'Portugal' },
+];
+const languageKeys = languages.map(l => l.key);
+
+const createEntitiesInAllLanguages = (baseTitle, template, metadata) =>
+  languageKeys.map(lKey => ({
+    metadata,
+    template,
+    title: `${baseTitle}_${lKey}`,
+    language: lKey,
+    sharedId: `${baseTitle}-sharedId`,
+  }));
+
 export default {
   templates: [
     {
@@ -206,7 +222,7 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [{ key: 'en', label: 'English', default: true }],
+      languages,
     },
   ],
   dictionaries: [
@@ -263,46 +279,22 @@ export default {
     },
   ],
   entities: [
-    {
-      metadata: {
-        select: [],
-        relationshipToBeDeleted: [],
-      },
-      template: thesaurusTemplateId,
-      title: 't1-1',
-      language: 'en',
-      sharedId: 't1-1-sharedId',
-    },
-    {
-      metadata: {
-        select: [],
-        relationshipToBeDeleted: [],
-      },
-      template: thesaurusTemplateId,
-      title: 't1-2',
-      language: 'en',
-      sharedId: 't1-2-sharedId',
-    },
-    {
-      metadata: {
-        select: [],
-        relationshipToBeDeleted: [],
-      },
-      template: thesaurusTemplateId,
-      title: 't1-3',
-      language: 'en',
-      sharedId: 't1-3-sharedId',
-    },
-    {
-      metadata: {
-        select2: [],
-        selectToBeDeleted: [],
-      },
-      template: thesaurusTemplate2Id,
-      title: 't2-1',
-      language: 'en',
-      sharedId: 't2-1-sharedId',
-    }
+    ...createEntitiesInAllLanguages('t1-1', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t1-2', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t1-3', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t2-1', thesaurusTemplate2Id, {
+      select2: [],
+      selectToBeDeleted: [],
+    }),
   ],
 };
 
