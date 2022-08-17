@@ -1,9 +1,11 @@
+/* eslint-disable max-lines */
 import { ObjectID } from 'mongodb';
 
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import translations from 'api/i18n/translations';
 import { updateMapping } from 'api/search/entitiesIndex';
+import settings from 'api/settings/settings';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -22,18 +24,6 @@ import {
   denormalizeInheritedProperties,
   updateExtractedMetadataProperties,
 } from './utils';
-
-const removePropsWithNonexistentId = async (nonexistentId: string) => {
-  const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
-  await Promise.all(
-    relatedTemplates.map(async t =>
-      model.save({
-        ...t,
-        properties: (t.properties || []).filter(prop => prop.content !== nonexistentId),
-      })
-    )
-  );
-};
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -260,6 +250,25 @@ export default {
     return model.getById(templateId);
   },
 
+  async removePropsWithNonexistentId(nonexistentId: string) {
+    const relatedTemplates = await model.get({ 'properties.content': nonexistentId });
+    const defaultLanguage = (await settings.getDefaultLanguage())?.key;
+    if (!defaultLanguage) {
+      throw Error('Missing default language.');
+    }
+    await Promise.all(
+      relatedTemplates.map(async t =>
+        this.save(
+          {
+            ...t,
+            properties: (t.properties || []).filter(prop => prop.content !== nonexistentId),
+          },
+          defaultLanguage
+        )
+      )
+    );
+  },
+
   async delete(template: TemplateSchema) {
     const count = await this.countByTemplate(ensure(template._id));
     if (count > 0) {
@@ -267,7 +276,7 @@ export default {
     }
     const _id = ensure<string>(template._id);
     await translations.deleteContext(_id);
-    await removePropsWithNonexistentId(_id);
+    await this.removePropsWithNonexistentId(_id);
     await model.delete(_id);
 
     return template;
