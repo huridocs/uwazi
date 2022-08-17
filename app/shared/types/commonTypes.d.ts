@@ -22,6 +22,7 @@ export interface ExtractedMetadataSchema {
   propertyID?: string;
   name?: string;
   timestamp?: string;
+  deleteSelection?: boolean;
   selection?: {
     text?: string;
     selectionRectangles?: {
@@ -31,7 +32,6 @@ export interface ExtractedMetadataSchema {
       height?: number;
       page?: string;
     }[];
-    deleteSelection?: boolean;
   };
 }
 

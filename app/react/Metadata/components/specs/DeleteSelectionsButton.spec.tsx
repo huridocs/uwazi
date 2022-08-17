@@ -13,7 +13,7 @@ import * as actions from '../../actions/metadataExtractionActions';
 describe('Delete selections button', () => {
   let renderResult: RenderResult;
   let fileSelections: ExtractedMetadataSchema[];
-  let userSelections: (ExtractedMetadataSchema & { deleteSelection?: boolean })[];
+  let userSelections: ExtractedMetadataSchema[];
   let entityDocument: ClientFile;
   let propertyName: string;
   let propertyID: string;

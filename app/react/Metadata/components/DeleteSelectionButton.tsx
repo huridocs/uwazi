@@ -13,10 +13,7 @@ type deleteSelectionButtonProps = {
   propertyID?: string;
 };
 
-const checkPropertySelections = (
-  property: string,
-  selections?: (ExtractedMetadataSchema & { deleteSelection?: boolean })[]
-) =>
+const checkPropertySelections = (property: string, selections?: ExtractedMetadataSchema[]) =>
   selections?.filter(selection => {
     if (selection.deleteSelection) {
       return false;

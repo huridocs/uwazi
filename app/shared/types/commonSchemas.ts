@@ -162,13 +162,13 @@ export const extractedMetadataSchema = {
     propertyID: { type: 'string' },
     name: { type: 'string' },
     timestamp: { type: 'string' },
+    deleteSelection: { type: 'boolean' },
     selection: {
       type: 'object',
       additionalProperties: false,
       properties: {
         text: { type: 'string' },
         selectionRectangles: selectionRectanglesSchema,
-        deleteSelection: { type: 'boolean' },
       },
     },
   },
