@@ -31,6 +31,7 @@ export interface ExtractedMetadataSchema {
       height?: number;
       page?: string;
     }[];
+    deleteSelection?: boolean;
   };
 }
 

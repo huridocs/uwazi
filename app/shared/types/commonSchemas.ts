@@ -168,6 +168,7 @@ export const extractedMetadataSchema = {
       properties: {
         text: { type: 'string' },
         selectionRectangles: selectionRectanglesSchema,
+        deleteSelection: { type: 'boolean' },
       },
     },
   },
