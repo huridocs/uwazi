@@ -27,9 +27,12 @@ export default {
 
   handleEntity(entity, propertyData) {
     const metadata = entity.metadata || {};
+    if (!entity.template) return;
+
     const extraProperties = Object.keys(metadata).filter(
       k => !propertyData[entity.template].has(k)
     );
+
     if (extraProperties.length) {
       this.actions.push({
         updateOne: {
