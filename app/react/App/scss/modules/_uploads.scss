@@ -89,6 +89,21 @@
 
   .upload-button {
     margin-left: 15px;
+    color: $c-grey-dark;
+    background-color: $c-grey-lighten;
+    border-color: $c-grey-lighten;
+
+    &.upload-failed {
+      color: $c-white;
+      background-color: $c-danger;
+      border-color: $c-danger;
+    }
+
+    &.upload-success {
+      color: $c-white;
+      background-color: $c-success;
+      border-color: $c-success;
+    }
   }
 
   .badge {
