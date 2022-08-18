@@ -1,7 +1,7 @@
 /*eslint max-nested-callbacks: ["error", 10]*/
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 import disableTransitions from '../helpers/disableTransitions';
 
 const getAllEntitiesTitles = async (number: number) => {
@@ -54,6 +54,10 @@ describe('search filters path', () => {
     await proxyMock();
     await adminLogin();
     await disableTransitions();
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 
   describe('filter one type', () => {
