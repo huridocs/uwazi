@@ -191,6 +191,14 @@ export type PropertyValueSchema =
   | LatLonSchema
   | LatLonSchema[];
 
+export interface SelectionRectangleSchema {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  page?: string;
+}
+
 export type SelectionRectanglesSchema = {
   top?: number;
   left?: number;

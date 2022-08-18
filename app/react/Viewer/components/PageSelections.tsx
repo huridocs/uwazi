@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
 import { Highlight } from 'react-text-selection-handler';
 import { IStore } from 'app/istore';
-import { ExtractedMetadataSchema, SelectionRectanglesSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, SelectionRectangleSchema } from 'shared/types/commonTypes';
 
 interface Selection extends ExtractedMetadataSchema {
   isCurrent?: boolean;
@@ -45,13 +45,14 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
       <>
         {selections.map(selection => {
           const selected = selection.selection;
-          const rectangles = (selected?.selectionRectangles as SelectionRectanglesSchema).map(
-            rectangle => ({
-              regionId: rectangle.page,
-              ...rectangle,
-            })
-          );
-          const highlight = { text: selected?.text, selectionRectangles: rectangles };
+          const rectangles = (selected?.selectionRectangles || []).map(rectangle => ({
+            regionId: rectangle.page,
+            ...(rectangle as Required<SelectionRectangleSchema>),
+          }));
+          const highlight = {
+            text: selected?.text,
+            selectionRectangles: rectangles,
+          };
 
           return (
             <div
