@@ -9,8 +9,8 @@ import { FileType } from 'shared/types/fileType';
 const uploadFile = async (
   url: string,
   filename: string,
-  type: FileType['type'] = 'document',
-  cookie: string = ''
+  cookie: string,
+  type: FileType['type'] = 'document'
 ) => {
   let apiEndpoint = 'api/sync/upload';
   if (type === 'custom') {
@@ -50,7 +50,7 @@ export const synchronizer = {
     );
 
     if (change.namespace === 'files' && data.filename) {
-      await uploadFile(url, data.filename, data.type, cookie);
+      await uploadFile(url, data.filename, cookie, data.type);
     }
   },
 };
