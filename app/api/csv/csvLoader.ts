@@ -82,7 +82,11 @@ export class CSVLoader extends EventEmitter {
   }
 
   /* eslint-disable class-methods-use-this */
-  async loadThesauri(csvPath: string, thesaurusId: ObjectIdSchema, { language }: { language: string }) {
+  async loadThesauri(
+    csvPath: string,
+    thesaurusId: ObjectIdSchema,
+    { language }: { language: string }
+  ) {
     const file = importFile(csvPath);
     const availableLanguages: string[] = ensure<LanguageSchema[]>((await settings.get()).languages)
       .map((l: LanguageSchema) => l.key)
