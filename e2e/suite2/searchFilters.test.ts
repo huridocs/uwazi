@@ -35,7 +35,7 @@ const selectFilterOption = async (text: string, position: number) => {
   );
 };
 
-const waitForEvent = async (eventName: string, seconds: number = 3) =>
+const waitForEvent = async (eventName: string, seconds: number = 2) =>
   Promise.race([
     page.evaluate(
       async (name: string) =>
@@ -152,6 +152,7 @@ describe('search filters path', () => {
     });
     it('should order them by aggregated value', async () => {
       await selectFilterOption('Ordenes de la corte', 2);
+      await waitForEvent('DOMContentLoaded');
       const filterNames = await getSearchFilters();
       expect([filterNames[0], filterNames[1], filterNames[2]]).toEqual([
         'Colombia',
