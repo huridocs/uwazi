@@ -48,7 +48,7 @@ const noExtraTemplateId = db.id();
 const allHaveExtraTemplateId = db.id();
 const mixedTemplateId = db.id();
 
-export const fixtures = {
+const fixtures = {
   settings: [
     {
       _id: db.id(),
@@ -141,12 +141,12 @@ export const fixtures = {
       no_extra_text: [],
       no_extra_number: [],
     }),
-    ...createEntitiesInAllLanguages('no_extra_plusOne', allHaveExtraTemplateId, {
+    ...createEntitiesInAllLanguages('all_extra_plusOne', allHaveExtraTemplateId, {
       all_extra_text: [],
       all_extra_number: [],
       extra1: [],
     }),
-    ...createEntitiesInAllLanguages('no_extra_plusThree', allHaveExtraTemplateId, {
+    ...createEntitiesInAllLanguages('all_extra_plusThree', allHaveExtraTemplateId, {
       all_extra_text: [],
       all_extra_number: [],
       extra1: [],
@@ -171,3 +171,5 @@ export const fixtures = {
     }),
   ],
 };
+
+export { fixtures, emptyTemplateId, noExtraTemplateId, allHaveExtraTemplateId, mixedTemplateId };
