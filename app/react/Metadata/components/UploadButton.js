@@ -76,9 +76,9 @@ class UploadButton extends Component {
     }
   }
 
-  renderButton(status = 'success', icon = 'paperclip', message = 'Upload PDF') {
+  renderButton(status = '', icon = 'plus', message = 'Add PDF') {
     return (
-      <label htmlFor="upload-button-input" className={`upload-button btn btn-${status}`}>
+      <label htmlFor="upload-button-input" className={`upload-button btn upload-${status}`}>
         <Icon icon={icon} />
         &nbsp;
         <input
@@ -98,7 +98,7 @@ class UploadButton extends Component {
 
     switch (true) {
       case this.state.failed:
-        return this.renderButton('danger', 'exclamation-triangle', 'An error occured');
+        return this.renderButton('failed', 'exclamation-triangle', 'An error occured');
       case this.state.processing || progress === 0:
         return renderProcessing();
       case progress > 0 && progress < 100:
