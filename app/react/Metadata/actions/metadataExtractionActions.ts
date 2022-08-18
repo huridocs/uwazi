@@ -28,13 +28,9 @@ const updateSelection = (
 const deleteSelection =
   (entityDocument: IImmutable<ClientFile> | undefined, propertyName: string, propertyID?: string) =>
   (dispatch: Dispatch<{}>) => {
-    if (!entityDocument) {
-      return null;
-    }
+    const document = entityDocument?.toJS();
 
-    const document = entityDocument.toJS();
-
-    const updatedSelections = document.extractedMetadata?.filter(selection => {
+    const updatedSelections = document?.extractedMetadata?.filter(selection => {
       if (propertyName === 'title') {
         return selection.name !== 'title';
       }
