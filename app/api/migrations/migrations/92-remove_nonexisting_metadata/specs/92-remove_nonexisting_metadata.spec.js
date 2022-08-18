@@ -97,8 +97,8 @@ describe('migration remove_nonexisting_metadata', () => {
   it('should not ask for a reindex if nothing changed', async () => {
     migration.reindex = undefined;
     await testingDB.setupFixturesAndContext({
-      templates: fixtures.templates.filter({ _id: noExtraTemplateId }),
-      entities: fixtures.entities.filter({ template: noExtraTemplateId }),
+      templates: fixtures.templates.filter(t => t._id === noExtraTemplateId),
+      entities: fixtures.entities.filter(e => e.template === noExtraTemplateId),
     });
     db = testingDB.mongodb;
     await migration.up(db);
