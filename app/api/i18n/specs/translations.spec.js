@@ -8,7 +8,7 @@ import fixtures, {
   englishTranslation,
   dictionaryId,
 } from './fixtures.js';
-import translations from '../translations.js';
+import translations from '../translations';
 
 describe('translations', () => {
   beforeEach(done => {
