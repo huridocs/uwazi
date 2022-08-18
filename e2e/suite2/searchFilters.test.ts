@@ -48,9 +48,6 @@ const waitForEvent = async (eventName: string, seconds: number = 3) =>
     page.waitForTimeout(seconds * 1000),
   ]);
 
-// const delay = async (minutes: number) =>
-//   new Promise(resolve => setTimeout(resolve, 1000 * 60 * minutes));
-
 describe('search filters path', () => {
   beforeAll(async () => {
     await insertFixtures();
