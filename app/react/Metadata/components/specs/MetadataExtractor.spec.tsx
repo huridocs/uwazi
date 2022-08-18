@@ -84,7 +84,7 @@ describe('MetadataExtractor', () => {
     });
 
     expect(notificationActions.notify).toHaveBeenCalledWith(
-      'Could not detect the area for the selected text, please try selecting again.',
+      'Could not detect the area for the selected text',
       'warning'
     );
 
