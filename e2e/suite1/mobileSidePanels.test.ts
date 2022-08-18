@@ -1,4 +1,4 @@
-import { adminLogin } from '../helpers/login';
+import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
@@ -22,6 +22,10 @@ describe('Custom home page and styles', () => {
     // iphone 6 measurements
     await page.setViewport({ width: 376, height: 667 });
     await disableTransitions();
+  });
+
+  afterAll(async () => {
+    await logout();
   });
 
   describe('library view', () => {
