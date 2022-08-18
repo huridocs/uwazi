@@ -12,7 +12,7 @@ let db;
 
 describe('migration remove_nonexisting_metadata', () => {
   beforeEach(async () => {
-    // spyOn(process.stdout, 'write');
+    spyOn(process.stdout, 'write');
     await testingDB.setupFixturesAndContext(fixtures);
     db = testingDB.mongodb;
     await migration.up(db);

@@ -455,8 +455,7 @@ describe('templates', () => {
   });
 
   describe('delete', () => {
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should delete properties of other templates using this template as select/relationship', async () => {
+    it('should delete properties of other templates using this template as select/relationship', async () => {
       await templates.delete({ _id: templateToBeDeleted });
 
       const [template1] = await templates.get({ name: 'thesauri template' });
@@ -473,8 +472,7 @@ describe('templates', () => {
       expect(template3.properties[1].label).toBe('text2');
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
+    it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
       await templates.delete({ _id: templateToBeDeleted });
       const relatedEntities = await db.mongodb
         .collection('entities')

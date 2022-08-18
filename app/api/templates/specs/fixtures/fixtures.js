@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 
