@@ -274,7 +274,7 @@ describe('csvLoader thesauri', () => {
           });
           fail('should throw error');
         } catch (e) {
-          expect(e.message.includes('Invalid')).toBeTrue();
+          expect(e.message.includes('Invalid')).toBe(true);
         }
         mockedFile.mockRestore();
       });
@@ -292,7 +292,7 @@ describe('csvLoader thesauri', () => {
           });
           fail('should throw error');
         } catch (e) {
-          expect(e.message.includes('Invalid')).toBeTrue();
+          expect(e.message.includes('Invalid')).toBe(true);
         }
         mockedFile.mockRestore();
       });
