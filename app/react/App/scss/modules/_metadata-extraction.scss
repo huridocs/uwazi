@@ -1,13 +1,23 @@
-.metadata-extraction-table{
-  .table tr th{
+.metadata-extraction-table {
+  .table tr th {
     border-bottom: 0;
   }
-  .table tr:first-of-type td{
+  .table tr:first-of-type td {
     border-top: 0;
   }
-  .table > tbody > tr > td{
+  .table > tbody > tr > td {
     vertical-align: middle;
     text-align: left;
     padding: 10px 0px;
   }
+}
+
+.delete-selection {
+  position: relative;
+  float: left;
+  border: unset;
+  background-color: transparent;
+  text-decoration: underline;
+  padding: 0;
+  color: $c-black;
 }

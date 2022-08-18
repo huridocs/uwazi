@@ -83,7 +83,7 @@ const DeleteSelectionButtonComponent = ({ onClickFunction, ownProps, stateProps 
   }
 
   return (
-    <button type="button" onClick={onClickFunction}>
+    <button type="button" className="delete-selection" onClick={onClickFunction}>
       <Translate translationKey="Clear PDF selection">Clear PDF selection</Translate>
     </button>
   );

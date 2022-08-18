@@ -101,6 +101,12 @@
     background-color: #ffd84b;
     cursor: pointer;
   }
+
+  .selection {
+    .highlight-rectangle {
+      cursor: default;
+    }
+  }
 }
 
 mark,
