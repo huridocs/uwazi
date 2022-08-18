@@ -56,12 +56,7 @@ const MetadataExtractorComponent = ({
   const onClick = async () => {
     if (!selection.selectionRectangles?.length) {
       notify(
-        t(
-          'System',
-          'Could not detect the area for the selected text, please try selecting again.',
-          null,
-          false
-        ),
+        t('System', 'Could not detect the area for the selected text', null, false),
         'warning'
       );
     }
