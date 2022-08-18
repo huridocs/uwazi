@@ -47,7 +47,7 @@ describe('FullTextSearch zone', () => {
   describe('when clicking on a snippet', () => {
     it('should open the snippets tab on the sidePanel', async () => {
       await expect(page).toClick('.item-snippet', { text: 'Artavia Murillo y otros' });
-      await page.waitForSelector('.is-active ul.snippet-list');
+      await page.waitForSelector('.is-active ul.snippet-list li:first-child');
       expect(
         await getPropertyOfSelector(
           page,
