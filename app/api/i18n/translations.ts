@@ -4,15 +4,15 @@ import thesauri from 'api/thesauri/thesauri';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import model from './translationsModel';
 
-interface IndexedContextValues {
+export interface IndexedContextValues {
   [k: string]: string;
 }
 
-interface IndexedContext extends TranslationContext {
-  values: IndexedContextValues[];
+export interface IndexedContext extends Omit<TranslationContext, 'values'> {
+  values: IndexedContextValues;
 }
 
-interface IndexedTranslations extends TranslationType {
+export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
   contexts?: IndexedContext[];
 }
 
@@ -47,11 +47,14 @@ function prepareContexts(contexts: TranslationContext[] = []) {
           }
           return values;
         }, {} as IndexedContextValues)
-      : ({} as IndexedContextValues),
+      : {},
   }));
 }
 
-function checkDuplicateKeys(context: TranslationContext, values: TranslationValue[]) {
+function checkDuplicateKeys(
+  context: TranslationContext | IndexedContext,
+  values: TranslationValue[]
+) {
   if (!values) return;
 
   const seen = new Set();
@@ -170,10 +173,13 @@ export default {
   prepareContexts,
   async get(query = {}) {
     const translations = await model.get(query);
-    return translations.map(translation => ({
-      ...translation,
-      contexts: prepareContexts(translation.contexts),
-    }));
+    return translations.map(
+      translation =>
+        ({
+          ...translation,
+          contexts: prepareContexts(translation.contexts),
+        } as IndexedTranslations)
+    );
   },
 
   async save(translation: TranslationType | IndexedTranslations) {
@@ -275,10 +281,7 @@ export default {
 
     const systemContextValues =
       (languages[0]?.contexts || []).find(c => c.label === 'System')?.values || [];
-
-    const allKeys = (
-      (languages[0]?.contexts || []).find(c => c.label === 'System').values || []
-    ).map(v => v.key);
+    const allKeys = systemContextValues.map(v => v.key);
 
     const existingKeys = new Set(allKeys);
     const newKeys = new Set(keys.map(k => k.key));

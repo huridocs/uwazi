@@ -57,6 +57,7 @@ const denormalizeInheritedProperties = async (template: TemplateSchema) => {
 
   return template.properties?.map(prop => {
     if (!prop.inherit?.property) {
+      // eslint-disable-next-line no-param-reassign
       delete prop.inherit;
       return prop;
     }
@@ -117,15 +118,16 @@ function getUpdatedNames(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[] = []
 ) {
-  const propertiesWithNewName: { [k: string]: string | undefined } = {};
+  const propertiesWithNewName: { [k: string]: string } = {};
   flattenProperties(oldProperties).forEach(property => {
     const newProperty = flattenProperties(newProperties).find(
       p => p[filterBy]?.toString() === property[filterBy]?.toString()
     );
     if (newProperty && newProperty[prop] !== property[prop]) {
       const key = property[outKey];
-      if (key) {
-        propertiesWithNewName[key] = newProperty[prop];
+      console.log('probably a ts bug');
+      if (key && typeof newProperty[prop] === 'string') {
+        propertiesWithNewName[key] = newProperty[prop] as string;
       }
     }
   });
@@ -146,6 +148,7 @@ function getDeletedProperties(
 ) {
   return flattenProperties(oldProperties)
     .filter(notIncludedIn(flattenProperties(newProperties), filterBy))
+    .filter((property): property is { [k: string]: string } => typeof property[prop] === 'string')
     .map(property => property[prop]);
 }
 
