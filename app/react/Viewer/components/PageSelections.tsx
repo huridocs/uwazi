@@ -62,7 +62,7 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
             >
               <Highlight
                 textSelection={highlight}
-                color={selection.isCurrent ? '#A3D7A3' : '#F27DA5'}
+                color={selection.isCurrent ? '#B1F7A3' : '#F27DA5'}
               />
             </div>
           );
