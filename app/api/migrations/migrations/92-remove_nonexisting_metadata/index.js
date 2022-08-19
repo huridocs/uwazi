@@ -14,7 +14,7 @@ export default {
   async getPropertyData(db) {
     const templates = await db.collection('templates').find().toArray();
     const indexed = Object.fromEntries(
-      templates.map(t => [t._id, t.properties ? new Set(t.properties.map(p => p.name)) : []])
+      templates.map(t => [t._id, t.properties ? new Set(t.properties.map(p => p.name)) : new Set()])
     );
     return indexed;
   },
