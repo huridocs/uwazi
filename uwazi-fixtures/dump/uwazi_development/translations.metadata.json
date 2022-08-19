@@ -1,1 +1,1 @@
-{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_e2e.translations"}],"uuid":"3186b9f4abfe437ab9f37cab2a5d6f64"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"4d5cb4755ec34a0e90dc1aae22a96a93","collectionName":"translations","type":"collection"}
