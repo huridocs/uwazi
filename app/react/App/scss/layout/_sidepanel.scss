@@ -328,3 +328,18 @@ $c-sidebar: $c-white;
     cursor: default;
   }
 }
+
+.form-group .form-title-actions {
+  position: relative;
+
+  .delete-selection {
+    position: absolute;
+    padding: 0;
+  }
+
+  .icon-selector {
+    ul.search__filter {
+      padding-top: 6px;
+    }
+  }
+}

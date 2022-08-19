@@ -19,6 +19,7 @@ import MetadataFormFields from './MetadataFormFields';
 import { MetadataExtractor } from './MetadataExtractor';
 import { SupportingFiles } from './SupportingFiles';
 import { PDFUpload } from './PDFUpload';
+import { DeleteSelectionButton } from './DeleteSelectionButton';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
 const selectTemplateOptions = createSelector(
@@ -157,7 +158,10 @@ class MetadataForm extends Component {
                     </Field>
                   </div>
                 </li>
-                <IconField model={model} />
+                <div className="form-title-actions">
+                  {storeKey === 'documentViewer' && <DeleteSelectionButton propertyName="title" />}
+                  <IconField model={model} />
+                </div>
               </ul>
             </FormGroup>
           )}

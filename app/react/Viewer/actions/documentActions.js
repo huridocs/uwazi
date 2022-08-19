@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import api from 'app/utils/api';
 import referencesAPI from 'app/Viewer/referencesAPI';
 import * as types from 'app/Viewer/actions/actionTypes';
@@ -26,6 +27,15 @@ function getEntityDoc(entity, filename, defaultLanguage) {
   return filename ? docByFilename : defaultDoc;
 }
 
+const dispatchUpdatedDocument = (dispatch, doc, updatedDoc, entityFileId) => {
+  dispatch(notificationActions.notify('Document updated', 'success'));
+  dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
+  dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
+  const defaultDoc = updatedDoc.entity.documents.find(document => document._id === entityFileId);
+  dispatch(actions.update('viewer/doc', { ...updatedDoc.entity, defaultDoc }));
+  dispatch(relationshipActions.reloadRelationships(updatedDoc.entity.sharedId));
+};
+
 export function setDocument(document, html) {
   return {
     type: types.SET_DOCUMENT,
@@ -45,25 +55,15 @@ export function loadDefaultViewerMenu() {
     type: types.LOAD_DEFAULT_VIEWER_MENU,
   };
 }
-
 export function saveDocument(doc, fileID) {
-  const updateDoc = {};
-  Object.keys(doc).forEach(key => {
-    if (key !== 'fullText') {
-      updateDoc[key] = doc[key];
-    }
-  });
-
+  const updateDoc = omit(doc, 'fullText', 'defaultDoc');
   return async (dispatch, getState) => {
     const extractredMetadata = getState().documentViewer.metadataExtraction.toJS();
     const entityFileId = fileID || getState().documentViewer.doc.toJS().defaultDoc._id;
     updateDoc.__extractedMetadata = { fileID: entityFileId, ...extractredMetadata };
     const updatedDoc = await saveEntityWithFiles(updateDoc, dispatch);
-    dispatch(notificationActions.notify('Document updated', 'success'));
-    dispatch({ type: types.VIEWER_UPDATE_DOCUMENT, doc });
-    dispatch(formActions.reset('documentViewer.sidepanel.metadata'));
-    dispatch(actions.update('viewer/doc', updatedDoc.entity));
-    dispatch(relationshipActions.reloadRelationships(updatedDoc.entity.sharedId));
+
+    dispatchUpdatedDocument(dispatch, doc, updatedDoc, entityFileId);
     return updateDoc;
   };
 }
