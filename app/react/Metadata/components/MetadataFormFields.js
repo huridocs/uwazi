@@ -341,14 +341,11 @@ class MetadataFormFields extends Component {
                         />
                       )}
                       {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
-                      {showIXButtons && (
-                        <DeleteSelectionButton
-                          propertyName={property.name}
-                          propertyID={property._id}
-                        />
-                      )}
                     </div>
                   </li>
+                  {showIXButtons && (
+                    <DeleteSelectionButton propertyName={property.name} propertyID={property._id} />
+                  )}
                 </ul>
               </FormGroup>
             );

@@ -13,11 +13,13 @@
 }
 
 .delete-selection {
-  position: relative;
-  float: left;
   border: unset;
   background-color: transparent;
-  text-decoration: underline;
-  padding: 0;
-  color: $c-black;
+  padding: 6px 0;
+  color: $c-primary;
+  font-size: $f-size-xs;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

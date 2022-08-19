@@ -158,8 +158,10 @@ class MetadataForm extends Component {
                     </Field>
                   </div>
                 </li>
-                {storeKey === 'documentViewer' && <DeleteSelectionButton propertyName="title" />}
-                <IconField model={model} />
+                <div className="form-title-actions">
+                  {storeKey === 'documentViewer' && <DeleteSelectionButton propertyName="title" />}
+                  <IconField model={model} />
+                </div>
               </ul>
             </FormGroup>
           )}
