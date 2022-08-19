@@ -42,6 +42,7 @@ describe('Share publicly', () => {
     await insertFixtures();
     await proxyMock();
     await adminLogin();
+    await disableTransitions();
   });
 
   afterAll(async () => {
