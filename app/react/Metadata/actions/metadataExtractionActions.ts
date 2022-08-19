@@ -30,12 +30,11 @@ const deleteSelection =
   (dispatch: Dispatch<{}>) => {
     const document = entityDocument?.toJS();
 
-    const updatedSelections = document?.extractedMetadata?.filter(selection => {
-      if (propertyName === 'title') {
-        return selection.name !== 'title';
-      }
-      return selection.propertyID !== propertyID;
-    });
+    const updatedSelections = document?.extractedMetadata?.filter(
+      selection =>
+        (propertyName === 'title' && selection.name !== 'title') ||
+        selection.propertyID !== propertyID
+    );
 
     const data = {
       ...(propertyID && { propertyID }),

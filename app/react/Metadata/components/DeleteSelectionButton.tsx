@@ -18,10 +18,9 @@ const checkPropertySelections = (property: string, selections?: ExtractedMetadat
     if (selection.deleteSelection) {
       return false;
     }
-    if (property === 'title') {
-      return selection.name === 'title';
-    }
-    return selection.propertyID === property;
+    return (
+      (property === 'title' && selection.name === 'title') || selection.propertyID === property
+    );
   });
 
 const mapStateToProps = (state: IStore) => {
