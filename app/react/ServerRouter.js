@@ -30,9 +30,9 @@ function renderComponentWithRoot(
   componentProps,
   data,
   user,
+  language,
   actions = [],
-  isRedux = false,
-  language = 'en'
+  isRedux = false
 ) {
   let initialStore = createStore({});
 
@@ -119,9 +119,9 @@ function handleRoute(res, renderProps, req) {
       renderProps,
       initialData,
       req.user,
+      initialData.locale,
       actions,
-      isRedux,
-      initialData.locale
+      isRedux
     );
     res.status(200).send(wholeHtml);
   }
