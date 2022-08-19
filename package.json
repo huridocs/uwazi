@@ -70,8 +70,7 @@
     "normalize-url": "6.0.1",
     "node-fetch": "2.6.7",
     "@types/istanbul-lib-report": "^3.0.0",
-    "@types/react": "^16.8.6",
-    "electron": "^2.0.18"
+    "@types/react": "^16.8.6"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.137.0",
