@@ -1,7 +1,7 @@
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { WithId } from 'api/odm';
-import thesauri from 'api/thesauri/thesauri';
 import settings from 'api/settings/settings';
+import thesauri from 'api/thesauri/thesauri';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import model from './translationsModel';
 
 interface IndexedContextValues {
@@ -14,6 +14,23 @@ interface IndexedContext extends TranslationContext {
 
 interface IndexedTranslations extends TranslationType {
   contexts?: IndexedContext[];
+}
+
+function checkForMissingKeys(
+  keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
+  translation: WithId<TranslationType>,
+  valueDict: IndexedContextValues,
+  contextId: string
+) {
+  if (!translation.locale) throw new Error('Translation local does not exist !');
+  const missingKeys = Object.keys(keyValuePairsPerLanguage[translation.locale]).filter(
+    key => !(key in valueDict)
+  );
+  if (missingKeys.length) {
+    throw new Error(
+      `Process is trying to update missing translation keys: ${translation.locale} - ${contextId} - ${missingKeys}.`
+    );
+  }
 }
 
 function prepareContexts(contexts: TranslationContext[] = []) {
@@ -52,9 +69,10 @@ function processContextValues(context: TranslationContext | IndexedContext) {
   const processedValues: TranslationValue[] = [];
 
   if (context.values && !Array.isArray(context.values)) {
-    Object.keys(context.values).forEach(key => {
-      if (context?.values?.[key]) {
-        processedValues.push({ key, value: context.values[key] });
+    const indexedValues: IndexedContextValues = context.values;
+    Object.keys(indexedValues).forEach(key => {
+      if (indexedValues[key]) {
+        processedValues.push({ key, value: indexedValues[key] });
       }
     });
   }
@@ -70,51 +88,60 @@ const propagateTranslation = async (
   translation: TranslationType,
   currentTranslationData: WithId<TranslationType>
 ) => {
-  await (currentTranslationData.contexts || []).reduce(async (promise, context) => {
-    await promise;
+  await (currentTranslationData.contexts || ([] as TranslationContext[])).reduce(
+    async (promise: Promise<any>, context) => {
+      await promise;
 
-    const isPresentInTheComingData = (translation.contexts || []).find(
-      _context => _context.id?.toString() === context.id?.toString()
-    );
-
-    if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
-      const thesaurus = await thesauri.getById(context.id);
-
-      const valuesChanged = (isPresentInTheComingData.values || []).reduce((changes, value) => {
-        const currentValue = (context.values || []).find(v => v.key === value.key);
-        if (currentValue?.key && currentValue.value !== value.value) {
-          return { ...changes, [currentValue.key]: value.value };
-        }
-        return changes;
-      }, {});
-
-      const changesMatchingDictionaryId = Object.keys(valuesChanged)
-        .map(valueChanged => {
-          const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
-          if (valueFound) {
-            return { id: valueFound.id, value: valuesChanged[valueChanged] };
-          }
-          return null;
-        })
-        .filter(a => a);
-
-      return Promise.all(
-        changesMatchingDictionaryId.map(async change =>
-          thesauri.renameThesaurusInMetadata(
-            change.id,
-            change.value,
-            context.id,
-            translation.locale
-          )
-        )
+      const isPresentInTheComingData = (translation.contexts || []).find(
+        _context => _context.id?.toString() === context.id?.toString()
       );
-    }
-    return Promise.resolve();
-  }, Promise.resolve());
+
+      if (isPresentInTheComingData && isPresentInTheComingData.type === 'Thesaurus') {
+        const thesaurus = await thesauri.getById(context.id);
+
+        const valuesChanged: IndexedContextValues = (isPresentInTheComingData.values || []).reduce(
+          (changes, value) => {
+            const currentValue = (context.values || []).find(v => v.key === value.key);
+            if (currentValue?.key && currentValue.value !== value.value) {
+              return { ...changes, [currentValue.key]: value.value } as IndexedContextValues;
+            }
+            return changes;
+          },
+          {} as IndexedContextValues
+        );
+
+        const changesMatchingDictionaryId = Object.keys(valuesChanged)
+          .map(valueChanged => {
+            const valueFound = (thesaurus?.values || []).find(v => v.label === valueChanged);
+            if (valueFound?.id) {
+              return { id: valueFound.id, value: valuesChanged[valueChanged] };
+            }
+            return null;
+          })
+          .filter(a => a) as { id: string; value: string }[];
+
+        return Promise.all(
+          changesMatchingDictionaryId.map(async change =>
+            thesauri.renameThesaurusInMetadata(
+              change.id,
+              change.value,
+              context.id,
+              translation.locale
+            )
+          )
+        );
+      }
+      return Promise.resolve([]);
+    },
+    Promise.resolve([])
+  );
 };
 
 const update = async (translation: TranslationType | IndexedTranslations) => {
   const currentTranslationData = await model.getById(translation._id);
+  if (!currentTranslationData) {
+    throw new Error('currentTranslationData does not exist');
+  }
 
   const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {
     ...translation,
@@ -154,6 +181,7 @@ export default {
       return update(translation);
     }
 
+    console.log('try update ts to 4.2 to resolve as any[]');
     return model.save({
       ...translation,
       contexts: translation.contexts && (translation.contexts as any[]).map(processContextValues),
@@ -176,10 +204,12 @@ export default {
     return 'ok';
   },
 
-  async updateEntries(contextId, keyValuePairsPerLanguage) {
-    // keyValuePairsPerLanguage expected in the form of:
-    // { 'en': { 'key': 'value', ...}, 'es': { 'key': 'value', ...}, ... }
-
+  async updateEntries(
+    contextId: string,
+    keyValuePairsPerLanguage: {
+      [x: string]: { [k: string]: string };
+    }
+  ) {
     const { languages = [] } = await settings.get({}, 'languages');
     const languagesSet = new Set(languages.map(l => l.key));
     const languagesToUpdate = Object.keys(keyValuePairsPerLanguage).filter(l =>
@@ -188,21 +218,16 @@ export default {
 
     return Promise.all(
       (await model.get({ locale: { $in: languagesToUpdate } })).map(async translation => {
+        if (!translation.locale) throw new Error('Translation local does not exist !');
+
         const context = (translation.contexts || []).find(c => c.id === contextId);
         if (!context) {
           return Promise.resolve();
         }
-        const valueDict = Object.fromEntries(
+        const valueDict: IndexedContextValues = Object.fromEntries(
           (context.values || []).map(({ key, value }) => [key, value])
         );
-        const missingKeys = Object.keys(keyValuePairsPerLanguage[translation.locale]).filter(
-          key => !(key in valueDict)
-        );
-        if (missingKeys.length) {
-          throw new Error(
-            `Process is trying to update missing translation keys: ${translation.locale} - ${contextId} - ${missingKeys}.`
-          );
-        }
+        checkForMissingKeys(keyValuePairsPerLanguage, translation, valueDict, contextId);
         Object.entries(keyValuePairsPerLanguage[translation.locale]).forEach(([key, value]) => {
           valueDict[key] = value;
         });
@@ -212,7 +237,7 @@ export default {
     );
   },
 
-  async addContext(id, contextName, values, type) {
+  async addContext(id: string, contextName: string, values: IndexedContextValues, type: string) {
     const translatedValues: TranslationValue[] = [];
     Object.keys(values).forEach(key => {
       translatedValues.push({ key, value: values[key] });
@@ -229,123 +254,141 @@ export default {
     return 'ok';
   },
 
-  async deleteContext(id) {
+  async deleteContext(id: string) {
     const results = await model.get();
     await Promise.all(
       results.map(async translation =>
         model.save({
           ...translation,
-          contexts: translation.contexts.filter(tr => tr.id !== id),
+          contexts: (translation.contexts || []).filter(tr => tr.id !== id),
         })
       )
     );
     return 'ok';
   },
 
-  processSystemKeys(keys) {
-    return model.get().then(languages => {
-      let existingKeys = new Set(
-        languages[0].contexts.find(c => c.label === 'System').values.map(v => v.key)
-      );
-      const newKeys = new Set(keys.map(k => k.key));
-      const keysToAdd = keys
-        .filter(key => !existingKeys.has(key.key))
-        .map(key => ({ key: key.key, value: key.label || key.key }));
+  async processSystemKeys(keys: { key: string; label?: string }[]) {
+    const languages = await model.get();
+    if (!languages.length) {
+      throw new Error('No translations found !!');
+    }
 
-      languages.forEach(language => {
-        let system = language.contexts.find(c => c.label === 'System');
-        if (!system) {
-          system = {
-            id: 'System',
-            label: 'System',
-            values: keys.map(k => ({ key: k.key, value: k.label || k.key })),
-          };
-          language.contexts.unshift(system);
-        }
-        existingKeys = system.values;
-        const valuesWithRemovedValues = existingKeys.filter(i => newKeys.has(i.key));
-        system.values = valuesWithRemovedValues.concat(keysToAdd);
-      });
+    const systemContextValues =
+      (languages[0]?.contexts || []).find(c => c.label === 'System')?.values || [];
 
-      return model.saveMultiple(languages);
+    const allKeys = (
+      (languages[0]?.contexts || []).find(c => c.label === 'System').values || []
+    ).map(v => v.key);
+
+    const existingKeys = new Set(allKeys);
+    const newKeys = new Set(keys.map(k => k.key));
+    const keysToAdd = keys
+      .filter(key => !existingKeys.has(key.key))
+      .map(key => ({ key: key.key, value: key.label || key.key }));
+
+    languages.forEach(language => {
+      if (!language.contexts) return;
+      let system = language.contexts.find(c => c.label === 'System');
+      if (!system) {
+        system = {
+          id: 'System',
+          label: 'System',
+          values: keys.map(k => ({ key: k.key, value: k.label || k.key })),
+        };
+        language.contexts.unshift(system);
+      }
+      const valuesWithRemovedValues = (system.values || []).filter(i => newKeys.has(i.key || ''));
+      system.values = valuesWithRemovedValues.concat(keysToAdd);
     });
+
+    return model.saveMultiple(languages);
   },
 
-  updateContext(id, newContextName, keyNamesChanges, deletedProperties, values, type) {
-    const translatedValues = [];
+  async updateContext(
+    id: string,
+    newContextName: string | undefined,
+    keyNamesChanges: { [x: string]: string },
+    deletedProperties: string[],
+    values: IndexedContextValues,
+    type: string | undefined
+  ) {
+    const translatedValues: TranslationValue[] = [];
     Object.keys(values).forEach(key => {
       translatedValues.push({ key, value: values[key] });
     });
 
-    return Promise.all([model.get(), settings.get()])
-      .then(([translations, siteSettings]) => {
-        const defaultLanguage = siteSettings.languages.find(lang => lang.default).key;
-        return Promise.all(
-          translations.map(translation => {
-            const context = translation.contexts.find(tr => tr.id.toString() === id.toString());
-            if (!context) {
-              translation.contexts.push({
-                id,
-                label: newContextName,
-                values: translatedValues,
-                type,
-              });
-              return this.save(translation);
+    const [translations, defaultLanguage] = await Promise.all([
+      model.get(),
+      settings.getDefaultLanguage(),
+    ]);
+    await Promise.all(
+      translations.map(async translation => {
+        translation.contexts = translation.contexts || [];
+        const context = translation.contexts.find(c => c.id?.toString() === id.toString());
+        if (!context) {
+          translation.contexts.push({
+            id,
+            label: newContextName,
+            values: translatedValues,
+            type,
+          });
+          return this.save(translation);
+        }
+
+        context.values = context.values || [];
+        context.values = context.values.filter(v => !deletedProperties.includes(v.key || ''));
+        context.type = type;
+
+        Object.keys(keyNamesChanges).forEach(originalKey => {
+          const newKey = keyNamesChanges[originalKey];
+          context.values = context.values || [];
+          const value = context.values.find(v => v.key === originalKey);
+          if (value) {
+            value.key = newKey;
+
+            if (translation.locale === defaultLanguage.key) {
+              value.value = newKey;
             }
+          }
+          if (!value) {
+            context.values.push({ key: newKey, value: values[newKey] });
+          }
+        });
 
-            context.values = context.values || [];
-            context.values = context.values.filter(v => !deletedProperties.includes(v.key));
-            context.type = type;
+        Object.keys(values).forEach(key => {
+          context.values = context.values || [];
+          if (!context.values.find(v => v.key === key)) {
+            context.values.push({ key, value: values[key] });
+          }
+        });
 
-            Object.keys(keyNamesChanges).forEach(originalKey => {
-              const newKey = keyNamesChanges[originalKey];
-              const value = context.values.find(v => v.key === originalKey);
-              if (value) {
-                value.key = newKey;
+        context.label = newContextName;
 
-                if (translation.locale === defaultLanguage) {
-                  value.value = newKey;
-                }
-              }
-              if (!value) {
-                context.values.push({ key: newKey, value: values[newKey] });
-              }
-            });
-
-            Object.keys(values).forEach(key => {
-              if (!context.values.find(v => v.key === key)) {
-                context.values.push({ key, value: values[key] });
-              }
-            });
-
-            context.label = newContextName;
-
-            return this.save(translation);
-          })
-        );
+        return this.save(translation);
       })
-      .then(() => 'ok');
+    );
+    return 'ok';
   },
 
-  async addLanguage(language) {
-    const [languageTranslationAlreadyExists] = await model.get({ locale: language });
+  async addLanguage(locale: string) {
+    const [languageTranslationAlreadyExists] = await model.get({ locale });
     if (languageTranslationAlreadyExists) {
       return Promise.resolve();
     }
 
-    const { languages } = await settings.get();
+    const defaultLanguage = await settings.getDefaultLanguage();
 
-    const [defaultTranslation] = await model.get({ locale: languages.find(l => l.default).key });
+    const [defaultTranslation] = await model.get({ locale: defaultLanguage.key });
 
     return model.save({
       ...defaultTranslation,
-      _id: null,
-      locale: language,
-      contexts: defaultTranslation.contexts.map(({ _id, ...context }) => context),
+      _id: undefined,
+      locale,
+      contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
     });
   },
 
-  async removeLanguage(language) {
-    return model.delete({ locale: language });
+  async removeLanguage(locale: string) {
+    return model.delete({ locale });
   },
 };

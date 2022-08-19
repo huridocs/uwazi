@@ -217,7 +217,11 @@ export default {
 
   async getDefaultLanguage() {
     const currentSettings = await this.get();
-    return currentSettings.languages?.find(language => language.default);
+    const defaultLanguage = currentSettings.languages?.find(language => language.default);
+    if (!defaultLanguage) {
+      throw new Error('There is no default language !');
+    }
+    return defaultLanguage;
   },
 
   async addLanguage(language: LanguageSchema) {
