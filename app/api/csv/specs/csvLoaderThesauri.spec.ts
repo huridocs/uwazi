@@ -6,14 +6,15 @@ import settings from 'api/settings';
 import { ObjectId } from 'mongodb';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { WithId } from 'api/odm';
+import { IndexedContextValues } from 'api/i18n/translations';
 import { CSVLoader } from '../csvLoader';
 import fixtures, { thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
 const getTranslation = async (lang: string, id: ObjectId) =>
-  (await translations.get())
-    .find(t => t.locale === lang)
-    .contexts.find((c: { id: string }) => c.id === id.toString()).values;
+  ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(
+    c => c?.id === id?.toString()
+  )?.values || ({} as IndexedContextValues);
 
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
