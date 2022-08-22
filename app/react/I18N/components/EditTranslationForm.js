@@ -9,6 +9,7 @@ import { Icon } from 'UI';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { SelectFileButton } from 'app/App/SelectFileButton';
+
 class EditTranslationForm extends Component {
   static getDefaultTranslation(translations, languages) {
     const defaultLocale = languages.find(lang => lang.default).key;
