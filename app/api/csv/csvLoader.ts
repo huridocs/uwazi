@@ -7,7 +7,7 @@ import { EventEmitter } from 'events';
 import { ObjectId } from 'mongodb';
 import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
