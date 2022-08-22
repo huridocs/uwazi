@@ -78,17 +78,16 @@ class NavlinkForm extends Component {
   constructor(props) {
     super(props);
     this.firstLoad = true;
+    // eslint-disable-next-line react/no-unused-class-component-methods
     this.focus = () => {
       this.focusableInput.focus();
     };
   }
 
-  // TEST!!!
   componentDidMount() {
     this.props.blockReferences.push(this);
   }
 
-  // TEST!!!
   componentDidUpdate(previousProps) {
     if (this.firstLoad) {
       this.firstLoad = false;
@@ -98,7 +97,6 @@ class NavlinkForm extends Component {
     this.focusOnNewElement(previousProps);
   }
 
-  // TEST!!!
   focusOnNewElement(previousProps) {
     if (this.props.link.type === 'group') {
       const links = this.props.links[this.props.index].sublinks;
