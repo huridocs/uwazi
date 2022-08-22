@@ -148,7 +148,7 @@ const update = async (translation: TranslationType | IndexedTranslations) => {
 
   const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {
     ...translation,
-    contexts: ((translation.contexts || []) as any[]).map(processContextValues),
+    contexts: (translation.contexts || []).map(processContextValues),
   };
 
   await propagateTranslation(processedTranslation, currentTranslationData);
@@ -187,10 +187,9 @@ export default {
       return update(translation);
     }
 
-    console.log('try update ts to 4.2 to resolve as any[]');
     return model.save({
       ...translation,
-      contexts: translation.contexts && (translation.contexts as any[]).map(processContextValues),
+      contexts: translation.contexts && translation.contexts.map(processContextValues),
     });
   },
 
