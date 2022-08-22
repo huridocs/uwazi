@@ -489,10 +489,20 @@ describe('translations', () => {
       Account, Account traducida
       Age, Age traducida`;
 
-      backend.get(
-        'https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/es.csv',
-        SpanishCsv
-      );
+      // backend.get(
+      //   'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
+      //   SpanishCsv
+      // );
+
+      backend.get((url, opts) =>
+        // @ts-ignore
+        {
+          console.log(opts);
+          /* @ts-ignore*/
+          return url ===
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+            opts?.headers?.accept === 'application/vnd.github.v4.raw';
+        }, SpanishCsv);
 
       await translations.importPredefined('es');
 
