@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Icon } from 'UI';
-import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import { Translate } from 'app/I18N';
 
@@ -14,7 +13,7 @@ import ActionButton from './ActionButton';
 import SearchForm from './SearchForm';
 import SearchResults from './SearchResults';
 
-export class CreateConnectionPanel extends Component {
+class CreateConnectionPanel extends Component {
   renderCheckType(template) {
     if (this.props.connection.get('template') === template.get('_id')) {
       return <Icon icon="check" />;
@@ -42,6 +41,7 @@ export class CreateConnectionPanel extends Component {
             className="closeSidepanel close-modal"
             onClick={this.props.closePanel}
             aria-label="Close side panel"
+            type="button"
           >
             <Icon icon="times" />
           </button>
@@ -65,24 +65,27 @@ export class CreateConnectionPanel extends Component {
         </div>
 
         <div className="sidepanel-footer">
-          <button
-            className="btn btn-primary"
-            onClick={this.props.closePanel}
-            aria-label="Close side panel"
-          >
-            <Icon icon="times" />
-          </button>
-          <ShowIf if={connection.type !== 'targetRanged'}>
-            <ActionButton
-              action="save"
-              onCreate={reference => {
-                this.props.onCreate(reference);
-              }}
-            />
-          </ShowIf>
-          <ShowIf if={connection.type === 'targetRanged'}>
-            <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect} />
-          </ShowIf>
+          <div className="btn-cluster content-right">
+            <button
+              className="btn btn-default"
+              onClick={this.props.closePanel}
+              aria-label="Close side panel"
+              type="button"
+            >
+              <Translate>Cancel</Translate>
+            </button>
+            {connection.type !== 'targetRanged' && (
+              <ActionButton
+                action="save"
+                onCreate={reference => {
+                  this.props.onCreate(reference);
+                }}
+              />
+            )}
+            {connection.type === 'targetRanged' && (
+              <ActionButton action="connect" onRangedConnect={this.props.onRangedConnect} />
+            )}
+          </div>
         </div>
 
         <div className="sidepanel-body">
@@ -115,7 +118,7 @@ CreateConnectionPanel.propTypes = {
   closePanel: PropTypes.func,
 };
 
-export const mapStateToProps = ({ connections, relationTypes }) => ({
+const mapStateToProps = ({ connections, relationTypes }) => ({
   uiState: connections.uiState,
   connection: connections.connection,
   searchResults: connections.searchResults,
@@ -125,5 +128,7 @@ export const mapStateToProps = ({ connections, relationTypes }) => ({
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ setRelationType, setTargetDocument, closePanel }, dispatch);
 }
+
+export { CreateConnectionPanel, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateConnectionPanel);
