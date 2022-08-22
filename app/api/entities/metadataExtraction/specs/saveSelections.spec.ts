@@ -4,6 +4,7 @@ import { saveSelections } from '../saveSelections';
 
 const file1ID = testingDB.id();
 const file2ID = testingDB.id();
+const file3ID = testingDB.id();
 
 const fixture = {
   files: [
@@ -21,14 +22,27 @@ const fixture = {
       _id: file2ID,
       extractedMetadata: [],
     },
+    {
+      _id: file3ID,
+      extractedMetadata: [
+        {
+          name: 'title',
+          selection: { text: 'document title' },
+        },
+        { name: 'property1', propertyID: '1', selection: { text: 'document text 1' } },
+      ],
+    },
   ],
 };
 
 describe('saveSelections', () => {
-  jest.spyOn(files, 'save');
-
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixture);
+    jest.spyOn(files, 'save');
+    await testingDB.setupFixturesAndContext(fixture);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   afterAll(async () => {
@@ -117,6 +131,62 @@ describe('saveSelections', () => {
         },
         { name: 'property_c', selection: { text: 'new selected text of prop C' } },
         { name: 'property_b', selection: { text: 'unchanged text of prop B' } },
+      ],
+    });
+  });
+
+  it('should remove selections marked for deletion', async () => {
+    await saveSelections({
+      _id: 'entityID',
+      sharedId: 'entitySharedId',
+      title: 'document title',
+      __extractedMetadata: {
+        fileID: file3ID.toString(),
+        selections: [
+          {
+            name: 'title',
+            selection: { text: 'document title' },
+            deleteSelection: true,
+          },
+          {
+            name: 'property1',
+            propertyID: '1',
+            selection: { text: 'updated selection' },
+          },
+          {
+            name: 'property2',
+            propertyID: '2',
+            selection: { text: 'new selection' },
+          },
+        ],
+      },
+      metadata: {
+        property1: [
+          {
+            value: 'updated selection',
+          },
+        ],
+        property2: [
+          {
+            value: 'new selection',
+          },
+        ],
+      },
+    });
+
+    expect(files.save).toHaveBeenCalledWith({
+      _id: file3ID,
+      extractedMetadata: [
+        {
+          name: 'property1',
+          propertyID: '1',
+          selection: { text: 'updated selection' },
+        },
+        {
+          name: 'property2',
+          propertyID: '2',
+          selection: { text: 'new selection' },
+        },
       ],
     });
   });

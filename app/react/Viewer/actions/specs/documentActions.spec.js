@@ -279,8 +279,15 @@ describe('documentActions', () => {
 
     describe('saveDocument', () => {
       it('should save the document (omitting fullText) and dispatch a notification on success', done => {
+        const defaultDocument = { _id: 'file1', originalName: 'File 1' };
+        const docWithExtractedMetadata = {
+          ...defaultDocument,
+          extractedMetadata: { title: 'Title' },
+        };
         spyOn(libraryActions, 'saveEntityWithFiles').and.returnValue(
-          Promise.resolve({ entity: { sharedId: 'responseId' } })
+          Promise.resolve({
+            entity: { sharedId: 'responseId', documents: [docWithExtractedMetadata] },
+          })
         );
         spyOn(relationshipActions, 'reloadRelationships').and.returnValue({
           type: 'reloadRelationships',
@@ -289,6 +296,7 @@ describe('documentActions', () => {
           name: 'doc',
           fullText: 'fullText',
           attachments: [{ _id: '1', originalname: 'supportingFile' }],
+          defaultDoc: defaultDocument,
         };
 
         const expectedActions = [
@@ -302,16 +310,24 @@ describe('documentActions', () => {
               name: 'doc',
               fullText: 'fullText',
               attachments: [{ _id: '1', originalname: 'supportingFile' }],
+              defaultDoc: defaultDocument,
             },
           },
           { type: 'rrf/reset', model: 'documentViewer.sidepanel.metadata' },
-          { type: 'viewer/doc/UPDATE', value: { sharedId: 'responseId' } },
+          {
+            type: 'viewer/doc/UPDATE',
+            value: {
+              sharedId: 'responseId',
+              defaultDoc: docWithExtractedMetadata,
+              documents: [docWithExtractedMetadata],
+            },
+          },
           { type: 'reloadRelationships' },
         ];
         const store = mockStore({
           documentViewer: {
             metadataExtraction: Immutable.fromJS([]),
-            doc: Immutable.fromJS({ defaultDoc: { _id: '' } }),
+            doc: Immutable.fromJS({ defaultDoc: defaultDocument }),
           },
         });
 
@@ -320,7 +336,7 @@ describe('documentActions', () => {
           .then(() => {
             expect(libraryActions.saveEntityWithFiles).toHaveBeenCalledWith(
               {
-                __extractedMetadata: { fileID: '' },
+                __extractedMetadata: { fileID: 'file1' },
                 attachments: [{ _id: '1', originalname: 'supportingFile' }],
                 name: 'doc',
               },

@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 import { PageReferences } from 'app/Viewer/components/PageReferences';
-import PDFJS, { textLayerFactory } from '../PDFJS';
+import { PageSelections } from 'app/Viewer/components/PageSelections';
+import PDFJS, { textLayerFactory, EventBus } from '../PDFJS';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -88,7 +89,12 @@ class PDFPage extends Component {
 
   renderReferences() {
     if (this.state.rendered) {
-      return <PageReferences page={this.props.page} onClick={this.props.highlightReference} />;
+      return (
+        <>
+          <PageSelections />
+          <PageReferences page={this.props.page} onClick={this.props.highlightReference} />
+        </>
+      );
     }
 
     return false;
@@ -115,6 +121,7 @@ class PDFPage extends Component {
           defaultViewport: page.getViewport({ scale }),
           textLayerMode: 2,
           textLayerFactory,
+          eventBus: new EventBus(),
         });
 
         this.pdfPageView.setPdfPage(page);
