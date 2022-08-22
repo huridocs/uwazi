@@ -313,7 +313,7 @@ export default {
     keyNamesChanges: { [x: string]: string },
     deletedProperties: string[],
     values: IndexedContextValues,
-    type: string | undefined
+    type?: string
   ) {
     const translatedValues: TranslationValue[] = [];
     Object.keys(values).forEach(key => {
