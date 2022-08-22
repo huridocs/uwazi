@@ -1,6 +1,7 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
+import backend from 'fetch-mock';
 import thesauri from 'api/thesauri/thesauri.js';
 import fixtures, {
   entityTemplateId,
@@ -465,6 +466,44 @@ describe('translations', () => {
 
       expect(allTranslations.length).toBe(1);
       expect(allTranslations[0].locale).toBe('en');
+    });
+  });
+
+  describe('import predefined translation csv', () => {
+    it('should download a translations csv based on iso key and import it', async () => {
+      //https://api.github.com/repos/huridocs/uwazi-contents/git/trees/main?recursive=1
+      // const mockedResponse = {
+      //   tree: [
+      //     { path: 'ui-translations' },
+      //     { path: 'ui-translations/es.csv' },
+      //     { path: 'ui-translations/en.csv' },
+      //   ],
+      // };
+
+      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/es.csv
+      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/en.csv
+      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/wtf.csv
+
+      const SpanishCsv = `Key, Español
+      Password, Password traducida
+      Account, Account traducida
+      Age, Age traducida`;
+
+      backend.get(
+        'https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/es.csv',
+        SpanishCsv
+      );
+
+      await translations.importPredefined('es');
+
+      const result = await translations.get();
+      const ESTranslations =
+        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
+          ?.values || {};
+
+      expect(ESTranslations['Password']).toBe('Password traducida');
+      expect(ESTranslations['Account']).toBe('Account traducida');
+      expect(ESTranslations['Age']).toBe('Age traducida');
     });
   });
 });

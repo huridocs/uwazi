@@ -1,8 +1,14 @@
+import { CSVLoader } from 'api/csv';
+import * as os from 'os';
 import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
+import { appendFile } from 'fs/promises';
+import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { Readable } from 'stream';
 import model from './translationsModel';
+import { generateFileName } from 'api/files';
 
 export interface IndexedContextValues {
   [k: string]: string;
@@ -392,5 +398,16 @@ export default {
 
   async removeLanguage(locale: string) {
     return model.delete({ locale });
+  },
+
+  async importPredefined(locale: string) {
+    const url = `https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/${locale}.csv`;
+    const csv = (await fetch(url)).body.toString();
+
+    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+
+    await appendFile(tmpCsv, csv);
+    const loader = new CSVLoader();
+    await loader.loadTranslations(tmpCsv, 'System');
   },
 };
