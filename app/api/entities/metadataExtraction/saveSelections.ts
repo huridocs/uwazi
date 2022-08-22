@@ -21,7 +21,9 @@ const prepareSelections = (entity: EntityWithExtractedMetadata, file: FileType) 
   let selections = entity.__extractedMetadata?.selections || [];
 
   if (file.extractedMetadata) {
-    selections = updateSelections(selections, file.extractedMetadata);
+    selections = updateSelections(selections, file.extractedMetadata).filter(
+      selection => !selection.deleteSelection
+    );
   }
 
   return selections;
