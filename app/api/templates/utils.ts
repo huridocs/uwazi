@@ -125,9 +125,9 @@ function getUpdatedNames(
     );
     if (newProperty && newProperty[prop] !== property[prop]) {
       const key = property[outKey];
-      console.log('probably a ts bug');
-      if (key && typeof newProperty[prop] === 'string') {
-        propertiesWithNewName[key] = newProperty[prop] as string;
+      const theValue = newProperty[prop];
+      if (key && typeof theValue === 'string') {
+        propertiesWithNewName[key] = theValue;
       }
     }
   });
