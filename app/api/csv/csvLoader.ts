@@ -4,7 +4,7 @@ import templates from 'api/templates';
 import settings from 'api/settings';
 import translations from 'api/i18n';
 import thesauri from 'api/thesauri';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { ensure } from 'shared/tsUtils';
@@ -82,7 +82,11 @@ export class CSVLoader extends EventEmitter {
   }
 
   /* eslint-disable class-methods-use-this */
-  async loadThesauri(csvPath: string, thesaurusId: string, { language }: { language: string }) {
+  async loadThesauri(
+    csvPath: string,
+    thesaurusId: ObjectIdSchema,
+    { language }: { language: string }
+  ) {
     const file = importFile(csvPath);
     const availableLanguages: string[] = ensure<LanguageSchema[]>((await settings.get()).languages)
       .map((l: LanguageSchema) => l.key)

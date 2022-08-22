@@ -3,21 +3,25 @@ import thesauri from 'api/thesauri';
 import translations from 'api/i18n';
 import settings from 'api/settings';
 
+import { ObjectId } from 'mongodb';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { WithId } from 'api/odm';
 import { CSVLoader } from '../csvLoader';
 import fixtures, { thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
-const getTranslation = async (lang, id) =>
-  (await translations.get()).find(t => t.locale === lang).contexts.find(c => c.id === id.toString())
-    .values;
+const getTranslation = async (lang: string, id: ObjectId) =>
+  (await translations.get())
+    .find(t => t.locale === lang)
+    .contexts.find((c: { id: string }) => c.id === id.toString()).values;
 
 describe('csvLoader thesauri', () => {
   const loader = new CSVLoader();
 
   afterAll(async () => db.disconnect());
 
-  let thesauriId;
-  let result;
+  let thesauriId: ObjectId;
+  let result: WithId<ThesaurusSchema>;
   describe('load thesauri', () => {
     beforeAll(async () => {
       await db.clearAllAndLoad(fixtures);
@@ -48,7 +52,7 @@ describe('csvLoader thesauri', () => {
 
     it('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesaurus = await thesauri.getById(thesauriId);
-      expect(thesaurus.values.map(v => v.label)).toEqual([
+      expect(thesaurus!.values!.map(v => v.label)).toEqual([
         'existing value',
         'value 1',
         'value 2',
@@ -108,7 +112,7 @@ describe('csvLoader thesauri', () => {
       const updated = await loader.loadThesauri('mockedFileFromString', thesauri1Id, {
         language: 'en',
       });
-      expect(updated.values.map(v => v.label)).toEqual([
+      expect(updated!.values!.map(v => v.label)).toEqual([
         'value1',
         'value2',
         'Value3',
@@ -270,7 +274,7 @@ describe('csvLoader thesauri', () => {
           });
           fail('should throw error');
         } catch (e) {
-          expect(e.message).toMatch('Invalid');
+          expect(e.message.includes('Invalid')).toBe(true);
         }
         mockedFile.mockRestore();
       });
@@ -288,7 +292,7 @@ describe('csvLoader thesauri', () => {
           });
           fail('should throw error');
         } catch (e) {
-          expect(e.message).toMatch('Invalid');
+          expect(e.message.includes('Invalid')).toBe(true);
         }
         mockedFile.mockRestore();
       });
