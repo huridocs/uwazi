@@ -3,18 +3,22 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
+export interface TranslationContext {
+  _id?: ObjectIdSchema;
+  id?: string;
+  label?: string;
+  type?: string;
+  values?: TranslationValue[];
+}
+
 export interface TranslationType {
   _id?: ObjectIdSchema;
   locale?: string;
-  contexts?: {
-    _id?: ObjectIdSchema;
-    id?: string;
-    label?: string;
-    type?: string;
-    values?: {
-      _id?: ObjectIdSchema;
-      key?: string;
-      value?: string;
-    }[];
-  }[];
+  contexts?: TranslationContext[];
+}
+
+export interface TranslationValue {
+  _id?: ObjectIdSchema;
+  key?: string;
+  value?: string;
 }

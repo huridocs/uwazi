@@ -666,7 +666,7 @@ describe('Denormalize relationships', () => {
         ...spanishTranslation,
         contexts: [
           {
-            id: factory.id('Numbers'),
+            id: factory.id('Numbers').toString(),
             label: 'Numbers',
             values: [
               {
