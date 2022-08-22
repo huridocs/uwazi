@@ -70,12 +70,14 @@ export default {
       entity: 'shared',
       filename: `${uploadId1}.jpg`,
       language: 'en',
+      type: 'thumbnail',
     },
     {
       _id: db.id(),
       entity: 'shared',
       filename: `${uploadId2}.jpg`,
       language: 'es',
+      type: 'thumbnail',
     },
     {
       _id: uploadId1,
@@ -94,6 +96,7 @@ export default {
       entity: 'shared',
       filename: '8202c463d6158af8065022d9b5014ccb.pdf',
       language: 'es',
+      type: 'document',
       fullText: { 1: 'text' },
     },
     {
@@ -106,26 +109,31 @@ export default {
       entity: 'shared1',
       language: 'en',
       filename: 'nonexistent.pdf',
+      type: 'document',
       fullText: { 1: 'text' },
     },
     {
       entity: 'shared1',
       filename: 'nonexistent.pdf',
+      type: 'document',
       language: 'es',
     },
     {
       entity: 'shared1',
       filename: 'nonexistent.pdf',
+      type: 'document',
       language: 'pt',
     },
     {
       entity: 'shared10',
       filename: '123.pdf',
+      type: 'document',
       language: 'pt',
     },
     {
       entity: 'multiselect',
       filename: '123.pdf',
+      type: 'document',
       language: 'en',
     },
     {
@@ -133,6 +141,7 @@ export default {
       filename: '123.pdf',
       language: 'es',
       fullText: { 1: 'text' },
+      type: 'document',
     },
     // files to test entity.get
     {

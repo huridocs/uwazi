@@ -5,7 +5,7 @@ export type SelectFileButtonProps = {
   children: any;
 };
 
-export function SelectFileButton({ onFileImported, children }: SelectFileButtonProps) {
+export const SelectFileButton = ({ onFileImported, children }: SelectFileButtonProps) => {
   // @ts-ignore
   const fileInputRef: MutableRefObject<HTMLInputElement> = useRef();
 
@@ -34,4 +34,4 @@ export function SelectFileButton({ onFileImported, children }: SelectFileButtonP
       />
     </div>
   );
-}
+};

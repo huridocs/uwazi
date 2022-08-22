@@ -20,10 +20,12 @@ describe('Page actions', () => {
     dispatch = jasmine.createSpy('dispatch');
     apiSave = jasmine
       .createSpy()
-      .and.returnValue(Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' }));
+      .and.callFake(async () =>
+        Promise.resolve({ _id: 'newId', sharedId: 'newSharedId', _rev: 'newRev' })
+      );
     api.save = apiSave;
-    spyOn(api, 'delete').and.returnValue(Promise.resolve());
-    spyOn(api, 'get').and.returnValue(Promise.resolve());
+    spyOn(api, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(api, 'get').and.callFake(async () => Promise.resolve());
     spyOn(formActions, 'reset').and.returnValue('PAGE DATA RESET');
     spyOn(formActions, 'merge').and.returnValue('PAGE DATA MERGED');
     spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');

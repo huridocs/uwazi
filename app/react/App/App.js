@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -23,8 +22,6 @@ import Matomo from './Matomo';
 class App extends Component {
   constructor(props, context) {
     super(props, context);
-    // change fetch to use api and test it properly
-    this.fetch = props.fetch || fetch;
     this.state = { showmenu: false, confirmOptions: {} };
 
     this.toggleMenu = this.toggleMenu.bind(this);
@@ -38,10 +35,6 @@ class App extends Component {
 
   toggleMenu() {
     this.setState({ showmenu: !this.state.showmenu });
-  }
-
-  closeMenu() {
-    this.setState({ showmenu: false });
   }
 
   confirm(options) {

@@ -7,7 +7,7 @@ export default {
     return api.post(url, requestParams).then(response => response.json);
   },
 
-  get(requestParams = new RequestParams(), language) {
+  get(requestParams = new RequestParams(), language = undefined) {
     const params = requestParams.add({
       include:
         requestParams.data && requestParams.data.include

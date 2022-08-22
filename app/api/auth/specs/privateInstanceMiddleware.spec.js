@@ -49,7 +49,7 @@ describe('privateInstanceMiddleware', () => {
   });
 
   it('should redirect to "/login" when there is no user in the request and the instance is configured as private', done => {
-    spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+    spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: true }));
     middleWare(req, res, next).then(() => {
       expect(res.redirect).toHaveBeenCalledWith('/login');
       expect(next).not.toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Api calls', () => {
     beforeEach(() => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: true }));
     });
 
     it('should return an unauthorized error when there is no user, the instance is configured as private and the call is to the api', done => {
@@ -85,7 +85,7 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Other private-related calls', () => {
     beforeEach(() => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: true }));
       req.url = 'host:port/uploaded_documents/somefile.png';
     });
 
@@ -97,7 +97,7 @@ describe('privateInstanceMiddleware', () => {
   });
 
   it('should call next if the instance is private and there is a user logged', () => {
-    spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+    spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: true }));
     req.user = { username: 'test' };
 
     middleWare(req, res, next);
@@ -107,7 +107,7 @@ describe('privateInstanceMiddleware', () => {
   });
 
   it('should call next when instance is not private', done => {
-    spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: false }));
+    spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: false }));
     middleWare(req, res, next).then(() => {
       expect(res.redirect).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalled();
@@ -117,7 +117,7 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Routes', () => {
     beforeEach(() => {
-      spyOn(settings, 'get').and.returnValue(Promise.resolve({ private: true }));
+      spyOn(settings, 'get').and.callFake(async () => Promise.resolve({ private: true }));
     });
 
     it('should call next when instance is private and the url matches login', () => {

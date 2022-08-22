@@ -1,36 +1,40 @@
 import { errorLog } from 'api/log';
-import { PDF } from '../PDF.js';
-import { deleteFile, fileExistsOnPath } from '../filesystem';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { PDF } from '../PDF';
+import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem';
 
 describe('PDF', () => {
-  let pdf;
+  let pdf: PDF;
   const file = {
     filename: '12345.test.pdf',
     originalname: 'originalName.pdf',
     destination: __dirname,
   };
-  const thumbnailName = `${__dirname}/documentId.jpg`;
+  let thumbnailPath: string;
 
   const deleteThumbnail = async () => {
-    await deleteFile(thumbnailName);
+    await deleteFile(thumbnailPath);
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await testingEnvironment.setTenant();
+    thumbnailPath = uploadsPath('documentId.jpg');
     pdf = new PDF(file);
   });
 
   describe('convert', () => {
     it('should extract text indexed per page, with apended page in every word for elastic search purposes', async () => {
       const conversion = await pdf.convert();
-      const pages = conversion.fullText;
 
-      expect(pages[1]).toMatch('Page[[1]] 1[[1]]');
-      expect(pages[2]).toMatch('Page[[2]] 2[[2]]');
-      expect(pages[3]).toMatch('Page[[3]] 3[[3]]');
+      const pages = conversion.fullText;
+      expect(pages['1'].includes('Page[[1]] 1[[1]]')).toBeTruthy();
+      expect(pages['2'].includes('Page[[2]] 2[[2]]')).toBeTruthy();
+      expect(pages['3'].includes('Page[[3]] 3[[3]]')).toBeTruthy();
     });
 
     it('should return the conversion object', async () => {
       const conversion = await pdf.convert();
+
       expect(conversion).toEqual(
         expect.objectContaining({
           totalPages: 11,
@@ -50,11 +54,12 @@ describe('PDF', () => {
         destination: __dirname,
       };
       pdf = new PDF(invalidFile);
+
       try {
         await pdf.convert();
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toMatch(/may not be a pdf/i);
+        expect(e.message.toLowerCase().includes('may not be a pdf')).toBeTruthy();
       }
     });
   });
@@ -66,19 +71,18 @@ describe('PDF', () => {
 
     it('should create thumbnail', async () => {
       await pdf.createThumbnail('documentId');
-      expect(await fileExistsOnPath(thumbnailName)).toBe(true);
+
+      expect(await fileExistsOnPath(thumbnailPath)).toBe(true);
     });
 
-    it('should correctly log errors, but continue with the flow', async () => {
-      spyOn(errorLog, 'error');
-      pdf = new PDF({
-        filename: '/missingpath/pdf.pdf',
-      });
+    it('should return the error when there is one', async () => {
+      errorLog.error = jest.fn();
+      pdf = new PDF({ filename: '/missingpath/pdf.pdf' });
+
       const thumbnailResponse = await pdf.createThumbnail('documentId');
+
       expect(thumbnailResponse instanceof Error).toBe(true);
-      expect(errorLog.error).toHaveBeenCalledWith(
-        'Thumbnail creation error for: /missingpath/pdf.pdf'
-      );
+      expect(await fileExistsOnPath(thumbnailPath)).toBe(false);
     });
   });
 });

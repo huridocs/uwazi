@@ -31,7 +31,7 @@ describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
   beforeEach(async () => {
-    spyOn(translations, 'addContext').and.returnValue(Promise.resolve());
+    spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
     await db.clearAllAndLoad(fixtures, elasticIndex);
   });
 
@@ -124,7 +124,7 @@ describe('templates', () => {
       it('should remove the values from the entities and update them', done => {
         spyOn(translations, 'updateContext');
         spyOn(entities, 'removeValuesFromEntities').and.callThrough();
-        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
+        spyOn(entities, 'updateMetadataProperties').and.callFake(async () => Promise.resolve());
         const changedTemplate = {
           _id: templateWithContents,
           name: 'changed',
@@ -307,7 +307,7 @@ describe('templates', () => {
 
     describe('when passing _id', () => {
       beforeEach(() => {
-        spyOn(entities, 'updateMetadataProperties').and.returnValue(Promise.resolve());
+        spyOn(entities, 'updateMetadataProperties').and.callFake(async () => Promise.resolve());
       });
 
       it('should updateMetadataProperties', done => {
@@ -453,7 +453,7 @@ describe('templates', () => {
 
   describe('delete', () => {
     it('should delete properties of other templates using this template as select/relationship', async () => {
-      spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
+      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
       await templates.delete({ _id: templateToBeDeleted });
 
       const [template] = await templates.get({ name: 'thesauri template 2' });
@@ -467,7 +467,7 @@ describe('templates', () => {
     });
 
     it('should delete a template when no document is using it', done => {
-      spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(0));
+      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
       return templates
         .delete({ _id: templateToBeDeleted })
         .then(response => {
@@ -483,8 +483,8 @@ describe('templates', () => {
     });
 
     it('should delete the template translation', done => {
-      spyOn(documents, 'countByTemplate').and.returnValue(Promise.resolve(0));
-      spyOn(translations, 'deleteContext').and.returnValue(Promise.resolve());
+      spyOn(documents, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
+      spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
 
       return templates
         .delete({ _id: templateToBeDeleted })
@@ -496,7 +496,7 @@ describe('templates', () => {
     });
 
     it('should throw an error when there is documents using it', done => {
-      spyOn(templates, 'countByTemplate').and.returnValue(Promise.resolve(1));
+      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(1));
       return templates
         .delete({ _id: templateToBeDeleted })
         .then(() => {

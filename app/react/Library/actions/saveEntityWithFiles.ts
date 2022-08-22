@@ -83,7 +83,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       request.attach(`documents[${index}]`, file);
     });
 
-    return request.end((err, res) => {
+    request.end((err, res) => {
       if (err) return reject(err);
 
       if (dispatch && addedDocuments.length) {
@@ -92,7 +92,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
           doc: res.body.entity.sharedId,
         });
       }
-      return resolve(res.body);
+      resolve(res.body);
     });
   });
 };

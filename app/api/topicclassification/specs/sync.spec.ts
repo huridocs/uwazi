@@ -57,7 +57,7 @@ function fakeTopicClassification(url: string) {
 describe('templates utils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(JSONRequest, 'post').and.callFake(fakeTopicClassification);
     spyOn(JSONRequest, 'get').and.callFake(fakeTopicClassification);
     spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);

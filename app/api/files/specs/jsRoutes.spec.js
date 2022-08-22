@@ -1,5 +1,4 @@
 /*eslint-disable max-lines*/
-import { fs } from 'api/files';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
@@ -9,6 +8,8 @@ import request from 'supertest';
 import express from 'express';
 
 import mailer from 'api/utils/mailer';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
@@ -46,8 +47,8 @@ describe('upload routes', () => {
   beforeEach(async done => {
     await createDirIfNotExists(directory);
     await deleteAllFiles(() => {
-      spyOn(search, 'delete').and.returnValue(Promise.resolve());
-      spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+      spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
+      spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',

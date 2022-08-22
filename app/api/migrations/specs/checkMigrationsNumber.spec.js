@@ -1,6 +1,7 @@
 /* eslint-disable import/no-dynamic-require, global-require */
-import { fs } from 'api/files';
 import path from 'path';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { migrator } from '../migrator';
 
 describe('Unique migrations', () => {

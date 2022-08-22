@@ -61,11 +61,15 @@ const addTemplateTranslation = async (template: TemplateSchema) =>
 const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties || [];
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
-    prop: 'label',
-    outKey: 'label',
-    filterBy: '_id',
-  });
+  const updatedLabels = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'label',
+      filterBy: '_id',
+    },
+    currentProperties,
+    newProperties
+  );
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }

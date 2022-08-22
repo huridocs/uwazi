@@ -108,11 +108,7 @@ const suggestionsTable = (
       },
       {
         id: 'currentValue',
-        Header: () => (
-          <>
-            <Translate>Property</Translate>
-          </>
-        ),
+        Header: () => <Translate>Property</Translate>,
         Cell: currentValueCell,
         className: 'current',
       },

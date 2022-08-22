@@ -6,7 +6,7 @@ import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { filesModel } from './filesModel';
 import { validateFile } from '../../shared/types/fileSchema';
 import { FileType } from '../../shared/types/fileType';
-import { removeFiles } from './storage';
+import { storage } from './storage';
 
 export const files = {
   async save(_file: FileType, index = true) {
@@ -30,7 +30,12 @@ export const files = {
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
-      await removeFiles(toDeleteFiles);
+
+      await Promise.all(
+        toDeleteFiles.map(async ({ filename, type }) =>
+          storage.removeFile(filename || '', type || 'document')
+        )
+      );
       await search.indexEntities(
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'

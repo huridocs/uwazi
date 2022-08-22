@@ -32,7 +32,9 @@ describe('taskManager', () => {
     taskManager = new TaskManager(service);
     taskManager.subscribeToResults();
 
-    await new Promise(resolve => setTimeout(resolve, 100)); // wait for redis to be ready
+    await new Promise(resolve => {
+      setTimeout(resolve, 100);
+    }); // wait for redis to be ready
   });
 
   afterAll(async () => {

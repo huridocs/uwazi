@@ -81,7 +81,7 @@ describe('thesaurisActions', () => {
 
     describe('reloadThesauris', () => {
       it('should set thesauris to new values', done => {
-        spyOn(api, 'get').and.returnValue(Promise.resolve('thesaurisResponse'));
+        spyOn(api, 'get').and.callFake(async () => Promise.resolve('thesaurisResponse'));
         actions
           .reloadThesauri()(dispatch)
           .then(() => {

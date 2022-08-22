@@ -27,12 +27,12 @@ import { handleError } from '../api/utils';
 let assets = {};
 
 function renderComponentWithRoot(
-  actions = [],
   componentProps,
   data,
   user,
-  isRedux = false,
-  language
+  language,
+  actions = [],
+  isRedux = false
 ) {
   let initialStore = createStore({});
 
@@ -116,12 +116,12 @@ function handleRoute(res, renderProps, req) {
 
   function renderPage(actions, initialData, isRedux) {
     const wholeHtml = renderComponentWithRoot(
-      actions,
       renderProps,
       initialData,
       req.user,
-      isRedux,
-      initialData.locale
+      initialData.locale,
+      actions,
+      isRedux
     );
     res.status(200).send(wholeHtml);
   }
@@ -232,7 +232,7 @@ function handleRoute(res, renderProps, req) {
     });
 }
 
-const allowedRoute = (user = {}, url) => {
+const allowedRoute = (user = {}, url = '') => {
   const isAdmin = user.role === 'admin';
   const isAuthenticatedUser = ['editor', 'collaborator'].includes(user.role);
   const authRoutes = ['/uploads', '/settings/account'];

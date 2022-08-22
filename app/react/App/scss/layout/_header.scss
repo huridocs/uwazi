@@ -299,6 +299,10 @@ header {
       background: var(--c-bg-menu-mobile);
     }
   }
+
+  @media (min-width: 1024px) {
+    max-width: calc(100% - 300px);
+  }
 }
 
 .mobile-menuActions {

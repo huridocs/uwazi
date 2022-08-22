@@ -94,6 +94,7 @@ const PDFSidePanel = ({
       </>
     </SidePanel>
   ) : (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     <></>
   );
 };

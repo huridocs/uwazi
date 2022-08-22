@@ -27,7 +27,7 @@ describe('contact', () => {
     });
 
     it('should send an email', async () => {
-      spyOn(contact, 'sendMessage').and.returnValue(Promise.resolve());
+      spyOn(contact, 'sendMessage').and.callFake(async () => Promise.resolve());
       const response = await request(app).post('/api/contact').send(body);
       expect(response.text).toContain('ok');
       expect(contact.sendMessage).toHaveBeenCalledWith(body);

@@ -26,7 +26,7 @@ describe('MultiSelect', () => {
         },
       ],
       onChange: jasmine.createSpy('onChange'),
-      onFilter: jasmine.createSpy('onFilter').and.returnValue(Promise.resolve()),
+      onFilter: jasmine.createSpy('onFilter').and.callFake(async () => Promise.resolve()),
     };
   });
 

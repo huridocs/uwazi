@@ -20,10 +20,10 @@ describe('RelationTypesList', () => {
       notify: jasmine.createSpy('notify'),
       deleteRelationType: jasmine
         .createSpy('deleteRelationType')
-        .and.returnValue(Promise.resolve()),
+        .and.callFake(async () => Promise.resolve()),
       checkRelationTypeCanBeDeleted: jasmine
         .createSpy('checkRelationTypeCanBeDeleted')
-        .and.returnValue(Promise.resolve()),
+        .and.callFake(async () => Promise.resolve()),
     };
 
     context = {
