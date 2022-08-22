@@ -119,6 +119,10 @@ describe('csvLoader typeParsers', () => {
       ${'December 17, 1995|December 17, 1996'} | ${'dd/MM/yyyy'} | ${['17-12-1995', '17-12-1996']}
       ${'12/01/2021|12/01/2022'}               | ${'dd/MM/yyyy'} | ${['12-01-2021', '12-01-2022']}
       ${'2021/12/01|2022/12/01'}               | ${'yyyy/MM/dd'} | ${['01-12-2021', '01-12-2022']}
+      ${'2021|'}                               | ${'yyyy/MM/dd'} | ${['01-01-2021']}
+      ${'2021||2022'}                          | ${'yyyy/MM/dd'} | ${['01-01-2021', '01-01-2022']}
+      ${'|'}                                   | ${'yyyy/MM/dd'} | ${[]}
+      ${''}                                    | ${'yyyy/MM/dd'} | ${[]}
     `(
       "should parse '$dateProp' with format '$dateFormat' and return a timestamp",
       async ({ dateProp, dateFormat, expectedDate }) => {
@@ -205,6 +209,29 @@ describe('csvLoader typeParsers', () => {
           { from: '01-12-2021', to: '01-12-2022' },
           { from: '01-12-2023', to: '01-12-2024' },
         ],
+      },
+      {
+        dateProp: '2021/12/01:2022/12/01|',
+        dateFormat: 'dd/MM/yyyy',
+        expectedDate: [{ from: '01-12-2021', to: '01-12-2022' }],
+      },
+      {
+        dateProp: '2021/12/01:2022/12/01||2023/12/01:2024/12/01',
+        dateFormat: 'dd/MM/yyyy',
+        expectedDate: [
+          { from: '01-12-2021', to: '01-12-2022' },
+          { from: '01-12-2023', to: '01-12-2024' },
+        ],
+      },
+      {
+        dateProp: '|',
+        dateFormat: 'dd/MM/yyyy',
+        expectedDate: [],
+      },
+      {
+        dateProp: '',
+        dateFormat: 'dd/MM/yyyy',
+        expectedDate: [],
       },
     ])(
       "should parse '$dateProp' with format '$dateFormat' and return an array of to and from timestamps",

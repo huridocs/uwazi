@@ -44,6 +44,8 @@ const parseDateRange = (rangeValue: string, dateFormat: string) => {
   };
 };
 
+const parseMultiValue = (values: string) => values.split('|').filter(value => value !== '');
+
 export default {
   nested: defaultParser,
   preview: defaultParser,
@@ -79,7 +81,7 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const dates = entityToImport[ensure<string>(property.name)].split('|');
+    const dates = parseMultiValue(entityToImport[ensure<string>(property.name)]);
     return dates.map(date => parseDate(date, dateFormat));
   },
 
@@ -97,7 +99,7 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const ranges = entityToImport[ensure<string>(property.name)].split('|');
+    const ranges = parseMultiValue(entityToImport[ensure<string>(property.name)]);
     return ranges.map(range => parseDateRange(range, dateFormat));
   },
 
