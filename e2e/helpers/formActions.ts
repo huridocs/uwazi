@@ -15,6 +15,11 @@ export const clearInput = async (selector: string): Promise<void> => {
   await page.keyboard.press('Backspace');
 };
 
+export const clearAndType = async (selector: string, text: string) => {
+  await clearInput(selector);
+  await page.type(selector, text);
+};
+
 export const waitForNavigation = async (
   action: Promise<void>
 ): Promise<[void, HTTPResponse | null]> => Promise.all([action, page.waitForNavigation()]);

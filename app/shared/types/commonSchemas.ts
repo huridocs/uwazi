@@ -130,19 +130,21 @@ export const metadataSchema = {
   },
 };
 
+export const selectionRectangleSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    top: { type: 'number' },
+    left: { type: 'number' },
+    width: { type: 'number' },
+    height: { type: 'number' },
+    page: { type: 'string' },
+  },
+};
+
 export const selectionRectanglesSchema = {
   type: 'array',
-  items: {
-    type: 'object',
-    additionalProperties: false,
-    properties: {
-      top: { type: 'number' },
-      left: { type: 'number' },
-      width: { type: 'number' },
-      height: { type: 'number' },
-      page: { type: 'string' },
-    },
-  },
+  items: selectionRectangleSchema,
 };
 
 export const tocSchema = {
@@ -162,6 +164,7 @@ export const extractedMetadataSchema = {
     propertyID: { type: 'string' },
     name: { type: 'string' },
     timestamp: { type: 'string' },
+    deleteSelection: { type: 'boolean' },
     selection: {
       type: 'object',
       additionalProperties: false,
