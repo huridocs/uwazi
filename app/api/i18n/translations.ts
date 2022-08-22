@@ -6,9 +6,11 @@ import thesauri from 'api/thesauri/thesauri';
 import { appendFile } from 'fs/promises';
 import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import { Readable } from 'stream';
 import model from './translationsModel';
 import { generateFileName } from 'api/files';
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { Readable } from 'stream';
 
 export interface IndexedContextValues {
   [k: string]: string;
@@ -401,12 +403,16 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const url = `https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/${locale}.csv`;
-    const csv = (await fetch(url)).body.toString();
+    const url = `https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/${locale}.csv`;
+    // const csv = (await fetch(url)).body.toString();
 
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+    await pipeline(
+      (await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } })).body.toString(),
+      createWriteStream(tmpCsv)
+    );
 
-    await appendFile(tmpCsv, csv);
+    // await appendFile(tmpCsv, csv);
     const loader = new CSVLoader();
     await loader.loadTranslations(tmpCsv, 'System');
   },
