@@ -501,9 +501,9 @@ describe('translations', () => {
         (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
           ?.values || {};
 
-      expect(ESTranslations['Password']).toBe('Password traducida');
-      expect(ESTranslations['Account']).toBe('Account traducida');
-      expect(ESTranslations['Age']).toBe('Age traducida');
+      expect(ESTranslations.Password).toBe('Password traducida');
+      expect(ESTranslations.Account).toBe('Account traducida');
+      expect(ESTranslations.Age).toBe('Age traducida');
     });
   });
 });
