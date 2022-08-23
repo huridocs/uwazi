@@ -401,6 +401,9 @@ export default {
       createWriteStream(tmpCsv)
     );
 
+
+    // TODO handle Github rate limit
+    // TODO authenticate against Github
     // await appendFile(tmpCsv, csv);
     const loader = new CSVLoader();
     await loader.loadTranslations(tmpCsv, 'System');

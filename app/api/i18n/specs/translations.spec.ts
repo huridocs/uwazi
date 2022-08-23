@@ -494,11 +494,11 @@ describe('translations', () => {
       //   SpanishCsv
       // );
 
-      // @ts-ignore
       backend.get(
         (url, opts) =>
           url ===
             'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+          // @ts-ignore
           opts?.headers?.accept === 'application/vnd.github.v4.raw',
         spanishCsv
       );
