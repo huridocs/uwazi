@@ -50,11 +50,15 @@ const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
 
-  const updatedLabels = getUpdatedNames(currentProperties, newProperties, {
-    prop: 'label',
-    outKey: 'label',
-    filterBy: 'id',
-  });
+  const updatedLabels = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'label',
+      filterBy: 'id',
+    },
+    currentProperties,
+    newProperties
+  );
   if (current.name !== thesauri.name) {
     updatedLabels[current.name] = thesauri.name;
   }
@@ -87,11 +91,15 @@ async function updateOptionsInEntities(current, thesauri) {
     )
   );
 
-  const updatedIds = getUpdatedNames(currentProperties, newProperties, {
-    prop: 'label',
-    outKey: 'id',
-    filterBy: 'id',
-  });
+  const updatedIds = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'id',
+      filterBy: 'id',
+    },
+    currentProperties,
+    newProperties
+  );
   const toUpdate = [];
 
   Object.keys(updatedIds).forEach(id => {
@@ -135,6 +143,23 @@ const update = async thesauri => {
   return model.save(thesauri);
 };
 
+function recursivelyAppendValues(originalValues, newValues) {
+  const values = [...originalValues];
+  const valuesByLabel = Object.fromEntries(values.map(value => [value.label, value]));
+  const existingLabels = new Set(Object.keys(valuesByLabel));
+
+  newValues.forEach(newValue => {
+    if (!existingLabels.has(newValue.label)) {
+      values.push(newValue);
+    } else if (newValue.values) {
+      const originalValue = valuesByLabel[newValue.label];
+      originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
+    }
+  });
+
+  return values;
+}
+
 const thesauri = {
   async save(t) {
     const toSave = { values: [], type: 'thesauri', ...t };
@@ -150,11 +175,9 @@ const thesauri = {
   },
 
   appendValues(thesaurus, newValues) {
-    const existingValues = thesaurus.values || [];
-    const existingLabels = new Set(existingValues.map(v => v.label));
     return {
       ...thesaurus,
-      values: [...existingValues, ...newValues.filter(v => !existingLabels.has(v.label))],
+      values: recursivelyAppendValues(thesaurus.values || [], newValues),
     };
   },
 
@@ -172,8 +195,8 @@ const thesauri = {
     const _entities = await entities.getByTemplate(
       template._id,
       language,
-      onlyPublished,
-      preloadOptionsLimit
+      preloadOptionsLimit,
+      onlyPublished
     );
     const values = this.entitiesToThesauri(_entities);
     return Object.assign(template, values, {

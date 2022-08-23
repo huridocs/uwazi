@@ -7,11 +7,12 @@ import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { errorLog } from 'api/log';
-import { fs, uploadsPath, setupTestUploadedPaths, fileExists, attachmentsPath } from 'api/files';
+import { setupTestUploadedPaths, storage } from 'api/files';
 import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
 import mailer from 'api/utils/mailer';
-
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
 
@@ -33,7 +34,7 @@ describe('public routes', () => {
   const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
     spyOn(errorLog, 'error');
     await db.clearAllAndLoad(fixtures);
@@ -54,7 +55,7 @@ describe('public routes', () => {
             JSON.stringify({ title: 'public submit', template: templateId.toString() })
           )
           .attach('file', `${__dirname}/12345.test.pdf`)
-          .attach('attachment', path.join(os.tmpdir(), 'attachment.txt'))
+          .attach('attachments[0]', path.join(os.tmpdir(), 'attachment.txt'))
           .expect(200)
       );
 
@@ -66,13 +67,13 @@ describe('public routes', () => {
         attachment => attachment.originalname === 'attachment.txt'
       );
       expect(textAttachment).not.toBeUndefined();
-      expect(await fileExists(attachmentsPath(textAttachment?.filename))).toBe(true);
+      expect(await storage.fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
 
       const [document] = newEntity.documents!;
       expect(document).toEqual(
         expect.objectContaining({ originalname: '12345.test.pdf', status: 'ready' })
       );
-      expect(await fileExists(uploadsPath(document.filename))).toBe(true);
+      expect(await storage.fileExists(document.filename!, 'document')).toBe(true);
     });
 
     it('should send an email', async () => {

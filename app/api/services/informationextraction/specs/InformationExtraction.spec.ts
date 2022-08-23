@@ -2,10 +2,11 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { fs } from 'api/files';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import * as setupSockets from 'api/socketio/setupSockets';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';

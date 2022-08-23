@@ -1,6 +1,7 @@
 import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
+import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';
 
@@ -61,6 +62,10 @@ socket.on('translationsChange', translations => {
   store.dispatch(actions.update('translations', translations));
   t.resetCachedTranslation();
   Translate.resetCachedTranslation();
+});
+
+socket.on('documentProcessed', sharedId => {
+  store.dispatch(documentProcessed(sharedId));
 });
 
 socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));

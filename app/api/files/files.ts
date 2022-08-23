@@ -1,7 +1,6 @@
 import entities from 'api/entities';
 import { applicationEventsBus } from 'api/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { deleteUploadedFiles } from 'api/files/filesystem';
 import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import connections from 'api/relationships';
 import { search } from 'api/search';
@@ -11,6 +10,7 @@ import { FileCreatedEvent } from './events/FileCreatedEvent';
 import { FilesDeletedEvent } from './events/FilesDeletedEvent';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
+import { storage } from './storage';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -50,7 +50,12 @@ export const files = {
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
-      await deleteUploadedFiles(toDeleteFiles);
+
+      await Promise.all(
+        toDeleteFiles.map(async ({ filename, type }) =>
+          storage.removeFile(filename || '', type || 'document')
+        )
+      );
       await search.indexEntities(
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
         '+fullText'

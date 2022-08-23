@@ -1,5 +1,5 @@
 import entities from 'api/entities';
-import { fileFromReadStream, files, generateFileName } from 'api/files';
+import { files, generateFileName, storage } from 'api/files';
 import { errorLog } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
@@ -19,6 +19,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
 import { TemplateSchema } from 'shared/types/templateType';
+import { Readable } from 'stream';
 import { preserveSyncModel } from './preserveSyncModel';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
@@ -121,9 +122,9 @@ const saveEvidence =
             await fetch(new URL(path.join(host, download.path)).toString(), {
               headers: { Authorization: config.token },
             })
-          ).body as unknown as NodeJS.ReadableStream;
+          ).body as unknown as Readable;
           if (fileStream) {
-            await fileFromReadStream(fileName, fileStream);
+            await storage.storeFile(fileName, fileStream, 'attachment');
 
             await files.save({
               entity: sharedId,
@@ -154,7 +155,8 @@ const preserveSync = {
 
   async sync(preserveConfig: PreserveConfig) {
     // eslint-disable-next-line no-restricted-syntax
-    for await (const config of preserveConfig.config) {
+    await preserveConfig.config.reduce(async (promise, config) => {
+      await promise;
       const preservationSync = await preserveSyncModel.db.findOne({ token: config.token }, {});
 
       const queryString = qs.stringify({
@@ -184,7 +186,7 @@ const preserveSync = {
           token: config.token,
         });
       }
-    }
+    }, Promise.resolve());
   },
 };
 

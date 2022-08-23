@@ -12,7 +12,7 @@ describe('Pages', () => {
   beforeEach(() => {
     context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
-    spyOn(PagesAPI, 'get').and.returnValue(Promise.resolve(pages));
+    spyOn(PagesAPI, 'get').and.callFake(async () => Promise.resolve(pages));
     component = shallow(<Pages />, { context });
   });
 

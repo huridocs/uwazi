@@ -1,7 +1,5 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
-import path from 'path';
-
 import { applicationEventsBus } from 'api/eventsbus';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
@@ -22,7 +20,6 @@ import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
-import { deleteFiles, deleteUploadedFiles } from '../files/filesystem';
 import settings from '../settings';
 
 const FIELD_TYPES_TO_SYNC = [
@@ -169,23 +166,17 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   );
 }
 
-function getEntityTemplate(doc, language) {
-  return new Promise(resolve => {
-    if (!doc.sharedId && !doc.template) {
-      return resolve(null);
+async function getEntityTemplate(doc, language) {
+  let template = null;
+  if (doc.template) {
+    template = await templates.getById(doc.template);
+  } else if (doc.sharedId) {
+    const storedDoc = await this.getById(doc.sharedId, language);
+    if (storedDoc) {
+      template = await templates.getById(storedDoc.template);
     }
-
-    if (doc.template) {
-      return templates.getById(doc.template).then(resolve);
-    }
-
-    return this.getById(doc.sharedId, language).then(storedDoc => {
-      if (!storedDoc) {
-        return null;
-      }
-      return templates.getById(storedDoc.template).then(resolve);
-    });
-  });
+  }
+  return template;
 }
 
 const uniqueMetadataObject = (elem, pos, arr) =>
@@ -531,7 +522,7 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, onlyPublished = true, limit) {
+  getByTemplate(template, language, limit, onlyPublished = true) {
     const query = {
       template,
       language,
@@ -628,20 +619,7 @@ export default {
     );
   },
 
-  async deleteFiles(deletedDocs) {
-    await files.delete({ entity: { $in: deletedDocs.map(d => d.sharedId) } });
-    const attachmentsToDelete = deletedDocs.reduce((filePaths, doc) => {
-      if (doc.attachments) {
-        doc.attachments.forEach(file =>
-          filePaths.push({ filename: path.normalize(`${file.filename}`) })
-        );
-      }
-      return filePaths;
-    }, []);
-    return deleteUploadedFiles(attachmentsToDelete);
-  },
-
-  deleteIndexes(sharedIds) {
+  async deleteIndexes(sharedIds) {
     const deleteIndexBatch = (offset, totalRows) => {
       const limit = 200;
       if (offset >= totalRows) {
@@ -657,7 +635,7 @@ export default {
     );
   },
 
-  deleteMultiple(sharedIds) {
+  async deleteMultiple(sharedIds) {
     return this.deleteIndexes(sharedIds).then(() =>
       sharedIds.reduce(
         (previousPromise, sharedId) => previousPromise.then(() => this.delete(sharedId, false)),
@@ -683,7 +661,6 @@ export default {
     await Promise.all([
       relationships.delete({ entity: sharedId }, null, false),
       files.delete({ entity: sharedId }),
-      this.deleteFiles(docs),
       this.deleteRelatedEntityFromMetadata(docs[0]),
     ]);
 
@@ -755,24 +732,6 @@ export default {
   async createThumbnail(entity) {
     const filePath = filesystem.uploadsPath(entity.file.filename);
     return new PDF({ filename: filePath }).createThumbnail(entity._id.toString());
-  },
-
-  async deleteLanguageFiles(entity) {
-    const filesToDelete = [];
-    filesToDelete.push(path.normalize(filesystem.uploadsPath(`${entity._id.toString()}.jpg`)));
-    const sibilings = await this.get({ sharedId: entity.sharedId, _id: { $ne: entity._id } });
-    if (entity.file) {
-      const shouldUnlinkFile = sibilings.reduce(
-        (should, sibiling) => should && !(sibiling.file.filename === entity.file.filename),
-        true
-      );
-      if (shouldUnlinkFile) {
-        filesToDelete.push(path.normalize(filesystem.uploadsPath(entity.file.filename)));
-      }
-    }
-    if (entity.file) {
-      await deleteFiles(filesToDelete);
-    }
   },
 
   async generateNewEntitiesForLanguage(entities, language) {
@@ -847,9 +806,9 @@ export default {
         return Promise.resolve();
       }
 
-      return this.get({ language: locale }, null, { skip: offset, limit })
-        .then(entities => Promise.all(entities.map(entity => this.deleteLanguageFiles(entity))))
-        .then(() => deleteFilesByLanguage(offset + limit, totalRows));
+      return this.get({ language: locale }, null, { skip: offset, limit }).then(() =>
+        deleteFilesByLanguage(offset + limit, totalRows)
+      );
     };
 
     return this.count({ language: locale })

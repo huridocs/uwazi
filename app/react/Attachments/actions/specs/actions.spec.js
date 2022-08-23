@@ -70,7 +70,8 @@ describe('Attachments actions', () => {
 
       store.dispatch(actions.uploadAttachment('sharedId', file, { __reducerKey: 'storeKey' }));
       expect(mockUpload.field).toHaveBeenCalledWith('entity', 'sharedId');
-      expect(mockUpload.attach).toHaveBeenCalledWith('file', file, file.name);
+      expect(mockUpload.field).toHaveBeenCalledWith('originalname', file.name);
+      expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
 
       mockUpload.emit('progress', { percent: 55.1 });
       mockUpload.emit('progress', { percent: 65 });
@@ -146,7 +147,7 @@ describe('Attachments actions', () => {
 
   describe('deleteAttachment', () => {
     it('should call on attachments/delete, with entity and filename and dispatch deleted and notification actions', done => {
-      spyOn(api, 'delete').and.returnValue(Promise.resolve({}));
+      spyOn(api, 'delete').and.callFake(async () => Promise.resolve({}));
       mockID();
       const dispatch = jasmine.createSpy('dispatch');
       actions

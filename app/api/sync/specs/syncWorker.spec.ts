@@ -1,13 +1,7 @@
 import authRoutes from 'api/auth/routes';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
-import {
-  attachmentsPath,
-  customUploadsPath,
-  fileExists,
-  files,
-  testingUploadPaths,
-} from 'api/files';
+import { attachmentsPath, customUploadsPath, storage, files, testingUploadPaths } from 'api/files';
 import translations from 'api/i18n';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships';
@@ -26,6 +20,7 @@ import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
@@ -162,8 +157,12 @@ describe('syncWorker', () => {
     await tenants.run(async () => {
       await rmdir(attachmentsPath(), { recursive: true });
     }, 'target2');
-    await new Promise(resolve => server.close(resolve));
-    await new Promise(resolve => server2.close(resolve));
+    await new Promise(resolve => {
+      server.close(resolve);
+    });
+    await new Promise(resolve => {
+      server2.close(resolve);
+    });
     await db.disconnect();
   });
 
@@ -280,10 +279,10 @@ describe('syncWorker', () => {
         { type: 'custom' },
       ]);
 
-      expect(await fileExists(attachmentsPath(syncedFiles[0].filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(syncedFiles[1].filename))).toBe(true);
-      expect(await fileExists(attachmentsPath(syncedFiles[2].filename))).toBe(true);
-      expect(await fileExists(customUploadsPath(syncedFiles[3].filename))).toBe(true);
+      expect(await storage.fileExists(syncedFiles[0].filename!, 'attachment')).toBe(true);
+      expect(await storage.fileExists(syncedFiles[1].filename!, 'attachment')).toBe(true);
+      expect(await storage.fileExists(syncedFiles[2].filename!, 'attachment')).toBe(true);
+      expect(await storage.fileExists(syncedFiles[3].filename!, 'custom')).toBe(true);
     }, 'target1');
   });
 

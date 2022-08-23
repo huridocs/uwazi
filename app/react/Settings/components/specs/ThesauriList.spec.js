@@ -11,10 +11,12 @@ describe('ThesaurisList', () => {
 
   beforeEach(() => {
     props = {
-      deleteThesaurus: jasmine.createSpy('deleteThesaurus').and.returnValue(Promise.resolve()),
+      deleteThesaurus: jasmine
+        .createSpy('deleteThesaurus')
+        .and.callFake(async () => Promise.resolve()),
       checkThesaurusCanBeDeleted: jasmine
         .createSpy('checkThesaurusCanBeDeleted')
-        .and.returnValue(Promise.resolve()),
+        .and.callFake(async () => Promise.resolve()),
       topicClassificationEnabled: true,
       dictionaries: Immutable.fromJS([
         {

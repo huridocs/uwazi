@@ -1,3 +1,4 @@
+// Kevin------------------------------------------------------------------
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
@@ -5,7 +6,7 @@ import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
-import { fileExists, readFile, uploadsPath } from 'api/files';
+import { storage } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
@@ -80,8 +81,9 @@ class InformationExtraction {
     property: string,
     type: string
   ) => {
-    const fileContent = await readFile(
-      uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+    const fileContent = await storage.fileContents(
+      path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+      'document'
     );
     const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
     const url = urljoin(serviceUrl, endpoint, tenants.current().name, property);
@@ -97,8 +99,9 @@ class InformationExtraction {
     await Promise.all(
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
-        const xmlExists = await fileExists(
-          uploadsPath(path.join(PDFSegmentation.SERVICE_NAME, xmlName))
+        const xmlExists = await storage.fileExists(
+          path.join(PDFSegmentation.SERVICE_NAME, xmlName),
+          'document'
         );
 
         const propertyLabeledData = file.extractedMetadata?.find(
@@ -207,7 +210,11 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = stringToTypeOfProperty(rawSuggestion.text, property?.type);
+        const suggestedValue = stringToTypeOfProperty(
+          rawSuggestion.text,
+          property?.type,
+          currentSuggestion?.language || entity.language
+        );
 
         if (suggestedValue === null) {
           status = 'failed';

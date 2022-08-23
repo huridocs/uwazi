@@ -48,7 +48,7 @@ export function setPropertyDefaults(getState, property) {
   return propertyWithDefaults;
 }
 
-export function addProperty(property = {}, _index) {
+export function addProperty(property = {}, _index = undefined) {
   return (dispatch, getState) => {
     const properties = getState().template.data.properties.slice(0);
     const index = _index !== undefined ? _index : properties.length;

@@ -3,7 +3,7 @@ import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
@@ -28,6 +28,11 @@ interface EntityDisplayState {
   };
   search: any;
   filters: IImmutable<{ documentTypes: [] }>;
+}
+
+interface RelationshipTypesType {
+  _id: string;
+  name: string;
 }
 
 export interface ClientPropertySchema extends PropertySchema {
@@ -96,9 +101,15 @@ export interface ClientFile extends FileType {
   fileLocalID?: string;
 }
 
+export interface ClientBlobFile extends FileType {
+  data: string;
+  originalFile: File;
+}
+
 export interface ClientEntitySchema extends EntitySchema {
-  documents?: ClientFile[];
+  documents?: (ClientFile | ClientBlobFile)[];
   attachments?: ClientFile[];
+  defaultDoc?: ClientFile;
 }
 
 export interface DocumentViewerUiStateReference {
@@ -136,8 +147,11 @@ export interface IStore {
       activeReference: string;
     }>;
     metadataExtraction: IImmutable<{
-      selections: [];
+      selections: ExtractedMetadataSchema[];
     }>;
+    sidepanel: {
+      metadata: ClientEntitySchema;
+    };
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;
@@ -154,4 +168,5 @@ export interface IStore {
     formState: any;
   };
   pages: IImmutable<PageType>;
+  relationTypes: IImmutable<RelationshipTypesType[]>;
 }

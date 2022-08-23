@@ -14,7 +14,9 @@ describe('entities', () => {
 
   beforeEach(done => {
     routes = instrumentRoutes(documentRoutes);
-    spyOn(search, 'countPerTemplate').and.returnValue(Promise.resolve({ templateCount: 0 }));
+    spyOn(search, 'countPerTemplate').and.callFake(async () =>
+      Promise.resolve({ templateCount: 0 })
+    );
     db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
@@ -49,10 +51,8 @@ describe('entities', () => {
       spyOn(entitiesSavingManager, 'saveEntity').and.returnValue(
         Promise.resolve({ entity: 'entity', errors: [] })
       );
-      spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve({ values: [] })));
-      spyOn(thesauri, 'templateToThesauri').and.returnValue(
-        new Promise(resolve => resolve('document'))
-      );
+      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({ values: [] }));
+      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve('document'));
       const sockets = {
         emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
       };
@@ -67,7 +67,7 @@ describe('entities', () => {
     });
 
     it('should denormalize an entity', async () => {
-      spyOn(entities, 'denormalize').and.returnValue(Promise.resolve('entity'));
+      spyOn(entities, 'denormalize').and.callFake(async () => Promise.resolve('entity'));
 
       const document = await routes.post('/api/entity_denormalize', req);
       expect(document).toBe('entity');
@@ -111,9 +111,9 @@ describe('entities', () => {
       spyOn(entities, 'getWithRelationships').and.returnValue(
         Promise.resolve(['entityWithRelationShips'])
       );
-      spyOn(templates, 'getById').and.returnValue(new Promise(resolve => resolve('template')));
-      spyOn(thesauri, 'templateToThesauri').and.returnValue(
-        new Promise(resolve => resolve('templateTransformed'))
+      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve('template'));
+      spyOn(thesauri, 'templateToThesauri').and.callFake(async () =>
+        Promise.resolve('templateTransformed')
       );
       routes.post('/api/entities', req).catch(catchErrors(done));
     });
@@ -139,9 +139,7 @@ describe('entities', () => {
 
       it('should call multipleUpdate with the ids and the metadata in the body', async () => {
         const mockedResponse = [{ sharedId: '1' }, { sharedId: '2' }];
-        spyOn(entities, 'multipleUpdate').and.returnValue(
-          new Promise(resolve => resolve(mockedResponse))
-        );
+        spyOn(entities, 'multipleUpdate').and.callFake(async () => Promise.resolve(mockedResponse));
         const response = await routes.post('/api/entities/multipleupdate', req);
         expect(entities.multipleUpdate).toHaveBeenCalledWith(
           ['1', '2'],
@@ -167,7 +165,9 @@ describe('entities', () => {
           published: true,
         },
       ];
-      spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve(expectedEntity));
+      spyOn(entities, 'getWithRelationships').and.callFake(async () =>
+        Promise.resolve(expectedEntity)
+      );
       const req = {
         query: { sharedId: 'sharedId' },
         language: 'lang',
@@ -219,7 +219,7 @@ describe('entities', () => {
       };
 
       spyOn(entities, 'getWithRelationships');
-      spyOn(entities, 'get').and.returnValue(Promise.resolve([expectedEntity]));
+      spyOn(entities, 'get').and.callFake(async () => Promise.resolve([expectedEntity]));
 
       const req = {
         query: {
@@ -247,7 +247,7 @@ describe('entities', () => {
 
     describe('when the document does not exist', () => {
       it('should retunr a 404', done => {
-        spyOn(entities, 'getWithRelationships').and.returnValue(Promise.resolve([]));
+        spyOn(entities, 'getWithRelationships').and.callFake(async () => Promise.resolve([]));
         const req = {
           query: { sharedId: 'idontexist' },
           language: 'en',
@@ -326,7 +326,7 @@ describe('entities', () => {
 
   describe('/api/entities/get_raw_page', () => {
     it('should return formattedPlainTextPages page requested', async () => {
-      spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+      spyOn(entities, 'countByTemplate').and.callFake(async () => Promise.resolve(2));
       const req = { query: { templateId: 'templateId' } };
 
       const response = await routes.get('/api/entities/count_by_template', req);
@@ -341,7 +341,7 @@ describe('entities', () => {
       expect(routes.get.validation('/api/entities/count_by_template')).toMatchSnapshot();
     });
     it('should return count of entities using a specific template', done => {
-      spyOn(entities, 'countByTemplate').and.returnValue(new Promise(resolve => resolve(2)));
+      spyOn(entities, 'countByTemplate').and.callFake(async () => Promise.resolve(2));
       const req = { query: { templateId: 'templateId' } };
 
       routes
@@ -357,7 +357,7 @@ describe('entities', () => {
 
   describe('DELETE /api/entities', () => {
     beforeEach(() => {
-      spyOn(entities, 'delete').and.returnValue(Promise.resolve({ json: 'ok' }));
+      spyOn(entities, 'delete').and.callFake(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should have a validation schema', () => {
@@ -383,7 +383,7 @@ describe('entities', () => {
 
   describe('POST /api/entities/bulkdelete', () => {
     beforeEach(() => {
-      spyOn(entities, 'deleteMultiple').and.returnValue(Promise.resolve({ json: 'ok' }));
+      spyOn(entities, 'deleteMultiple').and.callFake(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should have a validation schema', () => {

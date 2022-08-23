@@ -45,15 +45,4 @@ describe('Alert', () => {
       expect(component).toMatchSnapshot();
     });
   });
-
-  describe('show()', () => {
-    it('should show the Alert', () => {
-      props = { message: '' };
-      render();
-
-      instance.show();
-      component.update();
-      expect(component).toMatchSnapshot();
-    });
-  });
 });

@@ -3,7 +3,7 @@ import fetchMock from 'fetch-mock';
 import path from 'path';
 import request from 'supertest';
 
-import { fileExists, uploadsPath } from 'api/files/filesystem';
+import { storage } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
 import { ocrManager } from 'api/services/ocr/OcrManager';
@@ -17,7 +17,8 @@ import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
 
 import * as setupSockets from 'api/socketio/setupSockets';
-import { fs } from '..';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { files } from '../files';
 import { ocrRoutes } from '../ocrRoutes';
 import { OcrModel, OcrStatus } from '../../services/ocr/ocrModel';
@@ -80,7 +81,7 @@ describe('OCR service', () => {
   }
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setUp(FIXTURES);
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;
@@ -119,9 +120,7 @@ describe('OCR service', () => {
     beforeEach(async () => {
       setSupportedLang(['en']);
       jest.spyOn(JSONRequest, 'uploadFile').mockReturnValue(Promise.resolve());
-      const resultTestFile = fs.createReadStream(
-        path.join(__dirname, `uploads/${fileNameToProcess}`)
-      );
+      const resultTestFile = createReadStream(path.join(__dirname, `uploads/${fileNameToProcess}`));
       fetchMock.mock(
         'protocol://link/to/result/file',
         {
@@ -156,9 +155,9 @@ describe('OCR service', () => {
 
       expect(record.status).toBe(OcrStatus.READY);
       expect(originalFile.type).toBe('attachment');
-      expect(await fileExists(uploadsPath(originalFile.filename))).toBe(true);
+      expect(await storage.fileExists(originalFile.filename!, 'document')).toBe(true);
       expect(resultFile.type).toBe('document');
-      expect(await fileExists(uploadsPath(resultFile.filename))).toBe(true);
+      expect(await storage.fileExists(resultFile.filename!, 'document')).toBe(true);
       expect(resultFile.language).toBe(originalFile.language);
 
       const connectionsForOrigFile = await relationships.get({

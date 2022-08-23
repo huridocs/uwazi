@@ -58,6 +58,9 @@ export const config = {
     customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
     temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
     activityLogs: ACTIVITY_LOGS_FOLDER || `${rootPath}/log/`,
+    featureFlags: {
+      s3Storage: false,
+    },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,
 
@@ -70,5 +73,12 @@ export const config = {
   sentry: {
     dsn: SENTRY_API_DSN,
     tracesSampleRate: 0.1,
+  },
+  s3: {
+    endpoint: process.env.S3_ENDPOINT || '',
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+    },
   },
 };

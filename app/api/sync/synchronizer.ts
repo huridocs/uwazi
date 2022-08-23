@@ -1,21 +1,23 @@
 import urljoin from 'url-join';
 
 import request from 'shared/JSONRequest';
-import { fs, customUploadsPath, uploadsPath } from 'api/files';
+import { storage } from 'api/files';
 import { DataType } from 'api/odm';
 import { UpdateLog } from 'api/updatelogs';
+import { FileType } from 'shared/types/fileType';
 
-const uploadFile = async (url: string, filename: string, type = 'document', cookie: string) => {
-  let pathFunction = uploadsPath;
+const uploadFile = async (
+  url: string,
+  filename: string,
+  cookie: string,
+  type: FileType['type'] = 'document'
+) => {
   let apiEndpoint = 'api/sync/upload';
-
   if (type === 'custom') {
-    pathFunction = customUploadsPath;
     apiEndpoint = 'api/sync/upload/custom';
   }
 
-  const filepath = pathFunction(filename);
-  const file = await fs.readFile(filepath);
+  const file = await storage.fileContents(filename, type);
   return request.uploadFile(urljoin(url, apiEndpoint), filename, file, cookie);
 };
 
@@ -48,7 +50,7 @@ export const synchronizer = {
     );
 
     if (change.namespace === 'files' && data.filename) {
-      await uploadFile(url, data.filename, data.type, cookie);
+      await uploadFile(url, data.filename, cookie, data.type);
     }
   },
 };

@@ -27,7 +27,7 @@ describe('RelationshipMetadata', () => {
       entity: testingEntity,
       errors: [''],
     });
-    spyOn(entitiesAPI, 'delete').and.returnValue(Promise.resolve());
+    spyOn(entitiesAPI, 'delete').and.callFake(async () => Promise.resolve());
   });
 
   function renderComponent(editing = false, hubIndex = null, rightRelationshipIndex = null) {
@@ -123,7 +123,7 @@ describe('RelationshipMetadata', () => {
   describe('deleting', () => {
     it('should request a delete and reload all the connections', async () => {
       renderComponent();
-      spyOn(routeUtils, 'requestState').and.returnValue(Promise.resolve([{}, {}]));
+      spyOn(routeUtils, 'requestState').and.callFake(async () => Promise.resolve([{}, {}]));
       instance.deleteDocument();
       await confirm.calls.allArgs()[0][0].accept();
       expect(entitiesAPI.delete).toHaveBeenCalledWith({

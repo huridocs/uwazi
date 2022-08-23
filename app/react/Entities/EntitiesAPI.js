@@ -2,7 +2,12 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
 export default {
-  get(requestParams = new RequestParams(), language) {
+  coerceValue(requestParams) {
+    const url = 'entities/coerce_value';
+    return api.post(url, requestParams).then(response => response.json);
+  },
+
+  get(requestParams = new RequestParams(), language = undefined) {
     const params = requestParams.add({
       include:
         requestParams.data && requestParams.data.include

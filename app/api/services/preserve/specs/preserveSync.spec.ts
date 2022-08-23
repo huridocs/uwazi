@@ -1,6 +1,6 @@
 import entities from 'api/entities';
-import { fileExists, generateFileName, testingUploadPaths } from 'api/files/filesystem';
-import { uwaziFS } from 'api/files/uwaziFS';
+import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
+import { storage } from 'api/files/storage';
 import { errorLog } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
@@ -16,6 +16,10 @@ import { URL } from 'url';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -38,8 +42,8 @@ const mockVault = async (evidences: any[], token: string = '', isoDate = '') => 
   return Promise.all(
     downloads.map(async download => {
       const tmpName = generateFileName({ originalname: 'test' });
-      await uwaziFS.writeFile(path.join('/tmp', tmpName), 'content');
-      const file = uwaziFS.createReadStream(path.join('/tmp', tmpName));
+      await fs.writeFile(path.join('/tmp', tmpName), 'content');
+      const file = createReadStream(path.join('/tmp', tmpName));
 
       // @ts-ignore
       const fileResponse = new Response(file, {
@@ -75,7 +79,7 @@ describe('preserveSync', () => {
 
     tenants.add(tenant1);
 
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
   });
 
   afterAll(async () => db.disconnect());
@@ -228,17 +232,15 @@ describe('preserveSync', () => {
 
     it('should save evidences downloads to disk', async () => {
       await tenants.run(async () => {
+        permissionsContext.setCommandContext();
         const entitiesImported: EntityWithFilesSchema[] = await entities.get();
         const attachments: FileType[] = entitiesImported
           .map(entity => entity.attachments || [])
           .flat();
-        const testingPaths = await testingUploadPaths();
-        // eslint-disable-next-line no-restricted-syntax
-        for await (const attachment of attachments) {
-          expect(
-            await fileExists(path.join(testingPaths.attachments, attachment.filename || ''))
-          ).toBe(true);
-        }
+        await attachments.reduce(async (promise, attachment) => {
+          await promise;
+          expect(await storage.fileExists(attachment.filename!, 'attachment')).toBe(true);
+        }, Promise.resolve());
       }, tenantName);
     });
 

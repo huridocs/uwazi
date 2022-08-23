@@ -2,11 +2,14 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import ID from 'shared/uniqueID';
+// eslint-disable-next-line node/no-restricted-import
+import fs, { access } from 'fs/promises';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
-import { uwaziFS as fs } from './uwaziFS';
 import { FileType } from '../../shared/types/fileType';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
 
 type FilePath = string;
 type pathFunction = (fileName?: string) => FilePath;
@@ -68,32 +71,6 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
-const deleteUploadedFiles = async (files: FileType[]) =>
-  deleteFiles(
-    files
-      .filter(f => f.filename)
-      .map(({ filename = '', type }) => {
-        if (type === 'custom') {
-          return customUploadsPath(filename);
-        }
-        return uploadsPath(filename);
-      })
-  );
-
-const fileExists = async (filePath: FilePath): Promise<boolean> => {
-  try {
-    await fs.access(filePath);
-  } catch (err) {
-    if (err?.code === 'ENOENT') {
-      return false;
-    }
-    if (err) {
-      throw err;
-    }
-  }
-  return true;
-};
-
 const generateFileName = ({ originalname = '' }: FileType) =>
   Date.now() + ID() + path.extname(originalname);
 
@@ -111,7 +88,7 @@ const fileFromReadStream = async (
 ): Promise<FilePath> =>
   new Promise((resolve, reject) => {
     const filePath = path.join(destination || uploadsPath(), fileName);
-    const writeStream = fs.createWriteStream(filePath);
+    const writeStream = createWriteStream(filePath);
     readStream
       .pipe(writeStream)
       .on('finish', () => resolve(filePath))
@@ -121,45 +98,40 @@ const fileFromReadStream = async (
 const streamToString = async (stream: Readable): Promise<string> =>
   new Promise((resolve, reject) => {
     const chunks: any[] = [];
-    stream.on('data', (chunk: any) => chunks.push(chunk));
+    stream.on('data', chunk => chunks.push(Buffer.from(chunk)));
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
 
-const getFileContent = async (fileName: FilePath): Promise<string> =>
-  fs.readFile(uploadsPath(fileName), 'utf8');
-
-const readFile = async (fileName: FilePath): Promise<Buffer> => fs.readFile(fileName);
-
-const storeFile: (
-  filePathFunction: pathFunction,
-  file: any,
-  overrideFilename: boolean
-) => Promise<FileType> = async (filePathFunction, file, overrideFilename = false) => {
-  const filename = (overrideFilename && file.filename) || generateFileName(file);
-  await fs.appendFile(filePathFunction(filename), file.buffer);
-  return Object.assign(file, { filename, destination: filePathFunction() });
+const fileExistsOnPath = async (filePath: string): Promise<boolean> => {
+  try {
+    await access(filePath);
+  } catch (err) {
+    if (err?.code === 'ENOENT') {
+      return false;
+    }
+    if (err) {
+      throw err;
+    }
+  }
+  return true;
 };
 
 export {
   setupTestUploadedPaths,
-  deleteUploadedFiles,
   createDirIfNotExists,
   deleteFiles,
   deleteFile,
   generateFileName,
   fileFromReadStream,
-  fileExists,
   streamToString,
-  getFileContent,
   customUploadsPath,
   uploadsPath,
   temporalFilesPath,
   attachmentsPath,
   activityLogPath,
-  readFile,
-  storeFile,
   testingUploadPaths,
+  fileExistsOnPath,
 };
 
 export type { FilePath, pathFunction };

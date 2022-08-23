@@ -174,6 +174,21 @@
     right: calc((100% - 400px) / 2);
   }
 
+  &.clustered {
+    @media (min-width: 1024px) {
+      right: calc((100% - 200px) / 2);
+    }
+
+    .btn {
+      margin: 0 9px 25px 9px;
+    }
+
+    span {
+      line-height: 1;
+      white-space: normal;
+    }
+  }
+
   .btn {
     position: relative;
     border-radius: 50%;
@@ -504,5 +519,40 @@
     .toggle-children-button {
       margin-bottom: 0px;
     }
+  }
+}
+
+.new-thesaurus-modal,
+.new-relationshipType-modal {
+  border-radius: 6px;
+
+  h3 {
+    margin-top: 10px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid $c-grey-light;
+  }
+
+  .description {
+    color: $c-grey-dark;
+  }
+
+  .error {
+    margin-top: 5px;
+    font-weight: bold;
+    color: $c-type-0;
+  }
+
+  .modal-footer {
+    text-align: left;
   }
 }

@@ -5,20 +5,8 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Open PDF',
-    value: 'Open PDF',
-  },
-  {
-    key: 'Add properties',
-    value: 'Add properties',
-  },
-  {
-    key: 'Only text, number and date properties are currently supported',
-    value: 'Only text, number and date properties are currently supported',
-  },
-  {
-    key: 'Current value',
-    value: 'Current value',
+    key: 'Value cannot be transformed to date',
+    value: 'Value cannot be transformed to date',
   },
 ];
 const alreadyInAllContexts = {
@@ -31,7 +19,7 @@ const alreadyInAllContexts = {
 describe('migration add_system_key_translations', () => {
   beforeEach(async () => {
     spyOn(process.stdout, 'write');
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {

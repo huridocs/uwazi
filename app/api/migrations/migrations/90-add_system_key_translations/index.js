@@ -49,16 +49,7 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'Open PDF',
-      },
-      {
-        key: 'Add properties',
-      },
-      {
-        key: 'Only text, number and date properties are currently supported',
-      },
-      {
-        key: 'Current value',
+        key: 'Value cannot be transformed to date',
       },
     ];
     await insertSystemKeys(db, systemKeys);

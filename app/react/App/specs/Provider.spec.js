@@ -16,7 +16,6 @@ describe('Provider', () => {
     constructor(props, context) {
       super(props, context);
       this.state = {};
-      this.context = context;
     }
 
     static requestState() {

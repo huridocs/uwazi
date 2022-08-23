@@ -12,10 +12,10 @@ import { settingsModel } from './settingsModel';
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
 const getUpdatesAndDeletes = (
-  newValues: (SettingsLinkSchema & SettingsFilterSchema)[] = [],
-  currentValues: (SettingsLinkSchema & SettingsFilterSchema)[] = [],
   matchProperty: keyof (SettingsLinkSchema & SettingsFilterSchema),
-  propertyName: keyof (SettingsLinkSchema & SettingsFilterSchema)
+  propertyName: keyof (SettingsLinkSchema & SettingsFilterSchema),
+  newValues: (SettingsLinkSchema & SettingsFilterSchema)[] = [],
+  currentValues: (SettingsLinkSchema & SettingsFilterSchema)[] = []
 ) => {
   const updatedValues: { [k: string]: any } = {};
   const deletedValues: string[] = [];
@@ -68,10 +68,10 @@ const saveLinksTranslations = async (
   }
 
   const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(
-    newLinks,
-    currentLinks,
     '_id',
-    'title'
+    'title',
+    newLinks,
+    currentLinks
   );
 
   return translations.updateContext(
@@ -96,10 +96,10 @@ const saveFiltersTranslations = async (
   const currentFilters = _currentFilters.filter(item => item.items);
 
   const { updatedValues, deletedValues, values } = getUpdatesAndDeletes(
-    newFilters,
-    currentFilters,
     'id',
-    'name'
+    'name',
+    newFilters,
+    currentFilters
   );
   return translations.updateContext(
     'Filters',

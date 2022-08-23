@@ -4,14 +4,16 @@ import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
 import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
-import { uploadsPath, fileExists, customUploadsPath, attachmentsPath } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
+import { storage } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
@@ -35,7 +37,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/document',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(uploadsPath),
+    uploadMiddleware('document'),
     async (req, res) => {
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
@@ -56,7 +58,7 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/custom',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(customUploadsPath),
+    uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
       files
@@ -71,11 +73,15 @@ export default (app: Application) => {
   app.post(
     '/api/files/upload/attachment',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    uploadMiddleware(attachmentsPath),
+    uploadMiddleware('attachment'),
     activitylogMiddleware,
     (req, res, next) => {
       files
-        .save({ ...req.file, ...req.body, type: 'attachment' })
+        .save({
+          ...req.file,
+          ...req.body,
+          type: 'attachment',
+        })
         .then(saved => {
           res.json(saved);
         })
@@ -126,47 +132,79 @@ export default (app: Application) => {
     }
   );
 
+  app.use('/assets/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+
+  app.use('/uploaded_documents/:fileName', (req, res) => {
+    res.redirect(301, `/api/files/${req.params.fileName}`);
+  });
+
+  app.get(
+    '/api/attachments/download',
+
+    validation.validateRequest(
+      Joi.object({
+        file: Joi.string().required(),
+      }).required(),
+      'query'
+    ),
+
+    async (req, res) => {
+      res.redirect(301, `/api/files/${req.query.file}?download=true`);
+    }
+  );
+
   app.get(
     '/api/files/:filename',
-    validation.validateRequest({
+    validateAndCoerceRequest({
       type: 'object',
       properties: {
         params: {
           type: 'object',
+          required: ['filename'],
           properties: {
             filename: { type: 'string' },
+          },
+        },
+        query: {
+          type: 'object',
+          properties: {
+            download: { type: 'boolean' },
           },
         },
       },
     }),
 
-    async (req, res, next) => {
-      try {
-        const [file = { filename: '', originalname: undefined }] = await files.get({
-          filename: req.params.filename,
-        });
+    async (req, res) => {
+      const [file] = await files.get({
+        filename: req.params.filename,
+      });
 
-        const filename = file.filename || '';
-
-        if (
-          !filename ||
-          !(await fileExists(uploadsPath(filename))) ||
-          !(await checkEntityPermission(file))
-        ) {
-          throw createError('file not found', 404);
-        }
-
-        if (file.originalname) {
-          res.setHeader(
-            'Content-Disposition',
-            `filename*=UTF-8''${encodeURIComponent(file.originalname)}`
-          );
-        }
-
-        res.sendFile(uploadsPath(filename));
-      } catch (e) {
-        next(e);
+      if (
+        !file?.filename ||
+        !file?.type ||
+        !(await storage.fileExists(file.filename, file.type)) ||
+        !(await checkEntityPermission(file))
+      ) {
+        throw createError('file not found', 404);
       }
+
+      const headerFilename = file.originalname || file.filename;
+      res.setHeader(
+        'Content-Disposition',
+        `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
+      );
+
+      if (req.query.download === true) {
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename*=UTF-8''${encodeURIComponent(headerFilename)}`
+        );
+      }
+
+      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
+      (await storage.readableFile(file.filename, file.type)).pipe(res);
     }
   );
 

@@ -23,11 +23,14 @@ app/api/files/specs/customUploads/*
 app/api/csv/specs/*.jpg
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847a.pdf
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847b.pdf
+!app/api/files/specs/customUploads/customPDF.pdf
 !app/api/files/specs/uploads/eng.pdf
 !app/api/files/specs/uploads/spn.pdf
 !app/api/files/specs/uploads/import.zip
 !app/api/files/specs/uploads/importcsv.csv
 !app/api/files/specs/uploads/invalid_document.txt
+!app/api/files/specs/uploads/test_s3_file.txt
+!app/api/files/specs/uploads/documento.txt
 app/api/attachments/specs/uploads/toDelete.txt
 uploaded_documents/*
 custom_uploads/*
@@ -44,4 +47,5 @@ dump.rdb
 data_elastic
 data_mongo
 e2e/**/__diff_output__/
+/storage
 

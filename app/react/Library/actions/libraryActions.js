@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
@@ -16,15 +17,15 @@ import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActi
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 import { saveEntityWithFiles } from './saveEntityWithFiles';
 
-export function enterLibrary() {
+function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
 }
 
-export function initializeFiltersForm(values = {}) {
+function initializeFiltersForm(values = {}) {
   return Object.assign(values, { type: types.INITIALIZE_FILTERS_FORM });
 }
 
-export function selectDocument(_doc) {
+function selectDocument(_doc) {
   return async (dispatch, getState) => {
     const doc = _doc.toJS ? _doc.toJS() : _doc;
     const showingSemanticSearch = getState().library.sidepanel.tab === 'semantic-search-results';
@@ -37,7 +38,7 @@ export function selectDocument(_doc) {
   };
 }
 
-export function getAndSelectDocument(sharedId) {
+function getAndSelectDocument(sharedId) {
   return dispatch => {
     entitiesAPI.get(new RequestParams({ sharedId })).then(entity => {
       dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc: entity[0] });
@@ -45,7 +46,7 @@ export function getAndSelectDocument(sharedId) {
   };
 }
 
-export function selectDocuments(docs) {
+function selectDocuments(docs) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENTS, docs });
@@ -53,7 +54,7 @@ export function selectDocuments(docs) {
   };
 }
 
-export function unselectDocument(docId) {
+function unselectDocument(docId) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_DOCUMENT, docId });
@@ -61,7 +62,7 @@ export function unselectDocument(docId) {
   };
 }
 
-export function selectSingleDocument(doc) {
+function selectSingleDocument(doc) {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_SINGLE_DOCUMENT, doc });
@@ -69,7 +70,7 @@ export function selectSingleDocument(doc) {
   };
 }
 
-export function unselectAllDocuments() {
+function unselectAllDocuments() {
   return async dispatch => {
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.UNSELECT_ALL_DOCUMENTS });
@@ -77,65 +78,65 @@ export function unselectAllDocuments() {
   };
 }
 
-export function updateSelectedEntities(entities) {
+function updateSelectedEntities(entities) {
   return { type: types.UPDATE_SELECTED_ENTITIES, entities };
 }
 
-export function showFilters() {
+function showFilters() {
   return { type: types.SHOW_FILTERS };
 }
 
-export function hideFilters() {
+function hideFilters() {
   return { type: types.HIDE_FILTERS };
 }
 
-export function setDocuments(docs) {
+function setDocuments(docs) {
   return { type: types.SET_DOCUMENTS, documents: docs };
 }
 
-export function addDocuments(docs) {
+function addDocuments(docs) {
   return { type: types.ADD_DOCUMENTS, documents: docs };
 }
 
-export function unsetDocuments() {
+function unsetDocuments() {
   return { type: types.UNSET_DOCUMENTS };
 }
 
-export function setTemplates(templates, thesauris) {
+function setTemplates(templates, thesauris) {
   return dispatch => {
     dispatch({ type: types.SET_LIBRARY_TEMPLATES, templates, thesauris });
   };
 }
 
-export function setPreviewDoc(docId) {
+function setPreviewDoc(docId) {
   return { type: types.SET_PREVIEW_DOC, docId };
 }
 
-export function setSuggestions(suggestions) {
+function setSuggestions(suggestions) {
   return { type: types.SET_SUGGESTIONS, suggestions };
 }
 
-export function hideSuggestions() {
+function hideSuggestions() {
   return { type: types.HIDE_SUGGESTIONS };
 }
 
-export function showSuggestions() {
+function showSuggestions() {
   return { type: types.SHOW_SUGGESTIONS };
 }
 
-export function setOverSuggestions(boolean) {
+function setOverSuggestions(boolean) {
   return { type: types.OVER_SUGGESTIONS, hover: boolean };
 }
 
-export function zoomIn() {
+function zoomIn() {
   return { type: types.ZOOM_IN };
 }
 
-export function zoomOut() {
+function zoomOut() {
   return { type: types.ZOOM_OUT };
 }
 
-export function filterIsEmpty(value) {
+function filterIsEmpty(value) {
   if (value && value.values && !value.values.length) {
     return true;
   }
@@ -159,7 +160,7 @@ export function filterIsEmpty(value) {
   return false;
 }
 
-export function processFilters(readOnlySearch, filters, limit, from) {
+function processFilters(readOnlySearch, filters, limit, from) {
   let search = {
     filters: {},
     ...readOnlySearch,
@@ -196,7 +197,7 @@ export function processFilters(readOnlySearch, filters, limit, from) {
   return search;
 }
 
-export function encodeSearch(_search, appendQ = true) {
+function encodeSearch(_search, appendQ = true) {
   const search = { ..._search };
   Object.keys(search).forEach(key => {
     if (search[key] && search[key].length === 0) {
@@ -230,7 +231,7 @@ function setSearchInUrl(searchParams) {
   browserHistory.push(path + toUrlParams(query));
 }
 
-export function searchDocuments(
+function searchDocuments(
   { search = undefined, filters = undefined },
   storeKey,
   limit = 30,
@@ -262,19 +263,19 @@ export function searchDocuments(
   };
 }
 
-export function elementCreated(doc) {
+function elementCreated(doc) {
   return { type: types.ELEMENT_CREATED, doc };
 }
 
-export function updateEntity(updatedDoc) {
+function updateEntity(updatedDoc) {
   return { type: types.UPDATE_DOCUMENT, doc: updatedDoc };
 }
 
-export function updateEntities(updatedDocs) {
+function updateEntities(updatedDocs) {
   return { type: types.UPDATE_DOCUMENTS, docs: updatedDocs };
 }
 
-export function searchSnippets(searchString, sharedId, storeKey) {
+function searchSnippets(searchString, sharedId, storeKey) {
   const requestParams = new RequestParams(
     qs.stringify({
       filter: { sharedId, searchString },
@@ -290,7 +291,7 @@ export function searchSnippets(searchString, sharedId, storeKey) {
     });
 }
 
-export function saveDocument(doc, formKey) {
+function saveDocument(doc, formKey) {
   return async dispatch => {
     const updatedDoc = await documentsApi.save(new RequestParams(doc));
     dispatch(notificationActions.notify('Document updated', 'success'));
@@ -301,7 +302,7 @@ export function saveDocument(doc, formKey) {
   };
 }
 
-export function multipleUpdate(entities, values) {
+function multipleUpdate(entities, values) {
   return async dispatch => {
     const ids = entities.map(entity => entity.get('sharedId')).toJS();
     const updatedDocs = await entitiesAPI.multipleUpdate(new RequestParams({ ids, values }));
@@ -310,7 +311,7 @@ export function multipleUpdate(entities, values) {
   };
 }
 
-export function saveEntity(entity, formModel) {
+function saveEntity(entity, formModel) {
   // eslint-disable-next-line max-statements
   return async dispatch => {
     const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
@@ -334,15 +335,15 @@ export function saveEntity(entity, formModel) {
   };
 }
 
-export function removeDocument(doc) {
+function removeDocument(doc) {
   return { type: types.REMOVE_DOCUMENT, doc };
 }
 
-export function removeDocuments(docs) {
+function removeDocuments(docs) {
   return { type: types.REMOVE_DOCUMENTS, docs };
 }
 
-export function deleteDocument(doc) {
+function deleteDocument(doc) {
   return async dispatch => {
     await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
     dispatch(notificationActions.notify('Document deleted', 'success'));
@@ -351,7 +352,7 @@ export function deleteDocument(doc) {
   };
 }
 
-export function deleteEntity(entity) {
+function deleteEntity(entity) {
   return async dispatch => {
     await entitiesAPI.delete(entity);
     dispatch(notificationActions.notify('Entity deleted', 'success'));
@@ -360,18 +361,18 @@ export function deleteEntity(entity) {
   };
 }
 
-export function loadMoreDocuments(storeKey, amount, from) {
+function loadMoreDocuments(storeKey, amount, from) {
   return (dispatch, getState) => {
     const { search } = getState()[storeKey];
     searchDocuments({ search }, storeKey, amount, from)(dispatch, getState);
   };
 }
 
-export function getSuggestions() {
+function getSuggestions() {
   return { type: 'GET_SUGGESTIONS' };
 }
 
-export function getDocumentReferences(sharedId, fileId, storeKey) {
+function getDocumentReferences(sharedId, fileId, storeKey) {
   return dispatch =>
     referencesAPI
       .get(new RequestParams({ sharedId, file: fileId, onlyTextReferences: true }))
@@ -380,7 +381,7 @@ export function getDocumentReferences(sharedId, fileId, storeKey) {
       });
 }
 
-export function getAggregationSuggestions(storeKey, property, searchTerm) {
+function getAggregationSuggestions(storeKey, property, searchTerm) {
   const state = store.getState()[storeKey];
   const { search, filters } = state;
 
@@ -392,11 +393,11 @@ export function getAggregationSuggestions(storeKey, property, searchTerm) {
   return searchAPI.getAggregationSuggestions(new RequestParams({ query, property, searchTerm }));
 }
 
-export function setTableViewColumns(columns) {
+function setTableViewColumns(columns) {
   return { type: types.SET_TABLE_VIEW_COLUMNS, columns };
 }
 
-export function setTableViewColumnHidden(name, hidden) {
+function setTableViewColumnHidden(name, hidden) {
   return {
     type: types.SET_TABLE_VIEW_COLUMN_HIDDEN,
     name,
@@ -404,9 +405,56 @@ export function setTableViewColumnHidden(name, hidden) {
   };
 }
 
-export function setTableViewAllColumnsHidden(hidden) {
+function setTableViewAllColumnsHidden(hidden) {
   return {
     type: types.SET_TABLE_VIEW_ALL_COLUMNS_HIDDEN,
     hidden,
   };
 }
+
+export {
+  enterLibrary,
+  initializeFiltersForm,
+  selectDocument,
+  getAndSelectDocument,
+  selectDocuments,
+  unselectDocument,
+  selectSingleDocument,
+  unselectAllDocuments,
+  updateSelectedEntities,
+  showFilters,
+  hideFilters,
+  setDocuments,
+  addDocuments,
+  unsetDocuments,
+  setTemplates,
+  setPreviewDoc,
+  setSuggestions,
+  hideSuggestions,
+  showSuggestions,
+  setOverSuggestions,
+  zoomIn,
+  zoomOut,
+  filterIsEmpty,
+  processFilters,
+  encodeSearch,
+  searchDocuments,
+  elementCreated,
+  updateEntity,
+  updateEntities,
+  searchSnippets,
+  saveDocument,
+  multipleUpdate,
+  saveEntity,
+  removeDocument,
+  removeDocuments,
+  deleteDocument,
+  deleteEntity,
+  loadMoreDocuments,
+  getSuggestions,
+  getDocumentReferences,
+  getAggregationSuggestions,
+  setTableViewAllColumnsHidden,
+  setTableViewColumnHidden,
+  setTableViewColumns,
+};

@@ -18,7 +18,7 @@ describe('PagesList', () => {
         { _id: 2, title: 'Page 2', sharedId: 'a2' },
         { _id: 3, title: 'Page 3', sharedId: 'a3' },
       ]),
-      deletePage: jasmine.createSpy('deletePage').and.returnValue(Promise.resolve()),
+      deletePage: jasmine.createSpy('deletePage').and.callFake(async () => Promise.resolve()),
     };
 
     context = {

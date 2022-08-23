@@ -5,15 +5,17 @@ import Ajv from 'ajv';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
-import { fs } from 'api/files';
-import { uploadsPath, fileExists } from 'api/files/filesystem';
+import { uploadsPath, storage } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
 import date from 'api/utils/date.js';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 import { UserRole } from 'shared/types/userSchema';
+
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -36,10 +38,10 @@ describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeEach(async () => {
-    spyOn(search, 'delete').and.returnValue(Promise.resolve());
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
-    spyOn(search, 'bulkIndex').and.returnValue(Promise.resolve());
-    spyOn(search, 'bulkDelete').and.returnValue(Promise.resolve());
+    spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'bulkIndex').and.callFake(async () => Promise.resolve());
+    spyOn(search, 'bulkDelete').and.callFake(async () => Promise.resolve());
     await db.setupFixturesAndContext(fixtures);
   });
 
@@ -502,7 +504,9 @@ describe('entities', () => {
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' }, false);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => {
+        setTimeout(resolve, 3000);
+      });
       expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
     });
 
@@ -902,7 +906,7 @@ describe('entities', () => {
     });
 
     it('should return all entities (including unpublished) if required', async () => {
-      const docs = await entities.getByTemplate(templateId, 'en', false);
+      const docs = await entities.getByTemplate(templateId, 'en', null, false);
       expect(docs.length).toBe(7);
       expect(docs.map(d => d.title)).toEqual([
         'shared2title',
@@ -921,7 +925,7 @@ describe('entities', () => {
         role: 'collaborator',
         groups: [],
       });
-      const docs = await entities.getByTemplate(templateId, 'en', false);
+      const docs = await entities.getByTemplate(templateId, 'en', null, false);
       expect(docs.length).toBe(4);
       expect(docs[0].title).toBe('Unpublished entity');
       expect(docs[1].title).toBe('Batman finishes');
@@ -1319,20 +1323,32 @@ describe('entities', () => {
       await fs.writeFile(uploadsPath(`${uploadId1}.jpg`), '');
       await fs.writeFile(uploadsPath(`${uploadId2}.jpg`), '');
 
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(true);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(true);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(true);
-      expect(await fileExists(uploadsPath(`${uploadId1}.jpg`))).toBe(true);
-      expect(await fileExists(uploadsPath(`${uploadId2}.jpg`))).toBe(true);
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
+        true
+      );
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
+        true
+      );
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
+        true
+      );
+      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(true);
+      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(true);
 
       await entities.delete('shared');
 
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccb.pdf'))).toBe(false);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014cc1.pdf'))).toBe(false);
-      expect(await fileExists(uploadsPath('8202c463d6158af8065022d9b5014ccc.pdf'))).toBe(false);
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccb.pdf', 'document')).toBe(
+        false
+      );
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014cc1.pdf', 'document')).toBe(
+        false
+      );
+      expect(await storage.fileExists('8202c463d6158af8065022d9b5014ccc.pdf', 'document')).toBe(
+        false
+      );
 
-      expect(await fileExists(uploadsPath(`${uploadId1}.jpg`))).toBe(false);
-      expect(await fileExists(uploadsPath(`${uploadId2}.jpg`))).toBe(false);
+      expect(await storage.fileExists(`${uploadId1}.jpg`, 'document')).toBe(false);
+      expect(await storage.fileExists(`${uploadId2}.jpg`, 'document')).toBe(false);
     });
 
     describe('when entity is being used as thesauri', () => {
@@ -1379,7 +1395,7 @@ describe('entities', () => {
 
   describe('deleteMultiple()', () => {
     it('should delete() all the given entities', done => {
-      spyOn(entities, 'delete').and.returnValue(Promise.resolve());
+      spyOn(entities, 'delete').and.callFake(async () => Promise.resolve());
       entities
         .deleteMultiple(['id1', 'id2'])
         .then(() => {
@@ -1416,7 +1432,7 @@ describe('entities', () => {
   describe('removeLanguage()', () => {
     it('should delete all entities from the language', async () => {
       spyOn(search, 'deleteLanguage');
-      spyOn(entities, 'createThumbnail').and.returnValue(Promise.resolve());
+      spyOn(entities, 'createThumbnail').and.callFake(async () => Promise.resolve());
       await entities.addLanguage('ab');
       await entities.removeLanguage('ab');
       const newEntities = await entities.get({ language: 'ab' });

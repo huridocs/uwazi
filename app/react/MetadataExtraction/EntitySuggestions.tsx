@@ -121,12 +121,10 @@ export const EntitySuggestions = ({
 
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>
-      <>
-        <span className="segment-pdf">
-          <Translate>Open PDF</Translate>
-        </span>
-        <span className="segment-context">{row.original.segment}</span>
-      </>
+      <span className="segment-pdf">
+        <Translate>Open PDF</Translate>
+      </span>
+      <span className="segment-context">{row.original.segment}</span>
     </div>
   );
 
@@ -352,10 +350,8 @@ export const EntitySuggestions = ({
                     column.className + (filters.find(f => f.id === column.id) ? ' filtered' : '');
                   return (
                     <th {...column.getHeaderProps({ className })}>
-                      <>
-                        {column.render('Header')}
-                        {column.canFilter && column.Filter && column.render('Filter')}
-                      </>
+                      {column.render('Header')}
+                      {column.canFilter && column.Filter && column.render('Filter')}
                     </th>
                   );
                 })}

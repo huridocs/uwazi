@@ -2,7 +2,7 @@ import { Writable } from 'stream';
 import request from 'supertest';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { search } from 'api/search';
-import csvExporter from 'api/csv/csvExporter';
+import csvExporter, { SearchResults } from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
 import { NextFunction, Request, Response } from 'express';
 import authMiddleware from 'api/auth/authMiddleware';
@@ -23,8 +23,8 @@ function assertDownloaded(res: any) {
 
 function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
   expect(mockCall[0]).toEqual(searchResults);
-  expect(mockCall[1]).toEqual(types);
-  expect(mockCall[2] instanceof Writable).toBe(true);
+  expect(mockCall[1] instanceof Writable).toBe(true);
+  expect(mockCall[2]).toEqual(types);
   expect(mockCall[3]).toEqual(options);
 }
 
@@ -48,7 +48,14 @@ describe('export routes', () => {
       };
       await testingEnvironment.setUp(fixtures);
 
-      exportMock = jest.fn().mockImplementation(async () => Promise.resolve());
+      exportMock = jest.fn().mockImplementation(
+        async (_searchResults: SearchResults, writeStream: Writable, _types: string[] = []) =>
+          new Promise(resolve => {
+            writeStream.write('content');
+            writeStream.on('finish', resolve);
+            writeStream.end();
+          })
+      );
       (csvExporter as any).mockImplementation(() => ({
         export: exportMock,
       }));

@@ -8,6 +8,13 @@ const emitSchemaTypes = true;
 const ajv = new Ajv({ allErrors: true, removeAdditional: true });
 ajv.addVocabulary(['tsType']);
 
+enum TypeOfFile {
+  custom = 'custom',
+  document = 'document',
+  thumbnail = 'thumbnail',
+  attachment = 'attachment',
+}
+
 const fileSchema = {
   $schema: 'http://json-schema.org/schema#',
   $async: true,
@@ -24,7 +31,7 @@ const fileSchema = {
     size: { type: 'number' },
     creationDate: { type: 'number' },
     language: { type: 'string', minLength: 1 },
-    type: { type: 'string', enum: ['custom', 'document', 'thumbnail', 'attachment'] },
+    type: { type: 'string', enum: Object.values(TypeOfFile) },
     url: { type: 'string', pattern: '^https://' },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     totalPages: { type: 'number' },
@@ -49,4 +56,4 @@ const validate = wrapValidator(ajv.compile(fileSchema));
 
 const validateFile = async (file: FileType): Promise<FileType> => validate({ ...file });
 
-export { validateFile, fileSchema, emitSchemaTypes };
+export { TypeOfFile, validateFile, fileSchema, emitSchemaTypes };

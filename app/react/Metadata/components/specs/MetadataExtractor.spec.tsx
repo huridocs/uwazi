@@ -1,59 +1,100 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
-import { Provider } from 'react-redux';
 import Immutable from 'immutable';
-
-import { MetadataExtractor } from '../MetadataExtractor';
+import { screen, act, fireEvent } from '@testing-library/react';
+import { notificationActions } from 'app/Notifications';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import * as actions from '../../actions/metadataExtractionActions';
+import { MetadataExtractor, selection } from '../MetadataExtractor';
 
 describe('MetadataExtractor', () => {
-  let component: ShallowWrapper<typeof MetadataExtractor>;
-  let store: MockStore<object>;
-  const mockStoreCreator: MockStoreCreator<object> = configureStore<object>();
+  let selected: selection | undefined;
 
   beforeEach(() => {
-    store = mockStoreCreator({
-      documentViewer: {
-        uiState: Immutable.fromJS({ reference: { sourceRange: { text: 'a user selected text' } } }),
-      },
-    });
+    spyOn(actions, 'updateSelection').and.returnValue(() => {});
+    spyOn(actions, 'updateFormField').and.returnValue(() => {});
+    spyOn(notificationActions, 'notify').and.returnValue(() => {});
+    selected = {
+      text: 'a user selected text',
+      selectionRectangles: [{ top: 1, left: 2, width: 10, height: 1, page: '1' }],
+    };
   });
 
   const render = () => {
-    component = shallow(
-      <Provider store={store}>
-        <MetadataExtractor fieldName="field" model="documentViewer.sidepanel.metadata" />
-      </Provider>
-    )
-      .dive()
-      .dive();
+    const state = {
+      ...defaultState,
+      documentViewer: {
+        uiState: Immutable.fromJS({ reference: { sourceRange: selected } }),
+      },
+    };
+    renderConnectedContainer(
+      <MetadataExtractor fieldName="field" model="documentViewer.sidepanel.metadata" locale="en" />,
+      () => state
+    );
   };
 
-  it('should not render if theres not a selection', () => {
+  it('should render when there is a selection', () => {
     render();
-    expect(component.find('.extraction-button')).toHaveLength(1);
+    expect(screen.getByText('Click to fill')).toBeInTheDocument();
+  });
 
-    store = mockStoreCreator({
-      documentViewer: {
-        uiState: Immutable.fromJS({ reference: { sourceRange: null } }),
-      },
+  it('should not render if theres not a selection', () => {
+    selected = undefined;
+    render();
+    expect(screen.queryByText('Click to fill')).not.toBeInTheDocument();
+  });
+
+  it('should call update store function and the react redux form change function on click', async () => {
+    render();
+
+    const button = screen.queryByText('Click to fill')?.parentElement!;
+    act(() => {
+      fireEvent.click(button);
     });
 
-    render();
-    expect(component.find('.extraction-button')).toHaveLength(0);
+    expect(actions.updateSelection).toHaveBeenCalledWith(
+      Immutable.fromJS({
+        text: 'a user selected text',
+        selectionRectangles: [{ top: 1, left: 2, width: 10, height: 1, page: '1' }],
+      }),
+      'field',
+      undefined
+    );
+    expect(actions.updateFormField).toHaveBeenCalledWith(
+      undefined,
+      'documentViewer.sidepanel.metadata',
+      undefined,
+      'en'
+    );
   });
-  it('should call update store function and the react redux form change function on click', () => {
+
+  it('should notify the user if the selection rectangle is empty', () => {
+    selected = {
+      text: 'a text that failed to get the rectangles',
+      selectionRectangles: [],
+    };
+
     render();
-    component.find('.extraction-button').simulate('click');
-    expect(store.getActions()).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'documentViewer.metadataExtraction/UPDATE_IN',
-        }),
-        expect.objectContaining({
-          type: 'rrf/change',
-        }),
-      ])
+
+    const button = screen.queryByText('Click to fill')?.parentElement!;
+    act(() => {
+      fireEvent.click(button);
+    });
+
+    expect(notificationActions.notify).toHaveBeenCalledWith(
+      'Could not detect the area for the selected text',
+      'warning'
+    );
+
+    expect(actions.updateSelection).toHaveBeenCalledWith(
+      Immutable.fromJS({
+        text: 'a text that failed to get the rectangles',
+        selectionRectangles: [],
+      }),
+      'field',
+      undefined
     );
   });
 });

@@ -4,7 +4,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
-import { customUploadsPath, fileExists, uploadsPath } from 'api/files/filesystem';
+import { errorLog } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
@@ -25,6 +25,7 @@ import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import { storage } from '../storage';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 
@@ -41,7 +42,7 @@ describe('files routes', () => {
   );
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);
@@ -134,7 +135,7 @@ describe('files routes', () => {
       testingEnvironment.setPermissions(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' })
+        .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
@@ -148,11 +149,12 @@ describe('files routes', () => {
       testingEnvironment.setPermissions(adminUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ type: 'custom' })
+        .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'upload1',
+        'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
         'upload2',
@@ -171,7 +173,7 @@ describe('files routes', () => {
 
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
-        .query({ _id: uploadId.toString(), type: 'custom' })
+        .query({ _id: uploadId.toString(), type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual(['upload1']);
@@ -204,7 +206,7 @@ describe('files routes', () => {
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
-      expect(await fileExists(customUploadsPath(file.filename || ''))).toBe(false);
+      expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
@@ -310,10 +312,8 @@ describe('files routes', () => {
       const entityId = db.id();
       await request(app)
         .post('/api/files/upload/attachment')
-        .send({
-          originalname: 'Dont bring me down - 1979',
-          entity: entityId,
-        })
+        .field('entity', entityId.toString())
+        .attach('file', Buffer.from('attachment content'), 'Dont bring me down - 1979')
         .expect(200);
 
       const [attachment] = await files.get({ entity: entityId.toString() });
@@ -328,12 +328,32 @@ describe('files routes', () => {
 
   describe('POST/files/upload/document', () => {
     it('should save the attached file', async () => {
+      spyOn(errorLog, 'debug');
       const response = await request(app)
         .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));
       expect(response.status).toBe(200);
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
-      expect(await fileExists(uploadsPath(file.filename || ''))).toBe(true);
+
+      expect(await storage.fileExists(file.filename!, 'document')).toBe(true);
+      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+    });
+  });
+
+  describe('POST/files/upload/*', () => {
+    describe.each(['document', 'attachment'] as FileType['type'][])('when file is a %s', type => {
+      it.each(['Hello, World.pdf', 'Aló mundo.pdf', 'Привет, мир.pdf', '헬로월드.pdf'])(
+        'should accept the filename %s in a field',
+        async filename => {
+          const response = await request(app)
+            .post(`/api/files/upload/${type}`)
+            .field('originalname', filename)
+            .attach('file', path.join(__dirname, filename));
+          expect(response.status).toBe(200);
+          const [file]: FileType[] = await files.get({ originalname: filename, type });
+          expect(file).not.toBe(undefined);
+        }
+      );
     });
   });
 });
