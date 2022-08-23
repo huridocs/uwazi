@@ -8,6 +8,7 @@ import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
+import { availableLanguages } from 'shared/languagesList';
 
 export default app => {
   app.get('/api/translations', (_req, res, next) => {
@@ -15,6 +16,10 @@ export default app => {
       .get()
       .then(response => res.json({ rows: response }))
       .catch(next);
+  });
+
+  app.get('/api/languages', (_req, res, _next) => {
+    res.json(availableLanguages);
   });
 
   app.post(

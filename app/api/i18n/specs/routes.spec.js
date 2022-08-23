@@ -9,6 +9,7 @@ import { catchErrors } from 'api/utils/jasmineHelpers';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
+import { availableLanguages } from 'shared/languagesList';
 
 const mockSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
@@ -33,6 +34,18 @@ describe('i18n translations routes', () => {
           .then(response => {
             expect(translations.get).toHaveBeenCalled();
             expect(response).toEqual({ rows: { translations: 'response' } });
+            done();
+          })
+          .catch(catchErrors(done));
+      });
+    });
+
+    describe('api/languages', () => {
+      it('should return the available languages', done => {
+        routes
+          .get('/api/languages')
+          .then(response => {
+            expect(response).toEqual(availableLanguages);
             done();
           })
           .catch(catchErrors(done));
