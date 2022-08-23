@@ -73,7 +73,9 @@ class RelationshipMetadata extends Component {
   }
 
   closeSidePanel() {
-    this.props.resetForm('relationships.metadata');
+    return this.props.entityBeingEdited
+      ? this.props.resetForm('relationships.metadata')
+      : this.props.unselectConnection();
   }
 
   renderForm() {
