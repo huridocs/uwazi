@@ -6,9 +6,9 @@ import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
+import { availableLanguages } from 'shared/languagesList';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
-import { availableLanguages } from 'shared/languagesList';
 
 export default app => {
   app.get('/api/translations', (_req, res, next) => {
