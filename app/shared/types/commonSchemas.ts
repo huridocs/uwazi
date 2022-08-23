@@ -56,6 +56,7 @@ export const languageSchema = {
     default: { type: 'boolean' },
     ISO639_3: { type: 'string' },
     localized_label: { type: 'string' },
+    translationAvailable: { type: 'boolean' },
   },
 };
 
