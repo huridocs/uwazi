@@ -3,26 +3,15 @@ import * as os from 'os';
 import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
-import { appendFile } from 'fs/promises';
 import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import model from './translationsModel';
 import { generateFileName } from 'api/files';
+// eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
-import { Readable } from 'stream';
+import model from './translationsModel';
 
-export interface IndexedContextValues {
-  [k: string]: string;
-}
-
-export interface IndexedContext extends Omit<TranslationContext, 'values'> {
-  values: IndexedContextValues;
-}
-
-export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
-  contexts?: IndexedContext[];
-}
+const GITHUB_API_URL = 'https://api.github.com/repos/huridocs/uwazi-contents/contents';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -403,12 +392,12 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const url = `https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/${locale}.csv`;
-    // const csv = (await fetch(url)).body.toString();
-
+    const url = `${GITHUB_API_URL}/ui-translations/${locale}.csv`;
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     await pipeline(
-      (await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } })).body.toString(),
+      (
+        await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } })
+      ).body?.toString() || '',
       createWriteStream(tmpCsv)
     );
 
@@ -417,3 +406,15 @@ export default {
     await loader.loadTranslations(tmpCsv, 'System');
   },
 };
+
+export interface IndexedContextValues {
+  [k: string]: string;
+}
+
+export interface IndexedContext extends Omit<TranslationContext, 'values'> {
+  values: IndexedContextValues;
+}
+
+export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
+  contexts?: IndexedContext[];
+}

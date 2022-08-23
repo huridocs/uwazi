@@ -484,7 +484,7 @@ describe('translations', () => {
       //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/en.csv
       //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/wtf.csv
 
-      const SpanishCsv = `Key, Español
+      const spanishCsv = `Key, Español
       Password, Password traducida
       Account, Account traducida
       Age, Age traducida`;
@@ -494,15 +494,14 @@ describe('translations', () => {
       //   SpanishCsv
       // );
 
-      backend.get((url, opts) =>
-        // @ts-ignore
-        {
-          console.log(opts);
-          /* @ts-ignore*/
-          return url ===
+      // @ts-ignore
+      backend.get(
+        (url, opts) =>
+          url ===
             'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
-            opts?.headers?.accept === 'application/vnd.github.v4.raw';
-        }, SpanishCsv);
+          opts?.headers?.accept === 'application/vnd.github.v4.raw',
+        spanishCsv
+      );
 
       await translations.importPredefined('es');
 
