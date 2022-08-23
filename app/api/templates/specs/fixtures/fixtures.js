@@ -95,10 +95,10 @@ export default {
         },
         {
           _id: db.id(),
-          type: propertyTypes.select,
+          type: propertyTypes.relationship,
           content: templateToBeDeleted,
-          label: 'selectToBeDeleted',
-          name: 'selectToBeDeleted',
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
         },
       ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
@@ -111,10 +111,10 @@ export default {
         { _id: db.id(), type: propertyTypes.text, label: 'text2' },
         {
           _id: db.id(),
-          type: propertyTypes.select,
+          type: propertyTypes.relationship,
           content: templateToBeDeleted,
-          label: 'selectToBeDeleted',
-          name: 'selectToBeDeleted',
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
         },
       ],
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
@@ -292,7 +292,7 @@ export default {
     }),
     ...createEntitiesInAllLanguages('t2-1', thesaurusTemplate2Id, {
       select2: [],
-      selectToBeDeleted: [],
+      relationshipToBeDeleted: [],
     }),
   ],
 };
