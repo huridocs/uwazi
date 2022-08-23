@@ -7,18 +7,25 @@ import { shallow } from 'enzyme';
 import PDFJS from '../../PDFJS';
 import PDFPage from '../PDFPage';
 
+const pdfObject = { numPages: 2 };
+
+jest.mock('../../PDFJS', () => ({
+  default: {
+    getDocument: jest.fn().mockReturnValue(Promise.resolve(pdfObject)),
+  },
+  EventBus: function () {},
+}));
+
 describe('PDFPage', () => {
   let component;
   let instance;
   let container;
-  const pdfObject = { numPages: 2 };
 
   let props;
 
   beforeEach(() => {
     container = document.createElement('div');
     container.className = 'document-viewer';
-    spyOn(PDFJS, 'getDocument').and.callFake(async () => Promise.resolve(pdfObject));
     props = {
       onLoading: jasmine.createSpy('onLoading'),
       onUnload: jasmine.createSpy('onUnload'),

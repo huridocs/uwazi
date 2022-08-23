@@ -10,6 +10,29 @@ import { uploadSupportingFileToEntity } from '../helpers/createEntity';
 import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { refreshIndex } from '../helpers/elastichelpers';
 import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
+import { changeLanguage } from '../helpers/changeLanguage';
+
+const entityTitle = 'Entity with supporting files';
+const webAttachments = {
+  name: 'Resource from web',
+  url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+};
+const filesAttachments = [
+  `${__dirname}/../test_files/valid.pdf`,
+  `${__dirname}/../test_files/batman.jpg`,
+];
+const textWithHtml = `<h1>The title</h1>
+  <a href="https://duckduckgo.com/" target="_blank">
+    I am a link to an external site
+  </a>
+  <br />
+  <a href="/entity/mh5hwf3nzhq6w29">
+    I am a link to an internal entity
+  <a/>
+  <ol class="someClass">
+    <li>List item 1</li>
+    <li>List item 2</li>
+  </ol>`;
 
 const addSupportingFile = async (filePath: string) => {
   await expect(page).toClick('button', { text: 'Add file' });
@@ -50,28 +73,6 @@ describe('Entities', () => {
     await adminLogin();
     await disableTransitions();
   });
-
-  const entityTitle = 'Entity with supporting files';
-  const webAttachments = {
-    name: 'Resource from web',
-    url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
-  };
-  const filesAttachments = [
-    `${__dirname}/../test_files/valid.pdf`,
-    `${__dirname}/../test_files/batman.jpg`,
-  ];
-  const textWithHtml = `<h1>The title</h1>
-    <a href="https://duckduckgo.com/" target="_blank">
-      I am a link to an external site
-    </a>
-    <br />
-    <a href="/entity/mh5hwf3nzhq6w29">
-      I am a link to an internal entity
-    <a/>
-    <ol class="someClass">
-      <li>List item 1</li>
-      <li>List item 2</li>
-    </ol>`;
 
   it('Should create new entity', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
@@ -287,6 +288,90 @@ describe('Entities', () => {
 
         await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
         await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+      });
+    });
+  });
+
+  describe('Languages', () => {
+    it('should change the entity in Spanish', async () => {
+      await changeLanguage('Español');
+
+      await expect(page).toClick('.item-document', {
+        text: 'Test title',
+      });
+
+      await expect(page).toClick('button', { text: 'Editar' });
+
+      await expect(page).toFill(
+        'textarea[name="library.sidepanel.metadata.title"]',
+        'Título de prueba'
+      );
+
+      await expect(page).toFill(
+        'input[name="library.sidepanel.metadata.metadata.resumen"]',
+        'Resumen en español'
+      );
+
+      await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
+
+      await saveEntityAndClosePanel();
+    });
+
+    it('should check the values for the entity in Spanish', async () => {
+      await expect(page).toClick('.item-document', {
+        text: 'Título de prueba',
+      });
+
+      await expect(page).toMatchElement('h1.item-name', {
+        text: 'Título de prueba',
+      });
+
+      await expect(page).toMatchElement('.metadata-type-text > dd', {
+        text: 'Resumen en español',
+      });
+
+      await expect(page).toMatchElement('.multiline > .item-value > a', {
+        text: 'Argentina',
+      });
+    });
+
+    it('should edit the text field in English', async () => {
+      await changeLanguage('English');
+
+      await expect(page).toClick('.item-document', {
+        text: 'Test title',
+      });
+
+      await expect(page).toClick('button', { text: 'Edit' });
+
+      await expect(page).toFill(
+        'input[name="library.sidepanel.metadata.metadata.resumen"]',
+        'Brief in English'
+      );
+
+      await saveEntityAndClosePanel();
+
+      await expect(page).toClick('.item-document', {
+        text: 'Test title',
+      });
+
+      await expect(page).toMatchElement('.metadata-type-text > dd', {
+        text: 'Brief in English',
+      });
+      await expect(page).toMatchElement('.multiline > .item-value > a', {
+        text: 'Argentina',
+      });
+    });
+
+    it('should not affect the text field in Spanish', async () => {
+      await changeLanguage('Español');
+
+      await expect(page).toClick('.item-document', {
+        text: 'Título de prueba',
+      });
+
+      await expect(page).toMatchElement('.metadata-type-text > dd', {
+        text: 'Resumen en español',
       });
     });
   });

@@ -35,7 +35,7 @@ describe('templates', () => {
 
   beforeEach(async () => {
     spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
-    await db.clearAllAndLoad(fixtures, elasticIndex);
+    await db.setupFixturesAndContext(fixtures, elasticIndex);
   });
 
   afterAll(async () => {
@@ -206,7 +206,7 @@ describe('templates', () => {
       };
 
       expect(translations.addContext).toHaveBeenCalledWith(
-        response._id,
+        response._id.toString(),
         'created template',
         expectedValues,
         'Entity'
@@ -224,7 +224,7 @@ describe('templates', () => {
       };
 
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId,
+        templateToBeEditedId.toString(),
         'changed name',
         expectedContext,
         [],
@@ -244,7 +244,7 @@ describe('templates', () => {
         'First New Title': 'First New Title',
       };
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId,
+        templateToBeEditedId.toString(),
         'template to be edited',
         {},
         ['Title'],
@@ -259,7 +259,7 @@ describe('templates', () => {
         'Second New Title': 'Second New Title',
       };
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId,
+        templateToBeEditedId.toString(),
         'template to be edited',
         {},
         ['First New Title'],
@@ -382,7 +382,7 @@ describe('templates', () => {
           .then(response => {
             expect(translations.addContext).not.toHaveBeenCalled();
             expect(translations.updateContext).toHaveBeenCalledWith(
-              response._id,
+              response._id.toString(),
               'new title',
               {
                 'label 1': 'new label 1',

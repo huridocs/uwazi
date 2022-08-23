@@ -1,26 +1,25 @@
-import { ObjectID } from 'mongodb';
-
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import translations from 'api/i18n/translations';
+import { WithId } from 'api/odm';
 import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { ObjectID } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { validateTemplate } from 'shared/types/templateSchema';
 import { ensure } from 'shared/tsUtils';
-
+import { PropertySchema } from 'shared/types/commonTypes';
+import { validateTemplate } from 'shared/types/templateSchema';
+import { TemplateSchema } from 'shared/types/templateType';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
-  generateNames,
-  getRenamedTitle,
-  getDeletedProperties,
-  getUpdatedNames,
   denormalizeInheritedProperties,
+  generateNames,
+  getDeletedProperties,
+  getRenamedTitle,
+  getUpdatedNames,
   updateExtractedMetadataProperties,
 } from './utils';
 
@@ -39,15 +38,18 @@ const createTranslationContext = (template: TemplateSchema) => {
   return context;
 };
 
-const addTemplateTranslation = async (template: TemplateSchema) =>
+const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
   translations.addContext(
-    template._id,
+    template._id.toString(),
     template.name,
     createTranslationContext(template),
     'Entity'
   );
 
-const updateTranslation = async (currentTemplate: TemplateSchema, template: TemplateSchema) => {
+const updateTranslation = async (
+  currentTemplate: WithId<TemplateSchema>,
+  template: TemplateSchema
+) => {
   const currentProperties = currentTemplate.properties;
   const newProperties = template.properties || [];
   const updatedLabels = getUpdatedNames(
@@ -78,7 +80,7 @@ const updateTranslation = async (currentTemplate: TemplateSchema, template: Temp
   const context = createTranslationContext(template);
 
   return translations.updateContext(
-    currentTemplate._id,
+    currentTemplate._id.toString(),
     template.name,
     updatedLabels,
     deletedPropertiesByLabel,
@@ -187,7 +189,9 @@ export default {
   async _update(template: TemplateSchema, language: string, _reindex = true) {
     const reindex = _reindex && !template.synced;
     const templateStructureChanges = await checkIfReindex(template);
-    const currentTemplate = ensure<TemplateSchema>(await this.getById(ensure(template._id)));
+    const currentTemplate = ensure<WithId<TemplateSchema>>(
+      await this.getById(ensure(template._id))
+    );
     if (templateStructureChanges || currentTemplate.name !== template.name) {
       await updateTranslation(currentTemplate, template);
     }
