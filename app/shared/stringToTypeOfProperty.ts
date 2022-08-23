@@ -1,9 +1,10 @@
-import { dateToSeconds } from './dateToSeconds';
+import date from 'api/utils/date';
 import { PropertySchema } from './types/commonTypes';
 
 const stringToTypeOfProperty = (
   text: string | null,
-  propertyType: PropertySchema['type'] | undefined
+  propertyType: PropertySchema['type'] | undefined,
+  language?: string
 ) => {
   if (!text) return text;
 
@@ -12,7 +13,7 @@ const stringToTypeOfProperty = (
     case 'numeric':
       return parseFloat(trimmedText) || null;
     case 'date':
-      return dateToSeconds(trimmedText);
+      return date.dateToSeconds(trimmedText, language);
     default:
       return trimmedText;
   }
