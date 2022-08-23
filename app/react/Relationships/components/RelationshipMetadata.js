@@ -21,7 +21,7 @@ import {
   reloadRelationships,
 } from '../actions/actions';
 
-export class RelationshipMetadata extends Component {
+class RelationshipMetadata extends Component {
   constructor(props) {
     super(props);
     this.state = { copyFrom: false, copyFromProps: [] };
@@ -72,6 +72,10 @@ export class RelationshipMetadata extends Component {
     }));
   }
 
+  closeSidePanel() {
+    this.props.resetForm('relationships.metadata');
+  }
+
   renderForm() {
     const form = (
       <MetadataForm
@@ -106,10 +110,6 @@ export class RelationshipMetadata extends Component {
     ) : (
       <ShowMetadata entity={this.props.entity} showTitle showType />
     );
-  }
-
-  closeSidePanel() {
-    this.props.resetForm('relationships.metadata');
   }
 
   render() {
@@ -188,7 +188,7 @@ export const mapStateToProps = state => {
   return {
     selectedConnection: Boolean(
       (state.relationships.connection && state.relationships.connection.get('_id')) ||
-      entityBeingEdited
+        entityBeingEdited
     ),
     entity: connectionSelector(state),
     entityBeingEdited,
@@ -218,5 +218,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { RelationshipMetadata };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipMetadata);
