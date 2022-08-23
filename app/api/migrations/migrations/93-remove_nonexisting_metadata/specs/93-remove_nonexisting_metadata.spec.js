@@ -23,7 +23,7 @@ describe('migration remove_nonexisting_metadata', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(92);
+    expect(migration.delta).toBe(93);
   });
 
   it.each([
