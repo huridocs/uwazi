@@ -45,7 +45,7 @@ const getUpdatesAndDeletes = (
     }
   });
 
-  const values = newValues.reduce((result, value) => {
+  const values = newValues.reduce<{ [k: string]: string }>((result, value) => {
     const sublinkResults: { [key: string]: string | unknown } = {};
     value.sublinks?.map(sublink => {
       sublinkResults[ensure<string>(sublink[propertyName])] = sublink[propertyName];
@@ -54,7 +54,7 @@ const getUpdatesAndDeletes = (
       ...result,
       [ensure<string>(value[propertyName])]: value[propertyName],
       ...sublinkResults,
-    };
+    } as { [k: string]: string };
   }, {});
   return { updatedValues, deletedValues, values };
 };
@@ -179,7 +179,11 @@ export default {
 
   async getDefaultLanguage() {
     const currentSettings = await this.get();
-    return currentSettings.languages?.find(language => language.default);
+    const defaultLanguage = currentSettings.languages?.find(language => language.default);
+    if (!defaultLanguage) {
+      throw new Error('There is no default language !');
+    }
+    return defaultLanguage;
   },
 
   async addLanguage(language: LanguageSchema) {

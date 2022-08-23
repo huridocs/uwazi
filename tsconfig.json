@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "useUnknownInCatchVariables": false,
     "allowJs": true,
     "noEmit": true,
     "module": "commonjs",
