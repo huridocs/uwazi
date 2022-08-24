@@ -2,7 +2,7 @@
 
 exports[`DocumentSidePanel Tabs when doc passed has toc toc edition should show Edit button if edition is not active 1`] = `
 <button
-  className="edit-toc btn btn-primary"
+  className="edit-toc btn btn-default"
   onClick={[Function]}
   type="button"
 >

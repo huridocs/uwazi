@@ -21,7 +21,7 @@ import {
   reloadRelationships,
 } from '../actions/actions';
 
-export class RelationshipMetadata extends Component {
+class RelationshipMetadata extends Component {
   constructor(props) {
     super(props);
     this.state = { copyFrom: false, copyFromProps: [] };
@@ -133,6 +133,7 @@ export class RelationshipMetadata extends Component {
               entityBeingEdited={this.props.entityBeingEdited}
               copyFrom={this.toggleCopyFrom}
               hideDelete={this.props.hubsBeingEdited}
+              includeViewButton={false}
             />
           )}
         </div>
@@ -177,7 +178,7 @@ const connectionSelector = createSelector(
   entity => (entity && entity.toJS ? entity.toJS() : { metadata: {} })
 );
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   const entityBeingEdited = Boolean(state.relationships.metadata.metadata);
 
   return {
@@ -213,5 +214,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { RelationshipMetadata, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipMetadata);

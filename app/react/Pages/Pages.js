@@ -13,7 +13,11 @@ export class Pages extends RouteHandler {
   }
 
   render() {
-    return <PagesList />;
+    return (
+      <div className="settings-content">
+        <PagesList />
+      </div>
+    );
   }
 }
 

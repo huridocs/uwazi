@@ -58,7 +58,7 @@ describe('NavlinksSettings', () => {
   });
 
   it('should have an add button that calls on addLink with links', () => {
-    component.find('.menu-link-group-button').first().props().onClick();
+    component.find('#main-add-link-button').first().props().onClick();
     expect(props.addLink).toHaveBeenCalledWith(props.links, 'link');
   });
 

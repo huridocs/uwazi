@@ -61,7 +61,7 @@ describe('User', () => {
     it('Should update the name and groups of the user', async () => {
       await expect(page).toFill('#username_field > input', 'administrator');
       await expect(page).toClick('li', { text: 'Asesores legales' });
-      await expect(page).toClick('button', { text: 'Save User' });
+      await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('.side-panel', { hidden: true });
       const userRows = await getListRows();
       expect(userRows[0]).toEqual([
@@ -80,7 +80,7 @@ describe('User', () => {
       await expect(page).toFill('#password_field > input', 'collaboratorPass');
       await expect(page).toFill('#username_field > input', 'collaboratorUser');
       await expect(page).toClick('li', { text: 'Asesores legales' });
-      await expect(page).toClick('button', { text: 'Create User' });
+      await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('tbody tr:nth-child(3)');
       const userRows = await getListRows();
       expect(userRows[1]).toEqual([

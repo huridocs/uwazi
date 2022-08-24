@@ -5,5 +5,5 @@ const exportCsvSvgPath =
 export const exportCsv = {
   prefix: 'fas',
   iconName: 'export-csv',
-  icon: [15, 15, [], 'e001', exportCsvSvgPath],
+  icon: [17, 17, [], 'e001', exportCsvSvgPath],
 };

@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 
-import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
@@ -21,7 +20,7 @@ class MetadataFormButtons extends Component {
     const ViewButton = (
       <I18NLink
         to={`entity/${data.sharedId}`}
-        className="edit-metadata btn btn-primary"
+        className="edit-metadata btn btn-default"
         tabIndex="0"
       >
         <Icon icon="file" />
@@ -36,92 +35,96 @@ class MetadataFormButtons extends Component {
     }
 
     return (
-      <span>
-        <ShowIf if={this.props.includeViewButton}>{ViewButton}</ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
-          <ShowIf if={!entityBeingEdited}>
+      <>
+        <div className="btn-cluster">
+          {this.props.includeViewButton && ViewButton}
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
+            {!entityBeingEdited && (
+              <button
+                type="button"
+                onClick={() => {
+                  this.props.loadInReduxForm(
+                    this.props.formStatePath,
+                    data,
+                    this.props.templates.toJS()
+                  );
+                  this.props.clearMetadataSelections();
+                }}
+                className="edit-metadata btn btn-default"
+              >
+                <Icon icon="pencil-alt" />
+                <span className="btn-label">
+                  <Translate>Edit</Translate>
+                </span>
+              </button>
+            )}
+          </NeedAuthorization>
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
+            {!entityBeingEdited && !hideDelete && data && data.sharedId && (
+              <ShareButton sharedIds={[data.sharedId]} storeKey={this.props.storeKey} />
+            )}
+          </NeedAuthorization>
+          {entityBeingEdited && (
             <button
               type="button"
-              onClick={() => {
-                this.props.loadInReduxForm(
-                  this.props.formStatePath,
-                  data,
-                  this.props.templates.toJS()
-                );
-                this.props.clearMetadataSelections();
-              }}
-              className="edit-metadata btn btn-primary"
-            >
-              <Icon icon="pencil-alt" />
-              <span className="btn-label">
-                <Translate>Edit</Translate>
-              </span>
-            </button>
-          </ShowIf>
-        </NeedAuthorization>
-        <ShowIf if={entityBeingEdited}>
-          <button
-            type="button"
-            disabled={uploadFileprogress !== undefined}
-            onClick={() => this.props.resetForm(this.props.formStatePath)}
-            className="cancel-edit-metadata btn btn-primary"
-          >
-            <Icon icon="times" />
-            <span className="btn-label">
-              <Translate>Cancel</Translate>
-            </span>
-          </button>
-        </ShowIf>
-        <ShowIf if={entityBeingEdited}>
-          <>
-            <button
-              type="submit"
-              form={formName}
-              className="btn btn-success"
-              disabled={uploadFileprogress !== undefined}
-            >
-              {uploadFileprogress ? <Icon icon="spinner" spin /> : <Icon icon="save" />}
-              <span className="btn-label">
-                {uploadFileprogress ? (
-                  <span>{`${uploadFileprogress}%`}</span>
-                ) : (
-                  <Translate>Save</Translate>
-                )}
-              </span>
-            </button>
-            <button
-              type="button"
-              className="btn btn-success copy-from-btn"
+              className="btn btn-default copy-from-btn"
               onClick={this.props.copyFrom}
               disabled={uploadFileprogress !== undefined}
             >
               <Icon icon="copy-from" transform="left-0.07 up-0.06" />
               <span className="btn-label">
+                {' '}
                 <Translate>Copy From</Translate>
               </span>
             </button>
-          </>
-        </ShowIf>
-        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
-          <ShowIf if={!entityBeingEdited && !hideDelete}>
-            <button
-              className="delete-metadata btn btn-danger"
-              type="button"
-              onClick={this.props.delete}
-            >
-              <Icon icon="trash-alt" />
-              <span className="btn-label">
-                <Translate>Delete</Translate>
-              </span>
-            </button>
-          </ShowIf>
-        </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
-          {!entityBeingEdited && !hideDelete && data && data.sharedId && (
-            <ShareButton sharedIds={[data.sharedId]} storeKey={this.props.storeKey} />
           )}
-        </NeedAuthorization>
-      </span>
+        </div>
+        <div className="btn-cluster content-right">
+          {entityBeingEdited && (
+            <>
+              <button
+                type="button"
+                disabled={uploadFileprogress !== undefined}
+                onClick={() => this.props.resetForm(this.props.formStatePath)}
+                className="cancel-edit-metadata btn btn-default btn-extra-padding"
+              >
+                <span className="btn-label">
+                  <Translate>Cancel</Translate>
+                </span>
+              </button>
+              <button
+                type="submit"
+                form={formName}
+                className="btn btn-success btn-extra-padding"
+                disabled={uploadFileprogress !== undefined}
+              >
+                {uploadFileprogress ? <Icon icon="spinner" spin /> : null}
+                <span className="btn-label">
+                  {uploadFileprogress ? (
+                    <span>{`${uploadFileprogress}%`}</span>
+                  ) : (
+                    <Translate>Save</Translate>
+                  )}
+                </span>
+              </button>
+            </>
+          )}
+          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
+            {!entityBeingEdited && !hideDelete && (
+              <button
+                className="delete-metadata btn btn-danger"
+                type="button"
+                onClick={this.props.delete}
+              >
+                <Icon icon="trash-alt" />
+                <span className="btn-label">
+                  <Translate>Delete</Translate>
+                </span>
+              </button>
+            )}
+          </NeedAuthorization>
+        </div>
+      </>
     );
   }
 }
