@@ -16,6 +16,9 @@ import templates from '../templates';
 import fixtures, {
   templateToBeEditedId,
   templateToBeDeleted,
+  thesaurusTemplateId,
+  thesaurusTemplate2Id,
+  thesaurusTemplate3Id,
   templateWithContents,
   swapTemplate,
   templateToBeInherited,
@@ -453,17 +456,54 @@ describe('templates', () => {
 
   describe('delete', () => {
     it('should delete properties of other templates using this template as select/relationship', async () => {
-      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
       await templates.delete({ _id: templateToBeDeleted });
 
-      const [template] = await templates.get({ name: 'thesauri template 2' });
-      expect(template.properties.length).toBe(1);
-      expect(template.properties[0].label).toBe('select2');
+      const [template1] = await templates.get({ name: 'thesauri template' });
+      expect(template1.properties.length).toBe(1);
+      expect(template1.properties[0].label).toBe('select');
 
-      const [template2] = await templates.get({ name: 'thesauri template 3' });
-      expect(template2.properties.length).toBe(2);
-      expect(template2.properties[0].label).toBe('text');
-      expect(template2.properties[1].label).toBe('text2');
+      const [template2] = await templates.get({ name: 'thesauri template 2' });
+      expect(template2.properties.length).toBe(1);
+      expect(template2.properties[0].label).toBe('select2');
+
+      const [template3] = await templates.get({ name: 'thesauri template 3' });
+      expect(template3.properties.length).toBe(2);
+      expect(template3.properties[0].label).toBe('text');
+      expect(template3.properties[1].label).toBe('text2');
+    });
+
+    it('should remove the related metadata from entities using this template as a select/relationship, from all languages', async () => {
+      await templates.delete({ _id: templateToBeDeleted });
+      const relatedEntities = await db.mongodb
+        .collection('entities')
+        .find({
+          template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
+        })
+        .toArray();
+      const titles = relatedEntities.map(e => e.title);
+      expect(titles).toEqual([
+        't1-1_en',
+        't1-2_en',
+        't1-3_en',
+        't1-1_es',
+        't1-2_es',
+        't1-3_es',
+        't1-1_pt',
+        't1-2_pt',
+        't1-3_pt',
+        't2-1_en',
+        't2-1_es',
+        't2-1_pt',
+      ]);
+      ['en', 'es', 'pt'].forEach(l => {
+        const metadatas = relatedEntities.filter(e => e.language === l).map(e => e.metadata);
+        expect(metadatas).toEqual([
+          { select: [] },
+          { select: [] },
+          { select: [] },
+          { select2: [] },
+        ]);
+      });
     });
 
     it('should delete a template when no document is using it', done => {

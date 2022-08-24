@@ -30,6 +30,12 @@ const templateCommonProperties = [
 
 const fixtureFactory = getFixturesFactory();
 const fixtures = {
+  settings: [
+    {
+      site_name: 'Uwazi',
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
   dictionaries: [
     fixtureFactory.thesauri('select_thesaurus', ['A']),
     fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
