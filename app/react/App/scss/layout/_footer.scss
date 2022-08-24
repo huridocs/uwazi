@@ -143,6 +143,17 @@ footer {
     margin-bottom: 11px;
     color: $c-black;
 
+    span.translation {
+      max-width: calc(min(100vw - 80px, 250px));
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
+      margin-top: -10px;
+      top: 5px;
+    }
+
     &.btn-danger,
     &.btn-primary,
     &.btn-success {
