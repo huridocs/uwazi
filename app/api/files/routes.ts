@@ -1,4 +1,4 @@
-import { Application, Request } from 'express';
+import { Application } from 'express';
 
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -14,7 +14,6 @@ import Joi from 'joi';
 import { files } from './files';
 import { validation, createError, handleError } from '../utils';
 import { storage } from './storage';
-import { tenants } from 'api/tenants';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
   if (!file.entity) return true;
