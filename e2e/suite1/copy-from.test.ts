@@ -48,9 +48,14 @@ describe('Copy from', () => {
     );
     await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo et al' });
     await expect(page).toClick('button', { text: 'Copy Highlighted' });
-    await expect(page).toClick('.side-panel button', { text: 'Save' });
+    await expect(page).toClick(
+      'div.btn-cluster:nth-child(2) > button:nth-child(2) > span:nth-child(1) ',
+      {
+        text: 'Save',
+      }
+    );
     await expect(page).toClick('.alert.alert-success');
-    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('.entity-footer > div > button', { text: 'Save' });
   });
 
   it('should check the data', async () => {
