@@ -2,7 +2,7 @@
 const obsoleteTranslationKeys = ['Delete User', 'Save User', 'Create User'];
 
 export default {
-  delta: 93,
+  delta: 94,
 
   name: 'remove-obsolete-translation-keys',
 
