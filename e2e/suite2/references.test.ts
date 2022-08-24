@@ -52,7 +52,7 @@ describe('Entities', () => {
       text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
     });
 
-    await expect(page).toClick('.side-panel > .sidepanel-footer > .btn-success');
+    await expect(page).toClick('div.sidepanel-footer > div > button.edit-metadata.btn.btn-success');
 
     await page.waitForSelector('.show-target-document');
     await selectText('.textLayer > span:nth-child(9)');
