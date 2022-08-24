@@ -30,6 +30,7 @@ class RelationshipMetadata extends Component {
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
     this.saveEntity = this.saveEntity.bind(this);
+    this.closeSidePanel = this.closeSidePanel.bind(this);
   }
 
   onCopyFromSelect(copyFromProps) {
@@ -69,6 +70,12 @@ class RelationshipMetadata extends Component {
     this.setState(currentState => ({
       copyFrom: !currentState.copyFrom,
     }));
+  }
+
+  closeSidePanel() {
+    return this.props.entityBeingEdited
+      ? this.props.resetForm('relationships.metadata')
+      : this.props.unselectConnection();
   }
 
   renderForm() {
@@ -118,7 +125,7 @@ class RelationshipMetadata extends Component {
           <button
             type="button"
             className="closeSidepanel close-modal"
-            onClick={this.props.unselectConnection}
+            onClick={this.closeSidePanel}
           >
             <Icon icon="times" />
           </button>
