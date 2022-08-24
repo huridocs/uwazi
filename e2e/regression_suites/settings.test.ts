@@ -57,7 +57,7 @@ describe('Settings', () => {
 
     it('should display filter groups', async () => {
       await selectSettingsPage('Filters');
-      await expect(page).toClick('div.settings-footer > button');
+      await expect(page).toClick('button', { text: 'Create group' });
       await testSettingsContent();
     });
   });
@@ -100,10 +100,10 @@ describe('Settings', () => {
 
     it('should display new Thesaurus with groups page', async () => {
       await selectSettingsPage('Thesauri');
-      await expect(page).toClick('div.settings-footer > a');
-      await expect(page).toClick('div.settings-footer > button');
-      await expect(page).toClick('div.settings-footer > button');
-      await expect(page).toClick('div.settings-footer > button');
+      await expect(page).toClick('a', { text: 'Add thesaurus' });
+      await expect(page).toClick('button', { text: 'Add group' });
+      await expect(page).toClick('button', { text: 'Add group' });
+      await expect(page).toClick('button', { text: 'Add group' });
       await testSettingsContent();
     });
   });

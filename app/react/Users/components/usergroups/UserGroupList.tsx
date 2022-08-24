@@ -60,7 +60,7 @@ export const UserGroupList = ({
         </tbody>
       </table>
       <div className={`settings-footer ${className}`}>
-        <button type="button" className="btn btn-success" onClick={addGroup}>
+        <button type="button" className="btn btn-default" onClick={addGroup}>
           <Icon icon="plus" />
           <span className="btn-label">
             <Translate>Add group</Translate>

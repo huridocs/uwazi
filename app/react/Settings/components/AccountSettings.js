@@ -96,113 +96,115 @@ class AccountSettings extends Component {
     const { email, password, repeatPassword, passwordError, using2fa } = this.state;
     const { username, groups = [], role } = this.props.user;
     return (
-      <div className="account-settings">
-        <div className="panel panel-default">
-          <div className="panel-heading">
-            <Translate>Account</Translate>
-          </div>
-          <div className="panel-body">
-            <div className="user-details">
-              <div>
-                <Translate>Username</Translate>:&nbsp;&nbsp;
-                <strong>{username}</strong>
-              </div>
-              <div className="user-details-role">
-                <Translate>Role</Translate>:&nbsp;&nbsp;
-                <Pill>
-                  <Translate translationKey={roleTranslationKey[role]}>{role}</Translate>
-                </Pill>
-              </div>
-              {groups.length > 0 && (
+      <div className="settings-content">
+        <div className="account-settings">
+          <div className="panel panel-default">
+            <div className="panel-heading">
+              <Translate>Account</Translate>
+            </div>
+            <div className="panel-body">
+              <div className="user-details">
                 <div>
-                  <Translate>Groups</Translate>:&nbsp;&nbsp;
-                  {groups.map(g => (
-                    <Pill>{g.name}</Pill>
-                  ))}
+                  <Translate>Username</Translate>:&nbsp;&nbsp;
+                  <strong>{username}</strong>
+                </div>
+                <div className="user-details-role">
+                  <Translate>Role</Translate>:&nbsp;&nbsp;
+                  <Pill>
+                    <Translate translationKey={roleTranslationKey[role]}>{role}</Translate>
+                  </Pill>
+                </div>
+                {groups.length > 0 && (
+                  <div>
+                    <Translate>Groups</Translate>:&nbsp;&nbsp;
+                    {groups.map(g => (
+                      <Pill>{g.name}</Pill>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <hr />
+              <h5>
+                <Translate>Email address</Translate>
+              </h5>
+              <form onSubmit={this.updateEmail}>
+                <div className="form-group">
+                  <label className="form-group-label" htmlFor="collection_name">
+                    <Translate>Email</Translate>
+                  </label>
+                  <input
+                    type="email"
+                    onChange={this.emailChange}
+                    value={email}
+                    className="form-control"
+                  />
+                </div>
+                <button type="submit" className="btn btn-success">
+                  <Translate>Update</Translate>
+                </button>
+              </form>
+              <hr />
+              <h5>
+                <Translate>Change password</Translate>
+              </h5>
+              <form onSubmit={this.updatePassword}>
+                {this.renderPasswordField('password', password, 'New password', passwordError)}
+                {this.renderPasswordField(
+                  'repeatPassword',
+                  repeatPassword,
+                  'Confirm new password',
+                  passwordError
+                )}
+                {passwordError && (
+                  <div className="validation-error validation-error-centered">
+                    <Icon icon="exclamation-triangle" />
+                    &nbsp;
+                    <Translate>Password Error</Translate>
+                  </div>
+                )}
+                <button type="submit" className="btn btn-success">
+                  <Translate>Update</Translate>
+                </button>
+              </form>
+              <hr />
+              <h5>
+                <Translate>Two-step verification</Translate>
+              </h5>
+              {using2fa && (
+                <div className="alert alert-info">
+                  <Icon icon="check" size="2x" />
+                  <div className="force-ltr">
+                    <Translate>Your account is protected by 2fa.</Translate>
+                  </div>
+                </div>
+              )}
+              {!using2fa && (
+                <div>
+                  <div className="alert alert-warning">
+                    <Icon icon="exclamation-triangle" size="2x" />
+                    <div className="force-ltr">
+                      <Translate>
+                        You should activate this feature for enhanced account security
+                      </Translate>
+                    </div>
+                  </div>
+                  <div>
+                    <I18NLink to="/settings/2fa" className="btn btn-success">
+                      <Translate>Protect your account</Translate>
+                    </I18NLink>
+                  </div>
                 </div>
               )}
             </div>
-            <hr />
-            <h5>
-              <Translate>Email address</Translate>
-            </h5>
-            <form onSubmit={this.updateEmail}>
-              <div className="form-group">
-                <label className="form-group-label" htmlFor="collection_name">
-                  <Translate>Email</Translate>
-                </label>
-                <input
-                  type="email"
-                  onChange={this.emailChange}
-                  value={email}
-                  className="form-control"
-                />
-              </div>
-              <button type="submit" className="btn btn-success">
-                <Translate>Update</Translate>
-              </button>
-            </form>
-            <hr />
-            <h5>
-              <Translate>Change password</Translate>
-            </h5>
-            <form onSubmit={this.updatePassword}>
-              {this.renderPasswordField('password', password, 'New password', passwordError)}
-              {this.renderPasswordField(
-                'repeatPassword',
-                repeatPassword,
-                'Confirm new password',
-                passwordError
-              )}
-              {passwordError && (
-                <div className="validation-error validation-error-centered">
-                  <Icon icon="exclamation-triangle" />
-                  &nbsp;
-                  <Translate>Password Error</Translate>
-                </div>
-              )}
-              <button type="submit" className="btn btn-success">
-                <Translate>Update</Translate>
-              </button>
-            </form>
-            <hr />
-            <h5>
-              <Translate>Two-step verification</Translate>
-            </h5>
-            {using2fa && (
-              <div className="alert alert-info">
-                <Icon icon="check" size="2x" />
-                <div className="force-ltr">
-                  <Translate>Your account is protected by 2fa.</Translate>
-                </div>
-              </div>
-            )}
-            {!using2fa && (
-              <div>
-                <div className="alert alert-warning">
-                  <Icon icon="exclamation-triangle" size="2x" />
-                  <div className="force-ltr">
-                    <Translate>
-                      You should activate this feature for enhanced account security
-                    </Translate>
-                  </div>
-                </div>
-                <div>
-                  <I18NLink to="/settings/2fa" className="btn btn-success">
-                    <Translate>Protect your account</Translate>
-                  </I18NLink>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
-        <div className="settings-footer">
-          <a href="/logout" className="btn btn-danger">
-            <Icon icon="power-off" />
-            <span className="btn-label">
-              <Translate>Logout</Translate>
-            </span>
-          </a>
+          <div className="settings-footer">
+            <a href="/logout" className="btn btn-danger">
+              <Icon icon="power-off" />
+              <span className="btn-label">
+                <Translate>Logout</Translate>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     );

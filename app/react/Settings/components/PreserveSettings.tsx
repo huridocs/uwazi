@@ -38,79 +38,81 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
   }, []);
 
   return (
-    <div className="panel panel-preserve">
-      <div className="panel-preserve-heading">
-        <Icon icon="square" /> <Translate>Preserve Extension</Translate>
-      </div>
-      <div className="panel-preserve-content">
-        <div className="status">
-          <Translate>You have not connected an Uwazi instance, yet</Translate>
+    <div className="settings-content">
+      <div className="panel panel-preserve">
+        <div className="panel-preserve-heading">
+          <Icon icon="square" /> <Translate>Preserve Extension</Translate>
         </div>
-        <div className="setup">
-          <div className="span">
-            <Translate>INSTALL the browser extension</Translate>
+        <div className="panel-preserve-content">
+          <div className="status">
+            <Translate>You have not connected an Uwazi instance, yet</Translate>
           </div>
-          <br />
-          <div className="span">
-            <Translate translationKey="Preserve Setup Description">
-              If you know your Uwazi URL and TOKEN click the link below, and fill the required
-              information.
-            </Translate>
-          </div>
-          <div className="install-buttons">
-            <button type="button">
-              <Translate>Install browser extension (dynamic link)</Translate>
-            </button>
-            <div>
-              <a
-                href="https://uwazi.readthedocs.io/en/latest/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Translate>Chrome extension store link</Translate>
-              </a>
+          <div className="setup">
+            <div className="span">
+              <Translate>INSTALL the browser extension</Translate>
             </div>
-            <div>
-              <a
-                href="https://uwazi.readthedocs.io/en/latest/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Translate>Firefox extension store link</Translate>
-              </a>
+            <br />
+            <div className="span">
+              <Translate translationKey="Preserve Setup Description">
+                If you know your Uwazi URL and TOKEN click the link below, and fill the required
+                information.
+              </Translate>
             </div>
-          </div>
-          <hr />
-          <div className="preserve-token">
-            <div>
-              <Translate>Configuration</Translate>
-            </div>
-            <form onSubmit={requestToken}>
-              <div className="form-group">
-                <label className="form-group-label" htmlFor="collection_name">
-                  <Translate>Extension Token</Translate>
-                </label>
-                <input value={token} className="form-control" disabled />
-              </div>
-              {token && (
-                <button
-                  className="btn btn-success"
-                  type="button"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(token);
-                  }}
+            <div className="install-buttons">
+              <button type="button">
+                <Translate>Install browser extension (dynamic link)</Translate>
+              </button>
+              <div>
+                <a
+                  href="https://uwazi.readthedocs.io/en/latest/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Translate>Copy token</Translate>
-                </button>
-              )}
-              {!token && (
-                <button type="submit" className="btn btn-success">
-                  <Translate>Request token</Translate>
-                </button>
-              )}
-            </form>
-            <div className="info">
-              <Translate>Some information about the token</Translate>
+                  <Translate>Chrome extension store link</Translate>
+                </a>
+              </div>
+              <div>
+                <a
+                  href="https://uwazi.readthedocs.io/en/latest/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Translate>Firefox extension store link</Translate>
+                </a>
+              </div>
+            </div>
+            <hr />
+            <div className="preserve-token">
+              <div>
+                <Translate>Configuration</Translate>
+              </div>
+              <form onSubmit={requestToken}>
+                <div className="form-group">
+                  <label className="form-group-label" htmlFor="collection_name">
+                    <Translate>Extension Token</Translate>
+                  </label>
+                  <input value={token} className="form-control" disabled />
+                </div>
+                {token && (
+                  <button
+                    className="btn btn-success"
+                    type="button"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(token);
+                    }}
+                  >
+                    <Translate>Copy token</Translate>
+                  </button>
+                )}
+                {!token && (
+                  <button type="submit" className="btn btn-success">
+                    <Translate>Request token</Translate>
+                  </button>
+                )}
+              </form>
+              <div className="info">
+                <Translate>Some information about the token</Translate>
+              </div>
             </div>
           </div>
         </div>

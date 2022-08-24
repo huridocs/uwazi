@@ -24,13 +24,19 @@ const SuggestionComponent = ({
     .filter(v => !_.isUndefined(v));
   if (property && property.size > 0) {
     return (
-      <EntitySuggestions
-        property={property.get(0)!.toJS()}
-        acceptIXSuggestion={acceptIXSuggestion}
-      />
+      <div className="settings-content">
+        <EntitySuggestions
+          property={property.get(0)!.toJS()}
+          acceptIXSuggestion={acceptIXSuggestion}
+        />
+      </div>
     );
   }
-  return <GeneralError />;
+  return (
+    <div className="settings-content">
+      <GeneralError />
+    </div>
+  );
 };
 
 const mapStateToProps = (state: IStore) => ({
