@@ -6,6 +6,7 @@ import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
+import { availableLanguages } from 'shared/languagesList';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -15,6 +16,10 @@ export default app => {
       .get()
       .then(response => res.json({ rows: response }))
       .catch(next);
+  });
+
+  app.get('/api/languages', (_req, res, _next) => {
+    res.json(availableLanguages);
   });
 
   app.post(
