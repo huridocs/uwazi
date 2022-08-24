@@ -124,52 +124,54 @@ class Languages extends Component {
     );
     const filteredLanguagesList = languagesList.filter(l => !currentLanguagesIsos.includes(l.key));
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">
-          <Translate>Active Languages</Translate>
-        </div>
-        <ul className="list-group document-types">
-          {currentLanguages.map((language, index) => (
-            <li key={index} className="list-group-item">
-              <span className="force-ltr">{`${language.label} (${language.key})`}</span>
-              {language.default ? Languages.defaultLanguage() : ''}
-              <div className="list-group-item-actions">
-                {!language.default ? this.setAsDeafultButton(language) : ''}
-                {!language.default ? this.deleteButton(language) : ''}
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="panel-heading">
-          <Translate>Available Languages</Translate>
-        </div>
-        <ul className="list-group document-types">
-          {filteredLanguagesList.map((language, index) => {
-            const notSupported = !elasticSupportedIsos.includes(language.key);
-            return (
+      <div className="settings-content without-footer">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Active Languages</Translate>
+          </div>
+          <ul className="list-group document-types">
+            {currentLanguages.map((language, index) => (
               <li key={index} className="list-group-item">
-                <span className="force-ltr">
-                  {`${language.label} (${language.key}) `}
-                  {notSupported ? Languages.notSupportedLanguage() : ''}
-                </span>
+                <span className="force-ltr">{`${language.label} (${language.key})`}</span>
+                {language.default ? Languages.defaultLanguage() : ''}
                 <div className="list-group-item-actions">
-                  &nbsp;
-                  <button
-                    type="button"
-                    onClick={this.addLanguage.bind(this, language)}
-                    className="btn btn-success btn-xs template-remove"
-                  >
-                    <Icon icon="plus" />
-                    &nbsp;
-                    <span>
-                      <Translate>Add language</Translate>
-                    </span>
-                  </button>
+                  {!language.default ? this.setAsDeafultButton(language) : ''}
+                  {!language.default ? this.deleteButton(language) : ''}
                 </div>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+          <div className="panel-heading">
+            <Translate>Available Languages</Translate>
+          </div>
+          <ul className="list-group document-types">
+            {filteredLanguagesList.map((language, index) => {
+              const notSupported = !elasticSupportedIsos.includes(language.key);
+              return (
+                <li key={index} className="list-group-item">
+                  <span className="force-ltr">
+                    {`${language.label} (${language.key}) `}
+                    {notSupported ? Languages.notSupportedLanguage() : ''}
+                  </span>
+                  <div className="list-group-item-actions">
+                    &nbsp;
+                    <button
+                      type="button"
+                      onClick={this.addLanguage.bind(this, language)}
+                      className="btn btn-success btn-xs template-remove"
+                    >
+                      <Icon icon="plus" />
+                      &nbsp;
+                      <span>
+                        <Translate>Add language</Translate>
+                      </span>
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     );
   }

@@ -1,4 +1,3 @@
-/** @format */
 import { instanceModel } from 'api/odm';
 import mongoose from 'mongoose';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';

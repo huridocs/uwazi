@@ -19,7 +19,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 
 import { SelectFileButton } from 'app/App/SelectFileButton';
 import { ThesauriFormItem } from './ThesauriFormItem';
@@ -39,7 +39,7 @@ function sanitizeThesauri(thesaurus) {
   return sanitizedThesauri;
 }
 
-export class ThesauriForm extends Component {
+class ThesauriForm extends Component {
   static validation(thesauris, id) {
     return {
       name: {
@@ -195,33 +195,43 @@ export class ThesauriForm extends Component {
               />
             </div>
             <div className="settings-footer">
-              <BackButton to="/settings/dictionaries" />
-              <button type="button" className="btn btn-primary" onClick={this.props.addGroup}>
-                <Icon icon="plus" />
-                <span className="btn-label">
-                  <Translate>Add group</Translate>
-                </span>
-              </button>
-              <button type="button" className="btn btn-primary" onClick={this.props.sortValues}>
-                <Icon icon="sort-alpha-down" />
-                <span className="btn-label">
-                  <Translate>Sort</Translate>
-                </span>
-              </button>
-              <SelectFileButton onFileImported={this.importThesaurusFile}>
-                <button type="button" className="btn btn-primary import-template">
-                  <Icon icon="upload" />
+              <div className="btn-cluster">
+                <BackButton to="/settings/dictionaries" className="btn-plain" />
+              </div>
+              <div className="btn-cluster lg-margin-left-12 sm-order-1 sm-footer-extra-row">
+                <button type="button" className="btn btn-default" onClick={this.props.addGroup}>
+                  <Icon icon="plus" />
                   <span className="btn-label">
-                    <Translate>Import</Translate>
+                    <Translate>Add group</Translate>
                   </span>
                 </button>
-              </SelectFileButton>
-              <button type="submit" className="btn btn-success save-template">
-                <Icon icon="save" />
-                <span className="btn-label">
-                  <Translate>Save</Translate>
-                </span>
-              </button>
+                <button type="button" className="btn btn-default" onClick={this.props.sortValues}>
+                  <Icon icon="sort-alpha-down" />
+                  <span className="btn-label">
+                    <Translate>Sort</Translate>
+                  </span>
+                </button>
+                <SelectFileButton onFileImported={this.importThesaurusFile}>
+                  <button type="button" className="btn btn-default import-template">
+                    <Icon icon="upload" />
+                    <span className="btn-label">
+                      <Translate>Import</Translate>
+                    </span>
+                  </button>
+                </SelectFileButton>
+              </div>
+              <div className="btn-cluster content-right">
+                <I18NLink to="/settings/dictionaries" className="btn btn-default btn-extra-padding">
+                  <span className="btn-label">
+                    <Translate>Cancel</Translate>
+                  </span>
+                </I18NLink>
+                <button type="submit" className="btn btn-success btn-extra-padding save-template">
+                  <span className="btn-label">
+                    <Translate>Save</Translate>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </Form>
@@ -250,7 +260,7 @@ ThesauriForm.propTypes = {
   new: PropTypes.bool,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     thesauri: state.thesauri.data,
     thesauris: state.thesauris,
@@ -275,5 +285,7 @@ function bindActions(dispatch) {
     dispatch
   );
 }
+
+export { ThesauriForm, mapStateToProps };
 
 export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);

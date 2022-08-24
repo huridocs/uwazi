@@ -3,6 +3,9 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
+const thesaurusTemplateId = db.id();
+const thesaurusTemplate2Id = db.id();
+const thesaurusTemplate3Id = db.id();
 const templateWithContents = db.id();
 const select3id = db.id();
 const select4id = db.id();
@@ -20,6 +23,22 @@ const propertyB = db.id();
 const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
+
+const languages = [
+  { key: 'en', label: 'English', default: true },
+  { key: 'es', label: 'Spanish' },
+  { key: 'pt', label: 'Portugal' },
+];
+const languageKeys = languages.map(l => l.key);
+
+const createEntitiesInAllLanguages = (baseTitle, template, metadata) =>
+  languageKeys.map(lKey => ({
+    metadata,
+    template,
+    title: `${baseTitle}_${lKey}`,
+    language: lKey,
+    sharedId: `${baseTitle}-sharedId`,
+  }));
 
 export default {
   templates: [
@@ -43,47 +62,62 @@ export default {
       commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
-      _id: db.id(),
+      _id: thesaurusTemplateId,
       name: 'thesauri template',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.select,
           content: thesauriId1.toString(),
           label: 'select',
           name: 'select',
         },
-        { type: propertyTypes.relationship, content: templateToBeDeleted, label: 'select2' },
+        {
+          _id: db.id(),
+          type: propertyTypes.relationship,
+          content: templateToBeDeleted,
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
+        },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
-      _id: db.id(),
+      _id: thesaurusTemplate2Id,
       name: 'thesauri template 2',
       properties: [
         {
+          _id: db.id(),
           type: propertyTypes.select,
           content: thesauriId1.toString(),
           label: 'select2',
           name: 'select2',
         },
-        { type: propertyTypes.select, content: templateToBeDeleted, label: 'selectToBeDeleted' },
-      ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
-    },
-    {
-      _id: db.id(),
-      name: 'thesauri template 3',
-      properties: [
-        { type: propertyTypes.text, label: 'text' },
-        { type: propertyTypes.text, label: 'text2' },
         {
-          type: propertyTypes.select,
+          _id: db.id(),
+          type: propertyTypes.relationship,
           content: templateToBeDeleted,
-          label: 'selectToBeDeleted',
-          name: 'selecttobedeleted',
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
         },
       ],
-      commonProperties: [{ name: 'title', label: 'Title' }],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+    },
+    {
+      _id: thesaurusTemplate3Id,
+      name: 'thesauri template 3',
+      properties: [
+        { _id: db.id(), type: propertyTypes.text, label: 'text' },
+        { _id: db.id(), type: propertyTypes.text, label: 'text2' },
+        {
+          _id: db.id(),
+          type: propertyTypes.relationship,
+          content: templateToBeDeleted,
+          label: 'relationshipToBeDeleted',
+          name: 'relationshipToBeDeleted',
+        },
+      ],
+      commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
     },
     {
       _id: templateWithContents,
@@ -187,7 +221,7 @@ export default {
     {
       _id: db.id(),
       site_name: 'Uwazi',
-      languages: [{ key: 'en', label: 'English', default: true }],
+      languages,
     },
   ],
   dictionaries: [
@@ -243,11 +277,32 @@ export default {
       entityView: true,
     },
   ],
+  entities: [
+    ...createEntitiesInAllLanguages('t1-1', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t1-2', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t1-3', thesaurusTemplateId, {
+      select: [],
+      relationshipToBeDeleted: [],
+    }),
+    ...createEntitiesInAllLanguages('t2-1', thesaurusTemplate2Id, {
+      select2: [],
+      relationshipToBeDeleted: [],
+    }),
+  ],
 };
 
 export {
   templateToBeEditedId,
   templateToBeDeleted,
+  thesaurusTemplateId,
+  thesaurusTemplate2Id,
+  thesaurusTemplate3Id,
   templateWithContents,
   swapTemplate,
   templateToBeInherited,

@@ -66,7 +66,7 @@ export const UserSidePanel = ({
       <div className="sidepanel-header">
         <Translate>{`${user._id ? 'Edit' : 'Add'} User`}</Translate>
       </div>
-      <div className="sidepanel-body">
+      <div className={`sidepanel-body ${user._id ? 'footer-extra-row' : ''}`}>
         <form id="userFrom" className="user-form" onSubmit={handleSubmit(saveUser)}>
           <input type="hidden" name="_id" ref={register} />
           <input type="hidden" name="using2fa" ref={register} />
@@ -187,62 +187,67 @@ export const UserSidePanel = ({
         <PermissionsList isOpen={permissionsModalOpened} onClose={togglePermissionList} />
       </div>
       <div className="sidepanel-footer">
-        <button
-          id="discardChangesBtn"
-          type="button"
-          className="btn btn-primary"
-          onClick={closePanel}
-          aria-label="Close side panel"
-        >
-          <Icon icon="times" />
-          <span className="btn-label">
-            <Translate>Discard Changes</Translate>
-          </span>
-        </button>
         {user._id && (
-          <ConfirmButton
-            id="deleteBtn"
-            className="btn btn-outline-danger"
-            action={() => onDelete(user)}
-          >
-            <Icon icon="trash-alt" />
-            <span className="btn-label">
-              <Translate>Delete User</Translate>
-            </span>
-          </ConfirmButton>
+          <>
+            <div className="footer-extra-row">
+              <div className="btn-cluster">
+                <ConfirmButton
+                  id="resetPasswordBtn"
+                  className="btn btn-outline-warning"
+                  action={() => onResetPassword(user)}
+                >
+                  <Icon icon="key" />
+                  <span className="btn-label">
+                    <Translate>Reset Password</Translate>
+                  </span>
+                </ConfirmButton>
+                {user.using2fa && (
+                  <ConfirmButton
+                    id="reset2faBtn"
+                    className="btn btn-outline-danger"
+                    action={() => onReset2fa(user)}
+                  >
+                    <Icon icon="two-factor-auth" />
+                    <span className="btn-label">
+                      {' '}
+                      <Translate>Reset 2FA</Translate>
+                    </span>
+                  </ConfirmButton>
+                )}
+              </div>
+            </div>
+            <div className="btn-cluster">
+              <ConfirmButton
+                id="deleteBtn"
+                className="btn btn-danger"
+                action={() => onDelete(user)}
+              >
+                <Icon icon="trash-alt" />
+                <span className="btn-label">
+                  <Translate>Delete</Translate>
+                </span>
+              </ConfirmButton>
+            </div>
+          </>
         )}
-        {user._id && user.using2fa && (
-          <ConfirmButton
-            id="reset2faBtn"
-            className="btn btn-outline-danger"
-            action={() => onReset2fa(user)}
+        <div className="btn-cluster content-right">
+          <button
+            id="discardChangesBtn"
+            type="button"
+            className="btn btn-default"
+            onClick={closePanel}
+            aria-label="Cancel"
           >
-            <Icon icon="two-factor-auth" />
             <span className="btn-label">
-              <Translate>Reset 2FA</Translate>
+              <Translate>Cancel</Translate>
             </span>
-          </ConfirmButton>
-        )}
-        {user._id && (
-          <ConfirmButton
-            id="resetPasswordBtn"
-            className="btn btn-outline-warning"
-            action={() => onResetPassword(user)}
-          >
-            <Icon icon="key" />
-            <span className="btn-label">
-              <Translate>Reset Password</Translate>
+          </button>
+          <button id="saveChangesBtn" type="submit" form="userFrom" className="btn btn-success">
+            <span id="submitLabel" className="btn-label">
+              <Translate>Save</Translate>
             </span>
-          </ConfirmButton>
-        )}
-        <button id="saveChangesBtn" type="submit" form="userFrom" className="btn btn-success">
-          <Icon icon="save" />
-          <span id="submitLabel" className="btn-label">
-            <Translate translationKey={user._id ? 'Save User' : 'Create User'}>
-              {user._id ? 'Save User' : 'Create User'}
-            </Translate>
-          </span>
-        </button>
+          </button>
+        </div>
       </div>
     </SidePanel>
   );

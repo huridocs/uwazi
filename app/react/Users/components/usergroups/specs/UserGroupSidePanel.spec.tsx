@@ -67,7 +67,7 @@ describe('UserGroupSidePanel', () => {
       const header = wrapper.find('.sidepanel-header').find('Connect(Translate)');
       const submitBtn = wrapper.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Add Group');
-      expect(submitBtn.props().children).toEqual('Create Group');
+      expect(submitBtn.props().children).toEqual('Save');
       expect(wrapper.find('#deleteBtn').length).toBe(0);
     });
 
@@ -122,7 +122,7 @@ describe('UserGroupSidePanel', () => {
       const header = component.find('.sidepanel-header').find('Connect(Translate)');
       const submitBtn = component.find('#submitLabel').find('Connect(Translate)');
       expect(header.props().children).toEqual('Edit Group');
-      expect(submitBtn.props().children).toEqual('Save Group');
+      expect(submitBtn.props().children).toEqual('Save');
     });
 
     describe('User members', () => {

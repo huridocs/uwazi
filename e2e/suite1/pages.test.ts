@@ -68,7 +68,8 @@ describe('Custom home page and styles', () => {
       'textarea[name="settings.settings.customCSS"]',
       '.myDiv { color: white; font-size: 20px; background-color: red; }'
     );
-    await expect(page).toClick('button', { text: 'Update' });
+
+    await expect(page).toClick('button', { text: 'Save' });
   });
 
   it('should render the custom page as home page with the custom CSS styles', async () => {

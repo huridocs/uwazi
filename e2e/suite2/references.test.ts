@@ -36,7 +36,7 @@ describe('Entities', () => {
   });
 
   it('should create a new reference to a document', async () => {
-    await selectText('.textLayer > span:nth-child(1)');
+    await selectText('.textLayer > span:nth-child(1) > span');
 
     await expect(page).toClick('.connect-to-p');
 
@@ -52,7 +52,7 @@ describe('Entities', () => {
       text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
     });
 
-    await expect(page).toClick('.side-panel > .sidepanel-footer > .btn-success');
+    await expect(page).toClick('div.sidepanel-footer > div > button.edit-metadata.btn.btn-success');
 
     await page.waitForSelector('.show-target-document');
     await selectText('.textLayer > span:nth-child(9)');
@@ -62,7 +62,7 @@ describe('Entities', () => {
     });
 
     await expect(page).toMatchElement('.side-panel.is-active .item-snippet', {
-      text: 'Uwazi Heroes Investigation',
+      text: 'Urna Semper',
     });
   });
 
@@ -71,7 +71,7 @@ describe('Entities', () => {
     await expect(page).toClick('button', { text: 'Accept' });
 
     await expect(page).not.toMatchElement('.side-panel.is-active .item-snippet', {
-      text: 'Uwazi Heroes Investigation',
+      text: 'Urna Semper',
     });
   });
 

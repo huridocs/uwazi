@@ -13,14 +13,17 @@ import { Captcha, FormGroup } from 'app/ReactReduxForms';
 import { IImmutable } from 'shared/types/Immutable';
 import { ExportStore } from '../reducers/ExportStoreType';
 
-export type ExportButtonProps = {
+type ExportButtonProps = {
   processing: boolean;
   storeKey: string;
   user: IImmutable<User>;
+  className?: string;
   exportDocuments: (keyStore: string, captcha?: CaptchaValue) => any;
 };
 
 class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
+  static defaultProps: { className: string };
+
   constructor(props: ExportButtonProps) {
     super(props);
     this.state = {
@@ -49,12 +52,15 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
   }
 
   render() {
+    let btnClassName = 'btn btn-default btn-export';
+    btnClassName += this.props.processing ? ' btn-disabled' : '';
+    btnClassName += ` ${this.props.className}`;
     return (
       <>
         <button
           type="button"
           onClick={this.props.user.get('_id') ? this.export : this.showModal}
-          className={`btn btn-primary btn-export ${this.props.processing ? 'btn-disabled' : ''}`}
+          className={btnClassName}
         >
           {!this.props.processing ? (
             <Icon icon="export-csv" transform="up-0.1" />
@@ -99,6 +105,10 @@ class ExportButton extends Component<ExportButtonProps, { modal: boolean }> {
   }
 }
 
+ExportButton.defaultProps = {
+  className: '',
+};
+
 function mapDispatchToProps(dispatch: Dispatch<any>, props: Pick<ExportButtonProps, 'storeKey'>) {
   return bindActionCreators({ exportDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
@@ -109,5 +119,7 @@ function mapStateToProps(state: ExportStore) {
     user: state.user,
   };
 }
+
+export type { ExportButtonProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ExportButton);

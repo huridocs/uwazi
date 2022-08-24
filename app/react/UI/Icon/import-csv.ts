@@ -5,5 +5,5 @@ const importCsvSvgPath =
 export const importCsv = {
   prefix: 'fas',
   iconName: 'import-csv',
-  icon: [15, 15, [], 'e001', importCsvSvgPath],
+  icon: [17, 17, [], 'e001', importCsvSvgPath],
 };

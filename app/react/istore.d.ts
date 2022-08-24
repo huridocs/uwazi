@@ -3,7 +3,7 @@ import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
 import { LabelCountSchema } from 'app/Thesauri/types/labelCountType';
 import { IImmutable } from 'shared/types/Immutable';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
@@ -109,6 +109,7 @@ export interface ClientBlobFile extends FileType {
 export interface ClientEntitySchema extends EntitySchema {
   documents?: (ClientFile | ClientBlobFile)[];
   attachments?: ClientFile[];
+  defaultDoc?: ClientFile;
 }
 
 export interface DocumentViewerUiStateReference {
@@ -146,8 +147,11 @@ export interface IStore {
       activeReference: string;
     }>;
     metadataExtraction: IImmutable<{
-      selections: [];
+      selections: ExtractedMetadataSchema[];
     }>;
+    sidepanel: {
+      metadata: ClientEntitySchema;
+    };
   };
   oneUpReview: {
     state?: IImmutable<OneUpState>;

@@ -14,6 +14,10 @@ export default class NewThesauri extends RouteHandler {
   }
 
   render() {
-    return <ThesauriForm new />;
+    return (
+      <div className="settings-content sm-footer-extra-row">
+        <ThesauriForm new />
+      </div>
+    );
   }
 }

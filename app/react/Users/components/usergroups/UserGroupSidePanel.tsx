@@ -103,36 +103,43 @@ export const UserGroupSidePanel = ({
         </form>
       </div>
       <div className="sidepanel-footer">
-        <button
-          id="discardChangesBtn"
-          type="button"
-          className="btn btn-primary"
-          onClick={closePanel}
-          aria-label="Close side panel"
-        >
-          <Icon icon="times" />
-          <span className="btn-label">
-            <Translate>Discard Changes</Translate>
-          </span>
-        </button>
         {userGroup._id && (
-          <ConfirmButton
-            id="deleteBtn"
-            className="btn btn-outline-danger"
-            action={() => onDelete(userGroup)}
-          >
-            <Icon icon="trash-alt" />
-            <span className="btn-label">
-              <Translate>Delete Group</Translate>
-            </span>
-          </ConfirmButton>
+          <div className="btn-cluster">
+            <ConfirmButton
+              id="deleteBtn"
+              className="btn btn-danger"
+              action={() => onDelete(userGroup)}
+            >
+              <Icon icon="trash-alt" />
+              <span className="btn-label">
+                <Translate>Delete</Translate>
+              </span>
+            </ConfirmButton>
+          </div>
         )}
-        <button id="saveChangesBtn" type="submit" form="userGroupFrom" className="btn btn-success">
-          <Icon icon="save" />
-          <span id="submitLabel" className="btn-label">
-            <Translate>{`${userGroup._id ? 'Save' : 'Create'} Group`}</Translate>
-          </span>
-        </button>
+        <div className="btn-cluster content-right">
+          <button
+            id="discardChangesBtn"
+            type="button"
+            className="btn btn-default"
+            onClick={closePanel}
+            aria-label="Close side panel"
+          >
+            <span className="btn-label">
+              <Translate>Cancel</Translate>
+            </span>
+          </button>
+          <button
+            id="saveChangesBtn"
+            type="submit"
+            form="userGroupFrom"
+            className="btn btn-success"
+          >
+            <span id="submitLabel" className="btn-label">
+              <Translate>Save</Translate>
+            </span>
+          </button>
+        </div>
       </div>
     </SidePanel>
   );

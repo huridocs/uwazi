@@ -9,6 +9,14 @@ import PDF from '../PDF';
 
 const legacyCharacterMapUrl = '/legacy_character_maps/';
 
+jest.mock('../../PDFJS', () => ({
+  default: {
+    getDocument: () => {},
+  },
+  getDocument: () => {},
+  EventBus: function () {},
+}));
+
 describe('PDF', () => {
   let component;
   let instance;

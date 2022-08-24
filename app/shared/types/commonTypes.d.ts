@@ -22,6 +22,7 @@ export interface ExtractedMetadataSchema {
   propertyID?: string;
   name?: string;
   timestamp?: string;
+  deleteSelection?: boolean;
   selection?: {
     text?: string;
     selectionRectangles?: {
@@ -76,6 +77,7 @@ export interface LanguageSchema {
   default?: boolean;
   ISO639_3?: string;
   localized_label?: string;
+  translationAvailable?: boolean;
 }
 
 export type LanguagesListSchema = {
@@ -86,6 +88,7 @@ export type LanguagesListSchema = {
   default?: boolean;
   ISO639_3?: string;
   localized_label?: string;
+  translationAvailable?: boolean;
 }[];
 
 export interface LatLonSchema {
@@ -189,6 +192,14 @@ export type PropertyValueSchema =
   | DateRangeSchema
   | LatLonSchema
   | LatLonSchema[];
+
+export interface SelectionRectangleSchema {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  page?: string;
+}
 
 export type SelectionRectanglesSchema = {
   top?: number;
