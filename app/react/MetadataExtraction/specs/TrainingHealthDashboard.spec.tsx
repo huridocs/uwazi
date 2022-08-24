@@ -58,6 +58,6 @@ describe('Render', () => {
       ['Non-matching', '20.00%'],
       ['Empty / Obsolete', '20.00%'],
     ]);
-    await expect(items[4].innerHTML).toMatch(new RegExp('Accuracy(.*)50%'));
+    await expect(items[4].innerHTML).toMatch(/Accuracy(.*)50.00%/);
   });
 });

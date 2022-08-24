@@ -23,7 +23,9 @@ function polledDeferred() {
 }
 
 async function putIntoEventQueue() {
-  return new Promise<void>(resolve => setTimeout(resolve, 0));
+  return new Promise<void>(resolve => {
+    setTimeout(resolve, 0);
+  });
 }
 
 describe('EventsBus', () => {
