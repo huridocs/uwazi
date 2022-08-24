@@ -180,6 +180,8 @@ describe('uploadsActions', () => {
           expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
           expect(mockUpload.attach).toHaveBeenCalledWith('attachments[1]', file);
+          expect(mockUpload.field).toHaveBeenCalledWith('attachments_originalname[0]', file.name);
+          expect(mockUpload.field).toHaveBeenCalledWith('attachments_originalname[1]', file.name);
           expect(superagent.post).toHaveBeenCalledWith(`${APIURL}public`);
           done();
         });
