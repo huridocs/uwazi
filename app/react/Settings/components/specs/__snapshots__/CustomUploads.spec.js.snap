@@ -11,180 +11,188 @@ Array [
 
 exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
 <div
-  className="panel panel-default"
+  className="settings-content without-footer"
 >
   <div
-    className="panel-heading"
+    className="panel panel-default"
   >
-    <Connect(Translate)>
-      Custom Uploads
-    </Connect(Translate)>
-  </div>
-  <div
-    className="panel-body custom-uploads"
-  >
-    <t
-      className="upload-box"
-      disableClick={false}
-      disablePreview={false}
-      disabled={false}
-      maxSize={Infinity}
-      minSize={0}
-      multiple={true}
-      onDrop={[Function]}
-      preventDropOnDocument={true}
+    <div
+      className="panel-heading"
     >
-      <div
-        className="upload-box_wrapper"
+      <Connect(Translate)>
+        Custom Uploads
+      </Connect(Translate)>
+    </div>
+    <div
+      className="panel-body custom-uploads"
+    >
+      <t
+        className="upload-box"
+        disableClick={false}
+        disablePreview={false}
+        disabled={false}
+        maxSize={Infinity}
+        minSize={0}
+        multiple={true}
+        onDrop={[Function]}
+        preventDropOnDocument={true}
       >
-        <Connect(Icon)
-          icon="upload"
-        />
-        <button
-          className="upload-box_link"
-          type="button"
-        >
-          <Connect(Translate)>
-            Browse files to upload
-          </Connect(Translate)>
-        </button>
-        <span>
-           
-          <Connect(Translate)>
-            or drop your files here.
-          </Connect(Translate)>
-        </span>
-      </div>
-    </t>
-    <ul>
-      <li
-        key="file1"
-      >
-        <Thumbnail
-          alt=""
-          file="/assets/file1"
-        />
         <div
-          className="info"
+          className="upload-box_wrapper"
         >
-          <span
-            no-translate={true}
-          >
-            URL:
-          </span>
-          <span
-            className="thumbnail-url"
-          >
-            /assets/file1
-          </span>
-          <ConfirmButton
-            action={[Function]}
-            className=""
-            message="Are you sure you want to continue?"
-            title="Confirm action"
+          <Connect(Icon)
+            icon="upload"
+          />
+          <button
+            className="upload-box_link"
+            type="button"
           >
             <Connect(Translate)>
-              Delete
+              Browse files to upload
             </Connect(Translate)>
-          </ConfirmButton>
-        </div>
-      </li>
-      <li
-        key="file2"
-      >
-        <Thumbnail
-          alt=""
-          file="/assets/file2"
-        />
-        <div
-          className="info"
-        >
-          <span
-            no-translate={true}
-          >
-            URL:
-          </span>
-          <span
-            className="thumbnail-url"
-          >
-            /assets/file2
-          </span>
-          <ConfirmButton
-            action={[Function]}
-            className=""
-            message="Are you sure you want to continue?"
-            title="Confirm action"
-          >
+          </button>
+          <span>
+             
             <Connect(Translate)>
-              Delete
+              or drop your files here.
             </Connect(Translate)>
-          </ConfirmButton>
+          </span>
         </div>
-      </li>
-    </ul>
+      </t>
+      <ul>
+        <li
+          key="file1"
+        >
+          <Thumbnail
+            alt=""
+            file="/assets/file1"
+          />
+          <div
+            className="info"
+          >
+            <span
+              no-translate={true}
+            >
+              URL:
+            </span>
+            <span
+              className="thumbnail-url"
+            >
+              /assets/file1
+            </span>
+            <ConfirmButton
+              action={[Function]}
+              className=""
+              message="Are you sure you want to continue?"
+              title="Confirm action"
+            >
+              <Connect(Translate)>
+                Delete
+              </Connect(Translate)>
+            </ConfirmButton>
+          </div>
+        </li>
+        <li
+          key="file2"
+        >
+          <Thumbnail
+            alt=""
+            file="/assets/file2"
+          />
+          <div
+            className="info"
+          >
+            <span
+              no-translate={true}
+            >
+              URL:
+            </span>
+            <span
+              className="thumbnail-url"
+            >
+              /assets/file2
+            </span>
+            <ConfirmButton
+              action={[Function]}
+              className=""
+              message="Are you sure you want to continue?"
+              title="Confirm action"
+            >
+              <Connect(Translate)>
+                Delete
+              </Connect(Translate)>
+            </ConfirmButton>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 `;
 
 exports[`CustomUploads when upload on progress should render on progress feedback 1`] = `
 <div
-  className="panel panel-default"
+  className="settings-content without-footer"
 >
   <div
-    className="panel-heading"
+    className="panel panel-default"
   >
-    <Connect(Translate)>
-      Custom Uploads
-    </Connect(Translate)>
-  </div>
-  <div
-    className="panel-body custom-uploads"
-  >
-    <t
-      className="upload-box"
-      disableClick={false}
-      disablePreview={false}
-      disabled={false}
-      maxSize={Infinity}
-      minSize={0}
-      multiple={true}
-      onDrop={[Function]}
-      preventDropOnDocument={true}
+    <div
+      className="panel-heading"
     >
-      <div
-        className="upload-box_wrapper"
+      <Connect(Translate)>
+        Custom Uploads
+      </Connect(Translate)>
+    </div>
+    <div
+      className="panel-body custom-uploads"
+    >
+      <t
+        className="upload-box"
+        disableClick={false}
+        disablePreview={false}
+        disabled={false}
+        maxSize={Infinity}
+        minSize={0}
+        multiple={true}
+        onDrop={[Function]}
+        preventDropOnDocument={true}
       >
-        <Connect(Icon)
-          icon="upload"
-        />
-        <button
-          className="upload-box_link"
-          type="button"
+        <div
+          className="upload-box_wrapper"
         >
+          <Connect(Icon)
+            icon="upload"
+          />
+          <button
+            className="upload-box_link"
+            type="button"
+          >
+            <Connect(Translate)>
+              Browse files to upload
+            </Connect(Translate)>
+          </button>
+          <span>
+             
+            <Connect(Translate)>
+              or drop your files here.
+            </Connect(Translate)>
+          </span>
+        </div>
+        <div
+          className="uploading"
+        >
+          <Connect(Icon)
+            icon="spinner"
+            spin={true}
+          />
           <Connect(Translate)>
-            Browse files to upload
+            Uploading ...
           </Connect(Translate)>
-        </button>
-        <span>
-           
-          <Connect(Translate)>
-            or drop your files here.
-          </Connect(Translate)>
-        </span>
-      </div>
-      <div
-        className="uploading"
-      >
-        <Connect(Icon)
-          icon="spinner"
-          spin={true}
-        />
-        <Connect(Translate)>
-          Uploading ...
-        </Connect(Translate)>
-      </div>
-    </t>
-    <ul />
+        </div>
+      </t>
+      <ul />
+    </div>
   </div>
 </div>
 `;

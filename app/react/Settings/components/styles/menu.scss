@@ -1,15 +1,20 @@
 .menu-link-group-button {
-  background: #2C56C0;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #eceff1;
+  border: 1px solid #cfd8dc;
   box-sizing: border-box;
   border-radius: 3px;
-  padding: 8px 16px;
+  padding: 4px 12px;
   margin-right: 10px;
-  color: white;
+  color: #444444;
+
+  &:hover {
+    border: 1px solid #3655ba;
+    color: #3655ba;
+  }
 }
 
 .menu-delete-button {
-  background: #D9534E;
+  background: #d9534e;
   border: 1px solid rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   border-radius: 3px;
@@ -29,8 +34,4 @@
   left: 20px;
   top: 100%;
   padding-bottom: 20px;
-}
-
-.footer-buttons {
-  right: calc(100% - 400px);
 }

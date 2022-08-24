@@ -13,29 +13,31 @@ export const roleTranslationKey: { [role: string]: string } = {
 export const UserManagement = () => {
   const [selectedTab, setSelectedTab] = useState('users');
   return (
-    <div className="userManagementTabs">
-      <Tabs selectedTab={selectedTab} renderActiveTabContentOnly handleSelect={setSelectedTab}>
-        <div>
-          <ul className="nav">
-            <li>
-              <TabLink to="users" component="div">
-                <Translate>Users</Translate>
-              </TabLink>
-            </li>
-            <li>
-              <TabLink to="usergroups" component="div">
-                <Translate>Groups</Translate>
-              </TabLink>
-            </li>
-          </ul>
-        </div>
-        <TabContent for="users">
-          <Users />
-        </TabContent>
-        <TabContent for="usergroups">
-          <UserGroups />
-        </TabContent>
-      </Tabs>
+    <div className="settings-content">
+      <div className="userManagementTabs">
+        <Tabs selectedTab={selectedTab} renderActiveTabContentOnly handleSelect={setSelectedTab}>
+          <div>
+            <ul className="nav">
+              <li>
+                <TabLink to="users" component="div">
+                  <Translate>Users</Translate>
+                </TabLink>
+              </li>
+              <li>
+                <TabLink to="usergroups" component="div">
+                  <Translate>Groups</Translate>
+                </TabLink>
+              </li>
+            </ul>
+          </div>
+          <TabContent for="users">
+            <Users />
+          </TabContent>
+          <TabContent for="usergroups">
+            <UserGroups />
+          </TabContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

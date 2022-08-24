@@ -14,6 +14,10 @@ export default class EditRelationType extends RouteHandler {
   }
 
   render() {
-    return <TemplateCreator relationType />;
+    return (
+      <div className="settings-content">
+        <TemplateCreator relationType />
+      </div>
+    );
   }
 }

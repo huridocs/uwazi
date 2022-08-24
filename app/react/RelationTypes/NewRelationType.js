@@ -5,6 +5,10 @@ import TemplateCreator from '../Templates/components/TemplateCreator';
 
 export default class NewRelationType extends RouteHandler {
   render() {
-    return <TemplateCreator relationType />;
+    return (
+      <div className="settings-content">
+        <TemplateCreator relationType />
+      </div>
+    );
   }
 }

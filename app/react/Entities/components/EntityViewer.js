@@ -98,6 +98,7 @@ class EntityViewer extends Component {
       connectionsGroups,
       relationships,
       hasPageView,
+      user,
     } = this.props;
 
     const { panelOpen, copyFrom, copyFromProps } = this.state;
@@ -111,6 +112,12 @@ class EntityViewer extends Component {
       },
       { totalConnections: 0 }
     );
+
+    const includeFooter = user.get('_id') && ['info', 'connections'].includes(selectedTab);
+    const hasHeader = ['info', 'connections'].includes(selectedTab);
+    const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
+      user.get('_id') && includeFooter ? 'with-footer' : ''
+    } ${panelOpen ? 'with-panel' : ''}`;
 
     return (
       <div className="row">
@@ -132,7 +139,7 @@ class EntityViewer extends Component {
           </div>
         )}
 
-        <main className={`entity-viewer ${panelOpen ? 'with-panel' : ''}`}>
+        <main className={mainClass}>
           <Tabs selectedTab={selectedTab}>
             {hasPageView && (
               <TabContent for="page">
@@ -175,24 +182,28 @@ class EntityViewer extends Component {
           </Tabs>
         </main>
 
-        <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
-          <div className="sidepanel-footer">
-            <MetadataFormButtons
-              includeViewButton={false}
-              delete={this.deleteEntity}
-              data={this.props.entity}
-              formStatePath="entityView.entityForm"
-              entityBeingEdited={entityBeingEdited}
-              copyFrom={this.toggleCopyFrom}
-            />
-          </div>
-        </ShowIf>
+        {user.get('_id') && (
+          <>
+            <ShowIf if={selectedTab === 'info' || selectedTab === 'attachments'}>
+              <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
+                <MetadataFormButtons
+                  includeViewButton={false}
+                  delete={this.deleteEntity}
+                  data={this.props.entity}
+                  formStatePath="entityView.entityForm"
+                  entityBeingEdited={entityBeingEdited}
+                  copyFrom={this.toggleCopyFrom}
+                />
+              </div>
+            </ShowIf>
 
-        <ShowIf if={selectedTab === 'connections'}>
-          <div className="sidepanel-footer">
-            <RelationshipsFormButtons />
-          </div>
-        </ShowIf>
+            <ShowIf if={selectedTab === 'connections'}>
+              <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
+                <RelationshipsFormButtons />
+              </div>
+            </ShowIf>
+          </>
+        )}
 
         <SidePanel className={`entity-connections entity-${selectedTab}`} open={panelOpen}>
           <div className="sidepanel-header">
@@ -283,7 +294,7 @@ class EntityViewer extends Component {
         </SidePanel>
 
         <ContextMenu
-          align="bottom"
+          align={`bottom${includeFooter ? '-with-footer' : ''}`}
           overrideShow
           show={!panelOpen}
           className="show-info-sidepanel-context-menu"
@@ -312,6 +323,7 @@ EntityViewer.defaultProps = {
   entityBeingEdited: false,
   tab: 'info',
   hasPageView: false,
+  user: Immutable.fromJS({}),
 };
 
 EntityViewer.propTypes = {
@@ -329,6 +341,7 @@ EntityViewer.propTypes = {
   library: PropTypes.object,
   showTab: PropTypes.func.isRequired,
   hasPageView: PropTypes.bool,
+  user: PropTypes.instanceOf(Immutable.Map),
 };
 
 EntityViewer.contextTypes = {
@@ -355,6 +368,7 @@ const mapStateToProps = state => {
     entityBeingEdited: !!state.entityView.entityForm._id,
     tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
     hasPageView: Boolean(templateWithPageView),
+    user: state.user,
     // Is this used at all?
     library: state.library,
   };

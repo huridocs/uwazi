@@ -18,10 +18,12 @@ export class ActivityLog extends RouteHandler {
 
   render() {
     return (
-      <div className="activity-log">
-        <ActivitylogForm>
-          <ActivitylogList />
-        </ActivitylogForm>
+      <div className="settings-content without-footer">
+        <div className="activity-log">
+          <ActivitylogForm>
+            <ActivitylogList />
+          </ActivitylogForm>
+        </div>
       </div>
     );
   }

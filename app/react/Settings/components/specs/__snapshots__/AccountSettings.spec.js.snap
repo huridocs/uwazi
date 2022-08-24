@@ -2,364 +2,372 @@
 
 exports[`AccountSettings 2fa should render a success area if user has already activated 2fa 1`] = `
 <div
-  className="account-settings"
+  className="settings-content"
 >
   <div
-    className="panel panel-default"
+    className="account-settings"
   >
     <div
-      className="panel-heading"
-    >
-      <Connect(Translate)>
-        Account
-      </Connect(Translate)>
-    </div>
-    <div
-      className="panel-body"
+      className="panel panel-default"
     >
       <div
-        className="user-details"
+        className="panel-heading"
       >
-        <div>
-          <Connect(Translate)>
-            Username
-          </Connect(Translate)>
-          :  
-          <strong />
-        </div>
-        <div
-          className="user-details-role"
-        >
-          <Connect(Translate)>
-            Role
-          </Connect(Translate)>
-          :  
-          <Pill>
-            <Connect(Translate) />
-          </Pill>
-        </div>
+        <Connect(Translate)>
+          Account
+        </Connect(Translate)>
       </div>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Email address
-        </Connect(Translate)>
-      </h5>
-      <form
-        onSubmit={[Function]}
-      >
-        <div
-          className="form-group"
-        >
-          <label
-            className="form-group-label"
-            htmlFor="collection_name"
-          >
-            <Connect(Translate)>
-              Email
-            </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            onChange={[Function]}
-            type="email"
-            value=""
-          />
-        </div>
-        <button
-          className="btn btn-success"
-          type="submit"
-        >
-          <Connect(Translate)>
-            Update
-          </Connect(Translate)>
-        </button>
-      </form>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Change password
-        </Connect(Translate)>
-      </h5>
-      <form
-        onSubmit={[Function]}
-      >
-        <div
-          className="form-group"
-        >
-          <label
-            className="form-group-label"
-            htmlFor="password"
-          >
-            <Connect(Translate)>
-              New password
-            </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            id="password"
-            onChange={[Function]}
-            type="password"
-            value=""
-          />
-        </div>
-        <div
-          className="form-group"
-        >
-          <label
-            className="form-group-label"
-            htmlFor="repeatPassword"
-          >
-            <Connect(Translate)>
-              Confirm new password
-            </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            id="repeatPassword"
-            onChange={[Function]}
-            type="password"
-            value=""
-          />
-        </div>
-        <button
-          className="btn btn-success"
-          type="submit"
-        >
-          <Connect(Translate)>
-            Update
-          </Connect(Translate)>
-        </button>
-      </form>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Two-step verification
-        </Connect(Translate)>
-      </h5>
       <div
-        className="alert alert-info"
-      >
-        <Connect(Icon)
-          icon="check"
-          size="2x"
-        />
-        <div
-          className="force-ltr"
-        >
-          <Connect(Translate)>
-            Your account is protected by 2fa.
-          </Connect(Translate)>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    className="settings-footer"
-  >
-    <a
-      className="btn btn-danger"
-      href="/logout"
-    >
-      <Connect(Icon)
-        icon="power-off"
-      />
-      <span
-        className="btn-label"
-      >
-        <Connect(Translate)>
-          Logout
-        </Connect(Translate)>
-      </span>
-    </a>
-  </div>
-</div>
-`;
-
-exports[`AccountSettings 2fa should render a warning and link to protect account if user not using 2fa 1`] = `
-<div
-  className="account-settings"
->
-  <div
-    className="panel panel-default"
-  >
-    <div
-      className="panel-heading"
-    >
-      <Connect(Translate)>
-        Account
-      </Connect(Translate)>
-    </div>
-    <div
-      className="panel-body"
-    >
-      <div
-        className="user-details"
-      >
-        <div>
-          <Connect(Translate)>
-            Username
-          </Connect(Translate)>
-          :  
-          <strong />
-        </div>
-        <div
-          className="user-details-role"
-        >
-          <Connect(Translate)>
-            Role
-          </Connect(Translate)>
-          :  
-          <Pill>
-            <Connect(Translate) />
-          </Pill>
-        </div>
-      </div>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Email address
-        </Connect(Translate)>
-      </h5>
-      <form
-        onSubmit={[Function]}
+        className="panel-body"
       >
         <div
-          className="form-group"
+          className="user-details"
         >
-          <label
-            className="form-group-label"
-            htmlFor="collection_name"
+          <div>
+            <Connect(Translate)>
+              Username
+            </Connect(Translate)>
+            :  
+            <strong />
+          </div>
+          <div
+            className="user-details-role"
           >
             <Connect(Translate)>
-              Email
+              Role
             </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            onChange={[Function]}
-            type="email"
-            value=""
-          />
+            :  
+            <Pill>
+              <Connect(Translate) />
+            </Pill>
+          </div>
         </div>
-        <button
-          className="btn btn-success"
-          type="submit"
-        >
+        <hr />
+        <h5>
           <Connect(Translate)>
-            Update
+            Email address
           </Connect(Translate)>
-        </button>
-      </form>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Change password
-        </Connect(Translate)>
-      </h5>
-      <form
-        onSubmit={[Function]}
-      >
-        <div
-          className="form-group"
+        </h5>
+        <form
+          onSubmit={[Function]}
         >
-          <label
-            className="form-group-label"
-            htmlFor="password"
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="collection_name"
+            >
+              <Connect(Translate)>
+                Email
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              onChange={[Function]}
+              type="email"
+              value=""
+            />
+          </div>
+          <button
+            className="btn btn-success"
+            type="submit"
           >
             <Connect(Translate)>
-              New password
+              Update
             </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            id="password"
-            onChange={[Function]}
-            type="password"
-            value=""
-          />
-        </div>
-        <div
-          className="form-group"
+          </button>
+        </form>
+        <hr />
+        <h5>
+          <Connect(Translate)>
+            Change password
+          </Connect(Translate)>
+        </h5>
+        <form
+          onSubmit={[Function]}
         >
-          <label
-            className="form-group-label"
-            htmlFor="repeatPassword"
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="password"
+            >
+              <Connect(Translate)>
+                New password
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              id="password"
+              onChange={[Function]}
+              type="password"
+              value=""
+            />
+          </div>
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="repeatPassword"
+            >
+              <Connect(Translate)>
+                Confirm new password
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              id="repeatPassword"
+              onChange={[Function]}
+              type="password"
+              value=""
+            />
+          </div>
+          <button
+            className="btn btn-success"
+            type="submit"
           >
             <Connect(Translate)>
-              Confirm new password
+              Update
             </Connect(Translate)>
-          </label>
-          <input
-            className="form-control"
-            id="repeatPassword"
-            onChange={[Function]}
-            type="password"
-            value=""
-          />
-        </div>
-        <button
-          className="btn btn-success"
-          type="submit"
-        >
+          </button>
+        </form>
+        <hr />
+        <h5>
           <Connect(Translate)>
-            Update
+            Two-step verification
           </Connect(Translate)>
-        </button>
-      </form>
-      <hr />
-      <h5>
-        <Connect(Translate)>
-          Two-step verification
-        </Connect(Translate)>
-      </h5>
-      <div>
+        </h5>
         <div
-          className="alert alert-warning"
+          className="alert alert-info"
         >
           <Connect(Icon)
-            icon="exclamation-triangle"
+            icon="check"
             size="2x"
           />
           <div
             className="force-ltr"
           >
             <Connect(Translate)>
-              You should activate this feature for enhanced account security
+              Your account is protected by 2fa.
             </Connect(Translate)>
           </div>
         </div>
-        <div>
-          <Connect(I18NLink)
-            className="btn btn-success"
-            to="/settings/2fa"
+      </div>
+    </div>
+    <div
+      className="settings-footer"
+    >
+      <a
+        className="btn btn-danger"
+        href="/logout"
+      >
+        <Connect(Icon)
+          icon="power-off"
+        />
+        <span
+          className="btn-label"
+        >
+          <Connect(Translate)>
+            Logout
+          </Connect(Translate)>
+        </span>
+      </a>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AccountSettings 2fa should render a warning and link to protect account if user not using 2fa 1`] = `
+<div
+  className="settings-content"
+>
+  <div
+    className="account-settings"
+  >
+    <div
+      className="panel panel-default"
+    >
+      <div
+        className="panel-heading"
+      >
+        <Connect(Translate)>
+          Account
+        </Connect(Translate)>
+      </div>
+      <div
+        className="panel-body"
+      >
+        <div
+          className="user-details"
+        >
+          <div>
+            <Connect(Translate)>
+              Username
+            </Connect(Translate)>
+            :  
+            <strong />
+          </div>
+          <div
+            className="user-details-role"
           >
             <Connect(Translate)>
-              Protect your account
+              Role
             </Connect(Translate)>
-          </Connect(I18NLink)>
+            :  
+            <Pill>
+              <Connect(Translate) />
+            </Pill>
+          </div>
+        </div>
+        <hr />
+        <h5>
+          <Connect(Translate)>
+            Email address
+          </Connect(Translate)>
+        </h5>
+        <form
+          onSubmit={[Function]}
+        >
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="collection_name"
+            >
+              <Connect(Translate)>
+                Email
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              onChange={[Function]}
+              type="email"
+              value=""
+            />
+          </div>
+          <button
+            className="btn btn-success"
+            type="submit"
+          >
+            <Connect(Translate)>
+              Update
+            </Connect(Translate)>
+          </button>
+        </form>
+        <hr />
+        <h5>
+          <Connect(Translate)>
+            Change password
+          </Connect(Translate)>
+        </h5>
+        <form
+          onSubmit={[Function]}
+        >
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="password"
+            >
+              <Connect(Translate)>
+                New password
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              id="password"
+              onChange={[Function]}
+              type="password"
+              value=""
+            />
+          </div>
+          <div
+            className="form-group"
+          >
+            <label
+              className="form-group-label"
+              htmlFor="repeatPassword"
+            >
+              <Connect(Translate)>
+                Confirm new password
+              </Connect(Translate)>
+            </label>
+            <input
+              className="form-control"
+              id="repeatPassword"
+              onChange={[Function]}
+              type="password"
+              value=""
+            />
+          </div>
+          <button
+            className="btn btn-success"
+            type="submit"
+          >
+            <Connect(Translate)>
+              Update
+            </Connect(Translate)>
+          </button>
+        </form>
+        <hr />
+        <h5>
+          <Connect(Translate)>
+            Two-step verification
+          </Connect(Translate)>
+        </h5>
+        <div>
+          <div
+            className="alert alert-warning"
+          >
+            <Connect(Icon)
+              icon="exclamation-triangle"
+              size="2x"
+            />
+            <div
+              className="force-ltr"
+            >
+              <Connect(Translate)>
+                You should activate this feature for enhanced account security
+              </Connect(Translate)>
+            </div>
+          </div>
+          <div>
+            <Connect(I18NLink)
+              className="btn btn-success"
+              to="/settings/2fa"
+            >
+              <Connect(Translate)>
+                Protect your account
+              </Connect(Translate)>
+            </Connect(I18NLink)>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <div
-    className="settings-footer"
-  >
-    <a
-      className="btn btn-danger"
-      href="/logout"
+    <div
+      className="settings-footer"
     >
-      <Connect(Icon)
-        icon="power-off"
-      />
-      <span
-        className="btn-label"
+      <a
+        className="btn btn-danger"
+        href="/logout"
       >
-        <Connect(Translate)>
-          Logout
-        </Connect(Translate)>
-      </span>
-    </a>
+        <Connect(Icon)
+          icon="power-off"
+        />
+        <span
+          className="btn-label"
+        >
+          <Connect(Translate)>
+            Logout
+          </Connect(Translate)>
+        </span>
+      </a>
+    </div>
   </div>
 </div>
 `;

@@ -45,7 +45,7 @@ const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: 
 
   return (
     <>
-      <button type="button" className="btn btn-primary" onClick={() => setOpen(true)}>
+      <button type="button" className="btn btn-default" onClick={() => setOpen(true)}>
         <Icon icon="exchange-alt" />
         <span className="btn-label">
           <Translate translationKey="Add relationship type">Add relationship type</Translate>
