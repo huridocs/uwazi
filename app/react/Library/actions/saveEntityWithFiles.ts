@@ -77,14 +77,14 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.attach(`attachments[${index}]`, file);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.field(`attachments_originalnames[${index}]`, file.name);
+      request.field(`attachments_originalname[${index}]`, file.name);
     });
 
     addedDocuments.forEach((file, index) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.attach(`documents[${index}]`, file);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.field(`documents_originalnames[${index}]`, file.name);
+      request.field(`documents_originalname[${index}]`, file.name);
     });
 
     request.end((err, res) => {
