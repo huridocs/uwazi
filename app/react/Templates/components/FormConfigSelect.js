@@ -12,7 +12,7 @@ import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 class FormConfigSelect extends Component {
   static getDerivedStateFromProps(props, state) {
-    return { warning: Boolean(state.initialContent !== props.content) };
+    return { warning: Boolean(state.initialContent !== props.property.content) };
   }
 
   static contentValidation() {
@@ -21,11 +21,11 @@ class FormConfigSelect extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { warning: false, initialContent: props.content };
+    this.state = { warning: false, initialContent: props.property.content };
   }
 
   render() {
-    const { index, type, labelHasError, contentRequiredError, templateId } = this.props;
+    const { index, type, labelHasError, contentRequiredError, templateId, property } = this.props;
     const thesauris = this.props.thesauris.toJS();
 
     const options = orderBy(
@@ -41,17 +41,37 @@ class FormConfigSelect extends Component {
     return (
       <div>
         <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
-          <label>
+          <label htmlFor="property-label">
             <Translate>Label</Translate>
           </label>
           <Field model={`template.data.properties[${index}].label`}>
-            <input className="form-control" />
+            <input className="form-control" id="property-label" />
+          </Field>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="property-type">
+            <Translate>Property type</Translate>
+          </label>
+          &nbsp;(<Translate>This cannot be changed after saving</Translate>)
+          <Field model={`template.data.properties[${index}].type`}>
+            <select
+              name="type"
+              id="property-type"
+              className="form-control"
+              disabled={!!property._id}
+            >
+              <option value="select">{t('System', 'property select', 'Select', false)}</option>
+              <option value="multiselect">
+                {t('System', 'property multiselect', 'Multiselect', false)}
+              </option>
+            </select>
           </Field>
         </div>
 
         <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
-          <label>
-            <Translate>Select list</Translate>
+          <label htmlFor="property-thesauri">
+            <Translate>Thesauri</Translate>
             <span className="required">*</span>
           </label>
           {this.state.warning && (
@@ -67,6 +87,7 @@ class FormConfigSelect extends Component {
             options={options}
             optionsLabel="name"
             optionsValue="_id"
+            id="property-thesauri"
           />
         </div>
 
@@ -80,18 +101,17 @@ FormConfigSelect.defaultProps = {
   labelHasError: false,
   contentRequiredError: false,
   templateId: '',
-  content: '',
 };
 
 FormConfigSelect.propTypes = {
+  type: PropTypes.string.isRequired,
+  property: PropTypes.object.isRequired,
   thesauris: PropTypes.object,
   index: PropTypes.number,
   formKey: PropTypes.string,
-  type: PropTypes.string.isRequired,
   labelHasError: PropTypes.bool,
   contentRequiredError: PropTypes.bool,
   templateId: PropTypes.string,
-  content: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
@@ -103,7 +123,7 @@ export function mapStateToProps(state, props) {
       template.formState.$form.submitFailed,
     templateId: template.data._id,
     thesauris,
-    content: template.data.properties[props.index].content,
+    property: template.data.properties[props.index],
   };
 }
 
