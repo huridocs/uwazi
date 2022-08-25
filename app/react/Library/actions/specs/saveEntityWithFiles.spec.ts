@@ -91,9 +91,9 @@ describe('saveEntityWithFiles', () => {
 
     const updatedEntity = await saveEntityWithFiles(entity, dispatch);
 
+    expect(mockUpload.field).toHaveBeenCalledWith('entity', expectedEntityJson);
     expect(mockUpload.attach).toHaveBeenCalledWith('attachments[0]', file);
-
-    expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
+    expect(mockUpload.field).toHaveBeenCalledWith('attachments_originalname[0]', fileName);
     expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 
@@ -139,7 +139,8 @@ describe('saveEntityWithFiles', () => {
     fetchMock.mock('blob:http://localhost:3000/blob/file_id', { blob: {} });
     const updatedEntity = await saveEntityWithFiles(entity, dispatch);
     expect(mockUpload.attach).toHaveBeenCalledWith('documents[0]', file);
-    expect(mockUpload.field).toHaveBeenLastCalledWith('entity', expectedEntityJson);
+    expect(mockUpload.field).toHaveBeenCalledWith('entity', expectedEntityJson);
+    expect(mockUpload.field).toHaveBeenCalledWith('documents_originalname[0]', file.name);
     expect(updatedEntity).toEqual({ entity: { sharedId: 'entity1', title: 'entity1' } });
   });
 });
