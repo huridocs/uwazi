@@ -107,29 +107,31 @@ class ThesauriList extends Component {
 
   render() {
     return (
-      <div className="flex panel panel-default">
-        <div className="panel-heading">{t('System', 'Thesauri')}</div>
-        <div className="thesauri-list">
-          <table>
-            <thead>
-              <tr>
-                <th className="nameCol" scope="col" />
-                <th scope="col" />
-                <th scope="col" />
-              </tr>
-            </thead>
-            <tbody>
-              {sortThesauri(this.props.dictionaries.toJS()).map(thesaurus =>
-                this.thesaurusNode(thesaurus)
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="settings-footer">
-          <I18NLink to="/settings/dictionaries/new" className="btn btn-success">
-            <Icon icon="plus" />
-            <span className="btn-label">{t('System', 'Add thesaurus')}</span>
-          </I18NLink>
+      <div className="settings-content">
+        <div className="flex panel panel-default">
+          <div className="panel-heading">{t('System', 'Thesauri')}</div>
+          <div className="thesauri-list">
+            <table>
+              <thead>
+                <tr>
+                  <th className="nameCol" scope="col" />
+                  <th scope="col" />
+                  <th scope="col" />
+                </tr>
+              </thead>
+              <tbody>
+                {sortThesauri(this.props.dictionaries.toJS()).map(thesaurus =>
+                  this.thesaurusNode(thesaurus)
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="settings-footer">
+            <I18NLink to="/settings/dictionaries/new" className="btn btn-default">
+              <Icon icon="plus" />
+              <span className="btn-label">{t('System', 'Add thesaurus')}</span>
+            </I18NLink>
+          </div>
         </div>
       </div>
     );

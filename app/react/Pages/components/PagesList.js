@@ -52,7 +52,7 @@ class PagesList extends Component {
           ))}
         </ul>
         <div className="settings-footer">
-          <I18NLink to="/settings/pages/new" className="btn btn-success">
+          <I18NLink to="/settings/pages/new" className="btn btn-default">
             <Icon icon="plus" /> <span className="btn-label">{t('System', 'Add page')}</span>
           </I18NLink>
         </div>

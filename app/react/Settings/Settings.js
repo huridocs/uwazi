@@ -74,7 +74,7 @@ export class Settings extends RouteHandler {
         <div className="settings-navigation">
           <SettingsNavigation />
         </div>
-        <div className="settings-content">{this.props.children}</div>
+        {this.props.children}
       </div>
     );
   }

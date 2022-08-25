@@ -8,7 +8,12 @@ import routes from 'api/entities/routes';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
+import path from 'path';
+import * as entitySavingManager from 'api/entities/entitySavingManager';
+import templates from 'api/templates';
+import thesauri from 'api/thesauri';
 import fixtures, { permissions } from './fixtures';
+import { errorLog } from 'api/log';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -30,7 +35,7 @@ describe('entities routes', () => {
   });
 
   beforeEach(async () => {
-    //@ts-ignore
+    // @ts-ignore
     await db.setupFixturesAndContext(fixtures);
   });
 
@@ -91,6 +96,57 @@ describe('entities routes', () => {
         },
         errors: [],
       });
+    });
+
+    it('should call the saving manager with the correct filenames', async () => {
+      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
+        Promise.resolve({ entity: {} })
+      );
+      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
+      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+
+      await request(app)
+        .post('/api/entities')
+        .field('entity', JSON.stringify(entityToSave))
+        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+        .attach('documents[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 2')
+        .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
+        .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4')
+        .field('documents_originalname[0]', 'Nombre en español')
+        .field('documents_originalname[1]', 'Nombre en español 2')
+        .field('attachments_originalname[0]', 'Nombre en español 3')
+        .field('attachments_originalname[1]', 'Nombre en español 4');
+
+      expect(entitySavingManager.saveEntity).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          files: [
+            expect.objectContaining({ originalname: 'Nombre en español' }),
+            expect.objectContaining({ originalname: 'Nombre en español 2' }),
+            expect.objectContaining({ originalname: 'Nombre en español 3' }),
+            expect.objectContaining({ originalname: 'Nombre en español 4' }),
+          ],
+        })
+      );
+    });
+
+    it('should log a deprecation notice if no original name provided in body', async () => {
+      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
+        Promise.resolve({ entity: {} })
+      );
+      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
+      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+      spyOn(errorLog, 'debug');
+
+      await request(app)
+        .post('/api/entities')
+        .field('entity', JSON.stringify(entityToSave))
+        .attach('documents[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+        .attach('documents[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 2')
+        .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
+        .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4');
+
+      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 });

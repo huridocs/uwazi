@@ -9,7 +9,7 @@ import { Icon } from 'UI';
 
 import * as actions from '../actions/actions';
 
-export class RelationshipsFormButtons extends Component {
+class RelationshipsFormButtons extends Component {
   constructor(props) {
     super(props);
     this.edit = this.edit.bind(this);
@@ -30,32 +30,44 @@ export class RelationshipsFormButtons extends Component {
     const entityData = this.props.parentEntity.toJS();
 
     return (
-      <span>
+      <>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entityData]}>
           {!editing && (
-            <button onClick={this.edit(true)} className="edit-metadata btn btn-primary">
-              <Icon icon="pencil-alt" />
-              <span className="btn-label">{t('System', 'Edit')}</span>
-            </button>
+            <div className="btn-cluster">
+              <button
+                type="button"
+                onClick={this.edit(true)}
+                className="edit-metadata btn btn-default"
+              >
+                <Icon icon="pencil-alt" />
+                <span className="btn-label">{t('System', 'Edit')}</span>
+              </button>
+            </div>
           )}
         </NeedAuthorization>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entityData]}>
           {editing && (
-            <button onClick={this.edit(false)} className="cancel-edit-metadata btn btn-primary">
-              <Icon icon="times" />
-              <span className="btn-label">{t('System', 'Cancel')}</span>
-            </button>
+            <div className="btn-cluster content-right">
+              <button
+                type="button"
+                onClick={this.edit(false)}
+                className="cancel-edit-metadata btn btn-default btn-extra-padding"
+              >
+                <span className="btn-label">{t('System', 'Cancel')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={this.props.save}
+                className="btn btn-success btn-extra-padding"
+                disabled={saving}
+              >
+                {saving && <Icon icon="spinner" pulse fixedWidth />}
+                <span className="btn-label">{t('System', 'Save')}</span>
+              </button>
+            </div>
           )}
         </NeedAuthorization>
-        <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entityData]}>
-          {editing && (
-            <button onClick={this.props.save} className="btn btn-success" disabled={saving}>
-              <Icon icon={!saving ? 'save' : 'spinner'} pulse={!!saving} fixedWidth />
-              <span className="btn-label">{t('System', 'Save')}</span>
-            </button>
-          )}
-        </NeedAuthorization>
-      </span>
+      </>
     );
   }
 }
@@ -85,5 +97,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { RelationshipsFormButtons };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipsFormButtons);

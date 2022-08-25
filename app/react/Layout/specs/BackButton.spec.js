@@ -12,7 +12,7 @@ describe('Icon', () => {
   };
 
   it('should render the back button to the provided url', () => {
-    props = { to: '/some/url' };
+    props = { to: '/some/url', className: 'extra-class' };
     render();
     expect(component).toMatchSnapshot();
   });

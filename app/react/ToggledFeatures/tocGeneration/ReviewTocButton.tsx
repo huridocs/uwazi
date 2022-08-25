@@ -6,7 +6,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { ClientFile } from 'app/istore';
 import { tocGenerationActions } from './actions';
 
-export interface ReviewTocButtonProps {
+interface ReviewTocButtonProps {
   file: ClientFile;
   children: JSX.Element | string;
 }
@@ -32,3 +32,4 @@ const ReviewTocButton = ({ file, onClick, children }: ComponentProps) => (
 
 const container = connector(ReviewTocButton);
 export { container as ReviewTocButton };
+export type { ReviewTocButtonProps };

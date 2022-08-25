@@ -13,7 +13,7 @@
   }
   .tab-link {
     display: inline-block;
-    padding: 5px 5px 0;
+    padding: 5px 12px 0;
     font-size: $f-size;
     cursor: pointer;
     border-bottom: 1px;
@@ -24,8 +24,8 @@
     }
     &.tab-link-active {
       color: $c-primary;
-      border-top-left-radius: .25rem;
-      border-top-right-radius: .25rem;
+      border-top-left-radius: 0.25rem;
+      border-top-right-radius: 0.25rem;
       border: 1px solid;
       border-color: $c-grey-light $c-grey-light transparent;
       background-color: white;
@@ -34,7 +34,7 @@
       outline: none;
     }
   }
-  .tab-content{
+  .tab-content {
     margin-top: 15px;
   }
 }
@@ -55,7 +55,7 @@
       font-weight: bold;
       border-bottom: 2px solid $c-grey-light;
     }
-    th:nth-child(2){
+    th:nth-child(2) {
       text-align: center;
     }
     td {
@@ -75,23 +75,19 @@
       border-bottom: 1px solid $c-grey-light;
     }
   }
-  table.edition-mode{
+  table.edition-mode {
     width: calc(100% - 400px);
-  }
-
-  .settings-footer.edition-mode {
-    display: none;
   }
 }
 .user-group-form {
-  .search-user{
+  .search-user {
     width: 100%;
     .multiselect {
-      margin: 0 15px ;
+      margin: 0 15px;
     }
     .form-group {
       width: 100%;
-      .form-control{
+      .form-control {
         width: 100%;
       }
     }
