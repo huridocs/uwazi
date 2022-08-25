@@ -251,8 +251,8 @@ describe('files routes', () => {
       it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
         const emitSpy = spyOnEmit();
 
-        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId });
-        await request(app).delete('/api/files').query({ _id: uploadId.toString() });
+        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId2 });
+        await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
         emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file] });
         emitSpy.restore();
