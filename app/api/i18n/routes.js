@@ -91,6 +91,28 @@ export default app => {
   );
 
   app.post(
+    '/api/translations/populate',
+    needsAuthorization(),
+    validation.validateRequest(
+      Joi.object()
+        .keys({
+          locale: Joi.string(),
+        })
+        .required()
+    ),
+
+    async (req, res, next) => {
+      const { locale } = req.body;
+      try {
+        await translations.importPredefined(locale);
+        res.json({ locale });
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  app.post(
     '/api/translations/setasdeafult',
     needsAuthorization(),
     validation.validateRequest(

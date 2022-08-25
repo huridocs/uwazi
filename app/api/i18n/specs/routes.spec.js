@@ -68,6 +68,23 @@ describe('i18n translations routes', () => {
       });
     });
 
+    describe('api/translations/populate', () => {
+      it('should have a validation schema', () => {
+        expect(routes.post.validation('/api/translations/populate')).toMatchSnapshot();
+      });
+
+      it('should save the translations', async () => {
+        jest.spyOn(translations, 'importPredefined').mockResolvedValueOnce(undefined);
+
+        const response = await routes.post('/api/translations/populate', {
+          body: { locale: 'es' },
+        });
+
+        expect(translations.importPredefined).toHaveBeenCalledWith('es');
+        expect(response).toEqual({ locale: 'es' });
+      });
+    });
+
     describe('api/translations/setasdeafult', () => {
       it('should have a validation schema', () => {
         expect(routes.post.validation('/api/translations/setasdeafult')).toMatchSnapshot();

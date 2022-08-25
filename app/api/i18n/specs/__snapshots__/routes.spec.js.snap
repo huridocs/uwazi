@@ -98,6 +98,23 @@ Object {
 }
 `;
 
+exports[`i18n translations routes POST api/translations/populate should have a validation schema 1`] = `
+Object {
+  "children": Object {
+    "locale": Object {
+      "invalids": Array [
+        "",
+      ],
+      "type": "string",
+    },
+  },
+  "flags": Object {
+    "presence": "required",
+  },
+  "type": "object",
+}
+`;
+
 exports[`i18n translations routes POST api/translations/setasdeafult should have a validation schema 1`] = `
 Object {
   "children": Object {

@@ -471,28 +471,10 @@ describe('translations', () => {
 
   describe('import predefined translation csv', () => {
     it('should download a translations csv based on iso key and import it', async () => {
-      //https://api.github.com/repos/huridocs/uwazi-contents/git/trees/main?recursive=1
-      // const mockedResponse = {
-      //   tree: [
-      //     { path: 'ui-translations' },
-      //     { path: 'ui-translations/es.csv' },
-      //     { path: 'ui-translations/en.csv' },
-      //   ],
-      // };
-
-      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/es.csv
-      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/en.csv
-      //https://raw.githubusercontent.com/huridocs/uwazi-contents/main/ui-translations/wtf.csv
-
       const spanishCsv = `Key, Español
       Password, Password traducida
       Account, Account traducida
       Age, Age traducida`;
-
-      // backend.get(
-      //   'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
-      //   SpanishCsv
-      // );
 
       backend.get(
         (url, opts) =>
