@@ -55,7 +55,12 @@ describe('public routes', () => {
             JSON.stringify({ title: 'public submit', template: templateId.toString() })
           )
           .attach('file', `${__dirname}/12345.test.pdf`)
-          .attach('attachments[0]', path.join(os.tmpdir(), 'attachment.txt'))
+          .attach(
+            'attachments[0]',
+            path.join(os.tmpdir(), 'attachment.txt'),
+            'filename with special char ñ.txt'
+          )
+          .field('attachments_originalname[0]', 'filename with special char ñ.txt')
           .expect(200)
       );
 
@@ -64,7 +69,7 @@ describe('public routes', () => {
       })) as EntityWithFilesSchema[];
 
       const textAttachment = (newEntity.attachments || []).find(
-        attachment => attachment.originalname === 'attachment.txt'
+        attachment => attachment.originalname === 'filename with special char ñ.txt'
       );
       expect(textAttachment).not.toBeUndefined();
       expect(await storage.fileExists(textAttachment?.filename!, 'attachment')).toBe(true);
