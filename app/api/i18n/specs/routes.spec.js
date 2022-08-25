@@ -1,7 +1,7 @@
 import request from 'supertest';
 
 import * as csvApi from 'api/csv/csvLoader';
-import i18nRoutes from 'api/i18n/routes.js';
+import i18nRoutes from 'api/i18n/routes';
 import translations from 'api/i18n/translations';
 import settings from 'api/settings';
 import instrumentRoutes from 'api/utils/instrumentRoutes';

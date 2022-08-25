@@ -7,10 +7,11 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { availableLanguages } from 'shared/languagesList';
+import { Application } from 'express';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
-export default app => {
+export default (app: Application) => {
   app.get('/api/translations', (_req, res, next) => {
     translations
       .get()
@@ -60,6 +61,7 @@ export default app => {
     validation.validateRequest(
       Joi.object()
         .keys({
+          // @ts-ignore
           _id: Joi.objectId(),
           __v: Joi.number(),
           locale: Joi.string().required(),
@@ -82,6 +84,7 @@ export default app => {
       translations
         .save(req.body)
         .then(response => {
+          // @ts-ignore
           response.contexts = translations.prepareContexts(response.contexts);
           req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);
