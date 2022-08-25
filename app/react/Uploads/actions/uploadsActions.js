@@ -125,6 +125,7 @@ export function publicSubmit(data, remote = false) {
       if (data.attachments) {
         data.attachments.forEach((attachment, index) => {
           request.attach(`attachments[${index}]`, attachment);
+          request.field(`attachments_originalname[${index}]`, attachment.name);
         });
       }
       request.field(
