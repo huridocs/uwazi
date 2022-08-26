@@ -32,6 +32,7 @@ function selectDocument(_doc) {
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
+    dispatch(actions.set('library.sidepanel.trigger', 'library'));
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
     dispatch(selectedDocumentsChanged());
@@ -378,6 +379,7 @@ function getDocumentReferences(sharedId, fileId, storeKey) {
       .get(new RequestParams({ sharedId, file: fileId, onlyTextReferences: true }))
       .then(references => {
         dispatch(actions.set(`${storeKey}.sidepanel.references`, references));
+        dispatch(actions.set('relationships/list/sharedId', sharedId));
       });
 }
 

@@ -27,6 +27,7 @@ import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
+import { getDocumentReferences } from 'app/Library/actions/libraryActions';
 
 class DocumentSidePanel extends Component {
   constructor(props) {
@@ -39,17 +40,16 @@ class DocumentSidePanel extends Component {
     this.toggleSharing = this.toggleSharing.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
+    const sharedId = this.props.doc.get('sharedId');
     if (
       this.props.doc.get('_id') &&
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
-      this.props.getDocumentReferences
+      this.props.connectionsChanged &&
+      getDocumentReferences
     ) {
-      this.props.getDocumentReferences(
-        this.props.doc.get('sharedId'),
-        this.props.file._id,
-        this.props.storeKey
-      );
+      this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
+      this.props.connectionsChanged(sharedId);
     }
   }
 
@@ -486,6 +486,7 @@ DocumentSidePanel.defaultProps = {
   isTargetDoc: false,
   readOnly: false,
   getDocumentReferences: undefined,
+  connectionsChanged: undefined,
   tocFormComponent: () => false,
   EntityForm: () => false,
   raw: false,
@@ -518,6 +519,7 @@ DocumentSidePanel.propTypes = {
   editToc: PropTypes.func,
   leaveEditMode: PropTypes.func,
   searchSnippets: PropTypes.func,
+  connectionsChanged: PropTypes.func,
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
@@ -550,7 +552,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     references,
-    excludeConnectionsTab: Boolean(ownProps.references),
+    excludeConnectionsTab: Boolean(state.relationships.list.connectionsGroups.length),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
     defaultLanguage,
