@@ -21,7 +21,15 @@ class ConnectionsGroupsComponent extends Component {
 
     if (connectionsGroups.size) {
       if (this.props.sidePanelTrigger === 'library') {
-        Results = <div>Library triggered this side panel</div>;
+        Results = (
+          <div styles={{ padding: '20px' }}>
+            <div className="list-group">
+              {connectionsGroups.map(group => (
+                <div className="list-group-item">{group.get('connectionLabel')}</div>
+              ))}
+            </div>
+          </div>
+        );
       } else {
         Results = (
           <div>
