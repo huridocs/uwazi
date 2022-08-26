@@ -9,9 +9,8 @@ import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
+import { ContentsClient } from 'api/i18n/contentsClient';
 import model from './translationsModel';
-
-const GITHUB_API_URL = 'https://api.github.com/repos/huridocs/uwazi-contents/contents';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -392,15 +391,11 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const url = `${GITHUB_API_URL}/ui-translations/${locale}.csv`;
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-    const response = await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } });
-    if (response.status === 403) throw new Error();
-    await pipeline(response.body?.toString() || '', createWriteStream(tmpCsv));
-
-    // TODO handle Github rate limit
+    const contentsClient = new ContentsClient();
+    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    await pipeline(translationsCsv, createWriteStream(tmpCsv));
     // TODO authenticate against Github
-    // await appendFile(tmpCsv, csv);
     const loader = new CSVLoader();
     await loader.loadTranslations(tmpCsv, 'System');
   },
