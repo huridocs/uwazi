@@ -394,13 +394,9 @@ export default {
   async importPredefined(locale: string) {
     const url = `${GITHUB_API_URL}/ui-translations/${locale}.csv`;
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-    await pipeline(
-      (
-        await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } })
-      ).body?.toString() || '',
-      createWriteStream(tmpCsv)
-    );
-
+    const response = await fetch(url, { headers: { accept: 'application/vnd.github.v4.raw' } });
+    if (response.status === 403) throw new Error();
+    await pipeline(response.body?.toString() || '', createWriteStream(tmpCsv));
 
     // TODO handle Github rate limit
     // TODO authenticate against Github

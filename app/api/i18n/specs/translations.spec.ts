@@ -470,6 +470,10 @@ describe('translations', () => {
   });
 
   describe('import predefined translation csv', () => {
+    afterEach(() => {
+      backend.restore();
+    });
+
     it('should download a translations csv based on iso key and import it', async () => {
       const spanishCsv = `Key, Español
       Password, Password traducida
@@ -482,7 +486,7 @@ describe('translations', () => {
             'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
           // @ts-ignore
           opts?.headers?.accept === 'application/vnd.github.v4.raw',
-        spanishCsv
+        { body: spanishCsv }
       );
 
       await translations.importPredefined('es');
@@ -495,6 +499,19 @@ describe('translations', () => {
       expect(ESTranslations.Password).toBe('Password traducida');
       expect(ESTranslations.Account).toBe('Account traducida');
       expect(ESTranslations.Age).toBe('Age traducida');
+    });
+
+    it('should throw error on Github API quota exceeded', async () => {
+      backend.get(
+        (url, opts) =>
+          url ===
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+          // @ts-ignore
+          opts?.headers?.accept === 'application/vnd.github.v4.raw',
+        { status: 403 }
+      );
+
+      await expect(translations.importPredefined('es')).rejects.toThrowError(Error);
     });
   });
 });
