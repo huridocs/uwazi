@@ -98,7 +98,7 @@ class MetadataExtractionComponent extends React.Component<
       this.props.settings.toJS().features!.metadataExtraction!.templates || [];
 
     return (
-      <div className="settings-content">
+      <div className="settings-content without-footer">
         <div className="panel panel-default">
           <div className="panel-heading">
             <Translate>Metadata extraction dashboard</Translate>
