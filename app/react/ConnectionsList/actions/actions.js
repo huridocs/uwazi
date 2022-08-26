@@ -31,10 +31,12 @@ export function searchReferences() {
   };
 }
 
-export function connectionsChanged() {
+export function connectionsChanged(sharedId) {
   return (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
-    const { sharedId } = relationshipsList;
+    if (!sharedId) {
+      sharedId = relationshipsList.sharedId;
+    }
 
     return referencesAPI
       .getGroupedByConnection(new RequestParams({ sharedId }))

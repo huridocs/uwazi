@@ -20,17 +20,21 @@ class ConnectionsGroupsComponent extends Component {
     );
 
     if (connectionsGroups.size) {
-      Results = (
-        <div>
-          <div className="nested-selector">
-            <ul className="multiselect is-active">
-              {connectionsGroups.map(group => (
-                <ConnectionsGroup key={group.get('key')} group={group} />
-              ))}
-            </ul>
+      if (this.props.sidePanelTrigger === 'library') {
+        Results = <div>Library triggered this side panel</div>;
+      } else {
+        Results = (
+          <div>
+            <div className="nested-selector">
+              <ul className="multiselect is-active">
+                {connectionsGroups.map(group => (
+                  <ConnectionsGroup key={group.get('key')} group={group} />
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
 
     return Results;
@@ -39,11 +43,13 @@ class ConnectionsGroupsComponent extends Component {
 
 ConnectionsGroupsComponent.propTypes = {
   connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
+  sidePanelTrigger: PropTypes.string.isRequired,
 };
 
-function mapStateToProps({ relationships }) {
+function mapStateToProps({ relationships, library }) {
   return {
     connectionsGroups: relationships.list.connectionsGroups,
+    sidePanelTrigger: library.sidepanel.trigger,
   };
 }
 
