@@ -16,6 +16,6 @@ export class ContentsClient {
 
     if (response.status === 403) throw new GithubQuotaExceeded();
 
-    return response.body?.toString() || '';
+    return (await response.text()) || '';
   }
 }
