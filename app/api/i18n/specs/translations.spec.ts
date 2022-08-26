@@ -10,6 +10,7 @@ import fixtures, {
   dictionaryId,
 } from './fixtures.js';
 import translations from '../translations';
+import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -511,7 +512,7 @@ describe('translations', () => {
         { status: 403 }
       );
 
-      await expect(translations.importPredefined('es')).rejects.toThrowError(Error);
+      await expect(translations.importPredefined('es')).rejects.toThrowError(GithubQuotaExceeded);
     });
   });
 });

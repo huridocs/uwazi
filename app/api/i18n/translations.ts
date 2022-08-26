@@ -391,9 +391,9 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     const contentsClient = new ContentsClient();
     const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     await pipeline(translationsCsv, createWriteStream(tmpCsv));
     // TODO authenticate against Github
     const loader = new CSVLoader();
