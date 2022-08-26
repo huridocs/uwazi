@@ -25,6 +25,7 @@ $c-sidebar: $c-white;
     display: none;
   }
   @media (max-width: 1023px) {
+    z-index: 6;
     .only-mobile {
       display: inline-block;
     }
@@ -214,11 +215,25 @@ $c-sidebar: $c-white;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: $f-size-sm;
+  margin-bottom: $FooterHeight;
+  padding-bottom: $FooterHeight;
 
-  & > *:last-child {
-    // firefox hack (related issue #378)
-    padding-bottom: $header-height * 3;
+  @media (min-width: 1024px) {
+    padding-bottom: 0;
   }
+
+  &.without-footer {
+    margin-bottom: 0;
+  }
+
+  &.footer-extra-row {
+    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
+  }
+
+  // & > *:last-child {
+  //   // firefox hack (related issue #378)
+  //   padding-bottom: $header-height * 3;
+  // }
 }
 
 .sidepanel-header {
@@ -264,58 +279,6 @@ $c-sidebar: $c-white;
 
   .fa {
     font-size: $f-size-lg;
-  }
-}
-
-.sidepanel-footer {
-  z-index: 1;
-  position: absolute;
-  bottom: 2em;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0 0 20px;
-  text-align: center;
-  white-space: nowrap;
-
-  .btn {
-    position: relative;
-    border-radius: 50%;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
-    font-size: $f-size-lg;
-    padding: 0;
-    margin: 0 12px;
-  }
-
-  .btn-label {
-    color: $c-grey-dark;
-    position: absolute;
-    top: 100%;
-    font-size: $f-size-xs;
-    line-height: 1.5em;
-    left: 50%;
-    transform: translateX(-50%) translateY(2px);
-    background: rgba(255, 255, 255, 0.8);
-    padding: 0 5px;
-    width: 6em;
-    white-space: pre-line;
-  }
-
-  .btn:hover .btn-label {
-    color: $c-black;
-  }
-
-  .btn-success {
-    border: 0;
-  }
-
-  .btn:disabled {
-    cursor: default;
-    opacity: 0.7;
-  }
-  .btn:disabled .btn-label {
-    color: $c-grey !important;
   }
 }
 

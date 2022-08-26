@@ -98,70 +98,72 @@ class MetadataExtractionComponent extends React.Component<
       this.props.settings.toJS().features!.metadataExtraction!.templates || [];
 
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">
-          <Translate>Metadata extraction dashboard</Translate>
-        </div>
-        <div className="panel-subheading">
-          <Translate>Extract information from your documents</Translate>
-        </div>
-        <button
-          className="btn btn-default"
-          type="button"
-          onClick={() => {
-            this.setState({ configurationModalIsOpen: true });
-          }}
-        >
-          <Translate>Configure properties</Translate>
-        </button>
-        <PropertyConfigurationModal
-          isOpen={this.state.configurationModalIsOpen}
-          onClose={() => this.setState({ configurationModalIsOpen: false })}
-          onAccept={this.saveConfigs}
-          templates={this.props.templates.toJS()}
-          currentProperties={extractionSettings}
-        />
-        <div className="metadata-extraction-table">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>
-                  <Translate>Metadata to extract</Translate>
-                </th>
-                <th>
-                  <Translate>Template</Translate>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(formattedData).map(([propIndex, data]) => (
-                <tr key={propIndex}>
-                  <td>
-                    <Icon icon={Icons[data.properties[0].type]} fixedWidth />
-                    {data.properties[0].label}
-                  </td>
-                  <td className="templateNameViewer">
-                    {data.templates.map((template, index) => (
-                      <div key={template.name}>
-                        {template.name}
-                        {index !== data.templates.length - 1 ? ',' : ''}
-                      </div>
-                    ))}
-                  </td>
-                  <td>
-                    <I18NLink
-                      to={`settings/metadata_extraction/suggestions/${data.properties[0].name}`}
-                      className="btn btn-success btn-xs"
-                    >
-                      <Icon icon="bars" />
-                      &nbsp;
-                      <Translate>Review</Translate>
-                    </I18NLink>
-                  </td>
+      <div className="settings-content">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Metadata extraction dashboard</Translate>
+          </div>
+          <div className="panel-subheading">
+            <Translate>Extract information from your documents</Translate>
+          </div>
+          <button
+            className="btn btn-default"
+            type="button"
+            onClick={() => {
+              this.setState({ configurationModalIsOpen: true });
+            }}
+          >
+            <Translate>Configure properties</Translate>
+          </button>
+          <PropertyConfigurationModal
+            isOpen={this.state.configurationModalIsOpen}
+            onClose={() => this.setState({ configurationModalIsOpen: false })}
+            onAccept={this.saveConfigs}
+            templates={this.props.templates.toJS()}
+            currentProperties={extractionSettings}
+          />
+          <div className="metadata-extraction-table">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>
+                    <Translate>Metadata to extract</Translate>
+                  </th>
+                  <th>
+                    <Translate>Template</Translate>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {Object.entries(formattedData).map(([propIndex, data]) => (
+                  <tr key={propIndex}>
+                    <td>
+                      <Icon icon={Icons[data.properties[0].type]} fixedWidth />
+                      {data.properties[0].label}
+                    </td>
+                    <td className="templateNameViewer">
+                      {data.templates.map((template, index) => (
+                        <div key={template.name}>
+                          {template.name}
+                          {index !== data.templates.length - 1 ? ',' : ''}
+                        </div>
+                      ))}
+                    </td>
+                    <td>
+                      <I18NLink
+                        to={`settings/metadata_extraction/suggestions/${data.properties[0].name}`}
+                        className="btn btn-success btn-xs"
+                      >
+                        <Icon icon="bars" />
+                        &nbsp;
+                        <Translate>Review</Translate>
+                      </I18NLink>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );

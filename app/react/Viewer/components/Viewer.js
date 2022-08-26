@@ -59,12 +59,13 @@ class Viewer extends Component {
     showTab('metadata');
   }
 
-  prepareClassName() {
+  prepareClassName(includeFooter) {
     const { panelIsOpen, targetDoc, showConnections } = this.props;
     let className = 'document-viewer with-header';
     className += panelIsOpen ? ' with-panel is-active' : '';
     className += targetDoc ? ' show-target-document' : '';
     className += showConnections ? ' connections' : '';
+    className += includeFooter ? ' with-footer' : '';
     return className;
   }
 
@@ -89,13 +90,26 @@ class Viewer extends Component {
   }
 
   render() {
-    const { doc, sidepanelTab, targetDoc, changePage, onPageChange, onDocumentReady } = this.props;
-    const { addReference, loadTargetDocument, panelIsOpen, showTextSelectMenu, file } = this.props;
+    const {
+      doc,
+      sidepanelTab,
+      targetDoc,
+      changePage,
+      onPageChange,
+      onDocumentReady,
+      addReference,
+      loadTargetDocument,
+      panelIsOpen,
+      showTextSelectMenu,
+      file,
+      user,
+    } = this.props;
     const { firstRender } = this.state;
     if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
-    const className = this.prepareClassName();
+    const includeFooter = user.get('_id') && sidepanelTab === 'connections';
+    const className = this.prepareClassName(includeFooter);
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
 
@@ -151,6 +165,11 @@ class Viewer extends Component {
             <TargetDocument />
             <Footer />
           </div>
+          {includeFooter && (
+            <div className={`entity-footer remove-nesting ${panelIsOpen ? 'with-sidepanel' : ''}`}>
+              <RelationshipsFormButtons />
+            </div>
+          )}
         </main>
         <ConfirmCloseForm />
         <ViewMetadataPanel
@@ -169,12 +188,13 @@ class Viewer extends Component {
           <>
             <RelationshipMetadata />
             <AddEntitiesPanel />
-            <div className="sidepanel-footer">
-              <RelationshipsFormButtons />
-            </div>
           </>
         )}
-        <ContextMenu align="bottom" overrideShow show={!panelIsOpen}>
+        <ContextMenu
+          align={`bottom${includeFooter ? '-with-footer' : ''}`}
+          overrideShow
+          show={!panelIsOpen}
+        >
           <ViewerDefaultMenu />
         </ContextMenu>
         <ContextMenu align="center" overrideShow show={showTextSelectMenu}>
@@ -193,6 +213,7 @@ Viewer.defaultProps = {
   page: 1,
   doc: Map(),
   file: {},
+  user: Map({}),
 };
 Viewer.propTypes = {
   searchTerm: PropTypes.string,
@@ -215,6 +236,7 @@ Viewer.propTypes = {
   page: PropTypes.number,
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
+  user: PropTypes.instanceOf(Map),
 };
 Viewer.contextTypes = {
   store: PropTypes.object,
@@ -233,6 +255,7 @@ const mapStateToProps = state => {
     showTextSelectMenu: Boolean(
       !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
     ),
+    user: state.user,
   };
 };
 const mapDispatchToProps = dispatch =>

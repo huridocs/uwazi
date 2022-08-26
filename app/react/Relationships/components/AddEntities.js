@@ -13,7 +13,7 @@ import { closePanel } from '../actions/uiActions';
 import SearchForm from './SearchEntitiesForm';
 import * as actions from '../actions/actions';
 
-export class AddEntities extends Component {
+class AddEntities extends Component {
   constructor(props) {
     super(props);
     this.addEntity = this.addEntity.bind(this);
@@ -88,7 +88,7 @@ AddEntities.propTypes = {
   selectConnection: PropTypes.func.isRequired,
 };
 
-export const mapStateToProps = ({ relationships, templates }) => ({
+const mapStateToProps = ({ relationships, templates }) => ({
   uiState: relationships.uiState,
   searchResults: relationships.searchResults,
   hubIndex: relationships.hubActions.getIn(['addTo', 'hubIndex']),
@@ -107,5 +107,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { AddEntities, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddEntities);

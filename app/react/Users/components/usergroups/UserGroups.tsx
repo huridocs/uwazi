@@ -75,7 +75,7 @@ const UserGroupsComponent = ({
         userGroups={groupList}
         handleSelect={handlers.handleSelect}
         handleAddGroup={handlers.handleAddGroup}
-        className={sidePanelOpened ? 'edition-mode' : ''}
+        className={sidePanelOpened ? 'with-sidepanel' : ''}
       />
       {selectedGroup && (
         <UserGroupSidePanel

@@ -22,7 +22,7 @@ import {
 } from './actions/cockpitActions';
 import { getValuesSortedByName } from './utils/valuesSort';
 
-export type ThesaurusCockpitProps = {
+type ThesaurusCockpitProps = {
   thesaurus: ThesaurusSchema;
   suggestInfo: ThesaurusSuggestions;
   tasksState: TasksState;
@@ -32,7 +32,7 @@ export type ThesaurusCockpitProps = {
   toggleEnableClassification: () => {};
 };
 
-export class ThesaurusCockpitBase extends RouteHandler {
+class ThesaurusCockpitBase extends RouteHandler {
   static async requestState(requestParams: RequestParams) {
     // Thesauri should always have a length of 1, because a specific thesaurus ID is passed in the requestParams.
     const [thesauri, templates] = await Promise.all([
@@ -302,41 +302,47 @@ export class ThesaurusCockpitBase extends RouteHandler {
       .props as ThesaurusCockpitProps;
     const { name } = thesaurus;
     if (!name || !tasksState.SyncState?.state) {
-      return <Loader />;
+      return (
+        <div className="settings-content">
+          <Loader />
+        </div>
+      );
     }
     return (
-      <div className="flex thesaurus-cockpit panel panel-default">
-        <div className="panel-heading">
-          {t('System', `Thesauri > ${name}`)}
-          {this.renderEnableSuggestionsToggle()}
-          {this.publishButton()}
+      <div className="settings-content">
+        <div className="flex thesaurus-cockpit panel panel-default">
+          <div className="panel-heading">
+            {t('System', `Thesauri > ${name}`)}
+            {this.renderEnableSuggestionsToggle()}
+            {this.publishButton()}
+          </div>
+          <div className="cockpit">
+            {topicClassificationEnabled && this.learningNotice()}
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{name}</th>
+                  <th scope="col">
+                    <Translate>Sample</Translate>
+                  </th>
+                  <th scope="col">
+                    <Translate>Documents to be reviewed</Translate>
+                  </th>
+                  <th scope="col" />
+                </tr>
+              </thead>
+              <tbody>{this.topicNodes()}</tbody>
+            </table>
+            <div className="sync-state">{tasksState.SyncState.message}</div>
+          </div>
+          <div className="settings-footer">
+            <I18NLink to="/settings/dictionaries" className="btn btn-default">
+              <Icon icon="arrow-left" />
+              <span className="btn-label">{t('System', 'Back')}</span>
+            </I18NLink>
+          </div>
+          <Footer />
         </div>
-        <div className="cockpit">
-          {topicClassificationEnabled && this.learningNotice()}
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">{name}</th>
-                <th scope="col">
-                  <Translate>Sample</Translate>
-                </th>
-                <th scope="col">
-                  <Translate>Documents to be reviewed</Translate>
-                </th>
-                <th scope="col" />
-              </tr>
-            </thead>
-            <tbody>{this.topicNodes()}</tbody>
-          </table>
-          <div className="sync-state">{tasksState.SyncState.message}</div>
-        </div>
-        <div className="settings-footer">
-          <I18NLink to="/settings/dictionaries" className="btn btn-default">
-            <Icon icon="arrow-left" />
-            <span className="btn-label">{t('System', 'Back')}</span>
-          </I18NLink>
-        </div>
-        <Footer />
       </div>
     );
   }
@@ -366,6 +372,9 @@ function mapStateToProps(state: IStore) {
       .topicClassification,
   };
 }
+
+export { ThesaurusCockpitBase };
+export type { ThesaurusCockpitProps };
 
 export default connect(mapStateToProps, {
   updateCockpitData,

@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
 import { Icon } from 'UI';
-import ShowIf from 'app/App/ShowIf';
 import { Translate } from 'app/I18N';
 
 const groupStyles = {
@@ -18,7 +17,8 @@ const groupStyles = {
 const linkStyles = {
   display: 'flex',
 };
-export const LinkSource = {
+
+const LinkSource = {
   beginDrag(props) {
     return {
       id: props.localID,
@@ -27,7 +27,7 @@ export const LinkSource = {
   },
 };
 
-export const LinkTarget = {
+const LinkTarget = {
   hover(props, monitor, component) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
@@ -73,7 +73,41 @@ export const LinkTarget = {
     monitor.getItem().index = hoverIndex;
   },
 };
-export class NavlinkForm extends Component {
+
+class NavlinkForm extends Component {
+  constructor(props) {
+    super(props);
+    this.firstLoad = true;
+    // eslint-disable-next-line react/no-unused-class-component-methods
+    this.focus = () => {
+      this.focusableInput.focus();
+    };
+  }
+
+  componentDidMount() {
+    this.props.blockReferences.push(this);
+  }
+
+  componentDidUpdate(previousProps) {
+    if (this.firstLoad) {
+      this.firstLoad = false;
+      return;
+    }
+
+    this.focusOnNewElement(previousProps);
+  }
+
+  focusOnNewElement(previousProps) {
+    if (this.props.link.type === 'group') {
+      const links = this.props.links[this.props.index].sublinks;
+      const previousLinks = previousProps.links[this.props.index].sublinks;
+      const hasNewItem = links?.length > previousLinks?.length;
+      if (hasNewItem) {
+        this.items[this.items.length - 1].focus();
+      }
+    }
+  }
+
   render() {
     const {
       link,
@@ -92,6 +126,8 @@ export class NavlinkForm extends Component {
       className += ' error';
       titleClass += ' has-error';
     }
+
+    this.items = [];
 
     return connectDragPreview(
       connectDropTarget(
@@ -120,11 +156,17 @@ export class NavlinkForm extends Component {
                           <Translate>Title</Translate>
                         </span>
                         <Field model={`settings.navlinksData.links[${index}].title`}>
-                          <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
+                          <input
+                            className="form-control"
+                            style={{ width: 'calc(100% + 5px)' }}
+                            ref={f => {
+                              this.focusableInput = f;
+                            }}
+                          />
                         </Field>
                       </div>
                     </div>
-                    <ShowIf if={link.type !== 'group'}>
+                    {link.type !== 'group' && (
                       <div className="col-sm-8" style={{ paddingRight: '0px' }}>
                         <div className="input-group">
                           <span className="input-group-addon">
@@ -135,7 +177,7 @@ export class NavlinkForm extends Component {
                           </Field>
                         </div>
                       </div>
-                    </ShowIf>
+                    )}
                     <div className="col-sm-1">
                       <button
                         type="button"
@@ -148,7 +190,7 @@ export class NavlinkForm extends Component {
                     </div>
                   </div>
                   <div className="row">
-                    <ShowIf if={link.type === 'group'}>
+                    {link.type === 'group' && (
                       <div style={{ paddingLeft: '80px' }}>
                         <div className="row">
                           <div className="col-sm-12">
@@ -169,7 +211,11 @@ export class NavlinkForm extends Component {
                                     <Field
                                       model={`settings.navlinksData.links[${index}].sublinks[${i}].title`}
                                     >
-                                      <input className="form-control" style={{ width: '100%' }} />
+                                      <input
+                                        className="form-control"
+                                        style={{ width: '100%' }}
+                                        ref={f => this.items.push(f)}
+                                      />
                                     </Field>
                                   </div>
                                 </div>
@@ -211,7 +257,7 @@ export class NavlinkForm extends Component {
                           </div>
                         </div>
                       </div>
-                    </ShowIf>
+                    )}
                   </div>
                 </div>
               </div>
@@ -222,6 +268,10 @@ export class NavlinkForm extends Component {
     );
   }
 }
+
+NavlinkForm.defaultProps = {
+  blockReferences: [],
+};
 
 NavlinkForm.propTypes = {
   connectDragSource: PropTypes.func.isRequired,
@@ -237,6 +287,7 @@ NavlinkForm.propTypes = {
   formState: PropTypes.object.isRequired,
   addGroupLink: PropTypes.func.isRequired,
   removeGroupLink: PropTypes.func,
+  blockReferences: PropTypes.array,
 };
 
 const dropTarget = DropTarget('LINK', LinkTarget, connectDND => ({
@@ -249,7 +300,7 @@ const dragSource = DragSource('LINK', LinkSource, (connectDND, monitor) => ({
   isDragging: monitor.isDragging(),
 }))(dropTarget);
 
-export function mapStateToProps({ settings }) {
+function mapStateToProps({ settings }) {
   const { links } = settings.navlinksData;
   return {
     formState: settings.navlinksFormState,
@@ -260,5 +311,7 @@ export function mapStateToProps({ settings }) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeLink, addGroupLink, removeGroupLink }, dispatch);
 }
+
+export { NavlinkForm, mapStateToProps, LinkSource, LinkTarget };
 
 export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
