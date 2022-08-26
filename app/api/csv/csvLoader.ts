@@ -9,7 +9,6 @@ import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { Readable } from 'stream';
 import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import { extractEntity, toSafeName } from './entityRow';
@@ -151,44 +150,4 @@ export class CSVLoader extends EventEmitter {
 
     return translations.get();
   }
-
-  // async loadTranslationsXAXI(csvData: string, translationContext: string) {
-  //   const availableLanguages = ensure<LanguageSchema[]>((await settings.get()).languages).map(
-  //     (l: LanguageSchema) => ({ label: l.label, language: l.key })
-  //   );
-  //
-  //   const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
-  //
-  //   await csv(Readable.from([csvData]), this.stopOnError)
-  //     .onRow(async (row: CSVRow, _index: number): Promise<void> => {
-  //       Object.keys(row).forEach(lang => {
-  //         intermediateTranslation[lang] = intermediateTranslation[lang] || {};
-  //         intermediateTranslation[lang][row.Key] = row[lang];
-  //       });
-  //     })
-  //     .read();
-  //
-  //   await availableLanguages.reduce(async (prev, lang) => {
-  //     await prev;
-  //     const trans = intermediateTranslation[lang.label];
-  //     if (!trans) return;
-  //     const [dbTranslations] = await translations.get({ locale: lang.language });
-  //
-  //     const context = (dbTranslations.contexts || []).find(
-  //       (ctxt: any) => ctxt.id === translationContext
-  //     );
-  //
-  //     if (trans && context) {
-  //       Object.keys(trans).forEach(transKey => {
-  //         if (context.values[transKey] && trans[transKey] !== '') {
-  //           context.values[transKey] = trans[transKey];
-  //         }
-  //       });
-  //     }
-  //
-  //     return translations.save(dbTranslations);
-  //   }, Promise.resolve({} as WithId<TranslationType>));
-  //
-  //   return translations.get();
-  // }
 }
