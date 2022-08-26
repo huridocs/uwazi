@@ -9,6 +9,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
 import { availableLanguages } from 'shared/languagesList';
+import { Application } from 'express';
 
 const mockSocketIo = () => ({
   emitToCurrentTenant: jasmine.createSpy('emitToCurrentTenant'),
@@ -16,7 +17,6 @@ const mockSocketIo = () => ({
 
 describe('i18n translations routes', () => {
   let routes;
-
   beforeEach(() => {
     routes = instrumentRoutes(i18nRoutes);
   });
@@ -104,75 +104,6 @@ describe('i18n translations routes', () => {
         expect(sockets.emitToCurrentTenant).toHaveBeenCalledWith('updateSettings', {
           site_name: 'Uwazi',
         });
-      });
-    });
-
-    describe('api/<translations>/import', () => {
-      let csvLoaderMock;
-      let loadTranslationsMock;
-      const app = setUpApp(i18nRoutes, (req, _res, next) => {
-        req.user = {
-          username: 'admin',
-          role: UserRole.ADMIN,
-          email: 'admin@test.com',
-        };
-        req.file = { path: 'filder/filename.ext' };
-        next();
-      });
-
-      beforeEach(async () => {
-        await testingEnvironment.setUp({
-          settings: [
-            {
-              languages: [{ key: 'en', label: 'English', default: true }],
-            },
-          ],
-        });
-        csvLoaderMock = jest.spyOn(csvApi, 'CSVLoader');
-        csvLoaderMock.mockImplementation(() => {
-          const mockObj = {
-            loadTranslations: jest.fn(() => []),
-          };
-          loadTranslationsMock = mockObj.loadTranslations;
-          return mockObj;
-        });
-      });
-
-      afterAll(async () => {
-        csvLoaderMock.mockRestore();
-        await testingEnvironment.tearDown();
-      });
-
-      it.each([
-        {
-          body: { context: 0 },
-          expectedError: 'type',
-          expectedPath: '/body/context',
-        },
-        {
-          req: { body: {}, file: { path: 'filepath' } },
-          expectedError: 'required',
-          expectedPath: '/body',
-        },
-      ])(
-        'should return a validation error on $expectedError error',
-        async ({ body, expectedError, expectedPath }) => {
-          const response = await request(app)
-            .post('/api/translations/import')
-            .send(body)
-            .expect(400);
-          expect(response.body.errors[0].keyword).toBe(expectedError);
-          expect(response.body.errors[0].instancePath).toBe(expectedPath);
-          expect(response.body.error).toBe('validation failed');
-        }
-      );
-
-      it('should load csv', async () => {
-        await request(app)
-          .post('/api/translations/import')
-          .send({ context: 'context' })
-          .expect(200);
-        expect(loadTranslationsMock).toHaveBeenCalledWith('filder/filename.ext', 'context');
       });
     });
   });
