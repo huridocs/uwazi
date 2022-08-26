@@ -61,7 +61,6 @@ export default (app: Application) => {
     validation.validateRequest(
       Joi.object()
         .keys({
-          // @ts-ignore
           _id: Joi.objectId(),
           __v: Joi.number(),
           locale: Joi.string().required(),
@@ -84,7 +83,6 @@ export default (app: Application) => {
       translations
         .save(req.body)
         .then(response => {
-          // @ts-ignore
           response.contexts = translations.prepareContexts(response.contexts);
           req.sockets.emitToCurrentTenant('translationsChange', response);
           res.json(response);
