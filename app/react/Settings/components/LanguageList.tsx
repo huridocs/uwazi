@@ -5,24 +5,12 @@ import { connect, ConnectedProps } from 'react-redux';
 import { differenceBy } from 'lodash';
 import { Icon } from 'UI';
 import { Translate, actions } from 'app/I18N';
-import Tip from 'app/Layout/Tip';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import Confirm from 'app/App/Confirm';
 import { getLanguages } from './LanguagesAPI';
 
-const DefaultLanguage = () => (
-  <span>
-    <Translate>Default language</Translate>
-    <Tip position="right">
-      <Translate translationKey="Default language description">
-        This language will be used as default translation when adding new languages, and the default
-        language for the site when no other language has been selected.
-      </Translate>
-    </Tip>
-  </span>
-);
-
-const SetAsDefaultButton = ({ onClick }) => (
+const SetAsDefaultButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
   <button type="button" onClick={onClick} className="btn btn-success btn-xs template-remove">
     <Icon prefix="far" icon="star" />
     &nbsp;
@@ -34,7 +22,13 @@ const SetAsDefaultButton = ({ onClick }) => (
 
 const TranslationAvailable = () => <Translate>Available default translation</Translate>;
 
-const DeleteButton = ({ onClick, disabled }) => (
+const DeleteButton = ({
+  onClick,
+  disabled,
+}: {
+  onClick: React.MouseEventHandler;
+  disabled: boolean;
+}) => (
   <button
     disabled={disabled}
     className="btn btn-danger btn-xs template-remove"
@@ -75,6 +69,7 @@ const LanguageList = ({
 }: MappedProps) => {
   const currentLanguages: LanguageSchema[] = languages?.toJS();
   const [availableLanguages, setAvailableLanguages] = useState<LanguageSchema[]>([]);
+  const [addingLanguage, setAddingLanguage] = useState<LanguageSchema>();
 
   useEffect(() => {
     getLanguages()
@@ -85,6 +80,25 @@ const LanguageList = ({
       .catch(_e => {});
   }, [languages]);
 
+  const confirmLanguageAdding = (language: LanguageSchema) => ({
+    accept: () => {
+      addLanguage({ ...language });
+      setAddingLanguage(undefined);
+    },
+    cancel: () => {
+      setAddingLanguage(undefined);
+    },
+    title: (
+      <>
+        <Translate>Confirm add</Translate>&nbsp;{language.label}
+      </>
+    ),
+    message:
+      'This action may take some time while we add the extra language to the entire collection.',
+    extraConfirm: true,
+    type: 'success',
+  });
+
   return (
     <div className="panel panel-default">
       <div className="panel-heading">
@@ -94,7 +108,7 @@ const LanguageList = ({
         {currentLanguages.map((language: LanguageSchema) => (
           <li key={language.key} className="list-group-item">
             <span className="force-ltr">{`${language.label} (${language.key})`}</span>
-            {language.default && <DefaultLanguage />}
+            {language.default}
             <div className="list-group-item-actions">
               {!language.default && (
                 <>
@@ -123,7 +137,9 @@ const LanguageList = ({
               &nbsp;
               <button
                 type="button"
-                onClick={addLanguage(language)}
+                onClick={() => {
+                  setAddingLanguage(language);
+                }}
                 className="btn btn-success btn-xs template-remove"
               >
                 <Icon icon="plus" />
@@ -136,6 +152,7 @@ const LanguageList = ({
           </li>
         ))}
       </ul>
+      {addingLanguage && <Confirm {...confirmLanguageAdding(addingLanguage)} />}
     </div>
   );
 };
