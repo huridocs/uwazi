@@ -189,7 +189,7 @@
     "reselect": "^4.1.6",
     "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
-    "rtlcss": "^3.5.0",
+    "rtlcss": "^4.0.0",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^6.0.0",
     "sift": "^16.0.0",
