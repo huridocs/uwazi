@@ -1,5 +1,4 @@
-/* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/no-multi-comp */ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { differenceBy } from 'lodash';
@@ -10,10 +9,15 @@ import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { getLanguages } from './LanguagesAPI';
 
-const SetAsDefaultButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
-  <button type="button" onClick={onClick} className="btn btn-success btn-xs template-remove">
-    <Icon prefix="far" icon="star" />
-    &nbsp;
+const SetAsDefaultButton = ({
+  className,
+  onClick,
+}: {
+  className: string;
+  onClick?: React.MouseEventHandler;
+}) => (
+  <button type="button" onClick={onClick} className={`btn btn-xs template-remove ${className}`}>
+    <Icon prefix="far" icon="star" /> &nbsp;
     <span>
       <Translate>Set as default</Translate>
     </span>
@@ -22,26 +26,15 @@ const SetAsDefaultButton = ({ onClick }: { onClick: React.MouseEventHandler }) =
 
 const TranslationAvailable = () => <Translate>Available default translation</Translate>;
 
-const DeleteButton = ({
-  onClick,
-  disabled,
-}: {
-  onClick: React.MouseEventHandler;
-  disabled: boolean;
-}) => (
-  <button
-    disabled={disabled}
-    className="btn btn-danger btn-xs template-remove"
-    onClick={onClick}
-    type="button"
-  >
-    <Icon icon="trash-alt" />
-    &nbsp;
+const DeleteButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
+  <button className="btn btn-danger btn-xs template-remove" onClick={onClick} type="button">
+    <Icon icon="trash-alt" /> &nbsp;
     <span>
       <Translate>Delete language</Translate>
     </span>
   </button>
 );
+
 const mapStateToProps = (state: IStore & { locale: string }) => {
   const { settings, locale } = state;
   return { languages: settings.collection.get('languages'), locale };
@@ -81,51 +74,53 @@ const LanguageList = ({
       .catch(_e => {});
   }, [languages]);
 
-  const confirmLanguageAdding = (language: LanguageSchema) => ({
-    accept: () => {
-      addLanguage({ ...language });
-      setAddingLanguage(undefined);
-    },
-    cancel: () => {
-      setAddingLanguage(undefined);
-    },
-    title: (
-      <>
-        <Translate>Confirm add</Translate>&nbsp;{language.label}
-      </>
-    ),
-    message:
-      'This action may take some time while we add the extra language to the entire collection.',
-    extraConfirm: true,
-    type: 'success',
-  });
+  const confirmLanguageAddition = (language: LanguageSchema) => (
+    <Confirm
+      accept={() => {
+        addLanguage({ ...language });
+        setAddingLanguage(undefined);
+      }}
+      cancel={() => {
+        setAddingLanguage(undefined);
+      }}
+      title={
+        <>
+          <Translate>Confirm add</Translate>&nbsp;{language.label}
+        </>
+      }
+      message="This action may take some time while we add the extra language to the entire collection."
+      extraConfirm
+      type="success"
+    />
+  );
 
-  const confirmLanguageDeleting = (language: LanguageSchema) => ({
-    accept: () => {
-      deleteLanguage(language.key);
-      setDeletingLanguage(undefined);
-    },
-    cancel: () => {
-      setDeletingLanguage(undefined);
-    },
-    title: (
-      <>
-        <Translate>Confirm delete </Translate>&nbsp;{language.label}
-      </>
-    ),
-    message: (
-      <>
-        <Translate>Are you sure you want to delete</Translate>&nbsp;
-        {language.label} <Translate> language? </Translate>
-        <Translate>
-          This action may take some time, can not be undone and will delete all the information in
-          that language.
-        </Translate>
-      </>
-    ),
-    extraConfirm: true,
-  });
-
+  const confirmLanguageDeletion = (language: LanguageSchema) => (
+    <Confirm
+      accept={() => {
+        deleteLanguage(language.key);
+        setDeletingLanguage(undefined);
+      }}
+      cancel={() => {
+        setDeletingLanguage(undefined);
+      }}
+      title={
+        <>
+          <Translate>Confirm delete </Translate>&nbsp;{language.label}
+        </>
+      }
+      message={
+        <>
+          <Translate>Are you sure you want to delete</Translate>&nbsp; {language.label}
+          <Translate> language?</Translate>
+          <Translate>
+            This action may take some time, can not be undone and will delete all the information in
+            that language.
+          </Translate>
+        </>
+      }
+      extraConfirm
+    />
+  );
   return (
     <div className="panel panel-default">
       <div className="panel-heading">
@@ -137,13 +132,11 @@ const LanguageList = ({
             <span className="force-ltr">{`${language.label} (${language.key})`}</span>
             {language.default}
             <div className="list-group-item-actions">
+              {language.default && <SetAsDefaultButton className="btn-success" />}
               {!language.default && (
                 <>
-                  <SetAsDefaultButton onClick={() => setDefaultLanguage(language)} />
-                  <DeleteButton
-                    onClick={() => setDeletingLanguage(language)}
-                    disabled={language.key === locale}
-                  />
+                  <SetAsDefaultButton className="" onClick={() => setDefaultLanguage(language)} />
+                  <DeleteButton onClick={() => setDeletingLanguage(language)} />
                 </>
               )}
             </div>
@@ -169,8 +162,7 @@ const LanguageList = ({
                 }}
                 className="btn btn-success btn-xs template-remove"
               >
-                <Icon icon="plus" />
-                &nbsp;
+                <Icon icon="plus" /> &nbsp;
                 <span>
                   <Translate>Add language</Translate>
                 </span>
@@ -179,8 +171,8 @@ const LanguageList = ({
           </li>
         ))}
       </ul>
-      {addingLanguage && <Confirm {...confirmLanguageAdding(addingLanguage)} />}
-      {deletingLanguage && <Confirm {...confirmLanguageDeleting(deletingLanguage)} />}
+      {addingLanguage && confirmLanguageAddition(addingLanguage)}
+      {deletingLanguage && confirmLanguageDeletion(deletingLanguage)}
     </div>
   );
 };
