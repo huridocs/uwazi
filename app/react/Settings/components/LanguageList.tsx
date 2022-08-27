@@ -4,10 +4,10 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { differenceBy } from 'lodash';
 import { Icon } from 'UI';
+import Confirm from 'app/App/Confirm';
 import { Translate, actions } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import Confirm from 'app/App/Confirm';
 import { getLanguages } from './LanguagesAPI';
 
 const SetAsDefaultButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
@@ -70,6 +70,7 @@ const LanguageList = ({
   const currentLanguages: LanguageSchema[] = languages?.toJS();
   const [availableLanguages, setAvailableLanguages] = useState<LanguageSchema[]>([]);
   const [addingLanguage, setAddingLanguage] = useState<LanguageSchema>();
+  const [deletingLanguage, setDeletingLanguage] = useState<LanguageSchema>();
 
   useEffect(() => {
     getLanguages()
@@ -99,6 +100,32 @@ const LanguageList = ({
     type: 'success',
   });
 
+  const confirmLanguageDeleting = (language: LanguageSchema) => ({
+    accept: () => {
+      deleteLanguage(language.key);
+      setDeletingLanguage(undefined);
+    },
+    cancel: () => {
+      setDeletingLanguage(undefined);
+    },
+    title: (
+      <>
+        <Translate>Confirm delete </Translate>&nbsp;{language.label}
+      </>
+    ),
+    message: (
+      <>
+        <Translate>Are you sure you want to delete</Translate>&nbsp;
+        {language.label} <Translate> language? </Translate>
+        <Translate>
+          This action may take some time, can not be undone and will delete all the information in
+          that language.
+        </Translate>
+      </>
+    ),
+    extraConfirm: true,
+  });
+
   return (
     <div className="panel panel-default">
       <div className="panel-heading">
@@ -114,7 +141,7 @@ const LanguageList = ({
                 <>
                   <SetAsDefaultButton onClick={() => setDefaultLanguage(language)} />
                   <DeleteButton
-                    onClick={() => deleteLanguage(language)}
+                    onClick={() => setDeletingLanguage(language)}
                     disabled={language.key === locale}
                   />
                 </>
@@ -153,6 +180,7 @@ const LanguageList = ({
         ))}
       </ul>
       {addingLanguage && <Confirm {...confirmLanguageAdding(addingLanguage)} />}
+      {deletingLanguage && <Confirm {...confirmLanguageDeleting(deletingLanguage)} />}
     </div>
   );
 };
