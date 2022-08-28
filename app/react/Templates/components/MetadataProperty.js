@@ -11,9 +11,8 @@ import { Icon } from 'UI';
 import { StateSelector } from 'app/Review/components/StateSelector';
 import { createSelector } from 'reselect';
 import { Translate } from 'app/I18N';
-
 import FormConfigInput from './FormConfigInput';
-import FormConfigSelect from './FormConfigSelect';
+import { FormConfigSelect } from './FormConfigSelect';
 import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';

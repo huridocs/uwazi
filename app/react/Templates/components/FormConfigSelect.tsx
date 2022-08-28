@@ -1,0 +1,132 @@
+import React, { useEffect, useState } from 'react';
+import { Field } from 'react-redux-form';
+import { connect, ConnectedProps } from 'react-redux';
+import { orderBy } from 'lodash';
+import { Select } from 'app/ReactReduxForms';
+import { Translate, t } from 'app/I18N';
+import { Warning } from 'app/Layout';
+import { IStore } from 'app/istore';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import PropertyConfigOptions from './PropertyConfigOptions';
+import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
+
+type formConfigSelectComponentProps = {
+  index: number;
+  type: string;
+};
+
+const mapStateToProps = (state: IStore, ownProps: formConfigSelectComponentProps) => {
+  const { template, thesauris } = state;
+  return {
+    labelHasError: checkErrorsOnLabel(state, ownProps),
+    contentRequiredError:
+      //@ts-ignore
+      template.formState.$form.errors[`properties.${ownProps.index}.content.required`] &&
+      //@ts-ignore
+      template.formState.$form.submitFailed,
+    templateId: template.data._id,
+    thesauris,
+    property: template.data.properties ? template.data.properties[ownProps.index] : undefined,
+    index: ownProps.index,
+    type: ownProps.type,
+  };
+};
+
+const connector = connect(mapStateToProps);
+
+type mappedProps = ConnectedProps<typeof connector>;
+
+const FormConfigSelectComponent = ({
+  index,
+  type,
+  labelHasError,
+  contentRequiredError,
+  templateId,
+  property,
+  thesauris,
+}: mappedProps) => {
+  const [warning, setWarning] = useState(false);
+  const [initialContent] = useState(property?.content);
+
+  console.log(initialContent, property?.content);
+
+  useEffect(() => {
+    if (initialContent !== property?.content && property?._id) {
+      setWarning(true);
+    }
+  }, [property?.content]);
+
+  const options = orderBy(
+    thesauris
+      .toJS()
+      .filter(
+        (thesaurus: ThesaurusSchema) =>
+          thesaurus._id !== templateId && thesaurus.type !== 'template'
+      )
+      .map((thesaurus: ThesaurusSchema) => ({
+        ...thesaurus,
+        name: t(thesaurus._id, thesaurus.name, null, false),
+      })),
+    'name'
+  );
+
+  return (
+    <div>
+      <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
+        <label htmlFor="property-label">
+          <Translate>Label</Translate>
+        </label>
+        <Field model={`template.data.properties[${index}].label`}>
+          <input className="form-control" id="property-label" />
+        </Field>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="property-type">
+          <Translate>Property type</Translate>
+        </label>
+        &nbsp;(<Translate>This cannot be changed after saving</Translate>)
+        <Field model={`template.data.properties[${index}].type`}>
+          <select
+            name="type"
+            id="property-type"
+            className="form-control"
+            disabled={!!property?._id}
+          >
+            <option value="select">{t('System', 'property select', 'Select', false)}</option>
+            <option value="multiselect">
+              {t('System', 'property multiselect', 'Multiselect', false)}
+            </option>
+          </select>
+        </Field>
+      </div>
+
+      <div className={contentRequiredError ? 'form-group has-error' : 'form-group'}>
+        <label htmlFor="property-thesauri">
+          <Translate>Thesauri</Translate>
+          <span className="required">*</span>
+        </label>
+        {warning && (
+          <Warning inline>
+            <Translate>
+              All entities and documents that have already this property assigned will loose its
+              current value
+            </Translate>
+          </Warning>
+        )}
+        <Select
+          model={`template.data.properties[${index}].content`}
+          options={options}
+          optionsLabel="name"
+          optionsValue="_id"
+          id="property-thesauri"
+        />
+      </div>
+
+      <PropertyConfigOptions index={index} type={type} />
+    </div>
+  );
+};
+
+const container = connector(FormConfigSelectComponent);
+export { container as FormConfigSelect };
