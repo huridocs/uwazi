@@ -119,8 +119,8 @@ describe('Metadata', () => {
         '.metadataTemplate-list > li:nth-child(5) > div:nth-child(1) > div:nth-child(2) > button',
         { text: 'Edit' }
       );
-      await expect(page).toSelect('select.form-control', 'My new dictionary');
-      await expect(page).toClick('li.list-group-item:nth-child(5) > button:nth-child(1)');
+      await expect(page).toSelect('select.form-control:nth-child(2)', 'My new dictionary');
+      await expect(page).toClick('li.list-group-item:nth-child(4) > button:nth-child(1)');
       await expect(page).toClick(
         '.metadataTemplate-list > li:nth-child(6) > div:nth-child(1) > div:nth-child(2) > button',
         { text: 'Edit' }
