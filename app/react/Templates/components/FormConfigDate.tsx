@@ -28,11 +28,11 @@ type mappedProps = ConnectedProps<typeof connector>;
 const FormConfigDateComponent = ({ index, type, labelHasError, property }: mappedProps) => (
   <div>
     <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
-      <label>
+      <label htmlFor="property-label">
         <Translate>Name</Translate>
       </label>
       <Field model={`template.data.properties[${index}].label`}>
-        <input className="form-control" />
+        <input className="form-control" id="property-label" />
       </Field>
     </div>
 

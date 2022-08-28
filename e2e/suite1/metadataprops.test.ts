@@ -24,32 +24,78 @@ describe('Metadata Properties', () => {
     await expect(page).toClick('a', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'Add template' });
     const propertyList = await page.$$('.property-options-list li');
-    expect(propertyList.length).toBe(17);
+    expect(propertyList.length).toBe(13);
   });
 
-  it('should create a template with all the properties.', async () => {
-    await expect(page).toClick('a', { text: 'Templates' });
-    await expect(page).toClick('a', { text: 'Add template' });
-    await expect(page).toFill('input[name="template.data.name"]', 'All props');
+  describe('create template with all properties', () => {
+    it('should create a template with all the properties', async () => {
+      await expect(page).toClick('a', { text: 'Templates' });
+      await expect(page).toClick('a', { text: 'Add template' });
+      await expect(page).toFill('input[name="template.data.name"]', 'All props');
 
-    const propertyAddButtons = await page.$$('.property-options-list li button');
-    //intentionaly leaving the last fields out of the test: violated articles (nested), generated id.
-    for (let propIndex = 0; propIndex < 15; propIndex += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      await propertyAddButtons[propIndex].click();
-    }
+      const propertyAddButtons = await page.$$('.property-options-list li button');
+      //intentionaly leaving the last fields out of the test: violated articles (nested), generated id.
+      for (let propIndex = 0; propIndex < 11; propIndex += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await propertyAddButtons[propIndex].click();
+      }
 
-    const propertiesInMetadata = await page.$$('.metadataTemplate li');
-    await expect(propertiesInMetadata[7]).toClick('button', { text: 'Edit' });
-    await expect(propertiesInMetadata[7]).toSelect('select:first-of-type', 'Relacionado a');
-    await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
-  });
+      const propertiesInMetadata = await page.$$('.metadataTemplate li');
+      await expect(propertiesInMetadata[6]).toClick('button', { text: 'Edit' });
+      await expect(propertiesInMetadata[6]).toSelect('select:first-of-type', 'Relacionado a');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert-success');
+    });
 
-  it('should not allow duplicated properties', async () => {
-    await expect(page).toClick('.property-options-list li:first-child button');
-    await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('.alert.alert-danger');
+    it('should add another select of type multiselect', async () => {
+      await expect(page).toClick('li.list-group-item:nth-child(3) > button:nth-child(1)');
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(15) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toFill('#property-label', 'Multiselect');
+      await expect(page).toSelect('#property-type', 'Multiselect');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert-success');
+    });
+
+    it('should add multidate, date range and multidate range', async () => {
+      for (let index = 0; index < 3; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await expect(page).toClick('li.list-group-item:nth-child(5) > button:nth-child(1)');
+      }
+
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(16) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toFill('#property-label', 'Multi Date');
+      await expect(page).toSelect('#property-type', 'Multi Date');
+
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(17) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toFill('#property-label', 'Date Range');
+      await expect(page).toSelect('#property-type', 'Date Range');
+
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(18) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+
+      await expect(page).toFill('#property-label', 'Multi Date Range');
+      await expect(page).toSelect('#property-type', 'Multi Date Range');
+
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('div.alert-success');
+    });
+
+    it('should not allow duplicated properties', async () => {
+      await expect(page).toClick('.property-options-list li:first-child button');
+      await expect(page).toClick('button', { text: 'Save' });
+      await expect(page).toClick('.alert.alert-danger');
+    });
   });
 
   it('should create an entity filling all the props.', async () => {
