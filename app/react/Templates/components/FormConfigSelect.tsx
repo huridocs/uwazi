@@ -83,7 +83,9 @@ const FormConfigSelectComponent = ({
         <label htmlFor="property-type">
           <Translate>Property type</Translate>
         </label>
-        &nbsp;(<Translate>This cannot be changed after saving</Translate>)
+        <span className="property-type-warning">
+          <Translate>This cannot be changed after saving</Translate>
+        </span>
         <Field model={`template.data.properties[${index}].type`}>
           <select
             name="type"
