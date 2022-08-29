@@ -81,7 +81,7 @@ const FormConfigSelectComponent = ({
 
       <div className="form-group">
         <label htmlFor="property-type">
-          <Translate>Property type</Translate>
+          <Translate>Type</Translate>
         </label>
         <span className="property-type-warning">
           <Translate>This cannot be changed after saving</Translate>
