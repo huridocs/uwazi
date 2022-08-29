@@ -3,7 +3,12 @@
   z-index: 1;
 
   &-bottom {
-    bottom: 25px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  &-bottom-with-footer {
+    bottom: 62px;
     right: 20px;
   }
 

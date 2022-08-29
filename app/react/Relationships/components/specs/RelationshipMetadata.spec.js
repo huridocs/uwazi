@@ -88,6 +88,22 @@ describe('RelationshipMetadata', () => {
       expect(metadataComponent.props().model).toEqual('relationships.metadata');
     });
 
+    it('should reset the metadata form when closing entity edition', () => {
+      renderComponent(true);
+      const closeButton = component.find('.closeSidepanel');
+      closeButton.simulate('click');
+      expect(props.resetForm).toBeCalledWith('relationships.metadata');
+      expect(props.unselectConnection).not.toBeCalled();
+    });
+
+    it('should unselect the connection when closing the side panel', () => {
+      renderComponent(false);
+      const closeButton = component.find('.closeSidepanel');
+      closeButton.simulate('click');
+      expect(props.resetForm).not.toBeCalledWith('relationships.metadata');
+      expect(props.unselectConnection).toBeCalled();
+    });
+
     describe('save', () => {
       it('should save the entity', async () => {
         renderComponent(true);

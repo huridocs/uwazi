@@ -104,7 +104,7 @@ const UsersComponent = ({
         users={userList}
         handleSelect={handlers.handleSelect}
         handleAddUser={handlers.handleAddUser}
-        className={sidePanelOpened ? 'edition-mode' : ''}
+        className={sidePanelOpened ? 'with-sidepanel' : ''}
       />
       {selectedUser && (
         <UserSidePanel

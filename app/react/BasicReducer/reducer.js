@@ -81,7 +81,7 @@ export function update(namespace, value) {
   };
 }
 
-export function updateIn(namespace, key, value, customIndex = undefined) {
+export function updateIn(namespace, key, value, customIndex = '') {
   return {
     type: `${namespace}/${UPDATE_IN}`,
     key,

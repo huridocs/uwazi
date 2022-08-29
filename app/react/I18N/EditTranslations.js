@@ -12,6 +12,10 @@ export default class EditTranslations extends RouteHandler {
   }
 
   render() {
-    return <EditTranslationForm context={this.props.params.context} />;
+    return (
+      <div className="settings-content">
+        <EditTranslationForm context={this.props.params.context} />
+      </div>
+    );
   }
 }

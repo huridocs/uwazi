@@ -704,7 +704,7 @@ const search = {
     return snippetsFromSearchHit(response.body.hits.hits[0]);
   },
 
-  async indexEntities(query, select = '', limit = undefined, batchCallback = () => {}) {
+  async indexEntities(query, select = '', limit = 50, batchCallback = () => {}) {
     return indexEntities({
       query,
       select,

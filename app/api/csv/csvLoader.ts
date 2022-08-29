@@ -1,19 +1,19 @@
-import { EventEmitter } from 'events';
-
-import templates from 'api/templates';
-import settings from 'api/settings';
 import translations from 'api/i18n';
+import { WithId } from 'api/odm';
+import settings from 'api/settings';
+import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { LanguageSchema } from 'shared/types/commonTypes';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
-
-import { ensure } from 'shared/tsUtils';
+import { EventEmitter } from 'events';
 import { ObjectId } from 'mongodb';
+import { TranslationType } from 'shared/translationType';
+import { ensure } from 'shared/tsUtils';
+import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
-import importFile from './importFile';
-import { importEntity, translateEntity } from './importEntity';
 import { extractEntity, toSafeName } from './entityRow';
+import { importEntity, translateEntity } from './importEntity';
+import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
 
 export class CSVLoader extends EventEmitter {
@@ -82,7 +82,11 @@ export class CSVLoader extends EventEmitter {
   }
 
   /* eslint-disable class-methods-use-this */
-  async loadThesauri(csvPath: string, thesaurusId: string, { language }: { language: string }) {
+  async loadThesauri(
+    csvPath: string,
+    thesaurusId: ObjectIdSchema,
+    { language }: { language: string }
+  ) {
     const file = importFile(csvPath);
     const availableLanguages: string[] = ensure<LanguageSchema[]>((await settings.get()).languages)
       .map((l: LanguageSchema) => l.key)
@@ -127,9 +131,11 @@ export class CSVLoader extends EventEmitter {
       const trans = intermediateTranslation[lang.label];
       const [dbTranslations] = await translations.get({ locale: lang.language });
 
-      const context = dbTranslations.contexts.find((ctxt: any) => ctxt.id === translationContext);
+      const context = (dbTranslations.contexts || []).find(
+        (ctxt: any) => ctxt.id === translationContext
+      );
 
-      if (trans) {
+      if (trans && context) {
         Object.keys(trans).forEach(transKey => {
           if (context.values[transKey] && trans[transKey] !== '') {
             context.values[transKey] = trans[transKey];
@@ -138,7 +144,7 @@ export class CSVLoader extends EventEmitter {
       }
 
       return translations.save(dbTranslations);
-    }, Promise.resolve());
+    }, Promise.resolve({} as WithId<TranslationType>));
 
     return translations.get();
   }

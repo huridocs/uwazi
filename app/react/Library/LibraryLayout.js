@@ -11,13 +11,14 @@ import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/Featu
 import SemanticSearchPanel from 'app/SemanticSearch/components/SemanticSearchPanel';
 import ImportPanel from 'app/Uploads/components/ImportPanel';
 import { QuickLabelHeader } from './components/QuickLabelHeader';
+import { LibraryFooter } from './components/LibraryFooter';
 
-export class LibraryLayoutBase extends Component {
+class LibraryLayoutBase extends Component {
   render() {
     const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-panel ${sidePanelMode} ${
+    } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ${
       noScrollable ? 'no-scroll-layout' : ''
     }`;
 
@@ -29,6 +30,7 @@ export class LibraryLayoutBase extends Component {
         {quickLabelThesaurus && <QuickLabelHeader />}
         <div className={contentDivClass}>
           <main className={`${className}`}>{children}</main>
+          <LibraryFooter storeKey="library" />
           <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
@@ -57,6 +59,8 @@ LibraryLayoutBase.propTypes = {
   sidePanelMode: PropTypes.string,
   noScrollable: PropTypes.bool,
 };
+
+export { LibraryLayoutBase };
 
 export default connect(state => ({
   quickLabelThesaurus: state.library.sidepanel.quickLabelState.get('thesaurus'),

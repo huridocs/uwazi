@@ -110,38 +110,40 @@ class EntityTypesList extends Component {
 
   render() {
     return (
-      <div className="panel panel-default">
-        <div className="panel-heading">
-          <Translate>Templates</Translate>
-        </div>
-        <ul className="list-group document-types">
-          {this.sortTemplates().map((template, index) => (
-            <li key={index} className="list-group-item">
-              <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
-              {template.default ? this.defaultTemplateMessage() : ''}
-              {template.synced ? this.syncedTemplateMessage() : ''}
-              <div className="list-group-item-actions">
-                {!template.default ? this.setAsDefaultButton(template) : ''}
-                <Link
-                  to={`/settings/templates/edit/${template._id}`}
-                  className="btn btn-default btn-xs"
-                >
-                  <Icon icon="pencil-alt" />
-                  &nbsp;
-                  <Translate>Edit</Translate>
-                </Link>
-                {!template.default ? this.deleteTemplateButton(template) : ''}
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className="settings-footer">
-          <Link to="/settings/templates/new" className="btn btn-success">
-            <Icon icon="plus" />
-            <span className="btn-label">
-              <Translate>Add template</Translate>
-            </span>
-          </Link>
+      <div className="settings-content">
+        <div className="panel panel-default">
+          <div className="panel-heading">
+            <Translate>Templates</Translate>
+          </div>
+          <ul className="list-group document-types">
+            {this.sortTemplates().map((template, index) => (
+              <li key={index} className="list-group-item">
+                <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
+                {template.default ? this.defaultTemplateMessage() : ''}
+                {template.synced ? this.syncedTemplateMessage() : ''}
+                <div className="list-group-item-actions">
+                  {!template.default ? this.setAsDefaultButton(template) : ''}
+                  <Link
+                    to={`/settings/templates/edit/${template._id}`}
+                    className="btn btn-default btn-xs"
+                  >
+                    <Icon icon="pencil-alt" />
+                    &nbsp;
+                    <Translate>Edit</Translate>
+                  </Link>
+                  {!template.default ? this.deleteTemplateButton(template) : ''}
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="settings-footer">
+            <Link to="/settings/templates/new" className="btn btn-default">
+              <Icon icon="plus" />
+              <span className="btn-label">
+                <Translate>Add template</Translate>
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     );

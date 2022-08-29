@@ -21,7 +21,7 @@ import {
   reloadRelationships,
 } from '../actions/actions';
 
-export class RelationshipMetadata extends Component {
+class RelationshipMetadata extends Component {
   constructor(props) {
     super(props);
     this.state = { copyFrom: false, copyFromProps: [] };
@@ -30,6 +30,7 @@ export class RelationshipMetadata extends Component {
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
     this.saveEntity = this.saveEntity.bind(this);
+    this.closeSidePanel = this.closeSidePanel.bind(this);
   }
 
   onCopyFromSelect(copyFromProps) {
@@ -69,6 +70,12 @@ export class RelationshipMetadata extends Component {
     this.setState(currentState => ({
       copyFrom: !currentState.copyFrom,
     }));
+  }
+
+  closeSidePanel() {
+    return this.props.entityBeingEdited
+      ? this.props.resetForm('relationships.metadata')
+      : this.props.unselectConnection();
   }
 
   renderForm() {
@@ -118,7 +125,7 @@ export class RelationshipMetadata extends Component {
           <button
             type="button"
             className="closeSidepanel close-modal"
-            onClick={this.props.unselectConnection}
+            onClick={this.closeSidePanel}
           >
             <Icon icon="times" />
           </button>
@@ -133,6 +140,7 @@ export class RelationshipMetadata extends Component {
               entityBeingEdited={this.props.entityBeingEdited}
               copyFrom={this.toggleCopyFrom}
               hideDelete={this.props.hubsBeingEdited}
+              includeViewButton={false}
             />
           )}
         </div>
@@ -177,7 +185,7 @@ const connectionSelector = createSelector(
   entity => (entity && entity.toJS ? entity.toJS() : { metadata: {} })
 );
 
-export const mapStateToProps = state => {
+const mapStateToProps = state => {
   const entityBeingEdited = Boolean(state.relationships.metadata.metadata);
 
   return {
@@ -213,5 +221,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { RelationshipMetadata, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(RelationshipMetadata);
