@@ -20,9 +20,7 @@ interface UwaziResponse {
   };
 }
 
-interface UwaziReq<T> extends Request {
-  query: T;
-}
+type UwaziReq = Request & { query: SearchQuery };
 
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
@@ -63,7 +61,7 @@ const searchRoutes = (app: Application) => {
         query: SearchQuerySchema,
       },
     }),
-    async (req: UwaziReq<SearchQuery>, res: UwaziRes) => {
+    async (req: UwaziReq, res: UwaziRes) => {
       const { query, language, url } = req;
       const response = await elastic.search({ body: await buildQuery(query, language) });
       res.json({
