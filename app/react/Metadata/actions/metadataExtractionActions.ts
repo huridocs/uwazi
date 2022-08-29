@@ -1,12 +1,15 @@
+import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
+import { IImmutable } from 'shared/types/Immutable';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
-import { RequestParams } from 'app/utils/RequestParams';
 import { notificationActions } from 'app/Notifications';
 import { t } from 'app/I18N';
+import { RequestParams } from 'app/utils/RequestParams';
+import { ClientFile } from 'app/istore';
 
 const updateSelection = (
-  selection: { [key: string]: string },
+  selection: { text: string; selectionRectangles: any[] },
   fieldName: string,
   fieldId?: string
 ) => {
@@ -18,8 +21,40 @@ const updateSelection = (
     timestamp: Date(),
     selection: selected,
   };
+
   return actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID');
 };
+
+const deleteSelection =
+  (entityDocument: IImmutable<ClientFile> | undefined, propertyName: string, propertyID?: string) =>
+  (dispatch: Dispatch<{}>) => {
+    const document = entityDocument?.toJS();
+
+    const updatedSelections = document?.extractedMetadata?.filter(
+      selection =>
+        (propertyName === 'title' && selection.name !== 'title') ||
+        selection.propertyID !== propertyID
+    );
+
+    const data = {
+      ...(propertyID && { propertyID }),
+      name: propertyName,
+      selection: { text: '', selectionRectangles: [] },
+      deleteSelection: true,
+    };
+
+    return [
+      dispatch(
+        actions.setIn('viewer/doc', 'defaultDoc', {
+          ...document,
+          extractedMetadata: updatedSelections,
+        })
+      ),
+      dispatch(
+        actions.updateIn('documentViewer.metadataExtraction', ['selections'], data, 'propertyID')
+      ),
+    ];
+  };
 
 const updateFormField = async (
   value: string,
@@ -50,4 +85,4 @@ const updateFormField = async (
   return formActions.change(model, value);
 };
 
-export { updateSelection, updateFormField };
+export { updateSelection, updateFormField, deleteSelection };
