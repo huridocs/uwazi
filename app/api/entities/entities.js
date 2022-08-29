@@ -1,24 +1,26 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
-
-import { generateNames } from 'api/templates/utils';
-import ID from 'shared/uniqueID';
-import { propertyTypes } from 'shared/propertyTypes';
-import date from 'api/utils/date';
+import { applicationEventsBus } from 'api/eventsbus';
+import { PDF, files } from 'api/files';
+import * as filesystem from 'api/files';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
 import templates from 'api/templates/templates';
-import { PDF, files } from 'api/files';
-import * as filesystem from 'api/files';
+import { generateNames } from 'api/templates/utils';
+import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
 import { AccessLevels } from 'shared/types/permissionSchema';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { Suggestions } from 'api/suggestions/suggestions';
-import { validateEntity } from './validateEntity';
-import model from './entitiesModel';
-import settings from '../settings';
+import { propertyTypes } from 'shared/propertyTypes';
+import ID from 'shared/uniqueID';
+
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
+import model from './entitiesModel';
+import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
+import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
+import { validateEntity } from './validateEntity';
+import settings from '../settings';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -35,6 +37,7 @@ const FIELD_TYPES_TO_SYNC = [
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
+
   if (
     docLanguages[0].template &&
     entity.template &&
@@ -54,7 +57,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
   const thesauriByKey = await templates.getRelatedThesauri(template);
 
-  return Promise.all(
+  const result = await Promise.all(
     docLanguages.map(async d => {
       if (d._id.toString() === entity._id.toString()) {
         const toSave = { ...entity };
@@ -120,6 +123,16 @@ async function updateEntity(entity, _template, unrestricted = false) {
       return saveFunc(toSave);
     })
   );
+
+  await applicationEventsBus.emit(
+    new EntityUpdatedEvent({
+      before: docLanguages,
+      after: result,
+      targetLanguageKey: entity.language,
+    })
+  );
+
+  return result;
 }
 
 async function createEntity(doc, languages, sharedId, docTemplate) {
@@ -649,8 +662,10 @@ export default {
       relationships.delete({ entity: sharedId }, null, false),
       files.delete({ entity: sharedId }),
       this.deleteRelatedEntityFromMetadata(docs[0]),
-      Suggestions.deleteByEntityId(sharedId),
     ]);
+
+    await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
+
     return docs;
   },
 

@@ -19,8 +19,6 @@ class PDFSegmentation {
 
   public segmentationTaskManager: TaskManager;
 
-  templatesWithInformationExtraction: string[] | undefined;
-
   features: Settings | undefined;
 
   batchSize = 50;
