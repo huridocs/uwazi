@@ -106,7 +106,7 @@ export default (app: Application) => {
       const { locale } = req.body;
       try {
         await translations.importPredefined(locale);
-        res.json({ locale });
+        res.json(await translations.get({ locale }));
       } catch (error) {
         next(error);
       }
