@@ -16,7 +16,6 @@ import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ContentsClient } from 'api/i18n/contentsClient';
 import model from './translationsModel';
-import { validateTranslation } from 'shared/translationSchema';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },

@@ -191,7 +191,7 @@ describe('i18n translations routes', () => {
         backend.get(
           (url, opts) =>
             url ===
-            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
             // @ts-ignore
             opts?.headers?.accept === 'application/vnd.github.v4.raw',
           { status: 403 }
