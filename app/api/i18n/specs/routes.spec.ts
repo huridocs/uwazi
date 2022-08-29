@@ -146,6 +146,10 @@ describe('i18n translations routes', () => {
     });
 
     describe('api/translations/populate', () => {
+      afterEach(() => {
+        backend.restore();
+      });
+
       it('should save the translations', async () => {
         const spanishCsv = `Key,Spanish
       Search,Buscar traducida`;
@@ -181,6 +185,23 @@ describe('i18n translations routes', () => {
             locale: 'es',
           },
         ]);
+      });
+
+      it('should response with error when Github quota exceeded', async () => {
+        backend.get(
+          (url, opts) =>
+            url ===
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+            // @ts-ignore
+            opts?.headers?.accept === 'application/vnd.github.v4.raw',
+          { status: 403 }
+        );
+        const response = await request(app)
+          .post('/api/translations/populate')
+          .send({ locale: 'es' })
+          .expect(503);
+
+        expect(response.body).toEqual({ error: 'Translations could not be loaded' });
       });
     });
 

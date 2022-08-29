@@ -4,13 +4,19 @@ import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
 import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import {
+  IndexedContextValuesOriginal,
+  TranslationContext,
+  TranslationType,
+  TranslationValue,
+} from 'shared/translationType';
 import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ContentsClient } from 'api/i18n/contentsClient';
 import model from './translationsModel';
+import { validateTranslation } from 'shared/translationSchema';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -395,13 +401,12 @@ export default {
     const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     await pipeline(translationsCsv, createWriteStream(tmpCsv));
-    // TODO authenticate against Github
     const loader = new CSVLoader();
     await loader.loadTranslations(tmpCsv, 'System');
   },
 };
 
-export interface IndexedContextValues {
+export interface IndexedContextValues extends IndexedContextValuesOriginal {
   [k: string]: string;
 }
 

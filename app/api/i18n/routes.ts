@@ -8,18 +8,18 @@ import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { availableLanguages } from 'shared/languagesList';
 import { Application } from 'express';
+import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
 export default (app: Application) => {
-  app.get('/api/translations', (_req, res, next) => {
-    translations
-      .get()
-      .then(response => res.json({ rows: response }))
-      .catch(next);
+  app.get('/api/translations', async (_req, res) => {
+    const response = await translations.get();
+
+    res.json({ rows: response });
   });
 
-  app.get('/api/languages', (_req, res, _next) => {
+  app.get('/api/languages', (_req, res) => {
     res.json(availableLanguages);
   });
 
@@ -61,7 +61,7 @@ export default (app: Application) => {
     validation.validateRequest(
       Joi.object()
         .keys({
-          _id: Joi.objectId(),
+          _id: Joi.string(),
           __v: Joi.number(),
           locale: Joi.string().required(),
           contexts: Joi.array()
@@ -79,15 +79,11 @@ export default (app: Application) => {
         .required()
     ),
 
-    (req, res, next) => {
-      translations
-        .save(req.body)
-        .then(response => {
-          response.contexts = translations.prepareContexts(response.contexts);
-          req.sockets.emitToCurrentTenant('translationsChange', response);
-          res.json(response);
-        })
-        .catch(next);
+    async (req, res) => {
+      const { _id } = await translations.save(req.body);
+      const [response] = await translations.get({ _id });
+      req.sockets.emitToCurrentTenant('translationsChange', response);
+      res.json(response);
     }
   );
 
@@ -108,6 +104,11 @@ export default (app: Application) => {
         await translations.importPredefined(locale);
         res.json(await translations.get({ locale }));
       } catch (error) {
+        if (error instanceof GithubQuotaExceeded) {
+          res.status(503);
+          res.json({ error: error.message });
+          return;
+        }
         next(error);
       }
     }
@@ -124,14 +125,10 @@ export default (app: Application) => {
         .required()
     ),
 
-    (req, res, next) => {
-      settings
-        .setDefaultLanguage(req.body.key)
-        .then(response => {
-          req.sockets.emitToCurrentTenant('updateSettings', response);
-          res.json(response);
-        })
-        .catch(next);
+    async (req, res) => {
+      const response = await settings.setDefaultLanguage(req.body.key);
+      req.sockets.emitToCurrentTenant('updateSettings', response);
+      res.json(response);
     }
   );
 
@@ -145,19 +142,15 @@ export default (app: Application) => {
       },
     }),
 
-    async (req, res, next) => {
-      try {
-        const newSettings = await settings.addLanguage(req.body);
-        const newTranslations = await translations.addLanguage(req.body.key);
-        await entities.addLanguage(req.body.key);
-        await pages.addLanguage(req.body.key);
+    async (req, res) => {
+      const newSettings = await settings.addLanguage(req.body);
+      const newTranslations = await translations.addLanguage(req.body.key);
+      await entities.addLanguage(req.body.key);
+      await pages.addLanguage(req.body.key);
 
-        req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-        res.json(newSettings);
-      } catch (e) {
-        next(e);
-      }
+      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+      req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+      res.json(newSettings);
     }
   );
 
@@ -172,19 +165,17 @@ export default (app: Application) => {
         .required()
     ),
 
-    (req, res, next) => {
-      Promise.all([
+    async (req, res) => {
+      const [newSettings, newTranslations] = await Promise.all([
         settings.deleteLanguage(req.query.key),
         translations.removeLanguage(req.query.key),
         entities.removeLanguage(req.query.key),
         pages.removeLanguage(req.query.key),
-      ])
-        .then(([newSettings, newTranslations]) => {
-          req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-          req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-          res.json(newSettings);
-        })
-        .catch(next);
+      ]);
+
+      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+      req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+      res.json(newSettings);
     }
   );
 };

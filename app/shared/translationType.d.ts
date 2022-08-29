@@ -3,6 +3,18 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
+export interface IndexedContextOriginal {
+  _id?: ObjectIdSchema;
+  id?: string;
+  label?: string;
+  type?: string;
+  values?: IndexedContextValuesOriginal[];
+}
+
+export interface IndexedContextValuesOriginal {
+  [k: string]: string | undefined;
+}
+
 export interface TranslationContext {
   _id?: ObjectIdSchema;
   id?: string;
