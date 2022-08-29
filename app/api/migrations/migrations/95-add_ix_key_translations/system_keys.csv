@@ -1,0 +1,5 @@
+key, optionalValue
+"Error"
+"Mismatch / Empty"
+"Empty / Empty"
+emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a "match / label" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a "mismatch / label" that will be used as a training sample."
