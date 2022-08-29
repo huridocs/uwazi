@@ -3,13 +3,26 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { PropertySchema } from 'shared/types/commonTypes';
 
 const defaultHeaders = [
+  'Context',
   'Suggestion',
   '',
-  'Property',
+  'Current value',
   'Title',
-  'Context',
   'Language',
-  'StateAllMatch / LabelMismatch / LabelMatch / ValueMismatch / ValueEmpty / EmptyObsolete',
+  [
+    'State',
+    'All',
+    'Empty / Empty',
+    'Empty / Label',
+    'Empty / Value',
+    'Error',
+    'Match / Label',
+    'Match / Value',
+    'Mismatch / Empty',
+    'Mismatch / Label',
+    'Mismatch / Value',
+    'Obsolete',
+  ].join(''),
 ];
 
 const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {

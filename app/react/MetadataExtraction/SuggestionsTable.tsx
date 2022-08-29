@@ -11,6 +11,7 @@ import {
   useRowState,
   useTable,
 } from 'react-table';
+import { useSticky } from 'react-table-sticky';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { propertyValueFormatter } from 'app/Metadata/helpers/formater';
@@ -37,24 +38,14 @@ const suggestionsTable = (
       }}
     >
       <option value="">{t('System', 'All', 'All', false)}</option>
-      <option value={SuggestionState.labelMatch}>
-        {t('System', SuggestionState.labelMatch, SuggestionState.labelMatch, false)}
-      </option>
-      <option value={SuggestionState.labelMismatch}>
-        {t('System', SuggestionState.labelMismatch, SuggestionState.labelMismatch, false)}
-      </option>
-      <option value={SuggestionState.valueMatch}>
-        {t('System', SuggestionState.valueMatch, SuggestionState.valueMatch, false)}
-      </option>
-      <option value={SuggestionState.valueMismatch}>
-        {t('System', SuggestionState.valueMismatch, SuggestionState.valueMismatch, false)}
-      </option>
-      <option value={SuggestionState.empty}>
-        {t('System', SuggestionState.empty, SuggestionState.empty, false)}
-      </option>
-      <option value={SuggestionState.obsolete}>
-        {t('System', SuggestionState.obsolete, SuggestionState.obsolete, false)}
-      </option>
+      {Object.values(SuggestionState)
+        .filter(state => state !== SuggestionState.processing)
+        .sort()
+        .map(state => (
+          <option key={state} value={state}>
+            {t('System', state, state, false)}
+          </option>
+        ))}
     </select>
   );
 
@@ -71,9 +62,6 @@ const suggestionsTable = (
     const currentValue = formatValue(propertyValue);
     return (
       <div>
-        <span className="suggestion-label">
-          <Translate>{reviewedProperty.label}</Translate>
-        </span>
         <p className="current-value">{currentValue}</p>
       </div>
     );
@@ -84,9 +72,6 @@ const suggestionsTable = (
     const suggestedValue = formatValue(suggestion.suggestedValue);
     return (
       <div>
-        <span className="suggestion-label">
-          <Translate>Suggestion</Translate>
-        </span>
         <p className="suggested-value">{suggestedValue}</p>
       </div>
     );
@@ -94,6 +79,12 @@ const suggestionsTable = (
 
   const columns: Column<EntitySuggestionType>[] = React.useMemo(
     () => [
+      {
+        accessor: 'segment' as const,
+        Header: () => <Translate>Context</Translate>,
+        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
+        Cell: segmentCell,
+      },
       {
         id: 'suggestion',
         Header: () => <Translate>Suggestion</Translate>,
@@ -108,7 +99,7 @@ const suggestionsTable = (
       },
       {
         id: 'currentValue',
-        Header: () => <Translate>Property</Translate>,
+        Header: () => <Translate>Current value</Translate>,
         Cell: currentValueCell,
         className: 'current',
       },
@@ -119,14 +110,9 @@ const suggestionsTable = (
         className: 'title',
       },
       {
-        accessor: 'segment' as const,
-        Header: () => <Translate>Context</Translate>,
-        className: reviewedProperty.label === 'Title' ? 'long-segment' : 'segment',
-        Cell: segmentCell,
-      },
-      {
         accessor: 'language' as const,
         Header: () => <Translate>Language</Translate>,
+        className: 'language',
         Cell: ({ row }: { row: Row<EntitySuggestionType> }) => (
           <Translate>{row.original.language}</Translate>
         ),
@@ -184,6 +170,18 @@ const suggestionsTable = (
                   sample. If the current value is correct, you can still click to fill the text
                   selection so it becomes a "mismatch / label" that will be used as a training
                   sample.
+                </Translate>
+              </div>
+              <h5>
+                {t('System', SuggestionState.emptyMismatch, SuggestionState.emptyMismatch, false)}
+              </h5>
+              <div>
+                <Translate translationKey="emptyMismatchDesc">
+                  There is no current value and the model is suggesting a value. Accepting the
+                  suggestion will replace the current (empty) value and text selection with the
+                  suggested ones becoming a "match / label" that will be used as a training sample.
+                  Alternatively you can ignore the suggestion and click to fill the text selection
+                  so it becomes a "mismatch / label" that will be used as a training sample.
                 </Translate>
               </div>
               <h5>{t('System', SuggestionState.valueEmpty, SuggestionState.valueEmpty, false)}</h5>
@@ -249,7 +247,8 @@ const suggestionsTable = (
     useFilters,
     usePagination,
     useRowSelect,
-    useRowState
+    useRowState,
+    useSticky
   );
 };
 

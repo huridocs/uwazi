@@ -83,7 +83,7 @@ export class ConnectionsGroup extends Component {
     const group = this.props.group.toJS();
     const { connectionLabel, templates } = group;
     return (
-      <li>
+      <li className="relationshipFilters">
         <div className="multiselectItem">
           <input
             type="checkbox"
