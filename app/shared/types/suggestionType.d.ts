@@ -16,6 +16,14 @@ export interface EntitySuggestionType {
   propertyName: string;
   suggestedValue: PropertyValueSchema;
   currentValue?: PropertyValueSchema;
+  labeledValue?: PropertyValueSchema;
+  selectionRectangles?: {
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+    page?: string;
+  }[];
   segment: string;
   language: string;
   state:
@@ -27,7 +35,9 @@ export interface EntitySuggestionType {
     | 'Obsolete'
     | 'Empty / Label'
     | 'Empty / Value'
-    | 'Error';
+    | 'Error'
+    | 'Processing'
+    | 'Mismatch / Empty';
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
@@ -44,6 +54,18 @@ export interface IXSuggestionType {
   language: string;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
+  state?:
+    | 'Match / Label'
+    | 'Mismatch / Label'
+    | 'Match / Value'
+    | 'Mismatch / Value'
+    | 'Empty / Empty'
+    | 'Obsolete'
+    | 'Empty / Label'
+    | 'Empty / Value'
+    | 'Error'
+    | 'Processing'
+    | 'Mismatch / Empty';
   date?: number;
   error?: string;
   selectionRectangles?: {
@@ -63,6 +85,10 @@ export interface IXSuggestionsQuery {
   };
 }
 
+export interface IXSuggestionsStatsQuery {
+  propertyName: string;
+}
+
 export interface IXSuggestionsFilter {
   language?: string;
   propertyName: string;
@@ -75,5 +101,7 @@ export interface IXSuggestionsFilter {
     | 'Obsolete'
     | 'Empty / Label'
     | 'Empty / Value'
-    | 'Error';
+    | 'Error'
+    | 'Processing'
+    | 'Mismatch / Empty';
 }

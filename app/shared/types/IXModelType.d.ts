@@ -8,4 +8,5 @@ export interface IXModelType {
   propertyName: string;
   creationDate: number;
   status?: 'processing' | 'failed' | 'ready';
+  findingSuggestions?: boolean;
 }

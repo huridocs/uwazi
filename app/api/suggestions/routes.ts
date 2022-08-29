@@ -5,9 +5,13 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import {
+  IXSuggestionsQuerySchema,
+  IXSuggestionsStatsQuerySchema,
+} from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { serviceMiddleware } from './serviceMiddleware';
+import { saveConfigurations } from './configurationManager';
 
 const IX = new InformationExtraction();
 
@@ -64,6 +68,32 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
+  app.get(
+    '/api/suggestions/stats',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    parseQuery,
+    validateAndCoerceRequest({
+      properties: {
+        query: IXSuggestionsStatsQuerySchema,
+      },
+    }),
+    async (req, res, _next) => {
+      const stats = await Suggestions.getStats(req.query.propertyName);
+      res.json(stats);
+    }
+  );
+
+  app.post(
+    '/api/suggestions/stop',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    propertyRequestValidation('body'),
+    async (req, res, _next) => {
+      await processTrainFunction(IX.stopModel, req, res);
+    }
+  );
+
   app.post(
     '/api/suggestions/train',
     serviceMiddleware,
@@ -74,11 +104,43 @@ export const suggestionsRoutes = (app: Application) => {
     }
   );
 
-  app.get(
+  app.post(
+    '/api/suggestions/configurations',
+    needsAuthorization(['admin']),
+    validateAndCoerceRequest({
+      properties: {
+        body: {
+          additionalProperties: false,
+          properties: {
+            configurations: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  template: { type: 'string' },
+                  properties: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    (req, res, next) => {
+      saveConfigurations(req.body)
+        .then(response => res.json(response))
+        .catch(next);
+    }
+  );
+
+  app.post(
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('query'),
+    propertyRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
     }

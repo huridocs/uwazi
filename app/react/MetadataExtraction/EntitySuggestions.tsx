@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
@@ -15,8 +15,18 @@ import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { getSuggestions, ixStatus, trainModel } from './SuggestionsAPI';
+import { getSuggestionState } from 'shared/getIXSuggestionState';
+import { SuggestionsStats } from 'shared/types/suggestionStats';
+import {
+  getStats,
+  getSuggestions,
+  ixStatus,
+  trainModel,
+  cancelFindingSuggestions,
+} from './SuggestionsAPI';
 import { PDFSidePanel } from './PDFSidePanel';
+import { TrainingHealthDashboard } from './TrainingHealthDashboard';
+import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -27,13 +37,17 @@ export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
 }: EntitySuggestionsProps) => {
+  const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [resetActivePage, setResetActivePage] = useState(false);
   const [status, setStatus] = useState<{ key: string; data?: undefined }>({
     key: 'ready',
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
+  const [openCancelFindingSuggestions, setOpenCancelFindingSuggestions] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
+  const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -83,7 +97,6 @@ export const EntitySuggestions = ({
             state === SuggestionState.valueEmpty ||
             state === SuggestionState.obsolete ||
             state === SuggestionState.labelMatch ||
-            state === SuggestionState.valueMatch ||
             state === SuggestionState.error ||
             isRequiredFieldWithoutSuggestion(row.original)
           }
@@ -109,9 +122,9 @@ export const EntitySuggestions = ({
   const segmentCell = ({ row }: { row: Row<EntitySuggestionType> }) => (
     <div onClick={() => showPDF(row)}>
       <span className="segment-pdf">
-        <Translate>PDF</Translate>
+        <Translate>Open PDF</Translate>
       </span>
-      {row.original.segment}
+      <span className="segment-context">{row.original.segment}</span>
     </div>
   );
 
@@ -128,13 +141,13 @@ export const EntitySuggestions = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = () => {
+  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
     const queryFilter = filters.reduce(
       (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
       {}
     );
     const params = new RequestParams({
-      page: { number: pageIndex + 1, size: pageSize },
+      page: { number: pageNumber, size: pageSize },
       filter: { ...queryFilter, propertyName: reviewedProperty.name },
     });
     getSuggestions(params)
@@ -145,49 +158,48 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
+  const retriveStats = () => {
+    const params = new RequestParams({
+      propertyName: reviewedProperty.name,
+    });
+    getStats(params)
+      .then((response: any) => {
+        setStats(response);
+      })
+      .catch(() => {});
+  };
+
+  const getWrappedSuggestionState = (
+    acceptedSuggestion: any,
+    newCurrentValue: string | number | null
+  ) =>
+    getSuggestionState(
+      { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
+      reviewedProperty.type
+    );
+
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
+      let { labeledValue } = acceptedSuggestion;
+      if (!labeledValue && acceptedSuggestion.selectionRectangles?.length) {
+        labeledValue = acceptedSuggestion.suggestedValue;
+      }
       selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = SuggestionState.labelMatch;
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue },
+        acceptedSuggestion.suggestedValue as string
+      );
       selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
       selectedFlatRows[0].setState({});
     }
 
     setAcceptingSuggestion(false);
     toggleAllRowsSelected(false);
+    retriveStats();
   };
 
-  const userHasSelectedLabel = (entity: any) => {
-    if (entity.__extractedMetadata.selections.length === 0) return false;
-    const selection = entity.__extractedMetadata.selections.find(
-      (s: any) => s.name === reviewedProperty.name
-    );
-    if (!selection) return false;
-    return selection.selection.text === entity.title;
-  };
-
-  const calculateTemporaryState = (
-    entity: ClientEntitySchema,
-    suggestedValue: string,
-    state: SuggestionState
-  ) => {
-    if (state === SuggestionState.obsolete) return state;
-    const selected = userHasSelectedLabel(entity);
-    const currentValue = entity.title;
-    if (suggestedValue === '') {
-      return selected ? SuggestionState.labelEmpty : SuggestionState.valueEmpty;
-    }
-
-    if (currentValue === suggestedValue) {
-      return selected ? SuggestionState.labelMatch : SuggestionState.valueMatch;
-    }
-
-    return selected ? SuggestionState.labelMismatch : SuggestionState.valueMismatch;
-  };
-
-  // eslint-disable-next-line max-statements
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const changedPropertyValue = (entity[reviewedProperty.name] ||
@@ -197,13 +209,13 @@ export const EntitySuggestions = ({
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
-    const { suggestedValue, state } = selectedFlatRows[0].original;
-    selectedFlatRows[0].values.state = calculateTemporaryState(
-      entity,
-      suggestedValue as string,
-      state as SuggestionState
+    const acceptedSuggestion = selectedFlatRows[0].original;
+    selectedFlatRows[0].values.state = getWrappedSuggestionState(
+      acceptedSuggestion,
+      entity.title as string
     );
     selectedFlatRows[0].setState({});
+    retriveStats();
   };
 
   const _trainModel = async () => {
@@ -214,21 +226,51 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus({ key: response.status });
+    setStatus({ key: response.status, data: response.data });
     store?.dispatch(notify(response.message, type));
     if (status.key === 'ready') {
       await retrieveSuggestions();
     }
   };
 
+  const _cancelFindingSuggestions = async () => {
+    setOpenCancelFindingSuggestions(false);
+    const params = new RequestParams({
+      property: reviewedProperty.name,
+    });
+
+    if (status.key !== 'ready') {
+      setStatus({ key: 'cancel' });
+      await cancelFindingSuggestions(params);
+    }
+  };
+
+  const onFindSuggestionButtonClicked = async () => {
+    if (status.key === 'ready') {
+      setStatus({ key: 'sending_labeled_data' });
+      await _trainModel();
+    } else {
+      setOpenCancelFindingSuggestions(true);
+    }
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
+  useEffect(() => {
+    if (isMounted.current) {
+      retrieveSuggestions(1);
+      gotoPage(0);
+      setResetActivePage(true);
+    } else {
+      isMounted.current = true;
+    }
+  }, [filters]);
   useEffect(() => {
     const params = new RequestParams({
       property: reviewedProperty.name,
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status });
+        setStatus({ key: response.status, data: response.data });
       })
       .catch(() => {
         setStatus({ key: 'error' });
@@ -239,9 +281,17 @@ export const EntitySuggestions = ({
       (propertyName: string, modelStatus: string, _: string, data: any) => {
         if (propertyName === reviewedProperty.name) {
           setStatus({ key: modelStatus, data });
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
+            setStatus({ key: 'ready' });
+            retrieveSuggestions();
+          }
+          retriveStats();
         }
       }
     );
+
+    retriveStats();
+
     return () => {
       socket.off('ix_model_status');
     };
@@ -252,6 +302,7 @@ export const EntitySuggestions = ({
     sending_labeled_data: 'Sending labeled data...',
     processing_model: 'Training model...',
     processing_suggestions: 'Finding suggestions',
+    cancel: 'Cancelling...',
     error: 'Error',
   };
 
@@ -268,24 +319,30 @@ export const EntitySuggestions = ({
           </I18NLink>
         </div>
         <div className="panel-subheading">
-          <div>
-            <span className="suggestion-header">
-              <Translate>Reviewing</Translate>:&nbsp;
-            </span>
-            <span className="suggestion-property">
-              <Translate>{reviewedProperty.label}</Translate>
-            </span>
+          <div className="property-info-container">
+            <div>
+              <span className="suggestion-header">
+                <Translate>Reviewing</Translate>:&nbsp;
+              </span>
+              <span className="suggestion-property">
+                <Translate>{reviewedProperty.label}</Translate>
+              </span>
+            </div>
+            <div>
+              <button
+                type="button"
+                title={status.key !== 'ready' ? 'Cancel' : 'Train'}
+                className={`btn service-request-button ${status.key}`}
+                onClick={onFindSuggestionButtonClicked}
+              >
+                <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            className={`btn service-request-button ${status}`}
-            onClick={_trainModel}
-          >
-            <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
-          </button>
+          <TrainingHealthDashboard stats={stats} />
         </div>
-        <table {...getTableProps()}>
-          <thead>
+        <table {...getTableProps()} className="table sticky">
+          <thead className="header">
             {headerGroups.map((headerGroup: HeaderGroup<EntitySuggestionType>) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => {
@@ -317,6 +374,7 @@ export const EntitySuggestions = ({
           </tbody>
         </table>
         <Pagination
+          resetActivePage={resetActivePage}
           onPageChange={gotoPage}
           onPageSizeChange={setPageSize}
           totalPages={totalPages}
@@ -326,6 +384,11 @@ export const EntitySuggestions = ({
           propertyType={reviewedProperty.type}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
+        />
+        <CancelFindingSuggestionModal
+          isOpen={openCancelFindingSuggestions}
+          onClose={() => setOpenCancelFindingSuggestions(false)}
+          onAccept={async () => _cancelFindingSuggestions()}
         />
       </div>
       {Boolean(selectedFlatRows.length) && (
