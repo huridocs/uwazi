@@ -48,8 +48,6 @@ const FormConfigSelectComponent = ({
   const [warning, setWarning] = useState(false);
   const [initialContent] = useState(property?.content);
 
-  console.log(initialContent, property?.content);
-
   useEffect(() => {
     if (initialContent !== property?.content && property?._id) {
       setWarning(true);
