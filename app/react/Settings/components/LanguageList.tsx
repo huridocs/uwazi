@@ -13,7 +13,7 @@ const SetAsDefaultButton = ({
   className,
   onClick,
 }: {
-  className: string;
+  className?: string;
   onClick?: React.MouseEventHandler;
 }) => (
   <button type="button" onClick={onClick} className={`btn btn-xs template-remove ${className}`}>
@@ -135,7 +135,7 @@ const LanguageList = ({
               {language.default && <SetAsDefaultButton className="btn-success" />}
               {!language.default && (
                 <>
-                  <SetAsDefaultButton className="" onClick={() => setDefaultLanguage(language)} />
+                  <SetAsDefaultButton onClick={() => setDefaultLanguage(language.key)} />
                   <DeleteButton onClick={() => setDeletingLanguage(language)} />
                 </>
               )}
