@@ -1,3 +1,8 @@
+//eslint-disable-next-line node/no-restricted-import
+import * as fs from 'fs';
+
+import csv from 'api/csv/csv';
+
 /*
 This migration is meant to be repeatable.
 After copy pasting:
@@ -6,7 +11,11 @@ After copy pasting:
   - change the tests, if necessary
 */
 
-async function insertSystemKeys(db, newKeys) {
+// eslint-disable-next-line max-statements
+async function readCsvToSystemKeys(db, filename) {
+  const fstream = fs.createReadStream(filename);
+  const rows = await csv(fstream).read();
+  fstream.close();
   const translations = await db.collection('translations').find().toArray();
   const locales = translations.map(tr => tr.locale);
 
@@ -19,8 +28,8 @@ async function insertSystemKeys(db, newKeys) {
     locToKeys[loc] = new Set(context.values.map(v => v.key));
   });
 
-  newKeys.forEach(row => {
-    const { key, value: optionalValue } = row;
+  rows.forEach(row => {
+    const { key, optionalValue } = row;
 
     locales.forEach(loc => {
       if (!locToKeys[loc].has(key)) {
@@ -37,30 +46,20 @@ async function insertSystemKeys(db, newKeys) {
 }
 
 export default {
-  delta: 98,
+  delta: 97,
 
   reindex: false,
 
-  name: 'add_system_key_translations',
+  name: 'add_ix_key_translations',
 
-  description: 'Adding missing translations for system keys.',
+  description: 'Adds translation keys for some ix labels',
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    const systemKeys = [
-      {
-        key: 'Open PDF',
-      },
-      {
-        key: 'Add properties',
-      },
-      {
-        key: 'Only text, number and date properties are currently supported',
-      },
-      {
-        key: 'Current value',
-      },
-    ];
-    await insertSystemKeys(db, systemKeys);
+
+    await readCsvToSystemKeys(
+      db,
+      'app/api/migrations/migrations/97-add_ix_key_translations/system_keys.csv'
+    );
   },
 };
