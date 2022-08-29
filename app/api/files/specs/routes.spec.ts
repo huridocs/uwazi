@@ -105,7 +105,7 @@ describe('files routes', () => {
       };
       const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
       await expect(caller).toEmitEventWith(FileCreatedEvent, {
-        newFile: { ...fileInfo, _id: expect.anything() },
+        newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
       });
       await expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
