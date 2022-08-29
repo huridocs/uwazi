@@ -3,9 +3,7 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { screen, act, fireEvent, RenderResult } from '@testing-library/react';
-import { actions } from 'app/BasicReducer';
-import { actions as formActions } from 'react-redux-form';
+import { screen, RenderResult } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
@@ -13,67 +11,72 @@ import { store } from 'app/store';
 import { t } from 'app/I18N';
 import { FormConfigSelect } from '../FormConfigSelect';
 
-describe('FormConfigSelect', () => {
-  let reduxStore: MockStoreEnhanced;
-  let renderResult: RenderResult;
-  let state = {
-    locale: 'en',
-    template: {
-      data: {
-        properties: [{ _id: 'property1', content: '1', type: 'select', label: 'My selector' }],
-        name: 'template1',
-      },
-      formState: {
-        $form: { errors: [], submitFailed: false },
-      },
-    },
-    thesauris: Immutable.fromJS([
-      { _id: '1', values: [], name: 'Thesauri 1' },
-      { _id: '2', values: [], name: 'Thesauri 2' },
-    ]),
-    templates: Immutable.fromJS([
-      { properties: [{ content: '1', type: 'select' }], name: 'template1' },
-    ]),
-    translations: Immutable.fromJS([
+const defineTemplateProperty = (content: string, _id?: string) => ({
+  data: {
+    properties: [
       {
-        locale: 'es',
-        contexts: [
-          {
-            _id: '1',
-            id: '1',
-            label: 'Thesauri 1',
-            values: {
-              'Thesauri 1': 'Diccionario B',
-            },
-            type: 'Thesaurus',
-          },
-          {
-            _id: '2',
-            id: '2',
-            label: 'Thesauri 2',
-            values: {
-              'Thesauri 2': 'Diccionario A',
-            },
-            type: 'Thesaurus',
-          },
-        ],
+        _id,
+        content,
+        type: 'select',
+        label: 'My selector',
       },
-    ]),
-  };
+    ],
+    name: 'template1',
+  },
+  formState: {
+    $form: { errors: [], submitFailed: false },
+  },
+});
+
+describe('FormConfigSelect', () => {
+  let renderResult: RenderResult;
+  let reduxStore: MockStoreEnhanced;
+  let state: any;
 
   beforeEach(() => {
-    state.locale = 'en';
+    state = {
+      ...defaultState,
+      locale: 'en',
+      template: { ...defineTemplateProperty('1', 'id1') },
+      thesauris: Immutable.fromJS([
+        { _id: '1', values: [], name: 'Thesauri 1' },
+        { _id: '2', values: [], name: 'Thesauri 2' },
+      ]),
+      templates: Immutable.fromJS([
+        { properties: [{ content: '1', type: 'select' }], name: 'template1' },
+      ]),
+      translations: Immutable.fromJS([
+        {
+          locale: 'es',
+          contexts: [
+            {
+              _id: '1',
+              id: '1',
+              label: 'Thesauri 1',
+              values: {
+                'Thesauri 1': 'Diccionario B',
+              },
+              type: 'Thesaurus',
+            },
+            {
+              _id: '2',
+              id: '2',
+              label: 'Thesauri 2',
+              values: {
+                'Thesauri 2': 'Diccionario A',
+              },
+              type: 'Thesaurus',
+            },
+          ],
+        },
+      ]),
+    };
   });
 
   const render = () => {
-    const initialState = {
-      ...defaultState,
-      ...state,
-    };
-
     ({ store: reduxStore, renderResult } = renderConnectedContainer(
       <FormConfigSelect type="select" index={0} />,
-      () => initialState
+      () => state
     ));
   };
 
@@ -96,30 +99,41 @@ describe('FormConfigSelect', () => {
   });
 
   describe('validation', () => {
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should show a warning when changing the select thesaurus', async () => {
+    it('should show a warning when changing the select thesaurus', () => {
       t.resetCachedTranslation();
       render();
 
-      reduxStore.dispatch(actions.update('template.data.properties[0].content', '2'));
+      state = { ...state, template: { ...defineTemplateProperty('2', 'id1') } };
 
-      // renderResult.rerender(
-      //   <Provider store={reduxStore}>
-      //     <FormConfigSelect type="select" index={0} />
-      //   </Provider>
-      // );
+      renderResult.rerender(
+        <Provider store={reduxStore}>
+          <FormConfigSelect type="select" index={0} />
+        </Provider>
+      );
 
-      const warning = screen.findByText('All entities and documents that have already', {
-        exact: false,
-      });
+      const warning = screen.queryByText('All entities and documents that have', { exact: false });
 
       expect(warning).toBeInTheDocument();
     });
 
-    it('should not show the warning when changing select thesaurus for new properties', () => {});
+    it('should not show the warning when changing select thesaurus for new properties', () => {
+      render();
+
+      state = { ...state, template: { ...defineTemplateProperty('2') } };
+
+      renderResult.rerender(
+        <Provider store={reduxStore}>
+          <FormConfigSelect type="select" index={0} />
+        </Provider>
+      );
+
+      const warning = screen.queryByText('All entities and documents that have', { exact: false });
+
+      expect(warning).not.toBeInTheDocument();
+    });
   });
 
-  describe('when the fields are invalid and dirty or the form is submited', () => {
+  describe('when the fields are invalid', () => {
     it('should render the label with errors', () => {});
 
     it('should render the list select with errors', () => {});

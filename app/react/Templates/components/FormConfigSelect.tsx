@@ -17,6 +17,7 @@ type formConfigSelectComponentProps = {
 
 const mapStateToProps = (state: IStore, ownProps: formConfigSelectComponentProps) => {
   const { template, thesauris } = state;
+  const property = template.data.properties ? template.data.properties[ownProps.index] : undefined;
   return {
     labelHasError: checkErrorsOnLabel(state, ownProps),
     contentRequiredError:
@@ -26,7 +27,8 @@ const mapStateToProps = (state: IStore, ownProps: formConfigSelectComponentProps
       template.formState.$form.submitFailed,
     templateId: template.data._id,
     thesauris,
-    property: template.data.properties ? template.data.properties[ownProps.index] : undefined,
+    property,
+    content: property?.content,
     index: ownProps.index,
     type: ownProps.type,
   };
@@ -43,16 +45,17 @@ const FormConfigSelectComponent = ({
   contentRequiredError,
   templateId,
   property,
+  content,
   thesauris,
 }: mappedProps) => {
   const [warning, setWarning] = useState(false);
-  const [initialContent] = useState(property?.content);
+  const [initialContent] = useState(content);
 
   useEffect(() => {
-    if (initialContent !== property?.content && property?._id) {
+    if (initialContent !== content && property?._id) {
       setWarning(true);
     }
-  }, [property?.content]);
+  }, [content]);
 
   const options = orderBy(
     thesauris
