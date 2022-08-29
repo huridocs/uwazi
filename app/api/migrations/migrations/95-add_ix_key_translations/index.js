@@ -59,7 +59,7 @@ export default {
 
     await readCsvToSystemKeys(
       db,
-      'app/api/migrations/migrations/94-add_ix_key_translations/system_keys.csv'
+      'app/api/migrations/migrations/95-add_ix_key_translations/system_keys.csv'
     );
   },
 };
