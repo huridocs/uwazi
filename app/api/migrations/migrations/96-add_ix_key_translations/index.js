@@ -46,7 +46,7 @@ async function readCsvToSystemKeys(db, filename) {
 }
 
 export default {
-  delta: 95,
+  delta: 96,
 
   reindex: false,
 
