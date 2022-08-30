@@ -65,8 +65,8 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
   ensure<MongoMemoryServer>(await createMongoInstance(dbName));
 
 const initMongoServer = async (dbName: string) => {
-  mongod = await createNewMongoDB(dbName);
-  const uri = mongod.getUri();
+  // mongod = await createNewMongoDB(dbName);
+  const uri = 'mongodb://localhost/'
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
