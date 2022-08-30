@@ -1,5 +1,7 @@
+// Kevin------------------------------------------------------------------
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
+/* eslint-disable camelcase */
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
@@ -20,20 +22,22 @@ import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import date from 'api/utils/date';
 import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { IXModelType } from 'shared/types/IXModelType';
+import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
+import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 
 type RawSuggestion = {
   tenant: string;
-  /* eslint-disable camelcase */
   property_name: string;
   xml_file_name: string;
   text: string;
@@ -45,7 +49,6 @@ type RawSuggestion = {
     height: number;
     page_number: number;
   }[];
-  /* eslint-enable camelcase */
 };
 
 class InformationExtraction {
@@ -125,7 +128,7 @@ class InformationExtraction {
           data = {
             ...data,
             language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: propertyLabeledData.selection?.text,
+            label_text: file.propertyValue || propertyLabeledData.selection?.text,
             label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
               const { page, ...selection } = r;
               return { ...selection, page_number: page };
@@ -173,22 +176,6 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  coerceSuggestionValue = (
-    suggestion: RawSuggestion,
-    property?: PropertySchema,
-    language?: string
-  ) => {
-    const suggestedValue = suggestion.text.trim();
-    switch (property?.type) {
-      case 'numeric':
-        return parseFloat(suggestedValue) || null;
-      case 'date':
-        return date.dateToSeconds(suggestedValue, language);
-      default:
-        return suggestedValue;
-    }
-  };
-
   saveSuggestions = async (message: ResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
@@ -223,9 +210,9 @@ class InformationExtraction {
         );
         const property = allProps.find(p => p.name === rawSuggestion.property_name);
 
-        const suggestedValue = this.coerceSuggestionValue(
-          rawSuggestion,
-          property,
+        const suggestedValue = stringToTypeOfProperty(
+          rawSuggestion.text,
+          property?.type,
           currentSuggestion?.language || entity.language
         );
 
@@ -254,14 +241,13 @@ class InformationExtraction {
           }),
         };
 
-        return IXSuggestionsModel.save(suggestion);
+        return Suggestions.save(suggestion);
       })
     );
   };
 
   saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
     const entity = await this._getEntityFromFile(file);
-
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,
       propertyName,
@@ -277,7 +263,7 @@ class InformationExtraction {
       date: new Date().getTime(),
     };
 
-    return IXSuggestionsModel.save(suggestion);
+    return Suggestions.save(suggestion);
   };
 
   serviceUrl = async () => {
@@ -291,7 +277,7 @@ class InformationExtraction {
   };
 
   getSuggestions = async (property: string) => {
-    const files = await this.getFilesForSuggestions(property);
+    const files = await getFilesForSuggestions(property);
     if (files.length === 0) {
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
@@ -305,11 +291,6 @@ class InformationExtraction {
     });
   };
 
-  getFilesForSuggestions = async (property: string) => {
-    const templates = await this.getTemplatesWithProperty(property);
-    return getFilesForSuggestions(templates, property);
-  };
-
   materialsForSuggestions = async (files: FileWithAggregation[], property: string) => {
     const serviceUrl = await this.serviceUrl();
 
@@ -317,6 +298,11 @@ class InformationExtraction {
   };
 
   trainModel = async (property: string) => {
+    const [model] = await IXModelsModel.get({ propertyName: property });
+    if (model && !model.findingSuggestions) {
+      model.findingSuggestions = true;
+      await IXModelsModel.save(model);
+    }
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
@@ -331,29 +317,46 @@ class InformationExtraction {
     });
 
     await this.saveModelProcess(property);
+
     return { status: 'processing_model', message: 'Training model' };
   };
 
   status = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
-      status: 'processing',
     });
 
-    if (currentModel) {
+    if (!currentModel) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    if (currentModel.status === ModelStatus.processing) {
       return { status: 'processing_model', message: 'Training model' };
     }
 
-    const [suggestion] = await IXSuggestionsModel.get({
-      propertyName: property,
-      status: 'processing',
-    });
-
-    if (suggestion) {
-      return { status: 'processing_suggestions', message: 'Getting suggestions' };
+    if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
+      const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
+      return {
+        status: 'processing_suggestions',
+        message: 'Finding suggestions',
+        data: suggestionStatus,
+      };
     }
 
     return { status: 'ready', message: 'Ready' };
+  };
+
+  stopModel = async (propertyName: string) => {
+    const res = await IXModelsModel.db.findOneAndUpdate(
+      { propertyName },
+      { $set: { findingSuggestions: false } },
+      {}
+    );
+    if (res) {
+      return { status: 'ready', message: 'Ready' };
+    }
+
+    return { status: 'error', message: '' };
   };
 
   materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
@@ -366,13 +369,13 @@ class InformationExtraction {
   };
 
   saveModelProcess = async (property: string) => {
-    const [currentModel] = await IXModelsModel.get({
+    const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
 
-    await IXModelsModel.save({
+    await ixmodels.save({
       ...currentModel,
-      status: 'processing',
+      status: ModelStatus.processing,
       creationDate: new Date().getTime(),
       propertyName: property,
     });
@@ -391,21 +394,33 @@ class InformationExtraction {
       const [currentModel] = await IXModelsModel.get({
         propertyName: message.params!.property_name,
       });
+
       if (message.task === 'create_model' && message.success) {
-        await IXModelsModel.save({
+        await ixmodels.save({
           ...currentModel,
-          status: 'ready',
+          status: ModelStatus.ready,
           creationDate: new Date().getTime(),
         });
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
 
       if (message.task === 'suggestions') {
         await this.saveSuggestions(message);
         await this.updateSuggestionStatus(message, currentModel);
-        await this.getSuggestions(message.params!.property_name);
       }
+
+      if (!currentModel.findingSuggestions) {
+        emitToTenant(
+          message.tenant,
+          'ix_model_status',
+          message.params!.property_name,
+          'ready',
+          'Canceled'
+        );
+        return;
+      }
+
+      await this.getSuggestions(message.params!.property_name);
     }, message.tenant);
   };
 

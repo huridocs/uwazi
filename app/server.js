@@ -15,6 +15,8 @@ import * as Tracing from '@sentry/tracing';
 
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
+import { registerEventListeners } from 'api/eventListeners';
+import { applicationEventsBus } from 'api/eventsbus';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -133,6 +135,8 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     app.use(Sentry.Handlers.errorHandler());
   }
   app.use(errorHandlingMiddleware);
+  registerEventListeners(applicationEventsBus);
+
   if (config.externalServices) {
     // eslint-disable-next-line global-require
     require('./worker');
