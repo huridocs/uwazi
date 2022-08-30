@@ -11,7 +11,11 @@ import { store } from 'app/store';
 import { t } from 'app/I18N';
 import { FormConfigSelect } from '../FormConfigSelect';
 
-const defineTemplateProperty = (content: string, _id?: string) => ({
+const defineTemplateInStore = (
+  content: string,
+  _id?: string,
+  errors: { [key: string]: boolean } = {}
+) => ({
   data: {
     properties: [
       {
@@ -24,7 +28,7 @@ const defineTemplateProperty = (content: string, _id?: string) => ({
     name: 'template1',
   },
   formState: {
-    $form: { errors: [], submitFailed: false },
+    $form: { errors, submitFailed: false },
   },
 });
 
@@ -37,7 +41,7 @@ describe('FormConfigSelect', () => {
     state = {
       ...defaultState,
       locale: 'en',
-      template: { ...defineTemplateProperty('1', 'id1') },
+      template: { ...defineTemplateInStore('1', 'id1') },
       thesauris: Immutable.fromJS([
         { _id: '1', values: [], name: 'Thesauri 1' },
         { _id: '2', values: [], name: 'Thesauri 2' },
@@ -103,7 +107,7 @@ describe('FormConfigSelect', () => {
       t.resetCachedTranslation();
       render();
 
-      state = { ...state, template: { ...defineTemplateProperty('2', 'id1') } };
+      state = { ...state, template: { ...defineTemplateInStore('2', 'id1') } };
 
       renderResult.rerender(
         <Provider store={reduxStore}>
@@ -119,7 +123,7 @@ describe('FormConfigSelect', () => {
     it('should not show the warning when changing select thesaurus for new properties', () => {
       render();
 
-      state = { ...state, template: { ...defineTemplateProperty('2') } };
+      state = { ...state, template: { ...defineTemplateInStore('2') } };
 
       renderResult.rerender(
         <Provider store={reduxStore}>
@@ -134,8 +138,46 @@ describe('FormConfigSelect', () => {
   });
 
   describe('when the fields are invalid', () => {
-    it('should render the label with errors', () => {});
+    it('should render the label with errors if field is empty', () => {
+      state = {
+        ...state,
+        template: {
+          ...defineTemplateInStore('1', 'id1', { 'properties.0.label.required': true }),
+        },
+      };
 
-    it('should render the list select with errors', () => {});
+      render();
+
+      const labelInput = screen.getByText('Label').parentElement?.parentElement;
+      expect(labelInput?.className).toBe('form-group has-error');
+    });
+
+    it('should render the label with errors if field is duplicated', () => {
+      state = {
+        ...state,
+        template: {
+          ...defineTemplateInStore('1', 'id1', { 'properties.0.label.duplicated': true }),
+        },
+      };
+
+      render();
+
+      const labelInputContainer = screen.getByText('Label').parentElement?.parentElement;
+      expect(labelInputContainer?.className).toBe('form-group has-error');
+    });
+
+    it('should render the thesauri selector with errors if its empty', () => {
+      state = {
+        ...state,
+        template: {
+          ...defineTemplateInStore('1', 'id1', { 'properties.0.content.required': true }),
+        },
+      };
+
+      render();
+      const thesauriSelectorContainer =
+        screen.getAllByText('Thesauri')[0].parentElement?.parentElement;
+      expect(thesauriSelectorContainer?.className).toBe('form-group has-error');
+    });
   });
 });

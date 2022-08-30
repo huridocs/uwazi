@@ -22,9 +22,7 @@ const mapStateToProps = (state: IStore, ownProps: formConfigSelectComponentProps
     labelHasError: checkErrorsOnLabel(state, ownProps),
     contentRequiredError:
       //@ts-ignore
-      template.formState.$form.errors[`properties.${ownProps.index}.content.required`] &&
-      //@ts-ignore
-      template.formState.$form.submitFailed,
+      template.formState.$form.errors[`properties.${ownProps.index}.content.required`],
     templateId: template.data._id,
     thesauris,
     property,
