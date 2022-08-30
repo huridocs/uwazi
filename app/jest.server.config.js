@@ -5,7 +5,11 @@ module.exports = {
   name: 'server',
   testRunner: 'jasmine2',
   displayName: 'Server',
-  testMatch: ['**/api/**/specs/*spec.(j|t)s?(x)', '**/shared/**/specs/*spec.(j|t)s?(x)'],
+  testMatch: [
+    '**/api/**/specs/*spec.(j|t)s?(x)',
+    '**/api2/**/specs/*spec.(j|t)s?(x)',
+    '**/shared/**/specs/*spec.(j|t)s?(x)',
+  ],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/setUpJestServer.js'],
   globalSetup: '<rootDir>/jestServerGlobalSetup.js',

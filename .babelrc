@@ -37,6 +37,7 @@
           "app": "./app/react",
           "shared": "./app/shared",
           "api": "./app/api",
+          "api2": "./app/api2",
           "UI": "./app/react/UI"
         }
       }

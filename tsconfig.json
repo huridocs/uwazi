@@ -17,6 +17,7 @@
     "paths": {
       // must match .bablerc
       "api/*": ["./app/api/*"],
+      "api2/*": ["./app/api2/*"],
       "app/*": ["./app/react/*"],
       "shared/*": ["./app/shared/*"],
       "UI": ["./app/react/UI"],
