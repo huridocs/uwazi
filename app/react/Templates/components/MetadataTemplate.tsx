@@ -30,7 +30,7 @@ import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 
 import { TemplateAsPageControl } from './TemplateAsPageControl';
-import validator from './ValidateTemplate';
+import { validate } from './ValidateTemplate';
 
 interface MetadataTemplateProps {
   notify(message: any, type: any): any;
@@ -157,7 +157,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
           onSubmit={this.onSubmit}
           onSubmitFailed={this.onSubmitFailed}
           className="metadataTemplate"
-          validators={validator(
+          validators={validate(
             this.props.properties,
             commonProperties,
             this.props.templates.toJS(),
