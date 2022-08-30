@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { difference, differenceBy, isUndefined, remove } from 'lodash';
+import { differenceBy } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
 import { Translate, actions } from 'app/I18N';
@@ -125,7 +125,7 @@ const LanguageList = ({
       <div className="panel-heading">
         <Translate>Available Languages</Translate>
       </div>
-      <div className="installed-languages">
+      <div className="available-languages">
         {availableLanguages.map(language => (
           <div key={language.key} className="row">
             <div className="col">
