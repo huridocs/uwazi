@@ -885,14 +885,14 @@ describe('entities', () => {
     it('should return all entities (including unpublished) if required', async () => {
       const docs = await entities.getByTemplate(templateId, 'en', null, false);
       expect(docs.length).toBe(7);
-      expect(docs.map(d => d.title)).toEqual([
-        'shared2title',
-        'value2',
-        'value0',
-        'Unpublished entity',
+      expect(docs.sort((a, b) => a.title.localeCompare(b.title)).map(d => d.title)).toEqual([
         'Batman finishes',
         'Batman still not done',
         'EN',
+        'shared2title',
+        'Unpublished entity',
+        'value0',
+        'value2',
       ]);
     });
 
@@ -902,12 +902,14 @@ describe('entities', () => {
         role: 'collaborator',
         groups: [],
       });
-      const docs = await entities.getByTemplate(templateId, 'en', null, false);
+      const docs = (await entities.getByTemplate(templateId, 'en', null, false)).sort((a, b) =>
+        b.title.localeCompare(a.title)
+      );
       expect(docs.length).toBe(4);
       expect(docs[0].title).toBe('Unpublished entity');
-      expect(docs[1].title).toBe('Batman finishes');
+      expect(docs[1].title).toBe('EN');
       expect(docs[2].title).toBe('Batman still not done');
-      expect(docs[3].title).toBe('EN');
+      expect(docs[3].title).toBe('Batman finishes');
     });
   });
 
