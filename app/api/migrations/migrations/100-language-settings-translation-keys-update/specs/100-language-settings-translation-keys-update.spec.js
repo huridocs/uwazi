@@ -34,7 +34,7 @@ describe('migration remove-obsolete-translation-keys', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(95);
+    expect(migration.delta).toBe(100);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {

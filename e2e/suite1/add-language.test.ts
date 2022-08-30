@@ -24,9 +24,7 @@ describe('Add language', () => {
     await expect(page).toClick('span', { text: 'Show in cards' });
     await expect(page).toClick('span', { text: 'Save' });
     await expect(page).toClick('span', { text: 'Languages' });
-    await expect(page).toClick(
-      'ul.list-group.document-types > li:nth-child(1) > div > button.template-remove'
-    );
+    await expect(page).toClick('button', { text: 'Add language' });
     await page.waitForSelector('div.modal-content');
     await expect(page).toFill('div.modal-content div.modal-body input', 'CONFIRM');
     await expect(page).toClick('span', { text: 'Accept' });
