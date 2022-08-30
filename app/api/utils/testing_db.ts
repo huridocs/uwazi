@@ -66,7 +66,7 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
 
 const initMongoServer = async (dbName: string) => {
   // mongod = await createNewMongoDB(dbName);
-  const uri = 'mongodb://localhost/'
+  const uri = 'mongodb://localhost/';
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
@@ -117,10 +117,13 @@ const testingDB: {
   },
 
   async disconnect() {
-    await mongoose.disconnect();
-    if (mongod) {
-      await mongod.stop();
+    if (this.mongodb) {
+      await this.mongodb.dropDatabase();
     }
+    await mongoose.disconnect();
+    // if (mongod) {
+    //   await mongod.stop();
+    // }
     testingTenants.restoreCurrentFn();
   },
 

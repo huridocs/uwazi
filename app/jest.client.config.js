@@ -9,6 +9,10 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],
   moduleFileExtensions: [...defaults.moduleFileExtensions, 'd.ts'],
+  snapshotFormat: {
+    escapeString: true,
+    printBasicPrototype: true,
+  },
   transform: {
     '\\.[jt]sx?$': ['babel-jest', { rootMode: 'upward' }],
   },
