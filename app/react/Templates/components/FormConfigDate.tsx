@@ -29,7 +29,7 @@ const FormConfigDateComponent = ({ index, type, labelHasError, property }: mappe
   <div>
     <div className={`form-group${labelHasError ? ' has-error' : ''}`}>
       <label htmlFor="property-label">
-        <Translate>Name</Translate>
+        <Translate>Label</Translate>
       </label>
       <Field model={`template.data.properties[${index}].label`}>
         <input className="form-control" id="property-label" />
