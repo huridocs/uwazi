@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { differenceBy } from 'lodash';
+import { difference, differenceBy, isUndefined, remove } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
 import { Translate, actions } from 'app/I18N';
@@ -24,10 +24,20 @@ const SetAsDefaultButton = ({
   </button>
 );
 
-const TranslationAvailable = () => <Translate>Available default translation</Translate>;
+const TranslationAvailable = () => (
+  <div className="translation-available">
+    <Translate>Available default translation</Translate>
+  </div>
+);
 
-const DeleteButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
-  <button className="btn btn-danger btn-xs template-remove" onClick={onClick} type="button">
+const DeleteButton = ({
+  onClick,
+  className,
+}: {
+  onClick: React.MouseEventHandler;
+  className?: string;
+}) => (
+  <button className={`btn btn-danger btn-xs ${className}`} onClick={onClick} type="button">
     <Icon icon="trash-alt" /> &nbsp;
     <span>
       <Translate>Delete language</Translate>
@@ -35,10 +45,9 @@ const DeleteButton = ({ onClick }: { onClick: React.MouseEventHandler }) => (
   </button>
 );
 
-const mapStateToProps = (state: IStore & { locale: string }) => {
-  const { settings, locale } = state;
-  return { languages: settings.collection.get('languages'), locale };
-};
+const mapStateToProps = (state: IStore) => ({
+  languages: state.settings.collection.get('languages'),
+});
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
@@ -55,106 +64,75 @@ type MappedProps = ConnectedProps<typeof connector>;
 
 const LanguageList = ({
   languages,
-  locale,
   setDefaultLanguage,
   deleteLanguage,
   addLanguage,
 }: MappedProps) => {
-  const currentLanguages: LanguageSchema[] = languages?.toJS();
-  const [availableLanguages, setAvailableLanguages] = useState<LanguageSchema[]>([]);
   const [addingLanguage, setAddingLanguage] = useState<LanguageSchema>();
   const [deletingLanguage, setDeletingLanguage] = useState<LanguageSchema>();
+
+  const [installedLanguages, setInstalledLanguages] = useState<LanguageSchema[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<LanguageSchema[]>([]);
 
   useEffect(() => {
     getLanguages()
       .then((languagesList: LanguageSchema[]) => {
-        const filteredLanguagesList = differenceBy(languagesList, currentLanguages, 'key');
-        setAvailableLanguages(filteredLanguagesList);
+        const currentLanguages = languages?.toJS() || [];
+        setAvailableLanguages(differenceBy(languagesList, currentLanguages, 'key'));
+        setInstalledLanguages(currentLanguages);
       })
       .catch(_e => {});
   }, [languages]);
 
-  const confirmLanguageAddition = (language: LanguageSchema) => (
-    <Confirm
-      accept={() => {
-        addLanguage({ ...language });
-        setAddingLanguage(undefined);
-      }}
-      cancel={() => {
-        setAddingLanguage(undefined);
-      }}
-      title={
-        <>
-          <Translate>Confirm add</Translate>&nbsp;{language.label}
-        </>
-      }
-      message="This action may take some time while we add the extra language to the entire collection."
-      extraConfirm
-      type="success"
-    />
-  );
-
-  const confirmLanguageDeletion = (language: LanguageSchema) => (
-    <Confirm
-      accept={() => {
-        deleteLanguage(language.key);
-        setDeletingLanguage(undefined);
-      }}
-      cancel={() => {
-        setDeletingLanguage(undefined);
-      }}
-      title={
-        <>
-          <Translate>Confirm delete </Translate>&nbsp;{language.label}
-        </>
-      }
-      message={
-        <>
-          <Translate>Are you sure you want to delete</Translate>&nbsp; {language.label}
-          <Translate> language?</Translate>
-          <Translate>
-            This action may take some time, can not be undone and will delete all the information in
-            that language.
-          </Translate>
-        </>
-      }
-      extraConfirm
-    />
-  );
   return (
-    <div className="panel panel-default">
+    <div className="panel panel-default settings-content">
       <div className="panel-heading">
         <Translate>Active Languages</Translate>
       </div>
-      <ul className="list-group document-types">
-        {currentLanguages.map((language: LanguageSchema) => (
-          <li key={language.key} className="list-group-item">
-            <span className="force-ltr">{`${language.label} (${language.key})`}</span>
-            {language.default}
-            <div className="list-group-item-actions">
-              {language.default && <SetAsDefaultButton className="btn-success" />}
-              {!language.default && (
-                <>
-                  <SetAsDefaultButton onClick={() => setDefaultLanguage(language.key)} />
-                  <DeleteButton onClick={() => setDeletingLanguage(language)} />
-                </>
-              )}
+      <div className="installed-languages">
+        {installedLanguages.map((language: LanguageSchema) => (
+          <div key={language.key} className="row">
+            <div className="col">{`${language.label} (${language.key})`}</div>
+            <div className="col">
+              <button
+                type="button"
+                onClick={() => {
+                  setAddingLanguage(language);
+                }}
+                className="btn btn-xs"
+              >
+                <Icon icon="sync" /> &nbsp;
+                <span>
+                  <Translate>Reset default translation</Translate>
+                </span>
+              </button>
             </div>
-          </li>
+            <div className="col">
+              <SetAsDefaultButton
+                className={language.default ? 'btn-success' : ''}
+                onClick={!language.default ? () => setDefaultLanguage(language.key) : () => {}}
+              />
+            </div>
+            <div className="col">
+              <DeleteButton
+                onClick={() => setDeletingLanguage(language)}
+                className={language.default ? 'hid' : ''}
+              />
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
       <div className="panel-heading">
         <Translate>Available Languages</Translate>
       </div>
-      <ul className="list-group document-types">
+      <div className="installed-languages">
         {availableLanguages.map(language => (
-          <li key={language.key} className="list-group-item">
-            <span className="force-ltr">
+          <div key={language.key} className="row">
+            <div className="col">
               {`${language.label} (${language.key}) `}
               {language.translationAvailable && <TranslationAvailable />}
-            </span>
-            <div className="list-group-item-actions">
-              &nbsp;
+            </div>
+            <div className="col">
               <button
                 type="button"
                 onClick={() => {
@@ -168,11 +146,56 @@ const LanguageList = ({
                 </span>
               </button>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
-      {addingLanguage && confirmLanguageAddition(addingLanguage)}
-      {deletingLanguage && confirmLanguageDeletion(deletingLanguage)}
+      </div>
+
+      {addingLanguage && (
+        <Confirm
+          accept={() => {
+            addLanguage({ ...addingLanguage });
+            setAddingLanguage(undefined);
+          }}
+          cancel={() => {
+            setAddingLanguage(undefined);
+          }}
+          title={
+            <>
+              <Translate>Confirm add</Translate>&nbsp;{addingLanguage.label}
+            </>
+          }
+          message="This action may take some time while we add the extra language to the entire collection."
+          extraConfirm
+          type="success"
+        />
+      )}
+      {deletingLanguage && (
+        <Confirm
+          accept={() => {
+            deleteLanguage(deletingLanguage.key);
+            setDeletingLanguage(undefined);
+          }}
+          cancel={() => {
+            setDeletingLanguage(undefined);
+          }}
+          title={
+            <>
+              <Translate>Confirm delete </Translate>&nbsp;{deletingLanguage.label}
+            </>
+          }
+          message={
+            <>
+              <Translate>Are you sure you want to delete</Translate>&nbsp; {deletingLanguage.label}
+              <Translate> language?</Translate>
+              <Translate>
+                This action may take some time, can not be undone and will delete all the
+                information in that language.
+              </Translate>
+            </>
+          }
+          extraConfirm
+        />
+      )}
     </div>
   );
 };
