@@ -17,7 +17,7 @@
 
 @media (min-width: 1024px) {
   .settings-navigation {
-    width: 250px;
+    width: $SettingsNavigationWidth;
     height: 100%;
     overflow-y: auto;
     border-right: 1px solid $c-grey-light;
@@ -25,7 +25,7 @@
 
   .settings-content {
     position: relative;
-    width: calc(100% - 250px);
+    width: $SettingsContentWidth;
     overflow-y: auto;
   }
 }
@@ -109,9 +109,14 @@
 
 .settings-content {
   padding: 15px;
+  margin-bottom: $FooterHeight;
 
-  form {
-    margin-bottom: 100px;
+  &.without-footer {
+    margin-bottom: 0px;
+  }
+
+  &.footer-extra-row {
+    margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
   }
 
   .panel-heading {
@@ -161,59 +166,11 @@
   }
 }
 
-.settings-footer {
-  position: fixed;
-  bottom: 0;
-  right: 50%;
-  transform: translateX(50%);
-  padding: 0 0 20px;
-  text-align: center;
-  white-space: nowrap;
-  z-index: 4;
-  @media (min-width: 1024px) {
-    right: calc((100% - 400px) / 2);
-  }
-
-  &.clustered {
-    @media (min-width: 1024px) {
-      right: calc((100% - 200px) / 2);
+@media (max-width: 1023px) {
+  .settings-content {
+    &.sm-footer-extra-row {
+      margin-bottom: calc(#{$FooterHeight} * 2 + 2px);
     }
-
-    .btn {
-      margin: 0 9px 25px 9px;
-    }
-
-    span {
-      line-height: 1;
-      white-space: normal;
-    }
-  }
-
-  .btn {
-    position: relative;
-    border-radius: 50%;
-    width: $header-height;
-    height: $header-height;
-    line-height: $header-height;
-    font-size: $f-size-lg;
-    padding: 0;
-    margin: 0 6px;
-  }
-
-  .btn-label {
-    color: $c-grey-dark;
-    position: absolute;
-    top: 100%;
-    font-size: $f-size-xs;
-    line-height: 1.5em;
-    left: 50%;
-    transform: translateX(-50%) translateY(2px);
-    background: rgba(255, 255, 255, 0.8);
-    padding: 0 5px;
-  }
-
-  .btn:hover .btn-label {
-    color: $c-black;
   }
 }
 
@@ -259,7 +216,7 @@
 .settings-content > .panel > .panel-body,
 .settings-content > .panel > .list-group {
   // height: calc(100% - 51px);
-  padding-bottom: 85px;
+  // padding-bottom: 85px;
   // overflow-y: scroll;
   div {
     @include pillItem;
@@ -411,7 +368,7 @@
     flex: 1;
 
     form,
-    div,
+    div:not(.settings-footer):not(.btn-cluster),
     label,
     textarea {
       height: 100%;

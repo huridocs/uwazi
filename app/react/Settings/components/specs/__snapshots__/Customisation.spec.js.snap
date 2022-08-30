@@ -2,52 +2,56 @@
 
 exports[`Customisation should render Customisation component 1`] = `
 <div
-  className="panel panel-default settings-custom-css"
+  className="settings-content"
 >
   <div
-    className="panel-heading"
+    className="panel panel-default settings-custom-css"
   >
-    Custom styles
-  </div>
-  <div
-    className="panel-body"
-  >
-    <Connect(Form)
-      model="settings.settings"
-      onSubmit={[Function]}
+    <div
+      className="panel-heading"
     >
-      <Modeled(Connect(Field))
-        model=".customCSS"
+      Custom styles
+    </div>
+    <div
+      className="panel-body"
+    >
+      <Connect(Form)
+        model="settings.settings"
+        onSubmit={[Function]}
       >
-        <label
-          className="form-group-label"
-          htmlFor="custom_css"
+        <Modeled(Connect(Field))
+          className="test"
+          model=".customCSS"
         >
-          Custom CSS
-          <textarea
-            className="form-control"
-            id="custom_css"
-          />
-        </label>
-      </Modeled(Connect(Field))>
-      <div
-        className="settings-footer"
-      >
-        <button
-          className="btn btn-success"
-          type="submit"
-        >
-          <Connect(Icon)
-            icon="save"
-          />
-          <span
-            className="btn-label"
+          <label
+            className="form-group-label"
+            htmlFor="custom_css"
           >
-            Update
-          </span>
-        </button>
-      </div>
-    </Connect(Form)>
+            Custom CSS
+            <textarea
+              className="form-control"
+              id="custom_css"
+            />
+          </label>
+        </Modeled(Connect(Field))>
+        <div
+          className="settings-footer remove-extra-nesting"
+        >
+          <div
+            className="btn-cluster content-right"
+          >
+            <button
+              className="btn btn-success btn-extra-padding"
+              type="submit"
+            >
+              <Connect(Translate)>
+                Save
+              </Connect(Translate)>
+            </button>
+          </div>
+        </div>
+      </Connect(Form)>
+    </div>
   </div>
 </div>
 `;

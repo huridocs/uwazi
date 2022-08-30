@@ -4,6 +4,10 @@ import RouteHandler from 'app/App/RouteHandler';
 
 export default class NewPage extends RouteHandler {
   render() {
-    return <PageCreator />;
+    return (
+      <div className="settings-content">
+        <PageCreator />
+      </div>
+    );
   }
 }

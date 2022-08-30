@@ -3,14 +3,12 @@
  */
 import 'mutationobserver-shim';
 import React from 'react';
-import { ReactWrapper } from 'enzyme';
-import { SidePanel } from 'app/Layout';
+import { screen, act, fireEvent, waitFor } from '@testing-library/react';
 import {
   UserGroupSidePanel,
   UserGroupSidePanelProps,
 } from 'app/Users/components/usergroups/UserGroupSidePanel';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import { MultiSelect } from 'app/Forms/components/MultiSelect';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 
 describe('UserGroupSidePanel', () => {
   const userGroup = {
@@ -35,26 +33,22 @@ describe('UserGroupSidePanel', () => {
     onSave: jasmine.createSpy('onSave'),
     onDelete: jasmine.createSpy('onDelete'),
   };
-
-  let component: ReactWrapper<React.Component['props'], React.Component['state'], React.Component>;
-
   function render(args?: UserGroupSidePanelProps) {
     const props = { ...defaultProps, ...args };
-    return renderConnectedMount(UserGroupSidePanel, {}, props, true);
+    return renderConnectedContainer(<UserGroupSidePanel {...props} />, () => defaultState);
   }
-
-  beforeEach(() => {
-    component = render();
-  });
-
   describe('Side panel opening', () => {
-    it('should set SidePanel as open if opened prop is true', () => {
-      const sidePanel = component.find(SidePanel);
-      expect(sidePanel.props().open).toBe(true);
+    it('should set SidePanel as open if opened prop is true', async () => {
+      render();
+      expect(screen.queryByText('Name of the group')).toBeInTheDocument();
     });
 
-    it('should call the closePanel method on Discard Changes button click', () => {
-      component.find({ id: 'discardChangesBtn' }).simulate('click');
+    it('should call the closePanel method on Cancel button click', () => {
+      render();
+      const cancelButton = screen.getByText('Cancel').parentElement!;
+      act(() => {
+        fireEvent.click(cancelButton);
+      });
       expect(defaultProps.closePanel).toHaveBeenCalled();
     });
   });
@@ -63,12 +57,10 @@ describe('UserGroupSidePanel', () => {
     it('should show creation labels', () => {
       const props = { ...defaultProps };
       props.userGroup = { name: 'NEW GROUP', members: [] };
-      const wrapper = render(props);
-      const header = wrapper.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = wrapper.find('#submitLabel').find('Connect(Translate)');
-      expect(header.props().children).toEqual('Add Group');
-      expect(submitBtn.props().children).toEqual('Create Group');
-      expect(wrapper.find('#deleteBtn').length).toBe(0);
+      render(props);
+      expect(screen.queryByText('Add Group')).toBeInTheDocument();
+      expect(screen.queryByText('Save')).toBeInTheDocument();
+      expect(screen.queryByText('Delete')).not.toBeInTheDocument();
     });
 
     it.each<any>([
@@ -76,93 +68,99 @@ describe('UserGroupSidePanel', () => {
       { field: 'name', value: '', message: 'Name is required' },
       { field: 'name', value: 'a'.repeat(55), message: 'Name is too long' },
       { field: 'name', value: 'a', message: 'Name is too short' },
-    ])(
-      'should not save if there is an invalid value %s',
-      ({ field, value, message }, done: jest.DoneCallback) => {
-        const props = { ...defaultProps };
-        const newGroup = { name: 'NEW GROUP', members: [] };
-        props.userGroup = { ...newGroup, [field]: value };
-        const wrapper = render(props);
-        wrapper.find('form').simulate('submit');
-        setTimeout(() => {
-          wrapper.update();
-          const error = wrapper
-            .find({ id: `${field}_field` })
-            .children()
-            .find('div')
-            .at(0);
-          expect(defaultProps.onSave).not.toBeCalled();
-          expect(error.text()).toEqual(message);
-          done();
-        }, 0);
-      }
-    );
+    ])('should not save if there is an invalid value %s', async ({ field, value, message }) => {
+      const props = { ...defaultProps };
+      const newGroup = { name: 'NEW GROUP', members: [] };
+      props.userGroup = { ...newGroup, [field]: value };
+      render(props);
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      });
 
-    it.each(['Group 1', ''])(
-      'should not save if there is another group with the same name',
-      (groupName: string) => {
-        const props = { ...defaultProps };
-        props.userGroup = { name: groupName, members: [] };
-        const wrapper = render(props);
-        wrapper.find('form').simulate('submit');
-        expect(defaultProps.onSave).not.toBeCalled();
-      }
-    );
+      expect(defaultProps.onSave).not.toBeCalled();
+      expect(await screen.findByText(message)).toBeInTheDocument();
+    });
   });
+
+  const checkGroupMembers = (expectedValues: Partial<HTMLInputElement>[]) => {
+    const availableUsers = screen.getAllByRole('checkbox') as HTMLInputElement[];
+    const groupMembers = availableUsers.values();
+
+    expectedValues.forEach(option => {
+      expect(groupMembers.next().value).toMatchObject(option);
+    });
+  };
 
   describe('Editing user group', () => {
     it('should show the name of the received group', () => {
-      const nameInput = component.find({ id: 'name_field' }).find('input');
-      expect((nameInput.getDOMNode() as HTMLInputElement).value).toEqual(
-        defaultProps.userGroup.name
-      );
+      render();
+      const nameInput = screen.getByRole('textbox') as HTMLInputElement;
+      expect(nameInput.value).toEqual(userGroup.name);
     });
 
     it('should show edition labels', () => {
-      const header = component.find('.sidepanel-header').find('Connect(Translate)');
-      const submitBtn = component.find('#submitLabel').find('Connect(Translate)');
-      expect(header.props().children).toEqual('Edit Group');
-      expect(submitBtn.props().children).toEqual('Save Group');
+      render();
+      expect(screen.queryByText('Cancel')).toBeInTheDocument();
+      expect(screen.queryByText('Save')).toBeInTheDocument();
+      expect(screen.queryByText('Delete')).toBeInTheDocument();
     });
 
     describe('User members', () => {
       it('should list all the available users sorted alphabetically', () => {
-        const availableUsers = component.find(MultiSelect);
-        expect(availableUsers.props().options).toEqual([
-          { _id: 'user2', username: 'ana johnson' },
-          { _id: 'user4', username: 'john smith' },
-          { _id: 'user3', username: 'maria rodriguez' },
-          { _id: 'user1', username: 'martha perez' },
+        render();
+        const availableUsers = screen.getAllByRole('checkbox') as HTMLInputElement[];
+        expect(availableUsers.map(user => user.labels![0].textContent)).toEqual([
+          'ana johnson',
+          'martha perez',
+          'john smith',
+          'maria rodriguez',
         ]);
       });
 
       it('should pass as value the ids of group members', () => {
-        expect(component.find(MultiSelect).props().value).toEqual(['user1', 'user2']);
+        render();
+        checkGroupMembers([
+          { value: 'user2', checked: true },
+          { value: 'user1', checked: true },
+          { value: 'user4', checked: false },
+          { value: 'user3', checked: false },
+        ]);
       });
 
       it('should remove the user if its is unchecked', () => {
-        const userToUncheck = component.find(MultiSelect).find('input').at(0);
-        userToUncheck.simulate('change');
-        const selectedUsers = component.find(MultiSelect).props().value;
-        expect(selectedUsers).toEqual(['user1']);
+        render();
+        const firstMember = screen.getByRole('checkbox', {
+          name: 'ana johnson',
+        }) as HTMLInputElement;
+
+        fireEvent.click(firstMember);
+        checkGroupMembers([
+          { value: 'user1', checked: true },
+          { value: 'user2', checked: false },
+          { value: 'user4', checked: false },
+          { value: 'user3', checked: false },
+        ]);
       });
     });
 
     describe('Saving user group', () => {
-      it('should call the save callback when save button is clicked', done => {
-        const nameInput = component.find({ id: 'name_field' }).find('input');
-        // @ts-ignore
-        nameInput.instance().value = 'GROUP 1';
-        nameInput.simulate('change');
-        component.find('form').simulate('submit');
-        setTimeout(() => {
-          expect(defaultProps.onSave).toHaveBeenCalledWith({
-            _id: 'group1Id',
-            name: 'GROUP 1',
-            members: [{ refId: 'user2' }, { refId: 'user1' }],
+      it('should call the save callback when save button is clicked', async () => {
+        render();
+        const nameInput = screen.getByRole('textbox') as HTMLInputElement;
+        expect(nameInput.value).toEqual(userGroup.name);
+        act(() => {
+          fireEvent.change(nameInput, {
+            target: { value: 'GROUP 1' },
           });
-          done();
-        }, 0);
+        });
+        await waitFor(() => {
+          fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        });
+        expect(defaultProps.onSave).toHaveBeenCalledWith({
+          _id: 'group1Id',
+          name: 'GROUP 1',
+          members: [{ refId: 'user2' }, { refId: 'user1' }],
+        });
       });
     });
   });
@@ -172,38 +170,59 @@ describe('UserGroupSidePanel', () => {
       const props = { ...defaultProps };
       // @ts-ignore
       props.users[2].using2fa = false;
-      const userToCheck = component.find(MultiSelect).find('input').at(2);
-      userToCheck.simulate('change');
+      render(props);
+      const [, , userToCheck] = screen.getAllByRole('checkbox') as HTMLInputElement[];
+      act(() => {
+        fireEvent.click(userToCheck);
+      });
     });
 
     it('should add a checked user to the selected users', () => {
-      const selectedUsers = component.find(MultiSelect).props().value;
-      expect(selectedUsers).toEqual(['user1', 'user2', 'user4']);
+      checkGroupMembers([
+        { value: 'user2', checked: true },
+        { value: 'user4', checked: true },
+        { value: 'user1', checked: true },
+        { value: 'user3', checked: false },
+      ]);
     });
 
-    it('should save the group with its members', done => {
-      component.find('form').simulate('submit');
-      setTimeout(() => {
-        expect(defaultProps.onSave).toHaveBeenCalledWith({
-          _id: 'group1Id',
-          name: 'Group 1',
-          members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
-        });
-        done();
-      }, 0);
+    it('should save the group with its members', async () => {
+      await waitFor(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      });
+      expect(defaultProps.onSave).toHaveBeenCalledWith({
+        _id: 'group1Id',
+        name: 'Group 1',
+        members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
+      });
     });
   });
 
   describe('Deleting user group', () => {
-    it('should not call the delete callback when cancel deletion', () => {
-      component.find({ id: 'deleteBtn' }).simulate('click');
-      component.find('.cancel-button').simulate('click');
-      expect(defaultProps.onDelete).not.toHaveBeenCalled();
+    it('should not call the delete callback when cancel deletion', done => {
+      render();
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      });
+
+      setTimeout(() => {
+        act(() => {
+          fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+        });
+        expect(defaultProps.onDelete).not.toHaveBeenCalled();
+        done();
+      }, 0);
     });
 
-    it('should call the delete callback when confirm deletion', () => {
-      component.find({ id: 'deleteBtn' }).simulate('click');
-      component.find('.confirm-button').simulate('click');
+    it('should call the delete callback when confirm deletion', async () => {
+      render();
+      await waitFor(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
+      });
       expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });

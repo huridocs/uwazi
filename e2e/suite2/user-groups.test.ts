@@ -49,7 +49,7 @@ describe('User groups', () => {
     it('Should update the name and members of the group', async () => {
       await expect(page).toFill('#name_field > input', 'new name');
       await expect(page).toClick('li', { text: 'admin' });
-      await expect(page).toClick('button', { text: 'Save Group' });
+      await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('.side-panel', { hidden: true });
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
       expect(groupRows).toEqual(['Activistas 2', 'new name 2']);
@@ -61,7 +61,7 @@ describe('User groups', () => {
       await expect(page).toClick('button', { text: 'Add group' });
       await expect(page).toFill('#name_field > input', 'New group');
       await expect(page).toClick('li', { text: 'admin' });
-      await expect(page).toClick('button', { text: 'Create Group' });
+      await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('tbody tr:nth-child(3)');
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
       expect(groupRows).toEqual(['Activistas 2', 'new name 2', 'New group 1']);
