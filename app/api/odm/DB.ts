@@ -4,7 +4,7 @@ import { config } from 'api/config';
 let connection: Connection;
 
 // setting this on createConnection directly is not working, maybe mongoose bug?
-mongoose.set('useCreateIndex', true);
+mongoose.set('useCreateIndex', false);
 
 const DB = {
   async connect(uri: string = config.DBHOST, auth: ConnectionOptions = {}) {

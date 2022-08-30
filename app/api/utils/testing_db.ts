@@ -18,6 +18,7 @@ import { testingTenants } from './testingTenants';
 import { createMongoInstance } from './createMongoInstance';
 import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
+import path from 'path';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
@@ -77,6 +78,7 @@ const testingDB: {
   UserInContextMockFactory: UserInContextMockFactory;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
+  tearDown: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
   /**
@@ -96,7 +98,10 @@ const testingDB: {
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
-      this.dbName = uniqueID();
+      // console.log(`uwazi_testing_${path.basename(expect.getState().testPath).replace(/\./g, '_')}`);
+      this.dbName = `uwazi_testing_${uniqueID()}_${path
+        .basename(expect.getState().testPath)
+        .replace(/[.-]/g, '_')}`.substring(0, 63);
       await initMongoServer(this.dbName);
       // mongo/mongoose types collisions
       //@ts-ignore
@@ -116,8 +121,15 @@ const testingDB: {
     return mongooseConnection;
   },
 
+  async tearDown() {
+    await this.disconnect();
+  },
+
   async disconnect() {
     if (this.mongodb) {
+      // await DB.connectionForDB('admin').command({ "currentOp": 1, "active": true  })
+      // console.log(await this.mongodb.executeDbAdminCommand({ "currentOp": 1, "active": true  }));
+      // await this.mongodb.
       await this.mongodb.dropDatabase();
     }
     await mongoose.disconnect();
