@@ -1,5 +1,4 @@
 import mongoose, { Connection } from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Db } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
@@ -12,10 +11,8 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import uniqueID from 'shared/uniqueID';
-import { ensure } from 'shared/tsUtils';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import { createMongoInstance } from './createMongoInstance';
 import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import path from 'path';
@@ -61,9 +58,6 @@ const fixturer = {
 
 let mongooseConnection: Connection;
 
-export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> =>
-  ensure<MongoMemoryServer>(await createMongoInstance(dbName));
-
 const initMongoServer = async (dbName: string) => {
   const uri = 'mongodb://localhost/';
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
@@ -96,13 +90,10 @@ const testingDB: {
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
-      // console.log(`uwazi_testing_${path.basename(expect.getState().testPath).replace(/\./g, '_')}`);
       this.dbName = `uwazi_testing_${uniqueID()}_${path
-        .basename(expect.getState().testPath)
+        .basename(expect.getState().testPath || '')
         .replace(/[.-]/g, '_')}`.substring(0, 63);
       await initMongoServer(this.dbName);
-      // mongo/mongoose types collisions
-      //@ts-ignore
       mongodb = mongooseConnection.db;
       this.mongodb = mongodb;
 

@@ -307,7 +307,6 @@
     "jest-jasmine2": "^29.0.1",
     "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "mongodb-memory-server": "^8.7.2",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^2.0.0",
     "node-sass": "7.0.1",
@@ -332,14 +331,6 @@
     "webpack-hot-middleware": "^2.25.1",
     "winston-transport": "^4.5.0",
     "worker-loader": "^3.0.8"
-  },
-  "config": {
-    "mongodbMemoryServer": {
-      "version": "4.4.8",
-      "debug": "no",
-      "preferGlobalPath": "0",
-      "runtimeDownload": "0"
-    }
   },
   "engines": {
     "node": ">=14.1.0"
