@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
-import { testingDB } from 'api/utils/testing_db';
 
 import { DB } from '../DB';
 import { instanceModel } from '../model';

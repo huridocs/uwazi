@@ -23,7 +23,6 @@ import path from 'path';
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 let connected = false;
-let mongod: MongoMemoryServer;
 let mongodb: Db;
 
 export type DBFixture = {
@@ -66,7 +65,6 @@ export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> 
   ensure<MongoMemoryServer>(await createMongoInstance(dbName));
 
 const initMongoServer = async (dbName: string) => {
-  // mongod = await createNewMongoDB(dbName);
   const uri = 'mongodb://localhost/';
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
@@ -127,15 +125,9 @@ const testingDB: {
 
   async disconnect() {
     if (this.mongodb) {
-      // await DB.connectionForDB('admin').command({ "currentOp": 1, "active": true  })
-      // console.log(await this.mongodb.executeDbAdminCommand({ "currentOp": 1, "active": true  }));
-      // await this.mongodb.
       await this.mongodb.dropDatabase();
     }
     await mongoose.disconnect();
-    // if (mongod) {
-    //   await mongod.stop();
-    // }
     testingTenants.restoreCurrentFn();
   },
 

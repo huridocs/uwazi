@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-nested-callbacks,max-statements */
 
-import Ajv, { str } from 'ajv';
+import Ajv from 'ajv';
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
