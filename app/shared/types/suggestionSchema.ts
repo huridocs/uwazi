@@ -17,6 +17,8 @@ export enum SuggestionState {
   labelEmpty = 'Empty / Label',
   valueEmpty = 'Empty / Value',
   error = 'Error',
+  processing = 'Processing',
+  emptyMismatch = 'Mismatch / Empty',
 }
 
 export const IXSuggestionSchema = {
@@ -35,6 +37,7 @@ export const IXSuggestionSchema = {
     language: { type: 'string', minLength: 1 },
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+    state: { type: 'string', enum: Object.values(SuggestionState) },
     date: { type: 'number' },
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
@@ -56,6 +59,8 @@ export const EntitySuggestionSchema = {
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
     currentValue: propertyValueSchema,
+    labeledValue: propertyValueSchema,
+    selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
     state: { type: 'string', enum: Object.values(SuggestionState) },
@@ -105,4 +110,14 @@ export const IXSuggestionsQuerySchema = {
       },
     },
   },
+};
+
+export const IXSuggestionsStatsQuerySchema = {
+  title: 'IXSuggestionsStatsQuery',
+  additionalProperties: false,
+  definitions: { SuggestionsQueryFilterSchema },
+  properties: {
+    propertyName: { type: 'string' },
+  },
+  required: ['propertyName'],
 };

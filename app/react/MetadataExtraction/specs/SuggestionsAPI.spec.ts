@@ -5,6 +5,7 @@ import {
   trainModel,
   ixStatus,
   acceptEntitySuggestion,
+  saveConfigurations,
 } from 'app/MetadataExtraction/SuggestionsAPI';
 
 describe('SuggestionsAPI', () => {
@@ -30,7 +31,7 @@ describe('SuggestionsAPI', () => {
   describe('status', () => {
     it('should return the status of the training', async () => {
       const request = new RequestParams();
-      spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: 'data' }));
+      spyOn(api, 'post').and.callFake(async () => Promise.resolve({ json: 'data' }));
       const result = await ixStatus(request);
       expect(result).toEqual('data');
     });
@@ -41,6 +42,15 @@ describe('SuggestionsAPI', () => {
       const request = new RequestParams();
       spyOn(api, 'post').and.callFake(async () => Promise.resolve({ json: 'success' }));
       const result = await acceptEntitySuggestion(request);
+      expect(result).toEqual('success');
+    });
+  });
+
+  describe('saveConfigurations', () => {
+    it('should return settings after saving the configurations', async () => {
+      const request = new RequestParams();
+      spyOn(api, 'post').and.returnValue(Promise.resolve({ json: 'success' }));
+      const result = await saveConfigurations(request);
       expect(result).toEqual('success');
     });
   });
