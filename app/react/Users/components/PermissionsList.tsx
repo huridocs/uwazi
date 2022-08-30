@@ -37,7 +37,7 @@ const permissionsByRole: PermissionByRole[] = [
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
-    label: 'Create connections and references',
+    label: 'Create relationships and references',
     roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
   },
   {
@@ -69,7 +69,7 @@ const permissionsByRole: PermissionByRole[] = [
     roles: { admin: 'full', editor: 'none', collaborator: 'none' },
   },
   {
-    label: 'Create connection types',
+    label: 'Create relationship types',
     roles: { admin: 'full', editor: 'none', collaborator: 'none' },
   },
 ];
