@@ -242,7 +242,7 @@
     "@types/express-session": "^1.17.0",
     "@types/google.maps": "^3.48.2",
     "@types/immutable": "^3.8.7",
-    "@types/jest": "27.4.0",
+    "@types/jest": "29.0.0",
     "@types/jest-environment-puppeteer": "4.3.1",
     "@types/jest-image-snapshot": "^3.1.0",
     "@types/joi": "^14.3.4",
@@ -278,6 +278,7 @@
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "assets-webpack-plugin": "7.1.1",
+    "babel-jest": "^29.0.1",
     "babel-loader": "8.2.5",
     "babel-plugin-module-resolver": "4.1.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
@@ -299,13 +300,13 @@
     "eslint-plugin-react": "v7.30.0",
     "fetch-mock": "^9.11.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "27.5.1",
-    "jest-environment-jsdom": "^27.0.6",
+    "jest": "29.0.1",
+    "jest-environment-jsdom": "29.0.1",
     "jest-extended": "2.0.0",
     "jest-image-snapshot": "^5.1.0",
+    "jest-jasmine2": "^29.0.1",
     "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "mongodb-memory-server": "^8.7.2",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^2.0.0",
     "node-sass": "7.0.1",
@@ -330,14 +331,6 @@
     "webpack-hot-middleware": "^2.25.1",
     "winston-transport": "^4.5.0",
     "worker-loader": "^3.0.8"
-  },
-  "config": {
-    "mongodbMemoryServer": {
-      "version": "4.4.8",
-      "debug": "no",
-      "preferGlobalPath": "0",
-      "runtimeDownload": "0"
-    }
   },
   "engines": {
     "node": ">=14.1.0"
