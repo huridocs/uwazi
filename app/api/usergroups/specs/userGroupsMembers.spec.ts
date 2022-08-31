@@ -6,7 +6,11 @@ import { fixtures, group1Id, group2Id, user1Id } from './fixtures';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingDB.setupFixturesAndContext(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   describe('getByMemberIdList', () => {

@@ -1,5 +1,4 @@
 import mongoose, { Connection } from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Db } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
@@ -12,17 +11,15 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import uniqueID from 'shared/uniqueID';
-import { ensure } from 'shared/tsUtils';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import { createMongoInstance } from './createMongoInstance';
 import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
+import path from 'path';
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 let connected = false;
-let mongod: MongoMemoryServer;
 let mongodb: Db;
 
 export type DBFixture = {
@@ -61,12 +58,8 @@ const fixturer = {
 
 let mongooseConnection: Connection;
 
-export const createNewMongoDB = async (dbName = ''): Promise<MongoMemoryServer> =>
-  ensure<MongoMemoryServer>(await createMongoInstance(dbName));
-
 const initMongoServer = async (dbName: string) => {
-  mongod = await createNewMongoDB(dbName);
-  const uri = mongod.getUri();
+  const uri = 'mongodb://localhost/';
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
@@ -77,6 +70,7 @@ const testingDB: {
   UserInContextMockFactory: UserInContextMockFactory;
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
+  tearDown: () => Promise<void>;
   id: (id?: string | undefined) => ObjectIdSchema;
   clear: (collections?: string[] | undefined) => Promise<void>;
   /**
@@ -96,10 +90,10 @@ const testingDB: {
 
   async connect(options = { defaultTenant: true }) {
     if (!connected) {
-      this.dbName = uniqueID();
+      this.dbName = `uwazi_testing_${uniqueID()}_${path
+        .basename(expect.getState().testPath || '')
+        .replace(/[.-]/g, '_')}`.substring(0, 63);
       await initMongoServer(this.dbName);
-      // mongo/mongoose types collisions
-      //@ts-ignore
       mongodb = mongooseConnection.db;
       this.mongodb = mongodb;
 
@@ -116,11 +110,15 @@ const testingDB: {
     return mongooseConnection;
   },
 
+  async tearDown() {
+    await this.disconnect();
+  },
+
   async disconnect() {
-    await mongoose.disconnect();
-    if (mongod) {
-      await mongod.stop();
+    if (this.mongodb) {
+      await this.mongodb.dropDatabase();
     }
+    await mongoose.disconnect();
     testingTenants.restoreCurrentFn();
   },
 
