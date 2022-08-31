@@ -41,6 +41,7 @@ export default (app: Application) => {
     }),
 
     async (req, res, next) => {
+      if (!req.file) throw new Error('File is not available on request object');
       try {
         const { context } = req.body;
         const loader = new CSVLoader();

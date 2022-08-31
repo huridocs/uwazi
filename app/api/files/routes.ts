@@ -39,6 +39,7 @@ export default (app: Application) => {
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware('document'),
     async (req, res) => {
+      if (!req.file) throw new Error('File is not available on request object');
       try {
         req.emitToSessionSocket('conversionStart', req.body.entity);
         const savedFile = await processDocument(req.body.entity, req.file);

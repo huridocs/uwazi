@@ -12,7 +12,7 @@ import { storage } from './storage';
 type multerCallback = (error: Error | null, destination: string) => void;
 
 const defaultStorage = multer.diskStorage({
-  filename(_req: Request, file: Express.Multer.File, cb: multerCallback) {
+  filename(_req, file: Express.Multer.File, cb: multerCallback) {
     cb(null, generateFileName(file));
   },
 });
