@@ -99,3 +99,13 @@ export function setDefaultLanguage(key) {
       )(dispatch);
     });
 }
+
+export function resetDefaultTranslations(key) {
+  return dispatch =>
+    I18NApi.populateTranslations(new RequestParams({ key })).then(() => {
+      notifications.notify(
+        t('System', 'Translations reset successfully', null, false),
+        'success'
+      )(dispatch);
+    });
+}

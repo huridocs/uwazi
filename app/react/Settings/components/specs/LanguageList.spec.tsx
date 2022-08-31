@@ -6,9 +6,8 @@ import React from 'react';
 import { fireEvent, screen, RenderResult, within, waitFor } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { actions } from 'app/I18N';
+import { actions, I18NApi } from 'app/I18N';
 import LanguageList from '../LanguageList';
-import * as LanguagesAPI from '../LanguagesAPI';
 
 describe('Languages', () => {
   let renderResult: RenderResult;
@@ -59,9 +58,7 @@ describe('Languages', () => {
   };
 
   beforeEach(async () => {
-    spyOn(LanguagesAPI, 'getLanguages').and.callFake(async () =>
-      Promise.resolve(availableLanguages)
-    );
+    spyOn(I18NApi, 'getLanguages').and.callFake(async () => Promise.resolve(availableLanguages));
     spyOn(actions, 'setDefaultLanguage').and.returnValue({
       type: 'SET_DEFAULT_LANGUAGE',
     });

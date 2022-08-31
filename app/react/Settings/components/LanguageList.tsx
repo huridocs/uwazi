@@ -1,13 +1,12 @@
 /* eslint-disable react/no-multi-comp */ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { differenceBy } from 'lodash';
+import { differenceBy, isEmpty } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
-import { Translate, actions } from 'app/I18N';
+import { Translate, actions, I18NApi } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { getLanguages } from './LanguagesAPI';
 
 const SetAsDefaultButton = ({
   className,
@@ -55,6 +54,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
       addLanguage: actions.addLanguage,
       deleteLanguage: actions.deleteLanguage,
       setDefaultLanguage: actions.setDefaultLanguage,
+      resetDefaultTranslations: actions.resetDefaultTranslations,
     },
     dispatch
   );
@@ -67,15 +67,17 @@ const LanguageList = ({
   setDefaultLanguage,
   deleteLanguage,
   addLanguage,
+  resetDefaultTranslations,
 }: MappedProps) => {
   const [addingLanguage, setAddingLanguage] = useState<LanguageSchema>();
   const [deletingLanguage, setDeletingLanguage] = useState<LanguageSchema>();
+  const [resettingLanguage, setResettingLanguage] = useState<LanguageSchema>();
 
   const [installedLanguages, setInstalledLanguages] = useState<LanguageSchema[]>([]);
   const [availableLanguages, setAvailableLanguages] = useState<LanguageSchema[]>([]);
 
   useEffect(() => {
-    getLanguages()
+    I18NApi.getLanguages()
       .then((languagesList: LanguageSchema[]) => {
         const currentLanguages = languages?.toJS() || [];
         setAvailableLanguages(differenceBy(languagesList, currentLanguages, 'key'));
@@ -83,6 +85,10 @@ const LanguageList = ({
       })
       .catch(_e => {});
   }, [languages]);
+
+  if (isEmpty(installedLanguages)) {
+    return null;
+  }
 
   return (
     <div className="panel panel-default settings-content">
@@ -97,9 +103,9 @@ const LanguageList = ({
               <button
                 type="button"
                 onClick={() => {
-                  setAddingLanguage(language);
+                  setResettingLanguage(language);
                 }}
-                className="btn btn-xs"
+                className={`btn btn-xs ${!language.translationAvailable ? 'hid' : ''}`}
               >
                 <Icon icon="sync" /> &nbsp;
                 <span>
@@ -194,6 +200,31 @@ const LanguageList = ({
             </>
           }
           extraConfirm
+        />
+      )}
+      {resettingLanguage && (
+        <Confirm
+          accept={() => {
+            resetDefaultTranslations(resettingLanguage.key);
+            setResettingLanguage(undefined);
+          }}
+          cancel={() => {
+            setResettingLanguage(undefined);
+          }}
+          title={
+            <>
+              <Translate>Confirm reset translations</Translate>&nbsp;{resettingLanguage.label}
+            </>
+          }
+          message={
+            <>
+              <Translate>Are you sure you want to reset the translations for</Translate>&nbsp;{' '}
+              {resettingLanguage.label}
+              <Translate> language?</Translate>
+            </>
+          }
+          extraConfirm
+          type="success"
         />
       )}
     </div>

@@ -10,6 +10,14 @@ describe('migration remove-obsolete-translation-keys', () => {
       key: 'Available default translation',
       value: 'Available default translation',
     },
+    {
+      key: 'Translations reset successfully',
+      value: 'Translations reset successfully',
+    },
+    {
+      key: 'Confirm reset translation',
+      value: 'Confirm reset translation',
+    },
   ];
 
   const obsoleteTranslationKeys = [
