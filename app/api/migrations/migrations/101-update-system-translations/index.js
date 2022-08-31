@@ -8,7 +8,6 @@ const updatedKeys = {
   'Cannot delete connection type:': 'Cannot delete relationship type:',
   'This connection type is being used and cannot be deleted.':
     'This relationship type is being used and cannot be deleted.',
-  Connections: 'Relationships',
 };
 
 export default {
