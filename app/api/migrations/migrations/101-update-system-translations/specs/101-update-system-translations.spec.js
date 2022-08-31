@@ -10,6 +10,7 @@ const expectedTranslations = {
       key: 'Create relationships and references',
       value: 'Create relationships and references',
     },
+    { key: 'relationships', value: 'relationships' },
   ],
   es: [
     { key: 'Filters', value: 'Filtros' },
@@ -18,6 +19,7 @@ const expectedTranslations = {
       key: 'Create relationships and references',
       value: 'Crear conecciones y referencias',
     },
+    { key: 'relationships', value: 'conexiones' },
   ],
   fr: [
     { key: 'Filters', value: 'Filtres' },
@@ -26,6 +28,7 @@ const expectedTranslations = {
       key: 'Create relationships and references',
       value: 'Create relationships and references',
     },
+    { key: 'relationships', value: 'relationships' },
   ],
 };
 

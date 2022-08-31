@@ -7,6 +7,7 @@ const spanishTranslations = [
     key: 'Create connections and references',
     value: 'Crear conecciones y referencias',
   },
+  { key: 'connections', value: 'conexiones' },
 ];
 
 const frenchTranslations = [
@@ -16,6 +17,7 @@ const frenchTranslations = [
     key: 'Create connections and references',
     value: 'Create connections and references',
   },
+  { key: 'connections', value: 'connections' },
 ];
 
 const system = {
@@ -29,6 +31,7 @@ const system = {
       key: 'Create connections and references',
       value: 'Create connections and references',
     },
+    { key: 'connections', value: 'connections' },
   ],
 };
 
