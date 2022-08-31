@@ -45,7 +45,7 @@ const singleUpload =
       if (req.file) {
         req.file.originalname = processOriginalFileName(req);
       }
-      if (type) {
+      if (type && req.file) {
         await storage.storeFile(
           req.file.filename,
           createReadStream(path.join(req.file.destination, req.file.filename)),
