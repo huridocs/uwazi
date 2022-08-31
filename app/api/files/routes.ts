@@ -292,6 +292,8 @@ export default (app: Application) => {
     }),
 
     (req, res) => {
+      if (!req.file) throw new Error('File is not available on request object');
+
       const loader = new CSVLoader();
       let loaded = 0;
 

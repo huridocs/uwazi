@@ -61,7 +61,7 @@ export class ExternalDummyService {
     });
 
     this.app.post(urls.materialsFiles, multer().any(), (req, res) => {
-      if (req.files.length) {
+      if (req.files?.length) {
         const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);
         this.filesNames.push(files[0].originalname);
