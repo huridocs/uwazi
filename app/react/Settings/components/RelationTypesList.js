@@ -29,10 +29,10 @@ class RelationTypesList extends RouteHandler {
           },
           title: (
             <>
-              <Translate>Confirm delete connection type:</Translate>&nbsp;{relationType.name}
+              <Translate>Confirm delete relationship type:</Translate>&nbsp;{relationType.name}
             </>
           ),
-          message: 'Are you sure you want to delete this connection type?',
+          message: 'Are you sure you want to delete this relationship type?',
         });
       })
       .catch(() => {
@@ -41,10 +41,10 @@ class RelationTypesList extends RouteHandler {
           noCancel: true,
           title: (
             <>
-              <Translate>Cannot delete connection type:</Translate>&nbsp;{relationType.name}
+              <Translate>Cannot delete relationship type:</Translate>&nbsp;{relationType.name}
             </>
           ),
-          message: 'This connection type is being used and cannot be deleted.',
+          message: 'This relationship type is being used and cannot be deleted.',
         });
       });
   }

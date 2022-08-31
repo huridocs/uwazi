@@ -2,6 +2,11 @@
 const updatedKeys = {
   'Create connections and references': 'Create relationships and references',
   'Add connection': 'Add relationship',
+  'Confirm delete connection type:': 'Confirm delete relationship type:',
+  'Are you sure you want to delete this connection type?':
+    'Are you sure you want to delete this relationship type?',
+  'This connection type is being used and cannot be deleted.':
+    'This relationship type is being used and cannot be deleted.',
 };
 
 export default {
