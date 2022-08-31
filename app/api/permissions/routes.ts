@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import { Application, Request } from 'express';
 import { needsAuthorization } from 'api/auth';
 import { validation } from 'api/utils';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
@@ -69,7 +69,7 @@ export const permissionRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, next) => {
+    async (req: Request<{}, {}, {}, { filterTerm: string }>, res, next) => {
       try {
         const availableCollaborators = await collaborators.search(req.query.filterTerm);
         res.json(availableCollaborators);

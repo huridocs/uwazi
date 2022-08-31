@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { parseQuery } from '../parseQueryMiddleware';
 
 describe('parseQueryMiddleware', () => {
@@ -13,8 +13,9 @@ describe('parseQueryMiddleware', () => {
         array: '["shrimps","garlic","onion","olive oil","pepper","pasta"]',
         searchTerm: '"this is known to be a string"',
       },
-    } as Request;
+    };
 
+    // @ts-ignore
     parseQuery(req, {} as Response, next);
 
     expect(req.query).toEqual({

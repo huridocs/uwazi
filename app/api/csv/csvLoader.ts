@@ -111,9 +111,6 @@ export class CSVLoader extends EventEmitter {
 
   async loadTranslations(csvPath: string, translationContext: string) {
     const file = importFile(csvPath);
-    const availableLanguages = ensure<LanguageSchema[]>((await settings.get()).languages).map(
-      (l: LanguageSchema) => ({ label: l.label, language: l.key })
-    );
 
     const intermediateTranslation: { [k: string]: { [k: string]: string } } = {};
 
@@ -126,9 +123,14 @@ export class CSVLoader extends EventEmitter {
       })
       .read();
 
-    await availableLanguages.reduce(async (prev, lang) => {
+    const languagesToTranslate = ensure<LanguageSchema[]>((await settings.get()).languages)
+      .map((l: LanguageSchema) => ({ label: l.label, language: l.key }))
+      .filter(lang => Object.keys(intermediateTranslation).includes(lang.label));
+
+    await languagesToTranslate.reduce(async (prev, lang) => {
       await prev;
       const trans = intermediateTranslation[lang.label];
+
       const [dbTranslations] = await translations.get({ locale: lang.language });
 
       const context = (dbTranslations.contexts || []).find(
