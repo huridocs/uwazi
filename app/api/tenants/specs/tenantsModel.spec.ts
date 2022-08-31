@@ -107,6 +107,7 @@ describe('tenantsModel', () => {
 
   it('should requiere a unique name for tenants', async () => {
     try {
+      await model.model!.ensureIndexes();
       await db.collection('tenants').insertMany([
         {
           name: 'tenant one',

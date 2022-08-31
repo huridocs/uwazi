@@ -51,10 +51,10 @@ describe('thesauri', () => {
     it('should return all thesauri including unpublished documents if user', async () => {
       const dictionaries = await thesauri.get(null, 'es', 'user');
       expect(dictionaries.length).toBe(6);
-      expect(dictionaries[4].values).toEqual([
-        { id: 'sharedId2' },
+      expect(dictionaries[4].values.sort((a, b) => a.id.localeCompare(b.id))).toEqual([
         { id: 'other', label: 'unpublished entity' },
         { id: 'sharedId', label: 'spanish entity', icon: { type: 'Icon' } },
+        { id: 'sharedId2' },
       ]);
     });
 

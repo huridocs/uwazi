@@ -1,11 +1,13 @@
 import { createError } from 'api/utils';
 import { errorLog, debugLog } from 'api/log';
 
-import { ConnectionError } from '@elastic/elasticsearch/lib/errors';
+import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { appContext } from 'api/utils/AppContext';
 import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
+
+const { ConnectionError } = elasticErrors;
 
 describe('handleError', () => {
   beforeEach(() => {
