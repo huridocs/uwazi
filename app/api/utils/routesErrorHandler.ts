@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { Application } from 'express';
 
 const wrapHandler = (originalHandler: any) => async (req: any, res: any, next: any) => {

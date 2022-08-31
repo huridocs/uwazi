@@ -22,5 +22,6 @@ module.exports = {
   moduleNameMapper: {
     '^api/(.*)': '<rootDir>/api/$1',
     '^shared/(.*)': '<rootDir>/shared/$1',
+    '^uuid$': require.resolve('uuid'),
   },
 };
