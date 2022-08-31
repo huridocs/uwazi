@@ -22,6 +22,7 @@ export default {
             { key: 'Account', value: 'Account' },
             { key: 'Email', value: 'E-Mail' },
             { key: 'Age', value: 'Age' },
+            { key: 'Library', value: 'Library' },
           ],
         },
         {

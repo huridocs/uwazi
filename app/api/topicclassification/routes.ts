@@ -36,9 +36,9 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response) => {
+    async (req: Request<{}, {}, {}, { thesaurus: string }>, res: Response) => {
       try {
-        const model = await getModelForThesaurus(req.query!.thesaurus);
+        const model = await getModelForThesaurus(req.query.thesaurus);
         return res.json(model);
       } catch (e) {
         return res.json({});
@@ -61,9 +61,9 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response) => {
+    async (req: Request<{}, {}, {}, { thesaurus: string }>, res: Response) => {
       try {
-        const status = await getTrainStateForThesaurus(req.query!.thesaurus);
+        const status = await getTrainStateForThesaurus(req.query.thesaurus);
         return res.json(status);
       } catch (e) {
         return res.json({ state: 'undefined', result: {} } as TaskStatus);

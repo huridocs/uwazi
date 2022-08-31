@@ -12,7 +12,7 @@ import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
 
 export default (app: Application) => {
-  const parseQueryProperty = (query: any, property: string) =>
+  const parseQueryProperty = (query: any, property: string): string[] =>
     query[property] ? JSON.parse(query[property]) : query[property];
 
   const generateExportFileName = (databaseName: string = '') =>

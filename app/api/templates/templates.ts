@@ -272,7 +272,7 @@ export default {
     );
   },
 
-  async delete(template: TemplateSchema) {
+  async delete(template: Partial<TemplateSchema>) {
     const count = await this.countByTemplate(ensure(template._id));
     if (count > 0) {
       return Promise.reject({ key: 'documents_using_template', value: count }); // eslint-disable-line prefer-promise-reject-errors
