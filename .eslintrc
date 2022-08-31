@@ -227,7 +227,12 @@
         ],
         // This is broken for ts, but circleci protects us.
         "@typescript-eslint/no-floating-promises": "error",
-        "@typescript-eslint/no-misused-promises": "error",
+        "@typescript-eslint/no-misused-promises": [
+          "error",
+          {
+            "checksVoidReturn": false
+          }
+        ],
         "@typescript-eslint/promise-function-async": "error"
       }
     }
