@@ -5,6 +5,7 @@ const updatedKeys = {
   'Confirm delete connection type:': 'Confirm delete relationship type:',
   'Are you sure you want to delete this connection type?':
     'Are you sure you want to delete this relationship type?',
+  'Cannot delete connection type:': 'Cannot delete relationship type:',
   'This connection type is being used and cannot be deleted.':
     'This relationship type is being used and cannot be deleted.',
 };
