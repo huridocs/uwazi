@@ -5,7 +5,6 @@ import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
 import path from 'path';
 import {
-  IndexedContextValuesOriginal,
   TranslationContext,
   TranslationType,
   TranslationValue,
@@ -405,7 +404,7 @@ export default {
   },
 };
 
-export interface IndexedContextValues extends IndexedContextValuesOriginal {
+export interface IndexedContextValues {
   [k: string]: string;
 }
 

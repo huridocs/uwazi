@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import { Application, Request } from 'express';
 import settings from 'api/settings';
 import { reindexAll } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
@@ -99,8 +99,8 @@ export default (app: Application) => {
         },
       },
     }),
-    (req, res, next) => {
-      const template = { _id: req.query._id, name: req.query.name };
+    (req: Request<{}, {}, {}, { _id: string }>, res, next) => {
+      const template = { _id: req.query._id };
       templates
         .delete(template)
         .then(async () => settings.removeTemplateFromFilters(template._id))
@@ -127,7 +127,7 @@ export default (app: Application) => {
         },
       },
     }),
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { _id: string }>, res, next) => {
       templates
         .countByThesauri(req.query._id)
         .then(response => res.json(response))

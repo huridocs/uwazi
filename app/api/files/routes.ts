@@ -1,4 +1,4 @@
-import { Application } from 'express';
+import { Application, Request } from 'express';
 
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -12,7 +12,7 @@ import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import Joi from 'joi';
 import { files } from './files';
-import { validation, createError, handleError } from '../utils';
+import { createError, handleError, validation } from '../utils';
 import { storage } from './storage';
 
 const checkEntityPermission = async (file: FileType): Promise<boolean> => {
@@ -176,7 +176,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req, res) => {
+    async (req: Request<{ filename: string }, {}, {}, { download?: boolean }>, res) => {
       const [file] = await files.get({
         filename: req.params.filename,
       });
@@ -226,7 +226,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req, res, next) => {
+    async (req: Request<{}, {}, {}, { _id: string }>, res, next) => {
       try {
         const [fileToDelete] = await files.get({ _id: req.query._id });
         if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {

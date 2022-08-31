@@ -7,7 +7,7 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { availableLanguages } from 'shared/languagesList';
-import { Application } from 'express';
+import { Application, Request } from 'express';
 import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
@@ -165,7 +165,7 @@ export default (app: Application) => {
         .required()
     ),
 
-    async (req, res) => {
+    async (req: Request<{}, {}, {}, { key: string }>, res) => {
       const [newSettings, newTranslations] = await Promise.all([
         settings.deleteLanguage(req.query.key),
         translations.removeLanguage(req.query.key),
