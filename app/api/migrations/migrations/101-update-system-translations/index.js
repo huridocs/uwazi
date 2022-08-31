@@ -1,10 +1,11 @@
 /* eslint-disable no-await-in-loop */
 const updatedKeys = {
   'Create connections and references': 'Create relationships and references',
+  'Add connection': 'Add relationship',
 };
 
 export default {
-  delta: 102,
+  delta: 101,
 
   name: 'update-system-translation-keys',
 

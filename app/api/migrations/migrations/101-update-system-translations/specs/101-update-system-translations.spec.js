@@ -48,7 +48,7 @@ describe('migration remove-obsolete-translation-keys', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(102);
+    expect(migration.delta).toBe(101);
   });
 
   it('should update the keys and untranslated values in all languages', () => {
