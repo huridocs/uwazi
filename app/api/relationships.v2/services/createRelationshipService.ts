@@ -1,48 +1,31 @@
-import { Db, MongoClient } from 'mongodb';
+import { EntitiesDataSource } from './EntitiesDataSource';
+import { RelationshipsDataSource } from './RelationshipsDataSource';
+import { TransactionManager } from './TransactionManager';
 
 export class CreateRelationshipService {
-  private db: Db;
+  private relationshipsDS: RelationshipsDataSource;
 
-  private client: MongoClient;
+  private entitiesDS: EntitiesDataSource;
 
-  constructor(db: Db, client: MongoClient) {
-    this.db = db;
-    this.client = client;
-  }
+  private transactionManager: TransactionManager;
 
-  private async entitiesExist(sharedIds: string[]) {
-    const countInExistence = await this.db
-      .collection('entities')
-      .find({ sharedId: { $in: sharedIds } }, { projection: { sharedId: 1 } })
-      .count();
-    return countInExistence === sharedIds.length;
+  constructor(
+    relationshipsDS: RelationshipsDataSource,
+    entitiesDS: EntitiesDataSource,
+    transactionManager: TransactionManager
+  ) {
+    this.relationshipsDS = relationshipsDS;
+    this.entitiesDS = entitiesDS;
+    this.transactionManager = transactionManager;
   }
 
   async create(from: string, to: string) {
-    let _created;
-    const session = this.client.startSession();
-    await session.withTransaction(
-      async () => {
-        if (!(await this.entitiesExist([from, to]))) {
-          throw new Error('Must provide sharedIds from existing entities');
-        }
-
-        const {
-          ops: [created],
-        } = await this.db.collection('relationships').insertOne({
-          from,
-          to,
-        });
-
-        _created = created;
-      },
-      {
-        readPreference: 'primary',
-        readConcern: { level: 'local' },
-        writeConcern: { w: 'majority' },
+    return this.transactionManager.run(async () => {
+      if (!(await this.entitiesDS.entitiesExist([from, to]))) {
+        throw new Error('Must provide sharedIds from existing entities');
       }
-    );
-
-    return _created;
+      const created = await this.relationshipsDS.insert({ from, to });
+      return created;
+    });
   }
 }

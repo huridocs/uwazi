@@ -6,6 +6,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { CreateRelationshipService } from '../createRelationshipService';
+import { EntitiesDataSource } from '../EntitiesDataSource';
+import { RelationshipsDataSource } from '../RelationshipsDataSource';
 
 const factory = getFixturesFactory();
 
@@ -24,9 +26,20 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const dummyTM = {
+  run(cb: any) {
+    return cb();
+  },
+};
+
 describe('When the entities exist', () => {
   it('should return a new connection', async () => {
-    const service = new CreateRelationshipService(getConnection(), getClient());
+    const connection = getConnection();
+    const service = new CreateRelationshipService(
+      new RelationshipsDataSource(connection),
+      new EntitiesDataSource(connection),
+      dummyTM
+    );
     const relationship = await service.create('entity1', 'entity2');
 
     expect(relationship).toEqual({
@@ -37,7 +50,12 @@ describe('When the entities exist', () => {
   });
 
   it('should persist a new connection', async () => {
-    const service = new CreateRelationshipService(getConnection(), getClient());
+    const connection = getConnection();
+    const service = new CreateRelationshipService(
+      new RelationshipsDataSource(connection),
+      new EntitiesDataSource(connection),
+      dummyTM
+    );
     await service.create('entity1', 'entity2');
 
     const relatinshipsInDb = await collectionInDb().find({}).toArray();
@@ -54,7 +72,12 @@ describe('When the entities exist', () => {
 
 describe('When an entity does not exist', () => {
   it('should throw a validation error', async () => {
-    const service = new CreateRelationshipService(getConnection(), getClient());
+    const connection = getConnection();
+    const service = new CreateRelationshipService(
+      new RelationshipsDataSource(connection),
+      new EntitiesDataSource(connection),
+      dummyTM
+    );
     try {
       await service.create('entity1', 'non-existing');
       fail('should throw error');
