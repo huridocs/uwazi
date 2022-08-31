@@ -102,7 +102,7 @@ export function setDefaultLanguage(key) {
 
 export function resetDefaultTranslations(key) {
   return dispatch =>
-    I18NApi.populateTranslations(new RequestParams({ key })).then(() => {
+    I18NApi.populateTranslations(new RequestParams({ locale: key })).then(() => {
       notifications.notify(
         t('System', 'Translations reset successfully', null, false),
         'success'

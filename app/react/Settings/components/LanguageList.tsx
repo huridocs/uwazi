@@ -44,6 +44,21 @@ const DeleteButton = ({
   </button>
 );
 
+const ResetDefaultTranslationButton = ({
+  onClick,
+  className,
+}: {
+  onClick: React.MouseEventHandler;
+  className?: string;
+}) => (
+  <button type="button" onClick={onClick} className={`btn btn-xs ${className}`}>
+    <Icon icon="sync" /> &nbsp;
+    <span>
+      <Translate>Reset default translation</Translate>
+    </span>
+  </button>
+);
+
 const mapStateToProps = (state: IStore) => ({
   languages: state.settings.collection.get('languages'),
 });
@@ -100,18 +115,12 @@ const LanguageList = ({
           <div key={language.key} className="row">
             <div className="col">{`${language.label} (${language.key})`}</div>
             <div className="col">
-              <button
-                type="button"
+              <ResetDefaultTranslationButton
                 onClick={() => {
                   setResettingLanguage(language);
                 }}
-                className={`btn btn-xs ${!language.translationAvailable ? 'hid' : ''}`}
-              >
-                <Icon icon="sync" /> &nbsp;
-                <span>
-                  <Translate>Reset default translation</Translate>
-                </span>
-              </button>
+                className={!language.translationAvailable ? 'action-hidden' : ''}
+              />
             </div>
             <div className="col">
               <SetAsDefaultButton
@@ -122,7 +131,7 @@ const LanguageList = ({
             <div className="col">
               <DeleteButton
                 onClick={() => setDeletingLanguage(language)}
-                className={language.default ? 'hid' : ''}
+                className={language.default ? 'action-hidden' : ''}
               />
             </div>
           </div>
@@ -213,12 +222,12 @@ const LanguageList = ({
           }}
           title={
             <>
-              <Translate>Confirm reset translations</Translate>&nbsp;{resettingLanguage.label}
+              <Translate>Confirm reset translation</Translate>&nbsp;{resettingLanguage.label}
             </>
           }
           message={
             <>
-              <Translate>Are you sure you want to reset the translations for</Translate>&nbsp;{' '}
+              <Translate>Are you sure you want to reset translation for</Translate>&nbsp;{' '}
               {resettingLanguage.label}
               <Translate> language?</Translate>
             </>
