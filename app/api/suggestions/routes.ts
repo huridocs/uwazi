@@ -6,10 +6,11 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import {
-  IXSuggestionsQuerySchema,
   IXSuggestionsStatsQuerySchema,
+  SuggestionsQueryFilterSchema,
 } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
+import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
 
@@ -56,10 +57,29 @@ export const suggestionsRoutes = (app: Application) => {
     validateAndCoerceRequest({
       type: 'object',
       properties: {
-        query: IXSuggestionsQuerySchema,
+        query: {
+          type: 'object',
+          required: ['filter'],
+          properties: {
+            filter: SuggestionsQueryFilterSchema,
+            page: {
+              type: 'object',
+              properties: {
+                number: { type: 'number', minimum: 1 },
+                size: { type: 'number', minimum: 1, maximum: 500 },
+              },
+            },
+          },
+        },
       },
     }),
-    async (req, res, _next) => {
+    async (
+      req: Request & {
+        query: { filter: IXSuggestionsFilter; page: { number: number; size: number } };
+      },
+      res,
+      _next
+    ) => {
       const suggestionsList = await Suggestions.get(
         { language: req.language, ...req.query.filter },
         { page: req.query.page }
@@ -78,7 +98,7 @@ export const suggestionsRoutes = (app: Application) => {
         query: IXSuggestionsStatsQuerySchema,
       },
     }),
-    async (req, res, _next) => {
+    async (req: Request<{}, {}, {}, { propertyName: string }>, res, _next) => {
       const stats = await Suggestions.getStats(req.query.propertyName);
       res.json(stats);
     }
@@ -108,21 +128,17 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/configurations',
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
+      type: 'object',
       properties: {
         body: {
-          additionalProperties: false,
-          properties: {
-            configurations: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  template: { type: 'string' },
-                  properties: {
-                    type: 'array',
-                    items: { type: 'string' },
-                  },
-                },
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              template: { type: 'string' },
+              properties: {
+                type: 'array',
+                items: { type: 'string' },
               },
             },
           },

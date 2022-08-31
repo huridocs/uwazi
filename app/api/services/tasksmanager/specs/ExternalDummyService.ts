@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import bodyParser from 'body-parser';
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import { Server } from 'http';
 import multer from 'multer';
 import Redis, { RedisClient } from 'redis';
@@ -44,7 +44,7 @@ export class ExternalDummyService {
     this.port = port;
     this.serviceName = serviceName;
     this.app = express();
-    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.json() as RequestHandler);
 
     const urls = {
       materialsData: '/data',
@@ -61,7 +61,7 @@ export class ExternalDummyService {
     });
 
     this.app.post(urls.materialsFiles, multer().any(), (req, res) => {
-      if (req.files.length) {
+      if (req.files?.length) {
         const files = req.files as { buffer: Buffer; originalname: string }[];
         this.files.push(files[0].buffer);
         this.filesNames.push(files[0].originalname);
