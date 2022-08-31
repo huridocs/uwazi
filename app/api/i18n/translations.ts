@@ -4,11 +4,7 @@ import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
 import path from 'path';
-import {
-  TranslationContext,
-  TranslationType,
-  TranslationValue,
-} from 'shared/translationType';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';

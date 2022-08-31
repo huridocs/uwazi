@@ -20,7 +20,11 @@ export default (app: Application) => {
 
   app.get(
     '/api/search/lookupaggregation',
-    (req: Request<{}, {}, {}, { property: string, searchTerm: string, query: string }>, res: Response, next: NextFunction) => {
+    (
+      req: Request<{}, {}, {}, { property: string; searchTerm: string; query: string }>,
+      res: Response,
+      next: NextFunction
+    ) => {
       const query = JSON.parse(req.query.query);
       search
         .autocompleteAggregations(

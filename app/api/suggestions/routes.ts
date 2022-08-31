@@ -6,12 +6,11 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import {
-  IXSuggestionsQuerySchema,
   IXSuggestionsStatsQuerySchema,
   SuggestionsQueryFilterSchema,
 } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsFilter, IXSuggestionsQuery } from 'shared/types/suggestionType';
+import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
 
