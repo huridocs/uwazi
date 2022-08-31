@@ -2,9 +2,7 @@ import { Db } from 'mongodb';
 import mongoose from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { tenants } from 'api/tenants/tenantContext';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { testingTenants } from 'api/utils/testingTenants';
-import { createNewMongoDB } from 'api/utils/testing_db';
 
 import { DB } from '../DB';
 import { instanceModel } from '../model';
@@ -24,29 +22,16 @@ interface TestDoc {
 describe('DB', () => {
   let db1: Db;
   let db2: Db;
-  let mongod: MongoMemoryServer;
-  let mongoUri: string;
-
-  beforeAll(async () => {
-    mongod = await createNewMongoDB();
-    mongoUri = mongod.getUri();
-  });
 
   beforeEach(async () => {
-    await DB.connect(mongoUri);
-    // mongo/mongoose types collisions
-    // @ts-ignore
+    const uri = 'mongodb://localhost/';
+    await DB.connect(`${uri}_DB_spec_ts`);
     db1 = DB.getConnection().useDb('db1').db;
-    // @ts-ignore
     db2 = DB.getConnection().useDb('db2').db;
   });
 
-  afterEach(async () => {
-    await DB.disconnect();
-  });
-
   afterAll(async () => {
-    await mongod.stop();
+    await DB.disconnect();
   });
 
   describe('newDB', () => {
@@ -56,7 +41,7 @@ describe('DB', () => {
     });
   });
 
-  describe('instance', () => {
+  describe('ensureIndexes', () => {
     it('should create indexes', async () => {
       const model = instanceModel<TestDoc>('docs', testSchema);
       tenants.add(
@@ -69,11 +54,11 @@ describe('DB', () => {
       const expected = ['_id_', 'name_1'];
 
       await tenants.run(async () => {
-        model.db.dbForCurrentTenant();
+        await model.db.ensureIndexes();
       }, 'tenant1');
 
       await tenants.run(async () => {
-        model.db.dbForCurrentTenant();
+        await model.db.ensureIndexes();
       }, 'tenant2');
 
       await waitForExpect(async () => {
@@ -94,11 +79,11 @@ describe('DB', () => {
       const model = instanceModel<TestDoc>('docs', updatedSchema);
 
       await tenants.run(async () => {
-        model.db.dbForCurrentTenant();
+        await model.db.ensureIndexes();
       }, 'tenant1');
 
       await tenants.run(async () => {
-        model.db.dbForCurrentTenant();
+        await model.db.ensureIndexes();
       }, 'tenant2');
 
       const expected = ['_id_', 'name_1', 'value_1', 'text_text'];

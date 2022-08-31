@@ -479,17 +479,19 @@ describe('templates', () => {
         .find({
           template: { $in: [thesaurusTemplateId, thesaurusTemplate2Id, thesaurusTemplate3Id] },
         })
+        .sort({ title: 1 })
         .toArray();
+
       const titles = relatedEntities.map(e => e.title);
       expect(titles).toEqual([
         't1-1_en',
-        't1-2_en',
-        't1-3_en',
         't1-1_es',
-        't1-2_es',
-        't1-3_es',
         't1-1_pt',
+        't1-2_en',
+        't1-2_es',
         't1-2_pt',
+        't1-3_en',
+        't1-3_es',
         't1-3_pt',
         't2-1_en',
         't2-1_es',

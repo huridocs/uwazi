@@ -103,6 +103,10 @@ class MultiTenantMongooseModel<T> {
   async bulkWrite(writes: Array<any>, options?: CollectionBulkWriteOptions) {
     return this.dbForCurrentTenant().bulkWrite(writes, options);
   }
+
+  async ensureIndexes() {
+    return this.dbForCurrentTenant().ensureIndexes();
+  }
 }
 
 export { MultiTenantMongooseModel };
