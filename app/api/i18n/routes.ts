@@ -10,7 +10,7 @@ import { availableLanguages } from 'shared/languagesList';
 import { Application, Request } from 'express';
 import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
-import translations from './translations';
+import translations, { UITranslationNotAvailable } from './translations';
 
 export default (app: Application) => {
   app.get('/api/translations', async (_req, res) => {
@@ -108,6 +108,10 @@ export default (app: Application) => {
         if (error instanceof GithubQuotaExceeded || error instanceof GithubAuthenticationError) {
           next(createError(error, 503));
         }
+
+        if (error instanceof UITranslationNotAvailable) {
+          next(createError(error, 422));
+        }
         next(error);
       }
     }
@@ -146,7 +150,13 @@ export default (app: Application) => {
       const newTranslations = await translations.addLanguage(req.body.key);
       await entities.addLanguage(req.body.key);
       await pages.addLanguage(req.body.key);
-
+      try {
+        await translations.importPredefined(req.body.key);
+      } catch (error) {
+        if (!(error instanceof UITranslationNotAvailable)) {
+          throw error;
+        }
+      }
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
       req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       res.json(newSettings);
