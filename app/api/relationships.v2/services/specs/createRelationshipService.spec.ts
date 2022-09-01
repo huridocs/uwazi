@@ -5,10 +5,11 @@ import {
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
+import { ObjectId } from 'mongodb';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
-import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
 
 const factory = getFixturesFactory();
 
@@ -38,7 +39,7 @@ describe('When the entities exist', () => {
     const relationship = await service.create('entity1', 'entity2');
 
     expect(relationship).toEqual({
-      _id: expect.anything(),
+      _id: expect.any(String),
       from: 'entity1',
       to: 'entity2',
     });
@@ -57,7 +58,7 @@ describe('When the entities exist', () => {
 
     expect(relatinshipsInDb).toEqual([
       {
-        _id: expect.anything(),
+        _id: expect.any(ObjectId),
         from: 'entity1',
         to: 'entity2',
       },
@@ -77,7 +78,24 @@ describe('When an entity does not exist', () => {
       await service.create('entity1', 'non-existing');
       fail('should throw error');
     } catch (e) {
-      await expect(e.message).toMatch(/entities/);
+      await expect(e.message).toMatch(/existing/);
+    }
+  });
+});
+
+describe('When trying to create a self-referencing relationship', () => {
+  it('should throw a validation error', async () => {
+    const connection = getConnection();
+    const service = new CreateRelationshipService(
+      new RelationshipsDataSource(connection),
+      new EntitiesDataSource(connection),
+      new MongoTransactionManager(getClient())
+    );
+    try {
+      await service.create('entity1', 'entity1');
+      fail('should throw error');
+    } catch (e) {
+      await expect(e.message).toMatch(/self/);
     }
   });
 });

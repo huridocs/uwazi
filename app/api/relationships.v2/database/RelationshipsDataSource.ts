@@ -1,4 +1,6 @@
-import { ClientSession, Db } from 'mongodb';
+/* eslint-disable max-classes-per-file */
+import { ClientSession, Db, ObjectId } from 'mongodb';
+import { Relationship } from '../model/Relationship';
 import { Transactional } from '../services/Transactional';
 
 export class RelationshipsDataSource implements Transactional<ClientSession> {
@@ -14,13 +16,16 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
     this.session = session;
   }
 
-  async insert(relationship: any) {
+  async insert(relationship: Relationship): Promise<Relationship> {
     const {
-      ops: [created],
-    } = await this.db
-      .collection('relationships')
-      .insertOne(relationship, { session: this.session });
+      ops: [{ _id }],
+    } = await this.db.collection('relationships').insertOne(
+      { ...relationship, _id: new ObjectId(relationship._id) },
+      {
+        session: this.session,
+      }
+    );
 
-    return created;
+    return Object.assign(relationship, { _id: _id.toHexString() });
   }
 }
