@@ -10,7 +10,7 @@ import fixtures, {
   englishTranslation,
   dictionaryId,
 } from './fixtures.js';
-import translations from '../translations';
+import translations, { UITranslationNotAvailable } from '../translations';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -505,8 +505,10 @@ describe('translations', () => {
       expect(ESTranslations.Age).toBe('Age traducida');
     });
 
-    it('should not translate when translation is not available', async () => {
-      await translations.importPredefined('zh');
+    it('should throw error when translation is not available', async () => {
+      await expect(translations.importPredefined('zh')).rejects.toThrowError(
+        UITranslationNotAvailable
+      );
 
       const result = await translations.get();
       const ZHTranslations =
