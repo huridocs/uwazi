@@ -21,16 +21,25 @@ afterAll(async () => {
 });
 
 describe('When every operation goes well', () => {
-  it('should be reflected in all of the collections affected', async () => {
+  let transactionResult: any;
+  beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
-    await transactionManager.run(async () => {
+    transactionResult = await transactionManager.run(async () => {
       await testingDB.mongodb?.collection('collection1').insertOne({ _id: ids('doc3') });
       await testingDB.mongodb
         ?.collection('collection1')
         .updateOne({ _id: ids('doc1') }, { $set: { updated: true } });
       await testingDB.mongodb?.collection('collection2').deleteOne({ _id: ids('doc2') });
-    });
+      const result = await testingDB
+        .mongodb!.collection('collection1')
+        .find({ _id: ids('doc1') })
+        .toArray();
 
+      return result;
+    });
+  });
+
+  it('should be reflected in all of the collections affected', async () => {
     const col1 = await testingDB.mongodb?.collection('collection1').find({}).toArray();
     const col2 = await testingDB.mongodb?.collection('collection2').find({}).toArray();
 
@@ -38,7 +47,10 @@ describe('When every operation goes well', () => {
 
     expect(col2).toEqual([]);
   });
-  it.todo('should return what the callback returned');
+
+  it('should return what the callback returned', async () => {
+    expect(transactionResult).toEqual([{ _id: ids('doc1'), updated: true }]);
+  });
 });
 
 describe('When one operation fails', () => {
@@ -53,7 +65,7 @@ describe('When one operation fails', () => {
         await testingDB.mongodb
           ?.collection('collection1')
           .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session });
-        throw error;
+        throw error; // Mimics error thrown mid-execution
         // eslint-disable-next-line no-unreachable
         await testingDB.mongodb
           ?.collection('collection2')

@@ -24,8 +24,8 @@ export class CreateRelationshipService {
       if (!(await this.entitiesDS.entitiesExist([from, to]))) {
         throw new Error('Must provide sharedIds from existing entities');
       }
-      const created = await this.relationshipsDS.insert({ from, to });
-      return created;
+
+      return this.relationshipsDS.insert({ from, to });
     });
   }
 }
