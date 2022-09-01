@@ -96,6 +96,10 @@
     }
 
     .legend-item {
+      svg {
+        margin-right: 5px;
+      }
+
       span {
         font-size: $f-size-sm;
         font-weight: normal;
