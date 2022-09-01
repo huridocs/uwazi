@@ -3,7 +3,6 @@ import db from 'api/utils/testing_db';
 
 import backend from 'fetch-mock';
 import thesauri from 'api/thesauri/thesauri.js';
-import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import { config } from 'api/config';
 import fixtures, {
   entityTemplateId,
