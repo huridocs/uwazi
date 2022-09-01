@@ -20,12 +20,16 @@ export class CreateRelationshipService {
   }
 
   async create(from: string, to: string) {
-    return this.transactionManager.run(async () => {
-      if (!(await this.entitiesDS.entitiesExist([from, to]))) {
-        throw new Error('Must provide sharedIds from existing entities');
-      }
+    return this.transactionManager.run(
+      async (entitiesDS, relationshipsDS) => {
+        if (!(await entitiesDS.entitiesExist([from, to]))) {
+          throw new Error('Must provide sharedIds from existing entities');
+        }
 
-      return this.relationshipsDS.insert({ from, to });
-    });
+        return relationshipsDS.insert({ from, to });
+      },
+      this.entitiesDS,
+      this.relationshipsDS
+    );
   }
 }
