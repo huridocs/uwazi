@@ -1,5 +1,5 @@
-import { EntitiesDataSource } from './EntitiesDataSource';
-import { RelationshipsDataSource } from './RelationshipsDataSource';
+import { EntitiesDataSource } from '../database/EntitiesDataSource';
+import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
 import { TransactionManager } from './TransactionManager';
 
 export class CreateRelationshipService {

@@ -5,9 +5,9 @@ import {
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { CreateRelationshipService } from '../createRelationshipService';
-import { EntitiesDataSource } from '../EntitiesDataSource';
-import { RelationshipsDataSource } from '../RelationshipsDataSource';
+import { CreateRelationshipService } from '../CreateRelationshipService';
+import { EntitiesDataSource } from '../../database/EntitiesDataSource';
+import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
 
 const factory = getFixturesFactory();
 
