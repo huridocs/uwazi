@@ -519,6 +519,5 @@ describe('translations', () => {
       expect(ZHTranslations.Account).toBe('Account');
       expect(ZHTranslations.Age).toBe('Age');
     });
-
   });
 });

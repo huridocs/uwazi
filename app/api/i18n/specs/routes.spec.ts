@@ -228,7 +228,6 @@ describe('i18n translations routes', () => {
           error: 'Predefined translation for locale zh is not available',
         });
       });
-
     });
 
     describe('api/translations/setasdeafult', () => {
