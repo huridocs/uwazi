@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { Translate } from 'app/I18N';
 import Icons from './Icons';
 
 const titles = {
@@ -15,7 +16,16 @@ const titles = {
     'Properties with the same label but incompatible inherited types are not allowed.',
 };
 
-export interface TemplateProperty {
+const selectAndDateTranslationKeys: { [key: string]: string } = {
+  select: 'Single select',
+  multiselect: 'Multiple select',
+  date: 'Single date',
+  daterange: 'Single date range',
+  multidate: 'Multiple date',
+  multidaterange: 'Multiple date range',
+};
+
+interface TemplateProperty {
   template: string;
   relationTypeName?: string;
   thesaurusName?: string;
@@ -27,7 +37,7 @@ export interface TemplateProperty {
   inheritType?: string;
 }
 
-export interface SimilarPropertiesProps {
+interface SimilarPropertiesProps {
   templateProperty: TemplateProperty;
 }
 
@@ -37,7 +47,8 @@ const inheritTypeToShow = (prop: TemplateProperty) =>
 const invalidType = (prop: TemplateProperty) =>
   prop.typeConflict || prop.relationConflict || prop.inheritConflict;
 
-const typeToShow = (prop: TemplateProperty) => prop.type[0].toUpperCase() + prop.type.slice(1);
+const typeToShow = (prop: TemplateProperty) =>
+  selectAndDateTranslationKeys[prop.type] || `property ${prop.type}`;
 
 const title = (prop: TemplateProperty) => {
   if (prop.inheritConflict) {
@@ -55,7 +66,7 @@ const title = (prop: TemplateProperty) => {
 const contentTitle = (prop: TemplateProperty) =>
   prop.contentConflict ? titles.contentConflict : '';
 
-export class SimilarProperty extends Component<SimilarPropertiesProps> {
+class SimilarProperty extends Component<SimilarPropertiesProps> {
   render() {
     const { templateProperty } = this.props;
     const typeIcon = templateProperty.type as keyof typeof Icons;
@@ -73,7 +84,7 @@ export class SimilarProperty extends Component<SimilarPropertiesProps> {
           &nbsp;
           <Icon icon={Icons[typeIcon] || 'fa fa-font'} />
           &nbsp;
-          {typeToShow(templateProperty)}
+          <Translate>{typeToShow(templateProperty)}</Translate>
           {templateProperty.relationTypeName && ` (${templateProperty.relationTypeName})`}
           {inheritTypeToShow(templateProperty) &&
             ` (Inherit: ${inheritTypeToShow(templateProperty)})`}
@@ -90,3 +101,6 @@ export class SimilarProperty extends Component<SimilarPropertiesProps> {
     );
   }
 }
+
+export type { TemplateProperty, SimilarPropertiesProps };
+export { SimilarProperty };
