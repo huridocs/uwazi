@@ -213,7 +213,7 @@ describe('DocumentSidePanel', () => {
     beforeEach(() => {
       state = {
         documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
-        relationships: { list: { connectionsGroups: 'connectionsGroups' } },
+        relationships: { list: { connectionsGroups: ['connectionsGroups'] } },
         relationTypes: Immutable.fromJS(['a', 'b']),
         settings: { collection: Immutable.fromJS({ languages }) },
         library: { sidepanel: { metadata: {} } },
@@ -241,12 +241,13 @@ describe('DocumentSidePanel', () => {
       expect(mapStateToProps(state, ownProps).references).toBe(
         'References selector used correctly'
       );
-      expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(false);
+      expect(mapStateToProps(state, ownProps).excludeConnectionsTab).toBe(true);
     });
 
     it('should map selected target references from viewer when no ownProps and targetDoc', () => {
       const ownProps = { storeKey: 'library' };
       state.documentViewer.targetDoc = Immutable.fromJS({ _id: 'targetDocId' });
+      state.relationships.list.connectionsGroups = [];
       expect(mapStateToProps(state, ownProps).references).toBe(
         'Target references selector used correctly'
       );
@@ -255,7 +256,7 @@ describe('DocumentSidePanel', () => {
 
     it('should map connectionsGroups', () => {
       const ownProps = { storeKey: 'library' };
-      expect(mapStateToProps(state, ownProps).connectionsGroups).toBe('connectionsGroups');
+      expect(mapStateToProps(state, ownProps).connectionsGroups).toEqual(['connectionsGroups']);
     });
 
     it('should map default language', () => {

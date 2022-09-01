@@ -12,7 +12,7 @@ import PDFView from '../PDFView';
 export class ViewerComponent extends Component {
   constructor(props, context) {
     super(props, context);
-    props.setSidepanelTrigger('entityViewer');
+    props.setSidepanelTrigger();
   }
 
   render() {
@@ -31,8 +31,7 @@ ViewerComponent.propTypes = {
   setSidepanelTrigger: PropTypes.func.isRequired,
 };
 
-const setSidepanelTrigger = name => dispatch =>
-  dispatch(actions.set('library.sidepanel.trigger', name));
+const setSidepanelTrigger = () => actions.set('library.sidepanel.trigger', 'entityViewer');
 
 const mapStateToProps = state => {
   const entity = state.documentViewer.doc.get('_id')
