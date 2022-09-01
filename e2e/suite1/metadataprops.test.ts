@@ -54,7 +54,7 @@ describe('Metadata Properties', () => {
         { text: 'Edit' }
       );
       await expect(page).toFill('#property-label', 'Multiselect');
-      await expect(page).toSelect('#property-type', 'Multiselect');
+      await expect(page).toSelect('#property-type', 'Multiple select');
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('div.alert-success');
     });
@@ -70,14 +70,14 @@ describe('Metadata Properties', () => {
         { text: 'Edit' }
       );
       await expect(page).toFill('#property-label', 'Multi Date');
-      await expect(page).toSelect('#property-type', 'Multi Date');
+      await expect(page).toSelect('#property-type', 'Multiple date');
 
       await expect(page).toClick(
         '.metadataTemplate-list > li:nth-child(17) > div:nth-child(1) > div:nth-child(2) > button',
         { text: 'Edit' }
       );
       await expect(page).toFill('#property-label', 'Date Range');
-      await expect(page).toSelect('#property-type', 'Date Range');
+      await expect(page).toSelect('#property-type', 'Single date range');
 
       await expect(page).toClick(
         '.metadataTemplate-list > li:nth-child(18) > div:nth-child(1) > div:nth-child(2) > button',
@@ -85,7 +85,7 @@ describe('Metadata Properties', () => {
       );
 
       await expect(page).toFill('#property-label', 'Multi Date Range');
-      await expect(page).toSelect('#property-type', 'Multi Date Range');
+      await expect(page).toSelect('#property-type', 'Multiple date range');
 
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('div.alert-success');

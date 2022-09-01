@@ -1,2 +1,8 @@
 key,optionalValue
 "This cannot be changed after saving","This cannot be changed after saving"
+"Single date","Single date"
+"Multiple date","Multiple date"
+"Single date range","Single date range"
+"Multiple date range","Multiple date range"
+"Single select","Single select"
+"Multiple select","Multiple select"

@@ -45,16 +45,10 @@ const FormConfigDateComponent = ({ index, type, labelHasError, property }: mappe
       </span>
       <Field model={`template.data.properties[${index}].type`}>
         <select name="type" id="property-type" className="form-control" disabled={!!property?._id}>
-          <option value="date">{t('System', 'property date', 'Date', false)}</option>
-          <option value="multidate">
-            {t('System', 'property multidate', 'Multi Date', false)}
-          </option>
-          <option value="daterange">
-            {t('System', 'property daterange', 'Date Range', false)}
-          </option>
-          <option value="multidaterange">
-            {t('System', 'property multidaterange', 'Multi Date Range', false)}
-          </option>
+          <option value="date">{t('System', 'Single date', null, false)}</option>
+          <option value="multidate">{t('System', 'Multiple date', null, false)}</option>
+          <option value="daterange">{t('System', 'Single date range', null, false)}</option>
+          <option value="multidaterange">{t('System', 'Multiple date range', null, false)}</option>
         </select>
       </Field>
     </div>

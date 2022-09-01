@@ -94,10 +94,8 @@ const FormConfigSelectComponent = ({
             className="form-control"
             disabled={!!property?._id}
           >
-            <option value="select">{t('System', 'property select', 'Select', false)}</option>
-            <option value="multiselect">
-              {t('System', 'property multiselect', 'Multiselect', false)}
-            </option>
+            <option value="select">{t('System', 'Single select', null, false)}</option>
+            <option value="multiselect">{t('System', 'Multiple select', null, false)}</option>
           </select>
         </Field>
       </div>

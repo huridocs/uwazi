@@ -87,7 +87,7 @@ describe('FormConfigSelect', () => {
   it('should render fields with the correct data', () => {
     render();
     expect(screen.getByDisplayValue('My selector')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Select')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Single select')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Thesauri 1')).toBeInTheDocument();
   });
 

@@ -45,7 +45,7 @@ describe('FormConfigSelect', () => {
     const selector = screen.getByRole('combobox');
 
     expect(screen.getByDisplayValue('My date range')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Date Range')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Single date range')).toBeInTheDocument();
     expect(selector).toBeDisabled();
   });
 
