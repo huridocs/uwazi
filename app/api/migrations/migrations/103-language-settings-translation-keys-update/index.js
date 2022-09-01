@@ -34,7 +34,7 @@ async function insertSystemKeys(db, newKeys) {
 }
 
 export default {
-  delta: 100,
+  delta: 103,
   name: 'language-settings-translation-keys-update',
   description:
     'The migration updates the removed and added keys from language settings into the System context of translations.',
