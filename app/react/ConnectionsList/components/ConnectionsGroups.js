@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 
 import ConnectionsGroup from './ConnectionsGroup';
+import { LibraryViewRelationships } from './LibraryViewRelationships';
 
 class ConnectionsGroupsComponent extends Component {
   render() {
@@ -21,15 +22,7 @@ class ConnectionsGroupsComponent extends Component {
 
     if (connectionsGroups.size) {
       if (this.props.sidePanelTrigger === 'library') {
-        Results = (
-          <div styles={{ padding: '20px' }}>
-            <div className="list-group">
-              {connectionsGroups.map(group => (
-                <div className="list-group-item">{group.get('connectionLabel')}</div>
-              ))}
-            </div>
-          </div>
-        );
+        Results = <LibraryViewRelationships />;
       } else {
         Results = (
           <div>

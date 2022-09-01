@@ -463,6 +463,7 @@ describe('libraryActions', () => {
 
         const expectedActions = [
           { type: 'library.sidepanel.references/SET', value: 'referencesResponse' },
+          { type: 'relationships/list/sharedId/SET', value: 'id' },
         ];
 
         const store = mockStore({ locale: 'es' });
