@@ -1,7 +1,7 @@
 import { ClientSession, Db } from 'mongodb';
 import { Transactional } from './Transactional';
 
-export class RelationshipsDataSource implements Transactional {
+export class RelationshipsDataSource implements Transactional<ClientSession> {
   private db: Db;
 
   private session?: ClientSession;

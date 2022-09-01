@@ -1,5 +1,5 @@
-/* eslint-disable class-methods-use-this */
-import { ClientSession, MongoClient } from 'mongodb';
+import { MongoClient, ClientSession } from 'mongodb';
+import { Transactional } from '../services/Transactional';
 import { TransactionManager } from '../services/TransactionManager';
 
 export class MongoTransactionManager implements TransactionManager {
@@ -9,11 +9,17 @@ export class MongoTransactionManager implements TransactionManager {
     this.mongoClient = mongoClient;
   }
 
-  async run<T>(callback: (session: ClientSession) => Promise<T>): Promise<T> {
+  async run<D extends Transactional<ClientSession>[], T>(
+    callback: (...deps: D) => Promise<T>,
+    ...deps: D
+  ): Promise<T> {
     let returnValue: T;
     await this.mongoClient.withSession(async session =>
       session.withTransaction(async () => {
-        returnValue = await callback(session);
+        deps.forEach(dep => {
+          dep.setTransactionContext(session);
+        });
+        returnValue = await callback(...deps);
       })
     );
     return returnValue!;

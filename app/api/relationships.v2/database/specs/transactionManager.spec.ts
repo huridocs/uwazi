@@ -1,7 +1,10 @@
+/* eslint-disable max-classes-per-file */
+import { Transactional } from 'api/relationships.v2/services/Transactional';
 import { TransactionManager } from 'api/relationships.v2/services/TransactionManager';
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import { ClientSession } from 'mongodb';
 import { getClient } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 
@@ -20,27 +23,66 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+class Transactional1 implements Transactional<ClientSession> {
+  private session?: ClientSession;
+
+  setTransactionContext(session: ClientSession): void {
+    this.session = session;
+  }
+
+  async do() {
+    await testingDB.mongodb?.collection('collection1').insertOne({ _id: ids('doc3') });
+    await testingDB.mongodb
+      ?.collection('collection1')
+      .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session: this.session });
+  }
+}
+
+class Transactional2 implements Transactional<ClientSession> {
+  private session?: ClientSession;
+
+  setTransactionContext(session: ClientSession): void {
+    this.session = session;
+  }
+
+  async do() {
+    await testingDB.mongodb
+      ?.collection('collection2')
+      .deleteOne({ _id: ids('doc2') }, { session: this.session });
+  }
+}
+
+class Transactional3 implements Transactional<ClientSession> {
+  private session?: ClientSession;
+
+  setTransactionContext(session: ClientSession): void {
+    this.session = session;
+  }
+
+  async do() {
+    return testingDB
+      .mongodb!.collection('collection1')
+      .find({ _id: ids('doc1') }, { session: this.session })
+      .toArray();
+  }
+}
+
 describe('When every operation goes well', () => {
   let transactionResult: any;
   beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
-    transactionResult = await transactionManager.run(async session => {
-      await testingDB.mongodb
-        ?.collection('collection1')
-        .insertOne({ _id: ids('doc3') }, { session });
-      await testingDB.mongodb
-        ?.collection('collection1')
-        .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session });
-      await testingDB.mongodb
-        ?.collection('collection2')
-        .deleteOne({ _id: ids('doc2') }, { session });
-      const result = await testingDB
-        .mongodb!.collection('collection1')
-        .find({ _id: ids('doc1') }, { session })
-        .toArray();
+    transactionResult = await transactionManager.run(
+      async (t1, t2, t3) => {
+        await t1.do();
+        await t2.do();
+        const result = await t3.do();
 
-      return result;
-    });
+        return result;
+      },
+      new Transactional1(),
+      new Transactional2(),
+      new Transactional3()
+    );
   });
 
   it('should be reflected in all of the collections affected', async () => {
@@ -62,19 +104,16 @@ describe('When one operation fails', () => {
     const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
     const error = new Error('Simulated error');
     try {
-      await transactionManager.run(async session => {
-        await testingDB.mongodb
-          ?.collection('collection1')
-          .insertOne({ _id: ids('doc3') }, { session });
-        await testingDB.mongodb
-          ?.collection('collection1')
-          .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session });
-        throw error; // Mimics error thrown mid-execution
-        // eslint-disable-next-line no-unreachable
-        await testingDB.mongodb
-          ?.collection('collection2')
-          .deleteOne({ _id: ids('doc2') }, { session });
-      });
+      await transactionManager.run(
+        async (t1, t2) => {
+          await t1.do();
+          throw error; // Mimics error thrown mid-execution
+          // eslint-disable-next-line no-unreachable
+          await t2.do();
+        },
+        new Transactional1(),
+        new Transactional2()
+      );
     } catch (e) {
       expect(e).toBe(error);
     }

@@ -1,5 +1,3 @@
-import { ClientSession } from 'mongodb';
-
-export interface Transactional {
-  setTransactionContext(session: ClientSession): void;
+export interface Transactional<ContextType> {
+  setTransactionContext(session: ContextType): void;
 }

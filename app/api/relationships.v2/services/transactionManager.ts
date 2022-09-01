@@ -1,5 +1,8 @@
-import { ClientSession } from 'mongodb';
+import { Transactional } from './Transactional';
 
 export interface TransactionManager {
-  run<T>(callback: (session: ClientSession) => Promise<T>): Promise<T>;
+  run<D extends Transactional<unknown>[], T>(
+    callback: (...deps: D) => Promise<T>,
+    ...deps: D
+  ): Promise<T>;
 }
