@@ -8,6 +8,7 @@ import testingDB from 'api/utils/testing_db';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
+import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
 
 const factory = getFixturesFactory();
 
@@ -26,19 +27,13 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-const dummyTM = {
-  run(cb: any) {
-    return cb();
-  },
-};
-
 describe('When the entities exist', () => {
   it('should return a new connection', async () => {
     const connection = getConnection();
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
       new EntitiesDataSource(connection),
-      dummyTM
+      new MongoTransactionManager(getClient())
     );
     const relationship = await service.create('entity1', 'entity2');
 
@@ -54,7 +49,7 @@ describe('When the entities exist', () => {
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
       new EntitiesDataSource(connection),
-      dummyTM
+      new MongoTransactionManager(getClient())
     );
     await service.create('entity1', 'entity2');
 
@@ -76,7 +71,7 @@ describe('When an entity does not exist', () => {
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
       new EntitiesDataSource(connection),
-      dummyTM
+      new MongoTransactionManager(getClient())
     );
     try {
       await service.create('entity1', 'non-existing');
