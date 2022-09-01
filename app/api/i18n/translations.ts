@@ -10,7 +10,15 @@ import { generateFileName } from 'api/files';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ContentsClient } from 'api/i18n/contentsClient';
+import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
+
+export class UITranslationNotAvailable extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UITranslationNotAvailable';
+  }
+}
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -397,6 +405,13 @@ export default {
   },
 
   async importPredefined(locale: string) {
+    const language = availableLanguages.find(lan => lan.key === locale);
+    if (!language?.translationAvailable) {
+      throw new UITranslationNotAvailable(
+        `Predefined translation for locale ${locale} is not available`
+      );
+    }
+
     const contentsClient = new ContentsClient();
     const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
