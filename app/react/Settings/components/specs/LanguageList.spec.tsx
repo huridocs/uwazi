@@ -95,6 +95,14 @@ describe('Languages', () => {
     )[0] as HTMLElement;
     return within(sectionLanguages).getByText(languageLabel).parentElement!;
   };
+
+  const clickOnLanguageAction = (languageRow: HTMLElement, buttonLabel: string) => {
+    const languageButton = within(languageRow).getByRole('button', {
+      name: buttonLabel,
+    });
+    fireEvent.click(languageButton);
+  };
+
   describe('visibility upon language info', () => {
     it('should hid a delete button for the default language', () => {
       const spanishLanguage = getLanguageRow('installed-languages', 'Español (es)');
@@ -140,10 +148,7 @@ describe('Languages', () => {
   describe('clicking on Delete Language', () => {
     beforeEach(() => {
       const englishLanguage = getLanguageRow('installed-languages', 'English (en)');
-      const deleteEnglishButton = within(englishLanguage).getByRole('button', {
-        name: 'Delete language',
-      });
-      fireEvent.click(deleteEnglishButton);
+      clickOnLanguageAction(englishLanguage, 'Delete language');
     });
 
     it('should call delete languae', () => {
@@ -182,11 +187,9 @@ describe('Languages', () => {
   describe('clicking on Reset default translation', () => {
     beforeEach(() => {
       const newLanguage = getLanguageRow('installed-languages', 'Español (es)');
-      const resetTranslationButton = within(newLanguage).getByRole('button', {
-        name: 'Reset default translation',
-      });
-      fireEvent.click(resetTranslationButton);
+      clickOnLanguageAction(newLanguage, 'Reset default translation');
     });
+
     it('should call reset default translation at accepting', () => {
       expect(screen.queryByText('Confirm reset translation')).toBeInTheDocument();
       confirmAction();
