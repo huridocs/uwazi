@@ -10,6 +10,7 @@ import { generateFileName } from 'api/files';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ContentsClient } from 'api/i18n/contentsClient';
+import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
 
 function checkForMissingKeys(
@@ -397,6 +398,8 @@ export default {
   },
 
   async importPredefined(locale: string) {
+    const language = availableLanguages.find(lan => lan.key === locale);
+    if (!language?.translationAvailable) return;
     const contentsClient = new ContentsClient();
     const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));

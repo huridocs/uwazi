@@ -146,7 +146,7 @@ export default (app: Application) => {
       const newTranslations = await translations.addLanguage(req.body.key);
       await entities.addLanguage(req.body.key);
       await pages.addLanguage(req.body.key);
-
+      await translations.importPredefined(req.body.key);
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
       req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       res.json(newSettings);

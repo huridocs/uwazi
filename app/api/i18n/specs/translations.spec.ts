@@ -476,7 +476,7 @@ describe('translations', () => {
       backend.restore();
     });
 
-    it('should download a translations csv based on iso key and import it', async () => {
+    it('should download a translations csv based on iso key and import it when translation is available', async () => {
       const spanishCsv = `Key, Español
       Password, Password traducida
       Account, Account traducida
@@ -504,5 +504,19 @@ describe('translations', () => {
       expect(ESTranslations.Account).toBe('Account traducida');
       expect(ESTranslations.Age).toBe('Age traducida');
     });
+
+    it('should not translate when translation is not available', async () => {
+      await translations.importPredefined('zh');
+
+      const result = await translations.get();
+      const ZHTranslations =
+        (result.find(t => t.locale === 'zh')?.contexts || []).find(c => c.label === 'System')
+          ?.values || {};
+
+      expect(ZHTranslations.Password).toBe('Password');
+      expect(ZHTranslations.Account).toBe('Account');
+      expect(ZHTranslations.Age).toBe('Age');
+    });
+
   });
 });
