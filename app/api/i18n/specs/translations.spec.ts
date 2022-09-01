@@ -3,6 +3,8 @@ import db from 'api/utils/testing_db';
 
 import backend from 'fetch-mock';
 import thesauri from 'api/thesauri/thesauri.js';
+import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
+import { config } from 'api/config';
 import fixtures, {
   entityTemplateId,
   documentTemplateId,
@@ -10,7 +12,6 @@ import fixtures, {
   dictionaryId,
 } from './fixtures.js';
 import translations from '../translations';
-import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -148,6 +149,7 @@ describe('translations', () => {
           { values: { test: 'value' } },
           // @ts-ignore
           { values: [{ key: 'test2', value: 'value2' }] },
+          { values: {} },
         ],
       });
 
@@ -486,6 +488,8 @@ describe('translations', () => {
           url ===
             'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
           // @ts-ignore
+          opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+          // @ts-ignore
           opts?.headers?.accept === 'application/vnd.github.v4.raw',
         { body: spanishCsv }
       );
@@ -500,19 +504,6 @@ describe('translations', () => {
       expect(ESTranslations.Password).toBe('Password traducida');
       expect(ESTranslations.Account).toBe('Account traducida');
       expect(ESTranslations.Age).toBe('Age traducida');
-    });
-
-    it('should throw error on Github API quota exceeded', async () => {
-      backend.get(
-        (url, opts) =>
-          url ===
-            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
-          // @ts-ignore
-          opts?.headers?.accept === 'application/vnd.github.v4.raw',
-        { status: 403 }
-      );
-
-      await expect(translations.importPredefined('es')).rejects.toThrowError(GithubQuotaExceeded);
     });
   });
 });

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { validation } from 'api/utils';
+import { createError, validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
 import pages from 'api/pages';
@@ -8,7 +8,7 @@ import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { availableLanguages } from 'shared/languagesList';
 import { Application, Request } from 'express';
-import { GithubQuotaExceeded } from 'api/i18n/contentsClient';
+import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
@@ -105,10 +105,8 @@ export default (app: Application) => {
         await translations.importPredefined(locale);
         res.json(await translations.get({ locale }));
       } catch (error) {
-        if (error instanceof GithubQuotaExceeded) {
-          res.status(503);
-          res.json({ error: error.message });
-          return;
+        if (error instanceof GithubQuotaExceeded || error instanceof GithubAuthenticationError) {
+          next(createError(error, 503));
         }
         next(error);
       }
