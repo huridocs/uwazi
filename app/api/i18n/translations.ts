@@ -76,7 +76,13 @@ function processContextValues(context: TranslationContext | IndexedContext) {
     });
   }
 
-  const values = processedValues.length ? processedValues : (context.values as TranslationValue[]);
+  let values: TranslationValue[] = [];
+  if (processedValues.length) {
+    values = processedValues;
+  }
+  if (Array.isArray(context.values)) {
+    values = context.values as TranslationValue[];
+  }
 
   checkDuplicateKeys(context, values);
 

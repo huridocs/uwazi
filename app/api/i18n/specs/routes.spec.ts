@@ -7,6 +7,7 @@ import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
 import { availableLanguages } from 'shared/languagesList';
 import backend from 'fetch-mock';
+import { config } from 'api/config';
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -159,6 +160,8 @@ describe('i18n translations routes', () => {
             url ===
               'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
             // @ts-ignore
+            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+            // @ts-ignore
             opts?.headers?.accept === 'application/vnd.github.v4.raw',
           { body: spanishCsv }
         );
@@ -189,11 +192,7 @@ describe('i18n translations routes', () => {
 
       it('should response with error when Github quota exceeded', async () => {
         backend.get(
-          (url, opts) =>
-            url ===
-              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
-            // @ts-ignore
-            opts?.headers?.accept === 'application/vnd.github.v4.raw',
+          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
           { status: 403 }
         );
         const response = await request(app)
@@ -201,7 +200,22 @@ describe('i18n translations routes', () => {
           .send({ locale: 'es' })
           .expect(503);
 
-        expect(response.body).toEqual({ error: 'Translations could not be loaded' });
+        expect(response.body).toMatchObject({ error: 'Translations could not be loaded' });
+      });
+
+      it('should response with error when Github authentication failed', async () => {
+        backend.get(
+          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
+          { status: 401 }
+        );
+        const response = await request(app)
+          .post('/api/translations/populate')
+          .send({ locale: 'es' })
+          .expect(503);
+
+        expect(response.body).toMatchObject({
+          error: 'Github authentication failed',
+        });
       });
     });
 
