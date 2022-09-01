@@ -24,15 +24,19 @@ describe('When every operation goes well', () => {
   let transactionResult: any;
   beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
-    transactionResult = await transactionManager.run(async () => {
-      await testingDB.mongodb?.collection('collection1').insertOne({ _id: ids('doc3') });
+    transactionResult = await transactionManager.run(async session => {
       await testingDB.mongodb
         ?.collection('collection1')
-        .updateOne({ _id: ids('doc1') }, { $set: { updated: true } });
-      await testingDB.mongodb?.collection('collection2').deleteOne({ _id: ids('doc2') });
+        .insertOne({ _id: ids('doc3') }, { session });
+      await testingDB.mongodb
+        ?.collection('collection1')
+        .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session });
+      await testingDB.mongodb
+        ?.collection('collection2')
+        .deleteOne({ _id: ids('doc2') }, { session });
       const result = await testingDB
         .mongodb!.collection('collection1')
-        .find({ _id: ids('doc1') })
+        .find({ _id: ids('doc1') }, { session })
         .toArray();
 
       return result;
