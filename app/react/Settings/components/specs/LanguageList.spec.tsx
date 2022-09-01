@@ -89,23 +89,22 @@ describe('Languages', () => {
     });
   });
 
+  const getLanguageRow = (section: string, languageLabel: string) => {
+    const sectionLanguages = renderResult.container.getElementsByClassName(
+      section
+    )[0] as HTMLElement;
+    return within(sectionLanguages).getByText(languageLabel).parentElement!;
+  };
   describe('visibility upon language info', () => {
     it('should hid a delete button for the default language', () => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'installed-languages'
-      )[0] as HTMLElement;
-      const spanishLanguage = within(activeLanguages).getByText('Español (es)').parentElement!;
+      const spanishLanguage = getLanguageRow('installed-languages', 'Español (es)');
       const deleteButton = within(spanishLanguage).getByRole('button', {
         name: 'Delete language',
       });
       expect(deleteButton.getAttribute('class')).toContain('action-hidden');
     });
-
     it('should not show reset translation if it is not available', () => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'installed-languages'
-      )[0] as HTMLElement;
-      const englishLanguage = within(activeLanguages).getByText('English (en)').parentElement!;
+      const englishLanguage = getLanguageRow('installed-languages', 'English (en)');
       const resetButton = within(englishLanguage).getByRole('button', {
         name: 'Reset default translation',
       });
@@ -113,16 +112,13 @@ describe('Languages', () => {
     });
 
     it('should show a label when translation is available', () => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'available-languages'
-      )[0] as HTMLElement;
-      const thaiLanguage = within(activeLanguages).getByText('Thai (th)').parentElement!;
+      const thaiLanguage = getLanguageRow('available-languages', 'Thai (th)');
       const availablilityThaiLabel = within(thaiLanguage).queryByText(
         'Available default translation'
       );
       expect(availablilityThaiLabel).toBeInTheDocument();
 
-      const afarLanguage = within(activeLanguages).getByText('Afar (aa)').parentElement!;
+      const afarLanguage = getLanguageRow('available-languages', 'Afar (aa)');
       const availablilityAfarLabel = within(afarLanguage).queryByText(
         'Available default translation'
       );
@@ -132,10 +128,7 @@ describe('Languages', () => {
 
   describe('clicking on Set as default', () => {
     it('should call setDefaultLanguage', async () => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'installed-languages'
-      )[0] as HTMLElement;
-      const englishLanguage = within(activeLanguages).getByText('English (en)').parentElement!;
+      const englishLanguage = getLanguageRow('installed-languages', 'English (en)');
       const englishAsDefaultButton = within(englishLanguage).getByRole('button', {
         name: 'Set as default',
       });
@@ -146,10 +139,7 @@ describe('Languages', () => {
 
   describe('clicking on Delete Language', () => {
     beforeEach(() => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'installed-languages'
-      )[0] as HTMLElement;
-      const englishLanguage = within(activeLanguages).getByText('English (en)').parentElement!;
+      const englishLanguage = getLanguageRow('installed-languages', 'English (en)');
       const deleteEnglishButton = within(englishLanguage).getByRole('button', {
         name: 'Delete language',
       });
@@ -171,10 +161,7 @@ describe('Languages', () => {
 
   describe('clicking on Add Language', () => {
     beforeEach(() => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'available-languages'
-      )[0] as HTMLElement;
-      const newLanguage = within(activeLanguages).getByText('Abkhazian (ab)').parentElement!;
+      const newLanguage = getLanguageRow('available-languages', 'Abkhazian (ab)');
       const addLanguageButton = within(newLanguage).getByRole('button', { name: 'Add language' });
       fireEvent.click(addLanguageButton);
     });
@@ -194,10 +181,7 @@ describe('Languages', () => {
 
   describe('clicking on Reset default translation', () => {
     beforeEach(() => {
-      const activeLanguages = renderResult.container.getElementsByClassName(
-        'installed-languages'
-      )[0] as HTMLElement;
-      const newLanguage = within(activeLanguages).getByText('Español (es)').parentElement!;
+      const newLanguage = getLanguageRow('installed-languages', 'Español (es)');
       const resetTranslationButton = within(newLanguage).getByRole('button', {
         name: 'Reset default translation',
       });
