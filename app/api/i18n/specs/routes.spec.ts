@@ -217,6 +217,18 @@ describe('i18n translations routes', () => {
           error: 'Github authentication failed',
         });
       });
+
+      it('should response with error when Github authentication failed', async () => {
+        const response = await request(app)
+          .post('/api/translations/populate')
+          .send({ locale: 'zh' })
+          .expect(422);
+
+        expect(response.body).toMatchObject({
+          error: 'Predefined translation for locale zh is not available',
+        });
+      });
+
     });
 
     describe('api/translations/setasdeafult', () => {

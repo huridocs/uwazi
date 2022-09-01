@@ -108,6 +108,10 @@ export default (app: Application) => {
         if (error instanceof GithubQuotaExceeded || error instanceof GithubAuthenticationError) {
           next(createError(error, 503));
         }
+
+        if (error instanceof UITranslationNotAvailable) {
+          next(createError(error, 422));
+        }
         next(error);
       }
     }
