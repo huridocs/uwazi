@@ -17,11 +17,7 @@ export class EntitiesDataSource implements Transactional<ClientSession> {
   async entitiesExist(sharedIds: string[]) {
     const countInExistence = await this.db
       .collection('entities')
-      .find(
-        { sharedId: { $in: sharedIds } },
-        { projection: { sharedId: 1 }, session: this.session }
-      )
-      .count();
+      .countDocuments({ sharedId: { $in: sharedIds } });
     return countInExistence === sharedIds.length;
   }
 }

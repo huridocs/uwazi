@@ -11,8 +11,8 @@ import { MongoTransactionManager } from '../MongoTransactionManager';
 const ids = getIdMapper();
 
 const fixtures = {
-  collection1: [{ _id: ids('doc1') }],
-  collection2: [{ _id: ids('doc2') }],
+  collection1: [{ _id: ids('doc1'), name: 'doc1' }],
+  collection2: [{ _id: ids('doc2'), name: 'doc2' }],
 };
 
 beforeEach(async () => {
@@ -31,7 +31,9 @@ class Transactional1 implements Transactional<ClientSession> {
   }
 
   async do() {
-    await testingDB.mongodb?.collection('collection1').insertOne({ _id: ids('doc3') });
+    await testingDB.mongodb
+      ?.collection('collection1')
+      .insertOne({ _id: ids('doc3'), name: 'doc3' }, { session: this.session });
     await testingDB.mongodb
       ?.collection('collection1')
       .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session: this.session });
@@ -89,13 +91,16 @@ describe('When every operation goes well', () => {
     const col1 = await testingDB.mongodb?.collection('collection1').find({}).toArray();
     const col2 = await testingDB.mongodb?.collection('collection2').find({}).toArray();
 
-    expect(col1).toEqual([{ _id: ids('doc1'), updated: true }, { _id: ids('doc3') }]);
+    expect(col1).toEqual([
+      { _id: ids('doc1'), name: 'doc1', updated: true },
+      { _id: ids('doc3'), name: 'doc3' },
+    ]);
 
     expect(col2).toEqual([]);
   });
 
   it('should return what the callback returned', async () => {
-    expect(transactionResult).toEqual([{ _id: ids('doc1'), updated: true }]);
+    expect(transactionResult).toEqual([{ _id: ids('doc1'), name: 'doc1', updated: true }]);
   });
 });
 
