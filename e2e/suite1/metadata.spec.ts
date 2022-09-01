@@ -153,7 +153,7 @@ describe('Metadata', () => {
   describe('Relationship types tests', () => {
     it('should create a new connection', async () => {
       await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toClick('a', { text: 'Add connection' });
+      await expect(page).toClick('a', { text: 'Add relationship' });
       await expect(page).toFill('input[placeholder="Template name"]', 'test connection');
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toClick('.alert.alert-success');
