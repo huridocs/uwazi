@@ -1,18 +1,17 @@
+import { Application, Request, Response, NextFunction } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import { setUpApp } from 'api/utils/testingRoutes';
-import connections from 'api/relationships';
-
-import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
-import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
 import { errorLog } from 'api/log';
-import { storage } from '../storage';
+import connections from 'api/relationships';
+import { search } from 'api/search';
+import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { FileType } from 'shared/types/fileType';
 import {
   fixtures,
   uploadId,
@@ -21,8 +20,14 @@ import {
   adminUser,
   writerUser,
 } from './fixtures';
+import { FileCreatedEvent } from '../events/FileCreatedEvent';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
+import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import { storage } from '../storage';
+
+expect.extend({ toEmitEvent, toEmitEventWith });
 
 describe('files routes', () => {
   const collabUser = fixtures.users!.find(u => u.username === 'collab');
@@ -63,6 +68,46 @@ describe('files routes', () => {
 
     it('should reindex all entities that are related to the saved file', async () => {
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+    });
+
+    it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
+      const emitSpy = spyOnEmit();
+
+      const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+
+      await request(app)
+        .post('/api/files')
+        .send({
+          ...original,
+          extractedMetadata: [
+            {
+              name: 'propertyName',
+              selection: {
+                text: 'something',
+                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+              },
+            },
+          ],
+        });
+
+      const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
+      emitSpy.restore();
+    });
+
+    it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
+      const fileInfo = {
+        creationDate: 1,
+        entity: 'someid',
+        originalname: 'doc.pdf',
+        type: 'document',
+        language: 'eng',
+      };
+      const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
+      await expect(caller).toEmitEventWith(FileCreatedEvent, {
+        newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
+      });
+      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
 
     describe('when external url file', () => {
@@ -200,6 +245,18 @@ describe('files routes', () => {
       const ocrCleanupSpy = jest.spyOn(ocrRecords, 'cleanupRecordsOfFiles');
       await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
       expect(ocrCleanupSpy).toHaveBeenCalledWith([uploadId2]);
+    });
+
+    describe('events', () => {
+      it(`should emit a ${FilesDeletedEvent.name} when a file is deleted`, async () => {
+        const emitSpy = spyOnEmit();
+
+        const file = await db.mongodb?.collection('files').findOne({ _id: uploadId2 });
+        await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
+
+        emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file] });
+        emitSpy.restore();
+      });
     });
 
     it('should validate _id as string', async () => {

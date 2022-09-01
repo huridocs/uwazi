@@ -1,20 +1,16 @@
+import { CSVLoader } from 'api/csv';
+import * as os from 'os';
 import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
+import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { generateFileName } from 'api/files';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { ContentsClient } from 'api/i18n/contentsClient';
 import model from './translationsModel';
-
-export interface IndexedContextValues {
-  [k: string]: string;
-}
-
-export interface IndexedContext extends Omit<TranslationContext, 'values'> {
-  values: IndexedContextValues;
-}
-
-export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
-  contexts?: IndexedContext[];
-}
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -393,4 +389,25 @@ export default {
   async removeLanguage(locale: string) {
     return model.delete({ locale });
   },
+
+  async importPredefined(locale: string) {
+    const contentsClient = new ContentsClient();
+    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+    await pipeline(translationsCsv, createWriteStream(tmpCsv));
+    const loader = new CSVLoader();
+    await loader.loadTranslations(tmpCsv, 'System');
+  },
 };
+
+export interface IndexedContextValues {
+  [k: string]: string;
+}
+
+export interface IndexedContext extends Omit<TranslationContext, 'values'> {
+  values: IndexedContextValues;
+}
+
+export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
+  contexts?: IndexedContext[];
+}

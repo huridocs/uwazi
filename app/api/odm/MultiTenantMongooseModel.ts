@@ -88,6 +88,10 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().aggregate(aggregations);
   }
 
+  aggregateCursor<U>(aggregations?: any[]) {
+    return this.dbForCurrentTenant().aggregate<U>(aggregations) as mongoose.Aggregate<U[]>;
+  }
+
   async facet(aggregations: any[], pipelines: any, project: any) {
     return this.dbForCurrentTenant().aggregate(aggregations).facet(pipelines).project(project);
   }
@@ -98,6 +102,10 @@ class MultiTenantMongooseModel<T> {
 
   async bulkWrite(writes: Array<any>, options?: CollectionBulkWriteOptions) {
     return this.dbForCurrentTenant().bulkWrite(writes, options);
+  }
+
+  async ensureIndexes() {
+    return this.dbForCurrentTenant().ensureIndexes();
   }
 }
 

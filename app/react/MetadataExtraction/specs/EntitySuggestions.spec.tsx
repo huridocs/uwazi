@@ -76,11 +76,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(firstRow).toEqual([
-          'SuggestionOlowo Kamali',
+          'Open PDFOlowo Kamali Case',
+          'Olowo Kamali',
           '',
-          'Other titleEntity title1',
           'Entity title1',
-          'PDFOlowo Kamali Case',
+          'Entity title1',
           'English',
           SuggestionState.labelMismatch,
         ]);
@@ -88,11 +88,11 @@ describe('EntitySuggestions', () => {
           .getAllByRole('cell')
           .map(cell => cell.textContent);
         expect(secondRow).toEqual([
-          'SuggestionViolación caso 1',
+          'Open PDFDetalle Violación caso 1',
+          'Violación caso 1',
           '',
-          'Other title-',
+          '-',
           'Título entidad',
-          'PDFDetalle Violación caso 1',
           'Spanish',
           SuggestionState.valueEmpty,
         ]);
@@ -200,17 +200,17 @@ describe('EntitySuggestions', () => {
       expect(firstRow).toContain(expectedSuggestionCell);
     };
     it('should format the current value from a date property', async () => {
-      await renderAndCheckSuggestion(dateSuggestion, 'FechaApr 2, 2020');
+      await renderAndCheckSuggestion(dateSuggestion, 'Open PDFFecha Apr 2, 2020');
     });
     it('should format the suggestion value from a date property', async () => {
-      await renderAndCheckSuggestion(dateSuggestion, 'SuggestionApr 2, 2020');
+      await renderAndCheckSuggestion(dateSuggestion, 'Apr 2, 2020');
     });
 
     it('should should not format is suggestion is a not valid date', async () => {
       const invalidSuggestion = { ...dateSuggestion };
       // @ts-ignore
       invalidSuggestion.suggestedValue = 'no date';
-      await renderAndCheckSuggestion(invalidSuggestion, 'Suggestionno date');
+      await renderAndCheckSuggestion(invalidSuggestion, 'no date');
     });
   });
 
@@ -286,7 +286,7 @@ describe('EntitySuggestions', () => {
         const selectedRow = within(screen.getAllByRole('row')[1])
           .getAllByRole('cell')
           .map(cell => cell.textContent);
-        expect(selectedRow[6]).toEqual(SuggestionState.labelMatch);
+        expect(selectedRow[6]).toEqual(SuggestionState.valueMatch);
       });
       it('should not accept a suggestion in confirmation is cancelled', async () => {
         const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
@@ -352,8 +352,8 @@ describe('EntitySuggestions', () => {
       const originalRow = within(rows[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(originalRow[2]).toEqual('Other title-');
-      const openPDFButton = within(rows[2]).getByText('PDF').parentElement!;
+      expect(originalRow[3]).toEqual('-');
+      const openPDFButton = within(rows[2]).getByText('Open PDF').parentElement!;
       await act(async () => {
         fireEvent.click(openPDFButton);
       });
@@ -363,7 +363,7 @@ describe('EntitySuggestions', () => {
       const updatedRow = within(screen.getAllByRole('row')[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(updatedRow[2]).toEqual(`Other title${filledPropertyValue}`);
+      expect(updatedRow[3]).toEqual(filledPropertyValue);
     });
   });
 

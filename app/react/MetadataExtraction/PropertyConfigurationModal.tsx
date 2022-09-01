@@ -4,10 +4,11 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import Icons from 'app/Templates/components/Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'number', 'date'];
 
-interface IXTemplateConfiguration {
+export interface IXTemplateConfiguration {
   template: ObjectIdSchema;
   properties: string[];
 }
@@ -28,8 +29,7 @@ export const PropertyConfigurationModal = ({
   currentProperties,
 }: PropertyConfigurationModalProps) => {
   const currentValues = currentProperties.reduce((result: string[], config) => {
-    const template = config.template;
-    const properties = config.properties;
+    const { template, properties } = config;
     const props = properties.map(prop => `${template}-${prop}`);
     return result.concat(props);
   }, []);
@@ -44,9 +44,17 @@ export const PropertyConfigurationModal = ({
         label: prop.label,
         value: `${template._id?.toString()}-${prop.name}`,
         type: prop.type,
+        icon: { type: 'Icons', _id: Icons[prop.type] },
       }))
       .filter(p => SUPPORTED_PROPERTIES.includes(p.type))
-      .concat([{ label: 'Title', value: `${template._id?.toString()}-title`, type: 'text' }]),
+      .concat([
+        {
+          label: 'Title',
+          value: `${template._id?.toString()}-title`,
+          type: 'text',
+          icon: { type: 'Icons', _id: Icons.text },
+        },
+      ]),
   }));
 
   const handleSubmit = (submitedValues: string[]) => {
@@ -75,7 +83,7 @@ export const PropertyConfigurationModal = ({
     <Modal isOpen={isOpen} type="content" className="suggestion-acceptance-modal">
       <Modal.Header>
         <h1>
-          <Translate>Add supported properties</Translate>
+          <Translate>Add properties</Translate>
           <span>*</span>
         </h1>
       </Modal.Header>
@@ -85,12 +93,12 @@ export const PropertyConfigurationModal = ({
           onChange={setValues}
           options={options}
           optionsToShow={20}
-          showSearch={true}
+          showSearch
         />
       </Modal.Body>
       <Modal.Footer>
         <span className="left">
-          *<Translate>Only supported properties are shown</Translate>
+          *<Translate>Only text, number and date properties are currently supported</Translate>
         </span>
         <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
           <Translate>Cancel</Translate>

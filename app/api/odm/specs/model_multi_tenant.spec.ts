@@ -34,6 +34,9 @@ describe('ODM Model multi-tenant', () => {
   });
 
   afterAll(async () => {
+    await defaultDB.dropDatabase();
+    await db1.dropDatabase();
+    await db2.dropDatabase();
     await testingDB.disconnect();
   });
 

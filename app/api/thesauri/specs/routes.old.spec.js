@@ -10,13 +10,13 @@ import thesauriRoute from '../routes.js';
 describe('thesauri routes', () => {
   let routes;
 
-  beforeEach(done => {
+  beforeEach(async () => {
     routes = instrumentRoutes(thesauriRoute);
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('GET', () => {

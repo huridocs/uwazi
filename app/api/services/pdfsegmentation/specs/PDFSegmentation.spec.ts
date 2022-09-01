@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-lines */
 
-import { fixturer, createNewMongoDB } from 'api/utils/testing_db';
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { fixturer } from 'api/utils/testing_db';
 import {
   fixturesOneFile,
   fixturesOtherFile,
@@ -68,17 +67,14 @@ describe('PDFSegmentation', () => {
   let dbTwo: Db;
   let fileA: Buffer;
   let fileB: Buffer;
-  let mongod: MongoMemoryServer;
 
   afterAll(async () => {
     await DB.disconnect();
-    await mongod.stop();
   });
 
   beforeAll(async () => {
-    mongod = await createNewMongoDB();
-    const mongoUri = mongod.getUri();
-    await DB.connect(mongoUri);
+    const uri = 'mongodb://localhost/';
+    await DB.connect(`${uri}PDFSegmentation_spec`);
   });
 
   beforeEach(async () => {

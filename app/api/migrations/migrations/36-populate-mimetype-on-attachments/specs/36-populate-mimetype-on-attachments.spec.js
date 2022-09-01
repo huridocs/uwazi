@@ -17,10 +17,10 @@ describe('migration populate-mimetype-on-attachments', () => {
   });
 
   afterAll(async () => {
+    await testingDB.disconnect();
     headRequestMock.mockRestore();
     attachmentPathMock.mockRestore();
     mimeMock.mockRestore();
-    await testingDB.disconnect();
   });
 
   it('should have a delta number', () => {

@@ -7,7 +7,11 @@ import { PUBLIC_PERMISSION } from '../publicPermission';
 
 describe('collaborators', () => {
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
+    await testingDB.setupFixturesAndContext(fixtures);
+  });
+
+  afterAll(async () => {
+    await testingDB.disconnect();
   });
 
   describe('search', () => {
@@ -50,15 +54,18 @@ describe('collaborators', () => {
       });
 
       it('should return all existing groups', async () => {
-        const availableCollaborators = await collaborators.search('User');
+        const availableCollaborators = (await collaborators.search('User')).sort((a, b) =>
+          a.refId.toString().localeCompare(b.refId.toString())
+        );
+
         expect(availableCollaborators[0]).toEqual({
-          refId: groupB._id.toString(),
-          label: groupB.name,
+          refId: groupA._id.toString(),
+          label: groupA.name,
           type: PermissionType.GROUP,
         });
         expect(availableCollaborators[1]).toEqual({
-          refId: groupA._id.toString(),
-          label: groupA.name,
+          refId: groupB._id.toString(),
+          label: groupB.name,
           type: PermissionType.GROUP,
         });
         assertPublicOption(availableCollaborators);

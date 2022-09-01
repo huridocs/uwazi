@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { Application } from 'express';
+import { Application, Request } from 'express';
 
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -46,7 +46,7 @@ export default (app: Application) => {
       'query'
     ),
 
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
       pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
     }
   );
@@ -64,7 +64,7 @@ export default (app: Application) => {
       'query'
     ),
 
-    (req, res, next) => {
+    (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
       pages
         .delete(req.query.sharedId)
         .then(response => res.json(response))
