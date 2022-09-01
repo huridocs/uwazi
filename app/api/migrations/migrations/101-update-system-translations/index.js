@@ -9,6 +9,8 @@ const updatedKeys = {
   'This connection type is being used and cannot be deleted.':
     'This relationship type is being used and cannot be deleted.',
   connections: 'relationships',
+  'Changing the type will erase all connections to this entity.':
+    'Changing the type will erase all relationships to this entity.',
 };
 
 export default {
