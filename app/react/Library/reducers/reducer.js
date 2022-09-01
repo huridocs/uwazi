@@ -57,6 +57,6 @@ export default storeKey =>
         fullText: [],
       }),
       tab: createReducer(`${storeKey}.sidepanel.tab`, ''),
-      trigger: createReducer(`${storeKey}.sidepanel.trigger`, ''),
+      view: createReducer(`${storeKey}.sidepanel.view`, ''),
     }),
   });

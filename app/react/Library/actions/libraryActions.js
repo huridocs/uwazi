@@ -32,7 +32,7 @@ function selectDocument(_doc) {
     if (showingSemanticSearch && !doc.semanticSearch) {
       dispatch(actions.set('library.sidepanel.tab', ''));
     }
-    dispatch(actions.set('library.sidepanel.trigger', 'library'));
+    dispatch(actions.set('library.sidepanel.view', 'library'));
     await dispatch(maybeSaveQuickLabels());
     dispatch({ type: types.SELECT_DOCUMENT, doc });
     dispatch(selectedDocumentsChanged());

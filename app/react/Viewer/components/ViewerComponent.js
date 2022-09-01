@@ -31,7 +31,7 @@ ViewerComponent.propTypes = {
   setSidepanelTrigger: PropTypes.func.isRequired,
 };
 
-const setSidepanelTrigger = () => actions.set('library.sidepanel.trigger', 'entityViewer');
+const setSidepanelTrigger = () => actions.set('library.sidepanel.view', 'entity');
 
 const mapStateToProps = state => {
   const entity = state.documentViewer.doc.get('_id')

@@ -50,7 +50,7 @@ ConnectionsGroupsComponent.propTypes = {
 function mapStateToProps({ relationships, library }) {
   return {
     connectionsGroups: relationships.list.connectionsGroups,
-    sidePanelTrigger: library.sidepanel.trigger,
+    sidePanelTrigger: library.sidepanel.view,
   };
 }
 

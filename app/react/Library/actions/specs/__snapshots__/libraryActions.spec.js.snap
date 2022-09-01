@@ -7,7 +7,7 @@ Array [
     "value": "",
   },
   Object {
-    "type": "library.sidepanel.trigger/SET",
+    "type": "library.sidepanel.view/SET",
     "value": "library",
   },
   Object {
