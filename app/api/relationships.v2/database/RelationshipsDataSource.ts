@@ -20,7 +20,11 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
     const {
       ops: [{ _id }],
     } = await this.db.collection('relationships').insertOne(
-      { ...relationship, _id: new ObjectId(relationship._id) },
+      {
+        ...relationship,
+        _id: new ObjectId(relationship._id),
+        type: new ObjectId(relationship.type),
+      },
       {
         session: this.session,
       }

@@ -7,6 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
 import { ObjectId } from 'mongodb';
+import { RelationshipTypesDataSource } from 'api/relationships.v2/database/RelationshipTypesDataSource';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
@@ -17,6 +18,12 @@ const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 
 const fixtures = {
   entities: [factory.entity('entity1', 'template1'), factory.entity('entity2', 'template1')],
+  relationtypes: [
+    {
+      _id: factory.id('rel1'),
+      name: 'rel1',
+    },
+  ],
   templates: [factory.template('template1')],
 };
 
@@ -33,15 +40,21 @@ describe('When the entities exist', () => {
     const connection = getConnection();
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
+      new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient())
     );
-    const relationship = await service.create('entity1', 'entity2');
+    const relationship = await service.create(
+      'entity1',
+      'entity2',
+      factory.id('rel1').toHexString()
+    );
 
     expect(relationship).toEqual({
       _id: expect.any(String),
       from: 'entity1',
       to: 'entity2',
+      type: factory.id('rel1').toHexString(),
     });
   });
 
@@ -49,10 +62,11 @@ describe('When the entities exist', () => {
     const connection = getConnection();
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
+      new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient())
     );
-    await service.create('entity1', 'entity2');
+    await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
 
     const relatinshipsInDb = await collectionInDb().find({}).toArray();
 
@@ -61,6 +75,7 @@ describe('When the entities exist', () => {
         _id: expect.any(ObjectId),
         from: 'entity1',
         to: 'entity2',
+        type: factory.id('rel1'),
       },
     ]);
   });
@@ -71,11 +86,12 @@ describe('When an entity does not exist', () => {
     const connection = getConnection();
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
+      new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient())
     );
     try {
-      await service.create('entity1', 'non-existing');
+      await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
       fail('should throw error');
     } catch (e) {
       await expect(e.message).toMatch(/existing/);
@@ -88,11 +104,12 @@ describe('When trying to create a self-referencing relationship', () => {
     const connection = getConnection();
     const service = new CreateRelationshipService(
       new RelationshipsDataSource(connection),
+      new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient())
     );
     try {
-      await service.create('entity1', 'entity1');
+      await service.create('entity1', 'entity1', factory.id('rel1').toHexString());
       fail('should throw error');
     } catch (e) {
       await expect(e.message).toMatch(/self/);
