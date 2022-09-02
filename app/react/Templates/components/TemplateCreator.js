@@ -12,7 +12,7 @@ import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import { Translate } from 'app/I18N';
 
-export class TemplateCreator extends Component {
+class TemplateCreator extends Component {
   componentWillUnmount() {
     this.props.resetTemplate();
   }
@@ -54,16 +54,7 @@ export class TemplateCreator extends Component {
                     <ul className="list-group property-options-list">
                       <PropertyOption label="Text" type="text" />
                       <PropertyOption label="Numeric" type="numeric" />
-                      <PropertyOption
-                        label="Select"
-                        type="select"
-                        disabled={this.props.noDictionaries}
-                      />
-                      <PropertyOption
-                        label="Multi Select"
-                        type="multiselect"
-                        disabled={this.props.noDictionaries}
-                      />
+                      <PropertyOption label="Select" type="select" />
                       {environment !== 'relationship' && (
                         <PropertyOption
                           label="Relationship"
@@ -72,9 +63,6 @@ export class TemplateCreator extends Component {
                         />
                       )}
                       <PropertyOption label="Date" type="date" />
-                      <PropertyOption label="Date Range" type="daterange" />
-                      <PropertyOption label="Multi Date" type="multidate" />
-                      <PropertyOption label="Multi Date Range" type="multidaterange" />
                       <PropertyOption label="Rich Text" type="markdown" />
                       <PropertyOption label="Link" type="link" />
                       <PropertyOption label="Image" type="image" />
@@ -110,7 +98,6 @@ export class TemplateCreator extends Component {
 TemplateCreator.defaultProps = {
   relationType: false,
   noRelationtypes: true,
-  noDictionaries: true,
   project: '',
   syncedTemplate: false,
 };
@@ -122,7 +109,6 @@ TemplateCreator.propTypes = {
   relationType: PropTypes.bool,
   syncedTemplate: PropTypes.bool,
   noRelationtypes: PropTypes.bool,
-  noDictionaries: PropTypes.bool,
   project: PropTypes.string,
 };
 
@@ -141,6 +127,7 @@ const mapStateToProps = ({ settings, relationTypes, thesauris, template }, props
   syncedTemplate: !props.relationType && template.data.synced,
 });
 
+export { TemplateCreator };
 export default DragDropContext(HTML5Backend)(
   connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
 );

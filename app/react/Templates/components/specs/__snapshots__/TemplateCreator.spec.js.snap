@@ -54,14 +54,8 @@ exports[`TemplateCreator Property Options should include document specific optio
                 type="numeric"
               />
               <Connect(DragSource(PropertyOption))
-                disabled={true}
                 label="Select"
                 type="select"
-              />
-              <Connect(DragSource(PropertyOption))
-                disabled={true}
-                label="Multi Select"
-                type="multiselect"
               />
               <Connect(DragSource(PropertyOption))
                 disabled={true}
@@ -71,18 +65,6 @@ exports[`TemplateCreator Property Options should include document specific optio
               <Connect(DragSource(PropertyOption))
                 label="Date"
                 type="date"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Date Range"
-                type="daterange"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Multi Date"
-                type="multidate"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Multi Date Range"
-                type="multidaterange"
               />
               <Connect(DragSource(PropertyOption))
                 label="Rich Text"
@@ -184,14 +166,8 @@ exports[`TemplateCreator Property Options should include most common options by 
                 type="numeric"
               />
               <Connect(DragSource(PropertyOption))
-                disabled={true}
                 label="Select"
                 type="select"
-              />
-              <Connect(DragSource(PropertyOption))
-                disabled={true}
-                label="Multi Select"
-                type="multiselect"
               />
               <Connect(DragSource(PropertyOption))
                 disabled={true}
@@ -201,18 +177,6 @@ exports[`TemplateCreator Property Options should include most common options by 
               <Connect(DragSource(PropertyOption))
                 label="Date"
                 type="date"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Date Range"
-                type="daterange"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Multi Date"
-                type="multidate"
-              />
-              <Connect(DragSource(PropertyOption))
-                label="Multi Date Range"
-                type="multidaterange"
               />
               <Connect(DragSource(PropertyOption))
                 label="Rich Text"
