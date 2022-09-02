@@ -1,9 +1,12 @@
+import { IStore } from 'app/istore';
 import { createSelector } from 'reselect';
 
-const checkErrorsOnLabel = createSelector(
-  (state, props) =>
+const checkErrorsOnLabel: (state: IStore, props: any) => any = createSelector(
+  (state: IStore, props: any) =>
+    //@ts-ignore
     state.template.formState.$form.errors[`properties.${props.index}.label.required`],
-  (state, props) =>
+  (state: IStore, props: any) =>
+    //@ts-ignore
     state.template.formState.$form.errors[`properties.${props.index}.label.duplicated`],
   (required, duplicated) => required || duplicated
 );
