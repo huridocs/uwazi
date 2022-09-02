@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { differenceBy, isEmpty } from 'lodash';
+import { differenceBy, intersectionBy, isEmpty } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
 import { Translate, actions, I18NApi } from 'app/I18N';
@@ -94,9 +94,14 @@ const LanguageList = ({
   useEffect(() => {
     I18NApi.getLanguages()
       .then((languagesList: LanguageSchema[]) => {
-        const currentLanguages = languages?.toJS() || [];
+        const currentLanguages: LanguageSchema[] = languages?.toJS() || [];
+        const defaultLanguage = currentLanguages.find(l => l.default === true);
+        const installed = intersectionBy(languagesList, currentLanguages, 'key');
+        const defaultInstalled =
+          installed.find(l => l.key === defaultLanguage?.key) || installed[0];
+        defaultInstalled.default = true;
+        setInstalledLanguages(installed);
         setAvailableLanguages(differenceBy(languagesList, currentLanguages, 'key'));
-        setInstalledLanguages(currentLanguages);
       })
       .catch(_e => {});
   }, [languages]);
@@ -195,13 +200,14 @@ const LanguageList = ({
           }}
           title={
             <>
-              <Translate>Confirm delete </Translate>&nbsp;{deletingLanguage.label}
+              <Translate>Confirm delete</Translate>&nbsp;{deletingLanguage.label}
             </>
           }
           message={
             <>
-              <Translate>Are you sure you want to delete</Translate>&nbsp; {deletingLanguage.label}
-              <Translate> language?</Translate>
+              <Translate>Are you sure you want to delete</Translate>&nbsp;{deletingLanguage.label}
+              &nbsp;
+              <Translate>language?</Translate>&nbsp;
               <Translate>
                 This action may take some time, can not be undone and will delete all the
                 information in that language.
@@ -227,9 +233,9 @@ const LanguageList = ({
           }
           message={
             <>
-              <Translate>Are you sure you want to reset translation for</Translate>&nbsp;{' '}
-              {resettingLanguage.label}
-              <Translate> language?</Translate>
+              <Translate>Are you sure you want to reset translation for</Translate>&nbsp;
+              {resettingLanguage.label}&nbsp;
+              <Translate>language?</Translate>
             </>
           }
           extraConfirm
