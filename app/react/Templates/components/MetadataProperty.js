@@ -11,13 +11,13 @@ import { Icon } from 'UI';
 import { StateSelector } from 'app/Review/components/StateSelector';
 import { createSelector } from 'reselect';
 import { Translate } from 'app/I18N';
-
 import FormConfigInput from './FormConfigInput';
-import FormConfigSelect from './FormConfigSelect';
+import { FormConfigSelect } from './FormConfigSelect';
 import FormConfigRelationship from './FormConfigRelationship';
 import FormConfigNested from './FormConfigNested';
 import FormConfigCommon from './FormConfigCommon';
 import FormConfigMultimedia from './FormConfigMultimedia';
+import { FormConfigDate } from './FormConfigDate';
 import Icons from './Icons';
 
 const isLabelDuplicated = (index, template, formState) => {
@@ -44,28 +44,51 @@ class MetadataProperty extends Component {
     if (this.props.isCommonProperty) {
       return <FormConfigCommon index={index} type={type} />;
     }
-    if (type === 'relationship') {
-      defaultInput = <FormConfigRelationship index={index} type={type} />;
+
+    switch (type) {
+      case 'relationship':
+        defaultInput = <FormConfigRelationship index={index} type={type} />;
+        break;
+
+      case 'select':
+      case 'multiselect':
+        defaultInput = <FormConfigSelect index={index} type={type} />;
+        break;
+
+      case 'nested':
+        defaultInput = <FormConfigNested index={index} type={type} />;
+        break;
+
+      case 'media':
+      case 'image':
+      case 'preview':
+        defaultInput = (
+          <FormConfigMultimedia
+            type={type}
+            index={index}
+            canSetStyle={type === 'image' || type === 'preview'}
+            canBeRequired={type !== 'preview'}
+          />
+        );
+        break;
+
+      case 'geolocation':
+      case 'link':
+        defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false} />;
+        break;
+
+      case 'date':
+      case 'daterange':
+      case 'multidate':
+      case 'multidaterange':
+        defaultInput = <FormConfigDate index={index} type={type} />;
+        break;
+
+      default:
+        defaultInput = <FormConfigInput type={type} index={index} />;
+        break;
     }
-    if (type === 'select' || type === 'multiselect') {
-      defaultInput = <FormConfigSelect index={index} type={type} />;
-    }
-    if (type === 'nested') {
-      defaultInput = <FormConfigNested index={index} type={type} />;
-    }
-    if (type === 'media' || type === 'image' || type === 'preview') {
-      defaultInput = (
-        <FormConfigMultimedia
-          type={type}
-          index={index}
-          canSetStyle={type === 'image' || type === 'preview'}
-          canBeRequired={type !== 'preview'}
-        />
-      );
-    }
-    if (type === 'geolocation' || type === 'link') {
-      defaultInput = <FormConfigInput type={type} index={index} canBeFilter={false} />;
-    }
+
     return defaultInput;
   }
 
