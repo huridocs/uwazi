@@ -38,9 +38,9 @@ describe('Homepage entities', () => {
     await testSelectorShot('div.entity-metadata');
   });
 
-  it('should display entity connections page', async () => {
+  it('should display entity relationship page', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
-    await expect(page).toClick('div[aria-label="Connections"]');
+    await expect(page).toClick('div[aria-label="Relationships"]');
     await testSelectorShot('div.relationships-graph');
   });
 
