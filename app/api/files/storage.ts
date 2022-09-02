@@ -16,6 +16,7 @@ import {
   uploadsPath,
 } from './filesystem';
 import { S3Storage } from './S3Storage';
+import { pipeline } from 'stream/promises';
 
 type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
@@ -95,10 +96,7 @@ export const storage = {
     }
   },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
-    file.pipe(createWriteStream(paths[type](filename)));
-    await new Promise(resolve => {
-      file.on('close', resolve);
-    });
+    await pipeline(file, createWriteStream(paths[type](filename)));
 
     if (tenants.current().featureFlags?.s3Storage) {
       await s3().upload(
