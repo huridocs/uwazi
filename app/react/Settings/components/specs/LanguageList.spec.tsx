@@ -13,7 +13,7 @@ describe('Languages', () => {
   let renderResult: RenderResult;
 
   const currentLanguages = [
-    { label: 'Español', key: 'es', default: true },
+    { label: 'Spanish', key: 'es', default: true },
     { label: 'English', key: 'en' },
   ];
 
@@ -105,7 +105,7 @@ describe('Languages', () => {
 
   describe('visibility upon language info', () => {
     it('should hid a delete button for the default language', () => {
-      const spanishLanguage = getLanguageRow('installed-languages', 'Español (es)');
+      const spanishLanguage = getLanguageRow('installed-languages', 'Spanish (es)');
       const deleteButton = within(spanishLanguage).getByRole('button', {
         name: 'Delete language',
       });
@@ -189,7 +189,7 @@ describe('Languages', () => {
   describe('clicking on Reset default translation', () => {
     beforeEach(() => {
       clickOnLanguageAction(
-        getLanguageRow('installed-languages', 'Español (es)'),
+        getLanguageRow('installed-languages', 'Spanish (es)'),
         'Reset default translation'
       );
     });
