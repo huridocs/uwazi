@@ -153,7 +153,11 @@ export default (app: Application) => {
       try {
         await translations.importPredefined(req.body.key);
       } catch (error) {
-        if (!(error instanceof UITranslationNotAvailable)) {
+        if (
+          !(error instanceof UITranslationNotAvailable) &&
+          !(error instanceof GithubAuthenticationError) &&
+          !(error instanceof GithubQuotaExceeded)
+        ) {
           throw error;
         }
       }
