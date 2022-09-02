@@ -1,17 +1,16 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import { fromJS } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { difference } from 'lodash';
 import { Icon } from 'UI';
-
 import { I18NLink, t, Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';
-import { TranslationContext, TranslationType } from 'shared/translationType';
 import { IImmutable } from 'shared/types/Immutable';
-import { fromJS } from 'immutable';
+import { TranslationContext, TranslationType } from 'shared/translationType';
 
 const TranslationCtx = ({ context }: { context: TranslationContext }) => (
   <>
