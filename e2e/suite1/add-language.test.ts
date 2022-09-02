@@ -34,9 +34,7 @@ describe('Add language', () => {
     await page.goto(`${host}/settings/languages`);
     await disableTransitions();
     await expect(page).toClick('span', { text: 'Languages' });
-    await expect(page).toClick('.installed-languages > div:nth-child(4) > div:nth-child(4)', {
-      text: 'Delete language',
-    });
+    await expect(page).toClick('button', { text: 'Delete language' });
     await page.waitForSelector('div.modal-content');
     await expect(page).toFill('div.modal-content div.modal-body input', 'CONFIRM');
     await expect(page).toClick('span', { text: 'Accept' });
