@@ -4,6 +4,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
+import { host } from '../config';
 
 describe('Add language', () => {
   beforeAll(async () => {
@@ -13,7 +14,6 @@ describe('Add language', () => {
     await disableTransitions();
   });
 
-  // eslint-disable-next-line max-statements
   it('Should add the first language successfully', async () => {
     await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('span', { text: 'Languages' });
@@ -31,7 +31,8 @@ describe('Add language', () => {
   });
 
   it('should delete the added language', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
+    await page.goto(`${host}/settings/languages`);
+    await disableTransitions();
     await expect(page).toClick('span', { text: 'Languages' });
     await expect(page).toClick('.installed-languages > div:nth-child(4) > div:nth-child(4)', {
       text: 'Delete language',
