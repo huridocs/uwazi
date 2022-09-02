@@ -258,12 +258,12 @@ class DocumentSidePanel extends Component {
                       to="connections"
                       role="button"
                       tabIndex="0"
-                      aria-label={t('System', 'Connections', null, false)}
+                      aria-label={t('System', 'Relationships', null, false)}
                       component="div"
                     >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
-                      <span className="tab-link-tooltip">{t('System', 'Connections')}</span>
+                      <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
                     </TabLink>
                   </li>
                 );

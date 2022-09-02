@@ -680,7 +680,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'ko',
     ISO639_3: 'kor',
     localized_label: '한국어',
-    translationAvailable: false,
+    translationAvailable: true,
   },
   {
     label: 'Kurdish',
@@ -1222,7 +1222,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'tr',
     ISO639_3: 'tur',
     localized_label: 'Türkçe',
-    translationAvailable: false,
+    translationAvailable: true,
   },
   {
     label: 'Turkmen',

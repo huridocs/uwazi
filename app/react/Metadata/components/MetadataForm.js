@@ -65,7 +65,7 @@ class MetadataForm extends Component {
                   <span>
                     <Icon icon="exclamation-triangle" />
                     <Translate context="System">
-                      Changing the type will erase all connections to this entity.
+                      Changing the type will erase all relationships to this entity.
                     </Translate>
                   </span>
                 )}

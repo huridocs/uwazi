@@ -129,7 +129,7 @@ describe('MetadataForm', () => {
   });
 
   describe('on template change', () => {
-    const warningMessage = 'Changing the type will erase all connections to this entity.';
+    const warningMessage = 'Changing the type will erase all relationships to this entity.';
 
     it('should call changeTemplate with the template', () => {
       render();

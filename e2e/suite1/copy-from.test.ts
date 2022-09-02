@@ -24,7 +24,7 @@ describe('Copy from', () => {
     );
     await expect(page).toClick('.sidepanel-footer > .btn-cluster > a', { text: 'View' });
     await expect(page).toClick('.tab-link', {
-      text: 'Connections',
+      text: 'Relationships',
     });
     await expect(page).toClick('.entity-footer > .btn-cluster > .edit-metadata', { text: 'Edit' });
     await expect(page).toClick('button', {
