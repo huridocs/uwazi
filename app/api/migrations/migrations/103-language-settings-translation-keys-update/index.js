@@ -66,6 +66,8 @@ export default {
       { key: 'Translations reset successfully' },
       { key: 'Confirm reset translation' },
       { key: 'Are you sure you want to reset translation for' },
+      { key: 'System translations' },
+      { key: 'Content translations' },
     ];
     await insertSystemKeys(db, systemKeys);
   },

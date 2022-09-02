@@ -147,8 +147,10 @@ describe('Languages', () => {
 
   describe('clicking on Delete Language', () => {
     beforeEach(() => {
-      const englishLanguage = getLanguageRow('installed-languages', 'English (en)');
-      clickOnLanguageAction(englishLanguage, 'Delete language');
+      clickOnLanguageAction(
+        getLanguageRow('installed-languages', 'English (en)'),
+        'Delete language'
+      );
     });
 
     it('should call delete languae', () => {
@@ -186,8 +188,10 @@ describe('Languages', () => {
 
   describe('clicking on Reset default translation', () => {
     beforeEach(() => {
-      const newLanguage = getLanguageRow('installed-languages', 'Español (es)');
-      clickOnLanguageAction(newLanguage, 'Reset default translation');
+      clickOnLanguageAction(
+        getLanguageRow('installed-languages', 'Español (es)'),
+        'Reset default translation'
+      );
     });
 
     it('should call reset default translation at accepting', () => {

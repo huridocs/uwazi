@@ -25,7 +25,7 @@ const TranslationCtx = ({ context }: { context: TranslationContext }) => (
     </div>
     <div className="list-group-item-actions">
       <I18NLink
-        to={`/settings/translations/edit/${encodeURIComponent(context.id)}`}
+        to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}
         className="btn btn-default btn-xs"
       >
         <Icon icon="language" /> {t('System', 'Translate')}
@@ -54,10 +54,10 @@ const TranslationsList = ({ languages, translations }: MappedProps) => {
     .toJS();
 
   const contexts: TranslationContext[] = advancedSort(
-    defaultTranslationContexts.map(c => {
-      c.sort = c.type + c.label;
-      return c;
-    }),
+    defaultTranslationContexts.map((c: TranslationContext) => ({
+      ...c,
+      sort: `${c.type || ''} + ${c.label}`,
+    })),
     { property: 'sort' }
   );
 
