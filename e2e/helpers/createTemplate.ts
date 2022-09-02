@@ -6,7 +6,7 @@ export const createTemplate = async (name: string) => {
   if (name === 'With image') {
     await page.waitForSelector('ul.property-options-list > .list-group-item');
     const imageElement = await page.$$('ul.property-options-list > .list-group-item');
-    const button = await imageElement[11].$$('button');
+    const button = await imageElement[7].$$('button');
     await button[0].click();
   }
   await expect(page).toClick('button[type="submit"]');

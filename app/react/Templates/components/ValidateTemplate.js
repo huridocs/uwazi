@@ -9,7 +9,7 @@ function validateName(templates, id) {
   };
 }
 
-export function validateDuplicatedLabel(property, { properties, commonProperties }) {
+function validateDuplicatedLabel(property, { properties, commonProperties }) {
   const titleProperty = commonProperties.find(p => p.name === 'title');
   const allProperties = titleProperty ? [titleProperty, ...properties] : properties || [];
   return allProperties.reduce((validity, prop) => {
@@ -20,7 +20,7 @@ export function validateDuplicatedLabel(property, { properties, commonProperties
   }, true);
 }
 
-export function validateDuplicatedRelationship(property, properties) {
+function validateDuplicatedRelationship(property, properties) {
   return (properties || []).reduce((validity, prop) => {
     const sameProperty = (prop._id || prop.localID) === (property._id || property.localID);
     const differentRelationtype = !prop.relationType || prop.relationType !== property.relationType;
@@ -53,7 +53,7 @@ function getLabelDuplicatedValidator(propertiesArrayKey, propIndex) {
   };
 }
 
-export default function (properties, commonProperties, templates, id) {
+const validate = (properties, commonProperties, templates, id) => {
   const validator = {
     '': {},
     name: validateName(templates, id),
@@ -84,11 +84,12 @@ export default function (properties, commonProperties, templates, id) {
     validator[''][`properties.${index}.content.required`] = template => {
       if (
         !template.properties[index] ||
-        template.properties[index].type !== 'select' ||
-        template.properties[index].type !== 'multiselect'
+        (template.properties[index].type !== 'select' &&
+          template.properties[index].type !== 'multiselect')
       ) {
         return true;
       }
+
       const { content } = template.properties[index];
       return content && content.trim() !== '';
     };
@@ -111,4 +112,6 @@ export default function (properties, commonProperties, templates, id) {
   });
 
   return validator;
-}
+};
+
+export { validate, validateDuplicatedLabel, validateDuplicatedRelationship };
