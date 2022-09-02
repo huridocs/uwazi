@@ -14,21 +14,20 @@ describe('Add language', () => {
   });
 
   // eslint-disable-next-line max-statements
-  it('Should add a language successfully even after templates values are changed', async () => {
+  it('Should add a language successfully', async () => {
     await expect(page).toClick('a', { text: 'Settings' });
-    await expect(page).toClick('span', { text: 'Templates' });
-    await expect(page).toClick('a', { text: 'País' });
-    await expect(page).toClick(
-      'ul.metadataTemplate-list> li:nth-child(3) > div > div > button.property-edit'
-    );
-    await expect(page).toClick('span', { text: 'Show in cards' });
-    await expect(page).toClick('span', { text: 'Save' });
     await expect(page).toClick('span', { text: 'Languages' });
     await expect(page).toClick('button', { text: 'Add language' });
     await page.waitForSelector('div.modal-content');
     await expect(page).toFill('div.modal-content div.modal-body input', 'CONFIRM');
     await expect(page).toClick('span', { text: 'Accept' });
     await expect(page).toMatch('Saved successfully.');
+  });
+
+  it('should show the added language in the translation context', async () => {
+    await expect(page).toClick('span', { text: 'Translations' });
+    await expect(page).toClick('a', { text: 'Estado' });
+    await expect(page).toMatch('ab');
   });
 
   afterAll(async () => {
