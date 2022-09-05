@@ -44,6 +44,7 @@ const createCommonProps = () => [
 ];
 
 const emptyTemplateId = db.id();
+const templatesThatDoesNotExist = db.id();
 const noExtraTemplateId = db.id();
 const allHaveExtraTemplateId = db.id();
 const mixedTemplateId = db.id();
@@ -126,6 +127,9 @@ const fixtures = {
     },
   ],
   entities: [
+    ...createEntitiesInAllLanguages('migrated_entity', templatesThatDoesNotExist, {
+      test: [],
+    }),
     ...createEntitiesInAllLanguages('empty_correct', emptyTemplateId, {}),
     ...createEntitiesInAllLanguages('empty_plusOne', emptyTemplateId, { extra1: [] }),
     ...createEntitiesInAllLanguages('empty_plusThree', emptyTemplateId, {
