@@ -205,18 +205,16 @@ const entryValues: { [key: string]: EntryValue } = {
   },
   'POST/api/translations/populate': {
     desc: 'Reset default translation',
-    method: Methods.Create,
+    method: Methods.Update,
     extra: data => ` locale ${data.locale} `,
   },
   'POST/api/auth2fa-enable': {
     desc: 'Two-factor authentication enabled',
     method: Methods.Create,
-    extra: data => ` locale ${data.locale} `,
   },
   'POST/api/auth2fa-secret': {
     desc: 'Two-factor authentication secret',
     method: Methods.Create,
-    extra: data => ` locale ${data.locale} `,
   },
   'POST/api/files/upload/custom': {
     desc: 'Uploaded custom file',
