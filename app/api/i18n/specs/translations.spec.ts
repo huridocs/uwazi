@@ -555,4 +555,36 @@ describe('translations', () => {
       expect(ZHTranslations.Age).toBe('Age');
     });
   });
+
+  describe('availableLanguages', () => {
+    afterEach(() => {
+      backend.restore();
+    });
+
+    it('should return the list of available languages, indicating which ones have predefined translations available', async () => {
+      const githubResponse = [{ name: 'ar.csv' }, { name: 'es.csv' }, { name: 'fr.csv' }];
+
+      config.githubToken = 'gh_token';
+
+      backend.get(
+        (url, opts) =>
+          url === 'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations' &&
+          // @ts-ignore
+          opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+          // @ts-ignore
+          opts?.headers?.accept === 'application/vnd.github.v4.raw',
+        { body: githubResponse }
+      );
+
+      const availableLanguages = await translations.availableLanguages('es');
+
+      const ESTranslations =
+        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
+          ?.values || {};
+
+      expect(ESTranslations.Password).toBe('Password traducida');
+      expect(ESTranslations.Account).toBe('Account traducida');
+      expect(ESTranslations.Age).toBe('Age traducida');
+    });
+  });
 });
