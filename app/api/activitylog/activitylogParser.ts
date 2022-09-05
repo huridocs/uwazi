@@ -64,7 +64,7 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Update,
   },
   'POST/api/entities': {
-    desc: 'Created entity / document',
+    desc: 'Created entity',
     method: Methods.Create,
     idField: 'sharedId',
     nameField: 'title',
@@ -72,7 +72,7 @@ const entryValues: { [key: string]: EntryValue } = {
     extra: helpers.extraTemplate,
   },
   'POST/api/documents': {
-    desc: 'Created entity / document',
+    desc: 'Created entity',
     method: Methods.Create,
     idField: 'sharedId',
     nameField: 'title',
@@ -80,12 +80,12 @@ const entryValues: { [key: string]: EntryValue } = {
     extra: helpers.extraTemplate,
   },
   'DELETE/api/entities': {
-    desc: 'Deleted entity / document',
+    desc: 'Deleted entity',
     method: Methods.Delete,
     nameField: 'sharedId',
   },
   'DELETE/api/documents': {
-    desc: 'Deleted entity / document',
+    desc: 'Deleted entity',
     method: Methods.Delete,
     nameField: 'sharedId',
   },
@@ -151,13 +151,13 @@ const entryValues: { [key: string]: EntryValue } = {
     related: helpers.loadEntity,
     nameField: 'title',
   },
-  'DELETE/api/files': { desc: 'Delete file', method: Methods.Delete, nameField: '_id' },
+  'DELETE/api/files': { desc: 'Deleted file', method: Methods.Delete, nameField: '_id' },
   'POST/api/files': {
     desc: 'Updated file',
     related: helpers.loadFile,
     nameFunc: helpers.updatedFile,
   },
-  'DELETE/api/users': { desc: 'Delete user', method: Methods.Delete, nameField: '_id' },
+  'DELETE/api/users': { desc: 'Deleted user', method: Methods.Delete, nameField: '_id' },
   'POST/api/usergroups': {
     desc: 'Created user group',
     method: Methods.Create,
@@ -166,7 +166,7 @@ const entryValues: { [key: string]: EntryValue } = {
     extra: helpers.groupMembers,
   },
   'DELETE/api/usergroups': {
-    desc: 'Delete user group',
+    desc: 'Deleted user group',
     method: Methods.Delete,
     nameField: '_id',
   },
@@ -202,6 +202,26 @@ const entryValues: { [key: string]: EntryValue } = {
       const uniqueProps = Array.from(new Set(props));
       return ` Properties changed: ${uniqueProps}`;
     },
+  },
+  'POST/api/translations/populate': {
+    desc: 'Reset default translation',
+    method: Methods.Create,
+    extra: data => ` locale ${data.locale} `,
+  },
+  'POST/api/auth2fa-enable': {
+    desc: 'Two-factor authentication enabled',
+    method: Methods.Create,
+    extra: data => ` locale ${data.locale} `,
+  },
+  'POST/api/auth2fa-secret': {
+    desc: 'Two-factor authentication secret',
+    method: Methods.Create,
+    extra: data => ` locale ${data.locale} `,
+  },
+  'POST/api/files/upload/custom': {
+    desc: 'Uploaded custom file',
+    method: Methods.Create,
+    extra: data => ` originalname ${data.originalname} `,
   },
 };
 
