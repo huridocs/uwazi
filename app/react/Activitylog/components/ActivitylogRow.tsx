@@ -9,6 +9,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import DescriptionWrapper from './DescriptionWrapper';
 
 const methodColor = {
+  CREATE: 'btn-color-9',
   UPDATE: 'btn-color-6',
   DELETE: 'btn-color-2',
   RAW: 'btn-color-17',
