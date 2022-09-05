@@ -46,4 +46,4 @@ const ActivityLogListComponent = ({ list }: mappedProps) => (
 );
 
 const container = connector(ActivityLogListComponent);
-export { container as ActivitylogList };
+export { container as ActivitylogList, mapStateToProps };
