@@ -91,18 +91,15 @@ describe('CreateConnectionPanel', () => {
     expect(saveButton.props().action).toBe('save');
     saveButton.props().onCreate();
     expect(props.onCreate).toHaveBeenCalled();
-    expect(saveButton.parent().props().if).toBe(true);
-    expect(component.find(ActionButton).at(1).parent().props().if).toBe(false);
+    expect(component.find(ActionButton).at(1).length).toBe(0);
   });
 
   it('should have connect button with an onRangedConnect callback for targetRanged connections', () => {
     props.connection = props.connection.set('type', 'targetRanged');
     render();
-    const connectButton = component.find(ActionButton).at(1);
+    const connectButton = component.find(ActionButton).at(0);
     expect(connectButton.props().action).toBe('connect');
     expect(connectButton.props().onRangedConnect).toBe(props.onRangedConnect);
-    expect(connectButton.parent().props().if).toBe(true);
-    expect(component.find(ActionButton).at(0).parent().props().if).toBe(false);
   });
 
   it('should list the search results and pass props required', () => {

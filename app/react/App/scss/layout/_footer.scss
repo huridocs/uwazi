@@ -9,7 +9,7 @@ footer {
     color: $c-grey;
   }
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -26,7 +26,7 @@ footer {
   line-height: 20px;
   flex-wrap: wrap;
 
-  @media(min-width: 1024px) {
+  @media (min-width: 1024px) {
     justify-content: center;
   }
 
@@ -34,7 +34,7 @@ footer {
     display: inline-block;
     padding-left: 15px;
     position: relative;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       padding: 0 15px;
     }
   }
@@ -46,7 +46,7 @@ footer {
     height: 1px;
     margin: 15px 0;
     border-bottom: 1px solid $c-grey-light;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       width: auto;
       height: auto;
       margin: 0;
@@ -78,8 +78,207 @@ footer {
   }
 }
 
-@media(min-width: 1024px) {
-.footer-collection_name {
+@media (min-width: 1024px) {
+  .footer-collection_name {
     width: auto;
+  }
+}
+
+/* ----------------------------------------- */
+/* Sticky Footers                            */
+/* ----------------------------------------- */
+
+.entity-footer,
+.library-footer,
+.settings-footer,
+.sidepanel-footer {
+  min-height: $FooterHeight;
+  border-top: 1px solid #ddd;
+  padding: 10px 16px 0;
+  bottom: 0;
+  background-color: #fff;
+  z-index: 2;
+
+  display: flex;
+  align-content: flex-end;
+  flex-wrap: wrap;
+
+  .footer-extra-row {
+    width: 100%;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #ccc;
+  }
+
+  .btn-cluster {
+    display: flex;
+    flex-wrap: wrap;
+
+    &.lg-margin-left-12 {
+      @media (min-width: 1024px) {
+        margin-left: 12px;
+      }
+    }
+
+    .btn {
+      margin-right: 12px;
+    }
+
+    &.content-right {
+      text-align: right;
+      margin-left: auto;
+
+      .btn:last-child {
+        margin-right: 0;
+      }
+    }
+
+    &.sm-order-1,
+    .sm-order-1 {
+      order: -1;
+    }
+  }
+
+  .btn {
+    padding: 4px 8px;
+    margin-bottom: 11px;
+    color: $c-black;
+
+    span.translation {
+      max-width: calc(min(100vw - 80px, 250px));
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+      position: relative;
+      margin-top: -10px;
+      top: 5px;
+    }
+
+    &.btn-danger,
+    &.btn-primary,
+    &.btn-success {
+      color: #fff;
+    }
+
+    &.btn-default {
+      background-color: #eceff1;
+      border-color: #cfd8dc;
+
+      &:hover {
+        border-color: #3655ba;
+        color: #3655ba;
+      }
+    }
+
+    &.btn-plain {
+      background-color: unset;
+      border-color: transparent;
+    }
+  }
+
+  .btn-label {
+    padding: 0 5px;
+  }
+
+  &:hover {
+    .btn.btn-footer-hover-success {
+      color: #fff;
+      background-color: #5cb85c;
+      border-color: #4cae4c;
+
+      &:hover {
+        background-color: #449d44;
+        border-color: #398439;
+      }
+    }
+  }
+}
+
+.entity-footer,
+.library-footer,
+.settings-footer {
+  width: 100%;
+  position: fixed;
+
+  &.remove-nesting {
+    margin-left: -15px;
+  }
+
+  &.remove-extra-nesting {
+    margin-left: -30px;
+  }
+
+  &.with-sidepanel {
+    @media (min-width: 1024px) {
+      width: calc(100% - 400px);
+    }
+  }
+}
+
+.settings-footer {
+  margin-left: -15px;
+
+  &.with-sidepanel {
+    @media (min-width: 1024px) {
+      width: calc(#{$SettingsContentWidth} - 400px);
+    }
+  }
+}
+
+.sidepanel-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+
+  .btn:disabled {
+    cursor: default;
+    opacity: 0.7;
+  }
+  .btn:disabled .btn-label {
+    color: $c-grey !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  .entity-footer,
+  .library-footer,
+  .settings-footer,
+  .sidepanel-footer {
+    .sm-footer-extra-row {
+      width: 100%;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #ccc;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-footer {
+    width: $SettingsContentWidth;
+  }
+
+  .sidepanel-footer {
+    width: 400px;
+  }
+
+  .entity-footer,
+  .library-footer,
+  .settings-footer,
+  .sidepanel-footer {
+    .btn-cluster.sm-order-1,
+    .btn-cluster .sm-order-1 {
+      order: unset;
+    }
+  }
+
+  .entity-footer,
+  .library-footer,
+  .settings-footer {
+    .btn {
+      &.btn-extra-padding {
+        padding-left: 50px;
+        padding-right: 50px;
+      }
+    }
   }
 }

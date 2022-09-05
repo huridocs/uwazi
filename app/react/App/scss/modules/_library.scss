@@ -1,5 +1,9 @@
 .library-viewer {
   background-color: #eaeaea33;
+
+  @media (max-width: 1023px) {
+    padding-bottom: 51px;
+  }
 }
 
 .order-by-arrow {

@@ -31,11 +31,8 @@
       border-bottom: 1px solid $c-grey-light;
     }
   }
-  table.edition-mode{
+  table.edition-mode {
     width: calc(100% - 400px);
-  }
-  .settings-footer.edition-mode {
-    display: none;
   }
 }
 .user-form {
@@ -71,16 +68,16 @@
       border-bottom: 2px solid $c-grey-light;
     }
 
-    th:nth-child(n+2) {
+    th:nth-child(n + 2) {
       text-align: center;
     }
 
     tbody > tr > *:nth-last-child(1) {
-      width: 70%
+      width: 70%;
     }
 
-    tbody > tr > *:nth-child(n+2) {
-      width: 10%
+    tbody > tr > *:nth-child(n + 2) {
+      width: 10%;
     }
 
     tbody td {

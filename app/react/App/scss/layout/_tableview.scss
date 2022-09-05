@@ -3,10 +3,10 @@
   overflow: auto;
   margin: 0 -15px;
   margin-bottom: 15px;
-  height: calc(100vh - 225px);
+  height: calc(100vh - 329px);
 
   @media (min-width: 768px) {
-    height: calc(100vh - 166px);
+    height: calc(100vh - 227px);
   }
 
   .sticky-col {
@@ -75,7 +75,6 @@
     &.table-view-row-zoom-1 {
       -webkit-line-clamp: 2;
       height: 42px;
-
     }
 
     &.table-view-row-zoom-2 {

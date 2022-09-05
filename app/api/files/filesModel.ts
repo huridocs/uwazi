@@ -10,12 +10,13 @@ const propsWithDBSpecifics = {
   entity: { type: String, index: true },
   type: { type: String, index: true },
   filename: { type: String, index: true },
+  __v: { type: Number, select: false },
 };
 
 const mongoSchema = new mongoose.Schema(propsWithDBSpecifics, {
   emitIndexErrors: true,
   strict: false,
-  versionKey: false,
+  versionKey: '__v',
 });
 
 mongoSchema.index({ 'toc.0': 1, type: 1 }, { partialFilterExpression: { type: 'document' } });

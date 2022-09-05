@@ -19,14 +19,14 @@ describe('Copy from', () => {
 
   it('should create a new entity', async () => {
     await expect(page).toClick(
-      'div.documents-list > div > div.item-group.item-group-zoom-0 > div:nth-child(3) > div.item-actions > div > a'
+      'div.item-document:nth-child(3) > div:nth-child(1) > div:nth-child(1)',
+      { text: 'Artavia Murillo y otros' }
     );
+    await expect(page).toClick('.sidepanel-footer > .btn-cluster > a', { text: 'View' });
     await expect(page).toClick('.tab-link', {
       text: 'Connections',
     });
-    await expect(page).toClick(
-      '#app > div.content > div > div > div.sidepanel-footer > span > button'
-    );
+    await expect(page).toClick('.entity-footer > .btn-cluster > .edit-metadata', { text: 'Edit' });
     await expect(page).toClick('button', {
       text: 'Add entities / documents',
     });
@@ -48,9 +48,14 @@ describe('Copy from', () => {
     );
     await expect(page).toClick('div.copy-from .item-info', { text: 'Artavia Murillo et al' });
     await expect(page).toClick('button', { text: 'Copy Highlighted' });
-    await expect(page).toClick('.side-panel button', { text: 'Save' });
+    await expect(page).toClick(
+      'div.btn-cluster:nth-child(2) > button:nth-child(2) > span:nth-child(1) ',
+      {
+        text: 'Save',
+      }
+    );
     await expect(page).toClick('.alert.alert-success');
-    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('.entity-footer > div > button', { text: 'Save' });
   });
 
   it('should check the data', async () => {

@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Map } from 'immutable';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
 import { saveConnection, selectRangedTarget } from '../actions/actions';
 
-export class ActionButton extends Component {
+class ActionButton extends Component {
   onClick(enabled, connection) {
     if (enabled) {
       if (this.props.action === 'save') {
@@ -18,13 +19,14 @@ export class ActionButton extends Component {
     }
   }
 
-  renderIcon() {
+  renderContent() {
     let buttonIcon = 'arrow-right';
     if (this.props.busy) {
       buttonIcon = 'spinner';
     }
     if (this.props.action === 'save') {
       buttonIcon = 'save';
+      return <Translate>Save</Translate>;
     }
     return <Icon icon={buttonIcon} spin={!!this.props.busy} />;
   }
@@ -54,7 +56,7 @@ export class ActionButton extends Component {
         type="button"
         onClick={this.onClick.bind(this, enabled, connection)}
       >
-        {this.renderIcon()}
+        {this.renderContent()}
       </button>
     );
   }
@@ -78,7 +80,7 @@ ActionButton.propTypes = {
   busy: PropTypes.bool,
 };
 
-export function mapStateToProps({ connections }) {
+function mapStateToProps({ connections }) {
   return {
     type: connections.connection.get('type'),
     connection: connections.connection,
@@ -89,5 +91,7 @@ export function mapStateToProps({ connections }) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ saveConnection, selectRangedTarget }, dispatch);
 }
+
+export { ActionButton, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionButton);

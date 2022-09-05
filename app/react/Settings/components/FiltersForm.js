@@ -28,7 +28,7 @@ const removeItem = itemId => {
   return removeItemIterator;
 };
 
-export class FiltersForm extends Component {
+class FiltersForm extends Component {
   constructor(props) {
     super(props);
     const activeFilters = props.settings.collection.toJS().filters || [];
@@ -194,84 +194,89 @@ export class FiltersForm extends Component {
   render() {
     const { activeFilters, inactiveFilters } = this.state;
     return (
-      <div className="FiltersForm">
-        <div className="FiltersForm-list">
-          <div className="panel panel-default">
-            <div className="panel-heading">
-              <Translate>Filters configuration</Translate>
-            </div>
-            <div className="panel-body">
-              <div className="row">
-                <div className="col-sm-9">
-                  <div className="alert alert-info">
-                    <Icon icon="info-circle" size="2x" />
-                    <div className="force-ltr">
-                      <p>
-                        <Translate translationKey="Filters configuration description">
-                          By default, users can filter the entities in the library based on the
-                          types you have defined. However, you can configure how these entity types
-                          will be displayed:
-                        </Translate>
-                      </p>
-                      <ul>
-                        <li>
-                          <Translate translationKey="Filters configuration">
-                            drag and drop each entity type into the window in order to configure
-                            their order
+      <div className="settings-content">
+        <div className="FiltersForm">
+          <div className="FiltersForm-list">
+            <div className="panel panel-default">
+              <div className="panel-heading">
+                <Translate>Filters configuration</Translate>
+              </div>
+              <div className="panel-body">
+                <div className="row">
+                  <div className="col-sm-9">
+                    <div className="alert alert-info">
+                      <Icon icon="info-circle" size="2x" />
+                      <div className="force-ltr">
+                        <p>
+                          <Translate translationKey="Filters configuration description">
+                            By default, users can filter the entities in the library based on the
+                            types you have defined. However, you can configure how these entity
+                            types will be displayed:
                           </Translate>
-                        </li>
-                        <li>
-                          <Translate translationKey="Filters configuration example">
-                            select &quot;Create group&quot; below to group filters under a label e.g
-                            (&quot;Documents &quot;or &quot;People&quot;)
-                          </Translate>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <DragAndDropContainer
-                    id="active"
-                    onChange={this.activesChange}
-                    renderItem={this.renderActiveItems}
-                    items={activeFilters}
-                  />
-                </div>
-                <div className="col-sm-3">
-                  <div className="FiltersForm-constructor">
-                    <div>
-                      <i>
-                        <Translate>Entity types</Translate>
-                      </i>
+                        </p>
+                        <ul>
+                          <li>
+                            <Translate translationKey="Filters configuration">
+                              drag and drop each entity type into the window in order to configure
+                              their order
+                            </Translate>
+                          </li>
+                          <li>
+                            <Translate translationKey="Filters configuration example">
+                              select &quot;Create group&quot; below to group filters under a label
+                              e.g (&quot;Documents &quot;or &quot;People&quot;)
+                            </Translate>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                     <DragAndDropContainer
-                      id="inactive"
-                      onChange={this.unactivesChange}
-                      renderItem={this.renderInactiveItems}
-                      items={inactiveFilters}
+                      id="active"
+                      onChange={this.activesChange}
+                      renderItem={this.renderActiveItems}
+                      items={activeFilters}
                     />
+                  </div>
+                  <div className="col-sm-3">
+                    <div className="FiltersForm-constructor">
+                      <div>
+                        <i>
+                          <Translate>Entity types</Translate>
+                        </i>
+                      </div>
+                      <DragAndDropContainer
+                        id="inactive"
+                        onChange={this.unactivesChange}
+                        renderItem={this.renderInactiveItems}
+                        items={inactiveFilters}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="settings-footer">
-          <button
-            type="button"
-            onClick={this.addGroup.bind(this)}
-            className="btn btn-sm btn-primary"
-          >
-            <Icon icon="plus" />
-            <span className="btn-label">
-              <Translate>Create group</Translate>
-            </span>
-          </button>
-          <button type="button" onClick={this.save.bind(this)} className="btn btn-sm btn-success">
-            <Icon icon="save" />
-            <span className="btn-label">
-              <Translate>Save</Translate>
-            </span>
-          </button>
+          <div className="settings-footer">
+            <div className="btn-cluster">
+              <button type="button" onClick={this.addGroup.bind(this)} className="btn btn-default">
+                <Icon icon="plus" />
+                <span className="btn-label">
+                  <Translate>Create group</Translate>
+                </span>
+              </button>
+            </div>
+            <div className="btn-cluster content-right">
+              <button
+                type="button"
+                onClick={this.save.bind(this)}
+                className="btn btn-success btn-extra-padding"
+              >
+                <span className="btn-label">
+                  <Translate>Save</Translate>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -296,5 +301,7 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+
+export { FiltersForm };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

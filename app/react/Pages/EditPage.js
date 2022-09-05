@@ -18,6 +18,10 @@ export default class EditPage extends RouteHandler {
   }
 
   render() {
-    return <PageCreator />;
+    return (
+      <div className="settings-content">
+        <PageCreator />
+      </div>
+    );
   }
 }

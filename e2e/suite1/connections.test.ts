@@ -17,14 +17,13 @@ describe('connections', () => {
 
   it('should navigate to an entities connections view', async () => {
     await expect(page).toClick(
-      '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span'
+      '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span',
+      { text: 'Causa' }
     );
     await expect(page).toClick('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });
-    await expect(page).toClick(
-      '#app > div.content > div > div > div > aside.side-panel.metadata-sidepanel.is-active > div.sidepanel-footer > span > a'
-    );
+    await expect(page).toClick('.sidepanel-footer > .btn-cluster > a', { text: 'View' });
     await expect(page).toMatchElement('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });

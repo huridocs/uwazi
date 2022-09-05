@@ -56,7 +56,6 @@ export default [
   { key: 'Create dictionaries', label: 'Create dictionaries' },
   { key: 'Create document and entity types', label: 'Create document and entity types' },
   { key: 'Create group', label: 'Create group' },
-  { key: 'Create group', label: 'Create group' },
   { key: 'Custom page', label: 'Custom page' },
   { key: 'Date added', label: 'Date added' },
   { key: 'Date format', label: 'Date format' },

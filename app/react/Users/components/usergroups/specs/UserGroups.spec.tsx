@@ -87,7 +87,7 @@ describe('UserGroups', () => {
     it('Should render the user list from state and pass to side panel', () => {
       listComponent.props.handleSelect(userGroups[1]);
       const updatedList = component.find(UserGroupList).get(0);
-      expect(updatedList.props.className).toEqual('edition-mode');
+      expect(updatedList.props.className).toEqual('with-sidepanel');
       const sidePanel = component.find(UserGroupSidePanel).get(0);
       expect(sidePanel.props.users).toEqual(users);
     });
