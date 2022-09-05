@@ -4,7 +4,7 @@ import { CollectionSettings } from './components/CollectionSettings';
 import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
 import FiltersForm from './components/FiltersForm';
-import Languages from './components/Languages';
+import LanguageList from './components/LanguageList';
 import NavlinksSettings from './components/NavlinksSettings';
 import RelationTypesList from './components/RelationTypesList';
 import ThesauriList from './components/ThesauriList';
@@ -27,6 +27,6 @@ export {
   ThesauriList,
   TranslationsList,
   FiltersForm,
-  Languages,
+  LanguageList,
   Customisation,
 };

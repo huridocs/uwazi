@@ -4,12 +4,14 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import Immutable from 'immutable';
+import { Provider } from 'react-redux';
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import I18NMenu from '../I18NMenu';
 
 describe('I18NMenu', () => {
   let props;
+  let store;
   let renderResult;
   const reloadMock = jest.fn();
   const toggleInlineEditMock = jest.fn();
@@ -34,12 +36,9 @@ describe('I18NMenu', () => {
     };
   });
   const render = () => {
-    const reduxStore = {
-      ...defaultState,
-    };
-    ({ renderResult } = renderConnectedContainer(
+    ({ renderResult, store } = renderConnectedContainer(
       <I18NMenu.WrappedComponent {...props} />,
-      () => reduxStore
+      () => defaultState
     ));
   };
 
@@ -132,5 +131,18 @@ describe('I18NMenu', () => {
 
     const activeIcon = renderResult.container.getElementsByClassName('live-on');
     expect(activeIcon.length).toBe(1);
+  });
+
+  it('should reload if the default language has changed', async () => {
+    reloadMock.mockClear();
+    render();
+    props.locale = 'en';
+    renderResult.rerender(
+      <Provider store={store}>
+        <I18NMenu.WrappedComponent {...props} />
+      </Provider>
+    );
+
+    expect(reloadMock).toBeCalledWith('/templates/2452345');
   });
 });
