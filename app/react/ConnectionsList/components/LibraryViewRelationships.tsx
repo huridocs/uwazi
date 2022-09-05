@@ -4,8 +4,13 @@ import PropTypes from 'prop-types';
 import { Map, List } from 'immutable';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'app/UI';
+import { Item } from 'app/Layout';
+import { Collapsible } from 'app/App/Collapsible';
 import * as actions from '../../Relationships/actions/actions';
-import HubRelationshipMetadata from '../../Relationships/components/HubRelationshipMetadata';
+
+interface LibraryViewRelationshipsProps {
+  expanded: boolean;
+}
 
 function mapStateToProps(state: any) {
   const { relationships, library } = state;
@@ -29,56 +34,62 @@ function mapDispatchToProps(dispatch: any) {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type ComponentProps = ConnectedProps<typeof connector>;
+type ComponentProps = ConnectedProps<typeof connector> & LibraryViewRelationshipsProps;
 
-const createRightRelationshipGroups = (rightRelationships: any, relationTypes: any[]) => (
-  <div className="list-group">
-    {rightRelationships.map((relationship: any, index: number) => (
-      <>
-        <div className="list-group-item" key={index}>
-          <span className="property-name">
-            {' '}
-            {(() => {
-              const relationshipTemplateId = relationship.get('template');
-              const relationType = relationTypes.find(r => r._id === relationshipTemplateId);
-              if (relationType) {
-                return relationshipTemplateId ? (
-                  relationTypes.find(r => r._id === relationshipTemplateId).name
-                ) : (
-                  <Icon icon="link" />
-                );
-              }
-              return null;
-            })()}
-          </span>
-        </div>
-        {(() => {
-          return relationship.get('relationships').map((rel: any, indexI: number) => (
-            <div className="list-group-item" key={indexI}>
-              <div className={`item-document item-${rel.getIn(['entityData', '_id'])}`}>
-                <div className="item-info">
-                  <div className="item-name">
-                    <span>{rel.getIn(['entityData', 'title'])}</span>
-                  </div>
-                </div>
-                <HubRelationshipMetadata relationship={rel} />
+const createRightRelationshipGroups = (
+  rightRelationships: any,
+  relationTypes: any[],
+  expanded: boolean
+) => (
+  <div className="sidepanel-relationship-right">
+    {rightRelationships.map((relationship: any) => {
+      let header;
+      const relationshipTemplateId = relationship.get('template');
+      const relationType = relationTypes.find(r => r._id === relationshipTemplateId);
+      if (relationType) {
+        header = relationshipTemplateId ? (
+          relationTypes.find(r => r._id === relationshipTemplateId).name
+        ) : (
+          <Icon icon="link" />
+        );
+      }
+
+      const entityRelationships = relationship.get('relationships');
+      return (
+        <Collapsible
+          header={header}
+          className="sidepanel-relationship-collapsible"
+          headerInfo={`(${entityRelationships.size})`}
+          collapse={!expanded}
+        >
+          <>
+            {entityRelationships.map((rel: any, indexI: number) => (
+              <div className="sidepanel-relationship-right-entity" key={indexI}>
+                <Item
+                  active={false}
+                  doc={rel.get('entityData')}
+                  className="item-collapsed"
+                  noMetadata
+                />
               </div>
-            </div>
-          ));
-        })()}
-      </>
-    ))}
+            ))}
+          </>
+        </Collapsible>
+      );
+    })}
   </div>
 );
 
-const createLabelGroups = (hub: any, relationTypes: any[]) => {
+const createLabelGroups = (hub: any, relationTypes: any[], expanded: boolean) => {
   const template = hub.getIn(['leftRelationship', 'template']);
   return (
-    <div key={hub.get('hub')} className="list-group-item">
-      <span className="property-name">
-        {template && <div>{relationTypes.find(r => r._id === template).name}</div>}
-      </span>
-      {createRightRelationshipGroups(hub.get('rightRelationships'), relationTypes)}
+    <div key={hub.get('hub')} className="sidepanel-relationship">
+      {template && (
+        <span className="sidepanel-relationship-left-label">
+          {`${relationTypes.find(r => r._id === template).name}(Label)`}
+        </span>
+      )}
+      {createRightRelationshipGroups(hub.get('rightRelationships'), relationTypes, expanded)}
     </div>
   );
 };
@@ -89,6 +100,7 @@ const LibraryViewRelationshipsComp = ({
   parentEntity,
   parseResults,
   relationTypes,
+  expanded,
 }: ComponentProps) => {
   useEffect(() => {
     if (parentEntity) {
@@ -96,8 +108,8 @@ const LibraryViewRelationshipsComp = ({
     }
   }, [searchResults, parentEntity]);
   return (
-    <div className="list-group">
-      {hubs.map((hub: any) => createLabelGroups(hub, relationTypes))}
+    <div className="sidepanel-relationships">
+      {hubs.map((hub: any) => createLabelGroups(hub, relationTypes, expanded))}
     </div>
   );
 };
@@ -108,6 +120,7 @@ LibraryViewRelationshipsComp.propTypes = {
   searchResults: PropTypes.instanceOf(Map).isRequired,
   parseResults: PropTypes.func.isRequired,
   relationTypes: PropTypes.instanceOf(Array).isRequired,
+  expanded: PropTypes.bool,
 };
 
 const LibraryViewRelationships = connector(LibraryViewRelationshipsComp);

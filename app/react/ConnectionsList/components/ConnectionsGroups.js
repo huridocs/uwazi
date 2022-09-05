@@ -10,7 +10,7 @@ import { LibraryViewRelationships } from './LibraryViewRelationships';
 
 class ConnectionsGroupsComponent extends Component {
   render() {
-    const { connectionsGroups } = this.props;
+    const { connectionsGroups, expanded } = this.props;
 
     let Results = (
       <div className="blank-state">
@@ -22,7 +22,7 @@ class ConnectionsGroupsComponent extends Component {
 
     if (connectionsGroups.size) {
       if (this.props.sidePanelTrigger === 'library') {
-        Results = <LibraryViewRelationships />;
+        Results = <LibraryViewRelationships expanded={expanded} />;
       } else {
         Results = (
           <div>
@@ -42,9 +42,14 @@ class ConnectionsGroupsComponent extends Component {
   }
 }
 
+ConnectionsGroupsComponent.defaultProps = {
+  expanded: false,
+};
+
 ConnectionsGroupsComponent.propTypes = {
   connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
   sidePanelTrigger: PropTypes.string.isRequired,
+  expanded: PropTypes.bool,
 };
 
 function mapStateToProps({ relationships, library }) {
