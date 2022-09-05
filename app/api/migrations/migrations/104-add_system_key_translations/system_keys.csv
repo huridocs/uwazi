@@ -15,4 +15,7 @@ key,optionalValue
 "Created successfully.","Created successfully."
 "Entity saved","Entity saved"
 "Entity deleted","Entity deleted"
+"Entity updated","Entity updated"
 "Deletion success","Deletion success"
+"Entity updated with the following errors:","Entity updated with the following errors:"
+"Entity craated with the following errors:","Entity craated with the following errors:"
