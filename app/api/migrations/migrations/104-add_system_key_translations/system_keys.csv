@@ -19,3 +19,6 @@ key,optionalValue
 "Deletion success","Deletion success"
 "Entity updated with the following errors:","Entity updated with the following errors:"
 "Entity craated with the following errors:","Entity craated with the following errors:"
+"Group updated","Group updated"
+"Group deleted","Group deleted"
+"Group created","Group created"
