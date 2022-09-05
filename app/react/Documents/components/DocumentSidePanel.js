@@ -23,6 +23,7 @@ import { Icon } from 'UI';
 
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import ViewDocButton from 'app/Library/components/ViewDocButton';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -336,13 +337,7 @@ class DocumentSidePanel extends Component {
         <ShowIf if={this.props.tab === 'relationships'}>
           <div className="sidepanel-footer">
             <div className="relationships-left-buttons">
-              <button
-                type="button"
-                className="btn btn-default relationships-view-button"
-                onClick={() => {}}
-              >
-                <Icon icon="file-image" /> &nbsp; View
-              </button>
+              <ViewDocButton icon="file-image" sharedId={doc.get('sharedId')} />
             </div>
             <div className="relationships-right-buttons">
               <button

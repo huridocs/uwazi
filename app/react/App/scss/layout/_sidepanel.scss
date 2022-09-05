@@ -277,6 +277,9 @@ $c-sidebar: $c-white;
 
               padding: 8px 16px;
               gap: 9px;
+              .item-document {
+                z-index: -1;
+              }
             }
           }
         }

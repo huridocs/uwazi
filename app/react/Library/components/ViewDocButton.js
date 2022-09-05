@@ -36,7 +36,7 @@ export class ViewDocButton extends Component {
   }
 
   render() {
-    const { sharedId, processed, searchTerm, file, targetReference } = this.props;
+    const { sharedId, processed, searchTerm, file, targetReference, icon } = this.props;
     const isEntity = !file;
 
     const pathname = `/entity/${sharedId}`;
@@ -56,13 +56,14 @@ export class ViewDocButton extends Component {
         className="btn btn-default btn-xs view-doc"
         onClick={this.onClick}
       >
-        <Icon icon="angle-right" directionAware /> {t('System', 'View')}
+        <Icon icon={icon} directionAware /> {t('System', 'View')}
       </I18NLink>
     );
   }
 }
 
 ViewDocButton.defaultProps = {
+  icon: 'angle-right',
   searchTerm: '',
   processed: false,
   targetReference: null,
@@ -75,6 +76,7 @@ ViewDocButton.propTypes = {
   searchTerm: PropTypes.string,
   targetReference: PropTypes.instanceOf(Map),
   openReferencesTab: PropTypes.func.isRequired,
+  icon: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {

@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { Icon } from 'app/UI';
 import { Item } from 'app/Layout';
 import { Collapsible } from 'app/App/Collapsible';
+import { StickyHeader } from 'app/App/StickyHeader';
 import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {
@@ -42,7 +43,7 @@ const createRightRelationshipGroups = (
   expanded: boolean
 ) => (
   <div className="sidepanel-relationship-right">
-    {rightRelationships.map((relationship: any) => {
+    {rightRelationships.map((relationship: any, relationshipIndex: number) => {
       let header;
       const relationshipTemplateId = relationship.get('template');
       const relationType = relationTypes.find(r => r._id === relationshipTemplateId);
@@ -61,10 +62,11 @@ const createRightRelationshipGroups = (
           className="sidepanel-relationship-collapsible"
           headerInfo={`(${entityRelationships.size})`}
           collapse={!expanded}
+          key={relationshipIndex}
         >
           <>
-            {entityRelationships.map((rel: any, indexI: number) => (
-              <div className="sidepanel-relationship-right-entity" key={indexI}>
+            {entityRelationships.map((rel: any, entityRelationshipsIndex: number) => (
+              <div className="sidepanel-relationship-right-entity" key={entityRelationshipsIndex}>
                 <Item
                   active={false}
                   doc={rel.get('entityData')}
@@ -80,10 +82,10 @@ const createRightRelationshipGroups = (
   </div>
 );
 
-const createLabelGroups = (hub: any, relationTypes: any[], expanded: boolean) => {
+const createLabelGroups = (hub: any, relationTypes: any[], expanded: boolean, index: number) => {
   const template = hub.getIn(['leftRelationship', 'template']);
   return (
-    <div key={hub.get('hub')} className="sidepanel-relationship">
+    <div className="sidepanel-relationship" key={index}>
       {template && (
         <span className="sidepanel-relationship-left-label">
           {`${relationTypes.find(r => r._id === template).name}(Label)`}
@@ -108,9 +110,13 @@ const LibraryViewRelationshipsComp = ({
     }
   }, [searchResults, parentEntity]);
   return (
-    <div className="sidepanel-relationships">
-      {hubs.map((hub: any) => createLabelGroups(hub, relationTypes, expanded))}
-    </div>
+    <StickyHeader scrollElementSelector=".sidepanel-body">
+      <div className="sidepanel-relationships">
+        {hubs.map((hub: any, index: number) =>
+          createLabelGroups(hub, relationTypes, expanded, index)
+        )}
+      </div>
+    </StickyHeader>
   );
 };
 
