@@ -1,0 +1,38 @@
+.installed-languages {
+  margin-bottom: 3em;
+}
+
+.installed-languages,
+.available-languages {
+  .row {
+    display: flex;
+    border-bottom: 1px solid #d7d7dc;
+    margin-left: 1em;
+
+    .col {
+      padding: 0.5em;
+
+      .action-hidden {
+        visibility: hidden;
+      }
+    }
+
+    .col:nth-child(1) {
+      flex: 2;
+    }
+
+    .col:last-child {
+      margin-left: 0;
+    }
+  }
+
+  .translation-available {
+    background-color: transparentize($c-grey-dark, 0.85);
+    border-radius: 3px;
+    padding: 0 4px;
+    height: 17px;
+    line-height: 18px;
+    font-size: $f-size-xs;
+    display: inline-block;
+  }
+}

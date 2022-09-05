@@ -515,6 +515,8 @@ describe('translations', () => {
       Account, Account traducida
       Age, Age traducida`;
 
+      config.githubToken = 'gh_token';
+
       backend.get(
         (url, opts) =>
           url ===
