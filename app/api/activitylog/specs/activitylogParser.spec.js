@@ -60,7 +60,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'CREATE',
-              description: 'Created entity / document',
+              description: 'Created entity',
               name: 'New Entity',
               extra: 'of type Existing Template',
             }
@@ -77,7 +77,7 @@ describe('Activitylog Parser', () => {
           expect(semanticData).toEqual(
             expect.objectContaining({
               action: 'UPDATE',
-              description: 'Updated entity / document',
+              description: 'Updated entity',
               name: 'Existing Entity (m0asd0)',
             })
           );
@@ -120,7 +120,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Deleted entity / document',
+              description: 'Deleted entity',
               name: 'o9e07m5ni3h',
             }
           );
@@ -683,7 +683,7 @@ describe('Activitylog Parser', () => {
           },
           {
             action: 'DELETE',
-            description: 'Delete user',
+            description: 'Deleted user',
             name: 'userId',
           }
         );
@@ -932,7 +932,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Delete file',
+              description: 'Deleted file',
               name: 'attach1',
             }
           );
@@ -1023,7 +1023,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Delete user group',
+              description: 'Deleted user group',
               name: 'usergroupId',
             }
           );
