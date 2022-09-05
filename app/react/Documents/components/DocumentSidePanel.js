@@ -33,7 +33,7 @@ class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
-    this.state = { copyFrom: false, copyFromProps: [] };
+    this.state = { copyFrom: false, copyFromProps: [], relationshipsExpanded: false };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
@@ -121,6 +121,14 @@ class DocumentSidePanel extends Component {
     this.setState(currentState => ({
       sharing: !currentState.sharing,
     }));
+  }
+
+  collapseRelationships() {
+    this.setState({ relationshipsExpanded: false });
+  }
+
+  expandRelationships() {
+    this.setState({ relationshipsExpanded: true });
   }
 
   renderHeader(tab, doc, isEntity) {
@@ -255,7 +263,7 @@ class DocumentSidePanel extends Component {
                 return (
                   <li>
                     <TabLink
-                      to="connections"
+                      to="relationships"
                       role="button"
                       tabIndex="0"
                       aria-label={t('System', 'Relationships', null, false)}
@@ -323,6 +331,36 @@ class DocumentSidePanel extends Component {
               storeKey={this.props.storeKey}
               copyFrom={this.toggleCopyFrom}
             />
+          </div>
+        </ShowIf>
+        <ShowIf if={this.props.tab === 'relationships'}>
+          <div className="sidepanel-footer">
+            <div className="relationships-left-buttons">
+              <button
+                type="button"
+                className="btn btn-default relationships-view-button"
+                onClick={() => {}}
+              >
+                <Icon icon="file-image" /> &nbsp; View
+              </button>
+            </div>
+            <div className="relationships-right-buttons">
+              <button
+                type="button"
+                className="btn btn-default relationships-collapse-button"
+                style={{ marginRight: '10px' }}
+                onClick={() => this.collapseRelationships()}
+              >
+                Collapse all
+              </button>
+              <button
+                type="button"
+                className="btn btn-default relationships-expand-button"
+                onClick={() => this.expandRelationships()}
+              >
+                Expand all
+              </button>
+            </div>
           </div>
         </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
@@ -460,8 +498,8 @@ class DocumentSidePanel extends Component {
                 readOnly={readOnly}
               />
             </TabContent>
-            <TabContent for="connections" className="connections">
-              <ConnectionsGroups />
+            <TabContent for="relationships" className="connections">
+              <ConnectionsGroups expanded={this.state.relationshipsExpanded} />
             </TabContent>
             <TabContent for="semantic-search-results">
               <DocumentSemanticSearchResults doc={jsDoc} />

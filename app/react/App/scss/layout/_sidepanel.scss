@@ -234,6 +234,55 @@ $c-sidebar: $c-white;
   //   // firefox hack (related issue #378)
   //   padding-bottom: $header-height * 3;
   // }
+  .sidepanel-relationships {
+    display: flex;
+    flex-direction: column;
+    .sidepanel-relationship {
+      display: flex;
+      flex-direction: column;
+      .sidepanel-relationship-left-label {
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 16px;
+        gap: 9px;
+        background: #eeeeee;
+        border: 1px solid #d7d7dc;
+      }
+      .sidepanel-relationship-right {
+        padding: 7px 10px 7px 10px;
+        .sidepanel-relationship-collapsible {
+          .header {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 6px 12px;
+            gap: 12px;
+            background: #eeeeee;
+            border: 1px solid #d7d7dc;
+            margin-bottom: 7px;
+            .header-info {
+              float: right;
+            }
+            .header-icon {
+              margin-right: 6px;
+              font-size: large;
+            }
+          }
+          .content {
+            .sidepanel-relationship-right-entity {
+              margin-bottom: 7px;
+              border: 1px solid #d7d7dc;
+              box-sizing: border-box;
+
+              padding: 8px 16px;
+              gap: 9px;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .sidepanel-header {
