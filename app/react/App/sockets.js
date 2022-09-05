@@ -15,7 +15,7 @@ socket.on('disconnect', reason => {
     disconnectTimeoutMessage = setTimeout(() => {
       disconnectNotifyId = store.dispatch(
         notificationActions.notify(
-          'Lost connection to the server, your changes may be lost',
+          t('System', 'Lost connection to the server, your changes may be lost', null, false),
           'danger',
           false
         )
@@ -29,7 +29,7 @@ socket.io.on('reconnect', () => {
   if (disconnectNotifyId) {
     store.dispatch(notificationActions.removeNotification(disconnectNotifyId));
     disconnectNotifyId = store.dispatch(
-      notificationActions.notify('Connected to server', 'success')
+      notificationActions.notify(t('System', 'Connected to server', null, false), 'success')
     );
     disconnectNotifyId = null;
   }

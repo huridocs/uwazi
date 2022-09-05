@@ -22,3 +22,5 @@ key,optionalValue
 "Group updated","Group updated"
 "Group deleted","Group deleted"
 "Group created","Group created"
+"Lost connection to the server, your changes may be lost","Lost connection to the server, your changes may be lost"
+"Connected to server","Connected to server"
