@@ -24,7 +24,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response) => {
+    async (req: Request<{}, {}, {}, { name?: string }>, res: Response) => {
       if (req.query?.name) {
         const task = TaskProvider.getByName(req.query?.name);
         return res.json(task?.status ?? { state: 'undefined' });
@@ -52,8 +52,8 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request, res: Response) => {
-      const task = TaskProvider.getOrCreate(req.query?.name, req.query?.type);
+    async (req: Request<{}, {}, {}, { name: string; type: string }>, res: Response) => {
+      const task = TaskProvider.getOrCreate(req.query.name, req.query.type);
       if (task.status.state === 'created') {
         task.start(req.body ?? {});
       }

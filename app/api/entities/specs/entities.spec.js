@@ -2,20 +2,20 @@
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import date from 'api/utils/date.js';
-import db from 'api/utils/testing_db';
+
 import entitiesModel from 'api/entities/entitiesModel';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { uploadsPath, storage } from 'api/files';
 import relationships from 'api/relationships';
 import { search } from 'api/search';
-
-import { Suggestions } from 'api/suggestions/suggestions';
+import date from 'api/utils/date.js';
+import { catchErrors } from 'api/utils/jasmineHelpers';
+import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import entities from '../entities.js';
+import { UserRole } from 'shared/types/userSchema';
+
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -30,6 +30,9 @@ import fixtures, {
   unpublishedDocId,
   entityGetTestTemplateId,
 } from './fixtures.js';
+import entities from '../entities.js';
+import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
+import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -540,6 +543,26 @@ describe('entities', () => {
         expect(createdEntity._id).not.toBeUndefined();
         expect(createdEntity.title).toEqual(entity.title);
         userFactory.mockEditorUser();
+      });
+    });
+
+    describe('events', () => {
+      it('should emit an event when an entity is updated', async () => {
+        const emitSpy = spyOnEmit();
+        const before = fixtures.entities.find(e => e._id === batmanFinishesId);
+        const beforeAllLanguages = fixtures.entities.filter(e => e.sharedId === before.sharedId);
+        const after = { ...before, title: 'new title' };
+
+        await entities.save(after, { language: 'en' });
+
+        const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
+
+        emitSpy.expectToEmitEvent(EntityUpdatedEvent, {
+          before: beforeAllLanguages,
+          after: afterAllLanguages,
+          targetLanguageKey: 'en',
+        });
+        emitSpy.restore();
       });
     });
   });
@@ -1361,10 +1384,14 @@ describe('entities', () => {
     });
 
     it('should delete the suggestions with the entity sharedId', async () => {
+      const emitSpy = spyOnEmit();
       await entities.delete('shared');
-      const entitySuggestions = await Suggestions.getByEntityId('shared');
-      expect(entitySuggestions.length).toBe(0);
-      expect((await Suggestions.getByEntityId('other')).length).toBe(1);
+      emitSpy.expectToEmitEvent(EntityDeletedEvent, {
+        entity: fixtures.entities
+          .filter(entity => entity.sharedId === 'shared')
+          .map(entity => expect.objectContaining({ _id: entity._id })),
+      });
+      emitSpy.restore();
     });
   });
 

@@ -21,11 +21,11 @@ describe('DocumentCounter', () => {
     component = shallow(<DocumentCounter {...props} />);
   };
 
-  describe('connections content', () => {
-    it('should show the connections count', () => {
+  describe('relationships content', () => {
+    it('should show the relationships count', () => {
       render();
       expect(component.children().get(0).props.children[0]).toBe(3);
-      expect(component.children().get(1).props.children).toBe('connections');
+      expect(component.children().get(1).props.children).toBe('relationships');
       expect(component.children().get(3).props.children[0].props.children[1]).toBe('100');
       expect(component.children().get(4).props.children).toBe('entities');
     });

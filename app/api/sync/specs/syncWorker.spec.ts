@@ -19,7 +19,7 @@ import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import { rmdir, writeFile } from 'fs/promises';
 import { Server } from 'http';
@@ -119,7 +119,7 @@ describe('syncWorker', () => {
 
     await applyFixtures();
 
-    app.use(bodyParser.json());
+    app.use(bodyParser.json() as RequestHandler);
     app.use(appContextMiddleware);
 
     const multitenantMiddleware = (req: Request, _res: Response, next: NextFunction) => {

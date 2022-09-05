@@ -22,6 +22,7 @@ export default {
             { key: 'Account', value: 'Account' },
             { key: 'Email', value: 'E-Mail' },
             { key: 'Age', value: 'Age' },
+            { key: 'Library', value: 'Library' },
           ],
         },
         {
@@ -81,6 +82,23 @@ export default {
     {
       _id: db.id(),
       type: 'translation',
+      locale: 'zh',
+      contexts: [
+        {
+          id: 'System',
+          label: 'System',
+          values: [
+            { key: 'Password', value: 'Password' },
+            { key: 'Account', value: 'Account' },
+            { key: 'Email', value: 'Email' },
+            { key: 'Age', value: 'Age' },
+          ],
+        },
+      ],
+    },
+    {
+      _id: db.id(),
+      type: 'translation',
       locale: 'other',
       contexts: [],
     },
@@ -96,6 +114,11 @@ export default {
         {
           key: 'en',
           label: 'English',
+          default: true,
+        },
+        {
+          key: 'zh',
+          label: 'Chinese',
           default: true,
         },
       ],

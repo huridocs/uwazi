@@ -18,7 +18,7 @@ const parseQueryProperty = (query: query, property: string) => {
   }
 };
 
-export const parseQuery = (req: Request, _res: Response, next: NextFunction) => {
+export const parseQuery = (req: Request<{}, {}, {}, {}>, _res: Response, next: NextFunction) => {
   req.query = Object.keys(req.query).reduce(
     (parsedQuery: query, key: string) => ({
       ...parsedQuery,

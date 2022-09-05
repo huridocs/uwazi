@@ -28,7 +28,7 @@ describe('SimilarProperty', () => {
     expect(typeCell.length).toBe(0);
     const cells = component.find('td');
     expect(cells.get(0).props.children[2]).toBe('template 1');
-    expect(cells.get(1).props.children[4]).toBe('Relationship');
+    expect(cells.get(1).props.children[4].props.children).toBe('property relationship');
     expect(cells.get(2).props.children[2]).toBe('entity 1');
     const warningIcon = component.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.length).toBe(0);
@@ -48,7 +48,7 @@ describe('SimilarProperty', () => {
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
-    expect(typeCell.get(0).props.children[4]).toBe('Text');
+    expect(typeCell.get(0).props.children[4].props.children).toBe('property text');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
   });
@@ -68,7 +68,7 @@ describe('SimilarProperty', () => {
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
-    expect(typeCell.get(0).props.children[4]).toBe('Text');
+    expect(typeCell.get(0).props.children[4].props.children).toBe('property text');
     expect(typeCell.get(0).props.children[5]).toBe(' (related)');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
@@ -111,7 +111,7 @@ describe('SimilarProperty', () => {
     render(props);
     const typeCell = component.find('.conflict');
     expect(typeCell.props().title).not.toBeUndefined();
-    expect(typeCell.get(0).props.children[4]).toBe('Relationship');
+    expect(typeCell.get(0).props.children[4].props.children).toBe('property relationship');
     const warningIcon = typeCell.find({ icon: 'exclamation-triangle' });
     expect(warningIcon.get(0)).not.toBeUndefined();
   });

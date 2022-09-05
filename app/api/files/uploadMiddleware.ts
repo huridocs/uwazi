@@ -12,7 +12,7 @@ import { storage } from './storage';
 type multerCallback = (error: Error | null, destination: string) => void;
 
 const defaultStorage = multer.diskStorage({
-  filename(_req: Request, file: Express.Multer.File, cb: multerCallback) {
+  filename(_req, file: Express.Multer.File, cb: multerCallback) {
     cb(null, generateFileName(file));
   },
 });
@@ -45,7 +45,7 @@ const singleUpload =
       if (req.file) {
         req.file.originalname = processOriginalFileName(req);
       }
-      if (type) {
+      if (type && req.file) {
         await storage.storeFile(
           req.file.filename,
           createReadStream(path.join(req.file.destination, req.file.filename)),

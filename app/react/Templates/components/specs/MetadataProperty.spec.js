@@ -14,11 +14,10 @@ import { createStore } from 'redux';
 import Immutable from 'immutable';
 import { shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
-
 import Connected, { MetadataProperty, dragSource, dropTarget } from '../MetadataProperty';
 import FormConfigMultimedia from '../FormConfigMultimedia';
 import FormConfigInput from '../FormConfigInput';
-import FormConfigSelect from '../FormConfigSelect';
+import { FormConfigSelect } from '../FormConfigSelect';
 import FormConfigNested from '../FormConfigNested';
 import FormConfigRelationship from '../FormConfigRelationship';
 

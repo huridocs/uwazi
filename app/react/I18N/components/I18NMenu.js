@@ -35,9 +35,20 @@ const listItem = (item, i18nmode) => {
     </div>
   );
 };
+
+const locationSearch = location => {
+  const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
+  return cleanSearch === '?' ? '' : cleanSearch;
+};
+
 class I18NMenu extends Component {
   static reload(url) {
     window.location.href = url;
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = { currentLanguage: props.locale };
   }
 
   render() {
@@ -57,16 +68,18 @@ class I18NMenu extends Component {
     );
 
     if (location.search.match(/page=/)) {
-      const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
-      location.search = cleanSearch === '?' ? '' : cleanSearch;
+      location.search = locationSearch(location);
     }
 
-    const regexp = new RegExp(`^/?${locale}/|^/?${locale}$`);
-    const path = location.pathname.replace(regexp, '/');
+    const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
 
     if (languageMap.size === 0) {
       return null;
     }
+    if (this.state.currentLanguage !== selectedLanguage.key) {
+      I18NMenu.reload(path);
+    }
+
     return languageMap.count() > 1 || user.size ? (
       <div
         className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : ' '} ${
@@ -79,7 +92,7 @@ class I18NMenu extends Component {
           <DropdownList
             data={languages}
             id="key"
-            defaultValue={selectedLanguage}
+            defaultValue={selectedLanguage.key}
             textField="localized_label"
             className="menuNav-language"
             itemComponent={({ item }) => listItem(item)}

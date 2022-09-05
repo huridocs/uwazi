@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response, NextFunction, RequestHandler } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
@@ -17,7 +17,7 @@ const setUpApp = (
 ): Application => {
   const app: Application = express();
   routesErrorHandler(app);
-  app.use(bodyParser.json());
+  app.use(bodyParser.json() as RequestHandler);
   app.use((req: Request, _res: Response, next: NextFunction) => {
     req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);
     req.sockets = {

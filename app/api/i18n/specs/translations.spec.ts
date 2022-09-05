@@ -1,14 +1,16 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
+import backend from 'fetch-mock';
 import thesauri from 'api/thesauri/thesauri.js';
+import { config } from 'api/config';
 import fixtures, {
   entityTemplateId,
   documentTemplateId,
   englishTranslation,
   dictionaryId,
 } from './fixtures.js';
-import translations from '../translations';
+import translations, { UITranslationNotAvailable } from '../translations';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -105,26 +107,59 @@ describe('translations', () => {
 
   describe('get()', () => {
     it('should return the translations', async () => {
-      const result = await translations.get();
+      const [result] = await translations.get({ locale: 'en' });
 
-      expect(result.length).toBe(3);
-      expect(result[0].locale).toBe('en');
-      expect(result[0].contexts?.[0].id).toBe('System');
-      expect(result[0].contexts?.[0].type).toBe('Uwazi UI');
-
-      expect(result[0].contexts?.[1].id).toBe('Filters');
-      expect(result[0].contexts?.[1].type).toBe('Uwazi UI');
-
-      expect(result[0].contexts?.[2].id).toBe('Menu');
-      expect(result[0].contexts?.[2].type).toBe('Uwazi UI');
-
-      expect(result[0].contexts?.[3].id).toBe(entityTemplateId.toString());
-      expect(result[0].contexts?.[3].type).toBe('Entity');
-
-      expect(result[0].contexts?.[4].id).toBe(documentTemplateId.toString());
-      expect(result[0].contexts?.[4].type).toBe('Document');
-
-      expect(result[1].locale).toBe('es');
+      expect(result).toMatchObject({
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            type: 'Uwazi UI',
+            values: {
+              Account: 'Account',
+              Age: 'Age',
+              Email: 'E-Mail',
+              Library: 'Library',
+              Password: 'Password',
+            },
+          },
+          {
+            id: 'Filters',
+            label: 'Filters',
+            type: 'Uwazi UI',
+            values: {},
+          },
+          {
+            id: 'Menu',
+            label: 'Menu',
+            type: 'Uwazi UI',
+            values: {},
+          },
+          {
+            id: entityTemplateId.toString(),
+            label: 'Judge',
+            type: 'Entity',
+            values: {},
+          },
+          {
+            id: documentTemplateId.toString(),
+            label: 'Court order',
+            type: 'Document',
+            values: {},
+          },
+          {
+            type: 'Dictionary',
+            values: {
+              Account: 'Account',
+              Age: 'Age',
+              Email: 'E-Mail',
+              Password: 'Password',
+              'dictionary 2': 'dictionary 2',
+            },
+          },
+        ],
+        locale: 'en',
+      });
     });
   });
 
@@ -146,6 +181,7 @@ describe('translations', () => {
           { values: { test: 'value' } },
           // @ts-ignore
           { values: [{ key: 'test2', value: 'value2' }] },
+          { values: {} },
         ],
       });
 
@@ -463,8 +499,60 @@ describe('translations', () => {
       await translations.removeLanguage('other');
       const allTranslations = await translations.get();
 
-      expect(allTranslations.length).toBe(1);
+      expect(allTranslations.length).toBe(2);
       expect(allTranslations[0].locale).toBe('en');
+    });
+  });
+
+  describe('import predefined translation csv', () => {
+    afterEach(() => {
+      backend.restore();
+    });
+
+    it('should download a translations csv based on iso key and import it when translation is available', async () => {
+      const spanishCsv = `Key, Español
+      Password, Password traducida
+      Account, Account traducida
+      Age, Age traducida`;
+
+      config.githubToken = 'gh_token';
+
+      backend.get(
+        (url, opts) =>
+          url ===
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
+          // @ts-ignore
+          opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+          // @ts-ignore
+          opts?.headers?.accept === 'application/vnd.github.v4.raw',
+        { body: spanishCsv }
+      );
+
+      await translations.importPredefined('es');
+
+      const result = await translations.get();
+      const ESTranslations =
+        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
+          ?.values || {};
+
+      expect(ESTranslations.Password).toBe('Password traducida');
+      expect(ESTranslations.Account).toBe('Account traducida');
+      expect(ESTranslations.Age).toBe('Age traducida');
+    });
+
+    it('should throw error when translation is not available', async () => {
+      await expect(translations.importPredefined('zh')).rejects.toThrowError(
+        UITranslationNotAvailable
+      );
+
+      const result = await translations.get();
+      const ZHTranslations =
+        (result.find(t => t.locale === 'zh')?.contexts || []).find(c => c.label === 'System')
+          ?.values || {};
+
+      expect(ZHTranslations.Password).toBe('Password');
+      expect(ZHTranslations.Account).toBe('Account');
+      expect(ZHTranslations.Age).toBe('Age');
     });
   });
 });

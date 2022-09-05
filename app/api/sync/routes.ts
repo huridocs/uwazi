@@ -46,7 +46,7 @@ const deleteEntityFromIndex = async (entityId: string) => {
   }
 };
 
-const deleteFromIndex = async (req: Request) => {
+const deleteFromIndex = async (req: Request<{}, {}, {}, { data: string; namespace: string }>) => {
   if (req.query.namespace === 'entities') {
     await deleteEntityFromIndex(JSON.parse(req.query.data)._id);
   }
@@ -120,17 +120,21 @@ export default (app: Application) => {
     }
   );
 
-  app.delete('/api/sync', needsAuthorization(['admin']), async (req, res) => {
-    await models[req.query.namespace].delete(JSON.parse(req.query.data));
+  app.delete(
+    '/api/sync',
+    needsAuthorization(['admin']),
+    async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
+      await models[req.query.namespace].delete(JSON.parse(req.query.data));
 
-    if (req.query.namespace === 'files') {
-      await deleteFile(JSON.parse(req.query.data)._id);
+      if (req.query.namespace === 'files') {
+        await deleteFile(JSON.parse(req.query.data)._id);
+      }
+
+      if (req.query.namespace === 'entities') {
+        await deleteFromIndex(req);
+      }
+
+      res.json('ok');
     }
-
-    if (req.query.namespace === 'entities') {
-      await deleteFromIndex(req);
-    }
-
-    res.json('ok');
-  });
+  );
 };
