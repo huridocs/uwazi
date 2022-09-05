@@ -125,7 +125,7 @@ export class Attachment extends Component {
     document.execCommand('copy');
     document.body.removeChild(dummy);
 
-    store.dispatch(notify('Copied to clipboard', 'success'));
+    store.dispatch(notify(t('System', 'Copied to clipboard', null, false), 'success'));
     this.toggleDropdown();
   }
 
