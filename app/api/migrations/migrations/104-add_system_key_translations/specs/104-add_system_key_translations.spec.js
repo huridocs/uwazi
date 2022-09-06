@@ -5,8 +5,8 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'added to hub',
-    value: 'added to hub',
+    key: 'added to hub.',
+    value: 'added to hub.',
   },
   {
     key: 'added to hub with the following errors:',
@@ -15,6 +15,10 @@ const newKeyValues = [
   {
     key: 'Save your work to make change permanent',
     value: 'Save your work to make change permanent',
+  },
+  {
+    key: 'The token does not validate against the secret key!',
+    value: 'The token does not validate against the secret key!',
   },
 ];
 const alreadyInAllContexts = {
@@ -35,7 +39,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(103);
+    expect(migration.delta).toBe(104);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {

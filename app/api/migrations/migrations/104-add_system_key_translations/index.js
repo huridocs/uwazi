@@ -46,7 +46,7 @@ async function readCsvToSystemKeys(db, filename) {
 }
 
 export default {
-  delta: 103,
+  delta: 104,
   reindex: false,
 
   name: 'add_system_key_translations',
