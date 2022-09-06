@@ -49,7 +49,9 @@ const acceptSuggestion =
     });
     const result = await acceptEntitySuggestion(params);
     if (result.success) {
-      dispatch(notificationActions.notify('Saved successfully.', 'success'));
+      dispatch(
+        notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+      );
     }
   };
 
