@@ -34,3 +34,8 @@ key,optionalValue
 "Success, Upload another?","Success, Upload another?"
 "The token does not validate against the secret key!","The token does not validate against the secret key!"
 "Could not reach server. Please try again later.","Could not reach server. Please try again later."
+"Sending labeled data...","Sending labeled data..."
+"Training model...","Training model..."
+"Finding suggestions","Finding suggestions"
+"Cancelling...","Cancelling..."
+"Error","Error"
