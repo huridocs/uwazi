@@ -3,6 +3,12 @@ import { Relationship } from '../model/Relationship';
 import { Transactional } from '../services/Transactional';
 import { assignId, mapFromObjectIds, mapToObjectIds } from './dbMapper';
 
+interface RelationshipDBO {
+  _id: ObjectId;
+  from: string;
+  to: string;
+  type: ObjectId;
+}
 export class RelationshipsDataSource implements Transactional<ClientSession> {
   private db: Db;
 
@@ -16,15 +22,25 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
     this.session = session;
   }
 
+  private getCollection() {
+    return this.db.collection<RelationshipDBO>('relationships');
+  }
+
   async insert(relationship: Relationship): Promise<Relationship> {
     const {
       ops: [{ _id }],
-    } = await this.db
-      .collection('relationships')
-      .insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
-        session: this.session,
-      });
+    } = await this.getCollection().insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
+      session: this.session,
+    });
 
-    return mapFromObjectIds<Relationship>(assignId(relationship, _id as ObjectId), ['_id']);
+    return mapFromObjectIds<RelationshipDBO, Relationship>(assignId(relationship, _id), ['_id']);
+  }
+
+  async getByEntity(sharedId: string, page: number, size: number) {
+    return this.getCollection()
+      .find({ $or: [{ from: sharedId }, { to: sharedId }] })
+      .skip((page - 1) * size)
+      .limit(size)
+      .toArray();
   }
 }

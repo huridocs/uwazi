@@ -1,16 +1,19 @@
 import { ObjectId } from 'mongodb';
 
-export function mapToObjectIds<T extends object>(model: T, idProperties: Array<keyof T>): unknown {
+export function mapToObjectIds<DboType extends object, ModelType extends object>(
+  model: DboType,
+  idProperties: Array<keyof DboType>
+): ModelType {
   return Object.assign(
     { ...model },
     ...idProperties.map(key => ({ [key]: new ObjectId(model[key] as unknown as string) }))
   );
 }
 
-export function mapFromObjectIds<T>(
-  model: Record<keyof T, unknown>,
-  idProperties: Array<keyof T>
-): T {
+export function mapFromObjectIds<ModelType extends object, DboType extends object>(
+  model: Record<keyof ModelType, unknown>,
+  idProperties: Array<keyof ModelType>
+): DboType {
   return Object.assign(
     { ...model },
     ...idProperties.map(key => ({ [key]: (model[key] as ObjectId).toHexString() }))
