@@ -2,6 +2,7 @@ import { EntitiesDataSource } from '../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
 import { RelationshipTypesDataSource } from '../database/RelationshipTypesDataSource';
 import { Relationship } from '../model/Relationship';
+import { IdGenerator } from './IdGenerator';
 import { TransactionManager } from './TransactionManager';
 
 export class CreateRelationshipService {
@@ -13,16 +14,21 @@ export class CreateRelationshipService {
 
   private relationshipTypesDS: RelationshipTypesDataSource;
 
+  private generateId: IdGenerator;
+
+  // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
     relationshipTypesDS: RelationshipTypesDataSource,
     entitiesDS: EntitiesDataSource,
-    transactionManager: TransactionManager
+    transactionManager: TransactionManager,
+    generateId: IdGenerator
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
     this.entitiesDS = entitiesDS;
     this.transactionManager = transactionManager;
+    this.generateId = generateId;
   }
 
   async create(from: string, to: string, type: string) {
@@ -38,7 +44,7 @@ export class CreateRelationshipService {
           throw new Error('Must provide sharedIds from existing entities');
         }
 
-        return relationshipsDS.insert(new Relationship(from, to, type));
+        return relationshipsDS.insert(new Relationship(this.generateId(), from, to, type));
       },
       this.entitiesDS,
       this.relationshipsDS,

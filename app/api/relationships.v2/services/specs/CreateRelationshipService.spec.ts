@@ -8,6 +8,7 @@ import testingDB from 'api/utils/testing_db';
 import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
 import { ObjectId } from 'mongodb';
 import { RelationshipTypesDataSource } from 'api/relationships.v2/database/RelationshipTypesDataSource';
+import { generateId } from 'api/relationships.v2/database/MongoIdGenerator';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
@@ -42,7 +43,8 @@ describe('When the entities exist', () => {
       new RelationshipsDataSource(connection),
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      generateId
     );
     const relationship = await service.create(
       'entity1',
@@ -64,7 +66,8 @@ describe('When the entities exist', () => {
       new RelationshipsDataSource(connection),
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      generateId
     );
     await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
 
@@ -88,7 +91,8 @@ describe('When an entity does not exist', () => {
       new RelationshipsDataSource(connection),
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      generateId
     );
     try {
       await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
@@ -106,7 +110,8 @@ describe('When trying to create a self-referencing relationship', () => {
       new RelationshipsDataSource(connection),
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      generateId
     );
     try {
       await service.create('entity1', 'entity1', factory.id('rel1').toHexString());

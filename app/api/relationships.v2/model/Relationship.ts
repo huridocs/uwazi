@@ -1,10 +1,16 @@
-import { ObjectId } from 'mongodb';
-
-const generateId = () => new ObjectId().toHexString();
 export class Relationship {
   readonly _id: string;
 
-  constructor(readonly from: string, readonly to: string, public type: string) {
-    this._id = generateId();
+  readonly from: string;
+
+  readonly to: string;
+
+  readonly type: string;
+
+  constructor(_id: string, from: string, to: string, type: string) {
+    this._id = _id;
+    this.from = from;
+    this.to = to;
+    this.type = type;
   }
 }
