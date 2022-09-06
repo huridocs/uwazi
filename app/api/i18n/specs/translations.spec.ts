@@ -1,16 +1,17 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
-import backend from 'fetch-mock';
-import thesauri from 'api/thesauri/thesauri.js';
 import { config } from 'api/config';
+import thesauri from 'api/thesauri/thesauri.js';
+import backend from 'fetch-mock';
+import { availableLanguages } from 'shared/languagesList';
+import translations, { UITranslationNotAvailable } from '../translations';
 import fixtures, {
-  entityTemplateId,
+  dictionaryId,
   documentTemplateId,
   englishTranslation,
-  dictionaryId,
+  entityTemplateId,
 } from './fixtures.js';
-import translations, { UITranslationNotAvailable } from '../translations';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -582,9 +583,9 @@ describe('translations', () => {
         { body: githubResponse }
       );
 
-      const availableLanguages = await translations.availableLanguages();
+      const responseLanguages = await translations.availableLanguages();
 
-      const languagesWithPredefinedTranslations = availableLanguages.filter(
+      const languagesWithPredefinedTranslations = responseLanguages.filter(
         l => l.translationAvailable
       );
       expect(languagesWithPredefinedTranslations).toMatchObject([
@@ -592,6 +593,19 @@ describe('translations', () => {
         { key: 'fr' },
         { key: 'es' },
       ]);
+    });
+
+    describe('when github returns any error', () => {
+      it('should return an unaltered version of the languages list', async () => {
+        backend.get(
+          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/',
+          404
+        );
+
+        const responseLanguages = await translations.availableLanguages();
+
+        expect(responseLanguages).toEqual(availableLanguages);
+      });
     });
   });
 });

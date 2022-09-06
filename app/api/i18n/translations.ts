@@ -424,7 +424,11 @@ export default {
 
   async availableLanguages() {
     const contentsClient = new ContentsClient();
-    const languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+    try {
+      const languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+    } catch (e) {
+      return [];
+    }
     return availableLanguages.map(language => ({
       ...language,
       translationAvailable: languagesWithTranslations.includes(language.key),
