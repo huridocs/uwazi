@@ -11,7 +11,7 @@ import { actions } from 'app/BasicReducer';
 import { generateID } from 'shared/IDGenerator';
 import emptyTemplate from '../helpers/defaultTemplate';
 
-export function resetReduxForm(form) {
+function resetReduxForm(form) {
   return formActions.reset(form);
 }
 
@@ -43,7 +43,7 @@ const defaultValueByType = (type, options) => {
   }
 };
 
-export const resetMetadata = (metadata, template, options, previousTemplate) => {
+const resetMetadata = (metadata, template, options, previousTemplate) => {
   const resetedMetadata = {};
   template.properties.forEach(property => {
     const resetValue =
@@ -79,7 +79,7 @@ const getPropertyValue = (property, metadataProperty) => {
   }
 };
 
-export const UnwrapMetadataObject = (MetadataObject, Template) =>
+const UnwrapMetadataObject = (MetadataObject, Template) =>
   Object.keys(MetadataObject).reduce((UnwrapedMO, key) => {
     if (!MetadataObject[key].length) {
       return UnwrapedMO;
@@ -101,9 +101,10 @@ function checkGeneratedTitle(entity, template) {
 
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });
-  const defaultTemplate = sortedTemplates.find(t => t.default);
+  const defaultTemplate = sortedTemplates.find(sortedTemplate => sortedTemplate.default);
   const templateId = entity.template || defaultTemplate._id;
-  const template = sortedTemplates.find(t => t._id === templateId) || emptyTemplate;
+  const template =
+    sortedTemplates.find(sortedTemplate => sortedTemplate._id === templateId) || emptyTemplate;
   const title = checkGeneratedTitle(entity, template);
 
   const entitySelectedOptions = {};
@@ -147,8 +148,8 @@ export function changeTemplate(form, templateId) {
   return (dispatch, getState) => {
     const entity = { ...getModel(getState(), form) };
     const { templates } = getState();
-    const template = templates.find(t => t.get('_id') === templateId);
-    const previousTemplate = templates.find(t => t.get('_id') === entity.template);
+    const template = templates.find(temp => temp.get('_id') === templateId);
+    const previousTemplate = templates.find(temp => temp.get('_id') === entity.template);
 
     const templateJS = template.toJS();
     const title = checkGeneratedTitle(entity, templateJS);
@@ -201,3 +202,5 @@ export async function getSuggestions(templates, searchTerm = '') {
 
 export const clearMetadataSelections = () =>
   actions.unset('documentViewer.metadataExtraction', ['selections']);
+
+export { resetReduxForm, resetMetadata, UnwrapMetadataObject };

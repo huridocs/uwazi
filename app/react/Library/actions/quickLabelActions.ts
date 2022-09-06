@@ -11,7 +11,7 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { updateEntities } from './libraryActions';
 
-export function toggleQuickLabelAutoSave() {
+function toggleQuickLabelAutoSave() {
   return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const opts = getState().library.sidepanel.quickLabelState.toJS();
     dispatch(
@@ -62,7 +62,7 @@ function buildQuickLabelMetadata(docs: EntitySchema[], propNames: string[]): Qui
   );
 }
 
-export function selectedDocumentsChanged() {
+function selectedDocumentsChanged() {
   return (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const model = 'library.sidepanel.quickLabelMetadata';
     const state = getState();
@@ -82,7 +82,9 @@ export function selectedDocumentsChanged() {
       return;
     }
     const templateIds = docs.map(d => d.template).filter(v => v);
-    const templates = state.templates.filter(t => templateIds.includes(t!.get('_id'))).toJS();
+    const templates = state.templates
+      .filter(template => templateIds.includes(template!.get('_id')))
+      .toJS();
     const propNames = getThesaurusPropertyNames(
       state.library.sidepanel.quickLabelState.get('thesaurus')!,
       templates
@@ -93,7 +95,7 @@ export function selectedDocumentsChanged() {
   };
 }
 
-export function maybeSaveQuickLabels(force?: boolean) {
+function maybeSaveQuickLabels(force?: boolean) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     if (!force && !state.library?.sidepanel?.quickLabelState?.get('autoSave')) {
@@ -126,3 +128,5 @@ export function maybeSaveQuickLabels(force?: boolean) {
     dispatch(selectedDocumentsChanged());
   };
 }
+
+export { selectedDocumentsChanged, maybeSaveQuickLabels, toggleQuickLabelAutoSave };
