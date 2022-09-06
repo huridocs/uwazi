@@ -15,7 +15,7 @@ socket.on('disconnect', reason => {
     disconnectTimeoutMessage = setTimeout(() => {
       disconnectNotifyId = store.dispatch(
         notificationActions.notify(
-          t('System', 'Lost connection to the server, your changes may be lost', null, false),
+          t('System', 'Lost connection to the server. Your changes may be lost', null, false),
           'danger',
           false
         )
