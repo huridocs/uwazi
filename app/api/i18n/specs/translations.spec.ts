@@ -541,6 +541,11 @@ describe('translations', () => {
     });
 
     it('should throw error when translation is not available', async () => {
+      backend.get(
+        'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/zh.csv',
+        404
+      );
+
       await expect(translations.importPredefined('zh')).rejects.toThrowError(
         UITranslationNotAvailable
       );
@@ -568,7 +573,8 @@ describe('translations', () => {
 
       backend.get(
         (url, opts) =>
-          url === 'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations' &&
+          url ===
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/' &&
           // @ts-ignore
           opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
           // @ts-ignore
@@ -576,15 +582,16 @@ describe('translations', () => {
         { body: githubResponse }
       );
 
-      const availableLanguages = await translations.availableLanguages('es');
+      const availableLanguages = await translations.availableLanguages();
 
-      const ESTranslations =
-        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-
-      expect(ESTranslations.Password).toBe('Password traducida');
-      expect(ESTranslations.Account).toBe('Account traducida');
-      expect(ESTranslations.Age).toBe('Age traducida');
+      const languagesWithPredefinedTranslations = availableLanguages.filter(
+        l => l.translationAvailable
+      );
+      expect(languagesWithPredefinedTranslations).toMatchObject([
+        { key: 'ar' },
+        { key: 'fr' },
+        { key: 'es' },
+      ]);
     });
   });
 });

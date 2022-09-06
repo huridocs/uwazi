@@ -9,7 +9,7 @@ import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
-import { ContentsClient } from 'api/i18n/contentsClient';
+import { ContentsClient, GithubFileNotFound } from 'api/i18n/contentsClient';
 import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
 
@@ -405,19 +405,30 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const language = availableLanguages.find(lan => lan.key === locale);
-    if (!language?.translationAvailable) {
-      throw new UITranslationNotAvailable(
-        `Predefined translation for locale ${locale} is not available`
-      );
-    }
-
     const contentsClient = new ContentsClient();
-    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
-    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-    await pipeline(translationsCsv, createWriteStream(tmpCsv));
-    const loader = new CSVLoader();
-    await loader.loadTranslations(tmpCsv, 'System');
+    try {
+      const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+      const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+      await pipeline(translationsCsv, createWriteStream(tmpCsv));
+      const loader = new CSVLoader();
+      await loader.loadTranslations(tmpCsv, 'System');
+    } catch (error) {
+      if (error instanceof GithubFileNotFound) {
+        throw new UITranslationNotAvailable(
+          `Predefined translation for locale ${locale} is not available`
+        );
+      }
+      throw error;
+    }
+  },
+
+  async availableLanguages() {
+    const contentsClient = new ContentsClient();
+    const languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+    return availableLanguages.map(language => ({
+      ...language,
+      translationAvailable: languagesWithTranslations.includes(language.key),
+    }));
   },
 };
 

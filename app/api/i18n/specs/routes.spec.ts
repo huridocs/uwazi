@@ -221,6 +221,10 @@ describe('i18n translations routes', () => {
       });
 
       it('should response with error when Github authentication failed', async () => {
+        backend.get(
+          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/zh.csv',
+          { status: 404 }
+        );
         const response = await request(app)
           .post('/api/translations/populate')
           .send({ locale: 'zh' })
