@@ -202,7 +202,9 @@ function saveRelationships() {
         );
         dispatch(referencesActions.loadReferences(parentEntityId));
         dispatch({ type: types.SAVED_RELATIONSHIPS, response });
-        dispatch(notificationActions.notify('Relationships saved', 'success'));
+        dispatch(
+          notificationActions.notify(t('System', 'Relationships saved', null, false), 'success')
+        );
       })
       .catch(e => {
         dispatch({ type: types.SAVED_RELATIONSHIPS, e });
