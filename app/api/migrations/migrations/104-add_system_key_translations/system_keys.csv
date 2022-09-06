@@ -32,3 +32,5 @@ key,optionalValue
 "Success","Success"
 "An error occurred","An error occurred"
 "Success, Upload another?","Success, Upload another?"
+"The token does not validate against the secret key!","The token does not validate against the secret key!"
+"Could not reach server. Please try again later.","Could not reach server. Please try again later."
