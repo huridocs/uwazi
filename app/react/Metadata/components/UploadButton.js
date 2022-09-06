@@ -30,7 +30,12 @@ class UploadButton extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = { processing: false, failed: false, completed: false };
+    this.state = {
+      processing: false,
+      failed: false,
+      completed: false,
+      entitySharedId: props.entitySharedId,
+    };
     this.conversionStart = this.conversionStart.bind(this);
     this.conversionFailed = this.conversionFailed.bind(this);
     this.documentProcessed = this.documentProcessed.bind(this);
@@ -47,6 +52,19 @@ class UploadButton extends Component {
     socket.removeListener('conversionFailed', this.conversionFailed);
     socket.removeListener('documentProcessed', this.documentProcessed);
     clearTimeout(this.timeout);
+  }
+
+  static getDerivedStateFromProps(newProps, state) {
+    if (newProps.entitySharedId !== state.entitySharedId) {
+      return {
+        processing: false,
+        failed: false,
+        completed: false,
+        entitySharedId: newProps.entitySharedId,
+      };
+    }
+
+    return null;
   }
 
   onChange(e) {
