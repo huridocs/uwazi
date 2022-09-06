@@ -307,7 +307,7 @@ function multipleUpdate(entities, values) {
   return async dispatch => {
     const ids = entities.map(entity => entity.get('sharedId')).toJS();
     const updatedDocs = await entitiesAPI.multipleUpdate(new RequestParams({ ids, values }));
-    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Update success', null, false), 'success'));
     dispatch(updateEntities(updatedDocs));
   };
 }

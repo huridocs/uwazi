@@ -3,6 +3,7 @@ import { actions as formActions, getModel } from 'react-redux-form';
 import { advancedSort } from 'app/utils/advancedSort';
 import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
+import { t } from 'app/I18N';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
@@ -184,7 +185,7 @@ export function multipleUpdate(entities, values) {
   return async dispatch => {
     const ids = entities.map(e => e.get('sharedId')).toJS();
     const updatedEntities = await api.multipleUpdate(new RequestParams({ ids, values }));
-    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Update success', null, false), 'success'));
     if (values.published !== undefined) {
       await dispatch(unselectAllDocuments());
       dispatch(removeDocuments(updatedEntities));

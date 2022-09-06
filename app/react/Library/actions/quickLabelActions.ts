@@ -1,10 +1,11 @@
+import { Dispatch } from 'redux';
+import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
-import { actions as formActions } from 'react-redux-form';
-import { Dispatch } from 'redux';
+import { t } from 'app/I18N';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -120,7 +121,7 @@ export function maybeSaveQuickLabels(force?: boolean) {
     const updatedDocs = await EntitiesAPI.multipleUpdate(
       new RequestParams({ ids, values: { diffMetadata: diffs } })
     );
-    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Update success', null, false), 'success'));
     dispatch(updateEntities(updatedDocs));
     dispatch(selectedDocumentsChanged());
   };
