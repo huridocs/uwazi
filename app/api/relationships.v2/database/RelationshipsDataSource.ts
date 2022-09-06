@@ -1,7 +1,7 @@
-/* eslint-disable max-classes-per-file */
 import { ClientSession, Db, ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
 import { Transactional } from '../services/Transactional';
+import { assignId, mapFromObjectIds, mapToObjectIds } from './dbMapper';
 
 export class RelationshipsDataSource implements Transactional<ClientSession> {
   private db: Db;
@@ -19,17 +19,12 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
   async insert(relationship: Relationship): Promise<Relationship> {
     const {
       ops: [{ _id }],
-    } = await this.db.collection('relationships').insertOne(
-      {
-        ...relationship,
-        _id: new ObjectId(relationship._id),
-        type: new ObjectId(relationship.type),
-      },
-      {
+    } = await this.db
+      .collection('relationships')
+      .insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
         session: this.session,
-      }
-    );
+      });
 
-    return Object.assign(relationship, { _id: _id.toHexString() });
+    return mapFromObjectIds<Relationship>(assignId(relationship, _id as ObjectId), ['_id']);
   }
 }
