@@ -43,7 +43,7 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
       { session: this.session }
     );
 
-    return new MongoResultSet(cursor, (relationship: any) =>
+    return new MongoResultSet(cursor, relationship =>
       mapFromObjectIds<RelationshipDBO, Relationship>(relationship, ['_id'])
     );
   }
