@@ -15,12 +15,10 @@ import { LibraryFooter } from './components/LibraryFooter';
 
 class LibraryLayoutBase extends Component {
   render() {
-    const { className, children, quickLabelThesaurus, sidePanelMode, noScrollable } = this.props;
+    const { className, children, quickLabelThesaurus, sidePanelMode } = this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
-    } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ${
-      noScrollable ? 'no-scroll-layout' : ''
-    }`;
+    } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ]`;
 
     return (
       <div className="row panels-layout">
@@ -49,7 +47,6 @@ LibraryLayoutBase.defaultProps = {
   className: '',
   quickLabelThesaurus: '',
   sidePanelMode: '',
-  noScrollable: false,
 };
 
 LibraryLayoutBase.propTypes = {
@@ -57,7 +54,6 @@ LibraryLayoutBase.propTypes = {
   className: PropTypes.string,
   quickLabelThesaurus: PropTypes.string,
   sidePanelMode: PropTypes.string,
-  noScrollable: PropTypes.bool,
 };
 
 export { LibraryLayoutBase };
