@@ -211,6 +211,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-body {
+  position: relative;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -237,6 +238,20 @@ $c-sidebar: $c-white;
   .sidepanel-relationships {
     display: flex;
     flex-direction: column;
+    height: 100%;
+
+    .sticky {
+      .sidepanel-relationship {
+        padding-top: 46px;
+        .sidepanel-relationship-left-label {
+          position: fixed;
+          top: 0;
+          z-index: 10;
+          width: 100%;
+          color: blue;
+        }
+      }
+    }
     .sidepanel-relationship {
       display: flex;
       flex-direction: column;

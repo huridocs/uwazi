@@ -1,38 +1,38 @@
-import React, { ReactElement, Component } from 'react';
+import React, { LegacyRef, useEffect } from 'react';
 
 interface StickyHeaderProps {
-  children: ReactElement;
+  children: Function;
   scrollElementSelector: string;
 }
 
-class StickyHeader extends Component<StickyHeaderProps, {}> {
-  element: Element | null = null;
+// eslint-disable-next-line max-statements
+const stickHeader = (self: any, event: Event) => {
+  if (self) {
+    self.current?.classList.remove('sticky');
+    // @ts-ignore
+    const scrollerTop = event.target?.scrollTop || 0;
+    const stickyTop = self.current?.offsetTop || 0;
+    const stickyBottom = stickyTop + (self.current?.offsetHeight || 0);
 
-  constructor(props: StickyHeaderProps) {
-    super(props);
-    this.onElementScroll = this.onElementScroll.bind(this);
-  }
-
-  componentDidMount() {
-    this.element = document.querySelector(this.props.scrollElementSelector);
-    if (this.element) {
-      console.log(this.element);
-      this.element.addEventListener('onscroll', () => console.log('Scrolled...'));
+    if (stickyTop <= scrollerTop && stickyBottom > scrollerTop) {
+      self.current?.classList.add('sticky');
     }
   }
+};
 
-  componentWillUnmount(): void {
-    this.element?.removeEventListener('onscroll', () => console.log('Scrolled...'));
-  }
+const StickyHeader = (props: StickyHeaderProps) => {
+  const { children, scrollElementSelector } = props;
+  const self: LegacyRef<HTMLDivElement> = React.createRef();
+  const body = document.querySelector<HTMLDivElement>(scrollElementSelector);
+  const parentTop = ((body?.offsetParent as HTMLElement).offsetTop || 0) + (body?.offsetTop || 0);
+  useEffect(() => {
+    body?.addEventListener('scroll', event => stickHeader(self, event));
+    return () => {
+      body?.removeEventListener('scroll', event => stickHeader(self, event));
+    };
+  });
 
-  // eslint-disable-next-line class-methods-use-this
-  onElementScroll(event: Event) {
-    console.log('Scroll has happened...', event);
-  }
-
-  render() {
-    return <>{this.props.children}</>;
-  }
-}
+  return <div ref={self}>{children({ style: { top: parentTop } })}</div>;
+};
 
 export { StickyHeader };

@@ -85,14 +85,18 @@ const createRightRelationshipGroups = (
 const createLabelGroups = (hub: any, relationTypes: any[], expanded: boolean, index: number) => {
   const template = hub.getIn(['leftRelationship', 'template']);
   return (
-    <div className="sidepanel-relationship" key={index}>
-      {template && (
-        <span className="sidepanel-relationship-left-label">
-          {`${relationTypes.find(r => r._id === template).name}(Label)`}
-        </span>
+    <StickyHeader scrollElementSelector=".scrollable">
+      {({ style }: { style: any }) => (
+        <div className="sidepanel-relationship" key={index}>
+          {template && (
+            <span className="sidepanel-relationship-left-label" style={style}>
+              {`${relationTypes.find(r => r._id === template).name}(Label)`}
+            </span>
+          )}
+          {createRightRelationshipGroups(hub.get('rightRelationships'), relationTypes, expanded)}
+        </div>
       )}
-      {createRightRelationshipGroups(hub.get('rightRelationships'), relationTypes, expanded)}
-    </div>
+    </StickyHeader>
   );
 };
 
@@ -110,13 +114,11 @@ const LibraryViewRelationshipsComp = ({
     }
   }, [searchResults, parentEntity]);
   return (
-    <StickyHeader scrollElementSelector=".sidepanel-body">
-      <div className="sidepanel-relationships">
-        {hubs.map((hub: any, index: number) =>
-          createLabelGroups(hub, relationTypes, expanded, index)
-        )}
-      </div>
-    </StickyHeader>
+    <div className="sidepanel-relationships">
+      {hubs.map((hub: any, index: number) =>
+        createLabelGroups(hub, relationTypes, expanded, index)
+      )}
+    </div>
   );
 };
 

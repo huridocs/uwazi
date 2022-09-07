@@ -401,7 +401,7 @@ class DocumentSidePanel extends Component {
             </div>
           )}
         </NeedAuthorization>
-        <div className="sidepanel-body">
+        <div className="sidepanel-body scrollable">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="text-search" className="text-search">
               <SearchText
