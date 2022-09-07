@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import ActivitylogList, { mapStateToProps } from '../ActivitylogList.js';
+import { ActivitylogList, mapStateToProps } from '../ActivitylogList';
 
 describe('ActivitylogList', () => {
   let props;
@@ -15,7 +15,6 @@ describe('ActivitylogList', () => {
       action: 'CREATE',
       extra: 'extra info',
     };
-    props = {};
     state = {
       activitylog: {
         list: Immutable.fromJS([

@@ -3,13 +3,12 @@
 exports[`ActivitylogRow should render the component when not beautified 1`] = `
 <tr
   className="activitylog-raw"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-17"
-    >
-      RAW
-    </span>
+    <MethodLabel
+      method="RAW"
+    />
   </td>
   <td
     className="color-0"
@@ -20,6 +19,7 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "action": "RAW",
             "extra": "POST: /api/entities",
@@ -36,8 +36,9 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
         <span
           className="activitylog-extra"
         >
-           
-          POST: /api/entities
+          <Connect(Translate)>
+            POST: /api/entities
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -53,13 +54,12 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
 exports[`ActivitylogRow when beautified should render the componet for the different actions 1`] = `
 <tr
   className="activitylog-beautified"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-9"
-    >
-      CREATE
-    </span>
+    <MethodLabel
+      method="CREATE"
+    />
   </td>
   <td
     className=""
@@ -70,6 +70,7 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "beautified": true,
             "description": "descrip",
@@ -90,19 +91,23 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-prefix"
         >
-          descrip
+          <Connect(Translate)>
+            descrip
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-name"
         >
-           
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-           
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -118,13 +123,12 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
 exports[`ActivitylogRow when beautified should render the componet for the different actions 2`] = `
 <tr
   className="activitylog-beautified"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-6"
-    >
-      UPDATE
-    </span>
+    <MethodLabel
+      method="UPDATE"
+    />
   </td>
   <td
     className=""
@@ -135,6 +139,7 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "beautified": true,
             "description": "descrip",
@@ -155,19 +160,23 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-prefix"
         >
-          descrip
+          <Connect(Translate)>
+            descrip
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-name"
         >
-           
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-           
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -183,13 +192,12 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
 exports[`ActivitylogRow when beautified should render the componet for the different actions 3`] = `
 <tr
   className="activitylog-beautified"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-2"
-    >
-      DELETE
-    </span>
+    <MethodLabel
+      method="DELETE"
+    />
   </td>
   <td
     className=""
@@ -200,6 +208,7 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "beautified": true,
             "description": "descrip",
@@ -220,19 +229,23 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-prefix"
         >
-          descrip
+          <Connect(Translate)>
+            descrip
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-name"
         >
-           
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-           
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -248,13 +261,12 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
 exports[`ActivitylogRow when beautified should render the componet for the different actions 4`] = `
 <tr
   className="activitylog-beautified"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-12"
-    >
-      MIGRATE
-    </span>
+    <MethodLabel
+      method="MIGRATE"
+    />
   </td>
   <td
     className=""
@@ -265,6 +277,7 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "beautified": true,
             "description": "descrip",
@@ -285,19 +298,23 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-prefix"
         >
-          descrip
+          <Connect(Translate)>
+            descrip
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-name"
         >
-           
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-           
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -313,13 +330,12 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
 exports[`ActivitylogRow when beautified should render the componet for the different actions 5`] = `
 <tr
   className="activitylog-beautified"
+  key="post1"
 >
   <td>
-    <span
-      className="badge btn-color-17"
-    >
-      CUSTOM
-    </span>
+    <MethodLabel
+      method="CUSTOM"
+    />
   </td>
   <td
     className=""
@@ -330,6 +346,7 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
     <DescriptionWrapper
       entry={
         Immutable.Map {
+          "_id": "post1",
           "semantic": Immutable.Map {
             "beautified": true,
             "description": "descrip",
@@ -350,19 +367,23 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-prefix"
         >
-          descrip
+          <Connect(Translate)>
+            descrip
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-name"
         >
-           
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-           
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>

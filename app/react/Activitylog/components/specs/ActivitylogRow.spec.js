@@ -1,7 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import ActivitylogRow from '../ActivitylogRow';
+import { ActivitylogRow } from '../ActivitylogRow';
+import DescriptionWrapper from '../DescriptionWrapper';
 
 jest.mock('moment-timezone', () => {});
 
@@ -36,6 +37,7 @@ describe('ActivitylogRow', () => {
   beforeEach(() => {
     props = {
       entry: Immutable.fromJS({
+        _id: 'post1',
         semantic: { action: 'RAW', extra: 'POST: /api/entities' },
         url: '/api/entities',
         method: 'POST',
@@ -95,18 +97,16 @@ describe('ActivitylogRow', () => {
   });
 
   describe('toggleExpand', () => {
-    const toggle = instance => {
-      instance.toggleExpand();
-      component.update();
-    };
-
     it('should alternate the expand value', () => {
-      const instance = component.instance();
-      expect(component.state().expanded).toBe(false);
-      toggle(instance);
-      expect(component.state().expanded).toBe(true);
-      toggle(instance);
-      expect(component.state().expanded).toBe(false);
+      render();
+      const description = component.find(DescriptionWrapper);
+      expect(description.at(0).props().expanded).toBe(false);
+
+      description.at(0).props().toggleExpand();
+      component.update();
+
+      const actualDescription = component.find(DescriptionWrapper);
+      expect(actualDescription.at(0).props().expanded).toBe(true);
     });
   });
 });
