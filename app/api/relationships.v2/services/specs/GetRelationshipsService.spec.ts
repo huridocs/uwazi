@@ -29,14 +29,14 @@ describe('when getting the relationships for an entity', () => {
   it('should return the incoming and outcomming relationships, paginated', async () => {
     const service = new GetRelationshipsService(new RelationshipsDataSource(getConnection()));
 
-    const page1 = await service.getByEntity('entity1', { page: 1, size: 2 });
-    const page2 = await service.getByEntity('entity1', { page: 2, size: 2 });
+    const page1 = await service.getByEntity('entity1').page(1, 2);
+    const page2 = await service.getByEntity('entity1').page(2, 2);
 
-    expect(page1).toEqual([
+    expect(page1.data).toEqual([
       expect.objectContaining({ _id: factory.id('rel1') }),
       expect.objectContaining({ _id: factory.id('rel5') }),
     ]);
 
-    expect(page2).toEqual([expect.objectContaining({ _id: factory.id('rel6') })]);
+    expect(page2.data).toEqual([expect.objectContaining({ _id: factory.id('rel6') })]);
   });
 });

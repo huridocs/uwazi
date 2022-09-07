@@ -1,6 +1,7 @@
 import { ClientSession, Db, ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
 import { Transactional } from '../services/Transactional';
+import { MongoResultSet } from './MongoResultSet';
 import { assignId, mapFromObjectIds, mapToObjectIds } from './dbMapper';
 
 interface RelationshipDBO {
@@ -36,11 +37,12 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
     return mapFromObjectIds<RelationshipDBO, Relationship>(assignId(relationship, _id), ['_id']);
   }
 
-  async getByEntity(sharedId: string, page: number, size: number) {
-    return this.getCollection()
-      .find({ $or: [{ from: sharedId }, { to: sharedId }] })
-      .skip((page - 1) * size)
-      .limit(size)
-      .toArray();
+  getByEntity(sharedId: string) {
+    const cursor = this.getCollection().find(
+      { $or: [{ from: sharedId }, { to: sharedId }] },
+      { session: this.session }
+    );
+
+    return new MongoResultSet(cursor);
   }
 }

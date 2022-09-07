@@ -1,10 +1,5 @@
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
 
-interface PaginationOptions {
-  page: number;
-  size: number;
-}
-
 export class GetRelationshipsService {
   private relationshipsDS: RelationshipsDataSource;
 
@@ -12,7 +7,7 @@ export class GetRelationshipsService {
     this.relationshipsDS = relationshipsDS;
   }
 
-  async getByEntity(sharedId: string, { page, size }: PaginationOptions) {
-    return this.relationshipsDS.getByEntity(sharedId, page, size);
+  getByEntity(sharedId: string) {
+    return this.relationshipsDS.getByEntity(sharedId);
   }
 }
