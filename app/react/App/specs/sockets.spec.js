@@ -19,7 +19,7 @@ describe('sockets', () => {
       socket._callbacks.$disconnect[0]('transport close');
       jasmine.clock().tick(8000);
       expect(store.dispatch.calls.allArgs()[1][0].notification.message).toEqual(
-        'Lost connection to the server, your changes may be lost'
+        'Lost connection to the server. Your changes may be lost'
       );
       jasmine.clock().uninstall();
     });

@@ -9,10 +9,14 @@ exports[`ConfirmModal should render a confirm modal 1`] = `
 >
   <Body>
     <h4>
-      Confirm action
+      <Connect(Translate)>
+        Confirm action
+      </Connect(Translate)>
     </h4>
     <p>
-      Are you sure you want to continue?
+      <Connect(Translate)>
+        Are you sure you want to continue?
+      </Connect(Translate)>
     </p>
   </Body>
   <Footer>

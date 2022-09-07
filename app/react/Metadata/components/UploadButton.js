@@ -116,7 +116,7 @@ class UploadButton extends Component {
 
     switch (true) {
       case this.state.failed:
-        return this.renderButton('failed', 'exclamation-triangle', 'An error occured');
+        return this.renderButton('failed', 'exclamation-triangle', 'An error occurred');
       case this.state.processing || progress === 0:
         return renderProcessing();
       case progress > 0 && progress < 100:

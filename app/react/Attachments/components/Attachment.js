@@ -6,7 +6,7 @@ import filesize from 'filesize';
 
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
@@ -35,7 +35,7 @@ const getItemOptions = (filename, url) => {
   return options;
 };
 
-export class Attachment extends Component {
+class Attachment extends Component {
   static conformThumbnail(file, item) {
     const acceptedThumbnailExtensions = ['png', 'gif', 'jpg', 'jpeg'];
     let thumbnail = null;
@@ -125,7 +125,7 @@ export class Attachment extends Component {
     document.execCommand('copy');
     document.body.removeChild(dummy);
 
-    store.dispatch(notify('Copied to clipboard', 'success'));
+    store.dispatch(notify(t('System', 'Copied to clipboard', null, false), 'success'));
     this.toggleDropdown();
   }
 
@@ -272,13 +272,6 @@ Attachment.contextTypes = {
   confirm: PropTypes.func,
 };
 
-export function mapStateToProps({ attachments }, ownProps) {
-  return {
-    model: 'attachments.edit.attachment',
-    beingEdited: ownProps.file._id && attachments.edit.attachment._id === ownProps.file._id,
-  };
-}
-
 function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     { deleteAttachment, renameAttachment, loadForm, submitForm, resetForm },
@@ -286,4 +279,12 @@ function mapDispatchToProps(dispatch, props) {
   );
 }
 
+export function mapStateToProps({ attachments }, ownProps) {
+  return {
+    model: 'attachments.edit.attachment',
+    beingEdited: ownProps.file._id && attachments.edit.attachment._id === ownProps.file._id,
+  };
+}
+
+export { Attachment };
 export default connect(mapStateToProps, mapDispatchToProps)(Attachment);
