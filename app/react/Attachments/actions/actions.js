@@ -7,6 +7,7 @@ import { updateEntity, selectSingleDocument } from 'app/Library/actions/libraryA
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as basicReducerActions } from 'app/BasicReducer';
+import { t } from 'app/I18N';
 
 import * as types from './actionTypes';
 
@@ -23,7 +24,7 @@ export function updateFile(file, entity) {
     dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
     dispatch(updateEntity(updatedEntity));
     await dispatch(selectSingleDocument(updatedEntity));
-    dispatch(notify('File updated', 'success'));
+    dispatch(notify(t('System', 'File updated', null, false), 'success'));
   };
 }
 
@@ -36,7 +37,7 @@ export function deleteFile(file, entity) {
     dispatch(basicReducerActions.set('viewer/doc', updatedEntity));
     dispatch(updateEntity(updatedEntity));
     await dispatch(selectSingleDocument(updatedEntity));
-    dispatch(notify('File deleted', 'success'));
+    dispatch(notify(t('System', 'File deleted', null, false), 'success'));
   };
 }
 
@@ -61,7 +62,7 @@ export function uploadAttachment(entity, file, storeKeys) {
           file: JSON.parse(result.text),
           __reducerKey: storeKeys.__reducerKey,
         });
-        dispatch(notify('Attachment uploaded', 'success'));
+        dispatch(notify(t('System', 'Attachment uploaded', null, false), 'success'));
       })
       .end();
   };
@@ -81,7 +82,7 @@ export function uploadAttachmentFromUrl(entity, formData, storeKeys) {
           file: newFile.json,
           __reducerKey: storeKeys.__reducerKey,
         });
-        dispatch(notify('Attachment uploaded', 'success'));
+        dispatch(notify(t('System', 'Attachment uploaded', null, false), 'success'));
       });
   };
 }
@@ -104,7 +105,7 @@ export function renameAttachment(entityId, form, __reducerKey, file) {
           __reducerKey,
         });
         dispatch(formActions.reset(form));
-        dispatch(notify('Attachment renamed', 'success'));
+        dispatch(notify(t('System', 'Attachment renamed', null, false), 'success'));
       });
 }
 
@@ -123,7 +124,7 @@ export function deleteAttachment(entitySharedId, attachment, __reducerKey) {
       __reducerKey,
     });
 
-    dispatch(notify('Attachment deleted', 'success'));
+    dispatch(notify(t('System', 'Attachment deleted', null, false), 'success'));
   };
 }
 

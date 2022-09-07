@@ -1,5 +1,6 @@
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from 'app/utils/RequestParams';
+import { t } from 'app/I18N';
 
 import { actions } from 'app/BasicReducer';
 import { editLink } from 'app/Settings/actions/uiActions';
@@ -52,7 +53,9 @@ export function saveLinks(data) {
       .then(response => {
         dispatch({ type: types.NAVLINKS_SAVED, data: response });
         dispatch(actions.set('settings/collection', response));
-        dispatch(notificationActions.notify('Saved successfully.', 'success'));
+        dispatch(
+          notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+        );
       })
       .catch(() => {
         dispatch({ type: types.NAVLINKS_SAVED, data });

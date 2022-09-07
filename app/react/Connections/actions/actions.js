@@ -4,6 +4,7 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/utils/api';
 import debounce from 'app/utils/debounce';
 import { RequestParams } from 'app/utils/RequestParams';
+import { t } from 'app/I18N';
 
 import * as types from './actionTypes';
 import * as uiActions from './uiActions';
@@ -90,7 +91,9 @@ export function saveConnection(connection, callback = () => {}) {
     return api.post('relationships/bulk', new RequestParams(apiCall)).then(response => {
       dispatch({ type: types.CONNECTION_CREATED });
       callback(response.json);
-      dispatch(notificationActions.notify('saved successfully !', 'success'));
+      dispatch(
+        notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+      );
     });
   };
 }

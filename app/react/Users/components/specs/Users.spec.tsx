@@ -149,7 +149,7 @@ describe('Users', () => {
         listComponent.props.handleSelect(users[1]);
         const updatedSidePanel = component.find(UserSidePanel).get(0);
         await updatedSidePanel.props.onResetPassword(users[1]);
-        expect(recoverPassword).toHaveBeenCalledWith(users[1].email, expect.any(String));
+        expect(recoverPassword).toHaveBeenCalledWith(users[1].email);
       });
     });
   });
