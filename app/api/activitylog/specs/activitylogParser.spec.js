@@ -60,7 +60,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'CREATE',
-              description: 'Created entity / document',
+              description: 'Created entity',
               name: 'New Entity',
               extra: 'of type Existing Template',
             }
@@ -77,7 +77,7 @@ describe('Activitylog Parser', () => {
           expect(semanticData).toEqual(
             expect.objectContaining({
               action: 'UPDATE',
-              description: 'Updated entity / document',
+              description: 'Updated entity',
               name: 'Existing Entity (m0asd0)',
             })
           );
@@ -120,7 +120,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Deleted entity / document',
+              description: 'Deleted entity',
               name: 'o9e07m5ni3h',
             }
           );
@@ -511,6 +511,21 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+
+        it('should beautify as UPDATE at reset translation of a language', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/translations/populate',
+              body: JSON.stringify({ locale: 'es' }),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Reset default translation',
+              extra: ' locale es ',
+            }
+          );
+        });
       });
       describe('method:DELETE /languages', () => {
         it('should beautify as DELETE with language name', async () => {
@@ -683,7 +698,7 @@ describe('Activitylog Parser', () => {
           },
           {
             action: 'DELETE',
-            description: 'Delete user',
+            description: 'Deleted user',
             name: 'userId',
           }
         );
@@ -896,6 +911,26 @@ describe('Activitylog Parser', () => {
           );
         });
       });
+
+      describe('POST /api/files/upload/custom', () => {
+        it('should beautify as CREATE', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/files/upload/custom',
+              body: JSON.stringify({
+                entity: 'customUpload_22di2ga9o5q',
+                originalname: 'file1.jpg',
+              }),
+            },
+            {
+              action: 'CREATE',
+              description: 'Uploaded custom file',
+              extra: ' originalname file1.jpg ',
+            }
+          );
+        });
+      });
     });
 
     describe('routes: /api/files', () => {
@@ -932,7 +967,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Delete file',
+              description: 'Deleted file',
               name: 'attach1',
             }
           );
@@ -1023,7 +1058,7 @@ describe('Activitylog Parser', () => {
             },
             {
               action: 'DELETE',
-              description: 'Delete user group',
+              description: 'Deleted user group',
               name: 'usergroupId',
             }
           );
@@ -1046,6 +1081,35 @@ describe('Activitylog Parser', () => {
             }
           );
         });
+      });
+    });
+
+    describe('routes: /api/auth2fa', () => {
+      it('should beautify as create enabling of 2fa', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/auth2fa-enable',
+            body: '{"token": "1234"}',
+          },
+          {
+            action: 'CREATE',
+            description: 'Two-factor authentication enabled',
+          }
+        );
+      });
+
+      it('should beautify as create setting 2fa secret', async () => {
+        await testBeautified(
+          {
+            method: 'POST',
+            url: '/api/auth2fa-secret',
+          },
+          {
+            action: 'CREATE',
+            description: 'Two-factor authentication secret',
+          }
+        );
       });
     });
 
