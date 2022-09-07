@@ -15,6 +15,12 @@ const fixtures = {
     { _id: factory.id('rel5'), from: 'entity4', to: 'entity1', type: factory.id('relType1') },
     { _id: factory.id('rel6'), from: 'entity5', to: 'entity1', type: factory.id('relType1') },
   ],
+  entities: [
+    factory.entity('entity1'),
+    factory.entity('entity2'),
+    factory.entity('entity4'),
+    factory.entity('entity5'),
+  ],
 };
 
 beforeEach(async () => {
@@ -36,13 +42,25 @@ describe('when getting the relationships for an entity', () => {
       data: [
         expect.objectContaining({
           _id: factory.id('rel1').toHexString(),
-          from: 'entity1',
-          to: 'entity2',
+          from: {
+            sharedId: 'entity1',
+            title: 'entity1',
+          },
+          to: {
+            sharedId: 'entity2',
+            title: 'entity2',
+          },
         }),
         expect.objectContaining({
           _id: factory.id('rel5').toHexString(),
-          from: 'entity4',
-          to: 'entity1',
+          from: {
+            sharedId: 'entity4',
+            title: 'entity4',
+          },
+          to: {
+            sharedId: 'entity1',
+            title: 'entity1',
+          },
         }),
       ],
       total: 3,
@@ -52,8 +70,14 @@ describe('when getting the relationships for an entity', () => {
       data: [
         expect.objectContaining({
           _id: factory.id('rel6').toHexString(),
-          from: 'entity5',
-          to: 'entity1',
+          from: {
+            sharedId: 'entity5',
+            title: 'entity5',
+          },
+          to: {
+            sharedId: 'entity1',
+            title: 'entity1',
+          },
         }),
       ],
       total: 3,
