@@ -36,7 +36,9 @@ exports[`ActivitylogRow should render the component when not beautified 1`] = `
         <span
           className="activitylog-extra"
         >
-          POST: /api/entities
+          <Connect(Translate)>
+            POST: /api/entities
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -96,12 +98,16 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-name"
         >
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -161,12 +167,16 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-name"
         >
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -226,12 +236,16 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-name"
         >
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -291,12 +305,16 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-name"
         >
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>
@@ -356,12 +374,16 @@ exports[`ActivitylogRow when beautified should render the componet for the diffe
         <span
           className="activitylog-name"
         >
-          name
+          <Connect(Translate)>
+            name
+          </Connect(Translate)>
         </span>
         <span
           className="activitylog-extra"
         >
-          extra
+          <Connect(Translate)>
+            extra
+          </Connect(Translate)>
         </span>
       </span>
     </DescriptionWrapper>

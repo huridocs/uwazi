@@ -1,6 +1,3 @@
-/* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emit-types to update.*/
-
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface ActivityLogEntryType {

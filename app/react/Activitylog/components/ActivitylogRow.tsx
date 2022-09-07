@@ -53,8 +53,16 @@ const ActivitylogRow = ({ entry }: { entry: IImmutable<ActivityLogEntryType> }) 
                 <Translate>{semanticData.description}</Translate>
               </span>
             )}
-            {semanticData.name && <span className="activitylog-name">{semanticData.name}</span>}
-            {semanticData.extra && <span className="activitylog-extra">{semanticData.extra}</span>}
+            {semanticData.name && (
+              <span className="activitylog-name">
+                <Translate>{semanticData.name}</Translate>
+              </span>
+            )}
+            {semanticData.extra && (
+              <span className="activitylog-extra">
+                <Translate>{semanticData.extra}</Translate>
+              </span>
+            )}
           </span>
         </DescriptionWrapper>
       </td>
