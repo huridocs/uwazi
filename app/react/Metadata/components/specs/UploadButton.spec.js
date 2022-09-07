@@ -86,6 +86,18 @@ describe('UploadButton', () => {
         expect(icon.length).toBe(1);
       });
     });
+
+    describe('when entity changes', () => {
+      it('should show the default status of the button instead of an error', () => {
+        render();
+        component.setState({ processing: false, failed: true, entitySharedId: 'sharedabc1' });
+        component.update();
+        expect(component.find(Icon).find('[icon="exclamation-triangle"]').length).toBe(1);
+        component.setState({ processing: false, failed: true, entitySharedId: 'sharedabc2' });
+        component.update();
+        expect(component.find(Icon).find('[icon="exclamation-triangle"]').length).toBe(0);
+      });
+    });
   });
 
   describe('onChange', () => {
