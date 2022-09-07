@@ -2,7 +2,7 @@ import { ClientSession, Db, ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
 import { Transactional } from '../services/Transactional';
 import { CountDocument, MongoResultSet } from './MongoResultSet';
-import { assignId, mapFromObjectIds, mapToObjectIds } from './dbMapper';
+import { mapFromObjectIds, mapToObjectIds } from './dbMapper';
 
 interface RelationshipDBO {
   _id: ObjectId;
@@ -12,7 +12,7 @@ interface RelationshipDBO {
 }
 
 interface RelationshipAggregatedResult {
-  _id: ObjectId;
+  _id: string;
   from: {
     sharedId: string;
     title: string;
@@ -21,7 +21,7 @@ interface RelationshipAggregatedResult {
     sharedId: string;
     title: string;
   };
-  type: ObjectId;
+  type: string;
 }
 export class RelationshipsDataSource implements Transactional<ClientSession> {
   private db: Db;
@@ -42,27 +42,28 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
 
   async insert(relationship: Relationship): Promise<Relationship> {
     const {
-      ops: [{ _id }],
-    } = await this.getCollection().insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
+      ops: [created],
+    } = (await this.getCollection().insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
       session: this.session,
-    });
+    })) as { ops: RelationshipDBO[] };
 
-    return mapFromObjectIds<RelationshipDBO, Relationship>(assignId(relationship, _id), ['_id']);
+    return mapFromObjectIds(created, ['_id', 'type']);
   }
 
   getByEntity(sharedId: string) {
-    const totalCursor = this.getCollection().aggregate<CountDocument>([
-      {
-        $match: {
-          $or: [{ from: sharedId }, { to: sharedId }],
-        },
+    const matchStage = {
+      $match: {
+        $or: [{ from: sharedId }, { to: sharedId }],
       },
+    };
+    const totalCursor = this.getCollection().aggregate<CountDocument>([
+      matchStage,
       {
         $count: 'total',
       },
     ]);
 
-    interface JoinedRelationship extends Omit<RelationshipDBO, 'from' | 'to'> {
+    interface JoinedRelationshipDBO extends Omit<RelationshipDBO, 'from' | 'to'> {
       from: {
         sharedId: string;
         title: string;
@@ -73,12 +74,8 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
       }[];
     }
 
-    const dataCursor = this.getCollection().aggregate<JoinedRelationship>([
-      {
-        $match: {
-          $or: [{ from: sharedId }, { to: sharedId }],
-        },
-      },
+    const dataCursor = this.getCollection().aggregate<JoinedRelationshipDBO>([
+      matchStage,
       {
         $lookup: {
           from: 'entities',
@@ -97,16 +94,23 @@ export class RelationshipsDataSource implements Transactional<ClientSession> {
       },
     ]);
 
-    return new MongoResultSet(dataCursor, totalCursor, relationship => ({
-      ...mapFromObjectIds<JoinedRelationship, RelationshipAggregatedResult>(relationship, ['_id']),
-      from: {
-        sharedId: relationship.from[0]?.sharedId,
-        title: relationship.from[0]?.title,
-      },
-      to: {
-        sharedId: relationship.to[0]?.sharedId,
-        title: relationship.to[0]?.title,
-      },
-    }));
+    return new MongoResultSet<JoinedRelationshipDBO, RelationshipAggregatedResult>(
+      dataCursor,
+      totalCursor,
+      relationship => {
+        const mapped = mapFromObjectIds(relationship, ['_id', 'type']);
+        return {
+          ...mapped,
+          from: {
+            sharedId: relationship.from[0]?.sharedId,
+            title: relationship.from[0]?.title,
+          },
+          to: {
+            sharedId: relationship.to[0]?.sharedId,
+            title: relationship.to[0]?.title,
+          },
+        };
+      }
+    );
   }
 }
