@@ -32,11 +32,31 @@ describe('when getting the relationships for an entity', () => {
     const page1 = await service.getByEntity('entity1').page(1, 2);
     const page2 = await service.getByEntity('entity1').page(2, 2);
 
-    expect(page1.data).toEqual([
-      expect.objectContaining({ _id: factory.id('rel1') }),
-      expect.objectContaining({ _id: factory.id('rel5') }),
-    ]);
+    expect(page1).toEqual({
+      data: [
+        expect.objectContaining({
+          _id: factory.id('rel1').toHexString(),
+          from: 'entity1',
+          to: 'entity2',
+        }),
+        expect.objectContaining({
+          _id: factory.id('rel5').toHexString(),
+          from: 'entity4',
+          to: 'entity1',
+        }),
+      ],
+      total: 3,
+    });
 
-    expect(page2.data).toEqual([expect.objectContaining({ _id: factory.id('rel6') })]);
+    expect(page2).toEqual({
+      data: [
+        expect.objectContaining({
+          _id: factory.id('rel6').toHexString(),
+          from: 'entity5',
+          to: 'entity1',
+        }),
+      ],
+      total: 3,
+    });
   });
 });
