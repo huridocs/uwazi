@@ -7,22 +7,15 @@ import { Translate } from 'app/I18N';
 import { TableRows } from 'app/Layout/TableRows';
 import { CollectionViewerProps } from './CollectionViewerProps';
 
-export interface TableViewerProps extends CollectionViewerProps {
+interface TableViewerProps extends CollectionViewerProps {
   columns: TableViewColumn[];
 }
 
 class TableViewerComponent extends Component<TableViewerProps> {
-  handleScroll = (e: { target: any }) => {
-    const element = e.target;
-    if (element.scrollHeight - element.scrollTop === element.clientHeight) {
-      this.props.loadNextGroupOfEntities();
-    }
-  };
-
   render() {
     const columns = this.props.columns.filter((c: TableViewColumn) => !c.hidden);
     return (
-      <div className="tableview-wrapper" onScroll={this.handleScroll}>
+      <div className="tableview-wrapper">
         <table>
           <thead>
             <tr>
@@ -44,17 +37,20 @@ class TableViewerComponent extends Component<TableViewerProps> {
           </tbody>
         </table>
       </div>
-    );
+      );
   }
 }
 
 const getTableViewColumnsSelector = (state: EntityDisplayState) => state.ui.get('tableViewColumns');
-export const selectTableViewColumns = createSelector(getTableViewColumnsSelector, columns =>
+const selectTableViewColumns = createSelector(getTableViewColumnsSelector, columns =>
   columns?.toJS()
 );
 
 const mapStateToProps = (state: IStore, props: TableViewerProps) => ({
   columns: selectTableViewColumns(state[props.storeKey]),
 });
+
+export { selectTableViewColumns };
+export type { TableViewerProps };
 
 export const TableViewer = connect(mapStateToProps)(TableViewerComponent);
