@@ -16,6 +16,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
       },
       Object {
         "_id": "3",
+        "defaultfilter": true,
         "name": "date",
         "type": "date",
       },

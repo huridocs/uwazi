@@ -95,6 +95,9 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
 
 export const prepareDefaultFilters = fields =>
   fields.map(field => {
+    if (!field.options) {
+      return field;
+    }
     if (!field.defaultfilter) {
       return field;
     }

@@ -16,7 +16,7 @@ describe('FiltersForm', () => {
       fields: Immutable([
         { _id: '1', name: 'name' },
         { _id: '2', name: 'name', type: 'numeric' },
-        { _id: '3', name: 'date', type: 'date' },
+        { _id: '3', name: 'date', type: 'date', defaultfilter: true },
         { _id: '4', name: 'nested', type: 'nested' },
         {
           _id: '5',
