@@ -7,7 +7,7 @@ describe('migration reindex_if_topic_classification_active', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(105);
+    expect(migration.delta).toBe(106);
   });
 
   describe('when entities do not have suggestedMetadata', () => {

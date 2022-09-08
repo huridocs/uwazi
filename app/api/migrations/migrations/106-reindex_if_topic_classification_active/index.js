@@ -1,5 +1,5 @@
 export default {
-  delta: 105,
+  delta: 106,
 
   name: 'reindex_if_topic_classification_active',
 

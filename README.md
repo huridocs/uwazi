@@ -22,7 +22,7 @@ Read the [user guide](https://uwazi.readthedocs.io/en/latest/)
 
 Before anything else you will need to install the application dependencies:
 
-- **NodeJs 14.18.3** For ease of update, use nvm: https://github.com/creationix/nvm.
+- **NodeJs >= 16.17.0** For ease of update, use nvm: https://github.com/creationix/nvm.
 - **ElasticSearch 7.10.0** https://www.elastic.co/downloads/past-releases/elasticsearch-7-10-0 Please note that ElasticSearch requires java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
 - **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
@@ -83,6 +83,14 @@ There may be an issue with pngquant not running correctly. If you encounter this
 $ sudo rm -rf node_modules
 $ sudo apt-get install libpng-dev
 $ yarn install
+```
+
+### Docker
+
+Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin, MongoDB, Redis and Minio (S3 storage) can be installed via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
+
+```shell
+$ docker-compose up -d
 ```
 
 ### Development Run
@@ -150,18 +158,8 @@ $ yarn e2e-puppeteer
 
 Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in a the same port at the same time.
 
-E2E Tests depend on electron. If something appears to not be working, please run `node_modules/electron/dist/electron --help` to check for problems.
-
 ### Default login
 
 The application's default log in is admin / change this password now
 
 Note the subtle nudge ;)
-
-# Docker
-
-Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin and MongoDB) can be installed via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
-
-```shell
-$ docker-compose up -d
-```
