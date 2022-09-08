@@ -95,6 +95,15 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
   });
 }
 
+export const prepareDefaultFilters = fields =>
+  fields.map(field => {
+    if (!field.defaultfilter) {
+      return field;
+    }
+    const filteredOptions = field.options.filter(option => option.id !== 'missing');
+    return { ...field, options: filteredOptions };
+  });
+
 export default {
   URLQueryToState,
   populateOptions,

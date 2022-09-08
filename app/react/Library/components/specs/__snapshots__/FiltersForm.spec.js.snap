@@ -27,6 +27,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
       Object {
         "_id": "5",
         "content": "thesauri1",
+        "defaultfilter": true,
         "name": "select",
         "options": Array [
           Object {
@@ -91,7 +92,7 @@ exports[`FiltersForm render() should render diferent type fileds 1`] = `
             "value": "c",
           },
         ],
-        "totalPossibleOptions": 11,
+        "totalPossibleOptions": 3,
         "type": "multiselect",
       },
     ]
