@@ -12,6 +12,8 @@ import { pipeline } from 'stream/promises';
 import { ContentsClient, GithubFileNotFound } from 'api/i18n/contentsClient';
 import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
+import { errorLog } from 'api/log';
+import { prettifyError } from 'api/utils/handleError';
 
 export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
@@ -424,10 +426,12 @@ export default {
 
   async availableLanguages() {
     const contentsClient = new ContentsClient();
+    let languagesWithTranslations: string[] = [];
     try {
-      const languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+      languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
     } catch (e) {
-      return [];
+      errorLog.error(prettifyError(e));
+      return availableLanguages;
     }
     return availableLanguages.map(language => ({
       ...language,
