@@ -6,6 +6,7 @@ import { actions } from 'app/BasicReducer';
 import { RequestParams } from 'app/utils/RequestParams';
 import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
+import { t } from 'app/I18N';
 import * as types from 'app/Pages/actions/actionTypes';
 
 import { PageType } from 'shared/types/pageType';
@@ -36,7 +37,9 @@ export function savePage(data: PageType) {
     return api
       .save(new RequestParams(data))
       .then((response: PageType & { _rev: any }) => {
-        dispatch(notificationActions.notify('Saved successfully.', 'success'));
+        dispatch(
+          notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+        );
         dispatch(
           formActions.merge('page.data', {
             _id: response._id,

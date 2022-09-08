@@ -146,6 +146,7 @@ export default (app: Application) => {
 
     validation.validateRequest(
       Joi.object({
+        _id: Joi.string(),
         file: Joi.string().required(),
       }).required(),
       'query'

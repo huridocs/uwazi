@@ -155,6 +155,8 @@ describe('i18n translations routes', () => {
         const spanishCsv = `Key,Spanish
       Search,Buscar traducida`;
 
+        config.githubToken = 'gh_token';
+
         backend.get(
           (url, opts) =>
             url ===

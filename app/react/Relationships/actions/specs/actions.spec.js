@@ -168,7 +168,7 @@ describe('Relationships actions', () => {
           type: 'NOTIFY',
           notification: {
             id: 'unique_id',
-            message: 'a short title added to hub. Save your work to make change permanent.',
+            message: 'a short title added to hub.\nSave your work to make change permanent.',
             type: 'success',
           },
         },
@@ -184,7 +184,7 @@ describe('Relationships actions', () => {
           notification: {
             id: 'unique_id',
             message:
-              'a short title added to hub with the following errors: ["some errors"]. Save your work to make change permanent.',
+              'a short title added to hub with the following errors: ["some errors"].\nSave your work to make change permanent.',
             type: 'warning',
           },
         },

@@ -230,7 +230,7 @@ describe('Connections actions', () => {
           expect(callback).toHaveBeenCalledWith('bulkResponse(ArrayOfTwo)');
           expect(store.getActions()).toContainEqual({
             type: notificationsTypes.NOTIFY,
-            notification: { message: 'saved successfully !', type: 'success', id: 'unique_id' },
+            notification: { message: 'Saved successfully.', type: 'success', id: 'unique_id' },
           });
           done();
         })

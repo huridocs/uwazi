@@ -7,6 +7,7 @@ import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import entitiesApi from 'app/Entities/EntitiesAPI';
+import { t } from 'app/I18N';
 import templateCommonProperties from '../utils/templateCommonProperties';
 
 export const prepareTemplate = template => {
@@ -130,7 +131,9 @@ export function saveTemplate(data) {
         dispatch({ type: types.TEMPLATE_SAVED, data: template });
         dispatch(actions.update('templates', template));
         dispatch(formActions.merge('template.data', template));
-        dispatch(notificationActions.notify('Saved successfully.', 'success'));
+        dispatch(
+          notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+        );
       })
       .catch(e => {
         dispatch({ type: types.TEMPLATE_SAVED, data });

@@ -12,7 +12,6 @@ import { UserSidePanel } from 'app/Users/components/UserSidePanel';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
-import { t } from 'app/I18N';
 
 interface UserProps {
   users: IImmutable<UserSchema[]>;
@@ -23,7 +22,7 @@ interface UserProps {
   saveUser: (user: UserSchema) => Promise<void>;
   deleteUser: (user: { _id: ObjectIdSchema }) => Promise<void>;
   reset2fa: (user: UserSchema) => Promise<void>;
-  recoverPassword: (email: string, message: string) => Promise<void>;
+  recoverPassword: (email: string) => Promise<void>;
 }
 const UsersComponent = ({
   users,
@@ -91,10 +90,7 @@ const UsersComponent = ({
     },
 
     handleResetPassword: async (user: UserSchema) => {
-      await resetUserPassword(
-        user.email,
-        t('System', 'Instructions to reset user password have been sent', null, false)
-      );
+      await resetUserPassword(user.email);
     },
   };
 

@@ -26,7 +26,7 @@ import {
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  Languages,
+  LanguageList,
   NavlinksSettings,
   RelationTypesList,
   Settings,
@@ -164,7 +164,7 @@ const routes = (
         <Route path="edit/:_id" component={EditThesauri} />
         <Route path="cockpit/:_id" component={ThesaurusCockpit} />
       </Route>
-      <Route path="languages" component={Languages} />
+      <Route path="languages" component={LanguageList} />
       <Route path="translations">
         <IndexRoute component={TranslationsList} />
         <Route path="edit/:context" component={EditTranslations} />

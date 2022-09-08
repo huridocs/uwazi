@@ -3,6 +3,7 @@ import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
 import { browserHistory } from 'react-router';
+import { t } from 'app/I18N';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';
 import { actions } from 'app/BasicReducer';
@@ -295,7 +296,7 @@ function searchSnippets(searchString, sharedId, storeKey) {
 function saveDocument(doc, formKey) {
   return async dispatch => {
     const updatedDoc = await documentsApi.save(new RequestParams(doc));
-    dispatch(notificationActions.notify('Document updated', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Entity updated', null, false), 'success'));
     dispatch(formActions.reset(formKey));
     dispatch(updateEntity(updatedDoc));
     dispatch(actions.updateIn('library.markers', ['rows'], updatedDoc));
@@ -307,11 +308,12 @@ function multipleUpdate(entities, values) {
   return async dispatch => {
     const ids = entities.map(entity => entity.get('sharedId')).toJS();
     const updatedDocs = await entitiesAPI.multipleUpdate(new RequestParams({ ids, values }));
-    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Update success', null, false), 'success'));
     dispatch(updateEntities(updatedDocs));
   };
 }
 
+//
 function saveEntity(entity, formModel) {
   // eslint-disable-next-line max-statements
   return async dispatch => {
@@ -331,7 +333,10 @@ function saveEntity(entity, formModel) {
     if (errors.length) {
       message = `${message} with the following errors: ${JSON.stringify(errors, null, 2)}`;
     }
-    await dispatch(notificationActions.notify(message, errors.length ? 'warning' : 'success'));
+    const notificationMessage = t('System', message, null, false);
+    await dispatch(
+      notificationActions.notify(notificationMessage, errors.length ? 'warning' : 'success')
+    );
     await dispatch(selectSingleDocument(updatedDoc));
   };
 }
@@ -347,7 +352,7 @@ function removeDocuments(docs) {
 function deleteDocument(doc) {
   return async dispatch => {
     await documentsApi.delete(new RequestParams({ sharedId: doc.sharedId }));
-    dispatch(notificationActions.notify('Document deleted', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocument(doc));
   };
@@ -356,7 +361,7 @@ function deleteDocument(doc) {
 function deleteEntity(entity) {
   return async dispatch => {
     await entitiesAPI.delete(entity);
-    dispatch(notificationActions.notify('Entity deleted', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     await dispatch(unselectDocument(entity._id));
     dispatch(removeDocument(entity));
   };
