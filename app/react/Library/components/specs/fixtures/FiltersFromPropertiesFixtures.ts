@@ -18,7 +18,7 @@ const defaultProperties = [
     name: 'selectFilter',
     label: 'selectLabel',
     type: 'select',
-    options: [{ label: 'option1' }],
+    options: [{ label: 'option1' }, { id: 'missing', label: 'missing' }],
   },
   {
     content: 'aContent',

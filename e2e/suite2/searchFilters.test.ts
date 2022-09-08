@@ -251,7 +251,7 @@ describe('search filters path', () => {
 
       await expect(page).toMatchElement(
         'li.multiselectItem:nth-child(25) > label:nth-child(2) > span',
-        { text: 'No label' }
+        { text: 'No Label' }
       );
 
       await expect(page).toMatchElement(

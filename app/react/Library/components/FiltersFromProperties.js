@@ -21,7 +21,10 @@ const prepareOptions = property => {
   return filteredProperty.options.map(option => {
     const finalTranslatedOption = {
       ...option,
-      label: t(filteredProperty.content, option.label, undefined, false),
+      label:
+        option.id === 'missing'
+          ? t('System', 'No Label', undefined, false)
+          : t(filteredProperty.content, option.label, undefined, false),
     };
 
     if (option.options) {

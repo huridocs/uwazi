@@ -78,12 +78,16 @@ Array [
         Object {
           "label": "option1",
         },
+        Object {
+          "id": "missing",
+          "label": "No Label",
+        },
       ]
     }
     prefix="selectFilter"
     showBoolSwitch={false}
     sort={false}
-    totalPossibleOptions={1}
+    totalPossibleOptions={2}
   />,
   <SelectFilter
     allowSelectGroup={true}
