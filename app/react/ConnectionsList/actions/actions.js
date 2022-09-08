@@ -34,12 +34,13 @@ export function searchReferences() {
 export function connectionsChanged(sharedId) {
   return (dispatch, getState) => {
     const relationshipsList = getState().relationships.list;
-    if (!sharedId) {
-      sharedId = relationshipsList.sharedId;
+    let innerSharedId = sharedId;
+    if (!innerSharedId) {
+      innerSharedId = relationshipsList.sharedId;
     }
 
     return referencesAPI
-      .getGroupedByConnection(new RequestParams({ sharedId }))
+      .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
       .then(connectionsGroups => {
         const filteredTemplates = connectionsGroups.reduce(
           (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),

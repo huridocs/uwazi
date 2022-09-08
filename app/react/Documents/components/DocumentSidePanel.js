@@ -25,11 +25,11 @@ import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
+import { getDocumentReferences } from 'app/Library/actions/libraryActions';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
-import { getDocumentReferences } from 'app/Library/actions/libraryActions';
 
 class DocumentSidePanel extends Component {
   constructor(props) {
