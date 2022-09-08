@@ -39,25 +39,4 @@ describe('TableViewer', () => {
       expect(header.at(1).find(Translate).props().children).toBe('Country');
     });
   });
-
-  describe('infinite scroll', () => {
-    render();
-
-    it('should call onEndScroll if scrolling reach the end of content', () => {
-      const tableWrapper = component.find('.tableview-wrapper').at(0);
-      tableWrapper
-        .props()
-        .onScroll({ target: { scrollHeight: 1204, scrollTop: 406, clientHeight: 798 } });
-      expect(loadNextGroupOfEntities).toHaveBeenCalled();
-    });
-
-    it('should shoud not call onEndScroll if scrolling do not reach the end of content', () => {
-      loadNextGroupOfEntities.calls.reset();
-      const tableWrapper = component.find('.tableview-wrapper').at(0);
-      tableWrapper
-        .props()
-        .onScroll({ target: { scrollHeight: 100, scrollTop: 50, clientHeight: 100 } });
-      expect(loadNextGroupOfEntities).not.toBeCalled();
-    });
-  });
 });
