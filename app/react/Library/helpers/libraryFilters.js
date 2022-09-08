@@ -87,8 +87,6 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
       property.options = propertyAggregations.buckets
         .map(normalizeBucket)
         .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
-
-      property.totalPossibleOptions = propertyAggregations.count;
     }
 
     return property;

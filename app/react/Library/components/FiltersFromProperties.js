@@ -35,7 +35,7 @@ const prepareOptions = property => {
   });
 };
 
-export const FiltersFromProperties = ({
+const FiltersFromProperties = ({
   onChange,
   properties,
   translationContext,
@@ -58,38 +58,43 @@ export const FiltersFromProperties = ({
 
       let filter = <TextFilter {...commonProps} />;
 
-      if (type === 'numeric') {
-        filter = <NumberRangeFilter {...commonProps} />;
-      }
+      switch (type) {
+        case 'numeric':
+          filter = <NumberRangeFilter {...commonProps} />;
+          break;
 
-      if (['select', 'multiselect', 'relationship'].includes(type)) {
-        filter = (
-          <SelectFilter
-            {...commonProps}
-            lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
-            options={propertyOptions}
-            prefix={property.name}
-            showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
-            sort={property.type === 'relationship'}
-            totalPossibleOptions={property.totalPossibleOptions}
-            allowSelectGroup
-          />
-        );
-      }
+        case 'select':
+        case 'multiselect':
+        case 'relationship':
+          filter = (
+            <SelectFilter
+              {...commonProps}
+              lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+              options={propertyOptions}
+              prefix={property.name}
+              showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+              sort={property.type === 'relationship'}
+              totalPossibleOptions={propertyOptions.length}
+              allowSelectGroup
+            />
+          );
+          break;
 
-      if (type === 'nested') {
-        filter = (
-          <NestedFilter {...commonProps} property={property} aggregations={props.aggregations} />
-        );
-      }
+        case 'nested':
+          filter = (
+            <NestedFilter {...commonProps} property={property} aggregations={props.aggregations} />
+          );
+          break;
 
-      if (
-        type === 'date' ||
-        type === 'multidate' ||
-        type === 'multidaterange' ||
-        type === 'daterange'
-      ) {
-        filter = <DateFilter {...commonProps} format={props.dateFormat} />;
+        case 'date':
+        case 'multidate':
+        case 'multidaterange':
+        case 'daterange':
+          filter = <DateFilter {...commonProps} format={props.dateFormat} />;
+          break;
+
+        default:
+          break;
       }
 
       return <FormGroup key={property.name}>{filter}</FormGroup>;
@@ -124,4 +129,5 @@ export function mapStateToProps(state, props) {
   };
 }
 
+export { FiltersFromProperties };
 export default connect(mapStateToProps)(FiltersFromProperties);

@@ -83,7 +83,7 @@ Array [
     prefix="selectFilter"
     showBoolSwitch={false}
     sort={false}
-    totalPossibleOptions={0}
+    totalPossibleOptions={1}
   />,
   <SelectFilter
     allowSelectGroup={true}
@@ -101,7 +101,7 @@ Array [
     prefix="multiselectFilter"
     showBoolSwitch={true}
     sort={false}
-    totalPossibleOptions={0}
+    totalPossibleOptions={1}
   />,
   <SelectFilter
     allowSelectGroup={true}
@@ -119,7 +119,7 @@ Array [
     prefix="relationshipFilter"
     showBoolSwitch={true}
     sort={true}
-    totalPossibleOptions={0}
+    totalPossibleOptions={1}
   />,
 ]
 `;
