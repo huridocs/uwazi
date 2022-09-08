@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
 /*eslint max-nested-callbacks: ["error", 10]*/
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { adminLogin, logout } from '../helpers/login';
 import disableTransitions from '../helpers/disableTransitions';
+import { host } from '../config';
 
 const getAllEntitiesTitles = async (number: number) => {
   await page.$$('div.main-wrapper > div.item-group > div.item-document');
@@ -185,6 +187,77 @@ describe('search filters path', () => {
         'El Salvador',
         'Peru',
       ]);
+    });
+  });
+
+  describe('default filters', () => {
+    it('should define Fecha and País as default filters', async () => {
+      await expect(page).toClick('a', { text: 'Settings' });
+      await expect(page).toClick('a', { text: 'Templates' });
+      await expect(page).toClick('a', { text: 'Informe de admisibilidad' });
+
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(3) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toClick('.inline-group > div:nth-child(1) > label:nth-child(1) > span', {
+        text: 'Use as filter',
+      });
+      await expect(page).toClick('.inline-group > div:nth-child(2) > label:nth-child(1) > span', {
+        text: 'Default filter',
+      });
+
+      await expect(page).toClick(
+        '.metadataTemplate-list > li:nth-child(4) > div:nth-child(1) > div:nth-child(2) > button',
+        { text: 'Edit' }
+      );
+      await expect(page).toClick('.inline-group > div:nth-child(2) > label:nth-child(1) > span', {
+        text: 'Default filter',
+      });
+
+      await expect(page).toClick('.btn-success', { text: 'Save' });
+      await expect(page).toClick('.alert.alert-success');
+    });
+
+    it('should check that the filter show on the library', async () => {
+      await page.goto(host);
+      await disableTransitions();
+
+      await expect(page).toMatchElement(
+        '#filtersForm > div:nth-child(3) > ul:nth-child(1) > li:nth-child(1) > label:nth-child(1) > span',
+        { text: 'Fecha' }
+      );
+
+      await expect(page).toMatchElement(
+        'div.form-group:nth-child(4) > ul:nth-child(1) > li:nth-child(1) > span',
+        { text: 'País' }
+      );
+    });
+
+    it('should not display the No Label option for País', async () => {
+      await expect(page).toClick('li.multiselectActions:nth-child(7) > button', {
+        text: '19 more',
+      });
+
+      await expect(page).toMatchElement('li.multiselectItem', { text: 'Venezuela' });
+      await expect(page).not.toMatchElement('li.multiselectItem', { text: 'No Label' });
+    });
+
+    it('should display the No Label option with the correct aggregation when filtering by template', async () => {
+      await expect(page).toClick(
+        'li.wide:nth-child(1) > ul:nth-child(1) > li:nth-child(10) > label:nth-child(2) > span:nth-child(2) > span',
+        { text: 'Juez y/o Comisionado' }
+      );
+
+      await expect(page).toMatchElement(
+        'li.multiselectItem:nth-child(25) > label:nth-child(2) > span',
+        { text: 'No label' }
+      );
+
+      await expect(page).toMatchElement(
+        'li.multiselectItem:nth-child(25) > label:nth-child(2) > span:nth-child(3) > span',
+        { text: '15' }
+      );
     });
   });
 });
