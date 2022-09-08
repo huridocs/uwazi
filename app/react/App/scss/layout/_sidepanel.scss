@@ -5,6 +5,7 @@
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
+
 .side-panel {
   z-index: 4;
   display: flex;
@@ -241,12 +242,12 @@ $c-sidebar: $c-white;
     height: 100%;
 
     .sticky {
+      padding-top: 46px;
       .sidepanel-relationship {
-        padding-top: 46px;
         .sidepanel-relationship-left-label {
           position: fixed;
           top: 0;
-          z-index: 10;
+          z-index: 1;
           width: 100%;
           color: blue;
         }
@@ -286,6 +287,8 @@ $c-sidebar: $c-white;
           }
           .content {
             .sidepanel-relationship-right-entity {
+              cursor: pointer;
+              height: 100%;
               margin-bottom: 7px;
               border: 1px solid #d7d7dc;
               box-sizing: border-box;

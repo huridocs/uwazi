@@ -7,6 +7,7 @@ import { Icon } from 'app/UI';
 import { Item } from 'app/Layout';
 import { Collapsible } from 'app/App/Collapsible';
 import { StickyHeader } from 'app/App/StickyHeader';
+import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {
@@ -27,6 +28,7 @@ function mapStateToProps(state: any) {
 function mapDispatchToProps(dispatch: any) {
   return bindActionCreators(
     {
+      selectConnection: actions.selectConnection,
       parseResults: actions.parseResults,
     },
     dispatch
@@ -40,6 +42,7 @@ type ComponentProps = ConnectedProps<typeof connector> & LibraryViewRelationship
 const createRightRelationshipGroups = (
   rightRelationships: any,
   relationTypes: any[],
+  selectConnection: Function,
   expanded: boolean
 ) => (
   <div className="sidepanel-relationship-right">
@@ -66,7 +69,11 @@ const createRightRelationshipGroups = (
         >
           <>
             {entityRelationships.map((rel: any, entityRelationshipsIndex: number) => (
-              <div className="sidepanel-relationship-right-entity" key={entityRelationshipsIndex}>
+              <div
+                className="sidepanel-relationship-right-entity"
+                key={entityRelationshipsIndex}
+                onClick={() => selectConnection(rel.get('entityData'))}
+              >
                 <Item
                   active={false}
                   doc={rel.get('entityData')}
@@ -82,20 +89,32 @@ const createRightRelationshipGroups = (
   </div>
 );
 
-const createLabelGroups = (hub: any, relationTypes: any[], expanded: boolean, index: number) => {
+const createLabelGroups = (
+  hub: any,
+  relationTypes: any[],
+  selectConnection: Function,
+  expanded: boolean,
+  index: number
+) => {
   const template = hub.getIn(['leftRelationship', 'template']);
   return (
-    <StickyHeader scrollElementSelector=".scrollable">
-      {({ style }: { style: any }) => (
-        <div className="sidepanel-relationship" key={index}>
-          {template && (
-            <span className="sidepanel-relationship-left-label" style={style}>
-              {`${relationTypes.find(r => r._id === template).name}(Label)`}
-            </span>
-          )}
-          {createRightRelationshipGroups(hub.get('rightRelationships'), relationTypes, expanded)}
-        </div>
-      )}
+    <StickyHeader
+      scrollElementSelector=".scrollable"
+      stickyElementSelector=".sidepanel-relationship-left-label"
+    >
+      <div className="sidepanel-relationship" key={index}>
+        {template && (
+          <span className="sidepanel-relationship-left-label">
+            {`${relationTypes.find(r => r._id === template).name}`}
+          </span>
+        )}
+        {createRightRelationshipGroups(
+          hub.get('rightRelationships'),
+          relationTypes,
+          selectConnection,
+          expanded
+        )}
+      </div>
     </StickyHeader>
   );
 };
@@ -107,6 +126,7 @@ const LibraryViewRelationshipsComp = ({
   parseResults,
   relationTypes,
   expanded,
+  selectConnection,
 }: ComponentProps) => {
   useEffect(() => {
     if (parentEntity) {
@@ -114,15 +134,19 @@ const LibraryViewRelationshipsComp = ({
     }
   }, [searchResults, parentEntity]);
   return (
-    <div className="sidepanel-relationships">
-      {hubs.map((hub: any, index: number) =>
-        createLabelGroups(hub, relationTypes, expanded, index)
-      )}
-    </div>
+    <>
+      <div className="sidepanel-relationships">
+        {hubs.map((hub: any, index: number) =>
+          createLabelGroups(hub, relationTypes, selectConnection, expanded, index)
+        )}
+      </div>
+      <RelationshipMetadata />
+    </>
   );
 };
 
 LibraryViewRelationshipsComp.propTypes = {
+  selectConnection: PropTypes.func.isRequired,
   parentEntity: PropTypes.instanceOf(Map),
   hubs: PropTypes.instanceOf(List).isRequired,
   searchResults: PropTypes.instanceOf(Map).isRequired,

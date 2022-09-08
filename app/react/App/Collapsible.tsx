@@ -15,8 +15,8 @@ const Collapsible = ({ header, children, className, headerInfo, collapse }: Coll
     setCollapsed(collapse);
   }, [collapse]);
   return (
-    <div className={className} onClick={() => setCollapsed(!collapsed)}>
-      <div className="header">
+    <div className={className}>
+      <div className="header" onClick={() => setCollapsed(!collapsed)}>
         <span className="header-icon">
           <Icon icon={collapsed ? 'caret-right' : 'caret-down'} />
         </span>
