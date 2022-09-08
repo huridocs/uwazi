@@ -6,7 +6,6 @@ import i18nRoutes from 'api/i18n/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
-import { availableLanguages } from 'shared/languagesList';
 import backend from 'fetch-mock';
 import { config } from 'api/config';
 import { LanguageSchema } from 'shared/types/commonTypes';
