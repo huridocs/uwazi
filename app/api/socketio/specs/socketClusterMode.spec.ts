@@ -5,7 +5,6 @@ import io from 'socket.io-client';
 import { multitenantMiddleware } from 'api/utils/multitenantMiddleware';
 import { tenants, Tenant } from 'api/tenants/tenantContext';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { RedisServer } from 'api/services/tasksmanager/RedisServer';
 import { config } from 'api/config';
 import waitForExpect from 'wait-for-expect';
 
@@ -39,12 +38,9 @@ const connectSocket = async (
     });
   });
 
-let redisServer: RedisServer;
 let server: Server;
 
 const createServer = async (app: Application, port: number) => {
-  redisServer = new RedisServer();
-  redisServer.start();
   server = new Server(app);
   await new Promise<void>(resolve => {
     server.listen(port, resolve);
@@ -88,7 +84,6 @@ describe('socket middlewares setup', () => {
     socket4TenantDefault.disconnect();
 
     await closeServer(server);
-    await redisServer.stop();
   });
 
   const captureEvents = (eventName: string = 'eventName') => {
