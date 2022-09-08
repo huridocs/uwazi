@@ -31,6 +31,7 @@ describe('Collapsible', () => {
   it('should hide children when clicked', () => {
     const mountComp = render();
     mountComp.simulate('click');
+    mountComp.find('.header').simulate('click');
     expect(mountComp.contains(<div id="test" />)).toBe(false);
   });
 
