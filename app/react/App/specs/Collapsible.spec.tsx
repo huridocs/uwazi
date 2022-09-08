@@ -14,7 +14,7 @@ describe('Collapsible', () => {
   const middlewares = [thunk];
   const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
 
-  const render = (props = {}) =>
+  const render = (props = { collapse: false }) =>
     mount(
       <Provider store={mockStoreCreator({})}>
         <Collapsible header="Some header" collapse={props.collapse}>
