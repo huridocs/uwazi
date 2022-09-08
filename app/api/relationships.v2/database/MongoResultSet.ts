@@ -43,5 +43,9 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return { total, data };
   }
 
+  async all() {
+    return this.mongoCursor.toArray();
+  }
+
   static NoOpMapper = <V>(item: V) => item;
 }

@@ -2,6 +2,7 @@ import { EntitiesDataSource } from '../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
 import { RelationshipTypesDataSource } from '../database/RelationshipTypesDataSource';
 import { Relationship } from '../model/Relationship';
+import { AuthorizationService } from './AuthorizationService';
 import { IdGenerator } from './IdGenerator';
 import { TransactionManager } from './TransactionManager';
 
@@ -16,22 +17,28 @@ export class CreateRelationshipService {
 
   private generateId: IdGenerator;
 
+  private authService: AuthorizationService;
+
   // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
     relationshipTypesDS: RelationshipTypesDataSource,
     entitiesDS: EntitiesDataSource,
     transactionManager: TransactionManager,
-    generateId: IdGenerator
+    generateId: IdGenerator,
+    authService: AuthorizationService
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
     this.entitiesDS = entitiesDS;
     this.transactionManager = transactionManager;
     this.generateId = generateId;
+    this.authService = authService;
   }
 
   async create(from: string, to: string, type: string) {
+    await this.authService.validateAccess('write', [from, to]);
+
     return this.transactionManager.run(
       async (entitiesDS, relationshipsDS, relationshipTypesDS) => {
         if (from === to) {

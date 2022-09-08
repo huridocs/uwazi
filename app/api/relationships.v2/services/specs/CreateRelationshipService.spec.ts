@@ -9,13 +9,18 @@ import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTran
 import { ObjectId } from 'mongodb';
 import { RelationshipTypesDataSource } from 'api/relationships.v2/database/RelationshipTypesDataSource';
 import { generateId } from 'api/relationships.v2/database/MongoIdGenerator';
+import { User } from 'api/relationships.v2/model/User';
+import { PermissionsDataSource } from 'api/relationships.v2/database/PermissionsDataSource';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
+import { AuthorizationService } from '../AuthorizationService';
 
 const factory = getFixturesFactory();
 
 const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
+
+const mockUser = new User(generateId(), 'admin');
 
 const fixtures = {
   entities: [factory.entity('entity1', 'template1'), factory.entity('entity2', 'template1')],
@@ -44,7 +49,8 @@ describe('When the entities exist', () => {
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient()),
-      generateId
+      generateId,
+      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
     );
     const relationship = await service.create(
       'entity1',
@@ -67,7 +73,8 @@ describe('When the entities exist', () => {
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient()),
-      generateId
+      generateId,
+      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
     );
     await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
 
@@ -92,7 +99,8 @@ describe('When an entity does not exist', () => {
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient()),
-      generateId
+      generateId,
+      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
     );
     try {
       await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
@@ -111,7 +119,8 @@ describe('When trying to create a self-referencing relationship', () => {
       new RelationshipTypesDataSource(connection),
       new EntitiesDataSource(connection),
       new MongoTransactionManager(getClient()),
-      generateId
+      generateId,
+      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
     );
     try {
       await service.create('entity1', 'entity1', factory.id('rel1').toHexString());
