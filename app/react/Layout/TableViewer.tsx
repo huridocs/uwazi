@@ -37,7 +37,7 @@ class TableViewerComponent extends Component<TableViewerProps> {
           </tbody>
         </table>
       </div>
-      );
+    );
   }
 }
 
