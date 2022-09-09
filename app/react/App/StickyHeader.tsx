@@ -6,17 +6,29 @@ interface StickyHeaderProps {
   stickyElementSelector: string;
 }
 
+const getMeasurements = (target: HTMLElement, current: HTMLElement) => {
+  const parentTop = target.getBoundingClientRect().top;
+  const scrollerTop = target.scrollTop;
+  const stickyTop = current.offsetTop || 0;
+  const stickyBottom = stickyTop + current.offsetHeight;
+  return {
+    scrollerTop,
+    stickyTop,
+    stickyBottom,
+    parentTop,
+  };
+};
+
 // eslint-disable-next-line max-statements
 const eventHandler = (self: any, stickyElementSelector: string, event: Event) => {
   if (self && self.current && event.target && event.target instanceof Element) {
-    const { target } = event;
     const { current } = self;
     const stickyElement: HTMLElement = current.querySelector(stickyElementSelector);
-    const parentTop = target.getBoundingClientRect().top;
     current.classList.remove('sticky');
-    const scrollerTop = target.scrollTop;
-    const stickyTop = current.offsetTop || 0;
-    const stickyBottom = stickyTop + current.offsetHeight;
+    const { scrollerTop, stickyTop, stickyBottom, parentTop } = getMeasurements(
+      event.target as HTMLElement,
+      current
+    );
 
     if (stickyTop < scrollerTop && stickyBottom > scrollerTop) {
       current.classList.add('sticky');
