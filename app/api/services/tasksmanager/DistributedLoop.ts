@@ -7,11 +7,11 @@ export class DistributedLoop {
 
   private task: () => Promise<void>;
 
-  private redlock: Redlock | undefined;
+  private redlock: Redlock;
 
   private stopTask: Function | undefined;
 
-  private redisClient: Redis.RedisClient | undefined;
+  private redisClient: Redis.RedisClient;
 
   private maxLockTime: number;
 
@@ -49,20 +49,14 @@ export class DistributedLoop {
     this.task = task;
     this.port = _options.port;
     this.host = _options.host;
-  }
-
-  async start() {
-    this.redisClient = await Redis.createClient(`redis://${this.host}:${this.port}`);
-    this.redlock = await new Redlock([this.redisClient], {
+    this.redisClient = Redis.createClient(`redis://${this.host}:${this.port}`);
+    this.redlock = new Redlock([this.redisClient], {
       retryJitter: 0,
       retryDelay: this.retryDelay,
     });
-    this.redisClient.on('error', error => {
-      if (error.code !== 'ECONNREFUSED') {
-        throw error;
-      }
-    });
+  }
 
+  async start() {
     // eslint-disable-next-line no-void
     void this.lockTask();
   }
@@ -88,13 +82,13 @@ export class DistributedLoop {
       this.stopTask = resolve;
     });
 
-    await this.redlock?.quit();
-    await this.redisClient?.end(true);
+    await this.redlock.quit();
+    this.redisClient.end(true);
   }
 
   async lockTask(): Promise<void> {
     try {
-      const lock = await this.redlock!.lock(
+      const lock = await this.redlock.lock(
         this.lockName,
         this.maxLockTime + this.delayTimeBetweenTasks
       );
