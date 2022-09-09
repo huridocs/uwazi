@@ -19,7 +19,6 @@ const getMeasurements = (target: HTMLElement, current: HTMLElement) => {
   };
 };
 
-// eslint-disable-next-line max-statements
 const eventHandler = (self: any, stickyElementSelector: string, event: Event) => {
   if (self && self.current && event.target && event.target instanceof Element) {
     const { current } = self;
