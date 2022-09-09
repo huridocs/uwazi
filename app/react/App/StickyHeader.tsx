@@ -8,16 +8,18 @@ interface StickyHeaderProps {
 
 // eslint-disable-next-line max-statements
 const eventHandler = (self: any, stickyElementSelector: string, event: Event) => {
-  if (self && self.current && event.target) {
-    const stickyElement = self.current.querySelector(stickyElementSelector) as HTMLElement;
-    const parentTop = (event.target as HTMLElement).getBoundingClientRect().top;
-    self.current.classList.remove('sticky');
-    const scrollerTop = (event.target as HTMLElement).scrollTop;
-    const stickyTop = self.current.offsetTop || 0;
-    const stickyBottom = stickyTop + self.current.offsetHeight;
+  if (self && self.current && event.target && event.target instanceof Element) {
+    const { target } = event;
+    const { current } = self;
+    const stickyElement: HTMLElement = current.querySelector(stickyElementSelector);
+    const parentTop = target.getBoundingClientRect().top;
+    current.classList.remove('sticky');
+    const scrollerTop = target.scrollTop;
+    const stickyTop = current.offsetTop || 0;
+    const stickyBottom = stickyTop + current.offsetHeight;
 
     if (stickyTop < scrollerTop && stickyBottom > scrollerTop) {
-      self.current.classList.add('sticky');
+      current.classList.add('sticky');
       if (stickyElement) {
         stickyElement.style.top = `${parentTop}px`;
       }
