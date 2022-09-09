@@ -24,6 +24,7 @@ const mockUser = new User(generateId(), 'admin');
 
 const fixtures = {
   entities: [factory.entity('entity1', 'template1'), factory.entity('entity2', 'template1')],
+  relationships: [],
   relationtypes: [
     {
       _id: factory.id('rel1'),
