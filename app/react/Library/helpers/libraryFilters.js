@@ -95,10 +95,7 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
 
 export const prepareDefaultFilters = fields =>
   fields.map(field => {
-    if (!field.options) {
-      return field;
-    }
-    if (!field.defaultfilter) {
+    if (!field.defaultfilter || !field.options) {
       return field;
     }
     const filteredOptions = field.options.filter(option => option.id !== 'missing');
