@@ -57,66 +57,6 @@ describe('DistributedLoopLock', () => {
     await nodeTwo.stop();
   });
 
-  it('should wait until the redis server is available to execute the task', async () => {
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      retryDelay: 20,
-      delayTimeBetweenTasks: 0,
-    });
-    await nodeOne.start();
-
-    // important TEST ??
-    // await sleepTime(50);
-    // expect(task).toHaveBeenCalledTimes(0);
-
-    // await redisServer.start();
-
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(1);
-    });
-
-    finishTask();
-
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(2);
-    });
-
-    finishTask();
-
-    await nodeOne.stop();
-  });
-
-  it('should continue executing tasks after redis was unavailable for a while', async () => {
-    // const unstableRedisServer = new RedisServer(6371);
-    // await unstableRedisServer.start();
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      retryDelay: 20,
-      delayTimeBetweenTasks: 0,
-    });
-    await nodeOne.start();
-
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(1);
-    });
-
-    // await unstableRedisServer.stop();
-    finishTask();
-
-    // IMPORTANT TEST ???
-    // await sleepTime(50);
-    // expect(task).toHaveBeenCalledTimes(1);
-
-    // await unstableRedisServer.start();
-
-    await waitForExpect(async () => {
-      expect(task).toHaveBeenCalledTimes(2);
-    });
-
-    finishTask();
-
-    await nodeOne.stop();
-    // await unstableRedisServer.stop();
-  });
-
   it('should handle when a lock fails for too many retries', async () => {
     const nodeOne = new DistributedLoop('my_long_locked_task', task, {
       retryDelay: 20,

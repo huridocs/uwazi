@@ -149,10 +149,10 @@ describe('taskManager', () => {
   });
 
   describe('when redis server is not available', () => {
-    fit('taskManager should fail to start task', async () => {
+    it('taskManager should fail to start task', async () => {
       const task = { task: 'Spagueti', tenant: 'Konz' };
 
-      // taskManager.redisClient.end(true);
+      taskManager!.redisClient.end(true);
 
       try {
         await taskManager?.startTask(task);
@@ -160,51 +160,6 @@ describe('taskManager', () => {
       } catch (e) {
         expect(e).toEqual(Error('Redis is not connected'));
       }
-    });
-
-    describe('and redis comes back', () => {
-      fit('should send tasks again', async () => {
-        await externalDummyService.resetQueue();
-
-        const task = { task: 'Ceviche', tenant: 'Mercy' };
-
-        try {
-          await taskManager?.startTask(task);
-          fail('It should throw');
-        } catch (e) {
-          expect(e).toEqual(Error('Redis is not connected'));
-        }
-
-        await waitForExpect(async () => {
-          expect(taskManager?.redisClient.connected).toBe(true);
-        });
-        await taskManager?.startTask(task);
-
-        const message = await externalDummyService.readFirstTaskMessage();
-        expect(message).toBe('{"task":"Ceviche","tenant":"Mercy"}');
-      });
-
-      it('should read pending messages', async () => {
-        await taskManager?.stop();
-        const task = {
-          task: 'Ceviche',
-          tenant: 'Mercy',
-          results_url: 'http://localhost:1234/results',
-        };
-        externalDummyService.setResults({
-          results: 'Ceviche',
-        });
-
-        await externalDummyService.sendFinishedMessage(task);
-
-        taskManager = new TaskManager(service);
-        taskManager.subscribeToResults();
-        expect(service.processResults).not.toHaveBeenCalled();
-
-        await waitForExpect(async () => {
-          expect(service.processResults).toHaveBeenCalledWith(task);
-        });
-      });
     });
   });
 });
