@@ -4,27 +4,20 @@ import { TaskManager, Service } from 'api/services/tasksmanager/TaskManager';
 import { config } from 'api/config';
 import * as handleError from 'api/utils/handleError.js';
 import { ExternalDummyService } from './ExternalDummyService';
-import { RedisServer } from '../RedisServer';
 
 describe('taskManager', () => {
   let taskManager: TaskManager | undefined;
 
   let service: Service;
-  let redisServer: RedisServer;
   let externalDummyService: ExternalDummyService;
 
   beforeAll(async () => {
-    const port = 6378;
-    config.redis.port = port;
-
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     service = {
       serviceName: 'KonzNGaboHellKitchen',
       processResults: jest.fn(),
       processResultsMessageHiddenTime: 1,
     };
-    redisServer = new RedisServer(port);
-    redisServer.start();
 
     externalDummyService = new ExternalDummyService(1234, service.serviceName);
     await externalDummyService.start(redisUrl);
@@ -38,9 +31,12 @@ describe('taskManager', () => {
   });
 
   afterAll(async () => {
-    await redisServer.stop();
-    await externalDummyService.stop();
-    await taskManager?.stop();
+    try {
+      await externalDummyService.stop();
+      await taskManager?.stop();
+    } catch (e) {
+      console.log(JSON.stringify(e, null, ' '));
+    }
   });
 
   afterEach(() => {
@@ -154,8 +150,9 @@ describe('taskManager', () => {
 
   describe('when redis server is not available', () => {
     it('taskManager should fail to start task', async () => {
-      await redisServer.stop();
       const task = { task: 'Spagueti', tenant: 'Konz' };
+
+      taskManager!.redisClient.end(true);
 
       try {
         await taskManager?.startTask(task);
@@ -163,60 +160,6 @@ describe('taskManager', () => {
       } catch (e) {
         expect(e).toEqual(Error('Redis is not connected'));
       }
-
-      await redisServer.start();
-    });
-
-    describe('and redis comes back', () => {
-      it('should send tasks again', async () => {
-        await externalDummyService.resetQueue();
-        await redisServer.stop();
-
-        const task = { task: 'Ceviche', tenant: 'Mercy' };
-
-        try {
-          await taskManager?.startTask(task);
-          fail('It should throw');
-        } catch (e) {
-          expect(e).toEqual(Error('Redis is not connected'));
-        }
-
-        await redisServer.start();
-
-        await waitForExpect(async () => {
-          expect(taskManager?.redisClient.connected).toBe(true);
-        });
-        await taskManager?.startTask(task);
-
-        const message = await externalDummyService.readFirstTaskMessage();
-        expect(message).toBe('{"task":"Ceviche","tenant":"Mercy"}');
-      });
-
-      it('should read pending messages', async () => {
-        await taskManager?.stop();
-        const task = {
-          task: 'Ceviche',
-          tenant: 'Mercy',
-          results_url: 'http://localhost:1234/results',
-        };
-        externalDummyService.setResults({
-          results: 'Ceviche',
-        });
-
-        await externalDummyService.sendFinishedMessage(task);
-
-        await redisServer.stop();
-
-        taskManager = new TaskManager(service);
-        taskManager.subscribeToResults();
-        expect(service.processResults).not.toHaveBeenCalled();
-
-        redisServer.start();
-
-        await waitForExpect(async () => {
-          expect(service.processResults).toHaveBeenCalledWith(task);
-        });
-      });
     });
   });
 });
