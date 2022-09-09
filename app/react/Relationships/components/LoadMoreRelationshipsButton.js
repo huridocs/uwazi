@@ -18,13 +18,20 @@ export const LoadMoreRelationshipsButton = ({
       action(requestedHubs + loadMoreAmmount);
     };
 
+    let loadMoreAmmountDisplay = loadMoreAmmount;
+
+    const hubsLeft = totalHubs - requestedHubs;
+    if (hubsLeft < loadMoreAmmount) {
+      loadMoreAmmountDisplay = hubsLeft;
+    }
+
     return (
       <div className="text-center">
         <p className="col-sm-12 text-center documents-counter">
           <b>{requestedHubs}</b> {t('System', 'of')} <b>{totalHubs}</b> {t('System', 'hubs')}
         </p>
         <button onClick={actionFunction} className="btn btn-default btn-load-more">
-          {`${loadMoreAmmount}`} {t('System', 'x more')}
+          {`${loadMoreAmmountDisplay}`} {t('System', 'x more')}
         </button>
       </div>
     );

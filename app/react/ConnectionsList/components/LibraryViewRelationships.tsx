@@ -9,6 +9,7 @@ import { Collapsible } from 'app/App/Collapsible';
 import { StickyHeader } from 'app/App/StickyHeader';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import * as actions from '../../Relationships/actions/actions';
+import LoadMoreRelationshipsButton from 'app/Relationships/components/LoadMoreRelationshipsButton';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
@@ -119,15 +120,16 @@ const createLabelGroups = (
   );
 };
 
-const LibraryViewRelationshipsComp = ({
-  hubs,
-  searchResults,
-  parentEntity,
-  parseResults,
-  relationTypes,
-  expanded,
-  selectConnection,
-}: ComponentProps) => {
+const LibraryViewRelationshipsComp = (props: ComponentProps) => {
+  const {
+    hubs,
+    searchResults,
+    parentEntity,
+    parseResults,
+    relationTypes,
+    expanded,
+    selectConnection,
+  } = props;
   useEffect(() => {
     if (parentEntity) {
       parseResults(searchResults, parentEntity, false);
@@ -140,6 +142,7 @@ const LibraryViewRelationshipsComp = ({
           createLabelGroups(hub, relationTypes, selectConnection, expanded, index)
         )}
       </div>
+      <LoadMoreRelationshipsButton />
       <RelationshipMetadata />
     </>
   );

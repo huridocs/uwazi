@@ -33,6 +33,7 @@ export function searchReferences() {
 
 export function connectionsChanged(sharedId) {
   return (dispatch, getState) => {
+    dispatch(actions.set('relationships/list/filters', { limit: 10 }));
     const relationshipsList = getState().relationships.list;
     let innerSharedId = sharedId;
     if (!innerSharedId) {
