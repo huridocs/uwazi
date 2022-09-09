@@ -7,14 +7,14 @@ interface StickyHeaderProps {
 }
 
 // eslint-disable-next-line max-statements
-const stickHeader = (self: any, stickyElementSelector: string, event: Event) => {
+const eventHandler = (self: any, stickyElementSelector: string, event: Event) => {
   if (self && self.current && event.target) {
     const stickyElement = self.current.querySelector(stickyElementSelector) as HTMLElement;
-    const parentTop = (event.target as HTMLElement).getBoundingClientRect().top || 0;
+    const parentTop = (event.target as HTMLElement).getBoundingClientRect().top;
     self.current.classList.remove('sticky');
-    const scrollerTop = (event.target as HTMLElement).scrollTop || 0;
+    const scrollerTop = (event.target as HTMLElement).scrollTop;
     const stickyTop = self.current.offsetTop || 0;
-    const stickyBottom = stickyTop + (self.current.offsetHeight || 0);
+    const stickyBottom = stickyTop + self.current.offsetHeight;
 
     if (stickyTop < scrollerTop && stickyBottom > scrollerTop) {
       self.current.classList.add('sticky');
@@ -31,11 +31,13 @@ const StickyHeader = (props: StickyHeaderProps) => {
   const body = document.querySelector<HTMLDivElement>(scrollElementSelector);
   useEffect(() => {
     body?.addEventListener('scroll', event => {
-      stickHeader(self, stickyElementSelector, event);
+      eventHandler(self, stickyElementSelector, event);
     });
 
     return () => {
-      body?.removeEventListener('scroll', event => stickHeader(self, stickyElementSelector, event));
+      body?.removeEventListener('scroll', event =>
+        eventHandler(self, stickyElementSelector, event)
+      );
     };
   });
 
