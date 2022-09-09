@@ -351,7 +351,9 @@ describe('suggestions routes', () => {
           status: 'ready',
         },
       ]);
-      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' }, null, {
+        sort: { entityId: 1 },
+      });
       expect(enemySugg).toMatchObject([
         {
           entityId: 'shared5',
