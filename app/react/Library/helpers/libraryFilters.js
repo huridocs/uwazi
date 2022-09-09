@@ -87,13 +87,20 @@ export function parseWithAggregations(filters, aggregations, showNoValue = true)
       property.options = propertyAggregations.buckets
         .map(normalizeBucket)
         .filter(opt => opt.results || (!showNoValue && opt.value === 'missing'));
-
-      property.totalPossibleOptions = propertyAggregations.count;
     }
 
     return property;
   });
 }
+
+export const prepareDefaultFilters = fields =>
+  fields.map(field => {
+    if (!field.defaultfilter || !field.options) {
+      return field;
+    }
+    const filteredOptions = field.options.filter(option => option.id !== 'missing');
+    return { ...field, options: filteredOptions };
+  });
 
 export default {
   URLQueryToState,
