@@ -4,7 +4,6 @@ import db from 'api/utils/testing_db';
 import { config } from 'api/config';
 import thesauri from 'api/thesauri/thesauri.js';
 import backend from 'fetch-mock';
-import { availableLanguages } from 'shared/languagesList';
 import translations, { UITranslationNotAvailable } from '../translations';
 import fixtures, {
   dictionaryId,
@@ -559,53 +558,6 @@ describe('translations', () => {
       expect(ZHTranslations.Password).toBe('Password');
       expect(ZHTranslations.Account).toBe('Account');
       expect(ZHTranslations.Age).toBe('Age');
-    });
-  });
-
-  describe('availableLanguages', () => {
-    afterEach(() => {
-      backend.restore();
-    });
-
-    it('should return the list of available languages, indicating which ones have predefined translations available', async () => {
-      const githubResponse = [{ name: 'ar.csv' }, { name: 'es.csv' }, { name: 'fr.csv' }];
-
-      config.githubToken = 'gh_token';
-
-      backend.get(
-        (url, opts) =>
-          url ===
-            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/' &&
-          // @ts-ignore
-          opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-          // @ts-ignore
-          opts?.headers?.accept === 'application/vnd.github.v4.raw',
-        { body: githubResponse }
-      );
-
-      const responseLanguages = await translations.availableLanguages();
-
-      const languagesWithPredefinedTranslations = responseLanguages.filter(
-        l => l.translationAvailable
-      );
-      expect(languagesWithPredefinedTranslations).toMatchObject([
-        { key: 'ar' },
-        { key: 'fr' },
-        { key: 'es' },
-      ]);
-    });
-
-    describe('when github returns any error', () => {
-      it('should return an unaltered version of the languages list', async () => {
-        backend.get(
-          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/',
-          404
-        );
-
-        const responseLanguages = await translations.availableLanguages();
-
-        expect(responseLanguages).toEqual(availableLanguages);
-      });
     });
   });
 });

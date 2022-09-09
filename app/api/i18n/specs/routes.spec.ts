@@ -9,6 +9,9 @@ import { UserRole } from 'shared/types/userSchema';
 import backend from 'fetch-mock';
 import { config } from 'api/config';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { availableLanguages } from 'shared/languagesList';
+import { errorLog } from 'api/log';
+import { Logger } from 'winston';
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -132,6 +135,21 @@ describe('i18n translations routes', () => {
           { key: 'fr' },
           { key: 'es' },
         ]);
+      });
+
+      describe('when github returns any error', () => {
+        it('should return an unaltered version of the languages list', async () => {
+          jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+          backend.restore();
+          backend.get(
+            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/',
+            404
+          );
+
+          const responseLanguages = await request(app).get('/api/languages').expect(200);
+
+          expect(responseLanguages.body).toEqual(availableLanguages);
+        });
       });
     });
   });
