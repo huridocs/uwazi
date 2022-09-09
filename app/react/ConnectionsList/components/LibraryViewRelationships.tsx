@@ -8,8 +8,8 @@ import { Item } from 'app/Layout';
 import { Collapsible } from 'app/App/Collapsible';
 import { StickyHeader } from 'app/App/StickyHeader';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
-import * as actions from '../../Relationships/actions/actions';
 import LoadMoreRelationshipsButton from 'app/Relationships/components/LoadMoreRelationshipsButton';
+import * as actions from '../../Relationships/actions/actions';
 
 interface LibraryViewRelationshipsProps {
   expanded: boolean;
@@ -102,8 +102,9 @@ const createLabelGroups = (
     <StickyHeader
       scrollElementSelector=".scrollable"
       stickyElementSelector=".sidepanel-relationship-left-label"
+      key={index}
     >
-      <div className="sidepanel-relationship" key={index}>
+      <div className="sidepanel-relationship">
         {template && (
           <span className="sidepanel-relationship-left-label">
             {`${relationTypes.find(r => r._id === template).name}`}
