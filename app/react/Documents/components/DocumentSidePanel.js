@@ -354,14 +354,14 @@ class DocumentSidePanel extends Component {
                 style={{ marginRight: '10px' }}
                 onClick={() => this.collapseRelationships()}
               >
-                Collapse all
+                <Translate>Collapse all</Translate>
               </button>
               <button
                 type="button"
                 className="btn btn-default relationships-expand-button"
                 onClick={() => this.expandRelationships()}
               >
-                Expand all
+                <Translate>Expand all</Translate>
               </button>
             </div>
           </div>
