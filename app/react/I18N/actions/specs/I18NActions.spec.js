@@ -121,4 +121,14 @@ describe('I18NActions', () => {
         });
     });
   });
+
+  describe('resetDefaultTranslations', () => {
+    it('should request the I18NApi to reset translation of the language', async () => {
+      spyOn(I18NApi, 'populateTranslations').and.callFake(async () => Promise.resolve());
+      await actions.resetDefaultTranslations('es')(dispatch);
+      expect(I18NApi.populateTranslations).toHaveBeenCalledWith(
+        new RequestParams({ locale: 'es' })
+      );
+    });
+  });
 });

@@ -8,7 +8,7 @@ exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = 
     className="activity-log"
   >
     <Connect(ActivitylogForm)>
-      <Connect(ActivityLogList) />
+      <Connect(ActivityLogListComponent) />
     </Connect(ActivitylogForm)>
   </div>
 </div>

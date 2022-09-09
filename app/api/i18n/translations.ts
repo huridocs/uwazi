@@ -9,8 +9,18 @@ import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
-import { ContentsClient } from 'api/i18n/contentsClient';
+import { ContentsClient, GithubFileNotFound } from 'api/i18n/contentsClient';
+import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
+import { errorLog } from 'api/log';
+import { prettifyError } from 'api/utils/handleError';
+
+export class UITranslationNotAvailable extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UITranslationNotAvailable';
+  }
+}
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -76,7 +86,13 @@ function processContextValues(context: TranslationContext | IndexedContext) {
     });
   }
 
-  const values = processedValues.length ? processedValues : (context.values as TranslationValue[]);
+  let values: TranslationValue[] = [];
+  if (processedValues.length) {
+    values = processedValues;
+  }
+  if (Array.isArray(context.values)) {
+    values = context.values as TranslationValue[];
+  }
 
   checkDuplicateKeys(context, values);
 
@@ -392,11 +408,35 @@ export default {
 
   async importPredefined(locale: string) {
     const contentsClient = new ContentsClient();
-    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
-    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-    await pipeline(translationsCsv, createWriteStream(tmpCsv));
-    const loader = new CSVLoader();
-    await loader.loadTranslations(tmpCsv, 'System');
+    try {
+      const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+      const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+      await pipeline(translationsCsv, createWriteStream(tmpCsv));
+      const loader = new CSVLoader();
+      await loader.loadTranslations(tmpCsv, 'System');
+    } catch (error) {
+      if (error instanceof GithubFileNotFound) {
+        throw new UITranslationNotAvailable(
+          `Predefined translation for locale ${locale} is not available`
+        );
+      }
+      throw error;
+    }
+  },
+
+  async availableLanguages() {
+    const contentsClient = new ContentsClient();
+    let languagesWithTranslations: string[] = [];
+    try {
+      languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+    } catch (e) {
+      errorLog.error(prettifyError(e));
+      return availableLanguages;
+    }
+    return availableLanguages.map(language => ({
+      ...language,
+      translationAvailable: languagesWithTranslations.includes(language.key),
+    }));
   },
 };
 

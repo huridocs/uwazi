@@ -81,4 +81,5 @@ export const config = {
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
     },
   },
+  githubToken: process.env.GITHUB_TOKEN || '',
 };

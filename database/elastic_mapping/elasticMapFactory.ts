@@ -31,10 +31,14 @@ export default {
             (property.type === 'select' || property.type === 'multiselect')
           ) {
             map.properties.suggestedMetadata.properties[property.name] = {
-              properties: propertyMappings[property.type](),
+              properties: {
+                ...propertyMappings[property.type](),
+                suggestion_confidence: {
+                  type: 'float',
+                },
+              },
             };
           }
-
           if (property.inherit?.type && property.inherit.type !== 'preview') {
             map.properties.metadata.properties[property.name].properties.inheritedValue = {
               properties: propertyMappings[property.inherit.type](),

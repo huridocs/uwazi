@@ -278,6 +278,19 @@
       height: 32px;
     }
   }
+
+  .property-type-warning {
+    font-style: italic;
+    margin-left: 5px;
+
+    &::before {
+      content: '(';
+    }
+
+    &::after {
+      content: ')';
+    }
+  }
 }
 
 .custom-uploads {

@@ -16,7 +16,9 @@ describe('I18NApi', () => {
       .post(`${APIURL}translations/addentry`, { body: JSON.stringify(okResponse) })
       .post(`${APIURL}translations/languages`, { body: JSON.stringify(okResponse) })
       .delete(`${APIURL}translations/languages?key=kl`, { body: JSON.stringify(okResponse) })
-      .post(`${APIURL}translations/setasdeafult`, { body: JSON.stringify(okResponse) });
+      .post(`${APIURL}translations/setasdeafult`, { body: JSON.stringify(okResponse) })
+      .get(`${APIURL}languages`, { body: JSON.stringify([{ key: 'en' }]) })
+      .post(`${APIURL}translations/populate`, { body: JSON.stringify(okResponse) });
   });
 
   afterEach(() => backend.restore());
@@ -106,6 +108,25 @@ describe('I18NApi', () => {
           done();
         })
         .catch(done.fail);
+    });
+  });
+
+  describe('getLanguages', () => {
+    it('should return the available languages', async () => {
+      const response = await I18NApi.getLanguages();
+      expect(response).toEqual([{ key: 'en' }]);
+    });
+  });
+
+  describe('populateTranslations()', () => {
+    it('should post the locale to be reset', async () => {
+      const requestParams = new RequestParams({ locale: 'aa' });
+      const response = await I18NApi.populateTranslations(requestParams);
+      expect(JSON.parse(backend.lastOptions(`${APIURL}translations/populate`).body)).toEqual({
+        locale: 'aa',
+      });
+
+      expect(response).toEqual('ok');
     });
   });
 });

@@ -1,6 +1,7 @@
 /** @format */
 
 import api from 'app/utils/api';
+import { t } from 'app/I18N';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -14,15 +15,19 @@ export function login(credentials) {
   };
 }
 
-export function recoverPassword(email, altMessage) {
+export function recoverPassword(email) {
   const request = new RequestParams({ email });
   return dispatch =>
     api.post('recoverpassword', request).then(() => {
       dispatch(
         notify(
-          !altMessage
-            ? 'Instructions to reset your password have been sent, please check your email'
-            : altMessage,
+          t(
+            'System',
+            'Instructions to reset your password have been sent, please check your email',
+            null,
+            false
+          ),
+
           'success'
         )
       );
@@ -33,7 +38,7 @@ export function resetPassword(password, key) {
   const request = new RequestParams({ password, key });
   return dispatch =>
     api.post('resetpassword', request).then(() => {
-      dispatch(notify('Password changed success', 'success'));
+      dispatch(notify(t('System', 'Password changed success', null, false), 'success'));
     });
 }
 
@@ -41,6 +46,6 @@ export function unlockAccount(credentials) {
   const request = new RequestParams(credentials);
   return dispatch =>
     api.post('unlockaccount', request).then(() => {
-      dispatch(notify('Account unlocked successfully', 'success'));
+      dispatch(notify(t('System', 'Account unlocked successfully', null, false), 'success'));
     });
 }

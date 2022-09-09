@@ -33,7 +33,7 @@ export const DocumentCounter = (props: EntityCounterProps) => {
   const connectionsCounter = (
     <>
       <b>{totalConnectionsCount!} </b>
-      <Translate>connections</Translate>, <b>{totalEntitiesValue} </b>
+      <Translate>relationships</Translate>, <b>{totalEntitiesValue} </b>
       <Translate>entities</Translate>
     </>
   );
