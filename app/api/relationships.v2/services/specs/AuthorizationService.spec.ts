@@ -19,6 +19,10 @@ const fixtures = {
     factory.entity('entity2', undefined, undefined, {
       permissions: [{ refId: factory.id('user2'), level: 'write', type: 'user' }],
     }),
+    factory.entity('entity3', undefined, undefined, {
+      // @ts-ignore
+      permissions: [{ refId: 'public', level: 'public', type: 'public' }],
+    }),
   ],
 };
 
@@ -31,20 +35,38 @@ afterAll(async () => {
 });
 
 describe("When there's no authenticated user", () => {
-  it('should return false', async () => {
-    const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
-    expect(await auth.isAuthorized('read', ['entity1'])).toBe(false);
-    expect(await auth.isAuthorized('write', ['entity1'])).toBe(false);
+  describe('and the entity is not public', () => {
+    it('should return false', async () => {
+      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      expect(await auth.isAuthorized('read', ['entity1'])).toBe(false);
+      expect(await auth.isAuthorized('write', ['entity1'])).toBe(false);
+    });
+
+    it('should throw an error', async () => {
+      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      await expect(async () => auth.validateAccess('read', ['any entity'])).rejects.toThrow(
+        UnauthorizedError
+      );
+      await expect(async () => auth.validateAccess('write', ['any other entity'])).rejects.toThrow(
+        UnauthorizedError
+      );
+    });
   });
 
-  it('should throw an error', async () => {
-    const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
-    await expect(async () => auth.validateAccess('read', ['any entity'])).rejects.toThrow(
-      UnauthorizedError
-    );
-    await expect(async () => auth.validateAccess('write', ['any other entity'])).rejects.toThrow(
-      UnauthorizedError
-    );
+  describe('and the entity is public', () => {
+    it('should only allow to read', async () => {
+      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      expect(await auth.isAuthorized('read', ['entity3'])).toBe(true);
+      expect(await auth.isAuthorized('write', ['entity3'])).toBe(false);
+    });
+  });
+
+  describe('and not all the entities are public', () => {
+    it('should not allow to read nor write', async () => {
+      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      expect(await auth.isAuthorized('read', ['entity3', 'entity1'])).toBe(false);
+      expect(await auth.isAuthorized('write', ['entity3', 'entity1'])).toBe(false);
+    });
   });
 });
 

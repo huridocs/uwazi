@@ -15,27 +15,30 @@ export class AuthorizationService {
   }
 
   async isAuthorized(level: AccessLevels, sharedIds: string[]) {
+    if (this.authenticatedUser && ['admin', 'editor'].includes(this.authenticatedUser.role)) {
+      return true;
+    }
+
+    const permissions = await Promise.all(
+      sharedIds.map(async id => this.permissionsDS.getByEntity(id))
+    );
+
     if (this.authenticatedUser) {
-      if (['admin', 'editor'].includes(this.authenticatedUser.role)) {
-        return true;
-      }
-
-      const permissions = await Promise.all(
-        sharedIds.map(async id => this.permissionsDS.getByEntity(id))
-      );
-
       return permissions.every(
         permSet =>
           permSet &&
           permSet.find(
             perm =>
-              perm.refId.toString() === this.authenticatedUser?._id &&
-              (level === 'write' ? perm.level === 'write' : true)
+              (level === 'read' && perm.type === 'public') ||
+              (perm.refId.toString() === this.authenticatedUser?._id &&
+                (level === 'write' ? perm.level === 'write' : true))
           )
       );
     }
 
-    return false;
+    return permissions.every(
+      permSet => permSet && permSet.find(perm => level === 'read' && perm.type === 'public')
+    );
   }
 
   async validateAccess(level: AccessLevels, sharedIds: string[]) {
