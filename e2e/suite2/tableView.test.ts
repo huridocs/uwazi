@@ -3,6 +3,7 @@
 import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
+import { scrollTo } from '../helpers/formActions';
 import { adminLogin, logout } from '../helpers/login';
 import disableTransitions from '../helpers/disableTransitions';
 
@@ -84,13 +85,16 @@ describe('Table view', () => {
       });
     });
 
-    it('Should load more rows if scrolling reach the end of content', async () => {
+    it('Should load more rows on demand', async () => {
       const rowSelector = '.tableview-wrapper > table > tbody > tr';
-      const lastRowSelector = '.tableview-wrapper > table > tbody > tr:last-child';
-      await page.$$eval(lastRowSelector, el => el[0].scrollIntoView());
-      await page.waitForSelector('.tableview-wrapper > table > tbody > tr:nth-child(32)');
-      const rowsNumber = await page.$$eval(rowSelector, rows => rows.length);
-      expect(rowsNumber).toBe(60);
+      expect((await page.$$(rowSelector)).length).toBe(30);
+
+      await scrollTo('.btn-load-more');
+      await expect(page.click('.btn-load-more'));
+      await page.waitForNavigation();
+      await disableTransitions();
+      await page.waitForSelector(rowSelector);
+      expect((await page.$$(rowSelector)).length).toBe(60);
     });
   });
 
