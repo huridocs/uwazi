@@ -17,11 +17,17 @@ const fixtures = {
       ],
     }),
     factory.entity('entity2', undefined, undefined, {
-      permissions: [{ refId: factory.id('user2'), level: 'write', type: 'user' }],
+      permissions: [
+        { refId: factory.id('user2'), level: 'write', type: 'user' },
+        { refId: factory.id('group1'), level: 'read', type: 'group' },
+      ],
     }),
     factory.entity('entity3', undefined, undefined, {
-      // @ts-ignore
-      permissions: [{ refId: 'public', level: 'public', type: 'public' }],
+      permissions: [
+        // @ts-ignore
+        { refId: 'public', level: 'public', type: 'public' },
+        { refId: factory.id('group2'), level: 'write', type: 'group' },
+      ],
     }),
   ],
 };
@@ -73,14 +79,14 @@ describe("When there's no authenticated user", () => {
 describe("When there's an authenticated user", () => {
   describe.each(['admin', 'editor'] as const)('and the user is %s', role => {
     it('should return true', async () => {
-      const adminUser = new User(factory.id('admin').toHexString(), role);
+      const adminUser = new User(factory.id('admin').toHexString(), role, []);
       const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), adminUser);
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(true);
       expect(await auth.isAuthorized('write', ['entity1'])).toBe(true);
     });
 
     it('should not throw an error', async () => {
-      const adminUser = new User(factory.id('admin').toHexString(), role);
+      const adminUser = new User(factory.id('admin').toHexString(), role, []);
       const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), adminUser);
 
       await auth.validateAccess('read', ['entity1']);
@@ -89,8 +95,8 @@ describe("When there's an authenticated user", () => {
   });
 
   describe('and the user is collaborator', () => {
-    type Case = { user: string; entities: string[]; level: 'read' | 'write'; result: boolean };
-    it.each<Case>([
+    type Case1 = { user: string; entities: string[]; level: 'read' | 'write'; result: boolean };
+    it.each<Case1>([
       { user: 'user1', entities: ['entity1'], level: 'write', result: true },
       { user: 'user1', entities: ['entity1'], level: 'read', result: true },
       { user: 'user1', entities: ['entity2'], level: 'read', result: false },
@@ -105,11 +111,27 @@ describe("When there's an authenticated user", () => {
       async ({ user, entities, level, result }) => {
         const auth = new AuthorizationService(
           new PermissionsDataSource(getConnection()),
-          new User(factory.id(user).toHexString(), 'collaborator')
+          new User(factory.id(user).toHexString(), 'collaborator', [])
         );
 
         expect(await auth.isAuthorized(level, entities)).toBe(result);
       }
     );
+
+    type Case2 = { entities: string[]; level: 'read' | 'write'; result: boolean };
+    it.each<Case2>([
+      { entities: ['entity2', 'entity3'], level: 'read', result: true },
+      { entities: ['entity3'], level: 'write', result: true },
+    ])('should consider the user groups', async ({ entities, level, result }) => {
+      const auth = new AuthorizationService(
+        new PermissionsDataSource(getConnection()),
+        new User(factory.id('grouped user').toHexString(), 'collaborator', [
+          factory.id('group1').toHexString(),
+          factory.id('group2').toHexString(),
+        ])
+      );
+
+      expect(await auth.isAuthorized(level, entities)).toBe(result);
+    });
   });
 });

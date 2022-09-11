@@ -5,8 +5,11 @@ export class User {
 
   readonly role: UserRole;
 
-  constructor(_id: string, role: UserRole) {
+  readonly groups: string[];
+
+  constructor(_id: string, role: UserRole, groups: string[]) {
     this._id = _id;
     this.role = role;
+    this.groups = groups;
   }
 }

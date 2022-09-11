@@ -30,7 +30,9 @@ export class AuthorizationService {
           permSet.find(
             perm =>
               (level === 'read' && perm.type === 'public') ||
-              (perm.refId.toString() === this.authenticatedUser?._id &&
+              ([this.authenticatedUser!._id, ...this.authenticatedUser!.groups].includes(
+                perm.refId.toString()
+              ) &&
                 (level === 'write' ? perm.level === 'write' : true))
           )
       );

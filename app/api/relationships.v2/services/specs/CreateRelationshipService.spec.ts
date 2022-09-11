@@ -20,7 +20,7 @@ const factory = getFixturesFactory();
 
 const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 
-const mockUser = new User(generateId(), 'admin');
+const mockUser = new User(generateId(), 'admin', []);
 
 const fixtures = {
   entities: [factory.entity('entity1', 'template1'), factory.entity('entity2', 'template1')],
