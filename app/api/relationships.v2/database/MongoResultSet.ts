@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { Cursor } from 'mongodb';
 import { ResultSet } from '../services/ResultSet';
 
@@ -38,13 +39,27 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     this.mongoCursor.skip((number - 1) * size).limit(size);
 
     const total = await this.getTotal();
-    const data = (await this.mongoCursor.toArray()).map(item => this.mapper(item));
+    const data = await this.all();
 
     return { total, data };
   }
 
   async all() {
-    return this.mongoCursor.toArray();
+    const result = await this.mongoCursor.toArray();
+    return result.map(this.mapper);
+  }
+
+  async every(predicate: (item: U) => boolean): Promise<boolean> {
+    while (await this.mongoCursor.hasNext()) {
+      const item = await this.mongoCursor.next();
+      const mappedItem = this.mapper(item!);
+      if (predicate(mappedItem) === false) {
+        return false;
+      }
+    }
+
+    await this.mongoCursor.close();
+    return true;
   }
 
   static NoOpMapper = <V>(item: V) => item;

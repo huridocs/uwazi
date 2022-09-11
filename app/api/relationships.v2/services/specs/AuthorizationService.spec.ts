@@ -50,10 +50,10 @@ describe("When there's no authenticated user", () => {
 
     it('should throw an error', async () => {
       const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
-      await expect(async () => auth.validateAccess('read', ['any entity'])).rejects.toThrow(
+      await expect(async () => auth.validateAccess('read', ['entity1'])).rejects.toThrow(
         UnauthorizedError
       );
-      await expect(async () => auth.validateAccess('write', ['any other entity'])).rejects.toThrow(
+      await expect(async () => auth.validateAccess('write', ['entity2'])).rejects.toThrow(
         UnauthorizedError
       );
     });

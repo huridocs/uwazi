@@ -14,32 +14,31 @@ export class AuthorizationService {
     this.authenticatedUser = authenticatedUser;
   }
 
+  private isPrivileged() {
+    return this.authenticatedUser && ['admin', 'editor'].includes(this.authenticatedUser.role);
+  }
+
+  private getRelatedPermissionsSets(sharedIds: string[]) {
+    return this.permissionsDS.getByEntities(sharedIds);
+  }
+
   async isAuthorized(level: AccessLevels, sharedIds: string[]) {
-    if (this.authenticatedUser && ['admin', 'editor'].includes(this.authenticatedUser.role)) {
+    if (this.isPrivileged()) {
       return true;
     }
 
-    const permissions = await Promise.all(
-      sharedIds.map(async id => this.permissionsDS.getByEntity(id))
-    );
+    const allEntitiesPermissions = this.getRelatedPermissionsSets(sharedIds);
 
     if (this.authenticatedUser) {
-      return permissions.every(
-        permSet =>
-          permSet &&
-          permSet.find(
-            perm =>
-              (level === 'read' && perm.type === 'public') ||
-              ([this.authenticatedUser!._id, ...this.authenticatedUser!.groups].includes(
-                perm.refId.toString()
-              ) &&
-                (level === 'write' ? perm.level === 'write' : true))
-          )
+      const user = this.authenticatedUser;
+      return allEntitiesPermissions.every(entityPermissions =>
+        entityPermissions.allowsUserTo(user, level)
       );
     }
 
-    return permissions.every(
-      permSet => permSet && permSet.find(perm => level === 'read' && perm.type === 'public')
+    return (
+      level === 'read' &&
+      allEntitiesPermissions.every(entityPermissions => entityPermissions.allowsPublicReads())
     );
   }
 
