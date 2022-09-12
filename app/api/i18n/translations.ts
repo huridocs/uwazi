@@ -1,19 +1,23 @@
+import { CSVLoader } from 'api/csv';
+import * as os from 'os';
 import { WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
+import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { generateFileName } from 'api/files';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream/promises';
+import { ContentsClient } from 'api/i18n/contentsClient';
+import { availableLanguages } from 'shared/languagesList';
 import model from './translationsModel';
 
-export interface IndexedContextValues {
-  [k: string]: string;
-}
-
-export interface IndexedContext extends Omit<TranslationContext, 'values'> {
-  values: IndexedContextValues;
-}
-
-export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
-  contexts?: IndexedContext[];
+export class UITranslationNotAvailable extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UITranslationNotAvailable';
+  }
 }
 
 function checkForMissingKeys(
@@ -80,7 +84,13 @@ function processContextValues(context: TranslationContext | IndexedContext) {
     });
   }
 
-  const values = processedValues.length ? processedValues : (context.values as TranslationValue[]);
+  let values: TranslationValue[] = [];
+  if (processedValues.length) {
+    values = processedValues;
+  }
+  if (Array.isArray(context.values)) {
+    values = context.values as TranslationValue[];
+  }
 
   checkDuplicateKeys(context, values);
 
@@ -393,4 +403,32 @@ export default {
   async removeLanguage(locale: string) {
     return model.delete({ locale });
   },
+
+  async importPredefined(locale: string) {
+    const language = availableLanguages.find(lan => lan.key === locale);
+    if (!language?.translationAvailable) {
+      throw new UITranslationNotAvailable(
+        `Predefined translation for locale ${locale} is not available`
+      );
+    }
+
+    const contentsClient = new ContentsClient();
+    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+    await pipeline(translationsCsv, createWriteStream(tmpCsv));
+    const loader = new CSVLoader();
+    await loader.loadTranslations(tmpCsv, 'System');
+  },
 };
+
+export interface IndexedContextValues {
+  [k: string]: string;
+}
+
+export interface IndexedContext extends Omit<TranslationContext, 'values'> {
+  values: IndexedContextValues;
+}
+
+export interface IndexedTranslations extends Omit<TranslationType, 'contexts'> {
+  contexts?: IndexedContext[];
+}

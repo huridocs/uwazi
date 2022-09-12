@@ -1,4 +1,5 @@
-import getValidator, {
+import {
+  validate,
   validateDuplicatedLabel,
   validateDuplicatedRelationship,
 } from '../ValidateTemplate';
@@ -150,11 +151,12 @@ describe('ValidateTemplate', () => {
           { localID: 'cd', name: 'creationDate', label: 'Date added' },
         ],
         properties: [{ localID: '1', name: 'f1', label: 'F1' }],
+        id,
       };
     });
 
     const makeValidator = () => {
-      validator = getValidator(properties, commonProperties, templates, id);
+      validator = validate(properties, commonProperties, templates, id);
       return validator;
     };
 
@@ -178,6 +180,41 @@ describe('ValidateTemplate', () => {
         template.properties[0].label = 'Title';
         expect(validateTitleLabel('duplicated')).toBeFalsy();
       });
+    });
+  });
+
+  describe('selects and multiselects', () => {
+    let properties = [];
+    let validator;
+    let templates;
+
+    const _id = 'templateId';
+    const commonProperties = [
+      { localID: 't', name: 'title', label: 'Title' },
+      { localID: 'cd', name: 'creationDate', label: 'Date added' },
+    ];
+    const templateToValidate = {
+      _id,
+      commonProperties,
+      properties,
+    };
+
+    const validation = () => {
+      templateToValidate.properties = properties;
+      templates = [templateToValidate];
+      return validate(properties, commonProperties, templates, _id);
+    };
+
+    it('should validate the select has valid content', () => {
+      properties = [{ _id: '1', label: 'My select', type: 'select', content: '1' }];
+      validator = validation();
+      expect(validator['']['properties.0.content.required'](templateToValidate)).toBeTruthy();
+    });
+
+    it('should validate the content is not empty', () => {
+      properties = [{ _id: '1', label: 'My select', type: 'select', content: '' }];
+      validator = validation();
+      expect(validator['']['properties.0.content.required'](templateToValidate)).not.toBeTruthy();
     });
   });
 });

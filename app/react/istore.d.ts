@@ -12,6 +12,7 @@ import { UserSchema } from 'shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
+import { TranslationType } from 'shared/translationType';
 
 interface EntityDisplayState {
   documents: IImmutable<{ rows: EntitySchema[] }>;
@@ -169,4 +170,5 @@ export interface IStore {
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
+  translations: IImmutable<TranslationType[]>;
 }

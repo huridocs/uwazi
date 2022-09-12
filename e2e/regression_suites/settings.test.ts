@@ -110,7 +110,7 @@ describe('Settings', () => {
 
   it('should display Languages', async () => {
     await selectSettingsPage('Languages');
-    await testSelectorShot('.settings-content > .panel > .list-group:last-child');
+    await testSelectorShot('.panel.panel-default.settings-content');
   });
 
   it('should display Translations', async () => {

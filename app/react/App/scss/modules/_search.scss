@@ -742,7 +742,7 @@
   }
 }
 
-.multiselectItem-input[data-state="3"] {
+.multiselectItem-input[data-state='3'] {
   & + label {
     .checkbox-empty {
       display: none;
@@ -764,7 +764,7 @@
     color: $c-black;
   }
 }
-.multiselectItem-input[data-state="2"] {
+.multiselectItem-input[data-state='2'] {
   & + label {
     .checkbox-empty {
       display: none;
@@ -783,7 +783,7 @@
     color: $c-black;
   }
 }
-.multiselectItem-input[data-state="1"] {
+.multiselectItem-input[data-state='1'] {
   & + label {
     .checkbox-empty {
       display: none;
@@ -823,7 +823,8 @@
   line-height: inherit;
 }
 
-.documentTypes-selector .multiselectItem-input:checked {
+.documentTypes-selector .multiselectItem-input:checked,
+.relationshipFilters .multiselectItem-input:checked {
   & + label {
     .checkbox-empty {
       display: none;
