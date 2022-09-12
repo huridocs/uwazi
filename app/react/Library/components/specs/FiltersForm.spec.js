@@ -16,13 +16,14 @@ describe('FiltersForm', () => {
       fields: Immutable([
         { _id: '1', name: 'name' },
         { _id: '2', name: 'name', type: 'numeric' },
-        { _id: '3', name: 'date', type: 'date' },
+        { _id: '3', name: 'date', type: 'date', defaultfilter: true },
         { _id: '4', name: 'nested', type: 'nested' },
         {
           _id: '5',
           name: 'select',
           type: 'select',
           content: 'thesauri1',
+          defaultfilter: true,
           options: [
             { id: 'a', label: 'a', value: 'a', results: 1 },
             { id: 'b', label: 'b', value: 'b', results: 1 },
@@ -68,10 +69,11 @@ describe('FiltersForm', () => {
                 filtered: { doc_count: 1 },
                 values: [{ key: 'd', label: 'd', filtered: { doc_count: 1 } }],
               },
+              { key: 'missing', label: 'No Label', filtered: { doc_count: 6 } },
             ],
           },
           multiselect: {
-            count: 11,
+            count: 3,
             buckets: [
               { key: 'a', label: 'a', filtered: { doc_count: 1 } },
               { key: 'b', label: 'b', filtered: { doc_count: 1 } },
@@ -88,11 +90,15 @@ describe('FiltersForm', () => {
       search: { searchTerm: 'Batman' },
       storeKey: 'library',
     };
-    component = shallow(<FiltersForm {...props} />);
   });
+
+  const render = () => {
+    component = shallow(<FiltersForm {...props} />);
+  };
 
   describe('form on submit', () => {
     it('should call searchDocuments, with the searchTerm', () => {
+      render();
       component.find(Form).simulate('submit', { myfilter: true });
       expect(props.searchDocuments).toHaveBeenCalledWith({ search: { myfilter: true } }, 'library');
     });
@@ -100,8 +106,34 @@ describe('FiltersForm', () => {
 
   describe('render()', () => {
     it('should render diferent type fileds', () => {
+      render();
       const fields = component.find(FiltersFromProperties);
       expect(fields).toMatchSnapshot();
+    });
+
+    it('should omit No Label aggregation when filter is default and no templates are selected', () => {
+      render();
+      const fields = component.find(FiltersFromProperties);
+      expect(fields.props().properties[4].options).not.toContainEqual({
+        id: 'missing',
+        value: 'missing',
+        label: 'No Label',
+        results: 6,
+        noValueKey: true,
+      });
+    });
+
+    it('should show the No Label aggregation for default filters when a template is selected', () => {
+      props.documentTypes = Immutable(['templateId']);
+      render();
+      const fields = component.find(FiltersFromProperties);
+      expect(fields.props().properties[4].options).toContainEqual({
+        id: 'missing',
+        label: 'No Label',
+        noValueKey: true,
+        results: 6,
+        value: 'missing',
+      });
     });
   });
 

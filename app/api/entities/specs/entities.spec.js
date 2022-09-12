@@ -1323,7 +1323,7 @@ describe('entities', () => {
 
   describe('removeLanguage()', () => {
     it('should delete all entities from the language', async () => {
-      jest.spyOn(search, 'deleteLanguage');
+      jest.spyOn(search, 'deleteLanguage').mockImplementation(async () => Promise.resolve());
       jest.spyOn(entities, 'createThumbnail').mockImplementation(async () => Promise.resolve());
       await entities.addLanguage('ab');
       await entities.removeLanguage('ab');
