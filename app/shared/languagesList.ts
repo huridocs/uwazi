@@ -88,7 +88,7 @@ const availableLanguages: LanguageSchema[] = [
     rtl: true,
     ISO639_3: 'ara',
     localized_label: 'العربية',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Aragonese',
@@ -214,7 +214,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'my',
     ISO639_3: 'mya',
     localized_label: 'မြန်မာ',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Catalan',
@@ -390,7 +390,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'fr',
     ISO639_3: 'fra',
     localized_label: 'Français',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Fula, Fulah, Pulaar, Pular',
@@ -680,7 +680,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'ko',
     ISO639_3: 'kor',
     localized_label: '한국어',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Kurdish',
@@ -991,7 +991,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'ru',
     ISO639_3: 'rus',
     localized_label: 'Русский',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Sami',
@@ -1117,7 +1117,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'es',
     ISO639_3: 'spa',
     localized_label: 'Español',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Sundanese',
@@ -1187,7 +1187,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'th',
     ISO639_3: 'tha',
     localized_label: 'ไทย',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Tibetan',
@@ -1222,7 +1222,7 @@ const availableLanguages: LanguageSchema[] = [
     key: 'tr',
     ISO639_3: 'tur',
     localized_label: 'Türkçe',
-    translationAvailable: true,
+    translationAvailable: false,
   },
   {
     label: 'Turkmen',

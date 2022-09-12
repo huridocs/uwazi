@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { RequestParams } from 'app/utils/RequestParams';
 
-export class ContactForm extends Component {
+class ContactForm extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = { name: '', email: '', message: '' };
@@ -24,7 +24,7 @@ export class ContactForm extends Component {
   async submit(e) {
     e.preventDefault();
     await api.post('contact', new RequestParams(this.state));
-    this.props.notify('Message sent', 'success');
+    this.props.notify(t('System', 'Message sent', null, false), 'success');
     this.setState({ name: '', email: '', message: '' });
   }
 
@@ -87,4 +87,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ notify }, dispatch);
 }
 
+export { ContactForm };
 export default connect(null, mapDispatchToProps)(ContactForm);

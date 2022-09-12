@@ -4,6 +4,7 @@ import { isClient } from 'app/utils';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import loadingBar from 'app/App/LoadingProgressBar';
+import { t } from 'app/I18N';
 
 import { APIURL } from '../config.js';
 import request from '../../shared/JSONRequest';
@@ -59,7 +60,9 @@ const handleErrorStatus = error => {
   switch (error.status || true) {
     case 400:
     case 422:
-      store.dispatch(notify(extractMessageFromValidation(error), 'danger'));
+      store.dispatch(
+        notify(t('System', extractMessageFromValidation(error), null, false), 'danger')
+      );
       break;
 
     case 401:
@@ -71,23 +74,30 @@ const handleErrorStatus = error => {
       break;
 
     case 409:
-      store.dispatch(notify(error.json.error, 'warning'));
+      store.dispatch(notify(t('System', error.json.error, null, false), 'warning'));
       break;
 
     case 500:
-      store.dispatch(notify(extractMessageFromError(error), 'danger'));
+      store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
       break;
 
     case isNonUsualApiError(error):
-      store.dispatch(notify(error.json.prettyMessage || error.json.error, 'danger'));
+      store.dispatch(
+        notify(t('System', error.json.prettyMessage || error.json.error, null, false), 'danger')
+      );
       break;
 
     case error instanceof TypeError:
-      store.dispatch(notify('Could not reach server. Please try again later.', 'danger'));
+      store.dispatch(
+        notify(
+          t('System', 'Could not reach server. Please try again later.', null, false),
+          'danger'
+        )
+      );
       break;
 
     default:
-      store.dispatch(notify('An error has occurred', 'danger'));
+      store.dispatch(notify(t('System', 'An error occurred', null, false), 'danger'));
   }
 };
 

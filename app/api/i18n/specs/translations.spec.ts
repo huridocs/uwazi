@@ -1,16 +1,16 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
-import backend from 'fetch-mock';
-import thesauri from 'api/thesauri/thesauri.js';
 import { config } from 'api/config';
+import thesauri from 'api/thesauri/thesauri.js';
+import backend from 'fetch-mock';
+import translations, { UITranslationNotAvailable } from '../translations';
 import fixtures, {
-  entityTemplateId,
+  dictionaryId,
   documentTemplateId,
   englishTranslation,
-  dictionaryId,
+  entityTemplateId,
 } from './fixtures.js';
-import translations, { UITranslationNotAvailable } from '../translations';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -541,6 +541,11 @@ describe('translations', () => {
     });
 
     it('should throw error when translation is not available', async () => {
+      backend.get(
+        'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/zh.csv',
+        404
+      );
+
       await expect(translations.importPredefined('zh')).rejects.toThrowError(
         UITranslationNotAvailable
       );

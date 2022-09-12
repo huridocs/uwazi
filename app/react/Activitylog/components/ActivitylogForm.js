@@ -60,7 +60,7 @@ class ActivitylogForm extends Component {
                 className="form-control"
                 model=".find"
                 id="find"
-                placeholder="by ids, methods, keywords, etc."
+                placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
               />
             </div>
             <div className="form-group col-sm-12 col-lg-6">
@@ -95,7 +95,7 @@ class ActivitylogForm extends Component {
               this.loadMore();
             }}
           >
-            {t('System', 'x more')}
+            <Translate>x more</Translate>
           </button>
         </div>
       </div>

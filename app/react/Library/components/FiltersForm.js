@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 
 import debounce from 'app/utils/debounce';
-import libraryHelper from 'app/Library/helpers/libraryFilters';
+import libraryHelper, { prepareDefaultFilters } from 'app/Library/helpers/libraryFilters';
 import { searchDocuments } from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
@@ -19,7 +19,7 @@ import { PublishedFilters } from './PublishedFilters';
 
 import Filters from './FiltersFromProperties';
 
-export class FiltersForm extends Component {
+class FiltersForm extends Component {
   constructor(props) {
     super(props);
     this.search = debounce(search => {
@@ -62,9 +62,14 @@ export class FiltersForm extends Component {
       documentTypes.get(0) || (templates.get(0) || fromJS({})).get('_id') || 'System';
     const allFields = this.props.fields.toJS();
     const showNoValueOnFilters = allFields.size;
-    const fields = libraryHelper
+    let fields = libraryHelper
       .parseWithAggregations(allFields.slice(0), aggregations, showNoValueOnFilters)
       .filter(field => !field.options || field.options.length);
+
+    if (!documentTypes.size) {
+      fields = prepareDefaultFilters(fields);
+    }
+
     const model = `${this.props.storeKey}.search`;
 
     return (
@@ -128,7 +133,7 @@ FiltersForm.propTypes = {
   storeKey: PropTypes.string.isRequired,
 };
 
-export function mapStateToProps(state, props) {
+function mapStateToProps(state, props) {
   return {
     fields: state[props.storeKey].filters.get('properties'),
     aggregations: state[props.storeKey].aggregations,
@@ -141,4 +146,5 @@ function mapDispatchToProps(dispatch, props) {
   return bindActionCreators({ searchDocuments }, wrapDispatch(dispatch, props.storeKey));
 }
 
+export { FiltersForm, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);

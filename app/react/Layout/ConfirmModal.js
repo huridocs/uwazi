@@ -8,8 +8,12 @@ class ConfirmModal extends Component {
     return (
       <Modal isOpen={this.props.isOpen} type={this.props.type}>
         <Modal.Body>
-          <h4>{this.props.title}</h4>
-          <p>{this.props.message}</p>
+          <h4>
+            <Translate>{this.props.title}</Translate>
+          </h4>
+          <p>
+            <Translate>{this.props.message}</Translate>
+          </p>
         </Modal.Body>
 
         <Modal.Footer>
