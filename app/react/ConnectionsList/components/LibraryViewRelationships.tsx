@@ -90,6 +90,17 @@ const createRightRelationshipGroups = (
   </div>
 );
 
+const renderLabel = (template: any, relationTypes: any) =>
+  template ? (
+    <span className="sidepanel-relationship-left-label">
+      {`${relationTypes.find(r => r._id === template).name}`}
+    </span>
+  ) : (
+    <span className="sidepanel-relationship-left-label">
+      <Icon icon="link" />
+    </span>
+  );
+
 const createLabelGroups = (
   hub: any,
   relationTypes: any[],
@@ -105,11 +116,7 @@ const createLabelGroups = (
       key={index}
     >
       <div className="sidepanel-relationship">
-        {template && (
-          <span className="sidepanel-relationship-left-label">
-            {`${relationTypes.find(r => r._id === template).name}`}
-          </span>
-        )}
+        {renderLabel(template, relationTypes)}
         {createRightRelationshipGroups(
           hub.get('rightRelationships'),
           relationTypes,
