@@ -1,9 +1,6 @@
-import React, { Component } from 'react';
-import Immutable from 'immutable';
+import React, { useEffect, useState } from 'react';
 
-import { connect } from 'react-redux';
-import { TemplateSchema } from 'shared/types/templateType';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from 'app/istore';
 import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
@@ -16,16 +13,7 @@ interface TableRowProps {
   storeKey: 'library' | 'uploads';
   selected?: boolean;
   clickOnDocument: (...args: any[]) => void;
-  templates: IImmutable<TemplateSchema[]>;
-  thesauris: IImmutable<ThesaurusSchema[]>;
-  zoomLevel: number;
 }
-
-const defaultProps = {
-  templates: Immutable.fromJS([]) as IImmutable<TemplateSchema[]>,
-  thesauris: Immutable.fromJS([]) as IImmutable<ThesaurusSchema[]>,
-  zoomLevel: 2,
-};
 
 const getColumnValue = (
   formattedEntity: { [k: string]: string },
@@ -45,65 +33,7 @@ const getColumnValue = (
   return columnValue;
 };
 
-class TableRowComponent extends Component<TableRowProps> {
-  static defaultProps = defaultProps;
-
-  onRowClick = (e: { preventDefault: () => void }) => {
-    if (this.props.clickOnDocument) {
-      this.props.clickOnDocument(e, this.props.entity, this.props.selected);
-    }
-  };
-
-  renderCell = (
-    index: number,
-    selected: boolean | undefined,
-    columnValue: FormattedMetadataValue
-  ) => {
-    if (!index) {
-      return (
-        <div>
-          {!index && (
-            <input
-              type="checkbox"
-              onChange={() => {}}
-              checked={selected}
-              onClick={this.onRowClick}
-            />
-          )}
-          <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />
-        </div>
-      );
-    }
-
-    return <TableCell content={columnValue} zoomLevel={this.props.zoomLevel} />;
-  };
-
-  render() {
-    const { entity, templates, thesauris, columns, selected } = this.props;
-    const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
-      sortedProperties: ['editDate', 'creationDate'],
-    });
-    const columnValues = new Map();
-    formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
-      columnValues.set(prop.name, prop);
-    });
-    return (
-      <tr className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}>
-        {columns.map((column: TableViewColumn, index: number) => {
-          const columnValue = getColumnValue(formattedEntity, columnValues, column);
-          const columnKey = formattedEntity._id + column.name;
-          return (
-            <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-              {this.renderCell(index, selected, columnValue)}
-            </td>
-          );
-        })}
-      </tr>
-    );
-  }
-}
-
-function mapStateToProps(state: IStore, ownProps: TableRowProps) {
+const mapStateToProps = (state: IStore, ownProps: TableRowProps) => {
   const selected: boolean =
     state[ownProps.storeKey].ui
       .get('selectedDocuments')
@@ -113,10 +43,84 @@ function mapStateToProps(state: IStore, ownProps: TableRowProps) {
       ) !== undefined;
   return {
     selected,
+    selectionLength: state[ownProps.storeKey].ui.get('selectedDocuments').size,
     templates: state.templates,
     thesauris: state.thesauris,
     zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
   };
-}
+};
 
+const connector = connect(mapStateToProps);
+type mappedProps = ConnectedProps<typeof connector> & TableRowProps;
+
+const TableRowComponent = ({
+  clickOnDocument,
+  entity,
+  templates,
+  thesauris,
+  columns,
+  selected,
+  selectionLength,
+  zoomLevel = 2,
+}: mappedProps) => {
+  const [rowSelection, setRowSelection] = useState(false);
+  const onRowClick = (e: { preventDefault: () => void }, multiple: boolean) => {
+    if (clickOnDocument) {
+      clickOnDocument(e, entity, selected, multiple);
+    }
+  };
+
+  const renderCell = (index: number, columnValue: FormattedMetadataValue) => {
+    if (!index) {
+      return (
+        <div>
+          {!index && (
+            <input
+              type="checkbox"
+              onChange={() => {}}
+              checked={(!rowSelection || selectionLength > 1) && selected}
+              onClick={e => {
+                onRowClick(e, true);
+                setRowSelection(false);
+                e.stopPropagation();
+              }}
+            />
+          )}
+          <TableCell content={columnValue} zoomLevel={zoomLevel} />
+        </div>
+      );
+    }
+
+    return <TableCell content={columnValue} zoomLevel={zoomLevel} />;
+  };
+
+  const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
+    sortedProperties: ['editDate', 'creationDate'],
+  });
+  const columnValues = new Map();
+  formattedEntity.metadata.forEach((prop: FormattedMetadataValue) => {
+    columnValues.set(prop.name, prop);
+  });
+
+  return (
+    <tr
+      className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}
+      onClick={e => {
+        onRowClick(e, false);
+        const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
+        setRowSelection(!specialkeyPressed);
+      }}
+    >
+      {columns.map((column: TableViewColumn, index: number) => {
+        const columnValue = getColumnValue(formattedEntity, columnValues, column);
+        const columnKey = formattedEntity._id + column.name;
+        return (
+          <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
+            {renderCell(index, columnValue)}
+          </td>
+        );
+      })}
+    </tr>
+  );
+};
 export const TableRow = connect(mapStateToProps)(TableRowComponent);

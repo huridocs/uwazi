@@ -13,8 +13,8 @@ import {
 } from 'app/Library/actions/libraryActions';
 import DocumentsList from '../../Layout/DocumentsList';
 
-export function clickOnDocument(e, doc, active) {
-  const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
+function clickOnDocument(e, doc, active, multiple) {
+  const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey || multiple;
 
   if (!specialkeyPressed) {
     this.props.unselectAllDocuments();
@@ -55,12 +55,12 @@ export function clickOnDocument(e, doc, active) {
   return this.props.selectDocument(doc);
 }
 
-export function selectAllDocuments() {
+function selectAllDocuments() {
   const docs = this.props.documents.get('rows');
   return this.props.selectDocuments(docs.toJS());
 }
 
-export function mapStateToProps(state, props) {
+function mapStateToProps(state, props) {
   return {
     documents: state[props.storeKey].documents,
     filters: state[props.storeKey].filters,
@@ -88,5 +88,7 @@ function mapDispatchToProps(dispatch, props) {
     wrapDispatch(dispatch, props.storeKey)
   );
 }
+
+export { clickOnDocument, selectAllDocuments, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DocumentsList);
