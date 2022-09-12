@@ -1,19 +1,7 @@
-import { ClientSession, Db, ObjectId } from 'mongodb';
-import { Transactional } from '../services/Transactional';
+import { ObjectId } from 'mongodb';
+import { MongoDataSource } from './MongoDataSource';
 
-export class RelationshipTypesDataSource implements Transactional<ClientSession> {
-  private db: Db;
-
-  private session?: ClientSession;
-
-  constructor(db: Db) {
-    this.db = db;
-  }
-
-  setTransactionContext(session: ClientSession): void {
-    this.session = session;
-  }
-
+export class RelationshipTypesDataSource extends MongoDataSource {
   async typesExist(ids: string[]) {
     const countInExistence = await this.db
       .collection('relationtypes')

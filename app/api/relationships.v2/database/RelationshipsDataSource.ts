@@ -1,8 +1,8 @@
-import { ClientSession, Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
-import { Transactional } from '../services/Transactional';
 import { CountDocument, MongoResultSet } from './MongoResultSet';
 import { mapFromObjectIds, mapToObjectIds } from './dbMapper';
+import { MongoDataSource } from './MongoDataSource';
 
 interface RelationshipDBO {
   _id: ObjectId;
@@ -23,19 +23,7 @@ interface RelationshipAggregatedResult {
   };
   type: string;
 }
-export class RelationshipsDataSource implements Transactional<ClientSession> {
-  private db: Db;
-
-  private session?: ClientSession;
-
-  constructor(db: Db) {
-    this.db = db;
-  }
-
-  setTransactionContext(session: ClientSession) {
-    this.session = session;
-  }
-
+export class RelationshipsDataSource extends MongoDataSource {
   private getCollection() {
     return this.db.collection<RelationshipDBO>('relationships');
   }

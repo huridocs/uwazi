@@ -1,20 +1,7 @@
-import { ClientSession, Db } from 'mongodb';
-import { Transactional } from '../services/Transactional';
+import { MongoDataSource } from './MongoDataSource';
 import { MongoResultSet } from './MongoResultSet';
 
-export class EntitiesDataSource implements Transactional<ClientSession> {
-  private db: Db;
-
-  private session?: ClientSession;
-
-  constructor(db: Db) {
-    this.db = db;
-  }
-
-  setTransactionContext(session: ClientSession): void {
-    this.session = session;
-  }
-
+export class EntitiesDataSource extends MongoDataSource {
   async entitiesExist(sharedIds: string[]) {
     const countInExistence = await this.db
       .collection('entities')

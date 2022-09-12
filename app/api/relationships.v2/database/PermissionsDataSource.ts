@@ -1,5 +1,6 @@
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { EntityPermissions } from '../model/EntityPermissions';
+import { MongoDataSource } from './MongoDataSource';
 import { MongoResultSet } from './MongoResultSet';
 
 interface EntityPermissionsDBO {
@@ -18,17 +19,14 @@ interface EntityPermissionsDBO {
   )[];
 }
 
-export class PermissionsDataSource {
-  private db: Db;
-
-  constructor(db: Db) {
-    this.db = db;
-  }
-
+export class PermissionsDataSource extends MongoDataSource {
   getByEntities(sharedIds: string[]) {
     const cursor = this.db
       .collection<EntityPermissionsDBO>('entities')
-      .find({ sharedId: { $in: sharedIds } }, { projection: { sharedId: 1, permissions: 1 } });
+      .find(
+        { sharedId: { $in: sharedIds } },
+        { projection: { sharedId: 1, permissions: 1 }, session: this.session }
+      );
     return new MongoResultSet(
       cursor,
       entityPermission =>

@@ -1,3 +1,3 @@
 export interface Transactional<ContextType> {
-  setTransactionContext(session: ContextType): void;
+  setTransactionContext(context: ContextType): void;
 }
