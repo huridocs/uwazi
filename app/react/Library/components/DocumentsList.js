@@ -13,10 +13,10 @@ import {
 } from 'app/Library/actions/libraryActions';
 import DocumentsList from '../../Layout/DocumentsList';
 
-function clickOnDocument(e, doc, active, multiple) {
-  const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey || multiple;
+function clickOnDocument(e, doc, active, multipleSelection) {
+  const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
 
-  if (!specialkeyPressed) {
+  if (!specialkeyPressed && !multipleSelection) {
     this.props.unselectAllDocuments();
   }
 

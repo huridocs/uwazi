@@ -111,6 +111,8 @@ describe('TableRow', () => {
     entity,
     columns: commonColumns.concat(templateColumns),
     clickOnDocument: clickOnDocumentSpy,
+    multipleSelection: false,
+    setMultipleSelection: () => {},
   };
 
   function render() {
@@ -157,7 +159,7 @@ describe('TableRow', () => {
         { ctrlKey: false, metaKey: false, shiftKey: true },
         entity,
         true,
-        false
+        true
       );
     });
   });

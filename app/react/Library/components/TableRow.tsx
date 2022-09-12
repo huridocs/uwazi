@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from 'app/istore';
@@ -14,6 +14,8 @@ interface TableRowProps {
   storeKey?: 'library' | 'uploads';
   selected?: boolean;
   clickOnDocument: (...args: any[]) => void;
+  multipleSelection: boolean;
+  setMultipleSelection: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const getColumnValue = (
@@ -43,7 +45,6 @@ const mapStateToProps = (state: IStore, { entity, storeKey = 'library' }: TableR
       ) !== undefined;
   return {
     selected,
-    selectionLength: state[storeKey].ui.get('selectedDocuments').size,
     templates: state.templates,
     thesauris: state.thesauris,
     zoomLevel: state[storeKey].ui.get('zoomLevel'),
@@ -60,20 +61,14 @@ const TableRowComponent = ({
   thesauris,
   columns,
   selected,
-  selectionLength,
+  multipleSelection,
+  setMultipleSelection,
   zoomLevel = 2,
 }: mappedProps) => {
-  const [multipleSelection, setMultipleSelection] = useState(false);
   const onRowClick = (e: React.MouseEvent, multiple: boolean) => {
     const { metaKey, ctrlKey, shiftKey } = e;
     clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multiple);
   };
-
-  useEffect(() => {
-    if (selectionLength > 1) {
-      setMultipleSelection(true);
-    }
-  }, [selectionLength]);
 
   const renderCell = (index: number, columnValue: FormattedMetadataValue) => {
     if (!index) {
@@ -85,8 +80,8 @@ const TableRowComponent = ({
               onChange={() => {}}
               checked={multipleSelection && selected}
               onClick={e => {
+                onRowClick(e, multipleSelection);
                 setMultipleSelection(true);
-                onRowClick(e, multipleSelection || selectionLength > 1);
                 e.stopPropagation();
               }}
             />
@@ -114,7 +109,7 @@ const TableRowComponent = ({
         const { metaKey, ctrlKey, shiftKey } = e;
         const specialkeyPressed = metaKey || ctrlKey || shiftKey;
         setMultipleSelection(specialkeyPressed);
-        onRowClick(e, false);
+        onRowClick(e, specialkeyPressed);
       }}
     >
       {columns.map((column: TableViewColumn, index: number) => {
@@ -129,4 +124,5 @@ const TableRowComponent = ({
     </tr>
   );
 };
+
 export const TableRow = connect(mapStateToProps)(TableRowComponent);

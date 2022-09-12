@@ -48,6 +48,8 @@ describe('TableRows', () => {
         columns: columnList,
         storeKey: props.storeKey,
         clickOnDocument: props.clickOnDocument,
+        multipleSelection: false,
+        setMultipleSelection: expect.any(Function),
       });
     });
   });
