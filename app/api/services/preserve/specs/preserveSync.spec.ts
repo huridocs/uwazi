@@ -13,13 +13,13 @@ import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
+// eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
-// eslint-disable-next-line node/no-restricted-import
-// eslint-disable-next-line node/no-restricted-import
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
