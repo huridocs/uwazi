@@ -56,6 +56,7 @@ describe('TableRow', () => {
     },
   ];
   const clickOnDocumentSpy = jasmine.createSpy('clickOnDocument');
+  const setMultipleSelectionSpy = jasmine.createSpy('setMultipleSelection');
   const timestampCreation = Date.UTC(2020, 6, 23).valueOf();
   const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
   const entity: IImmutable<EntitySchema> = Immutable.fromJS({
@@ -112,14 +113,15 @@ describe('TableRow', () => {
     columns: commonColumns.concat(templateColumns),
     clickOnDocument: clickOnDocumentSpy,
     multipleSelection: false,
-    setMultipleSelection: () => {},
+    setMultipleSelection: setMultipleSelectionSpy,
   };
 
-  function render() {
+  function render(multipleSelection: boolean = false) {
+    const actualProps = { ...props, multipleSelection };
     renderConnectedContainer(
       <table>
         <tbody>
-          <TableRow {...props} />
+          <TableRow {...actualProps} />
         </tbody>
       </table>,
       () => storeState
@@ -150,8 +152,21 @@ describe('TableRow', () => {
     });
   });
 
-  describe('onClick', () => {
-    it('should call props.onClick with the event', () => {
+  describe('row selection', () => {
+    it('should call clickOnDocument with multiple selection as false', () => {
+      render(true);
+      const row = screen.getByRole('row');
+      fireEvent.click(row);
+      expect(clickOnDocumentSpy).toHaveBeenCalledWith(
+        { ctrlKey: false, metaKey: false, shiftKey: false },
+        entity,
+        true,
+        false
+      );
+      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(false);
+    });
+
+    it('should call clickOnDocument with multiple selection with event information', () => {
       render();
       const row = screen.getByRole('row');
       fireEvent.click(row, { shiftKey: true });
@@ -161,6 +176,22 @@ describe('TableRow', () => {
         true,
         true
       );
+      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('checkbox marked', () => {
+    it('should call clickOnDocument with multiple selection as false', () => {
+      render(true);
+      const checkbox = screen.getByRole('checkbox');
+      fireEvent.click(checkbox);
+      expect(clickOnDocumentSpy).toHaveBeenCalledWith(
+        { ctrlKey: false, metaKey: false, shiftKey: false },
+        entity,
+        true,
+        true
+      );
+      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
     });
   });
 });

@@ -63,7 +63,7 @@ const TableRowComponent = ({
   setMultipleSelection,
   zoomLevel = 2,
 }: mappedProps) => {
-  const onRowClick = (e: React.MouseEvent, multiple: boolean) => {
+  const selectEntity = (e: React.MouseEvent, multiple: boolean) => {
     const { metaKey, ctrlKey, shiftKey } = e;
     clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multiple);
   };
@@ -78,7 +78,7 @@ const TableRowComponent = ({
               onChange={() => {}}
               checked={multipleSelection && selected}
               onClick={e => {
-                onRowClick(e, multipleSelection);
+                selectEntity(e, multipleSelection);
                 setMultipleSelection(true);
                 e.stopPropagation();
               }}
@@ -107,7 +107,7 @@ const TableRowComponent = ({
         const { metaKey, ctrlKey, shiftKey } = e;
         const specialkeyPressed = metaKey || ctrlKey || shiftKey;
         setMultipleSelection(specialkeyPressed);
-        onRowClick(e, specialkeyPressed);
+        selectEntity(e, specialkeyPressed);
       }}
     >
       {columns.map((column: TableViewColumn, index: number) => {
