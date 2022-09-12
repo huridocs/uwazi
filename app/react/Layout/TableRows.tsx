@@ -24,15 +24,13 @@ const TableRowsComponent = ({ documents, columns, clickOnDocument, storeKey }: m
     <>
       {documents.get('rows').map((entity: any) => (
         <TableRow
-          {...{
-            entity,
-            columns,
-            clickOnDocument,
-            storeKey,
-            key: entity.get('_id'),
-            setMultipleSelection,
-            multipleSelection,
-          }}
+          entity={entity}
+          columns={columns}
+          clickOnDocument={clickOnDocument}
+          storeKey={storeKey}
+          key={entity.get('_id')}
+          setMultipleSelection={setMultipleSelection}
+          multipleSelection={multipleSelection}
         />
       ))}
     </>

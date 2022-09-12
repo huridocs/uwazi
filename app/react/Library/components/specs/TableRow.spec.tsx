@@ -153,18 +153,25 @@ describe('TableRow', () => {
   });
 
   describe('row selection', () => {
-    it('should call clickOnDocument with multiple selection as false', () => {
-      render(true);
-      const row = screen.getByRole('row');
-      fireEvent.click(row);
-      expect(clickOnDocumentSpy).toHaveBeenCalledWith(
-        { ctrlKey: false, metaKey: false, shiftKey: false },
-        entity,
-        true,
-        false
-      );
-      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(false);
-    });
+    it.each`
+      roleToClick   | multipleCallExpected
+      ${'row'}      | ${false}
+      ${'checkbox'} | ${true}
+    `(
+      'should call clickOnDocument from $roleToClick with multiple selection as $multipleCallExpected',
+      () => {
+        render(true);
+        const row = screen.getByRole('row');
+        fireEvent.click(row);
+        expect(clickOnDocumentSpy).toHaveBeenCalledWith(
+          { ctrlKey: false, metaKey: false, shiftKey: false },
+          entity,
+          true,
+          false
+        );
+        expect(setMultipleSelectionSpy).toHaveBeenCalledWith(false);
+      }
+    );
 
     it('should call clickOnDocument with multiple selection with event information', () => {
       render();
@@ -172,21 +179,6 @@ describe('TableRow', () => {
       fireEvent.click(row, { shiftKey: true });
       expect(clickOnDocumentSpy).toHaveBeenCalledWith(
         { ctrlKey: false, metaKey: false, shiftKey: true },
-        entity,
-        true,
-        true
-      );
-      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
-    });
-  });
-
-  describe('checkbox marked', () => {
-    it('should call clickOnDocument with multiple selection as false', () => {
-      render(true);
-      const checkbox = screen.getByRole('checkbox');
-      fireEvent.click(checkbox);
-      expect(clickOnDocumentSpy).toHaveBeenCalledWith(
-        { ctrlKey: false, metaKey: false, shiftKey: false },
         entity,
         true,
         true
