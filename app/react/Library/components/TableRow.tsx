@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect, useState } from 'react';
 
 import { connect, ConnectedProps } from 'react-redux';
@@ -10,7 +11,7 @@ import { IImmutable } from 'shared/types/Immutable';
 interface TableRowProps {
   columns: TableViewColumn[];
   entity: IImmutable<EntitySchema>;
-  storeKey: 'library' | 'uploads';
+  storeKey?: 'library' | 'uploads';
   selected?: boolean;
   clickOnDocument: (...args: any[]) => void;
 }
@@ -33,20 +34,19 @@ const getColumnValue = (
   return columnValue;
 };
 
-const mapStateToProps = (state: IStore, ownProps: TableRowProps) => {
+const mapStateToProps = (state: IStore, { entity, storeKey = 'library' }: TableRowProps) => {
   const selected: boolean =
-    state[ownProps.storeKey].ui
+    state[storeKey].ui
       .get('selectedDocuments')
       .find(
-        (doc: IImmutable<EntitySchema> | undefined) =>
-          doc?.get('_id') === ownProps.entity.get('_id')
+        (doc: IImmutable<EntitySchema> | undefined) => doc?.get('_id') === entity.get('_id')
       ) !== undefined;
   return {
     selected,
-    selectionLength: state[ownProps.storeKey].ui.get('selectedDocuments').size,
+    selectionLength: state[storeKey].ui.get('selectedDocuments').size,
     templates: state.templates,
     thesauris: state.thesauris,
-    zoomLevel: state[ownProps.storeKey].ui.get('zoomLevel'),
+    zoomLevel: state[storeKey].ui.get('zoomLevel'),
   };
 };
 
@@ -63,12 +63,17 @@ const TableRowComponent = ({
   selectionLength,
   zoomLevel = 2,
 }: mappedProps) => {
-  const [rowSelection, setRowSelection] = useState(false);
-  const onRowClick = (e: { preventDefault: () => void }, multiple: boolean) => {
-    if (clickOnDocument) {
-      clickOnDocument(e, entity, selected, multiple);
-    }
+  const [multipleSelection, setMultipleSelection] = useState(false);
+  const onRowClick = (e: React.MouseEvent, multiple: boolean) => {
+    const { metaKey, ctrlKey, shiftKey } = e;
+    clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multiple);
   };
+
+  useEffect(() => {
+    if (selectionLength > 1) {
+      setMultipleSelection(true);
+    }
+  }, [selectionLength]);
 
   const renderCell = (index: number, columnValue: FormattedMetadataValue) => {
     if (!index) {
@@ -78,10 +83,10 @@ const TableRowComponent = ({
             <input
               type="checkbox"
               onChange={() => {}}
-              checked={(!rowSelection || selectionLength > 1) && selected}
+              checked={multipleSelection && selected}
               onClick={e => {
-                onRowClick(e, true);
-                setRowSelection(false);
+                setMultipleSelection(true);
+                onRowClick(e, multipleSelection || selectionLength > 1);
                 e.stopPropagation();
               }}
             />
@@ -106,9 +111,10 @@ const TableRowComponent = ({
     <tr
       className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}
       onClick={e => {
+        const { metaKey, ctrlKey, shiftKey } = e;
+        const specialkeyPressed = metaKey || ctrlKey || shiftKey;
+        setMultipleSelection(specialkeyPressed);
         onRowClick(e, false);
-        const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
-        setRowSelection(!specialkeyPressed);
       }}
     >
       {columns.map((column: TableViewColumn, index: number) => {
