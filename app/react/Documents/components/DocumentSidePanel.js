@@ -126,11 +126,17 @@ class DocumentSidePanel extends Component {
   }
 
   collapseRelationships() {
-    this.setState({ relationshipsExpanded: false });
+    // Toggles the states to force re-rendering
+    this.setState({ relationshipsExpanded: true }, () =>
+      this.setState({ relationshipsExpanded: false })
+    );
   }
 
   expandRelationships() {
-    this.setState({ relationshipsExpanded: true });
+    // Toggles the states to force re-rendering
+    this.setState({ relationshipsExpanded: false }, () =>
+      this.setState({ relationshipsExpanded: true })
+    );
   }
 
   renderHeader(tab, doc, isEntity) {
