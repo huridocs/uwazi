@@ -50,16 +50,23 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   async every(predicate: (item: U) => boolean): Promise<boolean> {
+    let result = true;
+
     while (await this.mongoCursor.hasNext()) {
       const item = await this.mongoCursor.next();
       const mappedItem = this.mapper(item!);
       if (predicate(mappedItem) === false) {
-        return false;
+        result = false;
+        break;
       }
     }
 
-    await this.mongoCursor.close();
-    return true;
+    await this.close();
+    return result;
+  }
+
+  async close() {
+    return Promise.all([this.countCursor?.close(), this.mongoCursor.close()]);
   }
 
   static NoOpMapper = <V>(item: V) => item;
