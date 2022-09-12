@@ -4,14 +4,12 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { TableRow } from 'app/Library/components/TableRow';
 import { IStore, TableViewColumn } from 'app/istore';
-import { IImmutable } from 'shared/types/Immutable';
 import { EntitySchema } from 'shared/types/entityType';
 
 interface TableRowsProps {
   columns: TableViewColumn[];
   storeKey: 'library' | 'uploads';
   clickOnDocument: (e: React.SyntheticEvent, doc: EntitySchema, active: boolean) => any;
-  documents: IImmutable<{ rows: EntitySchema[] }>;
 }
 const mapStateToProps = (state: IStore, props: TableRowsProps) => ({
   documents: state[props.storeKey].documents,
