@@ -1,15 +1,8 @@
-import { ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
 import { CountDocument, MongoResultSet } from './MongoResultSet';
-import { mapFromObjectIds, mapToObjectIds } from './dbMapper';
 import { MongoDataSource } from './MongoDataSource';
-
-interface RelationshipDBO {
-  _id: ObjectId;
-  from: string;
-  to: string;
-  type: ObjectId;
-}
+import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
+import { RelationshipMappers } from './RelationshipMappers';
 
 interface RelationshipAggregatedResult {
   _id: string;
@@ -23,6 +16,7 @@ interface RelationshipAggregatedResult {
   };
   type: string;
 }
+
 export class RelationshipsDataSource extends MongoDataSource {
   private getCollection() {
     return this.db.collection<RelationshipDBO>('relationships');
@@ -31,11 +25,11 @@ export class RelationshipsDataSource extends MongoDataSource {
   async insert(relationship: Relationship): Promise<Relationship> {
     const {
       ops: [created],
-    } = (await this.getCollection().insertOne(mapToObjectIds(relationship, ['_id', 'type']), {
+    } = (await this.getCollection().insertOne(RelationshipMappers.toDBO(relationship), {
       session: this.session,
     })) as { ops: RelationshipDBO[] };
 
-    return mapFromObjectIds(created, ['_id', 'type']);
+    return RelationshipMappers.toModel(created);
   }
 
   getByEntity(sharedId: string) {
@@ -50,17 +44,6 @@ export class RelationshipsDataSource extends MongoDataSource {
         $count: 'total',
       },
     ]);
-
-    interface JoinedRelationshipDBO extends Omit<RelationshipDBO, 'from' | 'to'> {
-      from: {
-        sharedId: string;
-        title: string;
-      }[];
-      to: {
-        sharedId: string;
-        title: string;
-      }[];
-    }
 
     const dataCursor = this.getCollection().aggregate<JoinedRelationshipDBO>([
       matchStage,
@@ -85,20 +68,7 @@ export class RelationshipsDataSource extends MongoDataSource {
     return new MongoResultSet<JoinedRelationshipDBO, RelationshipAggregatedResult>(
       dataCursor,
       totalCursor,
-      relationship => {
-        const mapped = mapFromObjectIds(relationship, ['_id', 'type']);
-        return {
-          ...mapped,
-          from: {
-            sharedId: relationship.from[0]?.sharedId,
-            title: relationship.from[0]?.title,
-          },
-          to: {
-            sharedId: relationship.to[0]?.sharedId,
-            title: relationship.to[0]?.title,
-          },
-        };
-      }
+      RelationshipMappers.toAggegatedResult
     );
   }
 }
