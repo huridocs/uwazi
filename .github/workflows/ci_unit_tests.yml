@@ -32,6 +32,12 @@ jobs:
         options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
       mongodb:
         image: mongo:4.2.6
+        options: >-
+          --entrypoint '/usr/bin/mongod', '--replSet', 'uwazi_replica_set'
+          --health-cmd "test $$(mongo --quiet --eval 'rs.initiate().ok || rs.status().ok') -eq 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 27017:27017
       redis:
