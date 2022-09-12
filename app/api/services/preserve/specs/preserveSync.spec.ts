@@ -13,13 +13,13 @@ import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { URL } from 'url';
-import { preserveSync } from '../preserveSync';
-import { preserveSyncModel } from '../preserveSyncModel';
-import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+import { preserveSync } from '../preserveSync';
+import { preserveSyncModel } from '../preserveSyncModel';
+import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -66,7 +66,7 @@ describe('preserveSync', () => {
 
   beforeAll(async () => {
     await db.connect({ defaultTenant: false });
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     db.UserInContextMockFactory.restore();
     backend.restore();
 
@@ -93,6 +93,7 @@ describe('preserveSync', () => {
       downloads: [
         { path: `/evidences/id${number}/content${number}.txt` },
         { path: `/evidences/id${number}/screenshot${number}.jpg` },
+        { path: `/evidences/id${number}/stream${number}` },
       ],
     },
   });
@@ -197,32 +198,97 @@ describe('preserveSync', () => {
           [
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content1.txt' },
-                { filename: expect.any(String), originalname: 'screenshot1.jpg' },
+                {
+                  filename: expect.any(String),
+                  originalname: 'content1.txt',
+                  mimetype: 'text/plain',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'screenshot1.jpg',
+                  mimetype: 'image/jpeg',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'stream1',
+                  mimetype: 'application/octet-stream',
+                },
               ],
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content2.txt' },
-                { filename: expect.any(String), originalname: 'screenshot2.jpg' },
+                {
+                  filename: expect.any(String),
+                  originalname: 'content2.txt',
+                  mimetype: 'text/plain',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'screenshot2.jpg',
+                  mimetype: 'image/jpeg',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'stream2',
+                  mimetype: 'application/octet-stream',
+                },
               ],
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content3.txt' },
-                { filename: expect.any(String), originalname: 'screenshot3.jpg' },
+                {
+                  filename: expect.any(String),
+                  originalname: 'content3.txt',
+                  mimetype: 'text/plain',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'screenshot3.jpg',
+                  mimetype: 'image/jpeg',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'stream3',
+                  mimetype: 'application/octet-stream',
+                },
               ],
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content4.txt' },
-                { filename: expect.any(String), originalname: 'screenshot4.jpg' },
+                {
+                  filename: expect.any(String),
+                  originalname: 'content4.txt',
+                  mimetype: 'text/plain',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'screenshot4.jpg',
+                  mimetype: 'image/jpeg',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'stream4',
+                  mimetype: 'application/octet-stream',
+                },
               ],
             },
             {
               attachments: [
-                { filename: expect.any(String), originalname: 'content5.txt' },
-                { filename: expect.any(String), originalname: 'screenshot5.jpg' },
+                {
+                  filename: expect.any(String),
+                  originalname: 'content5.txt',
+                  mimetype: 'text/plain',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'screenshot5.jpg',
+                  mimetype: 'image/jpeg',
+                },
+                {
+                  filename: expect.any(String),
+                  originalname: 'stream5',
+                  mimetype: 'application/octet-stream',
+                },
               ],
             },
           ].sort()
