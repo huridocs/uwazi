@@ -19,7 +19,6 @@ export class LibraryTable extends RouteHandler {
         viewer={TableViewer}
         location={this.props.location}
         sidePanelMode="unpinned-mode"
-        noScrollable
       />
     );
   }
