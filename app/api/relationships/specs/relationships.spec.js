@@ -229,6 +229,11 @@ describe('relationships', () => {
           : savedItem.entityData.template,
       };
 
+      delete deletions.$clusterTime;
+      delete deletions.opTime;
+      delete deletions.operationTime;
+      delete deletions.electionId;
+
       return [[savedItem], deletions];
     };
 
