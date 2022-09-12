@@ -13,7 +13,7 @@ import {
 } from 'app/Library/actions/libraryActions';
 import DocumentsList from '../../Layout/DocumentsList';
 
-function clickOnDocument(e, doc, active, multipleSelection) {
+function clickOnDocument(e, doc, active, multipleSelection = false) {
   const specialkeyPressed = e.metaKey || e.ctrlKey || e.shiftKey;
 
   if (!specialkeyPressed && !multipleSelection) {

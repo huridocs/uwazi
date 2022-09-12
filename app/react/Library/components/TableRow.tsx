@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from 'react';
-
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from 'app/istore';
 import formatter from 'app/Metadata/helpers/formater';

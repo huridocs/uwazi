@@ -74,6 +74,20 @@ describe('Library DocumentsList container', () => {
         expect(props.selectDocuments).toHaveBeenCalledWith(documents.toJS().rows);
       });
     });
+
+    describe('when multipleSelection is true', () => {
+      it('should keep the previous selected documents', () => {
+        props.selectedDocuments = Immutable.fromJS([{ _id: '1' }]);
+        render();
+        const e = {};
+        const doc = Immutable.fromJS({ _id: '3' });
+        const active = false;
+        const multipleSelection = true;
+        clickOnDocument.call(instance, e, doc, active, multipleSelection);
+        expect(props.unselectAllDocuments).not.toHaveBeenCalled();
+        expect(props.selectDocument).toHaveBeenCalledWith(doc);
+      });
+    });
   });
 
   describe('maped state', () => {
