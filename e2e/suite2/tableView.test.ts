@@ -8,6 +8,8 @@ import { adminLogin, logout } from '../helpers/login';
 import disableTransitions from '../helpers/disableTransitions';
 
 describe('Table view', () => {
+  const sidePanelItemNameSelector = '.sidepanel-body .item-name';
+
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();
@@ -74,7 +76,6 @@ describe('Table view', () => {
 
     it('Should open the selected entity in the side panel', async () => {
       const rowCheckboxSelector = ".tableview-wrapper .sticky-col input[type='checkbox']";
-      const sidePanelItemNameSelector = '.sidepanel-body .item-name';
       const entityTitle = await page.$$eval(rowCheckboxSelector, columns => {
         (<HTMLInputElement>columns[4]).click();
         return columns[4].textContent;
@@ -82,6 +83,36 @@ describe('Table view', () => {
       await page.waitForSelector(sidePanelItemNameSelector);
       await expect(page).toMatchElement(sidePanelItemNameSelector, {
         text: entityTitle?.toString(),
+      });
+    });
+
+    it('should show multiple selection panel when several entities are checked', async () => {
+      const rowCheckboxSelector = ".tableview-wrapper .sticky-col input[type='checkbox']";
+      await page.$$eval(rowCheckboxSelector, columns =>
+        columns
+          .filter((_column, index) => [3, 6, 9, 12].includes(index))
+          .forEach(column => {
+            (<HTMLInputElement>column).click();
+          })
+      );
+      await expect(page).toMatchElement('div.sidepanel-header > span', { text: '5 selected' });
+      await expect(page).toMatchElement('div.sidepanel-body > ul > li:nth-child(1) > span', {
+        text: 'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012',
+      });
+      await expect(page).toMatchElement('div.sidepanel-body > ul > li:nth-child(2) > span', {
+        text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
+      });
+      await expect(page).toMatchElement('div.sidepanel-body > ul > li:nth-child(5) > span', {
+        text: 'Alvarez et al. Order of the President. August 14, 1997',
+      });
+    });
+
+    it('should uncheck selected rows and show the clicked entity row on the side panel', async () => {
+      const rowSelector = 'div.tableview-wrapper > table > tbody > tr:nth-child(2)';
+      await expect(page).toClick(rowSelector);
+      await expect(page).not.toMatchElement('div.sidepanel-header > span', { text: '5 selected' });
+      await expect(page).toMatchElement(sidePanelItemNameSelector, {
+        text: 'Artavia Murillo y otros',
       });
     });
 
