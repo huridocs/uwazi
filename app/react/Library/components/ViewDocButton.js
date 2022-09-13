@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
-import { t, I18NLink } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import url from 'url';
@@ -56,7 +56,7 @@ export class ViewDocButton extends Component {
         className="btn btn-default btn-xs view-doc"
         onClick={this.onClick}
       >
-        <Icon icon={icon} directionAware /> {t('System', 'View')}
+        <Icon icon={icon} directionAware /> <Translate>View</Translate>
       </I18NLink>
     );
   }
