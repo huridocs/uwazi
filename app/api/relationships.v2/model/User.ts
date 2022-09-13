@@ -12,4 +12,8 @@ export class User {
     this.role = role;
     this.groups = groups;
   }
+
+  isPrivileged() {
+    return ['admin', 'editor'].includes(this.role);
+  }
 }

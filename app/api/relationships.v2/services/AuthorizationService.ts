@@ -15,7 +15,7 @@ export class AuthorizationService {
   }
 
   private isPrivileged() {
-    return this.authenticatedUser && ['admin', 'editor'].includes(this.authenticatedUser.role);
+    return this.authenticatedUser && this.authenticatedUser.isPrivileged();
   }
 
   private getRelatedPermissionsSets(sharedIds: string[]) {
