@@ -3,6 +3,8 @@ import { CountDocument, MongoResultSet } from './MongoResultSet';
 import { MongoDataSource } from './MongoDataSource';
 import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
 import { RelationshipMappers } from './RelationshipMappers';
+import { RelationshipsQuery } from '../services/RelationshipsQuery';
+import { buildAggregationPipeline } from './GraphQueryBuilder';
 
 interface RelationshipAggregatedResult {
   _id: string;
@@ -15,6 +17,10 @@ interface RelationshipAggregatedResult {
     title: string;
   };
   type: string;
+}
+
+function unrollTraversal({ traversal, ...rest }: any): any {
+  return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
 }
 
 export class RelationshipsDataSource extends MongoDataSource {
@@ -70,5 +76,12 @@ export class RelationshipsDataSource extends MongoDataSource {
       totalCursor,
       RelationshipMappers.toAggegatedResult
     );
+  }
+
+  async getByQuery(query: RelationshipsQuery) {
+    const pipeline = buildAggregationPipeline(query);
+    const cursor = this.db.collection('entities').aggregate(pipeline);
+
+    return (await cursor.toArray()).map(unrollTraversal);
   }
 }
