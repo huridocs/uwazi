@@ -351,7 +351,7 @@ class DocumentSidePanel extends Component {
         <ShowIf if={this.props.tab === 'relationships'}>
           <div className="sidepanel-footer">
             <div className="relationships-left-buttons">
-              <ViewDocButton icon="file-image" sharedId={doc.get('sharedId')} />
+              <ViewDocButton icon="file" sharedId={doc.get('sharedId')} />
             </div>
             <div className="relationships-right-buttons">
               <button

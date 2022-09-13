@@ -7,8 +7,8 @@ import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 
-import { ShowMetadata, MetadataFormButtons, MetadataForm, actions } from 'app/Metadata';
-import ViewDocButton from 'app/Library/components/ViewDocButton';
+import { ShowMetadata, MetadataForm, actions } from 'app/Metadata';
+import { Translate, I18NLink } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { api as entitiesAPI } from 'app/Entities';
@@ -117,6 +117,19 @@ class RelationshipMetadata extends Component {
 
   render() {
     const twoColumns = this.state.copyFrom ? 'two-columns' : '';
+    const ViewButton = (
+      <I18NLink
+        to={`entity/${this.props.entity.sharedId}`}
+        className="btn btn-default"
+        tabIndex="0"
+      >
+        <Icon icon="file" />
+        <span className="btn-label">
+          <Translate>View</Translate>
+        </span>
+      </I18NLink>
+    );
+
     return (
       <SidePanel
         open={this.props.selectedConnection}
@@ -132,9 +145,7 @@ class RelationshipMetadata extends Component {
           </button>
         )}
         <div className="sidepanel-body">{this.renderBody()}</div>
-        <div className="sidepanel-footer">
-          {!this.state.copyFrom && <ViewDocButton sharedId={this.props.entity.sharedId} />}
-        </div>
+        <div className="sidepanel-footer">{!this.state.copyFrom && ViewButton}</div>
       </SidePanel>
     );
   }
