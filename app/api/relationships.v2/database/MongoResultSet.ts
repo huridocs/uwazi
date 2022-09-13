@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { Cursor } from 'mongodb';
+import { AggregationCursor, Cursor } from 'mongodb';
 import { ResultSet } from '../services/ResultSet';
 
 type MapperFunc<T, U> = (elem: T) => U;
@@ -14,7 +14,11 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   constructor(mongoCursor: Cursor<T>, mapper: MapperFunc<T, U>);
 
-  constructor(mongoCursor: Cursor<T>, countCursor: Cursor<CountDocument>, mapper: MapperFunc<T, U>);
+  constructor(
+    mongoCursor: AggregationCursor<T>,
+    countCursor: AggregationCursor<CountDocument>,
+    mapper: MapperFunc<T, U>
+  );
 
   constructor(
     mongoCursor: Cursor<T>,
@@ -49,10 +53,13 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return result.map(this.mapper);
   }
 
+  // eslint-disable-next-line max-statements
   async every(predicate: (item: U) => boolean): Promise<boolean> {
     let result = true;
+    let counter = 0;
 
     while (await this.mongoCursor.hasNext()) {
+      counter += 1;
       const item = await this.mongoCursor.next();
       const mappedItem = this.mapper(item!);
       if (predicate(mappedItem) === false) {
@@ -62,7 +69,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     }
 
     await this.close();
-    return result;
+    return counter > 0 && result;
   }
 
   async close() {
