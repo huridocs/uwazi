@@ -175,6 +175,7 @@ describe('When getting by query', () => {
               traverse: [
                 {
                   direction: 'in',
+                  types: [factory.id('relType3').toHexString()],
                   match: [
                     {
                       templates: [
@@ -193,13 +194,6 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
-      [
-        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel1'), type: factory.id('nullType') },
-        { _id: factory.id('hub1-en'), sharedId: 'hub1' },
-        { _id: factory.id('rel3'), type: factory.id('relType1') },
-        { _id: factory.id('entity4-en'), sharedId: 'entity4' },
-      ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },

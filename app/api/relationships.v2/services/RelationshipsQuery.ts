@@ -12,6 +12,7 @@ export interface InternalNodeQuery extends NodeQuery {
 
 export interface EdgeQuery {
   direction: 'in' | 'out';
+  types?: string[];
   match: InternalNodeQuery[];
 }
 

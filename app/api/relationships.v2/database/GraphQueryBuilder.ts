@@ -65,7 +65,7 @@ const lookupEntity = (sourceField: 'from' | 'to', templates: ObjectId[], nested:
   },
 ];
 
-const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
+const lookupRelationship = (targetField: 'from' | 'to', types: ObjectId[], nested: object[]) => [
   {
     $lookup: {
       as: 'traversal',
@@ -78,6 +78,7 @@ const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
               $and: [
                 { $eq: ['$$sharedId', `$${targetField}`] },
                 { $not: [{ $in: ['$_id', '$$visited'] }] },
+                ...(types.length ? [{ $in: ['$type', types] }] : []),
               ],
             },
           },
@@ -130,6 +131,7 @@ function mapTraversal(subquery: EdgeQuery): object[] {
 
   return lookupRelationship(
     directionToField[subquery.direction],
+    (subquery.types || []).map(t => new ObjectId(t)),
     subquery.match.reduce<object[]>(
       (nested, submatch) => nested.concat(mapMatch(submatch, nextField)),
       []
