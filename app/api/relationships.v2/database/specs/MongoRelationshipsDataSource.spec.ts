@@ -53,7 +53,7 @@ describe('When getting by query', () => {
       ],
     };
 
-    const result = await ds.getByQuery(query);
+    const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -89,7 +89,7 @@ describe('When getting by query', () => {
       ],
     };
 
-    const result = await ds.getByQuery(query);
+    const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -105,6 +105,47 @@ describe('When getting by query', () => {
         { _id: factory.id('rel3'), type: factory.id('relType1') },
         { _id: factory.id('entity4-en'), sharedId: 'entity4' },
       ],
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+        { _id: factory.id('rel5'), type: factory.id('relType2') },
+        { _id: factory.id('entity5-en'), sharedId: 'entity5' },
+      ],
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+        { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+  });
+
+  it('should be paginable', async () => {
+    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const query: RelationshipsQuery = {
+      sharedId: 'entity1',
+      traverse: [
+        {
+          direction: 'out',
+          match: [
+            {
+              traverse: [
+                {
+                  direction: 'in',
+                  match: [{}],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = await ds.getByQuery(query).page(2, 2);
+    expect(result.total).toBe(4);
+    expect(result.data).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },

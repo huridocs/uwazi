@@ -78,10 +78,15 @@ export class RelationshipsDataSource extends MongoDataSource {
     );
   }
 
-  async getByQuery(query: RelationshipsQuery) {
+  getByQuery(query: RelationshipsQuery) {
     const pipeline = buildAggregationPipeline(query);
     const cursor = this.db.collection('entities').aggregate(pipeline);
-    const all = await cursor.toArray();
-    return all.map(unrollTraversal);
+    const count = this.db.collection('entities').aggregate([
+      ...pipeline,
+      {
+        $count: 'total',
+      },
+    ]);
+    return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
   }
 }
