@@ -11,9 +11,6 @@ describe('TableRows', () => {
     { _id: 'entity2ID', title: 'entity2' },
     { _id: 'entity3ID', title: 'entity3' },
   ];
-  const documents = Immutable.fromJS({
-    rows,
-  });
 
   const columnList = [
     { name: 'date', label: 'Date', hidden: false },
@@ -27,28 +24,35 @@ describe('TableRows', () => {
     clickOnDocument: jasmine.createSpy('clickOnDocumentApply'),
     onEndScroll,
   };
+  const documents = Immutable.fromJS({
+    rows,
+  });
   const storeState = {
-    library: { documents },
+    library: {
+      documents,
+      ui: Immutable.fromJS({ selectedDocuments: [{ _id: 'entity1' }, { _id: 'entity2' }] }),
+    },
   };
 
   function render() {
     component = renderConnected(TableRows, props, storeState);
   }
 
-  describe('tablerow', () => {
-    render();
+  describe('tablerows', () => {
     it('should display a table row for each document listed', () => {
+      render();
       const row = component.find(TableRow);
       expect(row.length).toBe(3);
     });
     it('should pass to each row the columns and the document', () => {
+      render();
       const row = component.find(TableRow);
       expect(row.at(0).props()).toEqual({
         entity: documents.get('rows').get(0),
         columns: columnList,
         storeKey: props.storeKey,
         clickOnDocument: props.clickOnDocument,
-        multipleSelection: false,
+        multipleSelection: true,
         setMultipleSelection: expect.any(Function),
       });
     });

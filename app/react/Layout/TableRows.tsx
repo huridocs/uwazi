@@ -13,13 +13,20 @@ interface TableRowsProps {
 }
 const mapStateToProps = (state: IStore, props: TableRowsProps) => ({
   documents: state[props.storeKey].documents,
+  selectionLength: state[props.storeKey].ui.get('selectedDocuments').size,
 });
 
 const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector> & TableRowsProps;
 
-const TableRowsComponent = ({ documents, columns, clickOnDocument, storeKey }: mappedProps) => {
-  const [multipleSelection, setMultipleSelection] = useState(false);
+const TableRowsComponent = ({
+  documents,
+  columns,
+  clickOnDocument,
+  storeKey,
+  selectionLength,
+}: mappedProps) => {
+  const [multipleSelection, setMultipleSelection] = useState(selectionLength > 1);
   return (
     <>
       {documents.get('rows').map((entity: any) => (
