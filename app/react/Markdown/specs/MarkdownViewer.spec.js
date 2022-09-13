@@ -34,7 +34,7 @@ describe('MarkdownViewer', () => {
         expect(component).toMatchSnapshot();
       });
 
-      it('shuld not render when its not a string', () => {
+      it('should not render when its not a string', () => {
         props.markdown = [];
         render();
 
