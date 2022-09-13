@@ -80,13 +80,16 @@ export class RelationshipsDataSource extends MongoDataSource {
 
   getByQuery(query: RelationshipsQuery) {
     const pipeline = buildAggregationPipeline(query);
-    const cursor = this.db.collection('entities').aggregate(pipeline);
-    const count = this.db.collection('entities').aggregate([
-      ...pipeline,
-      {
-        $count: 'total',
-      },
-    ]);
+    const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
+    const count = this.db.collection('entities').aggregate(
+      [
+        ...pipeline,
+        {
+          $count: 'total',
+        },
+      ],
+      { session: this.session }
+    );
     return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
   }
 }
