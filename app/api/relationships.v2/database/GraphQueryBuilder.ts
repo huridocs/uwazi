@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { EdgeQuery, InternalNodeQuery, RelationshipsQuery } from '../services/RelationshipsQuery';
 
 const lookupRoot = (sharedId: string, nested: object[]) => [
@@ -23,7 +24,7 @@ const lookupRoot = (sharedId: string, nested: object[]) => [
   },
 ];
 
-const lookupEntity = (sourceField: 'from' | 'to', nested: object[]) => [
+const lookupEntity = (sourceField: 'from' | 'to', templates: ObjectId[], nested: object[]) => [
   {
     $lookup: {
       as: 'traversal',
@@ -33,7 +34,10 @@ const lookupEntity = (sourceField: 'from' | 'to', nested: object[]) => [
         {
           $match: {
             $expr: {
-              $eq: [`$$${sourceField}`, '$sharedId'],
+              $and: [
+                { $eq: [`$$${sourceField}`, '$sharedId'] },
+                ...(templates.length ? [{ $in: ['$template', templates] }] : []),
+              ],
             },
           },
         },
@@ -101,6 +105,7 @@ const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
 function mapMatch(subquery: InternalNodeQuery, field: 'to' | 'from'): object[] {
   return lookupEntity(
     field,
+    (subquery.templates || []).map(t => new ObjectId(t)),
     (subquery.traverse || []).reduce<object[]>(
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       (nested, traversal) => nested.concat(mapTraversal(traversal)),

@@ -7,7 +7,7 @@ export interface RootNodeQuery extends NodeQuery {
 }
 
 export interface InternalNodeQuery extends NodeQuery {
-  //
+  templates?: string[];
 }
 
 export interface EdgeQuery {

@@ -22,7 +22,7 @@ const fixtures = {
     factory.entity('entity2'),
     factory.entity('hub1', 'formerHubsTemplate'),
     factory.entity('entity3', 'template2'),
-    factory.entity('entity4', 'template2'),
+    factory.entity('entity4', 'template4'),
     factory.entity('hub2', 'formerHubsTemplate'),
     factory.entity('entity5', 'template2'),
     factory.entity('entity6', 'template3'),
@@ -152,6 +152,53 @@ describe('When getting by query', () => {
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
         { _id: factory.id('rel5'), type: factory.id('relType2') },
         { _id: factory.id('entity5-en'), sharedId: 'entity5' },
+      ],
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+        { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+  });
+
+  it('should allow to add filters to the query', async () => {
+    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const query: RelationshipsQuery = {
+      sharedId: 'entity1',
+      traverse: [
+        {
+          direction: 'out',
+          match: [
+            {
+              traverse: [
+                {
+                  direction: 'in',
+                  match: [
+                    {
+                      templates: [
+                        factory.id('template3').toHexString(),
+                        factory.id('template4').toHexString(),
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = await ds.getByQuery(query).all();
+    expect(result).toEqual([
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel1'), type: factory.id('nullType') },
+        { _id: factory.id('hub1-en'), sharedId: 'hub1' },
+        { _id: factory.id('rel3'), type: factory.id('relType1') },
+        { _id: factory.id('entity4-en'), sharedId: 'entity4' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
