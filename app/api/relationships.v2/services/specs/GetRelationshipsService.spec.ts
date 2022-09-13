@@ -1,10 +1,16 @@
 import { getConnection } from 'api/relationships.v2/database/getConnectionForCurrentTenant';
+import { generateId } from 'api/relationships.v2/database/MongoIdGenerator';
+import { PermissionsDataSource } from 'api/relationships.v2/database/PermissionsDataSource';
 import { RelationshipsDataSource } from 'api/relationships.v2/database/RelationshipsDataSource';
+import { User } from 'api/relationships.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { AuthorizationService } from '../AuthorizationService';
 import { GetRelationshipsService } from '../GetRelationshipsService';
 
 const factory = getFixturesFactory();
+
+const mockUser = new User(generateId(), 'admin', []);
 
 const fixtures = {
   relationships: [
@@ -33,10 +39,13 @@ afterAll(async () => {
 
 describe('when getting the relationships for an entity', () => {
   it('should return the incoming and outcomming relationships, paginated', async () => {
-    const service = new GetRelationshipsService(new RelationshipsDataSource(getConnection()));
+    const service = new GetRelationshipsService(
+      new RelationshipsDataSource(getConnection()),
+      new AuthorizationService(new PermissionsDataSource(getConnection()), mockUser)
+    );
 
-    const page1 = await service.getByEntity('entity1').page(1, 2);
-    const page2 = await service.getByEntity('entity1').page(2, 2);
+    const page1 = await (await service.getByEntity('entity1')).page(1, 2);
+    const page2 = await (await service.getByEntity('entity1')).page(2, 2);
 
     expect(page1).toEqual({
       data: [
