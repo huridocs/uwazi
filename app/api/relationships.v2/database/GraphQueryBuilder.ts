@@ -6,6 +6,11 @@ const lookupRoot = (sharedId: string, nested: object[]) => [
       sharedId,
     },
   },
+  {
+    $addFields: {
+      visited: [],
+    },
+  },
   ...nested,
   {
     $project: {
@@ -23,13 +28,18 @@ const lookupEntity = (sourceField: 'from' | 'to', nested: object[]) => [
     $lookup: {
       as: 'traversal',
       from: 'entities',
-      let: { [sourceField]: `$${sourceField}` },
+      let: { [sourceField]: `$${sourceField}`, visited: '$visited' },
       pipeline: [
         {
           $match: {
             $expr: {
               $eq: [`$$${sourceField}`, '$sharedId'],
             },
+          },
+        },
+        {
+          $addFields: {
+            visited: '$$visited',
           },
         },
         ...nested,
@@ -56,13 +66,21 @@ const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
     $lookup: {
       as: 'traversal',
       from: 'relationships',
-      let: { sharedId: '$sharedId' },
+      let: { sharedId: '$sharedId', visited: '$visited' },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$$sharedId', `$${targetField}`],
+              $and: [
+                { $eq: ['$$sharedId', `$${targetField}`] },
+                { $not: [{ $in: ['$_id', '$$visited'] }] },
+              ],
             },
+          },
+        },
+        {
+          $addFields: {
+            visited: { $concatArrays: ['$$visited', ['$_id']] },
           },
         },
         ...nested,
@@ -80,17 +98,18 @@ const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
   },
 ];
 
-function mapMatch(subquery: InternalNodeQuery, field: 'to' | 'from') {
+function mapMatch(subquery: InternalNodeQuery, field: 'to' | 'from'): object[] {
   return lookupEntity(
     field,
     (subquery.traverse || []).reduce<object[]>(
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       (nested, traversal) => nested.concat(mapTraversal(traversal)),
       []
     )
   );
 }
 
-function mapTraversal(subquery: EdgeQuery) {
+function mapTraversal(subquery: EdgeQuery): object[] {
   const directionToField = {
     in: 'to',
     out: 'from',

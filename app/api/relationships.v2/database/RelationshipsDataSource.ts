@@ -81,7 +81,7 @@ export class RelationshipsDataSource extends MongoDataSource {
   async getByQuery(query: RelationshipsQuery) {
     const pipeline = buildAggregationPipeline(query);
     const cursor = this.db.collection('entities').aggregate(pipeline);
-
-    return (await cursor.toArray()).map(unrollTraversal);
+    const all = await cursor.toArray();
+    return all.map(unrollTraversal);
   }
 }
