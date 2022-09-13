@@ -80,8 +80,14 @@ const lookupRelationship = (targetField: 'from' | 'to', nested: object[]) => [
   },
 ];
 
-function mapMatch(_subquery: InternalNodeQuery, field: 'to' | 'from') {
-  return lookupEntity(field, []);
+function mapMatch(subquery: InternalNodeQuery, field: 'to' | 'from') {
+  return lookupEntity(
+    field,
+    (subquery.traverse || []).reduce<object[]>(
+      (nested, traversal) => nested.concat(mapTraversal(traversal)),
+      []
+    )
+  );
 }
 
 function mapTraversal(subquery: EdgeQuery) {
