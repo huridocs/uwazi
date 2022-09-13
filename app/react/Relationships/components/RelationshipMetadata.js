@@ -8,6 +8,7 @@ import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 
 import { ShowMetadata, MetadataFormButtons, MetadataForm, actions } from 'app/Metadata';
+import ViewDocButton from 'app/Library/components/ViewDocButton';
 import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { api as entitiesAPI } from 'app/Entities';
@@ -132,17 +133,7 @@ class RelationshipMetadata extends Component {
         )}
         <div className="sidepanel-body">{this.renderBody()}</div>
         <div className="sidepanel-footer">
-          {!this.state.copyFrom && (
-            <MetadataFormButtons
-              data={Immutable.fromJS(this.props.entity)}
-              delete={this.deleteDocument}
-              formStatePath="relationships.metadata"
-              entityBeingEdited={this.props.entityBeingEdited}
-              copyFrom={this.toggleCopyFrom}
-              hideDelete={this.props.hubsBeingEdited}
-              includeViewButton={false}
-            />
-          )}
+          {!this.state.copyFrom && <ViewDocButton sharedId={this.props.entity.sharedId} />}
         </div>
       </SidePanel>
     );
