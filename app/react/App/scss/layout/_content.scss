@@ -87,6 +87,18 @@
   }
 }
 
-.documents-list .main-wrapper {
-  overflow-y: hidden;
+.library-viewer.document-viewer.unpinned-mode {
+
+  @media (max-width: 1023px) {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      display: none;
+    }
+  }
 }
