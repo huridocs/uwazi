@@ -178,6 +178,7 @@ $c-sidebar: $c-white;
     border-top: 0;
     border-left: 0;
     border-right: 0;
+    border-bottom: 0;
     border-radius: 0;
     box-shadow: none;
     &:before {
@@ -262,8 +263,8 @@ $c-sidebar: $c-white;
         align-items: flex-start;
         padding: 8px 16px;
         gap: 9px;
-        background: #eeeeee;
-        border: 1px solid #d7d7dc;
+        background: #d7d7d7;
+        border: 1px solid #d7d7d7;
       }
       .sidepanel-relationship-right {
         padding: 7px 10px 7px 10px;
@@ -296,6 +297,23 @@ $c-sidebar: $c-white;
               gap: 9px;
               .item-document {
                 z-index: -1;
+                padding-bottom: 0;
+                min-height: 0;
+
+                .item-info {
+                  padding: 5px 10px;
+                }
+                .item-metadata {
+                  display: none;
+                }
+                .item-actions {
+                  padding: 0;
+                  height: auto;
+                  padding: 0 10px 10px;
+                  -webkit-align-items: center;
+                  align-items: center;
+                  position: relative;
+                }
               }
             }
           }
