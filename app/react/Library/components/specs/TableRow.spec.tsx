@@ -178,17 +178,17 @@ describe('TableRow', () => {
       }
     );
 
-    it('should call clickOnDocument without multiple selection with event information', () => {
+    it('should call clickOnDocument with multiple selection with event information', () => {
       render();
       const row = screen.getByRole('row');
-      fireEvent.click(row, { shiftKey: true });
+      fireEvent.click(row, { ctrlKey: true });
       expect(clickOnDocumentSpy).toHaveBeenCalledWith(
-        { ctrlKey: false, metaKey: false, shiftKey: true },
+        { ctrlKey: true, metaKey: false, shiftKey: false },
         entity,
         true,
-        false
+        true
       );
-      expect(setMultipleSelectionSpy).not.toHaveBeenCalledWith(true);
+      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
     });
 
     it('should not call clickOnDocument if there is text selected', () => {
