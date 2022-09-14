@@ -74,7 +74,7 @@ export class RelationshipsDataSource extends MongoDataSource {
     return new MongoResultSet<JoinedRelationshipDBO, RelationshipAggregatedResult>(
       dataCursor,
       totalCursor,
-      RelationshipMappers.toAggegatedResult
+      RelationshipMappers.toAggregatedResult
     );
   }
 

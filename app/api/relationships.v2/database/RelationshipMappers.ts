@@ -21,7 +21,7 @@ export const RelationshipMappers = {
     );
   },
 
-  toAggegatedResult(joined: JoinedRelationshipDBO) {
+  toAggregatedResult(joined: JoinedRelationshipDBO) {
     return {
       _id: joined._id.toHexString(),
       from: {
