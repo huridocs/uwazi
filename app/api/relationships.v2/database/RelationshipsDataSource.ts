@@ -43,8 +43,8 @@ const entityArraySchema = {
     required: ['sharedId', 'title'],
   },
 };
-const RelationshipBlueprint = new DataBlueprint(RelationshipSchema);
-const JoinedRelationshipDBBlueprint = RelationshipBlueprint.substitute({
+const relationshipBlueprint = new DataBlueprint(RelationshipSchema);
+const JoinedRelationshipDBBlueprint = relationshipBlueprint.substitute({
   from: entityArraySchema,
   to: entityArraySchema,
 });
@@ -59,11 +59,14 @@ export class RelationshipsDataSource extends MongoDataSource {
   }
 
   async insert(relationship: Relationship): Promise<Relationship> {
+    const item = RelationshipMappers.toDBO(relationship);
+    relationshipBlueprint.validate(item);
     const {
       ops: [created],
-    } = (await this.getCollection().insertOne(RelationshipMappers.toDBO(relationship), {
+    } = (await this.getCollection().insertOne(item, {
       session: this.session,
     })) as { ops: RelationshipDBO[] };
+    relationshipBlueprint.validate(created);
 
     return RelationshipMappers.toModel(created);
   }
