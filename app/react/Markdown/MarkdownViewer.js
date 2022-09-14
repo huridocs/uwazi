@@ -102,6 +102,10 @@ class MarkdownViewer extends Component {
   render() {
     this.renderedLists = 0;
 
+    if (typeof this.props.markdown !== 'string') {
+      return false;
+    }
+
     const ReactFromMarkdown = markdownToReact(
       this.props.markdown,
       this.customComponent.bind(this),

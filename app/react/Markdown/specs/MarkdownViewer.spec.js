@@ -26,12 +26,19 @@ describe('MarkdownViewer', () => {
   };
 
   describe('render', () => {
-    describe('when markdown is empty', () => {
-      it('should not render anything', () => {
+    describe('when markdown is invalid', () => {
+      it('should not render anything when its empty', () => {
         props.markdown = '';
-
         render();
+
         expect(component).toMatchSnapshot();
+      });
+
+      it('should not render when its not a string', () => {
+        props.markdown = [];
+        render();
+
+        expect(component.isEmptyRender()).toBe(true);
       });
     });
 
