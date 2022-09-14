@@ -13,4 +13,8 @@ export abstract class MongoDataSource implements Transactional<ClientSession> {
   setTransactionContext(session: ClientSession) {
     this.session = session;
   }
+
+  clearTransactionContext(): void {
+    this.session = undefined;
+  }
 }

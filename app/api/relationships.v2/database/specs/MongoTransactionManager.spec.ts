@@ -23,13 +23,19 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-class Transactional1 implements Transactional<ClientSession> {
-  private session?: ClientSession;
+abstract class TestBase implements Transactional<ClientSession> {
+  protected session?: ClientSession;
 
   setTransactionContext(session: ClientSession): void {
     this.session = session;
   }
 
+  clearTransactionContext(): void {
+    this.session = undefined;
+  }
+}
+
+class Transactional1 extends TestBase {
   async do() {
     await testingDB.mongodb
       ?.collection('collection1')
@@ -40,13 +46,7 @@ class Transactional1 implements Transactional<ClientSession> {
   }
 }
 
-class Transactional2 implements Transactional<ClientSession> {
-  private session?: ClientSession;
-
-  setTransactionContext(session: ClientSession): void {
-    this.session = session;
-  }
-
+class Transactional2 extends TestBase {
   async do() {
     await testingDB.mongodb
       ?.collection('collection2')
@@ -54,13 +54,7 @@ class Transactional2 implements Transactional<ClientSession> {
   }
 }
 
-class Transactional3 implements Transactional<ClientSession> {
-  private session?: ClientSession;
-
-  setTransactionContext(session: ClientSession): void {
-    this.session = session;
-  }
-
+class Transactional3 extends TestBase {
   async do() {
     return testingDB
       .mongodb!.collection('collection1')
@@ -73,6 +67,7 @@ describe('When every operation goes well', () => {
   let transactionResult: any;
   beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
+    const source1 = new Transactional1();
     transactionResult = await transactionManager.run(
       async (t1, t2, t3) => {
         await t1.do();
@@ -81,7 +76,7 @@ describe('When every operation goes well', () => {
 
         return result;
       },
-      new Transactional1(),
+      source1,
       new Transactional2(),
       new Transactional3()
     );

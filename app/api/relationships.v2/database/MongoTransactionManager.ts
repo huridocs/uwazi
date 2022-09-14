@@ -22,6 +22,9 @@ export class MongoTransactionManager implements TransactionManager {
         returnValue = await callback(...deps);
       })
     );
+    deps.forEach(dep => {
+      dep.clearTransactionContext();
+    });
     return returnValue!;
   }
 }
