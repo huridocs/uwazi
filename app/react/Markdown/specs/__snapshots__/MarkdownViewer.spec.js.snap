@@ -466,7 +466,7 @@ exports[`MarkdownViewer render should support containers with custom classNames 
 </div>
 `;
 
-exports[`MarkdownViewer render when markdown is empty should not render anything 1`] = `""`;
+exports[`MarkdownViewer render when markdown is invalid should not render anything when its empty 1`] = `""`;
 
 exports[`MarkdownViewer render when not valid html should not fail 1`] = `
 <div
