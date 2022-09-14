@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { fromJS as Immutable } from 'immutable';
 import { Collapsible } from 'app/App/Collapsible';
@@ -62,7 +62,7 @@ describe('LibraryViewRelationships', () => {
     expect(collapsibleProps.collapse).toEqual(true);
   });
 
-  it('should not show labels if none is available', () => {
+  it('should not show default labels if none available', () => {
     const customProps = {
       ...props,
       hubs: Immutable([
@@ -87,6 +87,9 @@ describe('LibraryViewRelationships', () => {
       ]),
     };
     render(customProps);
-    expect(component.find('.sidepanel-relationship-left-label').exists()).toEqual(false);
+    const label = component.find('.sidepanel-relationship-left-label');
+    expect(label.exists()).toEqual(true);
+    // @ts-ignore
+    expect((label.props().children as ReactNode)?.props).toEqual({ icon: 'link' });
   });
 });

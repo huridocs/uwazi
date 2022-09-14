@@ -35,7 +35,7 @@ class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
-    this.state = { copyFrom: false, copyFromProps: [], relationshipsExpanded: false };
+    this.state = { copyFrom: false, copyFromProps: [], relationshipsExpanded: true };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
