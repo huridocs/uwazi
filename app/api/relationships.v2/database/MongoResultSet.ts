@@ -1,9 +1,14 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, Cursor } from 'mongodb';
 import { ResultSet } from '../services/ResultSet';
-import { DataBlueprint } from '../validation/dataBlueprint';
 
-type MapperFunc<T, U> = (elem: T) => U;
+interface MapperFunc<T, U> {
+  (elem: T): U;
+}
+
+interface Validator {
+  validate: (data: unknown) => void;
+}
 
 export type CountDocument = { total: number };
 export class MongoResultSet<T, U = T> implements ResultSet<U> {
@@ -13,27 +18,27 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   private countCursor?: Cursor<CountDocument>;
 
-  private dbBlueprint: DataBlueprint;
+  private validator: Validator;
 
-  constructor(mongoCursor: Cursor<T>, dbBlueprint: DataBlueprint, mapper: MapperFunc<T, U>);
+  constructor(mongoCursor: Cursor<T>, validator: Validator, mapper: MapperFunc<T, U>);
 
   constructor(
     mongoCursor: AggregationCursor<T>,
-    dbBlueprint: DataBlueprint,
+    validator: Validator,
     countCursor: AggregationCursor<CountDocument>,
     mapper: MapperFunc<T, U>
   );
 
   constructor(
     mongoCursor: Cursor<T>,
-    dbBlueprint: DataBlueprint,
+    validator: Validator,
     countOrMapper: Cursor<CountDocument> | MapperFunc<T, U>,
     mapper?: MapperFunc<T, U>
   ) {
     this.mongoCursor = mongoCursor;
     this.countCursor = typeof countOrMapper === 'function' ? undefined : countOrMapper;
     this.mapper = typeof countOrMapper === 'function' ? countOrMapper : mapper!;
-    this.dbBlueprint = dbBlueprint;
+    this.validator = validator;
   }
 
   private async getTotal() {
@@ -61,7 +66,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   async next() {
     const item = await this.mongoCursor.next();
     if (item) {
-      this.dbBlueprint.validate(item);
+      this.validator.validate(item);
       const mappedItem = this.mapper(item!);
       return mappedItem;
     }
@@ -71,7 +76,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   async all() {
     const result = await this.mongoCursor.toArray();
     result.forEach(r => {
-      this.dbBlueprint.validate(r);
+      this.validator.validate(r);
     });
     const mapped = result.map(this.mapper);
     return mapped;
@@ -99,4 +104,6 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   static NoOpMapper = <V>(item: V) => item;
+
+  static NoOpValidator = { validate: <V>(_item: V) => {} };
 }
