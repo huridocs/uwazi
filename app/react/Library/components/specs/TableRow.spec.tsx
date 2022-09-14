@@ -137,7 +137,7 @@ describe('TableRow', () => {
   });
 
   describe('columns format', () => {
-    it('should render a column with the expected columns', () => {
+    it('should render a row with the expected columns', () => {
       render();
       const renderedColumns = screen.getAllByRole('cell');
       const content = renderedColumns.map(col => col.textContent);
