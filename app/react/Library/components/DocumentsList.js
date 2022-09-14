@@ -20,7 +20,7 @@ function clickOnDocument(e, doc, active, multipleSelection = false) {
     this.props.unselectAllDocuments();
   }
 
-  if (active && !specialkeyPressed) {
+  if (active && !specialkeyPressed && !multipleSelection) {
     return this.props.selectDocument(doc);
   }
 

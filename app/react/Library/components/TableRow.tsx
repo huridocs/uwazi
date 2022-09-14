@@ -63,9 +63,21 @@ const TableRowComponent = ({
   setMultipleSelection,
   zoomLevel = 2,
 }: mappedProps) => {
-  const selectEntity = (e: React.MouseEvent, multiple: boolean) => {
+  const checkEntity = (e: React.MouseEvent) => {
     const { metaKey, ctrlKey, shiftKey } = e;
-    clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multiple);
+    clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, multipleSelection);
+    setMultipleSelection(true);
+    e.stopPropagation();
+  };
+
+  const selectRow = (e: React.MouseEvent) => {
+    const sel = window.getSelection();
+    if (sel?.type !== 'Range') {
+      const { metaKey, ctrlKey, shiftKey } = e;
+      const specialkeyPressed = metaKey || ctrlKey || shiftKey;
+      setMultipleSelection(specialkeyPressed);
+      clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, specialkeyPressed);
+    }
   };
 
   const renderCell = (index: number, columnValue: FormattedMetadataValue) => {
@@ -73,16 +85,21 @@ const TableRowComponent = ({
       return (
         <div>
           {!index && (
-            <input
-              type="checkbox"
-              onChange={() => {}}
-              checked={multipleSelection && selected}
+            <div
+              className="checkbox-cell"
               onClick={e => {
-                selectEntity(e, multipleSelection);
-                setMultipleSelection(true);
-                e.stopPropagation();
+                if (!index) {
+                  checkEntity(e);
+                }
               }}
-            />
+            >
+              <input
+                type="checkbox"
+                onChange={() => {}}
+                checked={multipleSelection && selected}
+                onClick={checkEntity}
+              />
+            </div>
           )}
           <TableCell content={columnValue} zoomLevel={zoomLevel} />
         </div>
@@ -103,12 +120,7 @@ const TableRowComponent = ({
   return (
     <tr
       className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}
-      onClick={e => {
-        const { metaKey, ctrlKey, shiftKey } = e;
-        const specialkeyPressed = metaKey || ctrlKey || shiftKey;
-        setMultipleSelection(specialkeyPressed);
-        selectEntity(e, specialkeyPressed);
-      }}
+      onClick={selectRow}
     >
       {columns.map((column: TableViewColumn, index: number) => {
         const columnValue = getColumnValue(formattedEntity, columnValues, column);

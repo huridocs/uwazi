@@ -76,7 +76,7 @@ describe('Library DocumentsList container', () => {
     });
 
     describe('when multipleSelection is true', () => {
-      it('should keep the previous selected documents', () => {
+      it('should keep the previous selection and select the new one', () => {
         props.selectedDocuments = Immutable.fromJS([{ _id: '1' }]);
         render();
         const e = {};
@@ -86,6 +86,19 @@ describe('Library DocumentsList container', () => {
         clickOnDocument.call(instance, e, doc, active, multipleSelection);
         expect(props.unselectAllDocuments).not.toHaveBeenCalled();
         expect(props.selectDocument).toHaveBeenCalledWith(doc);
+      });
+
+      it('should keep the previous selection and unselect the active one ', () => {
+        props.selectedDocuments = Immutable.fromJS([{ _id: '1' }]);
+        render();
+        const e = {};
+        const doc = Immutable.fromJS({ _id: '3' });
+        const active = true;
+        const multipleSelection = true;
+        clickOnDocument.call(instance, e, doc, active, multipleSelection);
+        expect(props.unselectAllDocuments).not.toHaveBeenCalled();
+        expect(props.selectDocument).not.toHaveBeenCalled();
+        expect(props.unselectDocument).toHaveBeenCalledWith('3');
       });
     });
   });

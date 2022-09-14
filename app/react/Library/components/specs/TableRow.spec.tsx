@@ -55,8 +55,8 @@ describe('TableRow', () => {
       hidden: false,
     },
   ];
-  const clickOnDocumentSpy = jasmine.createSpy('clickOnDocument');
-  const setMultipleSelectionSpy = jasmine.createSpy('setMultipleSelection');
+  const clickOnDocumentSpy = jest.fn();
+  const setMultipleSelectionSpy = jest.fn();
   const timestampCreation = Date.UTC(2020, 6, 23).valueOf();
   const timestampProperty = Math.floor(Date.UTC(2019, 4, 20).valueOf() / 1000);
   const entity: IImmutable<EntitySchema> = Immutable.fromJS({
@@ -153,6 +153,11 @@ describe('TableRow', () => {
   });
 
   describe('row selection', () => {
+    beforeEach(() => {
+      clickOnDocumentSpy.mockClear();
+      setMultipleSelectionSpy.mockClear();
+    });
+
     it.each`
       roleToClick   | multipleCallExpected
       ${'row'}      | ${false}
@@ -184,6 +189,15 @@ describe('TableRow', () => {
         true
       );
       expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
+    });
+
+    it('should not call clickOnDocument if there is text selected', () => {
+      render();
+      spyOn(window, 'getSelection').and.returnValue({ type: 'Range' });
+      const row = screen.getByRole('row');
+      fireEvent.click(row, { type: 'Range' });
+      expect(clickOnDocumentSpy).not.toHaveBeenCalled();
+      expect(setMultipleSelectionSpy).not.toHaveBeenCalled();
     });
   });
 });
