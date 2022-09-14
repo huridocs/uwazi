@@ -4,7 +4,7 @@ import { MongoDataSource } from './MongoDataSource';
 import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipsQuery } from '../services/RelationshipsQuery';
-import { buildAggregationPipeline } from './GraphQueryBuilder';
+import { parseRelationshipQuery } from './GraphQueryBuilder';
 import { DataBlueprint } from '../validation/dataBlueprint';
 
 interface RelationshipAggregatedResult {
@@ -113,7 +113,8 @@ export class RelationshipsDataSource extends MongoDataSource {
   }
 
   getByQuery(query: RelationshipsQuery) {
-    const pipeline = buildAggregationPipeline(query);
+    const parser = parseRelationshipQuery(query);
+    const pipeline = parser.compile();
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
       [
@@ -124,6 +125,8 @@ export class RelationshipsDataSource extends MongoDataSource {
       ],
       { session: this.session }
     );
-    return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
+    return new MongoResultSet(cursor, MongoResultSet.NoOpValidator, count, elem =>
+      unrollTraversal(elem)
+    );
   }
 }

@@ -1,121 +1,24 @@
+/* eslint-disable import/exports-last */
 import { ObjectId } from 'mongodb';
 import { EdgeQuery, InternalNodeQuery, RelationshipsQuery } from '../services/RelationshipsQuery';
+import { MatchQueryNode } from './graphs/MatchQueryNode';
+import { QueryNode } from './graphs/QueryNode';
+import { RootQueryNode } from './graphs/RootQueryNode';
+import { TraversalQueryNode } from './graphs/TraversalQueryNode';
 
-const lookupRoot = (sharedId: string, nested: object[]) => [
-  {
-    $match: {
-      sharedId,
-    },
-  },
-  {
-    $addFields: {
-      visited: [],
-    },
-  },
-  ...nested,
-  {
-    $project: {
-      sharedId: 1,
-      traversal: 1,
-    },
-  },
-  {
-    $unwind: '$traversal',
-  },
-];
-
-const lookupEntity = (sourceField: 'from' | 'to', templates: ObjectId[], nested: object[]) => [
-  {
-    $lookup: {
-      as: 'traversal',
-      from: 'entities',
-      let: { [sourceField]: `$${sourceField}`, visited: '$visited' },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: [`$$${sourceField}`, '$sharedId'] },
-                ...(templates.length ? [{ $in: ['$template', templates] }] : []),
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            visited: '$$visited',
-          },
-        },
-        ...nested,
-        {
-          $project: {
-            sharedId: 1,
-            traversal: 1,
-          },
-        },
-        ...(nested.length
-          ? [
-              {
-                $unwind: '$traversal',
-              },
-            ]
-          : []),
-      ],
-    },
-  },
-];
-
-const lookupRelationship = (targetField: 'from' | 'to', types: ObjectId[], nested: object[]) => [
-  {
-    $lookup: {
-      as: 'traversal',
-      from: 'relationships',
-      let: { sharedId: '$sharedId', visited: '$visited' },
-      pipeline: [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ['$$sharedId', `$${targetField}`] },
-                { $not: [{ $in: ['$_id', '$$visited'] }] },
-                ...(types.length ? [{ $in: ['$type', types] }] : []),
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            visited: { $concatArrays: ['$$visited', ['$_id']] },
-          },
-        },
-        ...nested,
-        {
-          $project: {
-            type: 1,
-            traversal: 1,
-          },
-        },
-        {
-          $unwind: '$traversal',
-        },
-      ],
-    },
-  },
-];
-
-function mapMatch(subquery: InternalNodeQuery, field: 'to' | 'from'): object[] {
-  return lookupEntity(
-    field,
-    (subquery.templates || []).map(t => new ObjectId(t)),
-    (subquery.traverse || []).reduce<object[]>(
+function parseMatch(subquery: InternalNodeQuery, field: 'to' | 'from') {
+  const templates = subquery.templates?.map(template => new ObjectId(template)) || [];
+  const node = new MatchQueryNode(field, templates);
+  if (subquery.traverse) {
+    subquery.traverse.forEach(traversal => {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      (nested, traversal) => nested.concat(mapTraversal(traversal)),
-      []
-    )
-  );
+      node.addTraversal(parseTraversal(traversal));
+    });
+  }
+  return node;
 }
 
-function mapTraversal(subquery: EdgeQuery): object[] {
+function parseTraversal(subquery: EdgeQuery) {
   const directionToField = {
     in: 'to',
     out: 'from',
@@ -129,22 +32,21 @@ function mapTraversal(subquery: EdgeQuery): object[] {
   const field = directionToField[subquery.direction];
   const nextField = otherField[field];
 
-  return lookupRelationship(
-    directionToField[subquery.direction],
-    (subquery.types || []).map(t => new ObjectId(t)),
-    subquery.match.reduce<object[]>(
-      (nested, submatch) => nested.concat(mapMatch(submatch, nextField)),
-      []
-    )
-  );
+  const types = subquery.types?.map(type => new ObjectId(type)) || [];
+
+  const node = new TraversalQueryNode(field, types);
+  subquery.match.forEach(match => {
+    node.addMatch(parseMatch(match, nextField));
+  });
+  return node;
 }
 
-export function buildAggregationPipeline(query: RelationshipsQuery) {
-  return lookupRoot(
-    query.sharedId,
-    (query.traverse || []).reduce<object[]>(
-      (nested, subtraversal) => nested.concat(mapTraversal(subtraversal)),
-      []
-    )
-  );
+export function parseRelationshipQuery(query: RelationshipsQuery): QueryNode {
+  const node = new RootQueryNode(query.sharedId);
+  if (query.traverse) {
+    query.traverse.forEach(subquery => {
+      node.addTraversal(parseTraversal(subquery));
+    });
+  }
+  return node;
 }
