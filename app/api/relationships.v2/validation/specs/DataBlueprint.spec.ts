@@ -33,7 +33,6 @@ const foreignSchemaB = {
 const testSchema = {
   type: 'object',
   additionalProperties: false,
-  title: 'FileType',
   definitions: { subSchema },
   properties: {
     mainString: { type: 'string', minLength: 1 },
