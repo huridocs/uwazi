@@ -5,6 +5,7 @@ import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipsQuery } from '../services/RelationshipsQuery';
 import { buildAggregationPipeline } from './GraphQueryBuilder';
+import { DataBlueprint } from '../validation/dataBlueprint';
 
 interface RelationshipAggregatedResult {
   _id: string;
@@ -18,6 +19,35 @@ interface RelationshipAggregatedResult {
   };
   type: string;
 }
+
+const RelationshipSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    _id: { type: 'object' },
+    from: { type: 'string' },
+    to: { type: 'string' },
+    type: { type: 'object' },
+  },
+  required: ['_id', 'from', 'to', 'type'],
+};
+const entityArraySchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: true,
+    properties: {
+      sharedId: { type: 'string' },
+      title: { type: 'string' },
+    },
+    required: ['sharedId', 'title'],
+  },
+};
+const RelationshipBlueprint = new DataBlueprint(RelationshipSchema);
+const JoinedRelationshipDBBlueprint = RelationshipBlueprint.substitute({
+  from: entityArraySchema,
+  to: entityArraySchema,
+});
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -73,6 +103,7 @@ export class RelationshipsDataSource extends MongoDataSource {
 
     return new MongoResultSet<JoinedRelationshipDBO, RelationshipAggregatedResult>(
       dataCursor,
+      JoinedRelationshipDBBlueprint,
       totalCursor,
       RelationshipMappers.toAggregatedResult
     );
