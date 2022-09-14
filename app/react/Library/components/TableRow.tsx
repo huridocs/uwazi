@@ -79,24 +79,6 @@ const TableRowComponent = ({
       clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, specialkeyPressed);
     }
   };
-
-  const renderCell = (index: number, columnValue: FormattedMetadataValue) =>
-    index > 0 ? (
-      <TableCell content={columnValue} zoomLevel={zoomLevel} />
-    ) : (
-      <div>
-        <div className="checkbox-cell" onClick={checkEntity}>
-          <input
-            type="checkbox"
-            onChange={() => {}}
-            checked={multipleSelection && selected}
-            onClick={checkEntity}
-          />
-        </div>
-        <TableCell content={columnValue} zoomLevel={zoomLevel} />
-      </div>
-    );
-
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
     sortedProperties: ['editDate', 'creationDate'],
   });
@@ -105,20 +87,38 @@ const TableRowComponent = ({
     columnValues.set(prop.name, prop);
   });
 
+  const cells = columns.map((column: TableViewColumn) => {
+    const key = formattedEntity._id + column.name;
+    const value = getColumnValue(formattedEntity, columnValues, column);
+    return { key, value };
+  });
+  const [firstCell, ...rowCells] = cells;
+
   return (
     <tr
       className={`template-${formattedEntity.template} ${selected ? 'selected' : ''}`}
       onClick={selectRow}
     >
-      {columns.map((column: TableViewColumn, index: number) => {
-        const columnValue = getColumnValue(formattedEntity, columnValues, column);
-        const columnKey = formattedEntity._id + column.name;
-        return (
-          <td className={!index ? 'sticky-col' : ''} key={`column_${columnKey}`}>
-            {renderCell(index, columnValue)}
-          </td>
-        );
-      })}
+      {firstCell && (
+        <td className="sticky-col">
+          <div>
+            <div className="checkbox-cell" onClick={checkEntity}>
+              <input
+                type="checkbox"
+                onChange={() => {}}
+                checked={multipleSelection && selected}
+                onClick={checkEntity}
+              />
+            </div>
+            <TableCell content={firstCell.value} zoomLevel={zoomLevel} />
+          </div>
+        </td>
+      )}
+      {rowCells.map(({ key, value }) => (
+        <td key={`column_${key}`}>
+          <TableCell content={value} zoomLevel={zoomLevel} />
+        </td>
+      ))}
     </tr>
   );
 };
