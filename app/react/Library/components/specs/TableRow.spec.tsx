@@ -178,7 +178,7 @@ describe('TableRow', () => {
       }
     );
 
-    it('should call clickOnDocument with multiple selection with event information', () => {
+    it('should call clickOnDocument without multiple selection with event information', () => {
       render();
       const row = screen.getByRole('row');
       fireEvent.click(row, { shiftKey: true });
@@ -186,9 +186,9 @@ describe('TableRow', () => {
         { ctrlKey: false, metaKey: false, shiftKey: true },
         entity,
         true,
-        true
+        false
       );
-      expect(setMultipleSelectionSpy).toHaveBeenCalledWith(true);
+      expect(setMultipleSelectionSpy).not.toHaveBeenCalledWith(true);
     });
 
     it('should not call clickOnDocument if there is text selected', () => {

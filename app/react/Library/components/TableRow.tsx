@@ -71,13 +71,20 @@ const TableRowComponent = ({
   };
 
   const selectRow = (e: React.MouseEvent) => {
+    const { metaKey, ctrlKey, shiftKey } = e;
     const sel = window.getSelection();
-    if (sel?.type !== 'Range') {
-      const { metaKey, ctrlKey, shiftKey } = e;
-      const specialkeyPressed = metaKey || ctrlKey || shiftKey;
-      setMultipleSelection(specialkeyPressed);
-      clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, specialkeyPressed);
+
+    if (sel?.type === 'Range' && !ctrlKey) {
+      return null;
     }
+
+    if (ctrlKey) {
+      setMultipleSelection(true);
+      return clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, true);
+    }
+
+    setMultipleSelection(false);
+    return clickOnDocument({ metaKey, ctrlKey, shiftKey }, entity, selected, false);
   };
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
     sortedProperties: ['editDate', 'creationDate'],
