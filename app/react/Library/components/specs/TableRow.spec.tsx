@@ -164,17 +164,17 @@ describe('TableRow', () => {
       ${'checkbox'} | ${true}
     `(
       'should call clickOnDocument from $roleToClick with multiple selection as $multipleCallExpected',
-      () => {
+      ({ roleToClick, multipleCallExpected }) => {
         render(true);
-        const row = screen.getByRole('row');
+        const row = screen.getByRole(roleToClick);
         fireEvent.click(row);
         expect(clickOnDocumentSpy).toHaveBeenCalledWith(
           { ctrlKey: false, metaKey: false, shiftKey: false },
           entity,
           true,
-          false
+          multipleCallExpected
         );
-        expect(setMultipleSelectionSpy).toHaveBeenCalledWith(false);
+        expect(setMultipleSelectionSpy).toHaveBeenCalledWith(multipleCallExpected);
       }
     );
 

@@ -80,34 +80,22 @@ const TableRowComponent = ({
     }
   };
 
-  const renderCell = (index: number, columnValue: FormattedMetadataValue) => {
-    if (!index) {
-      return (
-        <div>
-          {!index && (
-            <div
-              className="checkbox-cell"
-              onClick={e => {
-                if (!index) {
-                  checkEntity(e);
-                }
-              }}
-            >
-              <input
-                type="checkbox"
-                onChange={() => {}}
-                checked={multipleSelection && selected}
-                onClick={checkEntity}
-              />
-            </div>
-          )}
-          <TableCell content={columnValue} zoomLevel={zoomLevel} />
+  const renderCell = (index: number, columnValue: FormattedMetadataValue) =>
+    index > 0 ? (
+      <TableCell content={columnValue} zoomLevel={zoomLevel} />
+    ) : (
+      <div>
+        <div className="checkbox-cell" onClick={checkEntity}>
+          <input
+            type="checkbox"
+            onChange={() => {}}
+            checked={multipleSelection && selected}
+            onClick={checkEntity}
+          />
         </div>
-      );
-    }
-
-    return <TableCell content={columnValue} zoomLevel={zoomLevel} />;
-  };
+        <TableCell content={columnValue} zoomLevel={zoomLevel} />
+      </div>
+    );
 
   const formattedEntity = formatter.prepareMetadata(entity.toJS(), templates, thesauris, null, {
     sortedProperties: ['editDate', 'creationDate'],
