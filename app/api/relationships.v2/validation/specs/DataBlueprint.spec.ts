@@ -51,10 +51,7 @@ const testSchema = {
   ],
 };
 
-const testBlueprint = new DataBlueprint(testSchema, {
-  pointerToForeignSchemaA: foreignSchemaA,
-  pointerToForeignSchemaB: foreignSchemaB,
-});
+const testBlueprint = new DataBlueprint(testSchema);
 
 describe('DataBlueprint', () => {
   describe('validate()', () => {
@@ -81,9 +78,15 @@ describe('DataBlueprint', () => {
     });
   });
 
-  describe('resolve()', () => {
-    it('should validate resolving one', () => {
-      testBlueprint.resolve(['pointerToForeignSchemaA']).validate({
+  describe('substitute()', () => {
+    const substitutedA = testBlueprint.substitute({ pointerToForeignSchemaA: foreignSchemaA });
+    const substitutedAB = testBlueprint.substitute({
+      pointerToForeignSchemaA: foreignSchemaA,
+      pointerToForeignSchemaB: foreignSchemaB,
+    });
+
+    it('should validate after substituting one', () => {
+      substitutedA.validate({
         mainString: 'a',
         mainNumber: 1,
         subValue: {
@@ -98,9 +101,9 @@ describe('DataBlueprint', () => {
       });
     });
 
-    it('should fail resolving one', () => {
+    it('should fail properly after substituting one', () => {
       expect(() => {
-        testBlueprint.resolve(['pointerToForeignSchemaA']).validate({
+        substitutedA.validate({
           mainString: 'a',
           mainNumber: 1,
           subValue: {
@@ -117,8 +120,8 @@ describe('DataBlueprint', () => {
       }).toThrow(ValidationError);
     });
 
-    it('should validate resolving two', () => {
-      testBlueprint.resolve(['pointerToForeignSchemaA', 'pointerToForeignSchemaB']).validate({
+    it('should validate after substituting two', () => {
+      substitutedAB.validate({
         mainString: 'a',
         mainNumber: 1,
         subValue: {
@@ -136,9 +139,9 @@ describe('DataBlueprint', () => {
       });
     });
 
-    it('should fail resolving two', () => {
+    it('should fail substituting two', () => {
       expect(() => {
-        testBlueprint.resolve(['pointerToForeignSchemaA', 'pointerToForeignSchemaB']).validate({
+        substitutedAB.validate({
           mainString: 'a',
           mainNumber: 1,
           subValue: {

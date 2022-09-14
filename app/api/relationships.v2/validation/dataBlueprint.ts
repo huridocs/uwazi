@@ -17,45 +17,33 @@ class DataBlueprint {
 
   readonly ajvSchema: AnySchemaObject;
 
-  private defaultValidator: ValidateFunction;
+  private validator: ValidateFunction;
 
   private subPrints: PrintMap = new Map();
 
-  private subSchemas: SchemaMap;
-
-  constructor(ajvSchema: AnySchemaObject, subSchemas: SchemaMap = {}) {
+  constructor(ajvSchema: AnySchemaObject) {
     this.ajvSchema = ajvSchema;
-    this.defaultValidator = this.ajvInstance.compile(this.ajvSchema);
-    this.subSchemas = subSchemas;
+    this.validator = this.ajvInstance.compile(this.ajvSchema);
   }
 
   validate(obj: any) {
-    const valid = this.defaultValidator(obj);
+    const valid = this.validator(obj);
     if (!valid) {
-      const err = new ValidationError(this.defaultValidator.errors || []);
+      const err = new ValidationError(this.validator.errors || []);
       err.message = util.inspect(err, false, null);
       throw err;
     }
   }
 
-  resolve(_props: string[]) {
-    const props = _props.sort();
-
-    if (this.subPrints.has(props)) return this.subPrints.get(props) as DataBlueprint;
-
-    console.log('calculating', props);
-
+  substitute(propToSchema: SchemaMap) {
     const resolvedSchema = _.cloneDeep(this.ajvSchema);
-    const resolvedSubSchemas = _.cloneDeep(this.subSchemas);
-    props.forEach(name => {
-      resolvedSchema.properties[name] = this.subSchemas[name];
-      delete resolvedSubSchemas[name];
+    Object.entries(propToSchema).forEach(([prop, schema]) => {
+      resolvedSchema.properties[prop] = schema;
     });
 
     const resolvedBlueprint = new DataBlueprint(resolvedSchema);
-    this.subPrints.set(props, resolvedBlueprint);
 
-    return this.subPrints.get(props) as DataBlueprint;
+    return resolvedBlueprint;
   }
 }
 
