@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { QueryNode } from './QueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
 
-export class MatchQueryNode implements QueryNode {
+export class MatchQueryNode extends QueryNode {
   private sourceField: string;
 
   private templates: ObjectId[];
@@ -10,40 +10,24 @@ export class MatchQueryNode implements QueryNode {
   private traversals: TraversalQueryNode[] = [];
 
   constructor(sourceField: 'from' | 'to', templates: ObjectId[]) {
+    super();
     this.sourceField = sourceField;
     this.templates = templates;
   }
 
+  protected getChildrenNodes(): QueryNode[] {
+    return this.traversals;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected getProjection() {
+    return {
+      sharedId: 1,
+    };
+  }
+
   addTraversal(traversal: TraversalQueryNode) {
     this.traversals.push(traversal);
-  }
-
-  private unwind() {
-    return this.traversals.length ? [{ $unwind: '$traversal' }] : [{ $unset: 'traversal' }];
-  }
-
-  private compileTraversals() {
-    return this.traversals.reduce<object[]>(
-      (reduced, traversal, index) => reduced.concat(traversal.compile(index)),
-      []
-    );
-  }
-
-  private project() {
-    const traversalFields = [];
-    // eslint-disable-next-line no-plusplus
-    for (let index = 0; index < this.traversals.length; index++) {
-      traversalFields.push(`$traversal-${index}`);
-    }
-
-    return [
-      {
-        $project: {
-          sharedId: 1,
-          traversal: { $concatArrays: traversalFields },
-        },
-      },
-    ];
   }
 
   compile(index: number): object[] {
@@ -69,8 +53,8 @@ export class MatchQueryNode implements QueryNode {
                 visited: '$$visited',
               },
             },
-            ...this.compileTraversals(),
-            ...this.project(),
+            ...this.compileChildren(),
+            ...this.projectAndArrangeTraversals(),
             ...this.unwind(),
           ],
         },
