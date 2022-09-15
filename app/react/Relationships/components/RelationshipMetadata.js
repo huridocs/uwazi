@@ -7,7 +7,7 @@ import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
 
-import { ShowMetadata, MetadataForm, actions } from 'app/Metadata';
+import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from 'app/Metadata';
 import { Translate, I18NLink } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
@@ -115,9 +115,21 @@ class RelationshipMetadata extends Component {
     );
   }
 
-  render() {
-    const twoColumns = this.state.copyFrom ? 'two-columns' : '';
-    const ViewButton = (
+  renderButtons() {
+    if (this.props.entityBeingEdited) {
+      return (
+        <MetadataFormButtons
+          data={Immutable.fromJS(this.props.entity)}
+          delete={this.deleteDocument}
+          formStatePath="relationships.metadata"
+          entityBeingEdited={this.props.entityBeingEdited}
+          copyFrom={this.toggleCopyFrom}
+          hideDelete={this.props.hubsBeingEdited}
+          includeViewButton={false}
+        />
+      );
+    }
+    return (
       <I18NLink
         to={`entity/${this.props.entity.sharedId}`}
         className="btn btn-default"
@@ -129,7 +141,10 @@ class RelationshipMetadata extends Component {
         </span>
       </I18NLink>
     );
+  }
 
+  render() {
+    const twoColumns = this.state.copyFrom ? 'two-columns' : '';
     return (
       <SidePanel
         open={this.props.selectedConnection}
@@ -145,7 +160,7 @@ class RelationshipMetadata extends Component {
           </button>
         )}
         <div className="sidepanel-body">{this.renderBody()}</div>
-        <div className="sidepanel-footer">{!this.state.copyFrom && ViewButton}</div>
+        <div className="sidepanel-footer">{this.renderButtons()}</div>
       </SidePanel>
     );
   }
