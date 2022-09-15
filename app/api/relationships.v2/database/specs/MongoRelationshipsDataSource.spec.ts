@@ -16,6 +16,7 @@ const fixtures = {
     { _id: factory.id('rel6'), to: 'hub2', from: 'entity6', type: factory.id('relType3') },
     { _id: factory.id('rel7'), from: 'entity2', to: 'hub3', type: factory.id('relType4') },
     { _id: factory.id('rel8'), to: 'hub3', from: 'entity7', type: factory.id('relType5') },
+    { _id: factory.id('rel9'), from: 'entity7', to: 'entity1', type: factory.id('relType5') },
   ],
   entities: [
     factory.entity('entity1', 'template1'),
@@ -200,6 +201,56 @@ describe('When getting by query', () => {
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
         { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+  });
+
+  it('should allow to query branches', async () => {
+    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const query: RelationshipsQuery = {
+      sharedId: 'entity1',
+      traverse: [
+        {
+          direction: 'out',
+          match: [
+            {
+              traverse: [
+                {
+                  direction: 'in',
+                  types: [factory.id('relType3').toHexString()],
+                  match: [
+                    {
+                      templates: [
+                        factory.id('template3').toHexString(),
+                        factory.id('template4').toHexString(),
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          direction: 'in',
+          match: [{}],
+        },
+      ],
+    };
+
+    const result = await ds.getByQuery(query).all();
+    expect(result).toEqual([
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+        { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel9'), type: factory.id('relType5') },
+        { _id: factory.id('entity7-en'), sharedId: 'entity7' },
       ],
     ]);
   });

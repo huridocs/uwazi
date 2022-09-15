@@ -19,27 +19,38 @@ export class MatchQueryNode implements QueryNode {
   }
 
   private unwind() {
-    return this.traversals.length
-      ? [
-          {
-            $unwind: '$traversal',
-          },
-        ]
-      : [];
+    return this.traversals.length ? [{ $unwind: '$traversal' }] : [{ $unset: 'traversal' }];
   }
 
   private compileTraversals() {
     return this.traversals.reduce<object[]>(
-      (reduced, traversal) => reduced.concat(traversal.compile()),
+      (reduced, traversal, index) => reduced.concat(traversal.compile(index)),
       []
     );
   }
 
-  compile(): object[] {
+  private project() {
+    const traversalFields = [];
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < this.traversals.length; index++) {
+      traversalFields.push(`$traversal-${index}`);
+    }
+
+    return [
+      {
+        $project: {
+          sharedId: 1,
+          traversal: { $concatArrays: traversalFields },
+        },
+      },
+    ];
+  }
+
+  compile(index: number): object[] {
     return [
       {
         $lookup: {
-          as: 'traversal',
+          as: `traversal-${index}`,
           from: 'entities',
           let: { [this.sourceField]: `$${this.sourceField}`, visited: '$visited' },
           pipeline: [
@@ -59,12 +70,7 @@ export class MatchQueryNode implements QueryNode {
               },
             },
             ...this.compileTraversals(),
-            {
-              $project: {
-                sharedId: 1,
-                traversal: 1,
-              },
-            },
+            ...this.project(),
             ...this.unwind(),
           ],
         },

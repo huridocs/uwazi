@@ -19,14 +19,38 @@ export class TraversalQueryNode implements QueryNode {
   }
 
   private compileMatches() {
-    return this.matches.reduce<object[]>((reduced, match) => reduced.concat(match.compile()), []);
+    return this.matches.reduce<object[]>(
+      (reduced, match, index) => reduced.concat(match.compile(index)),
+      []
+    );
   }
 
-  compile(): object[] {
+  private unwind() {
+    return this.matches.length ? [{ $unwind: '$traversal' }] : [{ $unset: 'traversal' }];
+  }
+
+  private project() {
+    const traversalFields = [];
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < this.matches.length; index++) {
+      traversalFields.push(`$traversal-${index}`);
+    }
+
+    return [
+      {
+        $project: {
+          type: 1,
+          traversal: { $concatArrays: traversalFields },
+        },
+      },
+    ];
+  }
+
+  compile(index: number): object[] {
     return [
       {
         $lookup: {
-          as: 'traversal',
+          as: `traversal-${index}`,
           from: 'relationships',
           let: { sharedId: '$sharedId', visited: '$visited' },
           pipeline: [
@@ -47,15 +71,8 @@ export class TraversalQueryNode implements QueryNode {
               },
             },
             ...this.compileMatches(),
-            {
-              $project: {
-                type: 1,
-                traversal: 1,
-              },
-            },
-            {
-              $unwind: '$traversal',
-            },
+            ...this.project(),
+            ...this.unwind(),
           ],
         },
       },

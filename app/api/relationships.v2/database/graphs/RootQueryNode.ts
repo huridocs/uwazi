@@ -16,9 +16,30 @@ export class RootQueryNode implements QueryNode {
 
   private compileTraversals() {
     return this.traversals.reduce<object[]>(
-      (reduced, traversal) => reduced.concat(traversal.compile()),
+      (reduced, traversal, index) => reduced.concat(traversal.compile(index)),
       []
     );
+  }
+
+  private unwind() {
+    return this.traversals.length ? [{ $unwind: '$traversal' }] : [{ $unset: 'traversal' }];
+  }
+
+  private project() {
+    const traversalFields = [];
+    // eslint-disable-next-line no-plusplus
+    for (let index = 0; index < this.traversals.length; index++) {
+      traversalFields.push(`$traversal-${index}`);
+    }
+
+    return [
+      {
+        $project: {
+          sharedId: 1,
+          traversal: { $concatArrays: traversalFields },
+        },
+      },
+    ];
   }
 
   compile() {
@@ -34,15 +55,8 @@ export class RootQueryNode implements QueryNode {
         },
       },
       ...this.compileTraversals(),
-      {
-        $project: {
-          sharedId: 1,
-          traversal: 1,
-        },
-      },
-      {
-        $unwind: '$traversal',
-      },
+      ...this.project(),
+      ...this.unwind(),
     ];
   }
 }

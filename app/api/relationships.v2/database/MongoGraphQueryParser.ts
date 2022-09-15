@@ -52,6 +52,6 @@ export class MongoGraphQueryParser {
 
   parse(query: RelationshipsQuery) {
     const ast = this.parseRoot(query);
-    return ast.compile();
+    return ast.compile(0);
   }
 }

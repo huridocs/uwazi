@@ -1,3 +1,3 @@
 export interface QueryNode {
-  compile(): object[];
+  compile(index: number): object[];
 }
