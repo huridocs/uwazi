@@ -1,20 +1,20 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ObjectIdType } from 'api/relationships.v2/database/typing/commonTypes';
 
 export interface JoinedRelationshipDBOType {
-  _id: ObjectIdSchema;
+  _id: ObjectIdType;
   from: EntityInfoArrayType;
   to: EntityInfoArrayType;
-  type: ObjectIdSchema;
+  type: ObjectIdType;
 }
 
 export interface RelationshipDBOType {
-  _id: ObjectIdSchema;
+  _id: ObjectIdType;
   from: string;
   to: string;
-  type: ObjectIdSchema;
+  type: ObjectIdType;
 }
 
 export type EntityInfoArrayType = EntityInfoType[];

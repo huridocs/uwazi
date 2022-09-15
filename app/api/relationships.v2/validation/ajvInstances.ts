@@ -4,6 +4,7 @@ import Ajv, { AnySchemaObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 
 const defaultAjv = new Ajv({ allErrors: true });
+defaultAjv.addVocabulary(['tsType']);
 
 type ValidatorType = (value: any) => any;
 

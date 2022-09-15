@@ -1,5 +1,4 @@
-import { objectIdSchema } from 'shared/types/commonSchemas';
-
+import { objectIdSchema } from 'api/relationships.v2/database/typing/commonSchemas';
 import { createDefaultValidator } from 'api/relationships.v2/validation/ajvInstances';
 
 const emitSchemaTypes = true;
@@ -26,7 +25,6 @@ const RelationshipDBOSchema = {
   title: 'RelationshipDBOType',
   type: 'object',
   additionalProperties: false,
-  definitions: { objectIdSchema },
   properties: {
     _id: objectIdSchema,
     from: { type: 'string' },
@@ -40,7 +38,7 @@ const validateRelationshipDBO = createDefaultValidator(RelationshipDBOSchema);
 const JoinedRelationshipDBOSchema = {
   ...RelationshipDBOSchema,
   title: 'JoinedRelationshipDBOType',
-  definitions: { ...RelationshipDBOSchema.definitions, entityInfoArraySchema },
+  definitions: { entityInfoArraySchema },
   properties: {
     ...RelationshipDBOSchema.properties,
     from: entityInfoArraySchema,
