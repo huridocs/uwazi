@@ -1,5 +1,5 @@
 import { AggregationCursor, Cursor } from 'mongodb';
-import { validatorType } from '../validation/ajvInstances';
+import { ValidatorType } from '../validation/ajvInstances';
 import { ResultSet } from '../services/ResultSet';
 
 interface MapperFunc<T, U> {
@@ -14,20 +14,20 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   private countCursor?: Cursor<CountDocument>;
 
-  private validate: validatorType;
+  private validate: ValidatorType;
 
-  constructor(mongoCursor: Cursor<T>, validator: validatorType, mapper: MapperFunc<T, U>);
+  constructor(mongoCursor: Cursor<T>, validator: ValidatorType, mapper: MapperFunc<T, U>);
 
   constructor(
     mongoCursor: AggregationCursor<T>,
-    validator: validatorType,
+    validator: ValidatorType,
     countCursor: AggregationCursor<CountDocument>,
     mapper: MapperFunc<T, U>
   );
 
   constructor(
     mongoCursor: Cursor<T>,
-    validator: validatorType,
+    validator: ValidatorType,
     countOrMapper: Cursor<CountDocument> | MapperFunc<T, U>,
     mapper?: MapperFunc<T, U>
   ) {
@@ -62,7 +62,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   async next() {
     const item = await this.mongoCursor.next();
     if (item) {
-      await this.validate(item);
+      this.validate(item);
       const mappedItem = this.mapper(item!);
       return mappedItem;
     }
@@ -70,12 +70,9 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   async all() {
-    const result = await this.mongoCursor.toArray();
-    for (let i = 0; i < result.length; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.validate(result[i]);
-    }
-    const mapped = result.map(this.mapper);
+    const results = await this.mongoCursor.toArray();
+    results.forEach(r => this.validate(r));
+    const mapped = results.map(this.mapper);
     return mapped;
   }
 
@@ -104,5 +101,5 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   static NoOpMapper = <V>(item: V) => item;
 
-  static NoOpValidator = { validate: <V>(_item: V) => {} };
+  static NoOpValidator = <V>(_item: V) => {};
 }

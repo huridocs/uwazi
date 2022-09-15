@@ -5,11 +5,11 @@ import ValidationError from 'ajv/dist/runtime/validation_error';
 
 const defaultAjv = new Ajv({ allErrors: true });
 
-type validatorType = (value: any) => Promise<any>;
+type ValidatorType = (value: any) => any;
 
-const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): validatorType => {
+const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): ValidatorType => {
   const validator = ajvInstance.compile<T>(ajvSchema);
-  return async (value: T) => {
+  return (value: T) => {
     const valid = validator(value);
     if (!valid) {
       const err = new ValidationError(validator.errors || []);
@@ -22,5 +22,5 @@ const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): valid
 const createDefaultValidator = (ajvSchema: AnySchemaObject) =>
   createValidator(defaultAjv, ajvSchema);
 
-export type { validatorType };
+export type { ValidatorType };
 export { createDefaultValidator };
