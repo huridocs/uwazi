@@ -2,6 +2,7 @@ import React from 'react';
 import { I18NLink, Translate } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
+import { PreserveIcon } from 'app/Layout/PreserveIcon';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
 
 const SettingsNavigation = () => (
@@ -93,7 +94,8 @@ const SettingsNavigation = () => (
         <FeatureToggle feature="preserve.host">
           <NeedAuthorization roles={['admin']}>
             <I18NLink to="/settings/preserve" activeClassName="active" className="list-group-item">
-              <Translate>Preserve Extension</Translate> <Icon icon="square" />
+              <Translate>Preserve</Translate>
+              <PreserveIcon />
             </I18NLink>
           </NeedAuthorization>
         </FeatureToggle>

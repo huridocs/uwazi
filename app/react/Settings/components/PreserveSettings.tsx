@@ -2,8 +2,8 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import api from 'app/utils/api';
 import { Translate } from 'app/I18N';
-import { Icon } from 'app/UI';
 import { IStore } from 'app/istore';
+import { PreserveIcon } from 'app/Layout/PreserveIcon';
 import './styles/preserve.scss';
 
 function mapStateToProps({ settings, user }: IStore) {
@@ -41,7 +41,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
     <div className="settings-content">
       <div className="panel panel-preserve">
         <div className="panel-preserve-heading">
-          <Icon icon="square" /> <Translate>Preserve Extension</Translate>
+          <PreserveIcon color="#D20D6C" /> <Translate>Preserve</Translate>
         </div>
         <div className="panel-preserve-content">
           <div className="status">
