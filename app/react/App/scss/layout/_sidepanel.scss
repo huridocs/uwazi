@@ -241,6 +241,7 @@ $c-sidebar: $c-white;
     display: flex;
     flex-direction: column;
     height: 100%;
+    font-size: $f-size-lg;
 
     .sticky {
       padding-top: 46px;
@@ -293,7 +294,6 @@ $c-sidebar: $c-white;
               border: 1px solid #d7d7dc;
               box-sizing: border-box;
 
-              padding: 8px 16px;
               gap: 9px;
               .item-document {
                 z-index: -1;

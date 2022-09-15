@@ -47,7 +47,7 @@ const createRightRelationshipGroups = (
   expanded: boolean
 ) => (
   <div className="sidepanel-relationship-right">
-    {rightRelationships.map((relationship: any, relationshipIndex: number) => {
+    {rightRelationships.map((relationship: Map<any, any>, index: number) => {
       let header;
       const relationshipTemplateId = relationship.get('template');
       const relationType = relationTypes.find(r => r._id === relationshipTemplateId);
@@ -66,13 +66,13 @@ const createRightRelationshipGroups = (
           className="sidepanel-relationship-collapsible"
           headerInfo={`(${entityRelationships.size})`}
           collapse={!expanded}
-          key={relationshipIndex}
+          key={Math.random().toString() + index.toString()}
         >
           <>
             {entityRelationships.map((rel: any, entityRelationshipsIndex: number) => (
               <div
                 className="sidepanel-relationship-right-entity"
-                key={entityRelationshipsIndex}
+                key={Math.random().toString() + entityRelationshipsIndex.toString()}
                 onClick={() => selectConnection(rel.get('entityData'))}
               >
                 <Item
@@ -113,7 +113,7 @@ const createLabelGroups = (
     <StickyHeader
       scrollElementSelector=".scrollable"
       stickyElementSelector=".sidepanel-relationship-left-label"
-      key={index}
+      key={Math.random().toString() + index.toString()}
     >
       <div className="sidepanel-relationship">
         {renderLabel(template, relationTypes)}
@@ -138,6 +138,7 @@ const LibraryViewRelationshipsComp = (props: ComponentProps) => {
     expanded,
     selectConnection,
   } = props;
+
   useEffect(() => {
     if (parentEntity) {
       parseResults(searchResults, parentEntity, false);
