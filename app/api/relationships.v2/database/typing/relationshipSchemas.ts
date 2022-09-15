@@ -1,5 +1,7 @@
 import { objectIdSchema } from 'shared/types/commonSchemas';
 
+import { createDefaultValidator } from 'api/relationships.v2/validation/ajvInstances';
+
 const emitSchemaTypes = true;
 
 const entityInfoSchema = {
@@ -33,6 +35,7 @@ const RelationshipDBOSchema = {
   },
   required: ['_id', 'from', 'to', 'type'],
 };
+const validateRelationshipDBO = createDefaultValidator(RelationshipDBOSchema);
 
 const JoinedRelationshipDBOSchema = {
   ...RelationshipDBOSchema,
@@ -44,11 +47,14 @@ const JoinedRelationshipDBOSchema = {
     to: entityInfoArraySchema,
   },
 };
+const validateJoinedRelationshipDBO = createDefaultValidator(JoinedRelationshipDBOSchema);
 
 export {
   entityInfoSchema,
   entityInfoArraySchema,
   RelationshipDBOSchema,
+  validateRelationshipDBO,
   JoinedRelationshipDBOSchema,
+  validateJoinedRelationshipDBO,
   emitSchemaTypes,
 };
