@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
-import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
+import { RelationshipDBOType, JoinedRelationshipDBOType } from './typing/relationshipTypes';
 
 export const RelationshipMappers = {
   toDBO(relationship: Relationship) {
@@ -12,7 +12,7 @@ export const RelationshipMappers = {
     };
   },
 
-  toModel(relationship: RelationshipDBO) {
+  toModel(relationship: RelationshipDBOType) {
     return new Relationship(
       relationship._id.toHexString(),
       relationship.from,
@@ -21,7 +21,7 @@ export const RelationshipMappers = {
     );
   },
 
-  toAggregatedResult(joined: JoinedRelationshipDBO) {
+  toAggregatedResult(joined: JoinedRelationshipDBOType) {
     return {
       _id: joined._id.toHexString(),
       from: {

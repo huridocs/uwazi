@@ -18,7 +18,12 @@ function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
 }
 
-type RelationshipAggregatedResultType = Omit<RelationshipDBOType, 'from' | 'to'> & {
+type RelationshipAggregatedResultType = Omit<
+  RelationshipDBOType,
+  '_id' | 'type' | 'from' | 'to'
+> & {
+  _id: string;
+  type: string;
   from: EntityInfoType;
   to: EntityInfoType;
 };
