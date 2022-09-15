@@ -4,8 +4,8 @@ import { MongoDataSource } from './MongoDataSource';
 import { JoinedRelationshipDBO, RelationshipDBO } from './RelationshipsTypes';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipsQuery } from '../services/RelationshipsQuery';
-import { parseRelationshipQuery } from './GraphQueryBuilder';
 import { DataBlueprint } from '../validation/dataBlueprint';
+import { MongoGraphQueryParser } from './MongoGraphQueryParser';
 
 interface RelationshipAggregatedResult {
   _id: string;
@@ -113,8 +113,8 @@ export class RelationshipsDataSource extends MongoDataSource {
   }
 
   getByQuery(query: RelationshipsQuery) {
-    const parser = parseRelationshipQuery(query);
-    const pipeline = parser.compile();
+    const parser = new MongoGraphQueryParser();
+    const pipeline = parser.parse(query);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
       [

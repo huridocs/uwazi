@@ -14,6 +14,13 @@ export class RootQueryNode implements QueryNode {
     this.traversals.push(traversal);
   }
 
+  private compileTraversals() {
+    return this.traversals.reduce<object[]>(
+      (reduced, traversal) => reduced.concat(traversal.compile()),
+      []
+    );
+  }
+
   compile() {
     return [
       {
@@ -26,10 +33,7 @@ export class RootQueryNode implements QueryNode {
           visited: [],
         },
       },
-      ...this.traversals.reduce<object[]>(
-        (reduced, traversal) => reduced.concat(traversal.compile()),
-        []
-      ),
+      ...this.compileTraversals(),
       {
         $project: {
           sharedId: 1,

@@ -18,6 +18,10 @@ export class TraversalQueryNode implements QueryNode {
     this.matches.push(match);
   }
 
+  private compileMatches() {
+    return this.matches.reduce<object[]>((reduced, match) => reduced.concat(match.compile()), []);
+  }
+
   compile(): object[] {
     return [
       {
@@ -42,10 +46,7 @@ export class TraversalQueryNode implements QueryNode {
                 visited: { $concatArrays: ['$$visited', ['$_id']] },
               },
             },
-            ...this.matches.reduce<object[]>(
-              (reduced, match) => reduced.concat(match.compile()),
-              []
-            ),
+            ...this.compileMatches(),
             {
               $project: {
                 type: 1,

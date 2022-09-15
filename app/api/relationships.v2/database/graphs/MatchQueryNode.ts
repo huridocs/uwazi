@@ -18,6 +18,23 @@ export class MatchQueryNode implements QueryNode {
     this.traversals.push(traversal);
   }
 
+  private unwind() {
+    return this.traversals.length
+      ? [
+          {
+            $unwind: '$traversal',
+          },
+        ]
+      : [];
+  }
+
+  private compileTraversals() {
+    return this.traversals.reduce<object[]>(
+      (reduced, traversal) => reduced.concat(traversal.compile()),
+      []
+    );
+  }
+
   compile(): object[] {
     return [
       {
@@ -41,23 +58,14 @@ export class MatchQueryNode implements QueryNode {
                 visited: '$$visited',
               },
             },
-            ...this.traversals.reduce<object[]>(
-              (reduced, traversal) => reduced.concat(traversal.compile()),
-              []
-            ),
+            ...this.compileTraversals(),
             {
               $project: {
                 sharedId: 1,
                 traversal: 1,
               },
             },
-            ...(this.traversals.length
-              ? [
-                  {
-                    $unwind: '$traversal',
-                  },
-                ]
-              : []),
+            ...this.unwind(),
           ],
         },
       },
