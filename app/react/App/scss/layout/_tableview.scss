@@ -49,6 +49,20 @@
     align-items: center;
   }
 
+  td:first-of-type {
+    padding-left: 0;
+
+    .checkbox-cell {
+      width: 30px;
+      padding: 0;
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      height: 2.5em;
+      margin: -8px 0;
+    }
+  }
+
   td:first-child input {
     margin-top: 0;
     margin-right: 8px;
