@@ -3,23 +3,23 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-export interface JoinedRelationshipDBOSchema {
+export interface JoinedRelationshipDBOType {
   _id: ObjectIdSchema;
-  from: EntityInfoArraySchema;
-  to: EntityInfoArraySchema;
+  from: EntityInfoArrayType;
+  to: EntityInfoArrayType;
   type: ObjectIdSchema;
 }
 
-export interface RelationshipDBOSchema {
+export interface RelationshipDBOType {
   _id: ObjectIdSchema;
   from: string;
   to: string;
   type: ObjectIdSchema;
 }
 
-export type EntityInfoArraySchema = EntityInfoSchema[];
+export type EntityInfoArrayType = EntityInfoType[];
 
-export interface EntityInfoSchema {
+export interface EntityInfoType {
   sharedId: string;
   title: string;
   [k: string]: unknown | undefined;

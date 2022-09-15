@@ -5,6 +5,7 @@ const emitSchemaTypes = true;
 const entityInfoSchema = {
   type: 'object',
   additionalProperties: true,
+  title: 'EntityInfoType',
   properties: {
     sharedId: { type: 'string' },
     title: { type: 'string' },
@@ -15,10 +16,12 @@ const entityInfoSchema = {
 const entityInfoArraySchema = {
   type: 'array',
   definitions: { entityInfoSchema },
+  title: 'EntityInfoArrayType',
   items: entityInfoSchema,
 };
 
 const RelationshipDBOSchema = {
+  title: 'RelationshipDBOType',
   type: 'object',
   additionalProperties: false,
   definitions: { objectIdSchema },
@@ -33,6 +36,7 @@ const RelationshipDBOSchema = {
 
 const JoinedRelationshipDBOSchema = {
   ...RelationshipDBOSchema,
+  title: 'JoinedRelationshipDBOType',
   definitions: { ...RelationshipDBOSchema.definitions, entityInfoArraySchema },
   properties: {
     ...RelationshipDBOSchema.properties,

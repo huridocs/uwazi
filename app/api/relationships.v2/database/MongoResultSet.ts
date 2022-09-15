@@ -1,13 +1,9 @@
-/* eslint-disable no-await-in-loop */
 import { AggregationCursor, Cursor } from 'mongodb';
+import { validatorType } from '../validation/ajvInstances';
 import { ResultSet } from '../services/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U;
-}
-
-interface Validator {
-  validate: (data: unknown) => void;
 }
 
 export type CountDocument = { total: number };
@@ -18,27 +14,27 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   private countCursor?: Cursor<CountDocument>;
 
-  private validator: Validator;
+  private validate: validatorType;
 
-  constructor(mongoCursor: Cursor<T>, validator: Validator, mapper: MapperFunc<T, U>);
+  constructor(mongoCursor: Cursor<T>, validator: validatorType, mapper: MapperFunc<T, U>);
 
   constructor(
     mongoCursor: AggregationCursor<T>,
-    validator: Validator,
+    validator: validatorType,
     countCursor: AggregationCursor<CountDocument>,
     mapper: MapperFunc<T, U>
   );
 
   constructor(
     mongoCursor: Cursor<T>,
-    validator: Validator,
+    validator: validatorType,
     countOrMapper: Cursor<CountDocument> | MapperFunc<T, U>,
     mapper?: MapperFunc<T, U>
   ) {
     this.mongoCursor = mongoCursor;
     this.countCursor = typeof countOrMapper === 'function' ? undefined : countOrMapper;
     this.mapper = typeof countOrMapper === 'function' ? countOrMapper : mapper!;
-    this.validator = validator;
+    this.validate = validator;
   }
 
   private async getTotal() {
@@ -66,7 +62,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   async next() {
     const item = await this.mongoCursor.next();
     if (item) {
-      this.validator.validate(item);
+      await this.validate(item);
       const mappedItem = this.mapper(item!);
       return mappedItem;
     }
@@ -75,9 +71,10 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async all() {
     const result = await this.mongoCursor.toArray();
-    result.forEach(r => {
-      this.validator.validate(r);
-    });
+    for (let i = 0; i < result.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.validate(result[i]);
+    }
     const mapped = result.map(this.mapper);
     return mapped;
   }
@@ -86,8 +83,10 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     let result = true;
     let counter = 0;
 
+    // eslint-disable-next-line no-await-in-loop
     while (await this.hasNext()) {
       counter += 1;
+      // eslint-disable-next-line no-await-in-loop
       const item = await this.next();
       if (predicate(item!) === false) {
         result = false;

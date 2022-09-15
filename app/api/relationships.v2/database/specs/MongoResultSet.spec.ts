@@ -1,7 +1,7 @@
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ObjectId } from 'mongodb';
 
-import { DataBlueprint } from 'api/relationships.v2/validation/dataBlueprint';
+import { createDefaultValidator } from 'api/relationships.v2/validation/ajvInstances';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 
@@ -27,7 +27,7 @@ const testDocumentSchema = {
   },
   required: ['_id', 'name'],
 };
-const testDocumentBlueprint = new DataBlueprint(testDocumentSchema);
+const testDocumentValidator = createDefaultValidator(testDocumentSchema);
 
 const buildCursor = (query?: any) =>
   testingDB.mongodb?.collection<typeof testDocuments[number]>('testDocuments').find(query || {});
@@ -56,7 +56,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(
         cursor!,
-        testDocumentBlueprint,
+        testDocumentValidator,
         MongoResultSet.NoOpMapper
       );
       let index = 0;
@@ -74,7 +74,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(
         cursor!,
-        testDocumentBlueprint,
+        testDocumentValidator,
         MongoResultSet.NoOpMapper
       );
       try {
@@ -91,7 +91,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(
         cursor!,
-        testDocumentBlueprint,
+        testDocumentValidator,
         MongoResultSet.NoOpMapper
       );
       expect(await resultSet.all()).toEqual(testDocuments);
@@ -103,7 +103,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(
         cursor!,
-        testDocumentBlueprint,
+        testDocumentValidator,
         MongoResultSet.NoOpMapper
       );
       try {
@@ -117,7 +117,7 @@ describe('when built from a $type cursor', () => {
 
   it('should use the mapper function', async () => {
     const cursor = buildCursor();
-    const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, elem => elem.name);
+    const resultSet = new MongoResultSet(cursor!, testDocumentValidator, elem => elem.name);
     expect(await resultSet.all()).toEqual(testDocuments.map(elem => elem.name));
   });
 
@@ -126,7 +126,7 @@ describe('when built from a $type cursor', () => {
     { page: 2, start: 4, end: 6 },
   ])('should return results page $page and close the cursor', async ({ page, start, end }) => {
     const cursor = buildCursor();
-    const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, elem => elem.name);
+    const resultSet = new MongoResultSet(cursor!, testDocumentValidator, elem => elem.name);
     const result = await resultSet.page(page, 4);
     expect(result.data).toEqual(testDocuments.slice(start, end).map(elem => elem.name));
     expect(result.total).toBe(6);
@@ -136,19 +136,19 @@ describe('when built from a $type cursor', () => {
   describe('using every(...) to check a predicate against every item', () => {
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
-      const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, elem => elem.name);
+      const resultSet = new MongoResultSet(cursor!, testDocumentValidator, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
     });
 
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
-      const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, elem => elem.name);
+      const resultSet = new MongoResultSet(cursor!, testDocumentValidator, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc1'))).toBe(false);
     });
 
     it('should return false if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
-      const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, elem => elem.name);
+      const resultSet = new MongoResultSet(cursor!, testDocumentValidator, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(false);
     });
   });
@@ -158,7 +158,7 @@ describe('when built from an aggregation cursor', () => {
   it('should correctly count the result and use the mapper', async () => {
     const cursor = buildAggregationCursor();
     const count = buildCountCursor();
-    const resultSet = new MongoResultSet(cursor!, testDocumentBlueprint, count!, elem => elem.name);
+    const resultSet = new MongoResultSet(cursor!, testDocumentValidator, count!, elem => elem.name);
     const result = await resultSet.page(1, 4);
     expect(result.data).toEqual(testDocuments.slice(0, 4).map(elem => elem.name));
     expect(result.total).toBe(6);
