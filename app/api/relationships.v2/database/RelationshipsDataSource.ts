@@ -33,17 +33,15 @@ export class RelationshipsDataSource extends MongoDataSource {
     return this.db.collection<RelationshipDBOType>('relationships');
   }
 
-  async insert(relationship: Relationship): Promise<Relationship> {
-    const item = RelationshipMappers.toDBO(relationship);
-    validateRelationshipDBO(item);
-    const {
-      ops: [created],
-    } = (await this.getCollection().insertOne(item, {
+  async insert(relationships: Relationship[]): Promise<Relationship[]> {
+    const items = relationships.map(r => RelationshipMappers.toDBO(r));
+    items.forEach(item => validateRelationshipDBO(item));
+    const { ops: created } = (await this.getCollection().insertMany(items, {
       session: this.session,
     })) as { ops: RelationshipDBOType[] };
-    validateRelationshipDBO(created);
+    created.forEach(item => validateRelationshipDBO(item));
 
-    return RelationshipMappers.toModel(created);
+    return created.map(item => RelationshipMappers.toModel(item));
   }
 
   getByEntity(sharedId: string) {

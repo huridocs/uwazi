@@ -20,15 +20,27 @@ const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 const mockUser = new User(generateId(), 'admin', []);
 
 const fixtures = {
-  entities: [factory.entity('entity1', 'template1'), factory.entity('entity2', 'template1')],
+  entities: [
+    factory.entity('entity1', 'template1'),
+    factory.entity('entity2', 'template2'),
+    factory.entity('entity3', 'template1'),
+  ],
   relationships: [],
   relationtypes: [
     {
       _id: factory.id('rel1'),
       name: 'rel1',
     },
+    {
+      _id: factory.id('rel2'),
+      name: 'rel2',
+    },
+    {
+      _id: factory.id('rel3'),
+      name: 'rel3',
+    },
   ],
-  templates: [factory.template('template1')],
+  templates: [factory.template('template1'), factory.template('template2')],
 };
 
 beforeEach(async () => {
@@ -39,92 +51,224 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('When the entities exist', () => {
-  it('should return a new connection', async () => {
-    const connection = getConnection();
-    const service = new CreateRelationshipService(
-      new RelationshipsDataSource(connection),
-      new RelationshipTypesDataSource(connection),
-      new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient()),
-      generateId,
-      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
-    );
-    const relationship = await service.create(
-      'entity1',
-      'entity2',
-      factory.id('rel1').toHexString()
-    );
+describe('create()', () => {
+  describe('When the entities exist', () => {
+    it('should return a new connection', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      const relationship = await service.create(
+        'entity1',
+        'entity2',
+        factory.id('rel1').toHexString()
+      );
 
-    expect(relationship).toEqual({
-      _id: expect.any(String),
-      from: 'entity1',
-      to: 'entity2',
-      type: factory.id('rel1').toHexString(),
+      expect(relationship).toEqual({
+        _id: expect.any(String),
+        from: 'entity1',
+        to: 'entity2',
+        type: factory.id('rel1').toHexString(),
+      });
+    });
+
+    it('should persist a new connection', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
+
+      const relatinshipsInDb = await collectionInDb().find({}).toArray();
+
+      expect(relatinshipsInDb).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          from: 'entity1',
+          to: 'entity2',
+          type: factory.id('rel1'),
+        },
+      ]);
     });
   });
 
-  it('should persist a new connection', async () => {
-    const connection = getConnection();
-    const service = new CreateRelationshipService(
-      new RelationshipsDataSource(connection),
-      new RelationshipTypesDataSource(connection),
-      new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient()),
-      generateId,
-      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
-    );
-    await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
+  describe('When an entity does not exist', () => {
+    it('should throw a validation error', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      try {
+        await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
+        fail('should throw error');
+      } catch (e) {
+        await expect(e.message).toMatch(/existing/);
+      }
+    });
+  });
 
-    const relatinshipsInDb = await collectionInDb().find({}).toArray();
-
-    expect(relatinshipsInDb).toEqual([
-      {
-        _id: expect.any(ObjectId),
-        from: 'entity1',
-        to: 'entity2',
-        type: factory.id('rel1'),
-      },
-    ]);
+  describe('When trying to create a self-referencing relationship', () => {
+    it('should throw a validation error', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      try {
+        await service.create('entity1', 'entity1', factory.id('rel1').toHexString());
+        fail('should throw error');
+      } catch (e) {
+        await expect(e.message).toMatch(/self/);
+      }
+    });
   });
 });
 
-describe('When an entity does not exist', () => {
-  it('should throw a validation error', async () => {
-    const connection = getConnection();
-    const service = new CreateRelationshipService(
-      new RelationshipsDataSource(connection),
-      new RelationshipTypesDataSource(connection),
-      new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient()),
-      generateId,
-      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
-    );
-    try {
-      await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
-      fail('should throw error');
-    } catch (e) {
-      await expect(e.message).toMatch(/existing/);
-    }
-  });
-});
+describe('createMultiple()', () => {
+  describe('When the entities exist', () => {
+    it('should return new connections', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      const relationship = await service.createMultiple([
+        { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
+        { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
+        { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
+      ]);
 
-describe('When trying to create a self-referencing relationship', () => {
-  it('should throw a validation error', async () => {
-    const connection = getConnection();
-    const service = new CreateRelationshipService(
-      new RelationshipsDataSource(connection),
-      new RelationshipTypesDataSource(connection),
-      new EntitiesDataSource(connection),
-      new MongoTransactionManager(getClient()),
-      generateId,
-      new AuthorizationService(new PermissionsDataSource(connection), mockUser)
-    );
-    try {
-      await service.create('entity1', 'entity1', factory.id('rel1').toHexString());
-      fail('should throw error');
-    } catch (e) {
-      await expect(e.message).toMatch(/self/);
-    }
+      expect(relationship).toEqual([
+        {
+          _id: expect.any(String),
+          from: 'entity1',
+          to: 'entity2',
+          type: factory.id('rel1').toHexString(),
+        },
+        {
+          _id: expect.any(String),
+          from: 'entity2',
+          to: 'entity1',
+          type: factory.id('rel2').toHexString(),
+        },
+        {
+          _id: expect.any(String),
+          from: 'entity3',
+          to: 'entity1',
+          type: factory.id('rel3').toHexString(),
+        },
+      ]);
+    });
+
+    it('should persist new connections', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      await service.createMultiple([
+        { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
+        { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
+        { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
+      ]);
+
+      const relatinshipsInDb = await collectionInDb().find({}).sort({ from: 1 }).toArray();
+
+      expect(relatinshipsInDb).toEqual([
+        {
+          _id: expect.any(ObjectId),
+          from: 'entity1',
+          to: 'entity2',
+          type: factory.id('rel1'),
+        },
+        {
+          _id: expect.any(ObjectId),
+          from: 'entity2',
+          to: 'entity1',
+          type: factory.id('rel2'),
+        },
+        {
+          _id: expect.any(ObjectId),
+          from: 'entity3',
+          to: 'entity1',
+          type: factory.id('rel3'),
+        },
+      ]);
+    });
+  });
+
+  describe('When an entity does not exist', () => {
+    it('should throw a validation error', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      try {
+        await service.createMultiple([
+          { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
+          { from: 'entity2', to: 'non-existing', type: factory.id('rel2').toHexString() },
+          { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
+        ]);
+        fail('should throw error');
+      } catch (e) {
+        await expect(e.message).toMatch(/existing/);
+      }
+    });
+  });
+
+  describe('When trying to create a self-referencing relationship', () => {
+    it('should throw a validation error', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new RelationshipsDataSource(connection),
+        new RelationshipTypesDataSource(connection),
+        new EntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        generateId,
+        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+      );
+      try {
+        await service.createMultiple([
+          { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
+          { from: 'entity1', to: 'entity1', type: factory.id('rel2').toHexString() },
+          { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
+        ]);
+        fail('should throw error');
+      } catch (e) {
+        await expect(e.message).toMatch(/self/);
+      }
+    });
   });
 });
