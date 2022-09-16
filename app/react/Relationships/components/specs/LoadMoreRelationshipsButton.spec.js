@@ -34,7 +34,7 @@ describe('LoadMoreRelationshipsButton', () => {
 
     it('should render a button when partial loaded hubs', () => {
       expect(component.find('button').length).toBe(1);
-      expect(component.find('button').text()).toBe('2 x more');
+      expect(component.find('button').text()).toBe('1 x more');
     });
 
     it('should call on the passed function upon click with previously requestedHubs', () => {

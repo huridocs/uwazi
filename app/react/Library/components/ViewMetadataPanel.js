@@ -12,6 +12,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import modals from 'app/Modals';
 
+import * as connectionsActions from 'app/ConnectionsList/actions/actions';
 import {
   getDocumentReferences,
   unselectAllDocuments,
@@ -52,6 +53,7 @@ function mapDispatchToProps(dispatch, props) {
     {
       loadInReduxForm: actions.loadInReduxForm,
       getDocumentReferences,
+      connectionsChanged: connectionsActions.connectionsChanged,
       closePanel: unselectAllDocuments,
       resetForm: () => _dispatch => {
         _dispatch(formActions.setInitial(`${props.storeKey}.sidepanel.metadata`));

@@ -129,6 +129,8 @@ describe('Share publicly', () => {
     });
 
     it('should create an entity', async () => {
+      await page.reload();
+      await disableTransitions();
       await expect(page).toClick('button', { text: 'Create entity' });
       await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
       await expect(page).toMatchElement('button', { text: 'Save' });

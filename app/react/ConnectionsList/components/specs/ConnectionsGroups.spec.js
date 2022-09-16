@@ -21,6 +21,7 @@ describe('ConnectionsGroups', () => {
           ],
         },
       ]),
+      sidePanelTrigger: 'entityView',
     };
   });
 

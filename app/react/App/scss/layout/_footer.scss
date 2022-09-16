@@ -1,3 +1,12 @@
+@mixin relationshipsFooterButtons {
+  .relationships-right-buttons {
+    float: right;
+  }
+  .relationships-left-buttons {
+    width: 50%;
+  }
+}
+
 footer {
   margin: 30px 0 0;
   padding: 20px 0 15px;
@@ -237,6 +246,8 @@ footer {
   .btn:disabled .btn-label {
     color: $c-grey !important;
   }
+
+  @include relationshipsFooterButtons();
 }
 
 @media (max-width: 1023px) {
@@ -259,6 +270,7 @@ footer {
 
   .sidepanel-footer {
     width: 400px;
+    @include relationshipsFooterButtons();
   }
 
   .entity-footer,
