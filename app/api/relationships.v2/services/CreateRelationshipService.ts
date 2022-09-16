@@ -40,18 +40,18 @@ export class CreateRelationshipService {
     await this.authService.validateAccess('write', [from, to]);
 
     return this.transactionManager.run(
-      async (entitiesDS, relationshipsDS, relationshipTypesDS) => {
+      async () => {
         if (from === to) {
           throw new Error('Cannot create relationship to itself');
         }
-        if (!(await relationshipTypesDS.typesExist([type]))) {
+        if (!(await this.relationshipTypesDS.typesExist([type]))) {
           throw new Error('Must provide id for existing relationship type');
         }
-        if (!(await entitiesDS.entitiesExist([from, to]))) {
+        if (!(await this.entitiesDS.entitiesExist([from, to]))) {
           throw new Error('Must provide sharedIds from existing entities');
         }
 
-        return relationshipsDS.insert(new Relationship(this.generateId(), from, to, type));
+        return this.relationshipsDS.insert(new Relationship(this.generateId(), from, to, type));
       },
       this.entitiesDS,
       this.relationshipsDS,

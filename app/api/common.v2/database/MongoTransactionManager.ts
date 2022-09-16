@@ -9,22 +9,21 @@ export class MongoTransactionManager implements TransactionManager {
     this.mongoClient = mongoClient;
   }
 
-  async run<D extends Transactional<ClientSession>[], T>(
-    callback: (...deps: D) => Promise<T>,
-    ...deps: D
-  ): Promise<T> {
+  async run<T>(callback: () => Promise<T>, ...deps: Transactional<ClientSession>[]): Promise<T> {
     let returnValue: T;
-    await this.mongoClient.withSession(async session =>
-      session.withTransaction(async () => {
-        deps.forEach(dep => {
-          dep.setTransactionContext(session);
-        });
-        returnValue = await callback(...deps);
-      })
-    );
+    await this.mongoClient.withSession(async session => {
+      deps.forEach(dep => {
+        dep.setTransactionContext(session);
+      });
+      await session.withTransaction(async () => {
+        returnValue = await callback();
+      });
+    });
+
     deps.forEach(dep => {
       dep.clearTransactionContext();
     });
+
     return returnValue!;
   }
 }

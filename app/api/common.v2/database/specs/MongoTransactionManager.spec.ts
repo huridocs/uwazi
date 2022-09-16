@@ -68,17 +68,19 @@ describe('When every operation goes well', () => {
   beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
     const source1 = new Transactional1();
+    const source2 = new Transactional2();
+    const source3 = new Transactional3();
     transactionResult = await transactionManager.run(
-      async (t1, t2, t3) => {
-        await t1.do();
-        await t2.do();
-        const result = await t3.do();
+      async () => {
+        await source1.do();
+        await source2.do();
+        const result = await source3.do();
 
         return result;
       },
       source1,
-      new Transactional2(),
-      new Transactional3()
+      source2,
+      source3
     );
   });
 
@@ -100,19 +102,22 @@ describe('When every operation goes well', () => {
 });
 
 describe('When one operation fails', () => {
+  // eslint-disable-next-line max-statements
   it('should not write any changes to the database and re-throw the error', async () => {
     const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
     const error = new Error('Simulated error');
+    const source1 = new Transactional1();
+    const source2 = new Transactional2();
     try {
       await transactionManager.run(
-        async (t1, t2) => {
-          await t1.do();
+        async () => {
+          await source1.do();
           throw error; // Mimics error thrown mid-execution
           // eslint-disable-next-line no-unreachable
-          await t2.do();
+          await source2.do();
         },
-        new Transactional1(),
-        new Transactional2()
+        source1,
+        source2
       );
     } catch (e) {
       expect(e).toBe(error);
@@ -122,7 +127,6 @@ describe('When one operation fails', () => {
     const col2 = await testingDB.mongodb?.collection('collection2').find({}).toArray();
 
     expect(col1).toEqual(fixtures.collection1);
-
     expect(col2).toEqual(fixtures.collection2);
   });
 });
