@@ -110,9 +110,6 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
                   </button>
                 )}
               </form>
-              <div className="info">
-                <Translate>Some information about the token</Translate>
-              </div>
             </div>
           </div>
         </div>
