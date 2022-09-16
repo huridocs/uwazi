@@ -31,13 +31,17 @@ export function searchReferences() {
   };
 }
 
-export function connectionsChanged() {
+export function connectionsChanged(sharedId) {
   return (dispatch, getState) => {
+    dispatch(actions.set('relationships/list/filters', { limit: 10 }));
     const relationshipsList = getState().relationships.list;
-    const { sharedId } = relationshipsList;
+    let innerSharedId = sharedId;
+    if (!innerSharedId) {
+      innerSharedId = relationshipsList.sharedId;
+    }
 
     return referencesAPI
-      .getGroupedByConnection(new RequestParams({ sharedId }))
+      .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
       .then(connectionsGroups => {
         const filteredTemplates = connectionsGroups.reduce(
           (templateIds, group) => templateIds.concat(group.templates.map(t => t._id.toString())),

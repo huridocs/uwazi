@@ -3,6 +3,7 @@ import {
   DeleteBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  ListObjectsCommand,
   NoSuchKey,
   PutObjectCommand,
   S3Client,
@@ -28,6 +29,7 @@ describe('storage', () => {
   beforeAll(async () => {
     config.s3 = {
       endpoint: 'http://127.0.0.1:9000',
+      bucket: 'uwazi-development',
       credentials: {
         accessKeyId: 'minioadmin',
         secretAccessKey: 'minioadmin',
@@ -42,7 +44,7 @@ describe('storage', () => {
     });
     await s3.send(new CreateBucketCommand({ Bucket: 'uwazi-development' }));
     testingTenants.mockCurrentTenant({
-      name: 'uwazi_development',
+      name: 'tenant1',
       dbName: 'uwazi_development',
       indexName: 'index',
     });
@@ -50,27 +52,28 @@ describe('storage', () => {
   });
 
   afterAll(async () => {
+    const allBucketKeys = (
+      await s3.send(
+        new ListObjectsCommand({
+          Bucket: 'uwazi-development',
+        })
+      )
+    ).Contents!.map(content => content.Key);
+
+    await Promise.all(
+      allBucketKeys.map(async key =>
+        s3.send(
+          new DeleteObjectCommand({
+            Bucket: 'uwazi-development',
+            Key: key,
+          })
+        )
+      )
+    );
     await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
   });
 
   describe('readableFile', () => {
-    beforeEach(async () => {
-      await s3.send(new CreateBucketCommand({ Bucket: 'another-tenant' }));
-    });
-    afterEach(async () => {
-      await s3.send(
-        new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
-      );
-      await s3.send(
-        new DeleteObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'uploads/already_uploaded.txt',
-        })
-      );
-      await s3.send(new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/' }));
-      await s3.send(new DeleteBucketCommand({ Bucket: 'another-tenant' }));
-    });
-
     describe('readableFile when s3 feature active', () => {
       beforeAll(async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
@@ -82,7 +85,10 @@ describe('storage', () => {
         ).toMatch('test content');
         await waitForExpect(async () => {
           const response = await s3.send(
-            new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+            new GetObjectCommand({
+              Bucket: 'uwazi-development',
+              Key: 'tenant1/uploads/test_s3_file.txt',
+            })
           );
           await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
             'test content'
@@ -94,7 +100,7 @@ describe('storage', () => {
         await s3.send(
           new PutObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'uploads/already_uploaded.txt',
+            Key: 'tenant1/uploads/already_uploaded.txt',
             Body: Buffer.from('already uploaded content', 'utf-8'),
           })
         );
@@ -121,7 +127,10 @@ describe('storage', () => {
         ).toMatch('test content');
         await expect(async () =>
           s3.send(
-            new GetObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/test_s3_file.txt' })
+            new GetObjectCommand({
+              Bucket: 'uwazi-development',
+              Key: 'another-tenant/uploads/test_s3_file.txt',
+            })
           )
         ).rejects.toBeInstanceOf(NoSuchKey);
       });
@@ -131,7 +140,7 @@ describe('storage', () => {
   describe('removeFile', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        name: 'uwazi_development',
+        name: 'tenant1',
         dbName: 'uwazi_development',
         indexName: 'index',
         featureFlags: { s3Storage: true },
@@ -146,17 +155,8 @@ describe('storage', () => {
       await s3.send(
         new PutObjectCommand({
           Bucket: 'uwazi-development',
-          Key: 'uploads/file_to_be_deleted.txt',
+          Key: 'tenant1/uploads/file_to_be_deleted.txt',
           Body: Buffer.from('to delete content'),
-        })
-      );
-    });
-
-    afterAll(async () => {
-      await s3.send(
-        new DeleteObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'uploads/file_to_be_deleted.txt',
         })
       );
     });
@@ -170,7 +170,7 @@ describe('storage', () => {
           s3.send(
             new GetObjectCommand({
               Bucket: 'uwazi-development',
-              Key: 'uploads/file_to_be_deleted.txt',
+              Key: 'tenant1/uploads/file_to_be_deleted.txt',
             })
           )
         ).rejects.toBeInstanceOf(NoSuchKey);
@@ -187,7 +187,7 @@ describe('storage', () => {
         const s3FileContents = await s3.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'uploads/file_to_be_deleted.txt',
+            Key: 'tenant1/uploads/file_to_be_deleted.txt',
           })
         );
         expect(s3FileContents).toBeDefined();
@@ -198,7 +198,7 @@ describe('storage', () => {
   describe('storeFile', () => {
     beforeEach(async () => {
       testingTenants.changeCurrentTenant({
-        name: 'uwazi_development',
+        name: 'tenant1',
         dbName: 'uwazi_development',
         indexName: 'index',
         featureFlags: {
@@ -207,20 +207,13 @@ describe('storage', () => {
       });
     });
 
-    afterAll(async () => {
-      await s3.send(
-        new DeleteObjectCommand({
-          Bucket: 'uwazi-development',
-          Key: 'uploads/file_created.txt',
-        })
-      );
-      await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
-    });
-
     afterEach(async () => {
       await deleteFile(uploadsPath('file_created.txt'));
       await s3.send(
-        new DeleteObjectCommand({ Bucket: 'uwazi-development', Key: 'uploads/file_created.txt' })
+        new DeleteObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'tenant1/uploads/file_created.txt',
+        })
       );
     });
 
@@ -238,7 +231,7 @@ describe('storage', () => {
         const s3File = await s3.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'uploads/file_created.txt',
+            Key: 'tenant1/uploads/file_created.txt',
           })
         );
         // @ts-ignore
@@ -259,7 +252,7 @@ describe('storage', () => {
           s3.send(
             new GetObjectCommand({
               Bucket: 'uwazi-development',
-              Key: 'uploads/file_created.txt',
+              Key: 'tenant1/uploads/file_created.txt',
             })
           )
         ).rejects.toBeInstanceOf(NoSuchKey);
