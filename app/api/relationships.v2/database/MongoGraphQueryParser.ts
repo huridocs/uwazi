@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { EdgeQuery, InternalNodeQuery, RelationshipsQuery } from '../services/RelationshipsQuery';
+import { EdgeQuery, InternalNodeQuery, RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import { MatchQueryNode } from './graphs/MatchQueryNode';
 import { QueryNode } from './graphs/QueryNode';
 import { RootQueryNode } from './graphs/RootQueryNode';

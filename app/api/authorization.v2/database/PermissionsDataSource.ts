@@ -1,12 +1,12 @@
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { EntityPermissions } from '../model/EntityPermissions';
-import { MongoDataSource } from './MongoDataSource';
-import { MongoResultSet } from './MongoResultSet';
-import { validateEntityPermissionsDBO } from './typing/permissionSchemas';
+import { validateEntityPermissionsDBO } from './schemas/permissionSchemas';
 import {
-  EntityPermissionsDBOType,
-  RestrictedPermissionType,
   PermissionType,
-} from './typing/permissionTypes';
+  RestrictedPermissionType,
+  EntityPermissionsDBOType,
+} from './schemas/permissionTypes';
 
 const isRestricted = (entry: PermissionType): entry is RestrictedPermissionType =>
   entry.refId !== 'public';

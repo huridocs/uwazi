@@ -1,5 +1,5 @@
-import { objectIdSchema } from 'api/relationships.v2/database/typing/commonSchemas';
-import { createDefaultValidator } from 'api/relationships.v2/validation/ajvInstances';
+import { objectIdSchema } from 'api/common.v2/database/schemas/commonSchemas';
+import { createDefaultValidator } from 'api/common.v2/validation/ajvInstances';
 
 const emitSchemaTypes = true;
 

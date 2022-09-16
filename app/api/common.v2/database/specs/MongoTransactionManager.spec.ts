@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { Transactional } from 'api/relationships.v2/services/Transactional';
-import { TransactionManager } from 'api/relationships.v2/services/TransactionManager';
+import { Transactional } from 'api/common.v2/contracts/Transactional';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';

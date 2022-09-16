@@ -1,6 +1,6 @@
+import { User } from 'api/users.v2/model/User';
 import { PermissionsDataSource } from '../database/PermissionsDataSource';
-import { User } from '../model/User';
-import { UnauthorizedError } from './UnauthorizedError';
+import { UnauthorizedError } from '../errors/UnauthorizedError';
 
 type AccessLevels = 'read' | 'write';
 

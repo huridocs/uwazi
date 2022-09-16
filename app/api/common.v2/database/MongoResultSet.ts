@@ -1,6 +1,6 @@
 import { AggregationCursor, Cursor } from 'mongodb';
 import { ValidatorType } from '../validation/ajvInstances';
-import { ResultSet } from '../services/ResultSet';
+import { ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U;

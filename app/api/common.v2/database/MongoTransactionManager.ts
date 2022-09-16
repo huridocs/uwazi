@@ -1,6 +1,6 @@
 import { MongoClient, ClientSession } from 'mongodb';
-import { Transactional } from '../services/Transactional';
-import { TransactionManager } from '../services/TransactionManager';
+import { Transactional } from '../contracts/Transactional';
+import { TransactionManager } from '../contracts/TransactionManager';
 
 export class MongoTransactionManager implements TransactionManager {
   private mongoClient: MongoClient;

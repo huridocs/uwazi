@@ -1,10 +1,10 @@
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ObjectId } from 'mongodb';
 
-import { createDefaultValidator } from 'api/relationships.v2/validation/ajvInstances';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 
+import { createDefaultValidator } from 'api/common.v2/validation/ajvInstances';
 import { CountDocument, MongoResultSet } from '../MongoResultSet';
 
 const testDocuments = [

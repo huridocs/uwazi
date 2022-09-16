@@ -1,4 +1,4 @@
-import { MongoDataSource } from './MongoDataSource';
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 
 export class EntitiesDataSource extends MongoDataSource {
   async entitiesExist(sharedIds: string[]) {

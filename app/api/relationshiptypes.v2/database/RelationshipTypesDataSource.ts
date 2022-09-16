@@ -1,5 +1,5 @@
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
-import { MongoDataSource } from './MongoDataSource';
 
 export class RelationshipTypesDataSource extends MongoDataSource {
   async typesExist(ids: string[]) {

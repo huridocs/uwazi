@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Relationship } from '../model/Relationship';
-import { RelationshipDBOType, JoinedRelationshipDBOType } from './typing/relationshipTypes';
+import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 
 export const RelationshipMappers = {
   toDBO(relationship: Relationship) {

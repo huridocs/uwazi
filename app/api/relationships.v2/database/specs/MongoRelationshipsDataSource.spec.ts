@@ -1,4 +1,4 @@
-import { RelationshipsQuery } from 'api/relationships.v2/services/RelationshipsQuery';
+import { RelationshipsQuery } from 'api/relationships.v2/contracts/RelationshipsQuery';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';

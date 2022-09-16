@@ -1,5 +1,5 @@
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
-import { AuthorizationService } from './AuthorizationService';
 
 export class GetRelationshipsService {
   private relationshipsDS: RelationshipsDataSource;

@@ -1,6 +1,6 @@
 import testingDB from 'api/utils/testing_db';
+import { TransactionContextAlreadySetError } from '../errors/TransactionContextAlreadySetError';
 import { MongoDataSource } from '../MongoDataSource';
-import { TransactionContextAlreadySetError } from '../TransactionContextAlreadySetError';
 
 class DummyDataSource extends MongoDataSource {}
 

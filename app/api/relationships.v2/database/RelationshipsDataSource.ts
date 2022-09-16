@@ -1,18 +1,18 @@
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { Relationship } from '../model/Relationship';
+import { RelationshipMappers } from './RelationshipMappers';
+import { MongoGraphQueryParser } from './MongoGraphQueryParser';
+import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import {
   validateRelationshipDBO,
   validateJoinedRelationshipDBO,
-} from './typing/relationshipSchemas';
+} from './schemas/relationshipSchemas';
 import {
   RelationshipDBOType,
-  JoinedRelationshipDBOType,
   EntityInfoType,
-} from './typing/relationshipTypes';
-import { CountDocument, MongoResultSet } from './MongoResultSet';
-import { MongoDataSource } from './MongoDataSource';
-import { RelationshipMappers } from './RelationshipMappers';
-import { RelationshipsQuery } from '../services/RelationshipsQuery';
-import { MongoGraphQueryParser } from './MongoGraphQueryParser';
+  JoinedRelationshipDBOType,
+} from './schemas/relationshipTypes';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);

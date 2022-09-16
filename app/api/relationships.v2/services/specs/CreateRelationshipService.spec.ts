@@ -1,20 +1,17 @@
-import {
-  getConnection,
-  getClient,
-} from 'api/relationships.v2/database/getConnectionForCurrentTenant';
+import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { generateId } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
+import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { MongoTransactionManager } from 'api/relationships.v2/database/MongoTransactionManager';
 import { ObjectId } from 'mongodb';
-import { RelationshipTypesDataSource } from 'api/relationships.v2/database/RelationshipTypesDataSource';
-import { generateId } from 'api/relationships.v2/database/MongoIdGenerator';
-import { User } from 'api/relationships.v2/model/User';
-import { PermissionsDataSource } from 'api/relationships.v2/database/PermissionsDataSource';
-import { CreateRelationshipService } from '../CreateRelationshipService';
-import { EntitiesDataSource } from '../../database/EntitiesDataSource';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
-import { AuthorizationService } from '../AuthorizationService';
+import { CreateRelationshipService } from '../CreateRelationshipService';
 
 const factory = getFixturesFactory();
 

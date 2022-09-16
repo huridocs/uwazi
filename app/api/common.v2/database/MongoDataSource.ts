@@ -1,6 +1,6 @@
 import { ClientSession, Db } from 'mongodb';
-import { Transactional } from '../services/Transactional';
-import { TransactionContextAlreadySetError } from './TransactionContextAlreadySetError';
+import { Transactional } from '../contracts/Transactional';
+import { TransactionContextAlreadySetError } from './errors/TransactionContextAlreadySetError';
 
 export abstract class MongoDataSource implements Transactional<ClientSession> {
   protected db: Db;

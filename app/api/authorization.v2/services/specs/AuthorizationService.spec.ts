@@ -1,10 +1,10 @@
-import { getConnection } from 'api/relationships.v2/database/getConnectionForCurrentTenant';
-import { PermissionsDataSource } from 'api/relationships.v2/database/PermissionsDataSource';
-import { User } from 'api/relationships.v2/model/User';
+import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
+import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { AuthorizationService } from '../AuthorizationService';
-import { UnauthorizedError } from '../UnauthorizedError';
 
 const factory = getFixturesFactory();
 

@@ -1,10 +1,10 @@
-import { EntitiesDataSource } from '../database/EntitiesDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
-import { RelationshipTypesDataSource } from '../database/RelationshipTypesDataSource';
 import { Relationship } from '../model/Relationship';
-import { AuthorizationService } from './AuthorizationService';
-import { IdGenerator } from './IdGenerator';
-import { TransactionManager } from './TransactionManager';
 
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
