@@ -1,7 +1,7 @@
 import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { generateId } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
@@ -11,13 +11,14 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
+import { MissingEntityError, SelfReferenceError } from '../../errors/relationshipErrors';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 
 const factory = getFixturesFactory();
 
 const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 
-const mockUser = new User(generateId(), 'admin', []);
+const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
 const fixtures = {
   entities: [
@@ -60,7 +61,7 @@ describe('create()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       const relationship = await service.create(
@@ -84,7 +85,7 @@ describe('create()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
@@ -110,7 +111,7 @@ describe('create()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       try {
@@ -118,6 +119,7 @@ describe('create()', () => {
         fail('should throw error');
       } catch (e) {
         await expect(e.message).toMatch(/existing/);
+        expect(e).toBeInstanceOf(MissingEntityError);
       }
     });
   });
@@ -130,7 +132,7 @@ describe('create()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       try {
@@ -138,6 +140,7 @@ describe('create()', () => {
         fail('should throw error');
       } catch (e) {
         await expect(e.message).toMatch(/self/);
+        expect(e).toBeInstanceOf(SelfReferenceError);
       }
     });
   });
@@ -152,7 +155,7 @@ describe('createMultiple()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       const relationship = await service.createMultiple([
@@ -190,7 +193,7 @@ describe('createMultiple()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       await service.createMultiple([
@@ -232,7 +235,7 @@ describe('createMultiple()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       try {
@@ -244,6 +247,7 @@ describe('createMultiple()', () => {
         fail('should throw error');
       } catch (e) {
         await expect(e.message).toMatch(/existing/);
+        expect(e).toBeInstanceOf(MissingEntityError);
       }
     });
   });
@@ -256,7 +260,7 @@ describe('createMultiple()', () => {
         new RelationshipTypesDataSource(connection),
         new EntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
-        generateId,
+        MongoIdGenerator,
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
       try {
@@ -268,6 +272,7 @@ describe('createMultiple()', () => {
         fail('should throw error');
       } catch (e) {
         await expect(e.message).toMatch(/self/);
+        expect(e).toBeInstanceOf(SelfReferenceError);
       }
     });
   });

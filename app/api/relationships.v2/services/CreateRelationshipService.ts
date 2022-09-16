@@ -4,6 +4,11 @@ import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
+import {
+  MissingEntityError,
+  MissingRelationshipTypeError,
+  SelfReferenceError,
+} from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 
 export class CreateRelationshipService {
@@ -15,7 +20,7 @@ export class CreateRelationshipService {
 
   private relationshipTypesDS: RelationshipTypesDataSource;
 
-  private generateId: IdGenerator;
+  private idGenerator: IdGenerator<string, any>;
 
   private authService: AuthorizationService;
 
@@ -25,14 +30,14 @@ export class CreateRelationshipService {
     relationshipTypesDS: RelationshipTypesDataSource,
     entitiesDS: EntitiesDataSource,
     transactionManager: TransactionManager,
-    generateId: IdGenerator,
+    idGenerator: IdGenerator<string, any>,
     authService: AuthorizationService
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
     this.entitiesDS = entitiesDS;
     this.transactionManager = transactionManager;
-    this.generateId = generateId;
+    this.idGenerator = idGenerator;
     this.authService = authService;
   }
 
@@ -43,7 +48,7 @@ export class CreateRelationshipService {
   async createMultiple(relationships: { from: string; to: string; type: string }[]) {
     relationships.forEach(r => {
       if (r.from === r.to) {
-        throw new Error('Cannot create relationship to itself');
+        throw new SelfReferenceError('Cannot create relationship to itself');
       }
     });
 
@@ -57,14 +62,16 @@ export class CreateRelationshipService {
     return this.transactionManager.run(
       async () => {
         if (!(await this.relationshipTypesDS.typesExist(types))) {
-          throw new Error('Must provide id for existing relationship type');
+          throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
         }
         if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
-          throw new Error('Must provide sharedIds from existing entities');
+          throw new MissingEntityError('Must provide sharedIds from existing entities');
         }
 
         return this.relationshipsDS.insert(
-          relationships.map(r => new Relationship(this.generateId(), r.from, r.to, r.type))
+          relationships.map(
+            r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type)
+          )
         );
       },
       this.entitiesDS,

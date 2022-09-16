@@ -1,7 +1,7 @@
 import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { generateId } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { RelationshipsDataSource } from 'api/relationships.v2/database/RelationshipsDataSource';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -10,7 +10,7 @@ import { GetRelationshipsService } from '../GetRelationshipsService';
 
 const factory = getFixturesFactory();
 
-const mockUser = new User(generateId(), 'admin', []);
+const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
 const fixtures = {
   relationships: [
