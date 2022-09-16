@@ -4,7 +4,7 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import DatePicker from './DatePicker';
 
-export default class MultiDateRange extends Component {
+class MultiDateRange extends Component {
   constructor(props) {
     super(props);
     const values =
@@ -51,7 +51,9 @@ export default class MultiDateRange extends Component {
             <div key={index} className="multidate-item">
               <div className="multidate-range">
                 <div className="DatePicker__From">
-                  <Translate translationKey='Label date "From"'>From:</Translate>
+                  <span className="truncate">
+                    <Translate translationKey='Label date "From"'>From:</Translate>
+                  </span>
                   <DatePicker
                     format={this.props.format}
                     value={value.from}
@@ -59,7 +61,9 @@ export default class MultiDateRange extends Component {
                   />
                 </div>
                 <div className="DatePicker__To">
-                  <Translate translationKey='Label date "to"'>To:</Translate>
+                  <span className="truncate">
+                    <Translate translationKey='Label date "to"'>To:</Translate>
+                  </span>
                   <DatePicker
                     format={this.props.format}
                     value={value.to}
@@ -90,3 +94,5 @@ MultiDateRange.propTypes = {
   onChange: PropTypes.func,
   format: PropTypes.string,
 };
+
+export default MultiDateRange;
