@@ -2,6 +2,7 @@
 import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
 import { notificationActions } from 'app/Notifications';
+import { t } from 'app/I18N';
 import { savePermissions } from 'app/Permissions/PermissionsAPI';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { wrapDispatch } from 'app/Multireducer';
@@ -45,6 +46,6 @@ export function saveEntitiesPermissions(permissionsData: PermissionsDataSchema, 
       }
     }
 
-    dispatch(notificationActions.notify('Update success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Update success', null, false), 'success'));
   };
 }

@@ -173,8 +173,6 @@ describe('library helper', () => {
         { id: 1, value: 1, label: 'value1', results: 2 },
         { id: 'missing', value: 'missing', label: 'No value', results: 2, noValueKey: true },
       ]);
-
-      expect(populatedFilters[0].totalPossibleOptions).toBe(27);
     });
   });
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { APIURL } from 'app/config.js';
 import backend from 'fetch-mock';
-import Activitylog from '../Activitylog.js';
+import Activitylog from '../Activitylog';
 
 describe('Activitylog', () => {
   let component;
