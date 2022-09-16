@@ -44,6 +44,10 @@ export class RelationshipsDataSource extends MongoDataSource {
     return created.map(item => RelationshipMappers.toModel(item));
   }
 
+  getById(ids: string[]) {
+    // const getCursor =  this.getCollection().find({ _id: { $in: ids } });
+  }
+
   getByEntity(sharedId: string) {
     const matchStage = {
       $match: {
