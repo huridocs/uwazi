@@ -41,7 +41,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
     <div className="settings-content">
       <div className="panel panel-preserve">
         <div className="panel-preserve-heading">
-          <PreserveIcon color="#D20D6C" /> <Translate>Preserve</Translate>
+          <PreserveIcon color="#D20D6C" /> <Translate>Preserve Extension</Translate>
         </div>
         <div className="panel-preserve-content">
           <div className="status">
