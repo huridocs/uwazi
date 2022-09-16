@@ -5,7 +5,6 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
-import { tenants } from 'api/tenants';
 
 export class S3Storage {
   private client: S3Client;
@@ -21,7 +20,7 @@ export class S3Storage {
   }
 
   static bucketName() {
-    return tenants.current().name.replace('_', '-');
+    return config.s3.bucket;
   }
 
   async upload(key: string, body: Buffer) {
