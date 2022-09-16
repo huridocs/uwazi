@@ -4,6 +4,11 @@
     font-weight: 700;
     font-size: 18px;
     line-height: 25.2px;
+
+    svg {
+      float: inline-start;
+      margin-right: 5px;
+    }
   }
   .panel-preserve-content {
     div.status {
