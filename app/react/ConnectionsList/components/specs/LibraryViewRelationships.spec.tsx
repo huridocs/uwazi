@@ -16,9 +16,8 @@ describe('LibraryViewRelationships', () => {
   beforeEach(() => {
     props = {
       expanded: false,
-      parentEntity: Immutable({}),
+      parentEntity: Immutable({ _id: 'someparentid' }),
       searchResults: Immutable({}),
-      search: { order: 'desc', sort: 'creationDate', treatAs: 'number' },
       hubs: Immutable([
         {
           hub: 'hubid',
