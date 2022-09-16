@@ -47,6 +47,7 @@
 .connections-metadata,
 .entity-create-connection-panel {
   top: 0;
+  z-index: 6;
   @media (min-width: 1024px) {
     top: $header-height + 1 !important;
   }

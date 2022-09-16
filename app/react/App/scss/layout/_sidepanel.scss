@@ -5,6 +5,7 @@
 
 $c-sidebar: darken($c-background, 0%);
 $c-sidebar: $c-white;
+
 .side-panel {
   z-index: 4;
   display: flex;
@@ -177,6 +178,7 @@ $c-sidebar: $c-white;
     border-top: 0;
     border-left: 0;
     border-right: 0;
+    border-bottom: 0;
     border-radius: 0;
     box-shadow: none;
     &:before {
@@ -211,6 +213,7 @@ $c-sidebar: $c-white;
 }
 
 .sidepanel-body {
+  position: relative;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
@@ -234,6 +237,90 @@ $c-sidebar: $c-white;
   //   // firefox hack (related issue #378)
   //   padding-bottom: $header-height * 3;
   // }
+  .sidepanel-relationships {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-size: $f-size-lg;
+
+    .sticky {
+      padding-top: 46px;
+      .sidepanel-relationship {
+        .sidepanel-relationship-left-label {
+          position: fixed;
+          top: 0;
+          z-index: 1;
+          width: 100%;
+        }
+      }
+    }
+    .sidepanel-relationship {
+      display: flex;
+      flex-direction: column;
+      .sidepanel-relationship-left-label {
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 16px;
+        gap: 9px;
+        background: #d7d7d7;
+        border: 1px solid #d7d7d7;
+      }
+      .sidepanel-relationship-right {
+        padding: 7px 10px 7px 10px;
+        .sidepanel-relationship-collapsible {
+          .header {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 6px 12px;
+            gap: 12px;
+            background: #eeeeee;
+            border: 1px solid #d7d7dc;
+            margin-bottom: 7px;
+            .header-info {
+              float: right;
+            }
+            .header-icon {
+              margin-right: 6px;
+              font-size: large;
+            }
+          }
+          .content {
+            .sidepanel-relationship-right-entity {
+              cursor: pointer;
+              height: 100%;
+              margin-bottom: 7px;
+              border: 1px solid #d7d7dc;
+              box-sizing: border-box;
+
+              gap: 9px;
+              .item-document {
+                z-index: -1;
+                padding-bottom: 0;
+                min-height: 0;
+
+                .item-info {
+                  padding: 5px 10px;
+                }
+                .item-metadata {
+                  display: none;
+                }
+                .item-actions {
+                  padding: 0;
+                  height: auto;
+                  padding: 0 10px 10px;
+                  -webkit-align-items: center;
+                  align-items: center;
+                  position: relative;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .sidepanel-header {
