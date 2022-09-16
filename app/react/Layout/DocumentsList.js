@@ -117,6 +117,71 @@ class DocumentsList extends Component {
     ) : null;
     const FooterComponent = !hideFooter ? <Footer /> : null;
 
+    const libraryContent = () => {
+      if (view !== 'graph') {
+        return (
+          <CollectionViewer
+            {...{
+              rowListZoomLevel,
+              storeKey: this.props.storeKey,
+              clickOnDocument: this.clickOnDocument,
+              onSnippetClick: this.props.onSnippetClick,
+              deleteConnection: this.props.deleteConnection,
+              loadNextGroupOfEntities: this.loadNextGroupOfEntities,
+            }}
+          />
+        );
+      }
+      if (view === 'graph') {
+        return <GraphView clickOnDocument={this.clickOnDocument} />;
+      }
+      return null;
+    };
+    const loadMoreSection = (
+      <div className="row">
+        {(() => {
+          if (view !== 'graph') {
+            return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
+          }
+          return null;
+        })()}
+        {(() => {
+          if (LoadMoreButton) {
+            return <LoadMoreButton />;
+          }
+          if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
+            return (
+              <div className="col-sm-12 text-center">
+                {this.loadMoreButton(30)} {this.loadMoreButton(300)}
+              </div>
+            );
+          }
+          if (this.state.loading) {
+            return <Loader />;
+          }
+          return null;
+        })()}
+        <NeedAuthorization>
+          <div className="col-sm-12 force-ltr text-center protip">
+            <Icon icon="lightbulb" />{' '}
+            <b>
+              <Translate>ProTip!</Translate>
+            </b>
+            <span>
+              <Translate>Use</Translate>&nbsp;
+              <span className="protip-key" no-translate>
+                cmd
+              </span>
+              &nbsp; <Translate>or</Translate>{' '}
+              <span className="protip-key" no-translate>
+                shift
+              </span>
+              &nbsp; <Translate>+ click to select multiple cards.</Translate>
+            </span>
+          </div>
+        </NeedAuthorization>
+      </div>
+    );
     return (
       <div className="documents-list">
         <div className="main-wrapper">
@@ -150,70 +215,19 @@ class DocumentsList extends Component {
           </div>
           {blankState() && <Welcome />}
 
-          {(() => {
-            if (view !== 'graph') {
-              return (
-                <CollectionViewer
-                  {...{
-                    rowListZoomLevel,
-                    storeKey: this.props.storeKey,
-                    clickOnDocument: this.clickOnDocument,
-                    onSnippetClick: this.props.onSnippetClick,
-                    deleteConnection: this.props.deleteConnection,
-                    loadNextGroupOfEntities: this.loadNextGroupOfEntities,
-                  }}
-                />
-              );
-            }
-            if (view === 'graph') {
-              return <GraphView clickOnDocument={this.clickOnDocument} />;
-            }
-            return null;
-          })()}
+          {CollectionViewer.wrapLoader && (
+            <div className="tableview-container">
+              {libraryContent()}
+              {loadMoreSection}
+            </div>
+          )}
+          {!CollectionViewer.wrapLoader && (
+            <>
+              {libraryContent()}
+              {loadMoreSection}
+            </>
+          )}
 
-          <div className="row">
-            {(() => {
-              if (view !== 'graph') {
-                return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
-              }
-              return null;
-            })()}
-            {(() => {
-              if (LoadMoreButton) {
-                return <LoadMoreButton />;
-              }
-              if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
-                return (
-                  <div className="col-sm-12 text-center">
-                    {this.loadMoreButton(30)} {this.loadMoreButton(300)}
-                  </div>
-                );
-              }
-              if (this.state.loading) {
-                return <Loader />;
-              }
-              return null;
-            })()}
-            <NeedAuthorization>
-              <div className="col-sm-12 force-ltr text-center protip">
-                <Icon icon="lightbulb" />{' '}
-                <b>
-                  <Translate>ProTip!</Translate>
-                </b>
-                <span>
-                  <Translate>Use</Translate>&nbsp;
-                  <span className="protip-key" no-translate>
-                    cmd
-                  </span>
-                  &nbsp; <Translate>or</Translate>{' '}
-                  <span className="protip-key" no-translate>
-                    shift
-                  </span>
-                  &nbsp; <Translate>+ click to select multiple cards.</Translate>
-                </span>
-              </div>
-            </NeedAuthorization>
-          </div>
           {FooterComponent}
         </div>
       </div>

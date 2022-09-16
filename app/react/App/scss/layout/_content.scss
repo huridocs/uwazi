@@ -88,17 +88,14 @@
 }
 
 .library-viewer.document-viewer.unpinned-mode {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
-  @media (max-width: 1023px) {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      display: none;
-    }
+  &::-webkit-scrollbar-thumb {
+    display: none;
   }
 }
