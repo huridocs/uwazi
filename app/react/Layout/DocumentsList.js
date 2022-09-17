@@ -216,7 +216,7 @@ class DocumentsList extends Component {
           {blankState() && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
-            <div className="tableview-container">
+            <div className="library-load-container">
               {libraryContent()}
               {loadMoreSection}
             </div>

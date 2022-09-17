@@ -1,136 +1,123 @@
-.tableview-container {
-  overflow: auto;
-  height: calc(100vh - 328px);
+.tableview-wrapper {
+  margin: 0;
+  margin-bottom: 15px;
 
-  @media (min-width: 768px) {
-    height: calc(100vh - 260px);
+  thead {
+    position: sticky;
+    top: 0px;
+    z-index: 2;
   }
 
-  @media (min-width: 1024px) {
-    height: calc(100vh - 225px);
-  }
+  .sticky-col {
+    z-index: 1;
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
 
-  .tableview-wrapper {
-    margin: 0;
-    margin-bottom: 15px;
-
-    thead {
+    @media (min-width: 871px) {
       position: sticky;
-      top: 0px;
+      left: 0px;
+      z-index: 1;
+    }
+  }
+
+  th {
+    background-color: white;
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
+    height: 30px;
+    padding: 8px;
+
+    font-size: 12px;
+
+    &.sticky-col {
       z-index: 2;
     }
+  }
 
-    .sticky-col {
-      z-index: 1;
-      box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
+  td {
+    padding: 8px 16px;
 
-      @media (min-width: 871px) {
-        position: sticky;
-        left: 0px;
-        z-index: 1;
-      }
-    }
+    border-bottom: 2px solid #e0e0e0;
 
-    th {
-      background-color: white;
-      box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.07);
-      height: 30px;
-      padding: 8px;
-
-      font-size: 12px;
-
-      &.sticky-col {
-        z-index: 2;
-      }
-    }
-
-    td {
-      padding: 8px 16px;
-
-      border-bottom: 2px solid #e0e0e0;
-
-      & > input {
-        margin-right: 8px;
-      }
-    }
-
-    td:first-child > div {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-    }
-
-    td:first-of-type {
-      padding-left: 0;
-
-      .checkbox-cell {
-        width: 30px;
-        padding: 0;
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        height: 2.5em;
-        margin: -8px 0;
-      }
-    }
-
-    td:first-child input {
-      margin-top: 0;
+    & > input {
       margin-right: 8px;
     }
+  }
 
-    .table-view-cell {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      min-width: 50px;
-      width: max-content;
-      max-width: 332px;
-      text-overflow: ellipsis;
-      overflow: hidden;
+  td:first-child > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  td:first-of-type {
+    padding-left: 0;
+
+    .checkbox-cell {
+      width: 30px;
+      padding: 0;
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      height: 2.5em;
+      margin: -8px 0;
+    }
+  }
+
+  td:first-child input {
+    margin-top: 0;
+    margin-right: 8px;
+  }
+
+  .table-view-cell {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    min-width: 50px;
+    width: max-content;
+    max-width: 332px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    flex: 1;
+
+    &.table-view-row-zoom-0 {
       -webkit-line-clamp: 1;
-      flex: 1;
-
-      &.table-view-row-zoom-0 {
-        -webkit-line-clamp: 1;
-        height: 21px;
-      }
-
-      &.table-view-row-zoom-1 {
-        -webkit-line-clamp: 2;
-        height: 42px;
-      }
-
-      &.table-view-row-zoom-2 {
-        -webkit-line-clamp: 3;
-        height: 63px;
-      }
+      height: 21px;
     }
 
-    th,
-    td {
-      border-right: 1px solid #e0e0e0;
+    &.table-view-row-zoom-1 {
+      -webkit-line-clamp: 2;
+      height: 42px;
     }
 
-    tbody {
-      overflow-y: auto;
+    &.table-view-row-zoom-2 {
+      -webkit-line-clamp: 3;
+      height: 63px;
+    }
+  }
+
+  th,
+  td {
+    border-right: 1px solid #e0e0e0;
+  }
+
+  tbody {
+    overflow-y: auto;
+  }
+
+  tbody > tr {
+    &:nth-child(even) > td {
+      background-color: white;
     }
 
-    tbody > tr {
-      &:nth-child(even) > td {
-        background-color: white;
-      }
+    &:nth-child(odd) > td {
+      background-color: #f5f5f5;
+    }
 
-      &:nth-child(odd) > td {
-        background-color: #f5f5f5;
-      }
+    &:hover > td {
+      background-color: #f2f6fb;
+    }
 
-      &:hover > td {
-        background-color: #f2f6fb;
-      }
-
-      &.selected > td {
-        background-color: #bed1ec;
-      }
+    &.selected > td {
+      background-color: #bed1ec;
     }
   }
 }

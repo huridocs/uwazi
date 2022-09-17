@@ -98,4 +98,17 @@
   &::-webkit-scrollbar-thumb {
     display: none;
   }
+
+  .library-load-container {
+    overflow: auto;
+    height: calc(100vh - 328px);
+
+    @media (min-width: 768px) {
+      height: calc(100vh - 260px);
+    }
+
+    @media (min-width: 1024px) {
+      height: calc(100vh - 225px);
+    }
+  }
 }
