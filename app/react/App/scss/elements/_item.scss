@@ -267,6 +267,7 @@ $item-padding: 15px;
 .item-type-empty .item-type__name {
   background-color: $c-grey-light;
   color: $c-grey-dark;
+  height: 1.5em;
 }
 .item-type-primary .item-type__name {
   background-color: $c-primary;
