@@ -34,7 +34,6 @@ export default (app, server) => {
   require('./settings/routes').default(app);
   require('./i18n/routes').default(app);
   require('./sync/routes').default(app);
-  require('./swagger/swaggerconfig').default(app);
   require('./tasks/routes').default(app);
   require('./usergroups/routes').default(app);
   require('./permissions/routes').permissionRoutes(app);
