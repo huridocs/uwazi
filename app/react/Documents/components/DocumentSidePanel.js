@@ -21,8 +21,11 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
+import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
+import ViewDocButton from 'app/Library/components/ViewDocButton';
+import { getDocumentReferences } from 'app/Library/actions/libraryActions';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -32,24 +35,23 @@ class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
-    this.state = { copyFrom: false, copyFromProps: [] };
+    this.state = { copyFrom: false, copyFromProps: [], relationshipsExpanded: true };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
     this.toggleSharing = this.toggleSharing.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
+    const sharedId = this.props.doc.get('sharedId');
     if (
       this.props.doc.get('_id') &&
       prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
-      this.props.getDocumentReferences
+      this.props.connectionsChanged &&
+      getDocumentReferences
     ) {
-      this.props.getDocumentReferences(
-        this.props.doc.get('sharedId'),
-        this.props.file._id,
-        this.props.storeKey
-      );
+      this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
+      this.props.connectionsChanged(sharedId);
     }
   }
 
@@ -123,6 +125,20 @@ class DocumentSidePanel extends Component {
     }));
   }
 
+  collapseRelationships() {
+    // Toggles the states to force re-rendering
+    this.setState({ relationshipsExpanded: true }, () =>
+      this.setState({ relationshipsExpanded: false })
+    );
+  }
+
+  expandRelationships() {
+    // Toggles the states to force re-rendering
+    this.setState({ relationshipsExpanded: false }, () =>
+      this.setState({ relationshipsExpanded: true })
+    );
+  }
+
   renderHeader(tab, doc, isEntity) {
     if (this.state.copyFrom) {
       return (
@@ -144,134 +160,141 @@ class DocumentSidePanel extends Component {
       { totalConnections: 0 }
     );
     return (
-      <div className="sidepanel-header">
-        <button
-          type="button"
-          className="closeSidepanel close-modal"
-          onClick={this.close.bind(this)}
-          aria-label="Close side panel"
-        >
-          <Icon icon="times" />
-        </button>
-        <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
-          <ul className="nav nav-tabs">
-            {(() => {
-              if (!this.props.raw && doc.get('semanticSearch')) {
-                return (
-                  <li>
-                    <TabLink
-                      to="semantic-search-results"
-                      role="button"
-                      tabIndex="0"
-                      aria-label={t('System', 'Semantic search results', null, false)}
-                      component="div"
-                    >
-                      <Icon icon="flask" />
-                      <span className="tab-link-tooltip">
-                        <Translate>Semantic search results</Translate>
-                      </span>
-                    </TabLink>
-                  </li>
-                );
-              }
-            })()}
-            {(() => {
-              if (!this.props.raw) {
-                return (
-                  <li>
-                    <TabLink
-                      to="text-search"
-                      role="button"
-                      tabIndex="0"
-                      aria-label={t('System', 'Search text', null, false)}
-                      component="div"
-                    >
-                      <SnippetsTab storeKey={this.props.storeKey} />
-                    </TabLink>
-                  </li>
-                );
-              }
-            })()}
-            {(() => {
-              if (!isEntity && !this.props.raw) {
-                return (
-                  <li>
-                    <TabLink
-                      to="toc"
-                      role="button"
-                      tabIndex="0"
-                      aria-label={t('System', 'Table of Contents', null, false)}
-                      component="div"
-                    >
-                      <Icon icon="font" />
-                      <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
-                    </TabLink>
-                  </li>
-                );
-              }
-              return <span />;
-            })()}
-            {(() => {
-              if (!isEntity && !this.props.raw) {
-                return (
-                  <li>
-                    <TabLink
-                      to="references"
-                      role="button"
-                      tabIndex="0"
-                      aria-label={t('System', 'References', null, false)}
-                      component="div"
-                    >
-                      <Icon icon="sitemap" />
-                      <span className="connectionsNumber">{references.size}</span>
-                      <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                    </TabLink>
-                  </li>
-                );
-              }
-              return <span />;
-            })()}
-            {(() => {
-              if (!this.props.raw) {
-                return <li className="tab-separator" />;
-              }
-              return <span />;
-            })()}
-            <li>
-              <TabLink
-                to="metadata"
-                default
-                role="button"
-                tabIndex="0"
-                aria-label={t('System', 'Info', null, false)}
-                component="div"
-              >
-                <Icon icon="info-circle" />
-                <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-              </TabLink>
-            </li>
-            {(() => {
-              if (!isTargetDoc && !excludeConnectionsTab) {
-                return (
-                  <li>
-                    <TabLink
-                      to="connections"
-                      role="button"
-                      tabIndex="0"
-                      aria-label={t('System', 'Relationships', null, false)}
-                      component="div"
-                    >
-                      <Icon icon="exchange-alt" />
-                      <span className="connectionsNumber">{summary.totalConnections}</span>
-                      <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
-                    </TabLink>
-                  </li>
-                );
-              }
-            })()}
-          </ul>
-        </Tabs>
-      </div>
+      <>
+        <div className="sidepanel-header">
+          <button
+            type="button"
+            className="closeSidepanel close-modal"
+            onClick={this.close.bind(this)}
+            aria-label="Close side panel"
+          >
+            <Icon icon="times" />
+          </button>
+          <Tabs selectedTab={tab} renderActiveTabContentOnly handleSelect={this.selectTab}>
+            <ul className="nav nav-tabs">
+              {(() => {
+                if (!this.props.raw && doc.get('semanticSearch')) {
+                  return (
+                    <li>
+                      <TabLink
+                        to="semantic-search-results"
+                        role="button"
+                        tabIndex="0"
+                        aria-label={t('System', 'Semantic search results', null, false)}
+                        component="div"
+                      >
+                        <Icon icon="flask" />
+                        <span className="tab-link-tooltip">
+                          <Translate>Semantic search results</Translate>
+                        </span>
+                      </TabLink>
+                    </li>
+                  );
+                }
+              })()}
+              {(() => {
+                if (!this.props.raw) {
+                  return (
+                    <li>
+                      <TabLink
+                        to="text-search"
+                        role="button"
+                        tabIndex="0"
+                        aria-label={t('System', 'Search text', null, false)}
+                        component="div"
+                      >
+                        <SnippetsTab storeKey={this.props.storeKey} />
+                      </TabLink>
+                    </li>
+                  );
+                }
+              })()}
+              {(() => {
+                if (!isEntity && !this.props.raw) {
+                  return (
+                    <li>
+                      <TabLink
+                        to="toc"
+                        role="button"
+                        tabIndex="0"
+                        aria-label={t('System', 'Table of Contents', null, false)}
+                        component="div"
+                      >
+                        <Icon icon="font" />
+                        <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
+                      </TabLink>
+                    </li>
+                  );
+                }
+                return <span />;
+              })()}
+              {(() => {
+                if (!isEntity && !this.props.raw) {
+                  return (
+                    <li>
+                      <TabLink
+                        to="references"
+                        role="button"
+                        tabIndex="0"
+                        aria-label={t('System', 'References', null, false)}
+                        component="div"
+                      >
+                        <Icon icon="sitemap" />
+                        <span className="connectionsNumber">{references.size}</span>
+                        <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                      </TabLink>
+                    </li>
+                  );
+                }
+                return <span />;
+              })()}
+              {(() => {
+                if (!this.props.raw) {
+                  return <li className="tab-separator" />;
+                }
+                return <span />;
+              })()}
+              <li>
+                <TabLink
+                  to="metadata"
+                  default
+                  role="button"
+                  tabIndex="0"
+                  aria-label={t('System', 'Info', null, false)}
+                  component="div"
+                >
+                  <Icon icon="info-circle" />
+                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                </TabLink>
+              </li>
+              {(() => {
+                if (!isTargetDoc && !excludeConnectionsTab) {
+                  return (
+                    <li>
+                      <TabLink
+                        to="relationships"
+                        role="button"
+                        tabIndex="0"
+                        aria-label={t('System', 'Relationships', null, false)}
+                        component="div"
+                      >
+                        <Icon icon="exchange-alt" />
+                        <span className="connectionsNumber">{summary.totalConnections}</span>
+                        <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                      </TabLink>
+                    </li>
+                  );
+                }
+              })()}
+            </ul>
+          </Tabs>
+        </div>
+        <ShowIf if={this.props.tab === 'relationships'}>
+          <div>
+            <Item active={false} doc={this.props.doc} className="item-collapsed" noMetadata />
+          </div>
+        </ShowIf>
+      </>
     );
   }
 
@@ -325,6 +348,30 @@ class DocumentSidePanel extends Component {
             />
           </div>
         </ShowIf>
+        <ShowIf if={this.props.tab === 'relationships'}>
+          <div className="sidepanel-footer">
+            <div className="relationships-left-buttons">
+              <ViewDocButton icon="file" sharedId={doc.get('sharedId')} />
+            </div>
+            <div className="relationships-right-buttons">
+              <button
+                type="button"
+                className="btn btn-default relationships-collapse-button"
+                style={{ marginRight: '10px' }}
+                onClick={() => this.collapseRelationships()}
+              >
+                <Translate>Collapse all</Translate>
+              </button>
+              <button
+                type="button"
+                className="btn btn-default relationships-expand-button"
+                onClick={() => this.expandRelationships()}
+              >
+                <Translate>Expand all</Translate>
+              </button>
+            </div>
+          </div>
+        </ShowIf>
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[jsDoc]}>
           {this.props.tab === 'toc' && this.props.tocBeingEdited && (
             <div className="sidepanel-footer">
@@ -368,7 +415,7 @@ class DocumentSidePanel extends Component {
             </div>
           )}
         </NeedAuthorization>
-        <div className="sidepanel-body">
+        <div className="sidepanel-body scrollable">
           <Tabs selectedTab={this.props.tab || 'metadata'}>
             <TabContent for="text-search" className="text-search">
               <SearchText
@@ -460,8 +507,8 @@ class DocumentSidePanel extends Component {
                 readOnly={readOnly}
               />
             </TabContent>
-            <TabContent for="connections" className="connections">
-              <ConnectionsGroups />
+            <TabContent for="relationships" className="connections">
+              <ConnectionsGroups expanded={this.state.relationshipsExpanded} />
             </TabContent>
             <TabContent for="semantic-search-results">
               <DocumentSemanticSearchResults doc={jsDoc} />
@@ -486,6 +533,7 @@ DocumentSidePanel.defaultProps = {
   isTargetDoc: false,
   readOnly: false,
   getDocumentReferences: undefined,
+  connectionsChanged: undefined,
   tocFormComponent: () => false,
   EntityForm: () => false,
   raw: false,
@@ -518,6 +566,7 @@ DocumentSidePanel.propTypes = {
   editToc: PropTypes.func,
   leaveEditMode: PropTypes.func,
   searchSnippets: PropTypes.func,
+  connectionsChanged: PropTypes.func,
   getDocumentReferences: PropTypes.func,
   removeFromToc: PropTypes.func,
   indentTocElement: PropTypes.func,
@@ -550,7 +599,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     references,
-    excludeConnectionsTab: Boolean(ownProps.references),
+    excludeConnectionsTab: Boolean(state.relationships.list.connectionsGroups.length),
     connectionsGroups: state.relationships.list.connectionsGroups,
     relationships: ownProps.references,
     defaultLanguage,
