@@ -1,5 +1,6 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { MongoGraphQueryParser } from './MongoGraphQueryParser';
@@ -17,6 +18,8 @@ import {
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
 }
+
+const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
 
 type RelationshipAggregatedResultType = Omit<
   RelationshipDBOType,
@@ -44,8 +47,33 @@ export class RelationshipsDataSource extends MongoDataSource {
     return created.map(item => RelationshipMappers.toModel(item));
   }
 
-  getById(ids: string[]) {
-    // const getCursor =  this.getCollection().find({ _id: { $in: ids } });
+  async count(ids: string[]) {
+    return this.getCollection().countDocuments(
+      { _id: { $in: idsToDb(ids) } },
+      { session: this.session }
+    );
+  }
+
+  async exists(ids: string[]) {
+    const existingCount = await this.count(ids);
+    return existingCount === ids.length;
+  }
+
+  getById(_ids: string[]) {
+    const ids = idsToDb(_ids);
+    const getCursor = this.getCollection().find({ _id: { $in: ids } });
+    return new MongoResultSet<RelationshipDBOType, Relationship>(
+      getCursor,
+      validateRelationshipDBO,
+      RelationshipMappers.toModel
+    );
+  }
+
+  async delete(_ids: string[]) {
+    const ids = idsToDb(_ids);
+    const deleted = await this.getById(_ids).all();
+    await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.session });
+    return deleted;
   }
 
   getByEntity(sharedId: string) {

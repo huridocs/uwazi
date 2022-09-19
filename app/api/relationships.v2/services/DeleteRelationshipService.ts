@@ -1,6 +1,8 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import relationships from 'api/relationships/relationships';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
+import { MissingRelationshipError } from '../errors/relationshipErrors';
 
 export class DeleteRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
@@ -21,30 +23,21 @@ export class DeleteRelationshipService {
   }
 
   async delete(_id: string) {
-    return this.deleteMultiple([_id]).then(deleted => deleted[0]);
+    const deleted = await this.deleteMultiple([_id]);
+    return deleted[0];
   }
 
   async deleteMultiple(_ids: string[]) {
+    const toBeDeleted = await this.relationshipsDS.getById(_ids).all();
+    const sharedIds = toBeDeleted.map(r => [r.from, r.to]).flat();
+    await this.authService.validateAccess('write', sharedIds);
 
+    return this.transactionManager.run(async () => {
+      if (!(await this.relationshipsDS.exists(_ids))) {
+        throw new MissingRelationshipError('Some relationships to be deleted are missing.');
+      }
 
-    // await this.authService.validateAccess('write', sharedIds);
-
-    // return this.transactionManager.run(
-    //   async () => {
-    //     if (!(await this.relationshipTypesDS.typesExist(types))) {
-    //       throw new Error('Must provide id for existing relationship type');
-    //     }
-    //     if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
-    //       throw new Error('Must provide sharedIds from existing entities');
-    //     }
-
-    //     return this.relationshipsDS.insert(
-    //       relationships.map(r => new Relationship(this.generateId(), r.from, r.to, r.type))
-    //     );
-    //   },
-    //   this.entitiesDS,
-    //   this.relationshipsDS,
-    //   this.relationshipTypesDS
-    // );
+      return this.relationshipsDS.delete(_ids);
+    }, this.relationshipsDS);
   }
 }

@@ -84,7 +84,7 @@ describe('delete()', () => {
         _id: expect.any(String),
         from: 'entity1',
         to: 'entity2',
-        type: factory.id('rel1').toHexString(),
+        type: factory.id('rtype1').toHexString(),
       });
     });
 
@@ -112,7 +112,6 @@ describe('delete()', () => {
         new MongoTransactionManager(getClient()),
         new AuthorizationService(new PermissionsDataSource(connection), mockUser)
       );
-      await service.delete(factory.id('non-existing').toHexString());
       try {
         await service.delete(factory.id('non-existing').toHexString());
         fail('should throw error');
@@ -142,13 +141,13 @@ describe('deleteMultiple()', () => {
           _id: expect.any(String),
           from: 'entity1',
           to: 'entity2',
-          type: factory.id('rel1').toHexString(),
+          type: factory.id('rtype1').toHexString(),
         },
         {
           _id: expect.any(String),
           from: 'entity3',
           to: 'entity1',
-          type: factory.id('rel3').toHexString(),
+          type: factory.id('rtype3').toHexString(),
         },
       ]);
     });
@@ -172,13 +171,13 @@ describe('deleteMultiple()', () => {
           _id: expect.any(ObjectId),
           from: 'entity2',
           to: 'entity1',
-          type: factory.id('rel2'),
+          type: factory.id('rtype2'),
         },
       ]);
     });
   });
 
-  describe('When an entity does not exist', () => {
+  describe('When an relationship does not exist', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
