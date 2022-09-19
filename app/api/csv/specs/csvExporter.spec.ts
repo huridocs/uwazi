@@ -1,5 +1,4 @@
 import { ObjectWritableMock } from 'stream-mock';
-import { isArray } from 'util';
 import templates from 'api/templates';
 import translations from 'api/i18n/translations';
 import * as translate from 'shared/translate';
@@ -345,7 +344,7 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(isArray(formatted)).toBe(true);
+      expect(Array.isArray(formatted)).toBe(true);
       expect(formatted.length).toBe(1);
       expect(formatted).toContain(searchResults.rows[0].title);
     });
@@ -361,7 +360,7 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(isArray(formatted)).toBe(true);
+      expect(Array.isArray(formatted)).toBe(true);
       expect(formatted.length).toBe(1);
       expect(formatted).toContain('');
     });
@@ -379,7 +378,7 @@ describe('csvExporter', () => {
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
       testTemplates['58ad7d240d44252fee4e61fd'].properties.unshift(propertyBackup);
 
-      expect(isArray(formatted)).toBe(true);
+      expect(Array.isArray(formatted)).toBe(true);
       expect(formatted.length).toBe(1);
       expect(formatted).toContain('');
     });
@@ -400,7 +399,7 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(isArray(formatted)).toBe(true);
+      expect(Array.isArray(formatted)).toBe(true);
       expect(formatted.length).toBe(2);
       expect(formatted[0]).toContain(searchResults.rows[0].metadata.company[0].value);
       expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
@@ -427,7 +426,7 @@ describe('csvExporter', () => {
 
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = typeBackup;
 
-      expect(isArray(formatted)).toBe(true);
+      expect(Array.isArray(formatted)).toBe(true);
       expect(formatted.length).toBe(2);
       expect(formatted[0]).toContain('');
       expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
