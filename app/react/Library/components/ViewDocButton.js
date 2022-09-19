@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
-import { t, I18NLink } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import url from 'url';
@@ -36,7 +36,7 @@ export class ViewDocButton extends Component {
   }
 
   render() {
-    const { sharedId, processed, searchTerm, file, targetReference } = this.props;
+    const { sharedId, processed, searchTerm, file, targetReference, icon } = this.props;
     const isEntity = !file;
 
     const pathname = `/entity/${sharedId}`;
@@ -56,13 +56,14 @@ export class ViewDocButton extends Component {
         className="btn btn-default btn-xs view-doc"
         onClick={this.onClick}
       >
-        <Icon icon="angle-right" directionAware /> {t('System', 'View')}
+        <Icon icon={icon} directionAware /> <Translate>View</Translate>
       </I18NLink>
     );
   }
 }
 
 ViewDocButton.defaultProps = {
+  icon: 'angle-right',
   searchTerm: '',
   processed: false,
   targetReference: null,
@@ -75,6 +76,7 @@ ViewDocButton.propTypes = {
   searchTerm: PropTypes.string,
   targetReference: PropTypes.instanceOf(Map),
   openReferencesTab: PropTypes.func.isRequired,
+  icon: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {
