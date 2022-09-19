@@ -350,7 +350,7 @@ describe('libraryActions', () => {
         const expectedActions = [
           {
             type: notificationsTypes.NOTIFY,
-            notification: { message: 'Document updated', type: 'success', id: 'unique_id' },
+            notification: { message: 'Entity updated', type: 'success', id: 'unique_id' },
           },
           { type: 'rrf/reset', model: 'library.sidepanel.metadata' },
           { type: types.UPDATE_DOCUMENT, doc: 'response' },
@@ -414,7 +414,7 @@ describe('libraryActions', () => {
         const expectedActions = [
           {
             type: notificationsTypes.NOTIFY,
-            notification: { message: 'Document deleted', type: 'success', id: 'unique_id' },
+            notification: { message: 'Entity deleted', type: 'success', id: 'unique_id' },
           },
           { type: types.UNSELECT_ALL_DOCUMENTS },
           { type: types.REMOVE_DOCUMENT, doc },

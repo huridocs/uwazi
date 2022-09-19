@@ -218,7 +218,7 @@ describe('api', () => {
     describe('unknown error', () => {
       it('should show generic error message', async () => {
         await testErrorHandling('unknown_error', () => {
-          testNotificationDisplayed('An error has occurred');
+          testNotificationDisplayed('An error occurred');
         });
       });
     });

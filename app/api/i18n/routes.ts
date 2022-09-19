@@ -6,7 +6,6 @@ import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
-import { availableLanguages } from 'shared/languagesList';
 import { Application, Request } from 'express';
 import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
@@ -19,8 +18,8 @@ export default (app: Application) => {
     res.json({ rows: response });
   });
 
-  app.get('/api/languages', (_req, res) => {
-    res.json(availableLanguages);
+  app.get('/api/languages', async (_req, res) => {
+    res.json(await translations.availableLanguages());
   });
 
   app.post(

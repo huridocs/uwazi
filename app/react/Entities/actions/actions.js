@@ -1,5 +1,6 @@
 import { actions } from 'app/BasicReducer';
 import api from 'app/Entities/EntitiesAPI';
+import { t } from 'app/I18N';
 import {
   removeDocument,
   removeDocuments,
@@ -16,7 +17,7 @@ export function saveEntity(entity) {
   return async dispatch => {
     const { entity: updatedDoc, errors } = await saveEntityWithFiles(entity, dispatch);
     if (!errors.length) {
-      dispatch(notificationActions.notify('Entity saved', 'success'));
+      dispatch(notificationActions.notify(t('System', 'Entity saved', null, false), 'success'));
     } else {
       dispatch(
         notificationActions.notify(
@@ -38,7 +39,7 @@ export function resetForm() {
 export function deleteEntity(entity) {
   return async dispatch => {
     await api.delete(new RequestParams({ sharedId: entity.sharedId }));
-    dispatch(notificationActions.notify('Entity deleted', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
     await dispatch(unselectDocument(entity._id));
   };
@@ -47,7 +48,7 @@ export function deleteEntity(entity) {
 export function deleteEntities(entities) {
   return async dispatch => {
     await api.deleteMultiple(new RequestParams({ sharedIds: entities.map(e => e.sharedId) }));
-    dispatch(notificationActions.notify('Deletion success', 'success'));
+    dispatch(notificationActions.notify(t('System', 'Deletion success', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocuments(entities));
   };

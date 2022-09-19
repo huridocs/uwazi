@@ -8,6 +8,7 @@ import * as types from 'app/Uploads/actions/actionTypes';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import uniqueID from 'shared/uniqueID';
 import { RequestParams } from 'app/utils/RequestParams';
+import { t } from 'app/I18N';
 
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
@@ -144,7 +145,7 @@ export function publicSubmit(data, remote = false) {
         })
         .on('response', response => {
           if (response.status === 200) {
-            dispatch(notificationActions.notify('Success', 'success'));
+            dispatch(notificationActions.notify(t('System', 'Success', null, false), 'success'));
             completionResolve(response);
             return;
           }
@@ -154,7 +155,10 @@ export function publicSubmit(data, remote = false) {
             return;
           }
           completionReject(response);
-          dispatch(notificationActions.notify('An error has ocurred', 'danger'));
+
+          dispatch(
+            notificationActions.notify(t('System', 'An error occurred', null, false), 'danger')
+          );
         })
         .end();
     });

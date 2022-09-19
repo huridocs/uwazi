@@ -30,7 +30,7 @@ const ONE_TWEET_PARAMS: TweetParamsType = {
   images_urls: [],
 };
 
-const tenantName = 'tenant1';
+const tenantName = 'tenant_twitter_integration';
 
 describe('TwitterIntegration', () => {
   let twitterIntegration: TwitterIntegration;
@@ -53,7 +53,7 @@ describe('TwitterIntegration', () => {
       ...folders,
     };
 
-    tenants.tenants = { tenant1 };
+    tenants.tenants = { tenant_twitter_integration: tenant1 };
 
     jest.resetAllMocks();
   });
