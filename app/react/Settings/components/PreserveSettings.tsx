@@ -58,8 +58,8 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
                 information.
               </Translate>
             </div>
-            <div className="install-buttons">
-              <button type="button" style={{ display: 'none' }}>
+            <div className="install-buttons" style={{ display: 'none' }}>
+              <button type="button">
                 <Translate>Install browser extension (dynamic link)</Translate>
               </button>
               <div>
