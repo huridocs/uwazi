@@ -1,5 +1,3 @@
-import { DragDropContext } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -12,6 +10,7 @@ import { loadLinks, addLink, sortLink, saveLinks } from 'app/Settings/actions/na
 import { Translate } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 
+import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 import NavlinkForm from './NavlinkForm';
 import './styles/menu.scss';
 
@@ -159,6 +158,4 @@ function mapDispatchToProps(dispatch) {
 
 export { NavlinksSettings, mapStateToProps };
 
-export default DragDropContext(HTML5Backend)(
-  connect(mapStateToProps, mapDispatchToProps)(NavlinksSettings)
-);
+export default DNDHTMLBackend(connect(mapStateToProps, mapDispatchToProps)(NavlinksSettings));
