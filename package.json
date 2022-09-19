@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.84.0-rc3",
+  "version": "1.85.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -198,7 +198,6 @@
     "socket.io-client": "4.4.1",
     "superagent": "^8.0.0",
     "svg-captcha": "^1.4.0",
-    "swagger-jsdoc": "^6.2.1",
     "tiny-cookie": "^2.3.2",
     "typescript": "4.7.4",
     "url-join": "^4.0.1",
