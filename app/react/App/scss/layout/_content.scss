@@ -110,5 +110,9 @@
     @media (min-width: 1024px) {
       height: calc(100vh - 225px);
     }
+
+    .row {
+      max-width: calc(100% - 5px);
+    }
   }
 }
