@@ -30,7 +30,7 @@ function assertExport(mockCall: any, searchResults: any, types: any, options: an
 
 describe('export routes', () => {
   describe('/api/export', () => {
-    let exportMock: any;
+    let exportMock: jest.Mock;
 
     beforeEach(async () => {
       const fixtures = {
@@ -77,8 +77,8 @@ describe('export routes', () => {
           next();
         }
       );
-      spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
-      spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
+      jest.spyOn(search, 'search').mockResolvedValueOnce({ rows: ['searchresults'] });
+      jest.spyOn(filesystem, 'temporalFilesPath').mockReturnValueOnce('exportRutesTest-A.csv');
 
       const app = setUpApp(
         routes,
