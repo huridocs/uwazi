@@ -40,4 +40,6 @@ export default (app, server) => {
   require('./permissions/routes').permissionRoutes(app);
   require('./suggestions/routes').suggestionsRoutes(app);
   require('./preserve/routes').PreserveRoutes(app);
+
+  require('./relationships.v2/routes').default(app);
 };

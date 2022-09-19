@@ -23,5 +23,8 @@ const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): Valid
 const createDefaultValidator = (ajvSchema: AnySchemaObject) =>
   createValidator(defaultAjv, ajvSchema);
 
+const getValidatorMiddleware = (validator: ValidatorType) => async (req, _res, next) =>
+  validator(req);
+
 export type { ValidatorType };
-export { createDefaultValidator };
+export { createDefaultValidator, getValidatorMiddleware };
