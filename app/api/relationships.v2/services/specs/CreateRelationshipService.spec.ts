@@ -4,6 +4,7 @@ import { getConnection, getClient } from 'api/common.v2/database/getConnectionFo
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -11,7 +12,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
-import { MissingEntityError, SelfReferenceError } from '../../errors/relationshipErrors';
+import { SelfReferenceError } from '../../errors/relationshipErrors';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 
 const factory = getFixturesFactory();

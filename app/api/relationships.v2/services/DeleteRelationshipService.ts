@@ -1,8 +1,6 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
-import { Relationship } from '../model/Relationship';
 
 export class DeleteRelationshipService {
   private relationshipsDS: RelationshipsDataSource;

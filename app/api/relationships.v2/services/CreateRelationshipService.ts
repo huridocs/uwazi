@@ -2,13 +2,11 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
+import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
 import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
-import {
-  MissingEntityError,
-  MissingRelationshipTypeError,
-  SelfReferenceError,
-} from '../errors/relationshipErrors';
+import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 
 export class CreateRelationshipService {
