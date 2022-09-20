@@ -166,9 +166,11 @@ describe('csvExporter', () => {
     });
 
     it('should translate only the common headers', async () => {
-      spyOn(translations, 'get').and.callFake(async () => Promise.resolve({}));
-      const localeTranslationsMock = spyOn(translate, 'getLocaleTranslation').and.returnValue({});
-      spyOn(translate, 'getContext').and.returnValue({});
+      jest.spyOn(translations, 'get').mockResolvedValue([]);
+      const localeTranslationsMock = jest
+        .spyOn(translate, 'getLocaleTranslation')
+        .mockReturnValue({});
+      jest.spyOn(translate, 'getContext').mockReturnValue({});
       const translateMock = jest
         .spyOn(translate, 'default')
         .mockImplementation((_context, _key, text) => `${text}T`);
@@ -190,7 +192,7 @@ describe('csvExporter', () => {
 
       expect(translatedHeaders[0].label).toBe(headers[0].label);
       expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
-      expect(localeTranslationsMock).toHaveBeenCalledWith({}, 'es');
+      expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
       expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
     });
   });
