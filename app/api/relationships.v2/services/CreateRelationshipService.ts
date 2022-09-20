@@ -18,7 +18,7 @@ export class CreateRelationshipService {
 
   private relationshipTypesDS: RelationshipTypesDataSource;
 
-  private idGenerator: IdGenerator<string, any>;
+  private idGenerator: IdGenerator;
 
   private authService: AuthorizationService;
 
@@ -28,7 +28,7 @@ export class CreateRelationshipService {
     relationshipTypesDS: RelationshipTypesDataSource,
     entitiesDS: EntitiesDataSource,
     transactionManager: TransactionManager,
-    idGenerator: IdGenerator<string, any>,
+    idGenerator: IdGenerator,
     authService: AuthorizationService
   ) {
     this.relationshipsDS = relationshipsDS;
