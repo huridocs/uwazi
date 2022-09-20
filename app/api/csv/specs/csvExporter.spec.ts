@@ -80,22 +80,18 @@ describe('csvExporter', () => {
       const headers: ExportHeader[] = processHeaders(testTemplates);
       const headersLabels = headers.map((header: ExportHeader) => header.label);
 
-      [
+      expect(headersLabels).toEqual([
         'company',
         'Nemesis',
         'Country',
         'Costume',
         'Super powers',
         'Allies',
+        'AutoId',
         'Sidekick',
         'Planets conquered',
         'DOB',
-        'AutoId',
-      ].forEach(label => {
-        expect(headersLabels).toContain(label);
-      });
-
-      expect(headers.length).toBe(10);
+      ]);
     });
 
     it('prependCommonHeaders should add entries tagged with common at the beginning', () => {
@@ -107,13 +103,32 @@ describe('csvExporter', () => {
         },
       ]);
 
-      prepended.slice(0, prepended.length - 1).forEach((header: ExportHeader) => {
-        expect(header.common).toBe(true);
-      });
+      expect(prepended).toEqual([
+        {
+          common: true,
+          label: 'Title',
+          name: 'title',
+        },
+        {
+          common: true,
+          label: 'Date added',
+          name: 'creationDate',
+        },
+        {
+          common: true,
+          label: 'Template',
+          name: 'template',
+        },
+        {
+          common: false,
+          label: 'someLabel',
+          name: 'someName',
+        },
+      ]);
     });
 
     it('concatCommonHeaders should add entries tagged with common at the end', () => {
-      const prepended = concatCommonHeaders([
+      const appended = concatCommonHeaders([
         {
           name: 'someName',
           label: 'someLabel',
@@ -121,9 +136,33 @@ describe('csvExporter', () => {
         },
       ]);
 
-      prepended.slice(1, prepended.length).forEach((header: ExportHeader) => {
-        expect(header.common).toBe(true);
-      });
+      expect(appended).toEqual([
+        {
+          common: false,
+          label: 'someLabel',
+          name: 'someName',
+        },
+        {
+          common: true,
+          label: 'Geolocation',
+          name: 'geolocation',
+        },
+        {
+          common: true,
+          label: 'Documents',
+          name: 'documents',
+        },
+        {
+          common: true,
+          label: 'Attachments',
+          name: 'attachments',
+        },
+        {
+          common: true,
+          label: 'Published',
+          name: 'published',
+        },
+      ]);
     });
 
     it('should translate only the common headers', async () => {
