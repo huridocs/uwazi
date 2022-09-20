@@ -1,11 +1,10 @@
 .tableview-wrapper {
-  margin: 0 -15px;
+  margin: 0;
   margin-bottom: 15px;
-
 
   thead {
     position: sticky;
-    top: -15px;
+    top: 0px;
     z-index: 2;
   }
 
@@ -15,7 +14,7 @@
 
     @media (min-width: 871px) {
       position: sticky;
-      left: -15px;
+      left: 0px;
       z-index: 1;
     }
   }
