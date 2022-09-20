@@ -60,7 +60,7 @@ describe('TranslationsList', () => {
       spyOn(I18NLink, 'navigate');
       render();
       const [systemUI] = screen.getAllByRole('listitem');
-      fireEvent.click(within(systemUI).getByText('Translate'));
+      fireEvent.click(within(systemUI).getByText('Translate').parentElement!);
       expect(I18NLink.navigate).toHaveBeenCalledWith('/en/settings/translations/edit/1');
     });
 
@@ -68,7 +68,7 @@ describe('TranslationsList', () => {
       spyOn(I18NLink, 'navigate');
       render();
       const [, systemUI] = screen.getAllByRole('listitem');
-      fireEvent.click(within(systemUI).getByText('System UI'));
+      fireEvent.click(within(systemUI).getByText('System UI').parentElement!);
       expect(I18NLink.navigate).toHaveBeenCalledWith('/en/settings/translations/edit/3');
     });
   });
