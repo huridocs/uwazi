@@ -56,20 +56,16 @@ describe('TranslationsList', () => {
   });
 
   describe('Translation links', () => {
-    it('should edit a translation context from translate link', async () => {
+    it.each`
+      index | text           | linkAddress
+      ${0}  | ${'Translate'} | ${'/en/settings/translations/edit/1'}
+      ${1}  | ${'System UI'} | ${'/en/settings/translations/edit/3'}
+    `('should edit a translation context from $text', async ({ index, text, linkAddress }) => {
       spyOn(I18NLink, 'navigate');
       render();
-      const [systemUI] = screen.getAllByRole('listitem');
-      fireEvent.click(within(systemUI).getByText('Translate').parentElement!);
-      expect(I18NLink.navigate).toHaveBeenCalledWith('/en/settings/translations/edit/1');
-    });
-
-    it('should edit a translation context from context name', async () => {
-      spyOn(I18NLink, 'navigate');
-      render();
-      const [, systemUI] = screen.getAllByRole('listitem');
-      fireEvent.click(within(systemUI).getByText('System UI').parentElement!);
-      expect(I18NLink.navigate).toHaveBeenCalledWith('/en/settings/translations/edit/3');
+      const list = screen.getAllByRole('listitem')[index];
+      fireEvent.click(within(list).getByText(text).parentElement!);
+      expect(I18NLink.navigate).toHaveBeenCalledWith(linkAddress);
     });
   });
 });

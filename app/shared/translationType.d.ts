@@ -20,5 +20,5 @@ export interface TranslationType {
 export interface TranslationValue {
   _id?: ObjectIdSchema;
   key?: string;
-  value?: string;
+  value?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
 }
