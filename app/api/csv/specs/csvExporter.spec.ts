@@ -198,43 +198,35 @@ describe('csvExporter', () => {
   });
 
   describe('geolocation fields', () => {
-    it('should locate the first geolocation field and call the formatter', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
+    it('should locate the first geolocation field', () => {
       const formatted = processGeolocationField(
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd']
       );
 
-      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
-        searchResults.rows[0].metadata.geolocation_geolocation,
-        {}
-      );
-      expect(formatted).toBe('geolocationValue');
+      expect(formatted).toBe('45.974236866039696|2.154785156250431');
     });
 
-    it('should return empty and not call the formatter if no geolocation field on the template', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
+    it('should return empty if no geolocation field on the template', () => {
       const formatted = processGeolocationField(
         searchResults.rows[1],
         testTemplates['58ad7d240d44252fee4e61fb']
       );
 
-      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
 
     it('should return empty and not call the formatter if no geolocation on the entity', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
-
       const geolocationFieldBackup = searchResults.rows[0].metadata.geolocation_geolocation;
       delete searchResults.rows[0].metadata.geolocation_geolocation;
+
       const formatted = processGeolocationField(
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd']
       );
+
       searchResults.rows[0].metadata.geolocation_geolocation = geolocationFieldBackup;
 
-      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
   });
