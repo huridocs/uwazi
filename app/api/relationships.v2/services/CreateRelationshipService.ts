@@ -1,11 +1,11 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
-import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 

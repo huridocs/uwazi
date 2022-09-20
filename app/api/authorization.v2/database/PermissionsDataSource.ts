@@ -11,7 +11,7 @@ import {
 const isRestricted = (entry: PermissionType): entry is RestrictedPermissionType =>
   entry.refId !== 'public';
 
-export class PermissionsDataSource extends MongoDataSource {
+export class PermissionsDataSource extends MongoDataSource implements PermissionsDataSource {
   getByEntities(sharedIds: string[]) {
     const cursor = this.db
       .collection<EntityPermissionsDBOType>('entities')

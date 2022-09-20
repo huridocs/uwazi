@@ -1,4 +1,4 @@
-export interface Transactional<ContextType> {
+export interface Transactional<ContextType = unknown> {
   setTransactionContext(context: ContextType): void;
   clearTransactionContext(): void;
 }

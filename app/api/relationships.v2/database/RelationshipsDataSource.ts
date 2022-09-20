@@ -14,6 +14,7 @@ import {
   EntityInfoType,
   JoinedRelationshipDBOType,
 } from './schemas/relationshipTypes';
+import { RelationshipsDataSource as IRelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -31,7 +32,7 @@ type RelationshipAggregatedResultType = Omit<
   to: EntityInfoType;
 };
 
-export class RelationshipsDataSource extends MongoDataSource {
+export class RelationshipsDataSource extends MongoDataSource implements IRelationshipsDataSource {
   private getCollection() {
     return this.db.collection<RelationshipDBOType>('relationships');
   }
@@ -47,7 +48,7 @@ export class RelationshipsDataSource extends MongoDataSource {
     return created.map(item => RelationshipMappers.toModel(item));
   }
 
-  async count(ids: string[]) {
+  private async count(ids: string[]) {
     return this.getCollection().countDocuments(
       { _id: { $in: idsToDb(ids) } },
       { session: this.session }
@@ -61,9 +62,9 @@ export class RelationshipsDataSource extends MongoDataSource {
 
   getById(_ids: string[]) {
     const ids = idsToDb(_ids);
-    const getCursor = this.getCollection().find({ _id: { $in: ids } });
+    const cursor = this.getCollection().find({ _id: { $in: ids } });
     return new MongoResultSet<RelationshipDBOType, Relationship>(
-      getCursor,
+      cursor,
       validateRelationshipDBO,
       RelationshipMappers.toModel
     );
