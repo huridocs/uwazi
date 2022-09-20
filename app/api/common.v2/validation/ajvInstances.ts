@@ -2,8 +2,6 @@ import util from 'util';
 
 import Ajv, { AnySchemaObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
-import { objectIdSchema } from 'shared/types/commonSchemas';
-import { ObjectID } from 'mongodb';
 
 const defaultAjv = new Ajv({ allErrors: true });
 defaultAjv.addVocabulary(['tsType']);
@@ -26,7 +24,6 @@ const createDefaultValidator = (ajvSchema: AnySchemaObject) =>
   createValidator(defaultAjv, ajvSchema);
 
 const getValidatorMiddleware = (validator: ValidatorType) => async (req, _res, next) => {
-  console.log(req.body)
   validator(req.body);
   next();
 };
