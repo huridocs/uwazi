@@ -53,9 +53,8 @@ describe('export routes', () => {
 
     const fakeRequestAugmenterMiddleware =
       (user: User, language: string) => (req: Request, _res: Response, next: NextFunction) => {
-        (req as any).user = user;
-        (req as any).language = language;
-
+        req.user = user;
+        req.language = language;
         next();
       };
 
@@ -73,15 +72,19 @@ describe('export routes', () => {
         fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
       );
 
-      const res = await request(app).get('/api/export').set('cookie', 'locale=es').query({
-        filters: '',
-        types: '["types"]',
-        fields: '',
-        aggregations: '',
-        select: '',
-        unpublished: '',
-        includeUnpublished: '',
-      });
+      const res = await request(app)
+        .get('/api/export')
+        .set('cookie', 'locale=es')
+        .set('host', 'cejil.uwazi.io')
+        .query({
+          filters: '',
+          types: '["types"]',
+          fields: '',
+          aggregations: '',
+          select: '',
+          unpublished: '',
+          includeUnpublished: '',
+        });
       expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(
@@ -99,8 +102,9 @@ describe('export routes', () => {
       );
       expect(exportMock.mock.calls[0][0]).toEqual({ rows: ['searchresults'] });
       expect(exportMock.mock.calls[0][1] instanceof Writable).toBe(true);
-      expect(exportMock.mock.calls[0][2]).toEqual(['types']);
-      expect(exportMock.mock.calls[0][3]).toEqual({
+      expect(exportMock.mock.calls[0][2]).toEqual('cejil.uwazi.io');
+      expect(exportMock.mock.calls[0][3]).toEqual(['types']);
+      expect(exportMock.mock.calls[0][4]).toEqual({
         dateFormat: 'yyyy-MM-dd',
         language: 'somelanguage',
       });

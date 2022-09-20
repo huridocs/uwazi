@@ -203,6 +203,7 @@ export default class CSVExporter extends EventEmitter {
   async export(
     searchResults: SearchResults,
     writeStream: Writable,
+    hostname: string,
     types: string[] = [],
     options: ExporterOptions = { dateFormat: 'YYYY-MM-DD', language: 'en' }
   ): Promise<void> {

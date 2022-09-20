@@ -318,6 +318,7 @@ describe('csvExporter typeFormatters', () => {
 
       const url = formatAttachment(fileName, entityId);
 
+      // TODO aquí!
       expect(url).toBe('/api/attachments/download?_id=entity1&file=fileName.pdf');
     });
   });
