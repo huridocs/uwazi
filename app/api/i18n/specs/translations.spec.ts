@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import { config } from 'api/config';
 import thesauri from 'api/thesauri/thesauri.js';
 import backend from 'fetch-mock';
+import { ContextType } from 'shared/translationSchema';
 import translations, { UITranslationNotAvailable } from '../translations';
 import fixtures, {
   dictionaryId,
@@ -363,7 +364,7 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      const result = await translations.addContext('context', 'Judge', values, 'type');
+      const result = await translations.addContext('context', 'Judge', values, ContextType.entity);
 
       expect(result).toBe('ok');
 

@@ -23,7 +23,7 @@ const translationValueSchema = {
   properties: {
     _id: objectIdSchema,
     key: { type: 'string', minLength: 1 },
-    value: { type: 'string', enum: Object.values(ContextType) },
+    value: { type: 'string', minLength: 1 },
   },
 };
 
@@ -36,7 +36,7 @@ const translationContextSchema = {
     _id: objectIdSchema,
     id: { type: 'string', minLength: 1 },
     label: { type: 'string', minLength: 1 },
-    type: { type: 'string', minLength: 1 },
+    type: { type: 'string', enum: Object.values(ContextType) },
     values: {
       type: 'array',
       items: translationValueSchema,

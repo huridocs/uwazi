@@ -7,7 +7,7 @@ export interface TranslationContext {
   _id?: ObjectIdSchema;
   id?: string;
   label?: string;
-  type?: string;
+  type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
   values?: TranslationValue[];
 }
 
@@ -20,5 +20,5 @@ export interface TranslationType {
 export interface TranslationValue {
   _id?: ObjectIdSchema;
   key?: string;
-  value?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+  value?: string;
 }
