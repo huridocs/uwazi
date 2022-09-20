@@ -4,19 +4,19 @@ import translations from 'api/i18n/translations';
 import * as translate from 'shared/translate';
 import moment from 'moment-timezone';
 import CSVExporter, {
-  getTypes,
-  getTemplatesModels,
-  ExportHeader,
-  processHeaders,
-  prependCommonHeaders,
   concatCommonHeaders,
   ExporterOptions,
-  processGeolocationField,
+  ExportHeader,
+  getTemplatesModels,
+  getTypes,
+  prependCommonHeaders,
   processCommonField,
   processEntity,
+  processGeolocationField,
+  processHeaders,
   translateCommonHeaders,
 } from '../csvExporter';
-import { templates as testTemplates, searchResults, csvExample } from './exportCsvFixtures';
+import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures';
 import * as formatters from '../typeFormatters';
 
 describe('csvExporter', () => {
@@ -30,6 +30,7 @@ describe('csvExporter', () => {
     });
     it('should deduce the filtered types from the aggregations', () => {
       const types = getTypes(searchResults);
+
       ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'].forEach(entry => {
         expect(types).toContain(entry);
       });
@@ -49,34 +50,28 @@ describe('csvExporter', () => {
       jest.clearAllMocks();
     });
 
-    const doTest = (types: string[], calledTimes: number, done: () => any) => {
-      getTemplatesModels(types)
-        .then(models => {
-          types.forEach(type => {
-            expect(templates.getById).toHaveBeenCalledWith(type);
-          });
-          expect(templates.getById).toHaveBeenCalledTimes(calledTimes);
-          expect(models).toEqual(testTemplates);
-          done();
-        })
-        .catch(e => {
-          throw e;
-        });
-    };
-
-    it('should fetch all the templates and return a map', done => {
-      jest
-        .spyOn(templates, 'getById')
-        .mockImplementation(async id => Promise.resolve(testTemplates[id.toString()]));
+    it('should fetch all the templates and return a map', async () => {
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'];
 
-      doTest(types, 2, done);
+      const models = await getTemplatesModels(types);
+
+      types.forEach(type => {
+        expect(templates.getById).toHaveBeenCalledWith(type);
+      });
+      expect(templates.getById).toHaveBeenCalledTimes(2);
+      expect(models).toEqual(testTemplates);
     });
 
-    it('should not include a missing template', done => {
+    it('should not include a missing template', async () => {
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb', 'notValid'];
 
-      doTest(types, 3, done);
+      const models = await getTemplatesModels(types);
+
+      types.forEach(type => {
+        expect(templates.getById).toHaveBeenCalledWith(type);
+      });
+      expect(templates.getById).toHaveBeenCalledTimes(3);
+      expect(models).toEqual(testTemplates);
     });
   });
 
