@@ -1,6 +1,8 @@
 export default {
   delta: 110,
 
+  reindex: false,
+
   name: 'replace_connection_with_relationship_type',
 
   description:

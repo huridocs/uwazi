@@ -371,9 +371,13 @@ describe('translations', () => {
       const translated = await translations.get();
 
       expect(translated.find(t => t.locale === 'en')?.contexts?.[6].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual('type');
+      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual(
+        ContextType.entity
+      );
       expect(translated.find(t => t.locale === 'es')?.contexts?.[1].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual('type');
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual(
+        ContextType.entity
+      );
     });
   });
 
