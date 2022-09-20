@@ -88,17 +88,31 @@
 }
 
 .library-viewer.document-viewer.unpinned-mode {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
-  @media (max-width: 1023px) {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
-    &::-webkit-scrollbar {
-      display: none;
+  &::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  .library-load-container {
+    overflow: auto;
+    height: calc(100vh - 328px);
+
+    @media (min-width: 768px) {
+      height: calc(100vh - 260px);
     }
 
-    &::-webkit-scrollbar-thumb {
-      display: none;
+    @media (min-width: 1024px) {
+      height: calc(100vh - 225px);
+    }
+
+    .row {
+      max-width: calc(100% - 5px);
     }
   }
 }
