@@ -6,6 +6,9 @@ import insertFixtures from '../helpers/insertFixtures';
 import { scrollTo } from '../helpers/formActions';
 import { adminLogin, logout } from '../helpers/login';
 import disableTransitions from '../helpers/disableTransitions';
+import { prepareToMatchImageSnapshot, testSelectorShot } from '../helpers/regression';
+
+prepareToMatchImageSnapshot();
 
 describe('Table view', () => {
   const sidePanelItemNameSelector = '.sidepanel-body .item-name';
@@ -16,6 +19,16 @@ describe('Table view', () => {
     await adminLogin();
     await disableTransitions();
   });
+
+  const selectAllColumns = async () => {
+    await page.click('.hidden-columns-dropdown');
+    const showAllSelector = "#rw_2_listbox > li:nth-child(1) > input[type='checkbox']";
+    await page.$$eval(showAllSelector, item => {
+      (<HTMLInputElement>item[0]).checked = false;
+      (<HTMLInputElement>item[0]).click();
+    });
+    await page.waitForSelector('.tableview-wrapper th:nth-child(6)');
+  };
 
   it('Should go to the table view', async () => {
     await page.goto(`${host}/library/table`);
@@ -60,13 +73,7 @@ describe('Table view', () => {
     });
 
     it('Should show all properties if all of them are selected', async () => {
-      await page.click('.hidden-columns-dropdown');
-      const showAllSelector = "#rw_2_listbox > li:nth-child(1) > input[type='checkbox']";
-      await page.$$eval(showAllSelector, item => {
-        (<HTMLInputElement>item[0]).checked = false;
-        (<HTMLInputElement>item[0]).click();
-      });
-      await page.waitForSelector('.tableview-wrapper th:nth-child(6)');
+      await selectAllColumns();
       const optionsSelector = '#rw_2_listbox li';
       const headerColumnSelector = '.tableview-wrapper th';
       const optionsCount = await page.$$eval(optionsSelector, options => options.length);
@@ -106,7 +113,6 @@ describe('Table view', () => {
         text: 'Alvarez et al. Order of the President. August 14, 1997',
       });
     });
-
     it('should uncheck selected rows and show the clicked entity row on the side panel', async () => {
       const rowSelector = 'div.tableview-wrapper > table > tbody > tr:nth-child(2)';
       await expect(page).toClick(rowSelector);
@@ -126,6 +132,18 @@ describe('Table view', () => {
       await disableTransitions();
       await page.waitForSelector(rowSelector);
       expect((await page.$$(rowSelector)).length).toBe(60);
+    });
+
+    describe('Scrolling', () => {
+      it('Should scroll vertically and keep the sticky header', async () => {
+        await scrollTo('.btn-load-more');
+        await testSelectorShot('.library-viewer.document-viewer.unpinned-mode');
+      });
+
+      it('Should scroll horizontaly and keep the search bar visible', async () => {
+        await scrollTo('.tableview-wrapper > table > thead > tr > th:nth-child(11)');
+        await testSelectorShot('.library-viewer.document-viewer.unpinned-mode');
+      });
     });
   });
 
