@@ -5,10 +5,7 @@ import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { MongoGraphQueryParser } from './MongoGraphQueryParser';
 import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
-import {
-  validateRelationshipDBO,
-  validateJoinedRelationshipDBO,
-} from './schemas/relationshipSchemas';
+import { validateRelationshipDBO } from './schemas/relationshipSchemas';
 import {
   RelationshipDBOType,
   EntityInfoType,
@@ -68,7 +65,6 @@ export class MongoRelationshipsDataSource
     const cursor = this.getCollection().find({ _id: { $in: ids } });
     return new MongoResultSet<RelationshipDBOType, Relationship>(
       cursor,
-      validateRelationshipDBO,
       RelationshipMappers.toModel
     );
   }
@@ -115,7 +111,6 @@ export class MongoRelationshipsDataSource
 
     return new MongoResultSet<JoinedRelationshipDBOType, RelationshipAggregatedResultType>(
       dataCursor,
-      validateJoinedRelationshipDBO,
       totalCursor,
       RelationshipMappers.toAggregatedResult
     );
@@ -134,8 +129,6 @@ export class MongoRelationshipsDataSource
       ],
       { session: this.session }
     );
-    return new MongoResultSet(cursor, MongoResultSet.NoOpValidator, count, elem =>
-      unrollTraversal(elem)
-    );
+    return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
   }
 }

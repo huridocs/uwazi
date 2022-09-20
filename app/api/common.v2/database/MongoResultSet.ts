@@ -1,5 +1,4 @@
 import { AggregationCursor, Cursor } from 'mongodb';
-import { ValidatorType } from '../validation/ajvInstances';
 import { ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
@@ -14,27 +13,22 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   private countCursor?: Cursor<CountDocument>;
 
-  private validate: ValidatorType;
-
-  constructor(mongoCursor: Cursor<T>, validator: ValidatorType, mapper: MapperFunc<T, U>);
+  constructor(mongoCursor: Cursor<T>, mapper: MapperFunc<T, U>);
 
   constructor(
     mongoCursor: AggregationCursor<T>,
-    validator: ValidatorType,
     countCursor: AggregationCursor<CountDocument>,
     mapper: MapperFunc<T, U>
   );
 
   constructor(
     mongoCursor: Cursor<T>,
-    validator: ValidatorType,
     countOrMapper: Cursor<CountDocument> | MapperFunc<T, U>,
     mapper?: MapperFunc<T, U>
   ) {
     this.mongoCursor = mongoCursor;
     this.countCursor = typeof countOrMapper === 'function' ? undefined : countOrMapper;
     this.mapper = typeof countOrMapper === 'function' ? countOrMapper : mapper!;
-    this.validate = validator;
   }
 
   private async getTotal() {
@@ -62,7 +56,6 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   async next() {
     const item = await this.mongoCursor.next();
     if (item) {
-      this.validate(item);
       const mappedItem = this.mapper(item!);
       return mappedItem;
     }
@@ -71,7 +64,6 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async all() {
     const results = await this.mongoCursor.toArray();
-    results.forEach(r => this.validate(r));
     const mapped = results.map(this.mapper);
     return mapped;
   }
@@ -100,6 +92,4 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   static NoOpMapper = <V>(item: V) => item;
-
-  static NoOpValidator = <V>(_item: V) => {};
 }

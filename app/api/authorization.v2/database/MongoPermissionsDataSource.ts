@@ -2,7 +2,6 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { EntityPermissions } from '../model/EntityPermissions';
-import { validateEntityPermissionsDBO } from './schemas/permissionSchemas';
 import {
   PermissionType,
   RestrictedPermissionType,
@@ -22,7 +21,6 @@ export class MongoPermissionsDataSource extends MongoDataSource implements Permi
       );
     return new MongoResultSet(
       cursor,
-      validateEntityPermissionsDBO,
       entityPermission =>
         new EntityPermissions(
           entityPermission.sharedId,
