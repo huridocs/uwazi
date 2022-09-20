@@ -5,6 +5,7 @@ import { RelationshipsQuery } from './RelationshipsQuery';
 
 export interface RelationshipsDataSource extends Transactional {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
+  delete(_ids: string[]): Promise<Relationship[]>;
   exists(ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<any>;

@@ -1,6 +1,6 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { RelationshipsDataSource } from '../database/RelationshipsDataSource';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MissingRelationshipError } from '../errors/relationshipErrors';
 
 export class DeleteRelationshipService {
