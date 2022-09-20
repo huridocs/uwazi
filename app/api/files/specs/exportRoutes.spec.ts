@@ -16,18 +16,6 @@ jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
 
-function assertDownloaded(res: any) {
-  expect(res.header['content-type'].match(/text\/csv/)).not.toBe(null);
-  expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
-}
-
-function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
-  expect(mockCall[0]).toEqual(searchResults);
-  expect(mockCall[1] instanceof Writable).toBe(true);
-  expect(mockCall[2]).toEqual(types);
-  expect(mockCall[3]).toEqual(options);
-}
-
 describe('export routes', () => {
   describe('/api/export', () => {
     let exportMock: jest.Mock;
@@ -94,7 +82,8 @@ describe('export routes', () => {
         unpublished: '',
         includeUnpublished: '',
       });
-      assertDownloaded(res);
+      expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
+      expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(
         {
           filters: '',
@@ -108,7 +97,10 @@ describe('export routes', () => {
         'somelanguage',
         { username: 'someuser' }
       );
-      assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], {
+      expect(exportMock.mock.calls[0][0]).toEqual({ rows: ['searchresults'] });
+      expect(exportMock.mock.calls[0][1] instanceof Writable).toBe(true);
+      expect(exportMock.mock.calls[0][2]).toEqual(['types']);
+      expect(exportMock.mock.calls[0][3]).toEqual({
         dateFormat: 'yyyy-MM-dd',
         language: 'somelanguage',
       });
