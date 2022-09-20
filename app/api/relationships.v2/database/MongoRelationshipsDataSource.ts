@@ -14,7 +14,7 @@ import {
   EntityInfoType,
   JoinedRelationshipDBOType,
 } from './schemas/relationshipTypes';
-import { RelationshipsDataSource as IRelationshipsDataSource } from '../contracts/RelationshipsDataSource';
+import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -32,7 +32,10 @@ type RelationshipAggregatedResultType = Omit<
   to: EntityInfoType;
 };
 
-export class RelationshipsDataSource extends MongoDataSource implements IRelationshipsDataSource {
+export class MongoRelationshipsDataSource
+  extends MongoDataSource
+  implements RelationshipsDataSource
+{ // eslint-disable-line
   private getCollection() {
     return this.db.collection<RelationshipDBOType>('relationships');
   }

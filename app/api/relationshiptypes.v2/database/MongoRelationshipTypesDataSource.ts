@@ -1,10 +1,10 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
-import { RelationshipTypesDataSource as IRelationshipTypesDataSource } from '../contracts/RelationshipTypesDataSource';
+import { RelationshipTypesDataSource } from '../contracts/RelationshipTypesDataSource';
 
-export class RelationshipTypesDataSource
+export class MongoRelationshipTypesDataSource
   extends MongoDataSource
-  implements IRelationshipTypesDataSource { // eslint-disable-line
+  implements RelationshipTypesDataSource { // eslint-disable-line
   async typesExist(ids: string[]) {
     const countInExistence = await this.db
       .collection('relationtypes')

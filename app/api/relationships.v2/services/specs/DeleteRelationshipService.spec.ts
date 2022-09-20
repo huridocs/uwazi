@@ -1,4 +1,4 @@
-import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
@@ -8,7 +8,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
+import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
 import { MissingRelationshipError } from '../../errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';
 
@@ -74,9 +74,9 @@ describe('delete()', () => {
     it('should return the deleted entry', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       const relationship = await service.delete(factory.id('rel1').toHexString());
 
@@ -91,9 +91,9 @@ describe('delete()', () => {
     it('should delete the relationship', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       await service.delete(factory.id('rel1').toHexString());
 
@@ -108,9 +108,9 @@ describe('delete()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.delete(factory.id('non-existing').toHexString());
@@ -127,9 +127,9 @@ describe('deleteMultiple()', () => {
     it('should return the deleted relationships', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       const relationships = await service.deleteMultiple([
         factory.id('rel1').toHexString(),
@@ -155,9 +155,9 @@ describe('deleteMultiple()', () => {
     it('should delete the relationships', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       await service.deleteMultiple([
         factory.id('rel1').toHexString(),
@@ -181,9 +181,9 @@ describe('deleteMultiple()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
-        new RelationshipsDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.deleteMultiple([

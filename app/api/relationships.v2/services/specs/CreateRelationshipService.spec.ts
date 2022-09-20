@@ -1,17 +1,17 @@
-import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { EntitiesDataSource } from 'api/entities.v2/database/EntitiesDataSource';
+import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/RelationshipTypesDataSource';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { RelationshipsDataSource } from '../../database/RelationshipsDataSource';
 import { SelfReferenceError } from '../../errors/relationshipErrors';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 
@@ -58,12 +58,12 @@ describe('create()', () => {
     it('should return a new connection', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       const relationship = await service.create(
         'entity1',
@@ -82,12 +82,12 @@ describe('create()', () => {
     it('should persist a new connection', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       await service.create('entity1', 'entity2', factory.id('rel1').toHexString());
 
@@ -108,12 +108,12 @@ describe('create()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.create('entity1', 'non-existing', factory.id('rel1').toHexString());
@@ -129,12 +129,12 @@ describe('create()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.create('entity1', 'entity1', factory.id('rel1').toHexString());
@@ -152,12 +152,12 @@ describe('createMultiple()', () => {
     it('should return new connections', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       const relationship = await service.createMultiple([
         { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
@@ -190,12 +190,12 @@ describe('createMultiple()', () => {
     it('should persist new connections', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       await service.createMultiple([
         { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
@@ -232,12 +232,12 @@ describe('createMultiple()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.createMultiple([
@@ -257,12 +257,12 @@ describe('createMultiple()', () => {
     it('should throw a validation error', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
-        new RelationshipsDataSource(connection),
-        new RelationshipTypesDataSource(connection),
-        new EntitiesDataSource(connection),
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new PermissionsDataSource(connection), mockUser)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
         await service.createMultiple([

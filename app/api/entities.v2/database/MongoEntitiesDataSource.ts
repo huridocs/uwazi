@@ -1,6 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 
-export class EntitiesDataSource extends MongoDataSource implements EntitiesDataSource {
+export class MongoEntitiesDataSource extends MongoDataSource implements EntitiesDataSource {
   async entitiesExist(sharedIds: string[]) {
     const countInExistence = await this.db
       .collection('entities')

@@ -1,4 +1,4 @@
-import { PermissionsDataSource } from 'api/authorization.v2/database/PermissionsDataSource';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { User } from 'api/users.v2/model/User';
@@ -43,13 +43,19 @@ afterAll(async () => {
 describe("When there's no authenticated user", () => {
   describe('and the entity is not public', () => {
     it('should return false', async () => {
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        undefined
+      );
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(false);
       expect(await auth.isAuthorized('write', ['entity1'])).toBe(false);
     });
 
     it('should throw an error', async () => {
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        undefined
+      );
       await expect(async () => auth.validateAccess('read', ['entity1'])).rejects.toThrow(
         UnauthorizedError
       );
@@ -61,7 +67,10 @@ describe("When there's no authenticated user", () => {
 
   describe('and the entity is public', () => {
     it('should only allow to read', async () => {
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        undefined
+      );
       expect(await auth.isAuthorized('read', ['entity3'])).toBe(true);
       expect(await auth.isAuthorized('write', ['entity3'])).toBe(false);
     });
@@ -69,7 +78,10 @@ describe("When there's no authenticated user", () => {
 
   describe('and not all the entities are public', () => {
     it('should not allow to read nor write', async () => {
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), undefined);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        undefined
+      );
       expect(await auth.isAuthorized('read', ['entity3', 'entity1'])).toBe(false);
       expect(await auth.isAuthorized('write', ['entity3', 'entity1'])).toBe(false);
     });
@@ -80,14 +92,20 @@ describe("When there's an authenticated user", () => {
   describe.each(['admin', 'editor'] as const)('and the user is %s', role => {
     it('should return true', async () => {
       const adminUser = new User(factory.id('admin').toHexString(), role, []);
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), adminUser);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        adminUser
+      );
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(true);
       expect(await auth.isAuthorized('write', ['entity1'])).toBe(true);
     });
 
     it('should not throw an error', async () => {
       const adminUser = new User(factory.id('admin').toHexString(), role, []);
-      const auth = new AuthorizationService(new PermissionsDataSource(getConnection()), adminUser);
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection()),
+        adminUser
+      );
 
       await auth.validateAccess('read', ['entity1']);
       await auth.validateAccess('write', ['entity1']);
@@ -110,7 +128,7 @@ describe("When there's an authenticated user", () => {
       'should return [$result] if [$user] wants to [$level] from/to $entities',
       async ({ user, entities, level, result }) => {
         const auth = new AuthorizationService(
-          new PermissionsDataSource(getConnection()),
+          new MongoPermissionsDataSource(getConnection()),
           new User(factory.id(user).toHexString(), 'collaborator', [])
         );
 
@@ -124,7 +142,7 @@ describe("When there's an authenticated user", () => {
       { entities: ['entity3'], level: 'write', result: true },
     ])('should consider the user groups', async ({ entities, level, result }) => {
       const auth = new AuthorizationService(
-        new PermissionsDataSource(getConnection()),
+        new MongoPermissionsDataSource(getConnection()),
         new User(factory.id('grouped user').toHexString(), 'collaborator', [
           factory.id('group1').toHexString(),
           factory.id('group2').toHexString(),

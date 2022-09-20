@@ -2,7 +2,7 @@ import { RelationshipsQuery } from 'api/relationships.v2/contracts/Relationships
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { RelationshipsDataSource } from '../RelationshipsDataSource';
+import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
 
@@ -43,7 +43,7 @@ afterAll(async () => {
 
 describe('When getting by query', () => {
   it('should allow traversing 1 hop', async () => {
-    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
     const query: RelationshipsQuery = {
       sharedId: 'entity1',
       traverse: [
@@ -70,7 +70,7 @@ describe('When getting by query', () => {
   });
 
   it('should allow traversing 2 hops', async () => {
-    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
     const query: RelationshipsQuery = {
       sharedId: 'entity1',
       traverse: [
@@ -124,7 +124,7 @@ describe('When getting by query', () => {
   });
 
   it('should be paginable', async () => {
-    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
     const query: RelationshipsQuery = {
       sharedId: 'entity1',
       traverse: [
@@ -165,7 +165,7 @@ describe('When getting by query', () => {
   });
 
   it('should allow to add filters to the query', async () => {
-    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
     const query: RelationshipsQuery = {
       sharedId: 'entity1',
       traverse: [
@@ -206,7 +206,7 @@ describe('When getting by query', () => {
   });
 
   it('should allow to query branches', async () => {
-    const ds = new RelationshipsDataSource(testingDB.mongodb!);
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
     const query: RelationshipsQuery = {
       sharedId: 'entity1',
       traverse: [
