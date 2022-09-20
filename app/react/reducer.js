@@ -57,8 +57,6 @@ export default combineReducers({
   relationTypeForm: formReducer('relationType', { name: '' }),
   templates: createReducer('templates', []),
   translations: createReducer('translations', []),
-  translationsForm: modelReducer('translationsForm', []),
-  translationsFormState: formReducer('translationsForm'),
   pages: createReducer('pages', []),
   users: createReducer('users', []),
   documentViewer,
