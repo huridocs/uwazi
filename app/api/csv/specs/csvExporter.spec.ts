@@ -451,30 +451,17 @@ describe('csvExporter', () => {
 
   describe('CSVExport class', () => {
     beforeEach(() => {
-      spyOn(translations, 'get').and.callFake(async () => Promise.resolve());
-      spyOn(translate, 'getLocaleTranslation').and.returnValue({});
-      spyOn(translate, 'getContext').and.returnValue({});
       jest.spyOn(translate, 'default').mockImplementation((_context, _key, text) => text);
     });
 
-    it('should be instantiable', () => {
-      const instance = new CSVExporter();
-      expect(instance).toBeInstanceOf(CSVExporter);
-    });
-
-    it('should export a correct csv content', done => {
+    it('should export a correct csv content', async () => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
-      exporter
-        .export(searchResults, writeMock, [])
-        .then(() => {
-          const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
-          expect(exported).toEqual(csvExample);
-          done();
-        })
-        .catch(err => {
-          throw err;
-        });
+
+      await exporter.export(searchResults, writeMock, []);
+
+      const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
+      expect(exported).toEqual(csvExample);
     });
   });
 });
