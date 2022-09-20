@@ -249,6 +249,7 @@ describe('csvExporter', () => {
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
+
       expect(formatted).toBe(testTemplates['58ad7d240d44252fee4e61fd'].name);
     });
 
@@ -261,12 +262,14 @@ describe('csvExporter', () => {
         async ({ timezone, timestamp, expectedDate }) => {
           const options = {};
           moment.tz.setDefault(timezone);
+
           const creationDate = processCommonField(
             'creationDate',
             { ...searchResults.rows[0], creationDate: timestamp },
             testTemplates['58ad7d240d44252fee4e61fd'],
             options
           );
+
           expect(creationDate).toBe(expectedDate);
           moment.tz.setDefault();
         }
@@ -274,22 +277,17 @@ describe('csvExporter', () => {
     });
 
     it('should return the geolocation field processed', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
       const formatted = processCommonField(
         'geolocation',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
-      expect(formatted).toBe('geolocationValue');
-      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
-        searchResults.rows[0].metadata.geolocation_geolocation,
-        {}
-      );
+
+      expect(formatted).toBe('45.974236866039696|2.154785156250431');
     });
 
     it('should return the documents field processed', () => {
-      spyOn(formatters, 'formatDocuments').and.returnValue('documentsValue');
       const formatted = processCommonField(
         'documents',
         searchResults.rows[0],
@@ -297,21 +295,20 @@ describe('csvExporter', () => {
         {}
       );
 
-      expect(formatters.formatDocuments).toHaveBeenCalledWith(searchResults.rows[0]);
-      expect(formatted).toBe('documentsValue');
+      expect(formatted).toBe('/files/1483623310306rxeimbblc6u323xr.pdf');
     });
 
     it('should return the attachments field processed', () => {
-      spyOn(formatters, 'formatAttachments').and.returnValue('attachmentsValue');
       const formatted = processCommonField(
         'attachments',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
-
-      expect(formatters.formatAttachments).toHaveBeenCalledWith(searchResults.rows[0]);
-      expect(formatted).toBe('attachmentsValue');
+      // TODO aquí hay que tocar
+      expect(formatted).toBe(
+        '/api/attachments/download?_id=58ad7d250d44252fee4e62f4&file=16636666131855z23xqq4fd8.csv'
+      );
     });
 
     it('should return the published field processed', () => {
@@ -321,6 +318,7 @@ describe('csvExporter', () => {
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
+
       expect(formatted).toBe('Published');
 
       const unpublishedEntity = { ...searchResults.rows[0] };
@@ -332,6 +330,7 @@ describe('csvExporter', () => {
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
+
       expect(formatted).toBe('Unpublished');
     });
 
@@ -342,6 +341,7 @@ describe('csvExporter', () => {
         testTemplates['58ad7d240d44252fee4e61fd'],
         {}
       );
+
       expect(formatted).toBe('');
     });
   });
@@ -361,7 +361,7 @@ describe('csvExporter', () => {
       }).toThrow();
     });
 
-    it('it should format a common field and return an array', () => {
+    it('should format a common field and return an array', () => {
       const headers: ExportHeader[] = [
         {
           common: true,
@@ -372,12 +372,10 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(Array.isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain(searchResults.rows[0].title);
+      expect(formatted).toEqual(['Star Lord  Wikipedia']);
     });
 
-    it("it should not fail and return empty if the entity doesn't define the property", () => {
+    it("should return empty if the entity doesn't define the property", () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -388,12 +386,10 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(Array.isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain('');
+      expect(formatted).toEqual(['']);
     });
 
-    it("it should not fail and return empty if the template doesn't define the property", () => {
+    it("it should return empty if the template doesn't define the property", () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -406,12 +402,10 @@ describe('csvExporter', () => {
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
       testTemplates['58ad7d240d44252fee4e61fd'].properties.unshift(propertyBackup);
 
-      expect(Array.isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain('');
+      expect(formatted).toEqual(['']);
     });
 
-    it('it should call the formatter and return the formatted properties ordered array', () => {
+    it('it should return the formatted properties ordered array', () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -427,10 +421,7 @@ describe('csvExporter', () => {
 
       const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
 
-      expect(Array.isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(2);
-      expect(formatted[0]).toContain(searchResults.rows[0].metadata.company[0].value);
-      expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
+      expect(formatted).toEqual(['Marvel', 'Thanos']);
     });
 
     it('it should not format non supported property types', () => {
@@ -454,10 +445,7 @@ describe('csvExporter', () => {
 
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = typeBackup;
 
-      expect(Array.isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(2);
-      expect(formatted[0]).toContain('');
-      expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
+      expect(formatted).toEqual(['', 'Thanos']);
     });
   });
 
