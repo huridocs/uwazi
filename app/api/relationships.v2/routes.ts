@@ -1,8 +1,17 @@
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import {
   createDefaultValidator,
   getValidatorMiddleware,
 } from 'api/common.v2/validation/ajvInstances';
+import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import needsAuthorization from '../auth/authMiddleware';
+import { MongoRelationshipsDataSource } from './database/MongoRelationshipsDataSource';
+import { CreateRelationshipService } from './services/CreateRelationshipService';
 
 const RelationshipInput = {
   type: 'object',
@@ -38,8 +47,18 @@ export default app => {
     getValidatorMiddleware(validateRelationshipInputArray),
     (req, res, next) => {
       // save relationships (based on post api/references)
-      res.status(418);
-      res.json({ error: 'not implemented yet' });
+      console.log(req.body)
+      console.log(req.user)
+      console.log()
+      const connection = getConnection();
+      // const service = new CreateRelationshipService(
+      //   new MongoRelationshipsDataSource(connection),
+      //   new MongoRelationshipTypesDataSource(connection),
+      //   new MongoEntitiesDataSource(connection),
+      //   new MongoTransactionManager(getClient()),
+      //   MongoIdGenerator,
+      //   new AuthorizationService(new MongoPermissionsDataSource(connection), req.user)
+      // );
     }
   );
 
