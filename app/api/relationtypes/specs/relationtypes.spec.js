@@ -1,17 +1,18 @@
 import { catchErrors } from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ContextType } from 'shared/translationSchema';
 import relationtypes from '../relationtypes.js';
 import fixtures, { canNotBeDeleted, against } from './fixtures.js';
 
 describe('relationtypes', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
   });
 
   describe('get()', () => {
@@ -75,7 +76,7 @@ describe('relationtypes', () => {
               response._id,
               'Indiferent',
               { Indiferent: 'Indiferent' },
-              'Connection'
+              ContextType.relationshipType
             );
             done();
           })

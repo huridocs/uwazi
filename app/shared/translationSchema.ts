@@ -8,6 +8,13 @@ const emitSchemaTypes = true;
 const ajv = new Ajv({ allErrors: true, removeAdditional: true });
 ajv.addVocabulary(['tsType']);
 
+enum ContextType {
+  entity = 'Entity',
+  relationshipType = 'Relationship Type',
+  uwaziUI = 'Uwazi UI',
+  thesaurus = 'Thesaurus',
+}
+
 const translationValueSchema = {
   title: 'TranslationValue',
   type: 'object',
@@ -16,7 +23,7 @@ const translationValueSchema = {
   properties: {
     _id: objectIdSchema,
     key: { type: 'string', minLength: 1 },
-    value: { type: 'string', minLength: 1 },
+    value: { type: 'string', enum: Object.values(ContextType) },
   },
 };
 
@@ -59,4 +66,10 @@ const validate = wrapValidator(ajv.compile(translationSchema));
 export const validateTranslation = async (translation: TranslationType): Promise<TranslationType> =>
   validate({ ...translation });
 
-export { emitSchemaTypes, translationValueSchema, translationContextSchema, translationSchema };
+export {
+  emitSchemaTypes,
+  translationValueSchema,
+  translationContextSchema,
+  translationSchema,
+  ContextType,
+};
