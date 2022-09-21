@@ -1,3 +1,5 @@
+import { Application } from 'express';
+
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -9,11 +11,15 @@ import {
 } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
+import { userDBOSchema } from 'api/users.v2/database/schemas/userSchemas';
+import { validateUserInputSchema } from 'api/users.v2/database/schemas/userValidators';
+import { User } from 'api/users.v2/model/User';
+import { UserRole } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
 import { MongoRelationshipsDataSource } from './database/MongoRelationshipsDataSource';
 import { CreateRelationshipService } from './services/CreateRelationshipService';
 
-const RelationshipInput = {
+const RelationshipInputSchema = {
   type: 'object',
   additionalProperties: false,
   properties: {
@@ -24,13 +30,13 @@ const RelationshipInput = {
   required: ['from', 'to', 'type'],
 };
 
-const RelationshipInputArray = {
+const RelationshipInputArraySchema = {
   type: 'array',
-  items: RelationshipInput,
+  items: RelationshipInputSchema,
 };
-const validateRelationshipInputArray = createDefaultValidator(RelationshipInputArray);
+const validateRelationshipInputArray = createDefaultValidator(RelationshipInputArraySchema);
 
-export default app => {
+export default (app: Application) => {
   //   app.post(
   //     '/api/relationships.v2/bulk',
   //     needsAuthorization(['admin', 'editor', 'collaborator']),
@@ -45,40 +51,47 @@ export default app => {
     '/api/relationships.v2',
     // needsAuthorization(['admin', 'editor']),
     getValidatorMiddleware(validateRelationshipInputArray),
-    (req, res, next) => {
-      // save relationships (based on post api/references)
-      console.log(req.body)
-      console.log(req.user)
-      console.log()
+    async (req, res) => {
+      // save relationships (based on post api/references) -- currently only creates
+      // validateUserInputSchema(req.user);
+      const user = new User(
+        req.user._id.toHexString(),
+        (req.user.role as UserRole) || 'collaborator',
+        req.user.groups || []
+      );
+      console.log(user);
       const connection = getConnection();
-      // const service = new CreateRelationshipService(
-      //   new MongoRelationshipsDataSource(connection),
-      //   new MongoRelationshipTypesDataSource(connection),
-      //   new MongoEntitiesDataSource(connection),
-      //   new MongoTransactionManager(getClient()),
-      //   MongoIdGenerator,
-      //   new AuthorizationService(new MongoPermissionsDataSource(connection), req.user)
-      // );
+
+      const service = new CreateRelationshipService(
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        MongoIdGenerator,
+        new AuthorizationService(new MongoPermissionsDataSource(connection), user)
+      );
+      const created = await service.createMultiple(req.body);
+      res.json(created);
     }
   );
 
-//   app.delete(
-//     '/api/relationships.v2',
-//     needsAuthorization(['admin', 'editor']),
-//     // validation.validateRequest(
-//     //   Joi.object()
-//     //     .keys({
-//     //       _id: Joi.objectId().required(),
-//     //     })
-//     //     .required(),
-//     //   'query'
-//     // ),
-//     (req, res, next) => {
-//       // delete relationships
-//       res.status(418);
-//       res.json({ error: 'not implemented yet' });
-//     }
-//   );
+  //   app.delete(
+  //     '/api/relationships.v2',
+  //     needsAuthorization(['admin', 'editor']),
+  //     // validation.validateRequest(
+  //     //   Joi.object()
+  //     //     .keys({
+  //     //       _id: Joi.objectId().required(),
+  //     //     })
+  //     //     .required(),
+  //     //   'query'
+  //     // ),
+  //     (req, res, next) => {
+  //       // delete relationships
+  //       res.status(418);
+  //       res.json({ error: 'not implemented yet' });
+  //     }
+  //   );
 
   //   app.get(
   //     '/api/relationships.v2/by_entity/',

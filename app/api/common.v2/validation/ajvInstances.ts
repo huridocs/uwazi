@@ -2,31 +2,35 @@ import util from 'util';
 
 import Ajv, { AnySchemaObject } from 'ajv';
 import ValidationError from 'ajv/dist/runtime/validation_error';
+import { Request, Response, NextFunction } from 'express';
 
 const defaultAjv = new Ajv({ allErrors: true });
 defaultAjv.addVocabulary(['tsType']);
 
-type ValidatorType = (value: any) => any;
+type ValidatorType<T> = (value: T) => boolean;
 
-const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): ValidatorType => {
+const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): ValidatorType<T> => {
   const validator = ajvInstance.compile<T>(ajvSchema);
-  return (value: T) => {
+  return (value: any): value is T => {
     const valid = validator(value);
     if (!valid) {
       const err = new ValidationError(validator.errors || []);
       err.message = util.inspect(err, false, null);
       throw err;
     }
+    return true;
   };
 };
 
-const createDefaultValidator = (ajvSchema: AnySchemaObject) =>
-  createValidator(defaultAjv, ajvSchema);
+const createDefaultValidator = <T>(ajvSchema: AnySchemaObject) =>
+  createValidator<T>(defaultAjv, ajvSchema);
 
-const getValidatorMiddleware = (validator: ValidatorType) => async (req, _res, next) => {
-  validator(req.body);
-  next();
-};
+const getValidatorMiddleware =
+  <T>(validator: ValidatorType<T>) =>
+  async (req: Request, _res: Response, next: NextFunction) => {
+    validator(req.body);
+    next();
+  };
 
 export type { ValidatorType };
 export { createDefaultValidator, getValidatorMiddleware };

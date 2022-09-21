@@ -1,5 +1,4 @@
 import { objectIdSchema } from 'api/common.v2/database/schemas/commonSchemas';
-import { createDefaultValidator } from 'api/common.v2/validation/ajvInstances';
 import { userSchema as originalUserSchema } from 'shared/types/userSchema';
 
 const emitSchemaTypes = true;
@@ -23,6 +22,11 @@ const userDBOSchema = {
     },
   },
 };
-const validateUserDBO = createDefaultValidator(userDBOSchema);
 
-export { emitSchemaTypes, userDBOSchema, validateUserDBO };
+const UserInputSchema = {
+  ...userDBOSchema,
+  title: 'UserInputType',
+  required: ['_id', 'role', 'groups'],
+};
+
+export { emitSchemaTypes, userDBOSchema, UserInputSchema };
