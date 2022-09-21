@@ -11,13 +11,12 @@ import {
 } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
-import { userDBOSchema } from 'api/users.v2/database/schemas/userSchemas';
 import { validateUserInputSchema } from 'api/users.v2/database/schemas/userValidators';
 import { User } from 'api/users.v2/model/User';
-import { UserRole } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
 import { MongoRelationshipsDataSource } from './database/MongoRelationshipsDataSource';
 import { CreateRelationshipService } from './services/CreateRelationshipService';
+import { DeleteRelationshipService } from './services/DeleteRelationshipService';
 
 const RelationshipInputSchema = {
   type: 'object',
@@ -35,6 +34,11 @@ const RelationshipInputArraySchema = {
   items: RelationshipInputSchema,
 };
 const validateRelationshipInputArray = createDefaultValidator(RelationshipInputArraySchema);
+
+const validateStringArray = createDefaultValidator({
+  type: 'array',
+  items: { type: 'string' },
+});
 
 const readUserFromRequest = (request: any): User => {
   const _user = request.user;
@@ -81,23 +85,24 @@ export default (app: Application) => {
     }
   );
 
-    // app.delete(
-    //   '/api/relationships.v2',
-    //   needsAuthorization(['admin', 'editor']),
-    //   // validation.validateRequest(
-    //   //   Joi.object()
-    //   //     .keys({
-    //   //       _id: Joi.objectId().required(),
-    //   //     })
-    //   //     .required(),
-    //   //   'query'
-    //   // ),
-    //   (req, res, next) => {
-    //     // delete relationships
-    //     res.status(418);
-    //     res.json({ error: 'not implemented yet' });
-    //   }
-    // );
+  app.delete(
+    '/api/relationships.v2',
+    needsAuthorization(['admin', 'editor']),
+    getValidatorMiddleware(validateStringArray),
+    async (req, res) => {
+      // save relationships (based on post api/references) -- currently only creates
+      const user = readUserFromRequest(req);
+      const connection = getConnection();
+
+      const service = new DeleteRelationshipService(
+        new MongoRelationshipsDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        new AuthorizationService(new MongoPermissionsDataSource(connection), user)
+      );
+      const created = await service.deleteMultiple(req.body);
+      res.json(created);
+    }
+  );
 
   //   app.get(
   //     '/api/relationships.v2/by_entity/',
