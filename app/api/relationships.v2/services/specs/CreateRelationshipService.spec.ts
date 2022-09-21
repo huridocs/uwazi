@@ -17,7 +17,7 @@ import { CreateRelationshipService } from '../CreateRelationshipService';
 
 const factory = getFixturesFactory();
 
-const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
+const collectionInDb = (collection = 'relationships') => testingDB.mongodb?.collection(collection)!;
 
 const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
@@ -26,6 +26,7 @@ const fixtures = {
     factory.entity('entity1', 'template1'),
     factory.entity('entity2', 'template2'),
     factory.entity('entity3', 'template1'),
+    factory.entity('entity4', 'template3'),
   ],
   relationships: [],
   relationtypes: [
@@ -41,8 +42,32 @@ const fixtures = {
       _id: factory.id('rel3'),
       name: 'rel3',
     },
+    {
+      _id: factory.id('rel4'),
+      name: 'rel4',
+    },
   ],
-  templates: [factory.template('template1'), factory.template('template2')],
+  templates: [
+    factory.template('template1'),
+    factory.template('template2'),
+    factory.template('template3', [
+      factory.property('relProp', 'newRelationship', {
+        query: {
+          traverse: [
+            {
+              direction: 'out',
+              types: [factory.id('rel4').toHexString()],
+              match: [
+                {
+                  templates: [factory.id('template1').toHexString()],
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    ]),
+  ],
 };
 
 beforeEach(async () => {
@@ -225,6 +250,32 @@ describe('createMultiple()', () => {
           type: factory.id('rel3'),
         },
       ]);
+    });
+
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should denormalize the fields', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        MongoIdGenerator,
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
+      );
+
+      await service.createMultiple([
+        { from: 'entity4', to: 'entity1', type: factory.id('rel4').toHexString() },
+      ]);
+
+      const [entity4] = await collectionInDb('entities').find({ sharedId: 'entity4' }).toArray();
+      const [entity1] = await collectionInDb('entities').find({ sharedId: 'entity1' }).toArray();
+      expect(entity4).toMatchObject({
+        metadata: {
+          relProp: [{ value: 'entity1', label: 'entity1' }],
+        },
+      });
+      expect(entity1).toEqual(fixtures.entities[0]);
     });
   });
 

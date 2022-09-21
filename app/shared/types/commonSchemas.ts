@@ -194,6 +194,7 @@ export const propertySchema = {
     generatedId: { type: 'boolean' },
     content: { type: 'string' },
     relationType: { type: 'string' },
+    query: { type: 'object' }, // TODO: write a schema for this
     inherit: {
       type: 'object',
       additionalProperties: false,

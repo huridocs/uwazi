@@ -1,11 +1,14 @@
+/* eslint-disable max-statements */
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
+import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 
@@ -66,11 +69,49 @@ export class CreateRelationshipService {
           throw new MissingEntityError('Must provide sharedIds from existing entities');
         }
 
-        return this.relationshipsDS.insert(
+        const insertedRelationships = await this.relationshipsDS.insert(
           relationships.map(
             r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type)
           )
         );
+
+        const [firstRelationshp] = relationships;
+
+        const db = getConnection();
+        const entities = db.collection('entities');
+        const entity = await entities.findOne(
+          { sharedId: firstRelationshp.from },
+          { projection: { template: 1 } }
+        );
+
+        const templates = db.collection('templates');
+        const { properties } = await templates.findOne(
+          { _id: entity.template },
+          { projection: { properties: 1 } }
+        );
+
+        const relProperty = properties.find((prop: { name: string }) => prop.name === 'relProp');
+
+        const denormalizationQuery: RelationshipsQuery = {
+          sharedId: firstRelationshp.from,
+          traverse: relProperty.query.traverse,
+        };
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const graphResults = this.relationshipsDS.getByQuery(denormalizationQuery);
+
+        const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
+
+        await entities.updateOne(
+          { sharedId: firstRelationshp.from },
+          {
+            $set: {
+              'metadata.relProp': leafEntities.map(e => ({ value: e.sharedId, label: e.sharedId })),
+            },
+          }
+        );
+
+        return insertedRelationships;
       },
       this.entitiesDS,
       this.relationshipsDS,
