@@ -36,6 +36,18 @@ const RelationshipInputArraySchema = {
 };
 const validateRelationshipInputArray = createDefaultValidator(RelationshipInputArraySchema);
 
+const readUserFromRequest = (request: any): User => {
+  const _user = request.user;
+  if (validateUserInputSchema(_user)) {
+    const id = _user._id.toHexString();
+    const { role } = _user;
+    const groups = _user.groups.map(g => g.name);
+    const user = new User(id, role, groups);
+    return user;
+  }
+  throw new Error('Invalid user in request.');
+};
+
 export default (app: Application) => {
   //   app.post(
   //     '/api/relationships.v2/bulk',
@@ -49,17 +61,11 @@ export default (app: Application) => {
 
   app.post(
     '/api/relationships.v2',
-    // needsAuthorization(['admin', 'editor']),
+    needsAuthorization(['admin', 'editor']),
     getValidatorMiddleware(validateRelationshipInputArray),
     async (req, res) => {
       // save relationships (based on post api/references) -- currently only creates
-      // validateUserInputSchema(req.user);
-      const user = new User(
-        req.user._id.toHexString(),
-        (req.user.role as UserRole) || 'collaborator',
-        req.user.groups || []
-      );
-      console.log(user);
+      const user = readUserFromRequest(req);
       const connection = getConnection();
 
       const service = new CreateRelationshipService(
@@ -75,23 +81,23 @@ export default (app: Application) => {
     }
   );
 
-  //   app.delete(
-  //     '/api/relationships.v2',
-  //     needsAuthorization(['admin', 'editor']),
-  //     // validation.validateRequest(
-  //     //   Joi.object()
-  //     //     .keys({
-  //     //       _id: Joi.objectId().required(),
-  //     //     })
-  //     //     .required(),
-  //     //   'query'
-  //     // ),
-  //     (req, res, next) => {
-  //       // delete relationships
-  //       res.status(418);
-  //       res.json({ error: 'not implemented yet' });
-  //     }
-  //   );
+    // app.delete(
+    //   '/api/relationships.v2',
+    //   needsAuthorization(['admin', 'editor']),
+    //   // validation.validateRequest(
+    //   //   Joi.object()
+    //   //     .keys({
+    //   //       _id: Joi.objectId().required(),
+    //   //     })
+    //   //     .required(),
+    //   //   'query'
+    //   // ),
+    //   (req, res, next) => {
+    //     // delete relationships
+    //     res.status(418);
+    //     res.json({ error: 'not implemented yet' });
+    //   }
+    // );
 
   //   app.get(
   //     '/api/relationships.v2/by_entity/',

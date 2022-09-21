@@ -7,7 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 const defaultAjv = new Ajv({ allErrors: true });
 defaultAjv.addVocabulary(['tsType']);
 
-type ValidatorType<T> = (value: T) => boolean;
+type ValidatorType<T> = (value: any) => value is T;
 
 const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): ValidatorType<T> => {
   const validator = ajvInstance.compile<T>(ajvSchema);
