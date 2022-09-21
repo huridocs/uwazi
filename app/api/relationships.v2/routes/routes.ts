@@ -5,52 +5,18 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import {
-  createDefaultValidator,
-  getValidatorMiddleware,
-} from 'api/common.v2/validation/ajvInstances';
+import { getValidatorMiddleware } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
-import { validateUserInputSchema } from 'api/users.v2/database/schemas/userValidators';
 import { User } from 'api/users.v2/model/User';
-import needsAuthorization from '../auth/authMiddleware';
-import { MongoRelationshipsDataSource } from './database/MongoRelationshipsDataSource';
-import { CreateRelationshipService } from './services/CreateRelationshipService';
-import { DeleteRelationshipService } from './services/DeleteRelationshipService';
-
-const RelationshipInputSchema = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    from: { type: 'string' },
-    to: { type: 'string' },
-    type: { type: 'string' },
-  },
-  required: ['from', 'to', 'type'],
-};
-
-const RelationshipInputArraySchema = {
-  type: 'array',
-  items: RelationshipInputSchema,
-};
-const validateRelationshipInputArray = createDefaultValidator(RelationshipInputArraySchema);
-
-const validateStringArray = createDefaultValidator({
-  type: 'array',
-  items: { type: 'string' },
-});
-
-const readUserFromRequest = (request: any): User => {
-  const _user = request.user;
-  if (validateUserInputSchema(_user)) {
-    const id = _user._id.toHexString();
-    const { role } = _user;
-    const groups = _user.groups.map(g => g.name);
-    const user = new User(id, role, groups);
-    return user;
-  }
-  throw new Error('Invalid user in request.');
-};
+import needsAuthorization from '../../auth/authMiddleware';
+import { MongoRelationshipsDataSource } from '../database/MongoRelationshipsDataSource';
+import {
+  validateRelationshipInputArray,
+  validateStringArray,
+} from './schemas/relationshipInputValidators';
+import { CreateRelationshipService } from '../services/CreateRelationshipService';
+import { DeleteRelationshipService } from '../services/DeleteRelationshipService';
 
 export default (app: Application) => {
   //   app.post(
@@ -69,7 +35,7 @@ export default (app: Application) => {
     getValidatorMiddleware(validateRelationshipInputArray),
     async (req, res) => {
       // save relationships (based on post api/references) -- currently only creates
-      const user = readUserFromRequest(req);
+      const user = User.fromRequest(req);
       const connection = getConnection();
 
       const service = new CreateRelationshipService(
@@ -91,7 +57,7 @@ export default (app: Application) => {
     getValidatorMiddleware(validateStringArray),
     async (req, res) => {
       // save relationships (based on post api/references) -- currently only creates
-      const user = readUserFromRequest(req);
+      const user = User.fromRequest(req);
       const connection = getConnection();
 
       const service = new DeleteRelationshipService(

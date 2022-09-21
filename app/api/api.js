@@ -41,5 +41,5 @@ export default (app, server) => {
   require('./suggestions/routes').suggestionsRoutes(app);
   require('./preserve/routes').PreserveRoutes(app);
 
-  require('./relationships.v2/routes').default(app);
+  require('./relationships.v2/routes/routes').default(app);
 };
