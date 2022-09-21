@@ -165,14 +165,7 @@ class MetadataFormFields extends Component {
           />
         );
       case 'date':
-        return (
-          <DatePicker
-            model={_model}
-            format={dateFormat}
-            locale={locale}
-            popperProps={{ strategy: 'fixed' }}
-          />
-        );
+        return <DatePicker model={_model} format={dateFormat} locale={locale} />;
       case 'daterange':
         return <DateRange model={_model} format={dateFormat} locale={locale} />;
       case 'numeric':
