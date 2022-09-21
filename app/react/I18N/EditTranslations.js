@@ -1,7 +1,7 @@
 import React from 'react';
 
 import RouteHandler from 'app/App/RouteHandler';
-import { EditTranslationFrom } from 'app/I18N/components/EditTranslationFrom';
+import { EditTranslationsForm } from 'app/I18N/components/EditTranslationsForm';
 import { actions } from 'app/I18N/';
 import { I18NApi } from 'app/I18N';
 
@@ -14,7 +14,7 @@ export default class EditTranslations extends RouteHandler {
   render() {
     return (
       <div className="settings-content">
-        <EditTranslationFrom context={this.props.params.context} />
+        <EditTranslationsForm context={this.props.params.context} />
       </div>
     );
   }

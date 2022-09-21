@@ -47,7 +47,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & { context: string };
 
-const EditTranslationFromComponent = ({
+const EditTranslationsFormComponent = ({
   context,
   translations,
   settings,
@@ -146,5 +146,5 @@ const EditTranslationFromComponent = ({
     </div>
   );
 };
-const container = connector(EditTranslationFromComponent);
-export { container as EditTranslationFrom };
+const container = connector(EditTranslationsFormComponent);
+export { container as EditTranslationsForm };
