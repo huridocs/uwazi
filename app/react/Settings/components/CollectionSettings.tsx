@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Settings } from 'shared/types/settingsType';
 import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import { ToggleButton } from 'app/UI';
@@ -54,13 +54,12 @@ const CollectionSettings = ({
     getValues,
     formState: { errors },
   } = useForm<Settings>({
-    // FIXME: come back to this and find out whats going on?
     // @ts-ignore
     defaultValues: collectionSettingsObject,
     mode: 'onSubmit',
   });
 
-  const save = async (newCollectionSettings: Settings) => {
+  const save: SubmitHandler<Settings> = async newCollectionSettings => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
