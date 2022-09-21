@@ -100,26 +100,29 @@ const EditTranslationFromComponent = ({
           <div className="panel-heading">
             <Translate>Translations</Translate> <Icon icon="angle-right" /> {contextLabel}
           </div>
+
+          <ul className="list-group">
+            {contextTerms.sort().map(term => (
+              <li key={term} className="list-group-item">
+                <h5>{term}</h5>
+                {preparedTranslations.map((translation: TranslationType, index: number) => (
+                  <div className="form-group">
+                    <div className="input-group">
+                      <span className="input-group-addon">{translation.locale}</span>
+                      <input name={`[${index}].locale`} type="hidden" ref={register()} />
+                      <input
+                        className="form-control"
+                        type="text"
+                        name={`[${index}].contexts[0].values[${term}]`}
+                        ref={register()}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="list-group">
-          {contextTerms.sort().map(term => (
-            <li key={term} className="list-group-item">
-              <h5>{term}</h5>
-              {preparedTranslations.map((translation: TranslationType, index: number) => (
-                <div className="input-group">
-                  <span className="input-group-addon">{translation.locale}</span>
-                  <input name={`[${index}].locale`} type="hidden" ref={register()} />
-                  <input
-                    className="form-control"
-                    type="text"
-                    name={`[${index}].contexts[0].values[${term}]`}
-                    ref={register()}
-                  />
-                </div>
-              ))}
-            </li>
-          ))}
-        </ul>
 
         <div className="settings-footer">
           <div className="btn-cluster">
