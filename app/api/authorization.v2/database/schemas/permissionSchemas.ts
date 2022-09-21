@@ -1,5 +1,4 @@
 import { objectIdSchema } from 'api/common.v2/database/schemas/commonSchemas';
-import { createDefaultValidator } from 'api/common.v2/validation/ajvInstances';
 
 const emitSchemaTypes = true;
 
@@ -47,13 +46,11 @@ const entityPermissionsDBOSchema = {
   },
   required: ['sharedId', 'permissions'],
 };
-const validateEntityPermissionsDBO = createDefaultValidator(entityPermissionsDBOSchema);
 
 export {
   restrictedPermissionSchema,
   publicPermissionSchema,
   permissionSchema,
   entityPermissionsDBOSchema,
-  validateEntityPermissionsDBO,
   emitSchemaTypes,
 };

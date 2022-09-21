@@ -5,7 +5,6 @@ import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { MongoGraphQueryParser } from './MongoGraphQueryParser';
 import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
-import { validateRelationshipDBO } from './schemas/relationshipSchemas';
 import {
   RelationshipDBOType,
   EntityInfoType,
@@ -39,11 +38,9 @@ export class MongoRelationshipsDataSource
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
     const items = relationships.map(r => RelationshipMappers.toDBO(r));
-    items.forEach(item => validateRelationshipDBO(item));
     const { ops: created } = (await this.getCollection().insertMany(items, {
       session: this.session,
     })) as { ops: RelationshipDBOType[] };
-    created.forEach(item => validateRelationshipDBO(item));
 
     return created.map(item => RelationshipMappers.toModel(item));
   }
