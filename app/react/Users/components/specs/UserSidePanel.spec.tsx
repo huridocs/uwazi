@@ -185,7 +185,7 @@ describe('UserSidePanel', () => {
             password: 'secretWord',
             role: 'editor',
             username: 'juan ramirez',
-            using2fa: 'true',
+            using2fa: true,
             groups: [
               { _id: 'group1', name: 'Denunciantes' },
               { _id: 'group2', name: 'Asesores legales' },
