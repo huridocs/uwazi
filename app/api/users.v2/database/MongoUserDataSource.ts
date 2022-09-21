@@ -2,6 +2,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { UserDataSource } from '../contracts/UserDataSource';
+import { UserMappers } from './UserMappers';
 import { UserDBOType } from './schemas/userTypes';
 import { User } from '../model/User';
 
