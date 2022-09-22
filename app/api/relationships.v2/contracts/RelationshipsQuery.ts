@@ -3,7 +3,8 @@ interface NodeQuery {
 }
 
 export interface RootNodeQuery extends NodeQuery {
-  sharedId: string;
+  templates?: string[];
+  sharedId?: string;
 }
 
 export interface InternalNodeQuery extends NodeQuery {

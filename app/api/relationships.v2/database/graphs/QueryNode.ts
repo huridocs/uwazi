@@ -1,3 +1,5 @@
+import { NonChainQueryError } from './NonChainQueryErrror';
+
 export abstract class QueryNode {
   abstract compile(index: number): object[];
 
@@ -26,7 +28,22 @@ export abstract class QueryNode {
     ];
   }
 
+  validateIsChain() {
+    if (this.getChildrenNodes().length > 1) {
+      throw new NonChainQueryError();
+    }
+  }
+
   protected unwind() {
     return this.getChildrenNodes().length ? [{ $unwind: '$traversal' }] : [{ $unset: 'traversal' }];
+  }
+
+  abstract chainsDecomposition(): QueryNode[];
+
+  __clearParents() {
+    // @ts-ignore
+    this.parent = undefined;
+    this.getChildrenNodes().forEach(node => node.__clearParents());
+    return this;
   }
 }

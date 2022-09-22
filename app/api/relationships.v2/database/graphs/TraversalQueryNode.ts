@@ -1,18 +1,39 @@
+import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { ObjectId } from 'mongodb';
 import { MatchQueryNode } from './MatchQueryNode';
+import { NonChainQueryError } from './NonChainQueryErrror';
 import { QueryNode } from './QueryNode';
+import { RootQueryNode } from './RootQueryNode';
+
+interface TraversalFilters {
+  _id?: string;
+  types?: string[];
+}
+
+const directionToField = {
+  in: 'to',
+  out: 'from',
+} as const;
+
+const inverseOfDirection = {
+  in: 'out',
+  out: 'in',
+} as const;
 
 export class TraversalQueryNode extends QueryNode {
-  private targetField: string;
+  public direction: 'in' | 'out';
 
-  private types: ObjectId[];
+  public filters: TraversalFilters;
+
+  private parent?: MatchQueryNode | RootQueryNode;
 
   private matches: MatchQueryNode[] = [];
 
-  constructor(targetField: 'from' | 'to', types: ObjectId[]) {
+  constructor(direction: 'in' | 'out', filters?: TraversalFilters, matches?: MatchQueryNode[]) {
     super();
-    this.targetField = targetField;
-    this.types = types;
+    this.direction = direction;
+    this.filters = filters || {};
+    matches?.forEach(match => this.addMatch(match));
   }
 
   protected getChildrenNodes(): QueryNode[] {
@@ -28,6 +49,19 @@ export class TraversalQueryNode extends QueryNode {
 
   addMatch(match: MatchQueryNode) {
     this.matches.push(match);
+    match.setParent(this);
+  }
+
+  getMatches() {
+    return this.matches as readonly MatchQueryNode[];
+  }
+
+  setParent(parent: MatchQueryNode | RootQueryNode) {
+    this.parent = parent;
+  }
+
+  getParent() {
+    return this.parent;
   }
 
   compile(index: number): object[] {
@@ -42,9 +76,14 @@ export class TraversalQueryNode extends QueryNode {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: ['$$sharedId', `$${this.targetField}`] },
+                    ...(this.filters._id
+                      ? [{ $eq: ['$_id', new ObjectId(this.filters._id)] }]
+                      : []),
+                    { $eq: ['$$sharedId', `$${directionToField[this.direction]}`] },
                     { $not: [{ $in: ['$_id', '$$visited'] }] },
-                    ...(this.types.length ? [{ $in: ['$type', this.types] }] : []),
+                    ...(this.filters.types?.length
+                      ? [{ $in: ['$type', this.filters.types.map(t => new ObjectId(t))] }]
+                      : []),
                   ],
                 },
               },
@@ -61,5 +100,51 @@ export class TraversalQueryNode extends QueryNode {
         },
       },
     ];
+  }
+
+  chainsDecomposition(): TraversalQueryNode[] {
+    if (!this.matches.length) {
+      return [new TraversalQueryNode(this.direction, { ...this.filters })];
+    }
+
+    const decomposition: TraversalQueryNode[] = [];
+    const childrenDecompositions = this.matches.map(match => match.chainsDecomposition());
+    childrenDecompositions.forEach(childDecompositions => {
+      childDecompositions.forEach(childDecomposition => {
+        const newChain = new TraversalQueryNode(this.direction, { ...this.filters }, [
+          childDecomposition,
+        ]);
+        decomposition.push(newChain);
+      });
+    });
+    return decomposition;
+  }
+
+  wouldTraverse(fromEntity: string, relationship: Relationship, toEntity: string) {
+    let traverseDirection: 'in' | 'out';
+    if (relationship.from === fromEntity && relationship.to === toEntity) {
+      traverseDirection = 'out';
+    } else if (relationship.to === fromEntity && relationship.from === toEntity) {
+      traverseDirection = 'in';
+    } else {
+      return false;
+    }
+    return (
+      (this.filters.types
+        ? this.filters.types.includes(relationship.type)
+        : true && this.filters.types) && this.direction === traverseDirection
+    );
+  }
+
+  inverse(next: MatchQueryNode) {
+    if (this.matches.length > 1) throw new NonChainQueryError();
+    const inversed = new TraversalQueryNode(
+      inverseOfDirection[this.direction],
+      {
+        ...this.filters,
+      },
+      [next]
+    );
+    return this.matches[0].inverse(inversed);
   }
 }
