@@ -1,6 +1,6 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
-
+import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
 
@@ -27,7 +27,7 @@ function _save(relationtype) {
     .save(relationtype)
     .then(response =>
       translations
-        .addContext(response._id, relationtype.name, values, 'Connection')
+        .addContext(response._id, relationtype.name, values, ContextType.relationshipType)
         .then(() => response)
     );
 }

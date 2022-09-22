@@ -8,6 +8,7 @@ import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
 import { ObjectID } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
+import { ContextType } from 'shared/translationSchema';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
@@ -43,7 +44,7 @@ const addTemplateTranslation = async (template: WithId<TemplateSchema>) =>
     template._id.toString(),
     template.name,
     createTranslationContext(template),
-    'Entity'
+    ContextType.entity
   );
 
 const updateTranslation = async (
@@ -85,7 +86,7 @@ const updateTranslation = async (
     updatedLabels,
     deletedPropertiesByLabel,
     context,
-    'Entity'
+    ContextType.entity
   );
 };
 
