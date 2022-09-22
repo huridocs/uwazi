@@ -14,6 +14,9 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
@@ -445,6 +448,38 @@ export default {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
     const entities = await model.get(query, extendedSelect, restOfOptions);
+
+    await Promise.all(
+      entities.map(async entity => {
+        const db = getConnection();
+        const { properties } = await db
+          .collection('templates')
+          .findOne({ _id: entity.template }, { projection: { properties: 1 } });
+
+        const relProperties = properties.filter(prop => prop.type === 'newRelationship');
+
+        await Promise.all(
+          relProperties.map(async relProperty => {
+            const denormalizationQuery = {
+              sharedId: entity.sharedId,
+              traverse: relProperty.query.traverse,
+            };
+
+            const graphResults = new MongoRelationshipsDataSource(db).getByQuery(
+              denormalizationQuery
+            );
+
+            const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
+
+            entity.metadata[relProperty.name] = leafEntities.map(e => ({
+              value: e.sharedId,
+              label: e.sharedId,
+            }));
+          })
+        );
+      })
+    );
+
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
 
