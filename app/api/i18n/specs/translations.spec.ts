@@ -4,6 +4,7 @@ import db from 'api/utils/testing_db';
 import { config } from 'api/config';
 import thesauri from 'api/thesauri/thesauri.js';
 import backend from 'fetch-mock';
+import { ContextType } from 'shared/translationSchema';
 import translations, { UITranslationNotAvailable } from '../translations';
 import fixtures, {
   dictionaryId,
@@ -363,16 +364,20 @@ describe('translations', () => {
   describe('addContext()', () => {
     it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      const result = await translations.addContext('context', 'Judge', values, 'type');
+      const result = await translations.addContext('context', 'Judge', values, ContextType.entity);
 
       expect(result).toBe('ok');
 
       const translated = await translations.get();
 
       expect(translated.find(t => t.locale === 'en')?.contexts?.[6].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual('type');
+      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual(
+        ContextType.entity
+      );
       expect(translated.find(t => t.locale === 'es')?.contexts?.[1].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual('type');
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual(
+        ContextType.entity
+      );
     });
   });
 

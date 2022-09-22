@@ -11,9 +11,10 @@ import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
 import { ContentsClient, GithubFileNotFound } from 'api/i18n/contentsClient';
 import { availableLanguages } from 'shared/languagesList';
-import model from './translationsModel';
 import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
+import { ContextType } from 'shared/translationSchema';
+import model from './translationsModel';
 
 export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
@@ -254,7 +255,12 @@ export default {
     );
   },
 
-  async addContext(id: string, contextName: string, values: IndexedContextValues, type: string) {
+  async addContext(
+    id: string,
+    contextName: string,
+    values: IndexedContextValues,
+    type: ContextType
+  ) {
     const translatedValues: TranslationValue[] = [];
     Object.keys(values).forEach(key => {
       translatedValues.push({ key, value: values[key] });
@@ -324,7 +330,7 @@ export default {
     keyNamesChanges: { [x: string]: string },
     deletedProperties: string[],
     values: IndexedContextValues,
-    type?: string
+    type?: ContextType
   ) {
     const translatedValues: TranslationValue[] = [];
     Object.keys(values).forEach(key => {
