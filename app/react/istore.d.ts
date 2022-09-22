@@ -12,7 +12,7 @@ import { UserSchema } from 'shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
-import { TranslationType } from 'shared/translationType';
+import { TranslationContext, TranslationType } from 'shared/translationType';
 
 interface EntityDisplayState {
   documents: IImmutable<{ rows: EntitySchema[] }>;
@@ -34,6 +34,14 @@ interface EntityDisplayState {
 interface RelationshipTypesType {
   _id: string;
   name: string;
+}
+
+interface ClientTranslationsContextSchema extends Omit<TranslationContext, 'values'> {
+  values?: { [key: string]: string };
+}
+
+export interface ClientTranslationsSchema extends Omit<TranslationType, 'contexts'> {
+  contexts?: ClientTranslationsContextSchema[];
 }
 
 export interface ClientPropertySchema extends PropertySchema {
@@ -170,5 +178,5 @@ export interface IStore {
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
-  translations: IImmutable<TranslationType[]>;
+  translations: IImmutable<ClientTranslationsSchema[]>;
 }

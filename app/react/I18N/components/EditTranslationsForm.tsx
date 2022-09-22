@@ -3,15 +3,17 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { IImmutable } from 'shared/types/Immutable';
-import { TranslationContext, TranslationType } from 'shared/translationType';
-import { IStore } from 'app/istore';
+import { ClientTranslationsSchema, IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'app/UI';
 import { actions, Translate, I18NLink } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
 
-const prepateTranslations = (translations: IImmutable<TranslationType[]>, context: string) =>
-  translations.toJS().map((translation: TranslationType) => {
+const prepateTranslations = (
+  translations: IImmutable<ClientTranslationsSchema[]>,
+  context: string
+) =>
+  translations.toJS().map((translation: ClientTranslationsSchema) => {
     const translationsForContext = translation.contexts?.filter(
       translationContext => translationContext?.id === context
     );
@@ -64,38 +66,13 @@ const EditTranslationsFormComponent = ({
     .get('key');
 
   const { register, handleSubmit } = useForm({
-    defaultValues: [...preparedTranslations],
+    defaultValues: preparedTranslations,
     mode: 'onSubmit',
   });
 
-  const submit = (values: { [s: string]: { locale: string; contexts: TranslationContext[] } }) => {
-    const translationsToSave = preparedTranslations.reduce(
-      (valueToSave: any[], originalValue: TranslationType) => {
-        const formValues = (
-          Object.values(values) as { locale: string; contexts: TranslationContext[] }[]
-        ).find(value => value.locale === originalValue.locale);
-
-        const [updatedContext] = originalValue.contexts || [];
-
-        const newValues = formValues?.contexts[0].values;
-
-        return [
-          ...valueToSave,
-          {
-            ...originalValue,
-            contexts: [{ ...updatedContext, values: newValues }],
-          },
-        ];
-      },
-      []
-    );
-
-    return saveTranslations(translationsToSave);
-  };
-
   return (
     <div className="EditTranslationForm">
-      <form onSubmit={handleSubmit(submit)}>
+      <form onSubmit={handleSubmit(saveTranslations)}>
         <div className="panel panel-default">
           <div className="panel-heading">
             <Translate>Translations</Translate> <Icon icon="angle-right" /> {contextLabel}
@@ -105,20 +82,27 @@ const EditTranslationsFormComponent = ({
             {contextTerms.sort().map(term => (
               <li key={term} className="list-group-item">
                 <h5>{term}</h5>
-                {preparedTranslations.map((translation: TranslationType, index: number) => (
-                  <div className="form-group">
-                    <div className="input-group">
-                      <span className="input-group-addon">{translation.locale}</span>
-                      <input name={`[${index}].locale`} type="hidden" ref={register()} />
-                      <input
-                        className="form-control"
-                        type="text"
-                        name={`[${index}].contexts[0].values[${term}]`}
-                        ref={register()}
-                      />
-                    </div>
-                  </div>
-                ))}
+                {preparedTranslations.map(
+                  (translation: ClientTranslationsSchema, index: number) => {
+                    const defaultValue =
+                      translation.contexts && translation.contexts[0].values
+                        ? translation.contexts[0].values[term]
+                        : '';
+                    return (
+                      <div className="form-group">
+                        <div className="input-group">
+                          <span className="input-group-addon">{translation.locale}</span>
+                          <input
+                            className="form-control"
+                            type="text"
+                            defaultValue={defaultValue}
+                            {...register(`[${index}].contexts[0].values[${term}]`)}
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
               </li>
             ))}
           </ul>
