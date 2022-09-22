@@ -40,19 +40,23 @@ class CustomUploads extends RouteHandler {
           </div>
           <div className="panel-body custom-uploads">
             <Dropzone className="upload-box" onDrop={this.onDrop}>
-              <div className="upload-box_wrapper">
-                <Icon icon="upload" />
-                <button className="upload-box_link" type="button">
-                  <Translate>Browse files to upload</Translate>
-                </button>
-                <span>
-                  &nbsp;<Translate>or drop your files here.</Translate>
-                </span>
-              </div>
-              {this.props.progress && (
-                <div className="uploading">
-                  <Icon icon="spinner" spin />
-                  <Translate>Uploading ...</Translate>
+              {({ getRootProps }) => (
+                <div {...getRootProps()}>
+                  <div className="upload-box_wrapper">
+                    <Icon icon="upload" />
+                    <button className="upload-box_link" type="button">
+                      <Translate>Browse files to upload</Translate>
+                    </button>
+                    <span>
+                      &nbsp;<Translate>or drop your files here.</Translate>
+                    </span>
+                  </div>
+                  {this.props.progress && (
+                    <div className="uploading">
+                      <Icon icon="spinner" spin />
+                      <Translate>Uploading ...</Translate>
+                    </div>
+                  )}
                 </div>
               )}
             </Dropzone>

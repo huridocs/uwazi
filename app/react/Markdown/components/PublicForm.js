@@ -129,21 +129,25 @@ class PublicForm extends Component {
                 className="dropzone"
                 accept={id === 'file' ? '.pdf' : undefined}
               >
-                <label>
-                  <div className="text-content">
-                    <div id="icon">
-                      <Icon icon="cloud-upload-alt" />
-                    </div>
-                    <div id="upload-text">
-                      <Translate>Drop your files here to upload or</Translate>
-                    </div>
-                    <div id="upload-button">
-                      <div id="button">
-                        <Translate>Select files on your device</Translate>
+                {({ getRootProps }) => (
+                  <div {...getRootProps()}>
+                    <label>
+                      <div className="text-content">
+                        <div id="icon">
+                          <Icon icon="cloud-upload-alt" />
+                        </div>
+                        <div id="upload-text">
+                          <Translate>Drop your files here to upload or</Translate>
+                        </div>
+                        <div id="upload-button">
+                          <div id="button">
+                            <Translate>Select files on your device</Translate>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </label>
                   </div>
-                </label>
+                )}
               </Dropzone>
             </BrowserView>
             <MobileView>

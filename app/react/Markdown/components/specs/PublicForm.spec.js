@@ -7,7 +7,7 @@ import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
-import PublicForm from '../PublicForm.js';
+import PublicForm from '../PublicForm';
 
 describe('PublicForm', () => {
   let props;

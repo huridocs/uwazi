@@ -99,36 +99,35 @@ const AttachmentsModalCmp = ({
 
           <div className="attachments-modal__tabs-content">
             <TabContent for="uploadComputer" className="tab-content centered">
-              <Dropzone
-                disableClick
-                onDrop={handleDropFiles}
-                className="attachments-modal__dropzone"
-                multiple={false}
-              >
-                {getPercentage === undefined ? (
-                  <>
-                    <button type="button" onClick={handleUploadButtonClicked} className="btn">
-                      <Icon icon="link" />
-                      &nbsp; <Translate>Upload and select file</Translate>
-                    </button>
-                    <input
-                      aria-label="fileInput"
-                      type="file"
-                      onChange={handleInputFileChange}
-                      style={{ display: 'none' }}
-                      ref={inputFileRef}
-                    />
-                    <h4 className="attachments-modal__dropzone-title">
-                      <Translate>Drag and drop file in this window to upload </Translate>
-                    </h4>
-                  </>
-                ) : (
-                  <div className="progress attachments-modal-progress">
-                    <div
-                      className="progress-bar progress-bar-success attachments-modal-progress-bar"
-                      role="progressbar"
-                      style={{ width: `${getPercentage}%` }}
-                    />
+              <Dropzone noClick onDrop={handleDropFiles} multiple={false}>
+                {({ getRootProps }) => (
+                  <div {...getRootProps()} className="attachments-modal__dropzone">
+                    {getPercentage === undefined ? (
+                      <>
+                        <button type="button" onClick={handleUploadButtonClicked} className="btn">
+                          <Icon icon="link" />
+                          &nbsp; <Translate>Upload and select file</Translate>
+                        </button>
+                        <input
+                          aria-label="fileInput"
+                          type="file"
+                          onChange={handleInputFileChange}
+                          style={{ display: 'none' }}
+                          ref={inputFileRef}
+                        />
+                        <h4 className="attachments-modal__dropzone-title">
+                          <Translate>Drag and drop file in this window to upload </Translate>
+                        </h4>
+                      </>
+                    ) : (
+                      <div className="progress attachments-modal-progress">
+                        <div
+                          className="progress-bar progress-bar-success attachments-modal-progress-bar"
+                          role="progressbar"
+                          style={{ width: `${getPercentage}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </Dropzone>
