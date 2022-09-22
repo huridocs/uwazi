@@ -166,7 +166,7 @@
     "react-dnd": "2.6.0",
     "react-dnd-html5-backend": "^15.1.2",
     "react-dom": "16.13.1",
-    "react-dropzone": "4.2.9",
+    "react-dropzone": "14.2.2",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.36.0",
     "react-hot-loader": "^4.13.0",
