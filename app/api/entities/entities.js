@@ -10,6 +10,7 @@ import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
@@ -444,19 +445,20 @@ export default {
     return withDocuments(entities, documentsFullText);
   },
 
-  async get(query, select, options = {}) {
-    const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
-    const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    const entities = await model.get(query, extendedSelect, restOfOptions);
+  async performNewRelationshipQueries(entities) {
+    const templateIdToProperties = objectIndex(
+      await templates.get(
+        { _id: entities.map(e => e.template) },
+        { projection: { properties: 1 } }
+      ),
+      t => t._id,
+      t => t.properties.filter(prop => prop.type === 'newRelationship')
+    );
 
     await Promise.all(
       entities.map(async entity => {
         const db = getConnection();
-        const { properties } = await db
-          .collection('templates')
-          .findOne({ _id: entity.template }, { projection: { properties: 1 } });
-
-        const relProperties = properties.filter(prop => prop.type === 'newRelationship');
+        const relProperties = templateIdToProperties[entity.template];
 
         await Promise.all(
           relProperties.map(async relProperty => {
@@ -479,6 +481,13 @@ export default {
         );
       })
     );
+  },
+
+  async get(query, select, options = {}) {
+    const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
+    const extendedSelect = withoutDocuments ? select : extendSelect(select);
+    const entities = await model.get(query, extendedSelect, restOfOptions);
+    await this.performNewRelationshipQueries(entities);
 
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
