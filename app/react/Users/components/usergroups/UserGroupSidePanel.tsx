@@ -33,7 +33,11 @@ export const UserGroupSidePanel = ({
   onDelete,
 }: UserGroupSidePanelProps) => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>(mapUserIds(userGroup.members));
-  const { register, handleSubmit, errors } = useForm({ defaultValues: userGroup });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: userGroup });
   const availableUsers = sortByName(users);
 
   const saveGroup = (groupToSave: UserGroupSchema) => {
@@ -59,7 +63,7 @@ export const UserGroupSidePanel = ({
       </div>
       <div className="sidepanel-body">
         <form id="userGroupFrom" className="user-group-form" onSubmit={handleSubmit(saveGroup)}>
-          <input type="hidden" name="_id" ref={register} />
+          <input type="hidden" {...register('_id')} />
           <div id="name_field" className="form-group nested-selector">
             <label>
               <Translate>Name of the group</Translate>
@@ -68,8 +72,7 @@ export const UserGroupSidePanel = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              name="name"
-              ref={register({
+              {...register('name', {
                 required: true,
                 validate: isUnique,
                 maxLength: 50,

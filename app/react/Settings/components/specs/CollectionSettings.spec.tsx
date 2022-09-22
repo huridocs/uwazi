@@ -46,19 +46,22 @@ describe('Collection settings', () => {
   };
 
   describe('on submit', () => {
-    it('should properly save the values', async () => {
-      const formData = { home_page: 'custom home page', private: true };
+    it('should properly save the values', done => {
+      const formData = { home_page: '/entity/asd2dad2', private: true };
       render(formData);
-      await component.find('form').simulate('submit');
-      expect(saveAPIMock).toHaveBeenCalledWith(new RequestParams(formData));
-      expect(store.getActions()).toEqual(
-        expect.arrayContaining([
-          {
-            type: 'settings/collection/SET',
-            value: { savedSettings: true },
-          },
-        ])
-      );
+      component.find('form').simulate('submit');
+      setTimeout(() => {
+        expect(saveAPIMock).toHaveBeenCalledWith(new RequestParams(formData));
+        expect(store.getActions()).toEqual(
+          expect.arrayContaining([
+            {
+              type: 'settings/collection/SET',
+              value: { savedSettings: true },
+            },
+          ])
+        );
+        done();
+      }, 0);
     });
   });
 
