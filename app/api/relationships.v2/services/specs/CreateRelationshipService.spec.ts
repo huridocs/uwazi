@@ -253,7 +253,7 @@ describe('createMultiple()', () => {
     });
 
     // eslint-disable-next-line jest/no-focused-tests
-    fit('should denormalize the fields', async () => {
+    it('should denormalize the fields', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
         new MongoRelationshipsDataSource(connection),
@@ -266,16 +266,23 @@ describe('createMultiple()', () => {
 
       await service.createMultiple([
         { from: 'entity4', to: 'entity1', type: factory.id('rel4').toHexString() },
+        { from: 'entity4', to: 'entity3', type: factory.id('rel4').toHexString() },
       ]);
 
       const [entity4] = await collectionInDb('entities').find({ sharedId: 'entity4' }).toArray();
       const [entity1] = await collectionInDb('entities').find({ sharedId: 'entity1' }).toArray();
+      const [entity3] = await collectionInDb('entities').find({ sharedId: 'entity3' }).toArray();
+
       expect(entity4).toMatchObject({
         metadata: {
-          relProp: [{ value: 'entity1', label: 'entity1' }],
+          relProp: [
+            { value: 'entity1', label: 'entity1' },
+            { value: 'entity3', label: 'entity3' },
+          ],
         },
       });
       expect(entity1).toEqual(fixtures.entities[0]);
+      expect(entity3).toEqual(fixtures.entities[2]);
     });
   });
 
