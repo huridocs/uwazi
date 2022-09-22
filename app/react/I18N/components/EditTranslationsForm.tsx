@@ -70,9 +70,11 @@ const EditTranslationsFormComponent = ({
     mode: 'onSubmit',
   });
 
+  const submit = (values: ClientTranslationsSchema[]) => saveTranslations(values);
+
   return (
     <div className="EditTranslationForm">
-      <form onSubmit={handleSubmit(saveTranslations)}>
+      <form onSubmit={handleSubmit(submit)}>
         <div className="panel panel-default">
           <div className="panel-heading">
             <Translate>Translations</Translate> <Icon icon="angle-right" /> {contextLabel}
@@ -89,7 +91,7 @@ const EditTranslationsFormComponent = ({
                         ? translation.contexts[0].values[term]
                         : '';
                     return (
-                      <div className="form-group">
+                      <div className="form-group" key={translation.locale}>
                         <div className="input-group">
                           <span className="input-group-addon">{translation.locale}</span>
                           <input
