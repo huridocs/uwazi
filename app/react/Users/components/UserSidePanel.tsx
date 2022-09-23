@@ -37,7 +37,11 @@ export const UserSidePanel = ({
   const [selectedGroups, setSelectedGroups] = useState(
     user.groups ? user.groups.map(group => group._id!.toString()) : []
   );
-  const { register, handleSubmit, errors } = useForm({ defaultValues: user });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: user });
   const availableGroups = groups;
   const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
@@ -68,8 +72,8 @@ export const UserSidePanel = ({
       </div>
       <div className={`sidepanel-body ${user._id ? 'footer-extra-row' : ''}`}>
         <form id="userFrom" className="user-form" onSubmit={handleSubmit(saveUser)}>
-          <input type="hidden" name="_id" ref={register} />
-          <input type="hidden" name="using2fa" ref={register} />
+          <input type="hidden" {...register('_id')} />
+          <input type="hidden" {...register('using2fa')} />
 
           <div id="email_field" className="form-group nested-selector">
             <label>
@@ -79,8 +83,7 @@ export const UserSidePanel = ({
               type="email"
               className="form-control"
               autoComplete="off"
-              name="email"
-              ref={register({
+              {...register('email', {
                 required: true,
                 validate: isUnique,
                 maxLength: 256,
@@ -109,7 +112,7 @@ export const UserSidePanel = ({
                 <Icon icon="info-circle" />
               </button>
             </div>
-            <select name="role" className="form-control" ref={register}>
+            <select className="form-control" {...register('role')}>
               {userRoles.map((role: string) => (
                 <option key={role} value={role}>
                   {t('System', roleTranslationKey[role], null, false)}
@@ -125,8 +128,7 @@ export const UserSidePanel = ({
               type="text"
               className="form-control"
               autoComplete="off"
-              name="username"
-              ref={register({
+              {...register('username', {
                 required: true,
                 validate: isUnique,
                 maxLength: 50,
@@ -155,8 +157,7 @@ export const UserSidePanel = ({
               type="password"
               className="form-control"
               autoComplete="off"
-              name="password"
-              ref={register({ maxLength: 50 })}
+              {...register('password', { maxLength: 50 })}
             />
             {errors.password && (
               <div className="validation-error">

@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Settings } from 'shared/types/settingsType';
 import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
 import { ToggleButton } from 'app/UI';
@@ -53,27 +53,13 @@ const CollectionSettings = ({
     setValue,
     getValues,
     formState: { errors },
-  } = useForm({
+  } = useForm<Settings>({
+    // @ts-ignore
     defaultValues: collectionSettingsObject,
     mode: 'onSubmit',
   });
 
-  register('private');
-  register('openPublicEndpoint');
-  register('allowedPublicTemplates');
-  register('mapStartingPoint');
-  register('cookiepolicy');
-  register('newNameGeneration');
-  register('ocrServiceEnabled');
-  register('home_page', {
-    validate: (val: string) => validateHomePageRoute(val) || val === '',
-  });
-  register('tilesProvider');
-  register('mapApiKey', {
-    pattern: /^[a-zA-Z0-9._]+$/,
-  });
-
-  const save = async (newCollectionSettings: Settings) => {
+  const save: SubmitHandler<Settings> = async newCollectionSettings => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
@@ -99,7 +85,7 @@ const CollectionSettings = ({
           </h2>
 
           <SettingsFormElement label="Collection name">
-            <input type="text" name="site_name" ref={register} className="form-control" />
+            <input type="text" {...register('site_name')} className="form-control" />
           </SettingsFormElement>
 
           <SettingsFormElement label="Custom favicon" tip={tips.customFavIcon}>
@@ -109,7 +95,7 @@ const CollectionSettings = ({
                 setValue('favicon', '');
               }}
             >
-              <input type="text" name="favicon" ref={register} className="form-control" />
+              <input type="text" {...register('favicon')} className="form-control" />
             </ToggleChildren>
           </SettingsFormElement>
 
@@ -124,7 +110,14 @@ const CollectionSettings = ({
                 <span className="input-group-addon" id="basic-addon1">
                   <Translate>https://yourdomain</Translate>
                 </span>
-                <input type="text" className="form-control" name="home_page" ref={register} />
+                <input
+                  type="text"
+                  className="form-control"
+                  {...register('home_page', {
+                    validate: (val: string | undefined) =>
+                      validateHomePageRoute(val as string) || val === '',
+                  })}
+                />
               </div>
               <div className="has-error">
                 {errors.home_page && (
@@ -137,7 +130,7 @@ const CollectionSettings = ({
           </SettingsFormElement>
           <SettingsFormElement label="Default view">
             <div className="col-xs-12 col-lg-3 col-no-gutters">
-              <select name="defaultLibraryView" className="form-control" ref={register}>
+              <select className="form-control" {...register('defaultLibraryView')}>
                 <option value="cards">{t('System', 'Cards', null, false)}</option>
                 <option value="table">{t('System', 'Table', null, false)}</option>
                 <option value="map">{t('System', 'Map', null, false)}</option>
@@ -147,7 +140,7 @@ const CollectionSettings = ({
 
           <SettingsFormElement label="Date format">
             <div className="col-xs-12 col-lg-3 col-no-gutters">
-              <select name="dateFormat" className="form-control" ref={register}>
+              <select className="form-control" {...register('dateFormat')}>
                 <option value="yyyy/MM/dd">
                   2021/02/26 ({year}, {month}, {day})
                 </option>
@@ -193,7 +186,7 @@ const CollectionSettings = ({
               <ToggleButton
                 checked={Boolean(watch('newNameGeneration'))}
                 onClick={() => {
-                  setValue('newNameGeneration', !getValues('newNameGeneration'));
+                  setValue('newNameGeneration', getValues('newNameGeneration'));
                 }}
               />
             </SettingsFormElement>
@@ -210,12 +203,7 @@ const CollectionSettings = ({
                 setValue('analyticsTrackingId', '');
               }}
             >
-              <input
-                type="text"
-                name="analyticsTrackingId"
-                ref={register}
-                className="form-control"
-              />
+              <input type="text" {...register('analyticsTrackingId')} className="form-control" />
             </ToggleChildren>
           </SettingsFormElement>
 
@@ -226,7 +214,7 @@ const CollectionSettings = ({
                 setValue('matomoConfig', '');
               }}
             >
-              <input type="text" name="matomoConfig" ref={register} className="form-control" />
+              <input type="text" {...register('matomoConfig')} className="form-control" />
             </ToggleChildren>
           </SettingsFormElement>
 
@@ -258,14 +246,13 @@ const CollectionSettings = ({
               }}
             >
               <SettingsFormElement label="Receiving email" tip={tips.emails[1]}>
-                <input type="text" ref={register} name="contactEmail" className="form-control" />
+                <input type="text" {...register('contactEmail')} className="form-control" />
               </SettingsFormElement>
 
               <SettingsFormElement label="Sending email" tip={tips.emails[2]}>
                 <input
                   type="text"
-                  ref={register}
-                  name="senderEmail"
+                  {...register('senderEmail')}
                   placeholder="no-reply@uwazi.io"
                   className="form-control"
                 />
@@ -291,8 +278,7 @@ const CollectionSettings = ({
               >
                 <input
                   type="text"
-                  name="publicFormDestination"
-                  ref={register}
+                  {...register('publicFormDestination')}
                   className="form-control"
                 />
               </SettingsFormElement>
@@ -331,7 +317,7 @@ const CollectionSettings = ({
           </h2>
           <SettingsFormElement label="Map provider">
             <div className="col-xs-12 col-lg-3 col-no-gutters">
-              <select name="tilesProvider" className="form-control" ref={register}>
+              <select className="form-control" {...register('tilesProvider')}>
                 <option value="mapbox">{t('System', 'MapBox', null, false)}</option>
                 <option value="google">{t('System', 'Google Maps', null, false)}</option>
               </select>
@@ -339,7 +325,11 @@ const CollectionSettings = ({
           </SettingsFormElement>
           <div className={`${errors.mapApiKey ? 'has-error' : ''}`}>
             <SettingsFormElement label="Map api key" tip={tips.mapApiKey}>
-              <input type="text" name="mapApiKey" ref={register} className="form-control" />
+              <input
+                type="text"
+                {...register('mapApiKey', { pattern: /^[a-zA-Z0-9._]+$/ })}
+                className="form-control"
+              />
             </SettingsFormElement>
           </div>
           <SettingsFormElement label="Custom starting location" tip={tips.mapAxis}>

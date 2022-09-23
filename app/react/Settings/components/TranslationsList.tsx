@@ -15,19 +15,25 @@ import { TranslationContext, TranslationType } from 'shared/translationType';
 const TranslationCtx = ({ context }: { context: TranslationContext }) => (
   <>
     <div>
-      <span className="item-type item-type-empty">
-        <span className="item-type__name">{context.type}</span>
-      </span>
-      <I18NLink to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}>
-        {context.label}
-      </I18NLink>
+      {context.type && (
+        <span className="item-type item-type-empty">
+          <span className="item-type__name">
+            <Translate>{context.type}</Translate>
+          </span>
+        </span>
+      )}
+      {context.label && (
+        <I18NLink to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}>
+          <Translate>{context.label}</Translate>
+        </I18NLink>
+      )}
     </div>
     <div className="list-group-item-actions">
       <I18NLink
         to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}
         className="btn btn-default btn-xs"
       >
-        <Icon icon="language" /> {t('System', 'Translate')}
+        <Icon icon="language" /> <Translate>Translate</Translate>
       </I18NLink>
     </div>
   </>

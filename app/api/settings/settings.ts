@@ -7,6 +7,7 @@ import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commo
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
+import { ContextType } from 'shared/translationSchema';
 import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
@@ -80,7 +81,7 @@ const saveLinksTranslations = async (
     updatedValues,
     deletedValues,
     values,
-    'Uwazi UI'
+    ContextType.uwaziUI
   );
 };
 
@@ -107,7 +108,7 @@ const saveFiltersTranslations = async (
     updatedValues,
     deletedValues,
     values,
-    'Uwazi UI'
+    ContextType.uwaziUI
   );
 };
 
