@@ -13,7 +13,7 @@ import { EditTranslationsForm } from '../EditTranslationsForm';
 describe('EditTranslationForm', () => {
   let translations: IImmutable<ClientTranslationsSchema[]>;
 
-  const render = () => {
+  const render = (context: string) => {
     const store = {
       ...defaultState,
       translations,
@@ -27,11 +27,11 @@ describe('EditTranslationForm', () => {
       },
     };
 
-    renderConnectedContainer(<EditTranslationsForm context="System" />, () => store);
+    renderConnectedContainer(<EditTranslationsForm context={context} />, () => store);
   };
 
   beforeEach(() => {
-    jest.spyOn(actions, 'saveTranslations').mockImplementation(() => ({ type: 'save' }));
+    jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
 
     translations = Immutable.fromJS([
       {
@@ -85,28 +85,29 @@ describe('EditTranslationForm', () => {
 
   describe('Render', () => {
     it('should render a form with fields for each value and each language', () => {
-      render();
+      render('System');
       expect(screen.getByText('Home')).toBeInTheDocument();
       expect(screen.getByText('Search')).toBeInTheDocument();
       expect(screen.getByText('Library')).toBeInTheDocument();
     });
 
     it('should render fields alphabetically', () => {
-      render();
+      render('System');
       const fields = screen.getAllByRole('heading');
       expect(fields[0].textContent).toBe('Home');
       expect(fields[1].textContent).toBe('Library');
       expect(fields[2].textContent).toBe('Search');
     });
 
-    it('should list the default language first in the group', () => {});
-
-    it('should only show the import translations button for the System context', () => {});
+    it('should only show the import translations button for the System context', () => {
+      render('5bfbb1a0471dd0fc16ada146');
+      expect(screen.queryByText('Import')).not.toBeInTheDocument();
+    });
   });
 
   describe('submit', () => {
     it('should call saveTranslations updating the changed value', async () => {
-      render();
+      render('System');
       const inputField = screen.getByDisplayValue('Principal');
       const submitButton = screen.getByText('Save').parentElement!;
 

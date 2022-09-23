@@ -12,13 +12,15 @@ import { SelectFileButton } from 'app/App/SelectFileButton';
 const prepateTranslations = (
   translations: IImmutable<ClientTranslationsSchema[]>,
   context: string
-) =>
-  translations.toJS().map((translation: ClientTranslationsSchema) => {
+) => {
+  const preparedTranslations = translations.toJS().map((translation: ClientTranslationsSchema) => {
     const translationsForContext = translation.contexts?.filter(
       translationContext => translationContext?.id === context
     );
     return { ...translation, contexts: translationsForContext };
   });
+  return preparedTranslations;
+};
 
 const importButton = (action: () => any) => (
   <SelectFileButton onFileImported={action}>
@@ -33,7 +35,6 @@ const importButton = (action: () => any) => (
 
 const mapStateToProps = (state: IStore) => ({
   translations: state.translations,
-  settings: state.settings,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -52,18 +53,12 @@ type mappedProps = ConnectedProps<typeof connector> & { context: string };
 const EditTranslationsFormComponent = ({
   context,
   translations,
-  settings,
   saveTranslations,
   importTranslations,
 }: mappedProps) => {
   const preparedTranslations = prepateTranslations(translations, context);
   const contextLabel = preparedTranslations[0].contexts[0].label;
   const contextTerms = Object.keys(preparedTranslations[0].contexts[0].values);
-
-  const defaultLanguage = settings.collection
-    .get('languages')
-    ?.find(language => language?.get('default') === true)
-    .get('key');
 
   const { register, handleSubmit } = useForm({
     defaultValues: preparedTranslations,
