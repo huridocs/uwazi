@@ -17,8 +17,8 @@ import CSVExporter, {
   translateCommonHeaders,
 } from '../csvExporter';
 import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures';
-import * as formatters from '../typeFormatters';
 
+const hostname = 'cejil.uwazi.io';
 describe('csvExporter', () => {
   describe('getTypes', () => {
     it('should return the whitelist if provided', () => {
@@ -237,6 +237,7 @@ describe('csvExporter', () => {
         'title',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
       expect(formatted).toBe(searchResults.rows[0].title);
@@ -247,6 +248,7 @@ describe('csvExporter', () => {
         'template',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -267,6 +269,7 @@ describe('csvExporter', () => {
             'creationDate',
             { ...searchResults.rows[0], creationDate: timestamp },
             testTemplates['58ad7d240d44252fee4e61fd'],
+            hostname,
             options
           );
 
@@ -281,6 +284,7 @@ describe('csvExporter', () => {
         'geolocation',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -292,6 +296,7 @@ describe('csvExporter', () => {
         'documents',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -303,12 +308,11 @@ describe('csvExporter', () => {
         'attachments',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
       // TODO aquí hay que tocar
-      expect(formatted).toBe(
-        '/api/attachments/download?_id=58ad7d250d44252fee4e62f4&file=16636666131855z23xqq4fd8.csv'
-      );
+      expect(formatted).toBe('https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv');
     });
 
     it('should return the published field processed', () => {
@@ -316,6 +320,7 @@ describe('csvExporter', () => {
         'published',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -328,6 +333,7 @@ describe('csvExporter', () => {
         'published',
         unpublishedEntity,
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -339,6 +345,7 @@ describe('csvExporter', () => {
         'unsupported',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
@@ -357,7 +364,7 @@ describe('csvExporter', () => {
       nonTemplateEntity.template = 'invalidTemplate';
 
       expect(() => {
-        processEntity(nonTemplateEntity, [], testTemplates, options);
+        processEntity(nonTemplateEntity, [], testTemplates, hostname, options);
       }).toThrow();
     });
 
@@ -370,7 +377,13 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
       expect(formatted).toEqual(['Star Lord  Wikipedia']);
     });
@@ -384,7 +397,13 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
       expect(formatted).toEqual(['']);
     });
@@ -399,7 +418,13 @@ describe('csvExporter', () => {
       ];
 
       const propertyBackup = testTemplates['58ad7d240d44252fee4e61fd'].properties.shift();
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
       testTemplates['58ad7d240d44252fee4e61fd'].properties.unshift(propertyBackup);
 
       expect(formatted).toEqual(['']);
@@ -419,7 +444,13 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
       expect(formatted).toEqual(['Marvel', 'Thanos']);
     });
@@ -441,7 +472,13 @@ describe('csvExporter', () => {
       const typeBackup = testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type;
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = 'nested';
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = typeBackup;
 
@@ -458,7 +495,7 @@ describe('csvExporter', () => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
 
-      await exporter.export(searchResults, writeMock, []);
+      await exporter.export(searchResults, writeMock, hostname, []);
 
       const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
       expect(exported).toEqual(csvExample);

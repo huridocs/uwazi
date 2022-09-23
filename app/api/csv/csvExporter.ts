@@ -126,6 +126,7 @@ export const processCommonField = (
   headerName: string,
   row: any,
   rowTemplate: TemplateSchema,
+  hostname: string,
   options: any
 ) => {
   switch (headerName) {
@@ -140,7 +141,7 @@ export const processCommonField = (
     case 'documents':
       return formatDocuments(row);
     case 'attachments':
-      return formatAttachments(row);
+      return formatAttachments(row, hostname);
     case 'published':
       return row.published ? 'Published' : 'Unpublished';
     default:
@@ -165,6 +166,7 @@ export const processEntity = (
   row: EntitySchema,
   headers: ExportHeader[],
   templatesCache: TemplatesCache,
+  hostname: string,
   options: ExporterOptions
 ) => {
   if (!row.template) {
@@ -179,7 +181,7 @@ export const processEntity = (
 
   return headers.map((header: ExportHeader) => {
     if (header.common) {
-      return processCommonField(header.name, row, rowTemplate, options);
+      return processCommonField(header.name, row, rowTemplate, hostname, options);
     }
 
     if (!row.metadata?.[header.name]) {
@@ -219,7 +221,7 @@ export default class CSVExporter extends EventEmitter {
       csvStream.write(headers.map((h: any) => h.label));
 
       searchResults.rows.forEach(row => {
-        csvStream.write(processEntity(row, headers, templatesCache, options));
+        csvStream.write(processEntity(row, headers, templatesCache, hostname, options));
         this.emit('entityProcessed');
       });
 
