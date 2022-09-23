@@ -1,12 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
-import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
+import api from 'app/utils/api';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import PublicForm from '../PublicForm';
 
 describe('PublicForm', () => {
@@ -43,11 +43,43 @@ describe('PublicForm', () => {
       submit,
       remote: false,
     };
+    const state = {
+      entityView: {
+        entity: Immutable.fromJS({
+          sharedId: 'entity1',
+          templatedId: 'template1',
+          title: 'Entity 1',
+          attachments: [],
+          metadata: [{ text: [] }],
+        }),
+        entityForm: { attachments: [] },
+      },
+      settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
+      templates: Immutable.fromJS([
+        {
+          name: 'template1',
+          _id: 'templateId',
+          properties: [],
+          commonProperties: [{ name: 'title', label: 'Title' }],
+        },
+      ]),
+    };
     const mappedProps = { ...props, ...customProps };
-    component = shallow(<PublicForm.WrappedComponent {...mappedProps} />);
+    spyOn(api, 'get').and.returnValue(
+      Promise.resolve({
+        json: {
+          data: [
+            { title: 'Southern Nights', documents: [], attachments: [] },
+            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+          ],
+        },
+      })
+    );
+
+    component = renderConnectedMount(PublicForm.WrappedComponent, state, mappedProps, true);
     instance = component.instance();
-    instance.refreshCaptcha = jasmine.createSpy('refreshCaptcha');
-    instance.formDispatch = jasmine.createSpy('formDispatch');
+    instance.refreshCaptcha = jest.fn();
+    instance.formDispatch = jest.fn();
   };
 
   it('should render a form', () => {
@@ -58,6 +90,8 @@ describe('PublicForm', () => {
   it('should bind the MetadataFormFields change to this form', () => {
     render();
     const metadataFormFields = component.find(MetadataFormFields);
+    const localForm = component.find(LocalForm);
+    localForm.props().getDispatch(instance.formDispatch);
     metadataFormFields.props().boundChange('publicForm.title', 'New Title');
 
     expect(instance.formDispatch).toHaveBeenCalledWith(
@@ -154,7 +188,6 @@ describe('PublicForm', () => {
     });
     const attachments = component.find('.preview-title');
     expect(attachments.length).toEqual(0);
-
     component.find(Dropzone).simulate('drop', [newFile]);
     await formSubmit({ title: 'test' });
     request.then(uploadCompletePromise => {

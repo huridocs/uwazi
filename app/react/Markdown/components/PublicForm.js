@@ -127,7 +127,13 @@ class PublicForm extends Component {
               <Dropzone
                 onDrop={this.fileDropped}
                 className="dropzone"
-                accept={id === 'file' ? '.pdf' : undefined}
+                accept={
+                  id === 'file'
+                    ? {
+                        'application/pdf': ['.pdf'],
+                      }
+                    : undefined
+                }
               >
                 {({ getRootProps }) => (
                   <div {...getRootProps()}>
