@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
+import { Captcha } from 'app/ReactReduxForms';
 import api from 'app/utils/api';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import PublicForm from '../PublicForm';
@@ -113,6 +114,7 @@ describe('PublicForm', () => {
     const formSubmit = component.find(LocalForm).props().onSubmit;
     await formSubmit({ title: 'test' });
 
+    component.update();
     const title1 = component.find('#title').at(0);
     expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
     expect(title1).not.toEqual(title);
@@ -148,14 +150,19 @@ describe('PublicForm', () => {
 
   it('should refresh the captcha and clear the form after submit', async () => {
     render();
+    const localForm = component.find(LocalForm);
+    const captcha = component.find(Captcha);
+    captcha.props().refresh = instance.refreshCaptcha;
     const formSubmit = component.find(LocalForm).props().onSubmit;
+    localForm.props().getDispatch(instance.formDispatch);
     await formSubmit({ title: 'test' });
+    captcha.props().refresh(instance.refreshCaptcha);
 
+    expect(instance.refreshCaptcha).toHaveBeenCalled();
     expect(instance.formDispatch).toHaveBeenCalledWith({
       model: 'publicform',
       type: 'rrf/reset',
     });
-    expect(instance.refreshCaptcha).toHaveBeenCalled();
   });
 
   it('should refresh captcha and NOT clear the form on submission error', async () => {
@@ -190,6 +197,7 @@ describe('PublicForm', () => {
     expect(attachments.length).toEqual(0);
     component.find(Dropzone).simulate('drop', [newFile]);
     await formSubmit({ title: 'test' });
+
     request.then(uploadCompletePromise => {
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
