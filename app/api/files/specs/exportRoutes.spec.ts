@@ -64,6 +64,7 @@ describe('export routes', () => {
           next();
         }
       );
+      // @ts-ignore
       jest.spyOn(search, 'search').mockResolvedValueOnce({ rows: ['searchresults'] });
       jest.spyOn(filesystem, 'temporalFilesPath').mockReturnValueOnce('exportRutesTest-A.csv');
 
