@@ -10,8 +10,8 @@ export const formatDate = (timestamp: number, format: string = defaultDateFormat
 
 export const formatFile = (fileName: string) => `/files/${fileName}`;
 
-export const formatAttachment = (fileName: string, entityId: string) =>
-  `/api/attachments/download?_id=${entityId}&file=${fileName}`;
+export const formatAttachment = (fileName: string, hostname: string) =>
+  `https://${hostname}/api/files/${fileName}`;
 
 const formatRelationship = (field: MetadataObjectSchema[]) =>
   field
@@ -61,7 +61,7 @@ export const formatters: {
 
 export const formatDocuments = (row: any) =>
   (row.documents || []).map((item: any) => formatFile(item.filename)).join('|');
-export const formatAttachments = (row: any) =>
-  (row.attachments || []).map((item: any) => formatAttachment(item.filename, row._id)).join('|');
+export const formatAttachments = (row: any, hostname: string) =>
+  (row.attachments || []).map((item: any) => formatAttachment(item.filename, hostname)).join('|');
 export const formatCreationDate = (row: any, options: FormatterOptions) =>
   moment(row.creationDate).format(mapFormatToMoment(options.dateFormat || defaultDateFormat));

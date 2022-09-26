@@ -16,21 +16,9 @@ jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
 
-function assertDownloaded(res: any) {
-  expect(res.header['content-type'].match(/text\/csv/)).not.toBe(null);
-  expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
-}
-
-function assertExport(mockCall: any, searchResults: any, types: any, options: any) {
-  expect(mockCall[0]).toEqual(searchResults);
-  expect(mockCall[1] instanceof Writable).toBe(true);
-  expect(mockCall[2]).toEqual(types);
-  expect(mockCall[3]).toEqual(options);
-}
-
 describe('export routes', () => {
   describe('/api/export', () => {
-    let exportMock: any;
+    let exportMock: jest.Mock;
 
     beforeEach(async () => {
       const fixtures = {
@@ -65,9 +53,8 @@ describe('export routes', () => {
 
     const fakeRequestAugmenterMiddleware =
       (user: User, language: string) => (req: Request, _res: Response, next: NextFunction) => {
-        (req as any).user = user;
-        (req as any).language = language;
-
+        req.user = user;
+        req.language = language;
         next();
       };
 
@@ -77,24 +64,30 @@ describe('export routes', () => {
           next();
         }
       );
-      spyOn(search, 'search').and.returnValue({ rows: ['searchresults'] });
-      spyOn(filesystem, 'temporalFilesPath').and.returnValue('exportRutesTest-A.csv');
+      // @ts-ignore
+      jest.spyOn(search, 'search').mockResolvedValueOnce({ rows: ['searchresults'] });
+      jest.spyOn(filesystem, 'temporalFilesPath').mockReturnValueOnce('exportRutesTest-A.csv');
 
       const app = setUpApp(
         routes,
         fakeRequestAugmenterMiddleware({ username: 'someuser' }, 'somelanguage')
       );
 
-      const res = await request(app).get('/api/export').set('cookie', 'locale=es').query({
-        filters: '',
-        types: '["types"]',
-        fields: '',
-        aggregations: '',
-        select: '',
-        unpublished: '',
-        includeUnpublished: '',
-      });
-      assertDownloaded(res);
+      const res = await request(app)
+        .get('/api/export')
+        .set('cookie', 'locale=es')
+        .set('host', 'cejil.uwazi.io')
+        .query({
+          filters: '',
+          types: '["types"]',
+          fields: '',
+          aggregations: '',
+          select: '',
+          unpublished: '',
+          includeUnpublished: '',
+        });
+      expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
+      expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(
         {
           filters: '',
@@ -108,7 +101,11 @@ describe('export routes', () => {
         'somelanguage',
         { username: 'someuser' }
       );
-      assertExport(exportMock.mock.calls[0], { rows: ['searchresults'] }, ['types'], {
+      expect(exportMock.mock.calls[0][0]).toEqual({ rows: ['searchresults'] });
+      expect(exportMock.mock.calls[0][1] instanceof Writable).toBe(true);
+      expect(exportMock.mock.calls[0][2]).toEqual('cejil.uwazi.io');
+      expect(exportMock.mock.calls[0][3]).toEqual(['types']);
+      expect(exportMock.mock.calls[0][4]).toEqual({
         dateFormat: 'yyyy-MM-dd',
         language: 'somelanguage',
       });
