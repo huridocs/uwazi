@@ -6,10 +6,11 @@ import { connect } from 'react-redux';
 import { t } from 'app/I18N';
 
 import ConnectionsGroup from './ConnectionsGroup';
+import { LibraryViewRelationships } from './LibraryViewRelationships';
 
 class ConnectionsGroupsComponent extends Component {
   render() {
-    const { connectionsGroups } = this.props;
+    const { connectionsGroups, expanded } = this.props;
 
     let Results = (
       <div className="blank-state">
@@ -20,30 +21,41 @@ class ConnectionsGroupsComponent extends Component {
     );
 
     if (connectionsGroups.size) {
-      Results = (
-        <div>
-          <div className="nested-selector">
-            <ul className="multiselect is-active">
-              {connectionsGroups.map(group => (
-                <ConnectionsGroup key={group.get('key')} group={group} />
-              ))}
-            </ul>
+      if (this.props.sidePanelTrigger === 'library') {
+        Results = <LibraryViewRelationships expanded={expanded} />;
+      } else {
+        Results = (
+          <div>
+            <div className="nested-selector">
+              <ul className="multiselect is-active">
+                {connectionsGroups.map(group => (
+                  <ConnectionsGroup key={group.get('key')} group={group} />
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     }
 
     return Results;
   }
 }
 
-ConnectionsGroupsComponent.propTypes = {
-  connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
+ConnectionsGroupsComponent.defaultProps = {
+  expanded: false,
 };
 
-function mapStateToProps({ relationships }) {
+ConnectionsGroupsComponent.propTypes = {
+  connectionsGroups: PropTypes.instanceOf(Immutable.List).isRequired,
+  sidePanelTrigger: PropTypes.string.isRequired,
+  expanded: PropTypes.bool,
+};
+
+function mapStateToProps({ relationships, library }) {
   return {
     connectionsGroups: relationships.list.connectionsGroups,
+    sidePanelTrigger: library.sidepanel.view,
   };
 }
 

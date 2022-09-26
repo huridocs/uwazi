@@ -1,4 +1,4 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
+import { WithId } from 'api/odm';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
@@ -7,10 +7,11 @@ import settings from '../settings';
 import fixtures from './fixtures.js';
 
 describe('settings', () => {
-  beforeEach(done => {
-    spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve('ok'));
-    spyOn(Suggestions, 'deleteByProperty').and.callFake(async () => Promise.resolve('ok'));
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    jest.restoreAllMocks();
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
+    jest.spyOn(Suggestions, 'deleteByProperty').mockImplementation(async () => Promise.resolve());
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -18,32 +19,22 @@ describe('settings', () => {
   });
 
   describe('save()', () => {
-    it('should save the settings', done => {
+    it('should save the settings', async () => {
       const config = { site_name: 'My collection' };
-      settings
-        .save(config)
-        .then(async () => settings.save({ custom: { customNested: 'data' } }))
-        .then(async () => settings.get())
-        .then(result => {
-          expect(result.site_name).toBe('My collection');
-          expect(typeof result.custom === 'object' && result.custom.customNested).toBe('data');
-          done();
-        })
-        .catch(catchErrors(done));
+      await settings.save(config);
+      await settings.save({ custom: { customNested: 'data' } });
+      const result = await settings.get();
+      expect(result.site_name).toBe('My collection');
+      expect(typeof result.custom === 'object' && result.custom.customNested).toBe('data');
     });
 
-    it('should return the updated settings', done => {
+    it('should return the updated settings', async () => {
       const config = { site_name: 'New settings' };
 
-      settings
-        .save(config)
-        .then(createdDocument => {
-          expect(createdDocument.site_name).toBe(config.site_name);
-          expect(createdDocument.allowedPublicTemplates?.[0]).toBe('id1');
-          expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
-          done();
-        })
-        .catch(catchErrors(done));
+      const createdDocument = await settings.save(config);
+      expect(createdDocument.site_name).toBe(config.site_name);
+      expect(createdDocument.allowedPublicTemplates?.[0]).toBe('id1');
+      expect(createdDocument.allowedPublicTemplates?.[1]).toBe('id2');
     });
 
     describe('when there are Links', () => {
@@ -53,22 +44,18 @@ describe('settings', () => {
         config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
       });
 
-      it('should create a translation context for the passed links', done => {
-        settings
-          .save(config)
-          .then(() => {
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              'Menu',
-              'Menu',
-              {},
-              [],
-              { 'Page one': 'Page one' },
-              'Uwazi UI'
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should create a translation context for the passed links', async () => {
+        await settings.save(config);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          'Menu',
+          'Menu',
+          {},
+          [],
+          { 'Page one': 'Page one' },
+          'Uwazi UI'
+        );
       });
+
       it('should create a translation context for passed links with sublinks', async () => {
         config.links = config.links || [];
         config.links[0].type = 'group';
@@ -85,34 +72,25 @@ describe('settings', () => {
       });
 
       describe('updating the links', () => {
-        it('should update the translation context for the links', done => {
+        it('should update the translation context for the links', async () => {
           config.links = config.links || [];
           config.links.push({ title: 'Page two' });
-          settings
-            .save(config)
-            .then(async savedConfig => {
-              config = {
-                site_name: 'My collection',
-                links: [
-                  { title: 'Page 1', _id: savedConfig.links?.[0]._id },
-                  { title: 'Page three' },
-                ],
-              };
-              return settings.save(config);
-            })
-            .then(() => {
-              expect(translations.updateContext).toHaveBeenCalledWith(
-                'Menu',
-                'Menu',
-                { 'Page one': 'Page 1' },
-                ['Page two'],
-                { 'Page 1': 'Page 1', 'Page three': 'Page three' },
-                'Uwazi UI'
-              );
-              done();
-            })
-            .catch(catchErrors(done));
+          const savedConfig = await settings.save(config);
+          config = {
+            site_name: 'My collection',
+            links: [{ title: 'Page 1', _id: savedConfig.links?.[0]._id }, { title: 'Page three' }],
+          };
+          await settings.save(config);
+          expect(translations.updateContext).toHaveBeenCalledWith(
+            'Menu',
+            'Menu',
+            { 'Page one': 'Page 1' },
+            ['Page two'],
+            { 'Page 1': 'Page 1', 'Page three': 'Page three' },
+            'Uwazi UI'
+          );
         });
+
         it('should update the translation context for the links with sublinks', async () => {
           config.links = config.links || [];
           config.links.push({
@@ -140,7 +118,7 @@ describe('settings', () => {
     });
 
     describe('when there are filter groups', () => {
-      it('should create translations for them', done => {
+      it('should create translations for them', async () => {
         const config: Settings = {
           site_name: 'My collection',
           filters: [
@@ -148,23 +126,18 @@ describe('settings', () => {
             { id: '2', name: 'Documents', items: [{ id: '3', name: 'Cause' }] },
           ],
         };
-        settings
-          .save(config)
-          .then(() => {
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              'Filters',
-              'Filters',
-              {},
-              [],
-              { Documents: 'Documents' },
-              'Uwazi UI'
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+        await settings.save(config);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          'Filters',
+          'Filters',
+          {},
+          [],
+          { Documents: 'Documents' },
+          'Uwazi UI'
+        );
       });
 
-      it('should update them', done => {
+      it('should update them', async () => {
         let config = {
           site_name: 'My collection',
           filters: [
@@ -173,32 +146,23 @@ describe('settings', () => {
             { id: '3', name: 'Files', items: [] },
           ],
         };
-        settings
-          .save(config)
-          .then(async () => {
-            config = {
-              site_name: 'My collection',
-              filters: [
-                { id: '1', name: 'Judge' },
-                { id: '2', name: 'Important Documents', items: [] },
-              ],
-            };
-            //@ts-ignore
-            translations.updateContext.calls.reset();
-            return settings.save(config);
-          })
-          .then(() => {
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              'Filters',
-              'Filters',
-              { Documents: 'Important Documents' },
-              ['Files'],
-              { 'Important Documents': 'Important Documents' },
-              'Uwazi UI'
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+        await settings.save(config);
+        config = {
+          site_name: 'My collection',
+          filters: [
+            { id: '1', name: 'Judge' },
+            { id: '2', name: 'Important Documents', items: [] },
+          ],
+        };
+        await settings.save(config);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          'Filters',
+          'Filters',
+          { Documents: 'Important Documents' },
+          ['Files'],
+          { 'Important Documents': 'Important Documents' },
+          'Uwazi UI'
+        );
       });
     });
 
@@ -245,42 +209,27 @@ describe('settings', () => {
   });
 
   describe('setDefaultLanguage()', () => {
-    it('should save the settings with the new default language', done => {
-      settings
-        .setDefaultLanguage('en')
-        .then(async () => settings.get())
-        .then(result => {
-          expect(result.languages?.[1].key).toBe('en');
-          expect(result.languages?.[1].default).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should save the settings with the new default language', async () => {
+      await settings.setDefaultLanguage('en');
+      const result = await settings.get();
+      expect(result.languages?.[1].key).toBe('en');
+      expect(result.languages?.[1].default).toBe(true);
     });
   });
 
   describe('addLanguage()', () => {
-    it('should add a to settings list language', done => {
-      settings
-        .addLanguage({ key: 'fr', label: 'Frances' })
-        .then(async () => settings.get())
-        .then(result => {
-          expect(result.languages?.length).toBe(3);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should add a to settings list language', async () => {
+      await settings.addLanguage({ key: 'fr', label: 'Frances' });
+      const result = await settings.get();
+      expect(result.languages?.length).toBe(3);
     });
   });
 
   describe('deleteLanguage()', () => {
-    it('should add a to settings list language', done => {
-      settings
-        .deleteLanguage('en')
-        .then(async () => settings.get())
-        .then(result => {
-          expect(result.languages?.length).toBe(1);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should add a to settings list language', async () => {
+      await settings.deleteLanguage('en');
+      const result = await settings.get();
+      expect(result.languages?.length).toBe(1);
     });
   });
 
@@ -295,8 +244,10 @@ describe('settings', () => {
           },
         ],
       };
-      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
-      spyOn(settings, 'save');
+      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
+      jest
+        .spyOn(settings, 'save')
+        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
       await settings.removeTemplateFromFilters('123');
       expect(settings.save).toHaveBeenCalledWith({ filters: [{ id: 'axz', items: [] }] });
     });
@@ -308,20 +259,26 @@ describe('settings', () => {
     };
 
     it('should update a filter name', async () => {
-      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
-      spyOn(settings, 'save').and.callFake(async () => Promise.resolve('updatedSettings'));
+      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
+      jest
+        .spyOn(settings, 'save')
+        .mockImplementation(async () =>
+          Promise.resolve({ project: 'updatedSettings' } as WithId<Settings>)
+        );
 
       const updatedFilter = await settings.updateFilterName('123', 'The dark knight');
 
       expect(settings.save).toHaveBeenCalledWith({
         filters: [{ id: '123', name: 'The dark knight' }],
       });
-      expect(updatedFilter).toEqual('updatedSettings');
+      expect(updatedFilter?.project).toEqual('updatedSettings');
     });
 
     it('should do nothing when filter does not exist', async () => {
-      spyOn(settings, 'get').and.callFake(async () => Promise.resolve(_settings));
-      spyOn(settings, 'save').and.callFake(async () => Promise.resolve('updatedSettings'));
+      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve(_settings));
+      jest
+        .spyOn(settings, 'save')
+        .mockImplementation(async () => Promise.resolve({} as WithId<Settings>));
 
       const updatedFilter = await settings.updateFilterName('321', 'Filter not present');
 
