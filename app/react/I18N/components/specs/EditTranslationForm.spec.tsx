@@ -6,12 +6,12 @@ import Immutable from 'immutable';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { IImmutable } from 'shared/types/Immutable';
-import { ClientTranslationsSchema } from 'app/istore';
+import { ClientTranslationSchema } from 'app/istore';
 import { actions } from 'app/I18N';
 import { EditTranslationsForm } from '../EditTranslationsForm';
 
 describe('EditTranslationForm', () => {
-  let translations: IImmutable<ClientTranslationsSchema[]>;
+  let translations: IImmutable<ClientTranslationSchema[]>;
 
   const render = (context: string) => {
     const store = {
@@ -99,7 +99,7 @@ describe('EditTranslationForm', () => {
       expect(fields[2].textContent).toBe('Search');
     });
 
-    it('should only show the import translations button for the System context', () => {
+    it('should not show the import translations button for contexts that are not System', () => {
       render('5bfbb1a0471dd0fc16ada146');
       expect(screen.queryByText('Import')).not.toBeInTheDocument();
     });

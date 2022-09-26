@@ -1,19 +1,20 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { IImmutable } from 'shared/types/Immutable';
-import { ClientTranslationsSchema, IStore } from 'app/istore';
+import { ClientTranslationSchema, IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'app/UI';
 import { actions, Translate, I18NLink } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
 
 const prepateTranslations = (
-  translations: IImmutable<ClientTranslationsSchema[]>,
+  translations: IImmutable<ClientTranslationSchema[]>,
   context: string
-) => {
-  const preparedTranslations = translations.toJS().map((translation: ClientTranslationsSchema) => {
+): ClientTranslationSchema[] => {
+  const preparedTranslations = translations.toJS().map((translation: ClientTranslationSchema) => {
     const translationsForContext = translation.contexts?.filter(
       translationContext => translationContext?.id === context
     );
@@ -57,15 +58,16 @@ const EditTranslationsFormComponent = ({
   importTranslations,
 }: mappedProps) => {
   const preparedTranslations = prepateTranslations(translations, context);
-  const contextLabel = preparedTranslations[0].contexts[0].label;
-  const contextTerms = Object.keys(preparedTranslations[0].contexts[0].values);
+  const contextLabel = preparedTranslations?.[0].contexts?.[0].label;
+  const contextTerms = Object.keys(preparedTranslations?.[0].contexts?.[0].values || {});
 
   const { register, handleSubmit } = useForm({
-    defaultValues: preparedTranslations,
+    defaultValues: { formValues: preparedTranslations },
     mode: 'onSubmit',
   });
 
-  const submit = (values: ClientTranslationsSchema[]) => saveTranslations(values);
+  const submit = (values: { formValues: ClientTranslationSchema[] }) =>
+    saveTranslations(values.formValues);
 
   return (
     <div className="EditTranslationForm">
@@ -79,27 +81,18 @@ const EditTranslationsFormComponent = ({
             {contextTerms.sort().map(term => (
               <li key={term} className="list-group-item">
                 <h5>{term}</h5>
-                {preparedTranslations.map(
-                  (translation: ClientTranslationsSchema, index: number) => {
-                    const defaultValue =
-                      translation.contexts && translation.contexts[0].values
-                        ? translation.contexts[0].values[term]
-                        : '';
-                    return (
-                      <div className="form-group" key={translation.locale}>
-                        <div className="input-group">
-                          <span className="input-group-addon">{translation.locale}</span>
-                          <input
-                            className="form-control"
-                            type="text"
-                            defaultValue={defaultValue}
-                            {...register(`[${index}].contexts[0].values[${term}]`)}
-                          />
-                        </div>
-                      </div>
-                    );
-                  }
-                )}
+                {preparedTranslations.map((translation: ClientTranslationSchema, index: number) => (
+                  <div className="form-group" key={translation.locale}>
+                    <div className="input-group">
+                      <span className="input-group-addon">{translation.locale}</span>
+                      <input
+                        className="form-control"
+                        type="text"
+                        {...register(`formValues.${index}.contexts.0.values.${term}`)}
+                      />
+                    </div>
+                  </div>
+                ))}
               </li>
             ))}
           </ul>

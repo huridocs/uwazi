@@ -36,12 +36,12 @@ interface RelationshipTypesType {
   name: string;
 }
 
-interface ClientTranslationsContextSchema extends Omit<TranslationContext, 'values'> {
+interface ClientTranslationContextSchema extends Omit<TranslationContext, 'values'> {
   values?: { [key: string]: string };
 }
 
-export interface ClientTranslationsSchema extends Omit<TranslationType, 'contexts'> {
-  contexts?: ClientTranslationsContextSchema[];
+export interface ClientTranslationSchema extends Omit<TranslationType, 'contexts'> {
+  contexts?: ClientTranslationContextSchema[];
 }
 
 export interface ClientPropertySchema extends PropertySchema {
@@ -178,5 +178,5 @@ export interface IStore {
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
-  translations: IImmutable<ClientTranslationsSchema[]>;
+  translations: IImmutable<ClientTranslationSchema[]>;
 }
