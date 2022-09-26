@@ -6,7 +6,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { difference } from 'lodash';
 import { Icon } from 'UI';
 import { I18NLink, t, Translate } from 'app/I18N';
-import { ClientTranslationsSchema, IStore } from 'app/istore';
+import { ClientTranslationSchema, IStore } from 'app/istore';
 import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { IImmutable } from 'shared/types/Immutable';
@@ -51,7 +51,7 @@ type MappedProps = ConnectedProps<typeof connector>;
 
 const TranslationsList = ({ languages, translations }: MappedProps) => {
   const defaultLanguage = languages!.find(lang => lang!.get('default') === true).get('key');
-  const trans: IImmutable<ClientTranslationsSchema[]> = translations || fromJS([]);
+  const trans: IImmutable<ClientTranslationSchema[]> = translations || fromJS([]);
 
   const defaultTranslationContexts = trans
     .find(translation => translation!.get('locale') === defaultLanguage)!
