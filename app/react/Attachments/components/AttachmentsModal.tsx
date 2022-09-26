@@ -101,6 +101,7 @@ const AttachmentsModalCmp = ({
             <TabContent for="uploadComputer" className="tab-content centered">
               <Dropzone noClick onDrop={handleDropFiles} multiple={false}>
                 {({ getRootProps }) => (
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()} className="attachments-modal__dropzone">
                     {getPercentage === undefined ? (
                       <>

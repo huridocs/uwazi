@@ -69,33 +69,6 @@ class PublicForm extends Component {
     this.state = { submiting: false, files: [], generatedIdTitle };
   }
 
-  async removeAttachment(removedFile) {
-    await this.setState(prevState => ({
-      files: prevState.files.filter(file => file !== removedFile),
-    }));
-    if (!this.state.files.length) {
-      const input = document.querySelector('input[name="publicform.file"]');
-      input.value = '';
-    }
-  }
-
-  attachDispatch(dispatch) {
-    this.formDispatch = dispatch;
-  }
-
-  resetForm() {
-    this.formDispatch(actions.reset('publicform'));
-    if (this.state.generatedIdTitle) {
-      this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
-    }
-  }
-
-  fileDropped(files) {
-    const uploadedFiles = files;
-    this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({ files: uploadedFiles });
-  }
-
   async handleSubmit(_values) {
     const { submit, remote } = this.props;
     const values = await prepareMetadataAndFiles(
@@ -113,6 +86,33 @@ class PublicForm extends Component {
       this.setState({ submiting: false });
     }
     this.refreshCaptcha();
+  }
+
+  attachDispatch(dispatch) {
+    this.formDispatch = dispatch;
+  }
+
+  async removeAttachment(removedFile) {
+    await this.setState(prevState => ({
+      files: prevState.files.filter(file => file !== removedFile),
+    }));
+    if (!this.state.files.length) {
+      const input = document.querySelector('input[name="publicform.file"]');
+      input.value = '';
+    }
+  }
+
+  resetForm() {
+    this.formDispatch(actions.reset('publicform'));
+    if (this.state.generatedIdTitle) {
+      this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
+    }
+  }
+
+  fileDropped(files) {
+    const uploadedFiles = files;
+    this.state.files.forEach(file => uploadedFiles.push(file));
+    this.setState({ files: uploadedFiles });
   }
 
   renderFileField(id, options) {
@@ -136,6 +136,7 @@ class PublicForm extends Component {
                 }
               >
                 {({ getRootProps }) => (
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()}>
                     <label>
                       <div className="text-content">
