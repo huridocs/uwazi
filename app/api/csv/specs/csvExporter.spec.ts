@@ -1,25 +1,24 @@
 import { ObjectWritableMock } from 'stream-mock';
-import { isArray } from 'util';
 import templates from 'api/templates';
 import translations from 'api/i18n/translations';
 import * as translate from 'shared/translate';
 import moment from 'moment-timezone';
 import CSVExporter, {
-  getTypes,
-  getTemplatesModels,
-  ExportHeader,
-  processHeaders,
-  prependCommonHeaders,
   concatCommonHeaders,
   ExporterOptions,
-  processGeolocationField,
+  ExportHeader,
+  getTemplatesModels,
+  getTypes,
+  prependCommonHeaders,
   processCommonField,
   processEntity,
+  processGeolocationField,
+  processHeaders,
   translateCommonHeaders,
 } from '../csvExporter';
-import { templates as testTemplates, searchResults, csvExample } from './exportCsvFixtures';
-import * as formatters from '../typeFormatters';
+import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures';
 
+const hostname = 'cejil.uwazi.io';
 describe('csvExporter', () => {
   describe('getTypes', () => {
     it('should return the whitelist if provided', () => {
@@ -31,6 +30,7 @@ describe('csvExporter', () => {
     });
     it('should deduce the filtered types from the aggregations', () => {
       const types = getTypes(searchResults);
+
       ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'].forEach(entry => {
         expect(types).toContain(entry);
       });
@@ -50,34 +50,28 @@ describe('csvExporter', () => {
       jest.clearAllMocks();
     });
 
-    const doTest = (types: string[], calledTimes: number, done: () => any) => {
-      getTemplatesModels(types)
-        .then(models => {
-          types.forEach(type => {
-            expect(templates.getById).toHaveBeenCalledWith(type);
-          });
-          expect(templates.getById).toHaveBeenCalledTimes(calledTimes);
-          expect(models).toEqual(testTemplates);
-          done();
-        })
-        .catch(e => {
-          throw e;
-        });
-    };
-
-    it('should fetch all the templates and return a map', done => {
-      jest
-        .spyOn(templates, 'getById')
-        .mockImplementation(async id => Promise.resolve(testTemplates[id.toString()]));
+    it('should fetch all the templates and return a map', async () => {
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb'];
 
-      doTest(types, 2, done);
+      const models = await getTemplatesModels(types);
+
+      types.forEach(type => {
+        expect(templates.getById).toHaveBeenCalledWith(type);
+      });
+      expect(templates.getById).toHaveBeenCalledTimes(2);
+      expect(models).toEqual(testTemplates);
     });
 
-    it('should not include a missing template', done => {
+    it('should not include a missing template', async () => {
       const types = ['58ad7d240d44252fee4e61fd', '58ad7d240d44252fee4e61fb', 'notValid'];
 
-      doTest(types, 3, done);
+      const models = await getTemplatesModels(types);
+
+      types.forEach(type => {
+        expect(templates.getById).toHaveBeenCalledWith(type);
+      });
+      expect(templates.getById).toHaveBeenCalledTimes(3);
+      expect(models).toEqual(testTemplates);
     });
   });
 
@@ -86,22 +80,18 @@ describe('csvExporter', () => {
       const headers: ExportHeader[] = processHeaders(testTemplates);
       const headersLabels = headers.map((header: ExportHeader) => header.label);
 
-      [
+      expect(headersLabels).toEqual([
         'company',
         'Nemesis',
         'Country',
         'Costume',
         'Super powers',
         'Allies',
+        'AutoId',
         'Sidekick',
         'Planets conquered',
         'DOB',
-        'AutoId',
-      ].forEach(label => {
-        expect(headersLabels).toContain(label);
-      });
-
-      expect(headers.length).toBe(10);
+      ]);
     });
 
     it('prependCommonHeaders should add entries tagged with common at the beginning', () => {
@@ -113,13 +103,32 @@ describe('csvExporter', () => {
         },
       ]);
 
-      prepended.slice(0, prepended.length - 1).forEach((header: ExportHeader) => {
-        expect(header.common).toBe(true);
-      });
+      expect(prepended).toEqual([
+        {
+          common: true,
+          label: 'Title',
+          name: 'title',
+        },
+        {
+          common: true,
+          label: 'Date added',
+          name: 'creationDate',
+        },
+        {
+          common: true,
+          label: 'Template',
+          name: 'template',
+        },
+        {
+          common: false,
+          label: 'someLabel',
+          name: 'someName',
+        },
+      ]);
     });
 
     it('concatCommonHeaders should add entries tagged with common at the end', () => {
-      const prepended = concatCommonHeaders([
+      const appended = concatCommonHeaders([
         {
           name: 'someName',
           label: 'someLabel',
@@ -127,15 +136,41 @@ describe('csvExporter', () => {
         },
       ]);
 
-      prepended.slice(1, prepended.length).forEach((header: ExportHeader) => {
-        expect(header.common).toBe(true);
-      });
+      expect(appended).toEqual([
+        {
+          common: false,
+          label: 'someLabel',
+          name: 'someName',
+        },
+        {
+          common: true,
+          label: 'Geolocation',
+          name: 'geolocation',
+        },
+        {
+          common: true,
+          label: 'Documents',
+          name: 'documents',
+        },
+        {
+          common: true,
+          label: 'Attachments',
+          name: 'attachments',
+        },
+        {
+          common: true,
+          label: 'Published',
+          name: 'published',
+        },
+      ]);
     });
 
     it('should translate only the common headers', async () => {
-      spyOn(translations, 'get').and.callFake(async () => Promise.resolve({}));
-      const localeTranslationsMock = spyOn(translate, 'getLocaleTranslation').and.returnValue({});
-      spyOn(translate, 'getContext').and.returnValue({});
+      jest.spyOn(translations, 'get').mockResolvedValue([]);
+      const localeTranslationsMock = jest
+        .spyOn(translate, 'getLocaleTranslation')
+        .mockReturnValue({});
+      jest.spyOn(translate, 'getContext').mockReturnValue({});
       const translateMock = jest
         .spyOn(translate, 'default')
         .mockImplementation((_context, _key, text) => `${text}T`);
@@ -157,49 +192,41 @@ describe('csvExporter', () => {
 
       expect(translatedHeaders[0].label).toBe(headers[0].label);
       expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
-      expect(localeTranslationsMock).toHaveBeenCalledWith({}, 'es');
+      expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
       expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
     });
   });
 
   describe('geolocation fields', () => {
-    it('should locate the first geolocation field and call the formatter', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
+    it('should locate the first geolocation field', () => {
       const formatted = processGeolocationField(
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd']
       );
 
-      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
-        searchResults.rows[0].metadata.geolocation_geolocation,
-        {}
-      );
-      expect(formatted).toBe('geolocationValue');
+      expect(formatted).toBe('45.974236866039696|2.154785156250431');
     });
 
-    it('should return empty and not call the formatter if no geolocation field on the template', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
+    it('should return empty if no geolocation field on the template', () => {
       const formatted = processGeolocationField(
         searchResults.rows[1],
         testTemplates['58ad7d240d44252fee4e61fb']
       );
 
-      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
 
     it('should return empty and not call the formatter if no geolocation on the entity', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
-
       const geolocationFieldBackup = searchResults.rows[0].metadata.geolocation_geolocation;
       delete searchResults.rows[0].metadata.geolocation_geolocation;
+
       const formatted = processGeolocationField(
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd']
       );
+
       searchResults.rows[0].metadata.geolocation_geolocation = geolocationFieldBackup;
 
-      expect(formatters.formatters.geolocation).not.toHaveBeenCalled();
       expect(formatted).toBe('');
     });
   });
@@ -210,6 +237,7 @@ describe('csvExporter', () => {
         'title',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
       expect(formatted).toBe(searchResults.rows[0].title);
@@ -220,8 +248,10 @@ describe('csvExporter', () => {
         'template',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
+
       expect(formatted).toBe(testTemplates['58ad7d240d44252fee4e61fd'].name);
     });
 
@@ -234,12 +264,15 @@ describe('csvExporter', () => {
         async ({ timezone, timestamp, expectedDate }) => {
           const options = {};
           moment.tz.setDefault(timezone);
+
           const creationDate = processCommonField(
             'creationDate',
             { ...searchResults.rows[0], creationDate: timestamp },
             testTemplates['58ad7d240d44252fee4e61fd'],
+            hostname,
             options
           );
+
           expect(creationDate).toBe(expectedDate);
           moment.tz.setDefault();
         }
@@ -247,44 +280,39 @@ describe('csvExporter', () => {
     });
 
     it('should return the geolocation field processed', () => {
-      spyOn(formatters.formatters, 'geolocation').and.returnValue('geolocationValue');
       const formatted = processCommonField(
         'geolocation',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
-      expect(formatted).toBe('geolocationValue');
-      expect(formatters.formatters.geolocation).toHaveBeenCalledWith(
-        searchResults.rows[0].metadata.geolocation_geolocation,
-        {}
-      );
+
+      expect(formatted).toBe('45.974236866039696|2.154785156250431');
     });
 
     it('should return the documents field processed', () => {
-      spyOn(formatters, 'formatDocuments').and.returnValue('documentsValue');
       const formatted = processCommonField(
         'documents',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
-      expect(formatters.formatDocuments).toHaveBeenCalledWith(searchResults.rows[0]);
-      expect(formatted).toBe('documentsValue');
+      expect(formatted).toBe('/files/1483623310306rxeimbblc6u323xr.pdf');
     });
 
     it('should return the attachments field processed', () => {
-      spyOn(formatters, 'formatAttachments').and.returnValue('attachmentsValue');
       const formatted = processCommonField(
         'attachments',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
 
-      expect(formatters.formatAttachments).toHaveBeenCalledWith(searchResults.rows[0]);
-      expect(formatted).toBe('attachmentsValue');
+      expect(formatted).toBe('https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv');
     });
 
     it('should return the published field processed', () => {
@@ -292,8 +320,10 @@ describe('csvExporter', () => {
         'published',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
+
       expect(formatted).toBe('Published');
 
       const unpublishedEntity = { ...searchResults.rows[0] };
@@ -303,8 +333,10 @@ describe('csvExporter', () => {
         'published',
         unpublishedEntity,
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
+
       expect(formatted).toBe('Unpublished');
     });
 
@@ -313,8 +345,10 @@ describe('csvExporter', () => {
         'unsupported',
         searchResults.rows[0],
         testTemplates['58ad7d240d44252fee4e61fd'],
+        hostname,
         {}
       );
+
       expect(formatted).toBe('');
     });
   });
@@ -330,11 +364,11 @@ describe('csvExporter', () => {
       nonTemplateEntity.template = 'invalidTemplate';
 
       expect(() => {
-        processEntity(nonTemplateEntity, [], testTemplates, options);
+        processEntity(nonTemplateEntity, [], testTemplates, hostname, options);
       }).toThrow();
     });
 
-    it('it should format a common field and return an array', () => {
+    it('should format a common field and return an array', () => {
       const headers: ExportHeader[] = [
         {
           common: true,
@@ -343,14 +377,18 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain(searchResults.rows[0].title);
+      expect(formatted).toEqual(['Star Lord  Wikipedia']);
     });
 
-    it("it should not fail and return empty if the entity doesn't define the property", () => {
+    it("should return empty if the entity doesn't define the property", () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -359,14 +397,18 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain('');
+      expect(formatted).toEqual(['']);
     });
 
-    it("it should not fail and return empty if the template doesn't define the property", () => {
+    it("it should return empty if the template doesn't define the property", () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -376,15 +418,19 @@ describe('csvExporter', () => {
       ];
 
       const propertyBackup = testTemplates['58ad7d240d44252fee4e61fd'].properties.shift();
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
       testTemplates['58ad7d240d44252fee4e61fd'].properties.unshift(propertyBackup);
 
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(1);
-      expect(formatted).toContain('');
+      expect(formatted).toEqual(['']);
     });
 
-    it('it should call the formatter and return the formatted properties ordered array', () => {
+    it('it should return the formatted properties ordered array', () => {
       const headers: ExportHeader[] = [
         {
           common: false,
@@ -398,12 +444,15 @@ describe('csvExporter', () => {
         },
       ];
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(2);
-      expect(formatted[0]).toContain(searchResults.rows[0].metadata.company[0].value);
-      expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
+      expect(formatted).toEqual(['Marvel', 'Thanos']);
     });
 
     it('it should not format non supported property types', () => {
@@ -423,43 +472,33 @@ describe('csvExporter', () => {
       const typeBackup = testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type;
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = 'nested';
 
-      const formatted = processEntity(searchResults.rows[0], headers, testTemplates, options);
+      const formatted = processEntity(
+        searchResults.rows[0],
+        headers,
+        testTemplates,
+        hostname,
+        options
+      );
 
       testTemplates['58ad7d240d44252fee4e61fd'].properties[0].type = typeBackup;
 
-      expect(isArray(formatted)).toBe(true);
-      expect(formatted.length).toBe(2);
-      expect(formatted[0]).toContain('');
-      expect(formatted[1]).toContain(searchResults.rows[0].metadata.nemesis[0].label);
+      expect(formatted).toEqual(['', 'Thanos']);
     });
   });
 
   describe('CSVExport class', () => {
     beforeEach(() => {
-      spyOn(translations, 'get').and.callFake(async () => Promise.resolve());
-      spyOn(translate, 'getLocaleTranslation').and.returnValue({});
-      spyOn(translate, 'getContext').and.returnValue({});
       jest.spyOn(translate, 'default').mockImplementation((_context, _key, text) => text);
     });
 
-    it('should be instantiable', () => {
-      const instance = new CSVExporter();
-      expect(instance).toBeInstanceOf(CSVExporter);
-    });
-
-    it('should export a correct csv content', done => {
+    it('should export a correct csv content', async () => {
       const writeMock = new ObjectWritableMock();
       const exporter = new CSVExporter();
-      exporter
-        .export(searchResults, writeMock, [])
-        .then(() => {
-          const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
-          expect(exported).toEqual(csvExample);
-          done();
-        })
-        .catch(err => {
-          throw err;
-        });
+
+      await exporter.export(searchResults, writeMock, hostname, []);
+
+      const exported = writeMock.data.reduce((chunk, memo) => chunk.toString() + memo, '');
+      expect(exported).toEqual(csvExample);
     });
   });
 });
