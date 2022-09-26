@@ -311,7 +311,7 @@ describe('csvExporter', () => {
         hostname,
         {}
       );
-      // TODO aquí hay que tocar
+
       expect(formatted).toBe('https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv');
     });
 

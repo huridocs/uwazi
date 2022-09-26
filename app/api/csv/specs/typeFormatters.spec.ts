@@ -324,7 +324,6 @@ describe('csvExporter typeFormatters', () => {
 
       const url = formatAttachment(fileName, hostname);
 
-      // TODO aquí!
       expect(url).toBe('https://cejil.uwazi.io/api/files/fileName.pdf');
     });
   });
