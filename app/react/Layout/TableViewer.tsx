@@ -12,6 +12,8 @@ interface TableViewerProps extends CollectionViewerProps {
 }
 
 class TableViewerComponent extends Component<TableViewerProps> {
+  static wrapLoader = true;
+
   render() {
     const columns = this.props.columns.filter((c: TableViewColumn) => !c.hidden);
     return (
