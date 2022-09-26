@@ -90,11 +90,6 @@ describe('PublicForm', () => {
     prepareMocks();
   };
 
-  it('should render a form', () => {
-    render();
-    expect(component).toMatchSnapshot();
-  });
-
   it('should bind the MetadataFormFields change to this form', () => {
     render();
     const metadataFormFields = component.find(MetadataFormFields);
@@ -127,12 +122,19 @@ describe('PublicForm', () => {
 
   it('should enable remote captcha', () => {
     render({ remote: true });
-    expect(component).toMatchSnapshot();
+
+    expect(component.find(Captcha).props()).toMatchObject({
+      model: '.captcha',
+      refresh: expect.any(Function),
+      remote: true,
+    });
   });
 
   it('should render a form with file and attachments', () => {
     render({ file: true, attachments: true });
-    expect(component).toMatchSnapshot();
+    const formSubmit = component.find(LocalForm);
+    expect(formSubmit.length).toBe(1);
+    expect(component.find(Dropzone).length).toBe(2);
   });
 
   it('should submit the values wrapped', async () => {
