@@ -4,23 +4,52 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { IImmutable } from 'shared/types/Immutable';
+import { generateID } from 'shared/IDGenerator';
 import { ClientTranslationSchema, IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'app/UI';
 import { actions, Translate, I18NLink } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
 
-const prepateTranslations = (
+const prepareFormValues = (
   translations: IImmutable<ClientTranslationSchema[]>,
   context: string
-): ClientTranslationSchema[] => {
-  const preparedTranslations = translations.toJS().map((translation: ClientTranslationSchema) => {
-    const translationsForContext = translation.contexts?.filter(
+) => {
+  const translationsByLanguage = translations.toJS().map((translation: ClientTranslationSchema) => {
+    const valuesForLanguage = translation.contexts?.filter(
       translationContext => translationContext?.id === context
     );
-    return { ...translation, contexts: translationsForContext };
+    return { ...translation, contexts: valuesForLanguage };
   });
-  return preparedTranslations;
+
+  const contextTerms = Object.keys(translationsByLanguage[0].contexts[0].values).sort();
+
+  const contextValues = translationsByLanguage.map((byLang: ClientTranslationSchema) => ({
+    locale: byLang.locale,
+    ...byLang?.contexts?.[0].values,
+  }));
+
+  const formValues = contextTerms.map(contextTerm => ({
+    key: contextTerm,
+    formID: generateID(6, 6),
+    values: contextValues.map((val: { [x: string]: any; locale: any }) => ({
+      locale: val.locale,
+      value: val[contextTerm],
+    })),
+  }));
+
+  return {
+    contextLabel: translationsByLanguage[0].contexts[0].label,
+    formValues,
+  };
+};
+
+const prepareTranslationsToSave = (
+  currentTranslations: IImmutable<ClientTranslationSchema[]>,
+  formData
+) => {
+  console.log(currentTranslations.toJS());
+  console.log(formData);
 };
 
 const importButton = (action: () => any) => (
@@ -57,17 +86,17 @@ const EditTranslationsFormComponent = ({
   saveTranslations,
   importTranslations,
 }: mappedProps) => {
-  const preparedTranslations = prepateTranslations(translations, context);
-  const contextLabel = preparedTranslations?.[0].contexts?.[0].label;
-  const contextTerms = Object.keys(preparedTranslations?.[0].contexts?.[0].values || {});
+  const { contextLabel, formValues } = prepareFormValues(translations, context);
 
   const { register, handleSubmit } = useForm({
-    defaultValues: { formValues: preparedTranslations },
+    defaultValues: { values: formValues },
     mode: 'onSubmit',
   });
 
-  const submit = (values: { formValues: ClientTranslationSchema[] }) =>
-    saveTranslations(values.formValues);
+  const submit = values => {
+    const translationsToSave = prepareTranslationsToSave(translations, values);
+    // saveTranslations(values.formValues);
+  };
 
   return (
     <div className="EditTranslationForm">
@@ -78,17 +107,17 @@ const EditTranslationsFormComponent = ({
           </div>
 
           <ul className="list-group">
-            {contextTerms.sort().map(term => (
-              <li key={term} className="list-group-item">
-                <h5>{term}</h5>
-                {preparedTranslations.map((translation: ClientTranslationSchema, index: number) => (
-                  <div className="form-group" key={translation.locale}>
+            {formValues.map((formValue, index) => (
+              <li key={formValue.key} className="list-group-item">
+                <h5>{formValue.key}</h5>
+                {formValue.values.map((value, index2: number) => (
+                  <div className="form-group" key={value.locale}>
                     <div className="input-group">
-                      <span className="input-group-addon">{translation.locale}</span>
+                      <span className="input-group-addon">{value.locale}</span>
                       <input
                         className="form-control"
                         type="text"
-                        {...register(`formValues.${index}.contexts.0.values.${term}`)}
+                        {...register(`values.${index}.values.${index2}.value`)}
                       />
                     </div>
                   </div>
