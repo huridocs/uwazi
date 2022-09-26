@@ -42,9 +42,12 @@ class UploadBox extends Component {
         className="upload-box force-ltr"
         style={{}}
         onDrop={this.onDrop}
-        accept="application/pdf"
+        accept={{
+          'application/pdf': ['.pdf'],
+        }}
       >
         {({ getRootProps }) => (
+          // eslint-disable-next-line react/jsx-props-no-spreading
           <div {...getRootProps()}>
             <div className="upload-box_wrapper">
               <Icon icon="upload" />
