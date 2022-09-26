@@ -216,7 +216,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                 className="info"
               >
                 <span
-                  no-translate={true}
+                  no-translate="true"
                 >
                   URL:
                 </span>
@@ -270,7 +270,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                 className="info"
               >
                 <span
-                  no-translate={true}
+                  no-translate="true"
                 >
                   URL:
                 </span>
