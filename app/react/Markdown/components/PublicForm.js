@@ -1,20 +1,20 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import Immutable from 'immutable';
-import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { BrowserView, MobileView } from 'react-device-detect';
+import Immutable from 'immutable';
+import Dropzone from 'react-dropzone';
+import PropTypes from 'prop-types';
+import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
-import { bindActionCreators } from 'redux';
 import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
 import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
-import Dropzone from 'react-dropzone';
-import { BrowserView, MobileView } from 'react-device-detect';
 import { generateID } from 'shared/IDGenerator';
 
 class PublicForm extends Component {
@@ -69,12 +69,6 @@ class PublicForm extends Component {
     this.state = { submiting: false, files: [], generatedIdTitle };
   }
 
-  fileDropped(files) {
-    const uploadedFiles = files;
-    this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({ files: uploadedFiles });
-  }
-
   async removeAttachment(removedFile) {
     await this.setState(prevState => ({
       files: prevState.files.filter(file => file !== removedFile),
@@ -94,6 +88,12 @@ class PublicForm extends Component {
     if (this.state.generatedIdTitle) {
       this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
     }
+  }
+
+  fileDropped(files) {
+    const uploadedFiles = files;
+    this.state.files.forEach(file => uploadedFiles.push(file));
+    this.setState({ files: uploadedFiles });
   }
 
   async handleSubmit(_values) {

@@ -21,6 +21,15 @@ describe('PublicForm', () => {
     request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.callFake(async () => request);
   });
+  const prepareMocks = () => {
+    instance = component.instance();
+    instance.refreshCaptcha = jest.fn();
+    instance.formDispatch = jest.fn();
+    component.find(LocalForm).props().getDispatch(instance.formDispatch);
+    const captcha = component.find(Captcha);
+    captcha.props().refresh = instance.refreshCaptcha;
+    captcha.props().refresh(instance.refreshCaptcha);
+  };
 
   const render = (customProps, generatedId = false) => {
     props = {
@@ -78,9 +87,7 @@ describe('PublicForm', () => {
     );
 
     component = renderConnectedMount(PublicForm.WrappedComponent, state, mappedProps, true);
-    instance = component.instance();
-    instance.refreshCaptcha = jest.fn();
-    instance.formDispatch = jest.fn();
+    prepareMocks();
   };
 
   it('should render a form', () => {
@@ -91,8 +98,6 @@ describe('PublicForm', () => {
   it('should bind the MetadataFormFields change to this form', () => {
     render();
     const metadataFormFields = component.find(MetadataFormFields);
-    const localForm = component.find(LocalForm);
-    localForm.props().getDispatch(instance.formDispatch);
     metadataFormFields.props().boundChange('publicForm.title', 'New Title');
 
     expect(instance.formDispatch).toHaveBeenCalledWith(
@@ -150,14 +155,8 @@ describe('PublicForm', () => {
 
   it('should refresh the captcha and clear the form after submit', async () => {
     render();
-    const localForm = component.find(LocalForm);
-    const captcha = component.find(Captcha);
-    captcha.props().refresh = instance.refreshCaptcha;
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    localForm.props().getDispatch(instance.formDispatch);
     await formSubmit({ title: 'test' });
-    captcha.props().refresh(instance.refreshCaptcha);
-
     expect(instance.refreshCaptcha).toHaveBeenCalled();
     expect(instance.formDispatch).toHaveBeenCalledWith({
       model: 'publicform',
@@ -188,16 +187,17 @@ describe('PublicForm', () => {
     request = new Promise(resolve => {
       resolve({ promise: Promise.reject() });
     });
-    render({ attachments: true });
-    const formSubmit = component.find(LocalForm).props().onSubmit;
+
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
+    render({ attachments: true });
     const attachments = component.find('.preview-title');
     expect(attachments.length).toEqual(0);
-    component.find(Dropzone).simulate('drop', [newFile]);
+    const formSubmit = component.find(LocalForm).props().onSubmit;
+    component.find(Dropzone).props().onDrop([newFile]);
+    component.update();
     await formSubmit({ title: 'test' });
-
     request.then(uploadCompletePromise => {
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
