@@ -281,13 +281,19 @@ describe('csvExporter typeFormatters', () => {
         { filename: 'file2.pdf', entityId: 'entity1', value: null },
       ];
 
-      const singleValue = formatAttachments({ attachments: singleField, _id: 'entity1' });
-      const multipleValue = formatAttachments({ attachments: multipleField, _id: 'entity1' });
+      const singleValue = formatAttachments(
+        { attachments: singleField, _id: 'entity1' },
+        'cejil.uwazi.io'
+      );
+      const multipleValue = formatAttachments(
+        { attachments: multipleField, _id: 'entity1' },
+        'cejil.uwazi.io'
+      );
       const emptyValue = formatDocuments({ attachments: [], _id: 'entity1' });
 
-      expect(singleValue).toBe(formatAttachment('file1.pdf', 'entity1'));
+      expect(singleValue).toBe('https://cejil.uwazi.io/api/files/file1.pdf');
       expect(multipleValue).toBe(
-        `${formatAttachment('file1.pdf', 'entity1')}|${formatAttachment('file2.pdf', 'entity1')}`
+        'https://cejil.uwazi.io/api/files/file1.pdf|https://cejil.uwazi.io/api/files/file2.pdf'
       );
       expect(emptyValue).toBe('');
     });
@@ -314,11 +320,11 @@ describe('csvExporter typeFormatters', () => {
 
     it('should build the correct attachment url', () => {
       const fileName = 'fileName.pdf';
-      const entityId = 'entity1';
+      const hostname = 'cejil.uwazi.io';
 
-      const url = formatAttachment(fileName, entityId);
+      const url = formatAttachment(fileName, hostname);
 
-      expect(url).toBe('/api/attachments/download?_id=entity1&file=fileName.pdf');
+      expect(url).toBe('https://cejil.uwazi.io/api/files/fileName.pdf');
     });
   });
 });

@@ -31,7 +31,7 @@ const displayGraph = async () => {
     throw TypeError('graphsPage should not be null ');
   }
   // wait for the chart visualization animations to end
-  await graphsPage.waitFor(4000);
+  await graphsPage.waitForTimeout(4000);
   return graphsPage;
 };
 
