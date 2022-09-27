@@ -7,6 +7,11 @@
     text-transform: uppercase;
     color: $c-grey-dark;
   }
+  .error {
+    margin-top: 5px;
+    font-weight: bold;
+    color: $c-type-0;
+  }
 }
 
 .TranslationsList {

@@ -2,12 +2,13 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 import { IImmutable } from 'shared/types/Immutable';
 import { generateID } from 'shared/IDGenerator';
 import { ClientTranslationSchema, IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
 import { Icon } from 'app/UI';
-import { actions, Translate, I18NLink } from 'app/I18N';
+import { actions, Translate, I18NLink, t } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
 
 type formDataType = {
@@ -111,7 +112,11 @@ const EditTranslationsFormComponent = ({
 }: mappedProps) => {
   const { contextLabel, formData, contextTranslations } = prepareFormValues(translations, context);
 
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
   });
@@ -140,9 +145,20 @@ const EditTranslationsFormComponent = ({
                       <input
                         className="form-control"
                         type="text"
-                        {...register(`formData.${dataIndex}.values.${valueIndex}.value`)}
+                        {...register(`formData.${dataIndex}.values.${valueIndex}.value`, {
+                          required: true,
+                        })}
                       />
                     </div>
+                    <ErrorMessage
+                      errors={errors}
+                      name={`formData.${dataIndex}.values.${valueIndex}.value`}
+                      render={() => (
+                        <p className="error" role="alert">
+                          {t('System', 'This field is required')}
+                        </p>
+                      )}
+                    />
                   </div>
                 ))}
               </li>

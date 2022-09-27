@@ -31,8 +31,6 @@ describe('EditTranslationForm', () => {
   };
 
   beforeEach(() => {
-    jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
-
     translations = Immutable.fromJS([
       {
         locale: 'en',
@@ -106,11 +104,35 @@ describe('EditTranslationForm', () => {
   });
 
   describe('submit', () => {
-    it('should call saveTranslations updating the changed value', async () => {
-      render('System');
-      const inputField = screen.getByDisplayValue('Principal');
-      const submitButton = screen.getByText('Save').parentElement!;
+    let inputField: Node | Window;
+    let submitButton: Node | Window;
 
+    beforeEach(() => {
+      jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
+      render('System');
+      inputField = screen.getByDisplayValue('Principal');
+      submitButton = screen.getByText('Save').parentElement!;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should display an error when values are empty', async () => {
+      fireEvent.change(inputField, {
+        target: { value: '' },
+      });
+
+      fireEvent.click(submitButton);
+
+      expect(actions.saveTranslations).not.toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(screen.getByText('This field is required')).toBeInTheDocument();
+      });
+    });
+
+    it('should call saveTranslations updating the changed value', async () => {
       fireEvent.change(inputField, {
         target: { value: 'Nueva traducción!' },
       });
@@ -144,7 +166,5 @@ describe('EditTranslationForm', () => {
         ])
       );
     });
-
-    it('should display an error when values are empty', () => {});
   });
 });
