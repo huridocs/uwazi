@@ -84,7 +84,7 @@ describe('EditTranslationForm', () => {
   });
 
   describe('Render', () => {
-    it('should render a form with fields for each value and each language', () => {
+    it('should render a form with fields for each value', () => {
       render('System');
       expect(screen.getByText('Home')).toBeInTheDocument();
       expect(screen.getByText('Search')).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('EditTranslationForm', () => {
       const submitButton = screen.getByText('Save').parentElement!;
 
       fireEvent.change(inputField, {
-        target: { value: 'Pagina principal' },
+        target: { value: 'Nueva traducción!' },
       });
 
       fireEvent.click(submitButton);
@@ -136,7 +136,7 @@ describe('EditTranslationForm', () => {
                 id: 'System',
                 label: 'User Interface',
                 type: 'Uwazi UI',
-                values: { Home: 'Pagina principal', Library: 'Biblioteca', Search: 'Busqueda' },
+                values: { Home: 'Nueva traducción!', Library: 'Biblioteca', Search: 'Busqueda' },
               },
             ],
             locale: 'es',
