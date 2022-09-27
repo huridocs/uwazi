@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -7,7 +7,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import { generateID } from 'shared/IDGenerator';
 import { ClientTranslationSchema, IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
-import { Icon } from 'app/UI';
+import { Icon, ToggleButton } from 'app/UI';
 import { actions, Translate, I18NLink, t } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
 
@@ -110,6 +110,7 @@ const EditTranslationsFormComponent = ({
   saveTranslations,
   importTranslations,
 }: mappedProps) => {
+  const [toggled, setToggled] = useState(false);
   const { contextLabel, formData, contextTranslations } = prepareFormValues(translations, context);
 
   const {
@@ -126,12 +127,24 @@ const EditTranslationsFormComponent = ({
     saveTranslations(translationsToSave);
   };
 
+  const handleToggle = () => {
+    setToggled(!toggled);
+  };
+
   return (
     <div className="EditTranslationForm">
       <form onSubmit={handleSubmit(submit)}>
         <div className="panel panel-default">
           <div className="panel-heading">
-            <Translate>Translations</Translate> <Icon icon="angle-right" /> {contextLabel}
+            <div className="context">
+              <Translate>Translations</Translate>
+              <Icon icon="angle-right" />
+              <span>{contextLabel}</span>
+            </div>
+            <div className="translation-filter">
+              <Translate>Untranslated Terms</Translate>
+              <ToggleButton checked={toggled} onClick={() => handleToggle()} />
+            </div>
           </div>
 
           <ul className="list-group">
