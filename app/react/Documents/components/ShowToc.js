@@ -41,7 +41,8 @@ export class ShowToc extends Component {
                 >
                   {tocElement.get('label')}
                   <span className="page-number">
-                    {tocElement.getIn(['selectionRectangles', 0]).get('page')}
+                    {tocElement.getIn(['selectionRectangles', 0]) &&
+                      tocElement.getIn(['selectionRectangles', 0]).get('page')}
                   </span>
                 </a>
               </ShowIf>
