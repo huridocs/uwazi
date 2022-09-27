@@ -34,10 +34,7 @@ describe('Translations', () => {
       await expect(page).toClick('span', { text: 'Translations' });
       await expect(page).toClick('a', { text: 'Mecanismo' });
 
-      await expect(page).toFill(
-        'input[name="translationsForm,1,contexts,10,values,Mecanismo"]',
-        'Mecânica'
-      );
+      await expect(page).toFill('input[name="formData.0.values.1.value"]', 'Mecânica');
       await expect(page).toClick('button', { text: 'Save' });
       await expect(page).toMatchElement('.alert-success');
 
