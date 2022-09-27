@@ -24,5 +24,19 @@ export default {
         },
       },
     });
+    await db.collection('relationships').createIndex([['type', 1]]);
+    await db.collection('relationships').createIndex([
+      ['to', 1],
+      ['type', 1],
+    ]);
+    await db.collection('relationships').createIndex([
+      ['from', 1],
+      ['type', 1],
+    ]);
+    await db.collection('relationships').createIndex([
+      ['from', 1],
+      ['to', 1],
+      ['type', 1],
+    ]);
   },
 };

@@ -16,23 +16,23 @@ const properties = Object.keys(baseRelationship).map(key => ({
   property: key,
 }));
 
+beforeAll(async () => {
+  spyOn(process.stdout, 'write');
+  await testingDB.setupFixturesAndContext({});
+  db = testingDB.mongodb;
+  collection = db.collection('relationships');
+  await migration.up(db);
+});
+
+beforeEach(async () => {
+  await testingDB.setupFixturesAndContext({});
+});
+
+afterAll(async () => {
+  await testingDB.tearDown();
+});
+
 describe('migration define_new_relationships_collection', () => {
-  beforeAll(async () => {
-    // spyOn(process.stdout, 'write');
-    await testingDB.setupFixturesAndContext({});
-    db = testingDB.mongodb;
-    collection = db.collection('relationships');
-    await migration.up(db);
-  });
-
-  beforeEach(async () => {
-    await testingDB.setupFixturesAndContext({});
-  });
-
-  afterAll(async () => {
-    await testingDB.tearDown();
-  });
-
   it('should have a delta number', () => {
     expect(migration.delta).toBe(107);
   });
@@ -43,6 +43,33 @@ describe('migration define_new_relationships_collection', () => {
     expect(names).toContain('relationships');
   });
 
+  it('should create the indices', async () => {
+    const indices = await collection.indexInformation();
+    expect(indices).toEqual({
+      _id_: [['_id', 1]],
+      type_1: [['type', 1]],
+      to_1_type_1: [
+        ['to', 1],
+        ['type', 1],
+      ],
+      from_1_type_1: [
+        ['from', 1],
+        ['type', 1],
+      ],
+      from_1_to_1_type_1: [
+        ['from', 1],
+        ['to', 1],
+        ['type', 1],
+      ],
+    });
+  });
+
+  it('should check if a reindex is needed', async () => {
+    expect(migration.reindex).toBe(false);
+  });
+});
+
+describe('the collection "relationships" after the migration', () => {
   it('should allow correct addition', async () => {
     await collection.insertOne(baseRelationship);
     const relationship = await collection.findOne(baseRelationship);
@@ -77,9 +104,5 @@ describe('migration define_new_relationships_collection', () => {
     }
     const relationships = await collection.find({}).toArray();
     expect(relationships).toHaveLength(0);
-  });
-
-  it('should check if a reindex is needed', async () => {
-    expect(migration.reindex).toBe(false);
   });
 });
