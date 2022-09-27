@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -eo pipefail
+
+function start {
+  docker-compose up --build -d "${@}"
+}
+
+function mongo {
+  docker exec -it uwazi-mongo mongo localhost/uwazi_development
+}
+
+function stop {
+  docker-compose stop
+}
+
+
+function help {
+  printf "%s <task> \n\nTasks:\n" "${0}"
+  compgen -A function | grep -v "^_" | cat -n
+}
+
+USER_ID=$(id -u) GROUP_ID=$(id -g) "${@:-help}"

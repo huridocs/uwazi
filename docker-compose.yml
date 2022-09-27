@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: elastic-icu-7.11.2.Dockerfile
+    container_name: uwazi-elasticsearch
     ports:
       - "9200:9200"
     environment:
@@ -14,10 +15,12 @@ services:
         - cluster.routing.allocation.disk.threshold_enabled=false
   mongo:
     image: "mongo:4.2"
+    container_name: uwazi-mongo
     ports:
       - "27017:27017"
   redis:
     image: "redis:5.0.14"
+    container_name: uwazi-redis
     command: redis-server
     ports:
       - "6379:6379"
@@ -25,6 +28,7 @@ services:
       - REDIS_REPLICATION_MODE=master
   minio:
     image: minio/minio
+    container_name: uwazi-s3
     ports:
       - "9000:9000"
       - "9001:9001"
