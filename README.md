@@ -87,10 +87,10 @@ $ yarn install
 
 ### Docker
 
-Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin, MongoDB, Redis and Minio (S3 storage) can be installed via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
+Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin, MongoDB, Redis and Minio (S3 storage) can be installed and run via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
 
 ```shell
-$ docker-compose up -d
+$ ./run start
 ```
 
 ### Development Run
