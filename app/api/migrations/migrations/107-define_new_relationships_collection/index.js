@@ -7,8 +7,8 @@ export default {
 
   reindex: false,
 
-  async up() {
+  async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return Promise.reject(new Error('error! change this, recently created migration'));
+    await db.createCollection('relationships');
   },
 };
