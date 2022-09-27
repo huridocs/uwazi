@@ -9,6 +9,20 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    await db.createCollection('relationships');
+    await db.createCollection('relationships', {
+      validator: {
+        $jsonSchema: {
+          bsonType: 'object',
+          additionalProperties: false,
+          properties: {
+            _id: { bsonType: 'objectId' },
+            from: { bsonType: 'objectId' },
+            to: { bsonType: 'objectId' },
+            type: { bsonType: 'objectId' },
+          },
+          required: ['_id', 'from', 'to', 'type'],
+        },
+      },
+    });
   },
 };

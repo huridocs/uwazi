@@ -6,6 +6,16 @@ import migration from '../index.js';
 let db;
 let collection;
 
+const baseRelationship = {
+  from: new ObjectId(),
+  to: new ObjectId(),
+  type: new ObjectId(),
+};
+
+const properties = Object.keys(baseRelationship).map(key => ({
+  property: key,
+}));
+
 describe('migration define_new_relationships_collection', () => {
   beforeAll(async () => {
     // spyOn(process.stdout, 'write');
@@ -13,6 +23,10 @@ describe('migration define_new_relationships_collection', () => {
     db = testingDB.mongodb;
     collection = db.collection('relationships');
     await migration.up(db);
+  });
+
+  beforeEach(async () => {
+    await testingDB.setupFixturesAndContext({});
   });
 
   afterAll(async () => {
@@ -29,18 +43,41 @@ describe('migration define_new_relationships_collection', () => {
     expect(names).toContain('relationships');
   });
 
-  // it.each([
-  //   {
-  //     property: 'from',
-  //     relationship: {
-  //       from: new ObjectId(),
-  //       to: new ObjectId(),
-  //       type: new ObjectId(),
-  //     },
-  //   },
-  // ])('should catch missing property "$property"', relationship => {
-  //   collection.insertOne(relationship);
-  // });
+  it('should allow correct addition', async () => {
+    await collection.insertOne(baseRelationship);
+    const relationship = await collection.findOne(baseRelationship);
+    expect(relationship).toMatchObject(relationship);
+  });
+
+  it.each(properties)('should catch missing property "$property"', async ({ property }) => {
+    try {
+      const relationship = { ...baseRelationship };
+      delete relationship[property];
+      await collection.insertOne(relationship);
+      fail('Should throw MongoError.');
+    } catch (err) {
+      if (err.message !== 'Document failed validation') {
+        throw err;
+      }
+    }
+    const relationships = await collection.find({}).toArray();
+    expect(relationships).toHaveLength(0);
+  });
+
+  it.each(properties)('should expect "$property" to be an "objectId"', async ({ property }) => {
+    try {
+      const relationship = { ...baseRelationship };
+      relationship[property] = 0;
+      await collection.insertOne(relationship);
+      fail('Should throw MongoError.');
+    } catch (err) {
+      if (err.message !== 'Document failed validation') {
+        throw err;
+      }
+    }
+    const relationships = await collection.find({}).toArray();
+    expect(relationships).toHaveLength(0);
+  });
 
   it('should check if a reindex is needed', async () => {
     expect(migration.reindex).toBe(false);
