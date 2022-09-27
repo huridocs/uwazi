@@ -107,18 +107,25 @@ class MetadataFormFields extends Component {
       case 'multiselect':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
-          <MultiSelect
-            model={_model}
-            optionsValue="id"
-            options={translateOptions(thesauri)}
-            prefix={_model}
-            forceHoist={version === 'OneUp'}
-            placeholder={
-              version === 'OneUp'
-                ? `${t('System', 'Search', null, false)} '${thesauri.get('name')}'`
-                : null
-            }
-          />
+          <>
+            <div className="multiselect-add-value">
+              <button type="button">
+                <Translate>add value</Translate>
+              </button>
+            </div>
+            <MultiSelect
+              model={_model}
+              optionsValue="id"
+              options={translateOptions(thesauri)}
+              prefix={_model}
+              forceHoist={version === 'OneUp'}
+              placeholder={
+                version === 'OneUp'
+                  ? `${t('System', 'Search', null, false)} '${thesauri.get('name')}'`
+                  : null
+              }
+            />
+          </>
         );
       case 'relationship':
         if (property.content) {
