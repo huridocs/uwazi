@@ -1,7 +1,5 @@
-/* eslint-disable class-methods-use-this */
 import { ObjectId } from 'mongodb';
 import { MatchQueryNode } from './graphs/MatchQueryNode';
-import { RootQueryNode } from './graphs/RootQueryNode';
 import { TraversalQueryNode } from './graphs/TraversalQueryNode';
 
 const parentDirectionToField = {
@@ -16,8 +14,7 @@ const directionToField = {
 
 function projectAndArrangeTraversals(projection: Record<string, 1>, childrenCount: number) {
   const traversalFields = [];
-  // eslint-disable-next-line no-plusplus
-  for (let index = 0; index < childrenCount; index++) {
+  for (let index = 0; index < childrenCount; index += 1) {
     traversalFields.push(`$traversal-${index}`);
   }
 
@@ -34,6 +31,7 @@ function unwind(childrenCount: number) {
 
 const compilers = {
   traversal(query: TraversalQueryNode, index: number): object[] {
+    const filters = query.getFilters();
     return [
       {
         $lookup: {
@@ -45,13 +43,11 @@ const compilers = {
               $match: {
                 $expr: {
                   $and: [
-                    ...(query.filters._id
-                      ? [{ $eq: ['$_id', new ObjectId(query.filters._id)] }]
-                      : []),
-                    { $eq: ['$$sharedId', `$${directionToField[query.direction]}`] },
+                    ...(filters._id ? [{ $eq: ['$_id', new ObjectId(filters._id)] }] : []),
+                    { $eq: ['$$sharedId', `$${directionToField[query.getDirection()]}`] },
                     { $not: [{ $in: ['$_id', '$$visited'] }] },
-                    ...(query.filters.types?.length
-                      ? [{ $in: ['$type', query.filters.types.map(t => new ObjectId(t))] }]
+                    ...(filters.types?.length
+                      ? [{ $in: ['$type', filters.types.map(t => new ObjectId(t))] }]
                       : []),
                   ],
                 },
@@ -78,7 +74,8 @@ const compilers = {
   },
 
   match(query: MatchQueryNode, index: number): object[] {
-    const sourceField = parentDirectionToField[query.getParent()!.direction];
+    const filters = query.getFilters();
+    const sourceField = parentDirectionToField[query.getParent()!.getDirection()];
     return [
       {
         $lookup: {
@@ -90,12 +87,10 @@ const compilers = {
               $match: {
                 $expr: {
                   $and: [
-                    ...(query.filters.sharedId
-                      ? [{ $eq: ['$sharedId', query.filters.sharedId] }]
-                      : []),
+                    ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
                     { $eq: [`$$${sourceField}`, '$sharedId'] },
-                    ...(query.filters.templates?.length
-                      ? [{ $in: ['$template', query.filters.templates.map(t => new ObjectId(t))] }]
+                    ...(filters.templates?.length
+                      ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
                       : []),
                   ],
                 },
@@ -121,15 +116,16 @@ const compilers = {
     ];
   },
 
-  root(query: RootQueryNode): object[] {
+  root(query: MatchQueryNode): object[] {
+    const filters = query.getFilters();
     return [
       {
         $match: {
           $expr: {
             $and: [
-              ...(query.filters.sharedId ? [{ $eq: ['$sharedId', query.filters.sharedId] }] : []),
-              ...(query.filters.templates?.length
-                ? [{ $in: ['$template', query.filters.templates.map(t => new ObjectId(t))] }]
+              ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
+              ...(filters.templates?.length
+                ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
                 : []),
             ],
           },

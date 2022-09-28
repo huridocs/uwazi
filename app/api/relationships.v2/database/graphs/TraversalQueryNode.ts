@@ -14,9 +14,9 @@ const inverseOfDirection = {
 } as const;
 
 export class TraversalQueryNode extends QueryNode {
-  public direction: 'in' | 'out';
+  private direction: 'in' | 'out';
 
-  public filters: TraversalFilters;
+  private filters: TraversalFilters;
 
   private parent?: MatchQueryNode;
 
@@ -38,6 +38,14 @@ export class TraversalQueryNode extends QueryNode {
     return {
       type: 1,
     } as const;
+  }
+
+  getFilters() {
+    return { ...this.filters };
+  }
+
+  getDirection() {
+    return this.direction;
   }
 
   addMatch(match: MatchQueryNode) {

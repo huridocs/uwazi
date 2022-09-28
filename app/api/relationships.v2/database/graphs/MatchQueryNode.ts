@@ -34,7 +34,7 @@ const sortEntitiesInTraversalOrder = (
 };
 
 export class MatchQueryNode extends QueryNode {
-  public filters: MatchFilters;
+  private filters: MatchFilters;
 
   private traversals: TraversalQueryNode[] = [];
 
@@ -55,6 +55,10 @@ export class MatchQueryNode extends QueryNode {
     return {
       sharedId: 1,
     } as const;
+  }
+
+  getFilters() {
+    return { ...this.filters };
   }
 
   addTraversal(traversal: TraversalQueryNode) {
@@ -155,7 +159,7 @@ export class MatchQueryNode extends QueryNode {
     const [toMatchBeforeTraverse, toMatchAfterTraverse] = sortEntitiesInTraversalOrder(
       entityData,
       relationship,
-      traversalNode.direction
+      traversalNode.getDirection()
     );
 
     const thisStepWouldReachRelationship =
@@ -171,7 +175,7 @@ export class MatchQueryNode extends QueryNode {
       return MatchQueryNode.buildQueryFittedToRelationship(
         toMatchBeforeTraverse.sharedId,
         relationship._id,
-        traversalNode.direction,
+        traversalNode.getDirection(),
         toMatchAfterTraverse.sharedId
       );
     }
@@ -180,7 +184,7 @@ export class MatchQueryNode extends QueryNode {
 
     if (nextStepReachingQuery) {
       return new MatchQueryNode({ ...currentMatchNode.filters }, [
-        new TraversalQueryNode(traversalNode.direction, { ...traversalNode.filters }, [
+        new TraversalQueryNode(traversalNode.getDirection(), { ...traversalNode.getFilters() }, [
           nextStepReachingQuery,
         ]),
       ]);
