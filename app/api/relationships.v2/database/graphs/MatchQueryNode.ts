@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { QueryNode } from './QueryNode';
-import { RootQueryNode } from './RootQueryNode';
+// import { RootQueryNode } from './RootQueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
 
 interface MatchFilters {
@@ -97,6 +97,8 @@ export class MatchQueryNode extends QueryNode {
       traversal.wouldTraverse(fromMatch.sharedId, traverse, toMatch.sharedId) &&
       node2.filtersWouldMatch(toMatch);
 
+    // verified equal -----------------------
+
     if (satisfies) {
       const newRoot = new MatchQueryNode(
         {
@@ -121,6 +123,7 @@ export class MatchQueryNode extends QueryNode {
       );
       return newRoot;
     }
+    // verified equal -----------------------
 
     const nextSatisfies = node2.reachesRelationship(traverse, matchData);
 
@@ -134,13 +137,12 @@ export class MatchQueryNode extends QueryNode {
     return false;
   }
 
-  inverse(next: TraversalQueryNode): RootQueryNode {
+  inverse(next?: TraversalQueryNode): MatchQueryNode {
     this.validateIsChain();
     if (this.traversals[0]) {
-      const inversed = new MatchQueryNode({ ...this.filters }, [next]);
+      const inversed = new MatchQueryNode({ ...this.filters }, next ? [next] : []);
       return this.traversals[0].inverse(inversed);
     }
-    const inversed = new RootQueryNode({ ...this.filters }, [next]);
-    return inversed;
+    return new MatchQueryNode({ ...this.filters }, next ? [next] : []);
   }
 }

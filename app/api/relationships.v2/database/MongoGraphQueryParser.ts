@@ -1,12 +1,11 @@
 import { EdgeQuery, InternalNodeQuery, RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import { MatchQueryNode } from './graphs/MatchQueryNode';
-import { RootQueryNode } from './graphs/RootQueryNode';
 import { TraversalQueryNode } from './graphs/TraversalQueryNode';
 
 export class MongoGraphQueryParser {
   private parseMatch(subquery: InternalNodeQuery): MatchQueryNode {
     return new MatchQueryNode(
-      { templates: subquery.templates || [] },
+      { templates: subquery.templates, sharedId: subquery.sharedId },
       subquery.traverse?.map(traversal => this.parseTraversal(traversal))
     );
   }
@@ -14,16 +13,13 @@ export class MongoGraphQueryParser {
   private parseTraversal(subquery: EdgeQuery): TraversalQueryNode {
     return new TraversalQueryNode(
       subquery.direction,
-      { types: subquery.types || [] },
+      { types: subquery.types },
       subquery.match?.map(match => this.parseMatch(match))
     );
   }
 
-  parseRoot(query: RelationshipsQuery): RootQueryNode {
-    return new RootQueryNode(
-      { sharedId: query.sharedId },
-      query.traverse?.map(traversal => this.parseTraversal(traversal))
-    );
+  parseRoot(query: RelationshipsQuery): MatchQueryNode {
+    return this.parseMatch(query);
   }
 
   parse(query: RelationshipsQuery) {

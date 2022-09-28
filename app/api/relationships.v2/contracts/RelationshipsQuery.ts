@@ -7,9 +7,7 @@ export interface RootNodeQuery extends NodeQuery {
   sharedId?: string;
 }
 
-export interface InternalNodeQuery extends NodeQuery {
-  templates?: string[];
-}
+export type InternalNodeQuery = RootNodeQuery;
 
 export interface EdgeQuery {
   direction: 'in' | 'out';

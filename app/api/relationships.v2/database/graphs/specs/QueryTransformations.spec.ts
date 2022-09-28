@@ -6,14 +6,13 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';
-import { RootQueryNode } from '../RootQueryNode';
 import { TraversalQueryNode } from '../TraversalQueryNode';
 
 describe('when calling chainsDecomposition()', () => {
   // eslint-disable-next-line max-statements
   it('should return an array of the queries from the chain decomposition of the query', () => {
     /* eslint-disable */
-    const query = new RootQueryNode({ sharedId: 'root' }, [ // Root
+    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
         new MatchQueryNode({}, [ // A
           new TraversalQueryNode('out', {}, [ // A -> B
@@ -30,7 +29,7 @@ describe('when calling chainsDecomposition()', () => {
     ]);
     
 
-    const chain1 = new RootQueryNode({ sharedId: 'root' }, [ // Root
+    const chain1 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
         new MatchQueryNode({}, [ // A
           new TraversalQueryNode('out', {}, [ // A -> B
@@ -40,7 +39,7 @@ describe('when calling chainsDecomposition()', () => {
       ]),
     ]);
 
-    const chain2 = new RootQueryNode({ sharedId: 'root' }, [ // Root
+    const chain2 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
         new MatchQueryNode({}, [ // A
           new TraversalQueryNode('out', {}, [ // A -> D
@@ -50,7 +49,7 @@ describe('when calling chainsDecomposition()', () => {
       ]),
     ]);
 
-    const chain3 = new RootQueryNode({ sharedId: 'root' }, [ // Root
+    const chain3 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
       new TraversalQueryNode('out', {}, [ // R -> C
         new MatchQueryNode({}, []), // C
       ]),
@@ -64,19 +63,19 @@ describe('when calling chainsDecomposition()', () => {
 
 // eslint-disable-next-line max-statements
 describe('when calling inverse()', () => {
-  const chain0 = new RootQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
-  const inverted0 = new RootQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
+  const chain0 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
+  const inverted0 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
 
-  const chain1 = new RootQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
+  const chain1 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
     new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
   ]);
-  const inverted1 = new RootQueryNode({}, [
+  const inverted1 = new MatchQueryNode({}, [
     new TraversalQueryNode('in', {}, [
       new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []),
     ]),
   ]);
 
-  const chain2 = new RootQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
+  const chain2 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
     new TraversalQueryNode('out', { types: ['type1'] }, [
       new MatchQueryNode({}, [
         new TraversalQueryNode('in', { types: ['type2'] }, [
@@ -85,7 +84,7 @@ describe('when calling inverse()', () => {
       ]),
     ]),
   ]);
-  const inverted2 = new RootQueryNode({ sharedId: 'leaf1', templates: ['temp2'] }, [
+  const inverted2 = new MatchQueryNode({ sharedId: 'leaf1', templates: ['temp2'] }, [
     new TraversalQueryNode('out', { types: ['type2'] }, [
       new MatchQueryNode({}, [
         new TraversalQueryNode('in', { types: ['type1'] }, [
@@ -107,7 +106,7 @@ describe('when calling inverse()', () => {
 // eslint-disable-next-line jest/no-focused-tests
 describe('when calling reachesRelationship()', () => {
   it('should return false if no segment <match, traverse, match> of the query would match the given relationship', () => {
-    const query = new RootQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
+    const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
         new MatchQueryNode({ templates: ['temp2'] }, [
           new TraversalQueryNode('in', { types: ['type2'] }, [
@@ -147,7 +146,7 @@ describe('when calling reachesRelationship()', () => {
   });
 
   it('should return the narrowed query that would match the given relationship', () => {
-    const query = new RootQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode({ templates: ['temp1'] }, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
         new MatchQueryNode({ templates: ['temp2'] }, [
           new TraversalQueryNode('in', { types: ['type2'] }, [
@@ -167,7 +166,7 @@ describe('when calling reachesRelationship()', () => {
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
     ).toEqual(
-      new RootQueryNode({ templates: ['temp1'], sharedId: 'entity1' }, [
+      new MatchQueryNode({ templates: ['temp1'], sharedId: 'entity1' }, [
         new TraversalQueryNode('out', { types: ['type1'], _id: 'rel1' }, [
           new MatchQueryNode({ templates: ['temp2'], sharedId: 'entity2' }, []),
         ]),
@@ -180,7 +179,7 @@ describe('when calling reachesRelationship()', () => {
         entity2: { template: 'temp3', sharedId: 'entity2' },
       })
     ).toEqual(
-      new RootQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode({ templates: ['temp1'] }, [
         new TraversalQueryNode('out', { types: ['type1'] }, [
           new MatchQueryNode({ templates: ['temp2'], sharedId: 'entity1' }, [
             new TraversalQueryNode('in', { types: ['type2'], _id: 'rel1' }, [
@@ -197,7 +196,7 @@ describe('when calling reachesRelationship()', () => {
         entity2: { template: 'temp4', sharedId: 'entity2' },
       })
     ).toEqual(
-      new RootQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode({ templates: ['temp1'] }, [
         new TraversalQueryNode('out', { types: ['type1'] }, [
           new MatchQueryNode({ templates: ['temp2'] }, [
             new TraversalQueryNode('in', { types: ['type2'] }, [
@@ -215,16 +214,16 @@ describe('when calling reachesRelationship()', () => {
 });
 
 describe('when calling a method that only supports chain queries', () => {
-  const query0 = new RootQueryNode({ sharedId: 'root' }, [
+  const query0 = new MatchQueryNode({ sharedId: 'root' }, [
     new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
     new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
   ]);
 
-  const query1 = new RootQueryNode({ sharedId: 'root' }, [
+  const query1 = new MatchQueryNode({ sharedId: 'root' }, [
     new TraversalQueryNode('out', {}, [new MatchQueryNode({}, []), new MatchQueryNode({}, [])]),
   ]);
 
-  const query2 = new RootQueryNode({ sharedId: 'root' }, [
+  const query2 = new MatchQueryNode({ sharedId: 'root' }, [
     new TraversalQueryNode('out', {}, [
       new MatchQueryNode({}, [
         new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
