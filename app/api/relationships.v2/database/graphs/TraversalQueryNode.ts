@@ -1,5 +1,4 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { ObjectId } from 'mongodb';
 import { MatchQueryNode } from './MatchQueryNode';
 import { NonChainQueryError } from './NonChainQueryErrror';
 import { QueryNode } from './QueryNode';
@@ -9,11 +8,6 @@ interface TraversalFilters {
   _id?: string;
   types?: string[];
 }
-
-const directionToField = {
-  in: 'to',
-  out: 'from',
-} as const;
 
 const inverseOfDirection = {
   in: 'out',
@@ -41,10 +35,10 @@ export class TraversalQueryNode extends QueryNode {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected getProjection() {
+  getProjection() {
     return {
       type: 1,
-    };
+    } as const;
   }
 
   addMatch(match: MatchQueryNode) {
@@ -62,44 +56,6 @@ export class TraversalQueryNode extends QueryNode {
 
   getParent() {
     return this.parent;
-  }
-
-  compile(index: number): object[] {
-    return [
-      {
-        $lookup: {
-          as: `traversal-${index}`,
-          from: 'relationships',
-          let: { sharedId: '$sharedId', visited: '$visited' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    ...(this.filters._id
-                      ? [{ $eq: ['$_id', new ObjectId(this.filters._id)] }]
-                      : []),
-                    { $eq: ['$$sharedId', `$${directionToField[this.direction]}`] },
-                    { $not: [{ $in: ['$_id', '$$visited'] }] },
-                    ...(this.filters.types?.length
-                      ? [{ $in: ['$type', this.filters.types.map(t => new ObjectId(t))] }]
-                      : []),
-                  ],
-                },
-              },
-            },
-            {
-              $addFields: {
-                visited: { $concatArrays: ['$$visited', ['$_id']] },
-              },
-            },
-            ...this.compileChildren(),
-            ...this.projectAndArrangeTraversals(),
-            ...this.unwind(),
-          ],
-        },
-      },
-    ];
   }
 
   chainsDecomposition(): TraversalQueryNode[] {

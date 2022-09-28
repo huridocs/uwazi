@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { ObjectId } from 'mongodb';
 import { MatchQueryNode } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
@@ -26,10 +25,10 @@ export class RootQueryNode extends QueryNode {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected getProjection() {
+  getProjection() {
     return {
       sharedId: 1,
-    };
+    } as const;
   }
 
   addTraversal(traversal: TraversalQueryNode) {
@@ -39,31 +38,6 @@ export class RootQueryNode extends QueryNode {
 
   getTraversals() {
     return this.traversals as readonly TraversalQueryNode[];
-  }
-
-  compile() {
-    return [
-      {
-        $match: {
-          $expr: {
-            $and: [
-              ...(this.filters.sharedId ? [{ $eq: ['$sharedId', this.filters.sharedId] }] : []),
-              ...(this.filters.templates?.length
-                ? [{ $in: ['$template', this.filters.templates.map(t => new ObjectId(t))] }]
-                : []),
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          visited: [],
-        },
-      },
-      ...this.compileChildren(),
-      ...this.projectAndArrangeTraversals(),
-      ...this.unwind(),
-    ];
   }
 
   chainsDecomposition(): RootQueryNode[] {

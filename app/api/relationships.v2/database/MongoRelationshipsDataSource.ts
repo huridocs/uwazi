@@ -12,6 +12,7 @@ import {
 } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { RootQueryNode } from './graphs/RootQueryNode';
+import { compileQuery } from './MongoGraphQueryCompiler';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -116,7 +117,8 @@ export class MongoRelationshipsDataSource
 
   getByQuery(query: RelationshipsQuery) {
     const parser = new MongoGraphQueryParser();
-    const pipeline = parser.parse(query);
+    const parsed = parser.parse(query);
+    const pipeline = compileQuery(parsed);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
       [
@@ -131,7 +133,7 @@ export class MongoRelationshipsDataSource
   }
 
   getByModelQuery(query: RootQueryNode) {
-    const pipeline = query.compile();
+    const pipeline = compileQuery(query);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
       [

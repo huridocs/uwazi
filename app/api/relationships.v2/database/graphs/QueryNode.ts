@@ -1,18 +1,9 @@
 import { NonChainQueryError } from './NonChainQueryErrror';
 
 export abstract class QueryNode {
-  abstract compile(index: number): object[];
-
   protected abstract getChildrenNodes(): QueryNode[];
 
-  protected abstract getProjection(): Record<string, 1 | {}>;
-
-  protected compileChildren() {
-    return this.getChildrenNodes().reduce<object[]>(
-      (reduced, nested, index) => reduced.concat(nested.compile(index)),
-      []
-    );
-  }
+  abstract getProjection(): Record<string, 1 | {}>;
 
   protected projectAndArrangeTraversals() {
     const traversalFields = [];

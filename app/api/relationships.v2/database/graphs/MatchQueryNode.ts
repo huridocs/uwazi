@@ -1,6 +1,5 @@
 /* eslint-disable max-statements */
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { ObjectId } from 'mongodb';
 import { QueryNode } from './QueryNode';
 import { RootQueryNode } from './RootQueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
@@ -9,11 +8,6 @@ interface MatchFilters {
   sharedId?: string;
   templates?: string[];
 }
-
-const parentDirectionToField = {
-  in: 'from',
-  out: 'to',
-} as const;
 
 export class MatchQueryNode extends QueryNode {
   public filters: MatchFilters;
@@ -33,10 +27,10 @@ export class MatchQueryNode extends QueryNode {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected getProjection() {
+  getProjection() {
     return {
       sharedId: 1,
-    };
+    } as const;
   }
 
   addTraversal(traversal: TraversalQueryNode) {
@@ -54,44 +48,6 @@ export class MatchQueryNode extends QueryNode {
 
   getParent() {
     return this.parent;
-  }
-
-  compile(index: number): object[] {
-    const sourceField = parentDirectionToField[this.parent!.direction];
-    return [
-      {
-        $lookup: {
-          as: `traversal-${index}`,
-          from: 'entities',
-          let: { [sourceField]: `$${sourceField}`, visited: '$visited' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    ...(this.filters.sharedId
-                      ? [{ $eq: ['$sharedId', this.filters.sharedId] }]
-                      : []),
-                    { $eq: [`$$${sourceField}`, '$sharedId'] },
-                    ...(this.filters.templates?.length
-                      ? [{ $in: ['$template', this.filters.templates.map(t => new ObjectId(t))] }]
-                      : []),
-                  ],
-                },
-              },
-            },
-            {
-              $addFields: {
-                visited: '$$visited',
-              },
-            },
-            ...this.compileChildren(),
-            ...this.projectAndArrangeTraversals(),
-            ...this.unwind(),
-          ],
-        },
-      },
-    ];
   }
 
   chainsDecomposition(): MatchQueryNode[] {
