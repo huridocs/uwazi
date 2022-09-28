@@ -72,6 +72,7 @@ class DatePicker extends Component {
         selected={datePickerValue}
         locale={locale}
         placeholderText={format || defaultFormat}
+        popperProps={{ strategy: 'fixed' }}
         isClearable
         fixedHeight
         showYearDropdown
