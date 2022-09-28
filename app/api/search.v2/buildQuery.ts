@@ -138,7 +138,10 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
         ],
       },
     },
-    ...snippetsHighlight(query, searchParams.search?.properties.map(property => ({ [property]: {} }))),
+    ...snippetsHighlight(
+      query,
+      searchParams.search?.properties?.map(property => ({ [property]: {} }))
+    ),
     sort: buildSortQuery(query),
     from: query.page?.offset || 0,
     size: query.page?.limit || 30,

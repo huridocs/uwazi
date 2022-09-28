@@ -1,7 +1,6 @@
 import { elastic } from 'api/search';
 import { SearchQuery } from 'shared/types/SearchQueryType';
 import templatesModel from 'api/templates/templates';
-import dictionariesModel from 'api/thesauri/dictionariesModel';
 import propertiesHelper from 'shared/comonProperties';
 import { PropertySchema } from 'shared/types/commonTypes';
 
@@ -70,7 +69,7 @@ async function extractSearchParams(query: SearchQuery) {
   };
 }
 
-function snippetsHighlight(query: SearchQuery, fields: { [key: string]: {} }[]) {
+function snippetsHighlight(query: SearchQuery, fields: { [key: string]: {} }[] | undefined) {
   const snippets = query.fields && query.fields.includes('snippets');
   return snippets
     ? {
