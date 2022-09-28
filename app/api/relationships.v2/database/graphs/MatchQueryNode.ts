@@ -1,13 +1,37 @@
-/* eslint-disable max-statements */
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { QueryNode } from './QueryNode';
-// import { RootQueryNode } from './RootQueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
 
 interface MatchFilters {
   sharedId?: string;
   templates?: string[];
 }
+
+interface EntitiesMap {
+  [sharedId: string]: { sharedId: string; template: string };
+}
+
+const sortEntitiesInTraversalOrder = (
+  entityData: EntitiesMap,
+  relationship: Relationship,
+  direction: 'in' | 'out'
+) => {
+  const relSideGivenDirection = {
+    out: {
+      first: 'from',
+      second: 'to',
+    } as const,
+    in: {
+      first: 'to',
+      second: 'from',
+    } as const,
+  } as const;
+
+  const first = entityData[relationship[relSideGivenDirection[direction].first]];
+  const second = entityData[relationship[relSideGivenDirection[direction].second]];
+
+  return [first, second];
+};
 
 export class MatchQueryNode extends QueryNode {
   public filters: MatchFilters;
@@ -68,70 +92,98 @@ export class MatchQueryNode extends QueryNode {
     return decomposition;
   }
 
-  filtersWouldMatch(match: { sharedId: string; template: string }) {
+  wouldMatch(match: { sharedId: string; template: string }) {
     return (
       (this.filters.sharedId ? this.filters.sharedId === match.sharedId : true) &&
       (this.filters.templates ? this.filters.templates.includes(match.template) : true)
     );
   }
 
-  reachesRelationship(
-    traverse: Relationship,
-    matchData: { [sharedId: string]: { sharedId: string; template: string } }
-  ): MatchQueryNode | false {
+  private static buildQueryFittedToRelationship(
+    firstSharedId: string,
+    relationshipId: string,
+    direction: 'in' | 'out',
+    secondSharedId: string
+  ) {
+    return new MatchQueryNode(
+      {
+        sharedId: firstSharedId,
+      },
+      [
+        new TraversalQueryNode(
+          direction,
+          {
+            _id: relationshipId,
+          },
+          [
+            new MatchQueryNode({
+              sharedId: secondSharedId,
+            }),
+          ]
+        ),
+      ]
+    );
+  }
+
+  private getCurrentStepToMatchRelationship() {
     this.validateIsChain();
 
-    const node1 = this;
-    const traversal = this.traversals[0];
-
-    traversal?.validateIsChain();
-
-    const node2 = traversal?.getMatches()[0];
-    if (!traversal || !node2) return false;
-
-    const fromMatch = matchData[traverse[traversal.direction === 'out' ? 'from' : 'to']];
-    const toMatch = matchData[traverse[traversal.direction === 'out' ? 'to' : 'from']];
-
-    const satisfies =
-      node1.filtersWouldMatch(fromMatch) &&
-      traversal.wouldTraverse(fromMatch.sharedId, traverse, toMatch.sharedId) &&
-      node2.filtersWouldMatch(toMatch);
-
-    // verified equal -----------------------
-
-    if (satisfies) {
-      const newRoot = new MatchQueryNode(
-        {
-          ...this.filters,
-          sharedId: fromMatch.sharedId,
-        },
-        [
-          new TraversalQueryNode(
-            traversal.direction,
-            {
-              ...traversal.filters,
-              _id: traverse._id,
-            },
-            [
-              new MatchQueryNode({
-                ...node2.filters,
-                sharedId: toMatch.sharedId,
-              }),
-            ]
-          ),
-        ]
-      );
-      return newRoot;
+    const traversalNode = this.traversals[0];
+    if (!traversalNode) {
+      return false;
     }
-    // verified equal -----------------------
+    traversalNode.validateIsChain();
 
-    const nextSatisfies = node2.reachesRelationship(traverse, matchData);
+    const targetMatchNode = traversalNode.getMatches()[0];
+    if (!targetMatchNode) {
+      return false;
+    }
 
-    if (nextSatisfies) {
-      const newRoot = new MatchQueryNode({ ...this.filters }, [
-        new TraversalQueryNode(traversal.direction, { ...traversal.filters }, [nextSatisfies]),
+    return [this, traversalNode, targetMatchNode] as const;
+  }
+
+  // eslint-disable-next-line max-statements
+  reachesRelationship(relationship: Relationship, entityData: EntitiesMap): MatchQueryNode | false {
+    const currentStep = this.getCurrentStepToMatchRelationship();
+
+    if (!currentStep) {
+      return false;
+    }
+
+    const [currentMatchNode, traversalNode, targetMatchNode] = currentStep;
+
+    const [toMatchBeforeTraverse, toMatchAfterTraverse] = sortEntitiesInTraversalOrder(
+      entityData,
+      relationship,
+      traversalNode.direction
+    );
+
+    const thisStepWouldReachRelationship =
+      currentMatchNode.wouldMatch(toMatchBeforeTraverse) &&
+      traversalNode.wouldTraverse(
+        toMatchBeforeTraverse.sharedId,
+        relationship,
+        toMatchAfterTraverse.sharedId
+      ) &&
+      targetMatchNode.wouldMatch(toMatchAfterTraverse);
+
+    if (thisStepWouldReachRelationship) {
+      return MatchQueryNode.buildQueryFittedToRelationship(
+        toMatchBeforeTraverse.sharedId,
+        relationship._id,
+        traversalNode.direction,
+        toMatchAfterTraverse.sharedId
+      );
+    }
+
+    const nextStepReachingQuery = targetMatchNode.reachesRelationship(relationship, entityData);
+
+    if (nextStepReachingQuery) {
+      return new MatchQueryNode({ ...currentMatchNode.filters }, [
+        new TraversalQueryNode(traversalNode.direction, { ...traversalNode.filters }, [
+          nextStepReachingQuery,
+        ]),
       ]);
-      return newRoot;
     }
 
     return false;

@@ -2,7 +2,6 @@ import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode } from './MatchQueryNode';
 import { NonChainQueryError } from './NonChainQueryErrror';
 import { QueryNode } from './QueryNode';
-import { RootQueryNode } from './RootQueryNode';
 
 interface TraversalFilters {
   _id?: string;
@@ -19,7 +18,7 @@ export class TraversalQueryNode extends QueryNode {
 
   public filters: TraversalFilters;
 
-  private parent?: MatchQueryNode | RootQueryNode;
+  private parent?: MatchQueryNode;
 
   private matches: MatchQueryNode[] = [];
 
@@ -50,7 +49,7 @@ export class TraversalQueryNode extends QueryNode {
     return this.matches as readonly MatchQueryNode[];
   }
 
-  setParent(parent: MatchQueryNode | RootQueryNode) {
+  setParent(parent: MatchQueryNode) {
     this.parent = parent;
   }
 

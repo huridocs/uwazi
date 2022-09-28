@@ -166,9 +166,9 @@ describe('when calling reachesRelationship()', () => {
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
     ).toEqual(
-      new MatchQueryNode({ templates: ['temp1'], sharedId: 'entity1' }, [
-        new TraversalQueryNode('out', { types: ['type1'], _id: 'rel1' }, [
-          new MatchQueryNode({ templates: ['temp2'], sharedId: 'entity2' }, []),
+      new MatchQueryNode({ sharedId: 'entity1' }, [
+        new TraversalQueryNode('out', { _id: 'rel1' }, [
+          new MatchQueryNode({ sharedId: 'entity2' }, []),
         ]),
       ])
     );
@@ -181,9 +181,9 @@ describe('when calling reachesRelationship()', () => {
     ).toEqual(
       new MatchQueryNode({ templates: ['temp1'] }, [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ templates: ['temp2'], sharedId: 'entity1' }, [
-            new TraversalQueryNode('in', { types: ['type2'], _id: 'rel1' }, [
-              new MatchQueryNode({ templates: ['temp3'], sharedId: 'entity2' }, []),
+          new MatchQueryNode({ sharedId: 'entity1' }, [
+            new TraversalQueryNode('in', { _id: 'rel1' }, [
+              new MatchQueryNode({ sharedId: 'entity2' }, []),
             ]),
           ]),
         ]),
@@ -200,9 +200,9 @@ describe('when calling reachesRelationship()', () => {
         new TraversalQueryNode('out', { types: ['type1'] }, [
           new MatchQueryNode({ templates: ['temp2'] }, [
             new TraversalQueryNode('in', { types: ['type2'] }, [
-              new MatchQueryNode({ templates: ['temp3'], sharedId: 'entity1' }, [
-                new TraversalQueryNode('out', { types: ['type3'], _id: 'rel1' }, [
-                  new MatchQueryNode({ templates: ['temp4'], sharedId: 'entity2' }, []),
+              new MatchQueryNode({ sharedId: 'entity1' }, [
+                new TraversalQueryNode('out', { _id: 'rel1' }, [
+                  new MatchQueryNode({ sharedId: 'entity2' }, []),
                 ]),
               ]),
             ]),
