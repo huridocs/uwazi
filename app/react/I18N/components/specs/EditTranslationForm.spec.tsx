@@ -47,10 +47,11 @@ describe('EditTranslationForm', () => {
           },
           {
             type: 'Entity',
-            label: 'State',
+            label: 'Template name',
             id: '5bfbb1a0471dd0fc16ada146',
             values: {
               Title: 'Title',
+              'Untranslated entity property': 'Untranslated entity property',
             },
           },
         ],
@@ -70,10 +71,11 @@ describe('EditTranslationForm', () => {
           },
           {
             type: 'Entity',
-            label: 'State',
+            label: 'Template name',
             id: '5bfbb1a0471dd0fc16ada146',
             values: {
-              Title: 'Title',
+              Title: 'Título',
+              'Untranslated entity property': 'Untranslated entity property',
             },
           },
         ],
@@ -159,6 +161,70 @@ describe('EditTranslationForm', () => {
                 label: 'User Interface',
                 type: 'Uwazi UI',
                 values: { Home: 'Nueva traducción!', Library: 'Biblioteca', Search: 'Busqueda' },
+              },
+            ],
+            locale: 'es',
+          },
+        ])
+      );
+    });
+  });
+
+  describe('filtering', () => {
+    beforeEach(() => {
+      jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
+      render('5bfbb1a0471dd0fc16ada146');
+      const toggleButton = screen.getByRole('checkbox');
+      fireEvent.click(toggleButton);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should filter to show only untranslated terms', () => {
+      expect(screen.getByText('Title').parentElement!).toHaveClass('list-group-item hidden');
+      expect(screen.getByText('Untranslated entity property').parentElement!).toHaveClass(
+        'list-group-item'
+      );
+    });
+
+    it('should submit with all the values even when filtering', async () => {
+      const inputField = screen.getAllByDisplayValue('Untranslated entity property');
+      const submitButton = screen.getByText('Save').parentElement!;
+
+      fireEvent.change(inputField[1], {
+        target: { value: 'Traducción para la propiedad' },
+      });
+
+      fireEvent.click(submitButton);
+
+      await waitFor(() =>
+        expect(actions.saveTranslations).toHaveBeenCalledWith([
+          {
+            contexts: [
+              {
+                id: '5bfbb1a0471dd0fc16ada146',
+                label: 'Template name',
+                type: 'Entity',
+                values: {
+                  Title: 'Title',
+                  'Untranslated entity property': 'Untranslated entity property',
+                },
+              },
+            ],
+            locale: 'en',
+          },
+          {
+            contexts: [
+              {
+                id: '5bfbb1a0471dd0fc16ada146',
+                label: 'Template name',
+                type: 'Entity',
+                values: {
+                  Title: 'Título',
+                  'Untranslated entity property': 'Traducción para la propiedad',
+                },
               },
             ],
             locale: 'es',

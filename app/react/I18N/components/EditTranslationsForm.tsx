@@ -3,78 +3,16 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
-import { IImmutable } from 'shared/types/Immutable';
-import { generateID } from 'shared/IDGenerator';
-import { ClientTranslationSchema, IStore } from 'app/istore';
+import { IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
 import { Icon, ToggleButton } from 'app/UI';
 import { actions, Translate, I18NLink, t } from 'app/I18N';
 import { SelectFileButton } from 'app/App/SelectFileButton';
-
-type formDataType = {
-  key: string;
-  formID: string;
-  values: {
-    locale: string;
-    value: string;
-  }[];
-};
-
-const prepareFormValues = (
-  translations: IImmutable<ClientTranslationSchema[]>,
-  context: string
-) => {
-  const contextTranslations = translations.toJS().map((translation: ClientTranslationSchema) => {
-    const currentContext = translation.contexts?.filter(
-      translationContext => translationContext?.id === context
-    );
-    return { ...translation, contexts: currentContext };
-  });
-
-  const contextTerms = Object.keys(contextTranslations[0].contexts[0].values).sort();
-
-  const contextValues = contextTranslations.map((byLang: ClientTranslationSchema) => ({
-    locale: byLang.locale,
-    ...byLang?.contexts?.[0].values,
-  }));
-
-  const formData = contextTerms.map(contextTerm => ({
-    key: contextTerm,
-    formID: generateID(6, 6),
-    values: contextValues.map((val: { [key: string]: any; locale: any }) => ({
-      locale: val.locale,
-      value: val[contextTerm],
-    })),
-  }));
-
-  return {
-    contextLabel: contextTranslations[0].contexts[0].label,
-    formData,
-    contextTranslations,
-  };
-};
-
-const prepareTranslationsToSave = (
-  currentTranslations: ClientTranslationSchema[],
-  formData: formDataType[]
-): ClientTranslationSchema[] => {
-  const preparedTranslations = currentTranslations.map(translation => {
-    const { locale } = translation;
-    const updatedContext = translation?.contexts?.map(context => {
-      const updatedValues = Object.keys(context.values || {}).reduce((updatedKeys, key) => {
-        const valuesForKey = formData.find(data => data.key === key);
-        const updatedValue = valuesForKey?.values.find(value => value.locale === locale);
-        return {
-          ...updatedKeys,
-          [key]: updatedValue?.value,
-        };
-      }, {});
-      return { ...context, values: updatedValues };
-    });
-    return { ...translation, contexts: updatedContext };
-  });
-  return preparedTranslations;
-};
+import {
+  prepareFormValues,
+  prepareTranslationsToSave,
+  formDataType,
+} from '../actions/translationsFormActions';
 
 const importButton = (action: () => any) => (
   <SelectFileButton onFileImported={action}>
@@ -110,7 +48,8 @@ const EditTranslationsFormComponent = ({
   saveTranslations,
   importTranslations,
 }: mappedProps) => {
-  const [toggled, setToggled] = useState(false);
+  const [showUntranslatedOnly, setShowUntranslatedOnly] = useState(false);
+
   const { contextLabel, formData, contextTranslations } = prepareFormValues(translations, context);
 
   const {
@@ -127,10 +66,6 @@ const EditTranslationsFormComponent = ({
     saveTranslations(translationsToSave);
   };
 
-  const handleToggle = () => {
-    setToggled(!toggled);
-  };
-
   return (
     <div className="EditTranslationForm">
       <form onSubmit={handleSubmit(submit)}>
@@ -143,16 +78,26 @@ const EditTranslationsFormComponent = ({
             </div>
             <div className="translation-filter">
               <Translate>Untranslated Terms</Translate>
-              <ToggleButton checked={toggled} onClick={() => handleToggle()} />
+              <ToggleButton
+                checked={showUntranslatedOnly}
+                onClick={() => setShowUntranslatedOnly(!showUntranslatedOnly)}
+              />
             </div>
           </div>
 
           <ul className="list-group">
             {formData.map((data, dataIndex) => (
-              <li key={data.key} className="list-group-item">
+              <li
+                key={data.key}
+                className={
+                  showUntranslatedOnly && !data.hasUntranslatedValues
+                    ? 'list-group-item hidden'
+                    : 'list-group-item'
+                }
+              >
                 <h5>{data.key}</h5>
                 {data.values.map((value: { locale: string; value: string }, valueIndex: number) => (
-                  <div className="form-group" key={value.locale}>
+                  <div key={value.locale} className="form-group">
                     <div className="input-group">
                       <span className="input-group-addon">{value.locale}</span>
                       <input
