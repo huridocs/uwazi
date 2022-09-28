@@ -1,6 +1,6 @@
 .react-datepicker {
-    font-size: $f-size;
-    z-index: 1;
+  font-size: $f-size;
+  z-index: 1;
 }
 
 .react-datepicker__header {
@@ -41,13 +41,12 @@
 .react-datepicker__navigation--years-previous {
   top: 8px;
   border-top-color: $c-grey;
-
 }
-.react-datepicker__navigation--previous{
+.react-datepicker__navigation--previous {
   left: 0;
   border-right-color: $c-grey;
 }
-.react-datepicker__navigation--next{
+.react-datepicker__navigation--next {
   right: 0;
   border-left-color: $c-grey;
 }
@@ -83,7 +82,7 @@
     bottom: 0;
     box-sizing: border-box;
     color: #fff;
-    content: "\D7";
+    content: '\D7';
     cursor: pointer;
     font-size: $f-size-sm;
     height: 16px;
@@ -93,7 +92,6 @@
     text-align: center;
   }
 }
-
 
 .react-datepicker__triangle {
   left: 30px;
@@ -105,7 +103,6 @@
   margin-top: -7px;
 }
 
-
 .react-datepicker__day--keyboard-selected {
   background-color: $c-primary;
 }
@@ -115,7 +112,6 @@
 .react-datepicker__day--outside-month {
   color: $c-grey-light;
 }
-
 
 .react-datepicker__close-icon,
 .react-datepicker__delete-icon {
@@ -128,7 +124,6 @@
     color: $c-white;
   }
 }
-
 
 .multidate {
   .react-datepicker__input-container {
@@ -148,6 +143,12 @@
   }
 
   .multidate-range-clear-float {
-    clear:both;
+    clear: both;
+  }
+}
+
+html[dir='rtl'] {
+  .react-datepicker__triangle {
+    transform: none !important;
   }
 }
