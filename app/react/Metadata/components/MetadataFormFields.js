@@ -3,9 +3,10 @@
 import { FormGroup } from 'app/Forms';
 import { t, Translate } from 'app/I18N';
 import { preloadOptionsLimit } from 'shared/config';
-import Immutable from 'immutable';
+import Immutable, { Map } from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import ID from 'shared/uniqueID';
 import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -14,6 +15,8 @@ import { generateID } from 'shared/IDGenerator';
 import { bindActionCreators } from 'redux';
 import Tip from 'app/Layout/Tip';
 
+import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
+import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
 import {
   DatePicker,
   DateRange,
@@ -34,6 +37,7 @@ import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
+import AddThesauriValueModal from './AddThesauriValueModal';
 
 const translateOptions = thesauri =>
   thesauri
@@ -77,6 +81,33 @@ const groupSameRelationshipFields = fields =>
     .filter(f => f);
 
 class MetadataFormFields extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showAddThesauriValueModal: false,
+      multiselectThesauri: new Map(),
+    };
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  onAddThesauriValueSaved(thesauri, newValue) {
+    const newThesauri = thesauri.toJS();
+    const newValueItem = { label: newValue.value, id: ID() };
+    if (newValue.group === 'root') {
+      newThesauri.values.push(newValueItem);
+    } else {
+      newThesauri.values.forEach(value => {
+        if (value.id === newValue.group) {
+          value.values.push(newValueItem);
+        }
+      });
+    }
+    const sanitizedThesauri = sanitizeThesauri(newThesauri);
+    console.log(sanitizedThesauri);
+    // this.props.saveThesaurus(sanitizedThesauri);
+    // this.setState({ showAddThesauriValueModal: false });
+  }
+
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
@@ -108,8 +139,17 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
+            <AddThesauriValueModal
+              values={translateOptions(thesauri)}
+              isOpen={this.state.showAddThesauriValueModal}
+              onCancel={() => this.setState({ showAddThesauriValueModal: false })}
+              onAccept={newValue => this.onAddThesauriValueSaved(thesauri, newValue)}
+            />
             <div className="multiselect-add-value">
-              <button type="button">
+              <button
+                type="button"
+                onClick={() => this.setState({ showAddThesauriValueModal: true })}
+              >
                 <Translate>add value</Translate>
               </button>
             </div>
@@ -376,6 +416,7 @@ MetadataFormFields.defaultProps = {
 };
 
 MetadataFormFields.propTypes = {
+  saveThesaurus: PropTypes.func.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -430,7 +471,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   if (ownProps.boundChange) {
     return { change: ownProps.boundChange };
   }
-  return bindActionCreators({ change: formActions.change }, dispatch);
+  return bindActionCreators({ saveThesaurus, change: formActions.change }, dispatch);
 };
 
 export { MetadataFormFields, translateOptions };
