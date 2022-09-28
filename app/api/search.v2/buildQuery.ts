@@ -54,7 +54,7 @@ const fullTextSearch = (
             score_mode: 'max',
             inner_hits: {
               _source: false,
-              ...snippetsHighlight(query),
+              ...snippetsHighlight(query, [{ 'fullText_*': {} }]),
             },
             query: {
               [searchMethod]: {
@@ -69,8 +69,14 @@ const fullTextSearch = (
 
 const languageFilter = (language: string) => [{ term: { language } }];
 
-const textSearch = (searchString: string | undefined, searchMethod: string | undefined) =>
-  searchString && searchMethod ? [{ [searchMethod]: { query: searchString } }] : [];
+const textSearch = (
+  searchString: string | undefined,
+  searchMethod: string | undefined,
+  properties: string[] = []
+) =>
+  searchString && searchMethod
+    ? [{ [searchMethod]: { query: searchString, fields: properties } }]
+    : [];
 
 const termsFilter = (query: SearchQuery, propertyName: string) =>
   query.filter?.[propertyName] ? [{ terms: { [propertyName]: [query.filter[propertyName]] } }] : [];
@@ -121,27 +127,18 @@ export const buildQuery = async (query: SearchQuery, language: string): Promise<
                   query,
                   searchParams.fullText?.method
                 ),
-                ...textSearch(searchParams.search?.string, searchParams.search?.method),
+                ...textSearch(
+                  searchParams.search?.string,
+                  searchParams.search?.method,
+                  searchParams.search?.properties
+                ),
               ],
             },
           },
         ],
       },
     },
-    highlight: {
-      order: 'score',
-      pre_tags: ['<b>'],
-      post_tags: ['</b>'],
-      encoder: 'html',
-      number_of_fragments: 9999,
-      type: 'fvh',
-      fragment_size: 300,
-      fragmenter: 'span',
-      fields: {
-        title: {},
-        'metadata.*': {},
-      },
-    },
+    ...snippetsHighlight(query, searchParams.search?.properties.map(property => ({ [property]: {} }))),
     sort: buildSortQuery(query),
     from: query.page?.offset || 0,
     size: query.page?.limit || 30,
