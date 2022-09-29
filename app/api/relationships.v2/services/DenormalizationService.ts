@@ -42,7 +42,6 @@ export class DenormalizationService {
     await Promise.all(
       properties.map(async property => {
         const { query } = property;
-        // @ts-ignore
         const ast = parser.parseRoot(query);
 
         const chains = ast.chainsDecomposition();
