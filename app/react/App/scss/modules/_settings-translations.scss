@@ -46,8 +46,13 @@
       }
     }
   }
+  .alert-info {
+    margin-top: 15px;
+  }
   .error {
+    font-size: $f-size-sm;
     margin-top: 5px;
+    margin-left: 5px;
     font-weight: bold;
     color: $c-type-0;
   }

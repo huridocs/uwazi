@@ -88,9 +88,12 @@ const EditTranslationsFormComponent = ({
           </div>
 
           {noUntranslatedTerms && showUntranslatedOnly ? (
-            <h4>
-              <Translate>There are no untranslated terms</Translate>
-            </h4>
+            <div className="alert alert-info">
+              <Icon icon="info-circle" size="2x" />
+              <div>
+                <Translate>There are no untranslated terms</Translate>
+              </div>
+            </div>
           ) : (
             <ul className="list-group">
               {formData.map((data, dataIndex) => (
