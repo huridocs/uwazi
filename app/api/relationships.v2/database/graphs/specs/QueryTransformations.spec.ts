@@ -1,8 +1,3 @@
-/* eslint-disable jest/no-focused-tests */
-/* eslint-disable max-statements */
-/* eslint-disable jest/no-focused-tests */
-/* eslint-disable max-statements */
-// import util from 'util';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';
@@ -54,9 +49,8 @@ describe('when calling chainsDecomposition()', () => {
         new MatchQueryNode({}, []), // C
       ]),
     ]);
-
-
     /* eslint-enable */
+
     expect(query.chainsDecomposition()).toEqual([chain1, chain2, chain3]);
   });
 });
@@ -103,7 +97,6 @@ describe('when calling inverse()', () => {
   });
 });
 
-// eslint-disable-next-line jest/no-focused-tests
 describe('when calling reachesRelationship()', () => {
   it('should return false if no segment <match, traverse, match> of the query would match the given relationship', () => {
     const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
