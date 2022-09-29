@@ -430,3 +430,10 @@ $c-sidebar: $c-white;
     }
   }
 }
+
+.add-thesauriValue-modal {
+  .error {
+    color: $c-type-1;
+    font-size: 0.9em;
+  }
+}

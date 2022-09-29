@@ -2,10 +2,11 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
+import { translateOptions } from './MetadataFormFields';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;
-  values: Array<any>;
+  thesauri: any;
   onAccept: Function;
   onCancel: Function;
 }
@@ -17,14 +18,17 @@ type FormInputs = {
 
 const AddThesauriValueModal = ({
   isOpen,
-  values,
+  thesauri,
   onAccept,
   onCancel,
 }: AddThesauriValueModalProps) => {
+  const values: any[] = translateOptions(thesauri);
   const {
     register,
     handleSubmit,
-    // formState: { errors },
+    formState: { errors },
+    getValues,
+    reset,
   } = useForm<FormInputs>({ defaultValues: { group: 'root' } });
 
   const onSubmitted = (submittedValues: any) => {
@@ -53,32 +57,44 @@ const AddThesauriValueModal = ({
         id="group"
       >
         {selectValues.map(option => (
-          <option value={option.value}>{option.label}</option>
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
         ))}
       </select>
     </>
   );
 
-  // validateDuplicates(newValue: { group: string; value: string }): boolean {
-  //   const { values } = this.props;
-  //   let innerValues = values;
-  //   if (newValue.group !== 'root') {
-  //     innerValues = values.find(value => value.id === newValue.group)?.values || [];
-  //   }
-  //   const index = innerValues.findIndex(value => value.label === newValue.value);
-  //   return index === -1;
-  // }
+  const validateDuplicates = (newValue: FormInputs): boolean => {
+    let innerValues = values;
+    if (newValue.group !== 'root') {
+      innerValues = values.find(value => value.id === newValue.group)?.values || [];
+    }
+    const index = innerValues.findIndex(value => value.label === newValue.value);
+    return index === -1;
+  };
 
   const selectValues = createSelectValues();
 
   return (
-    <Modal isOpen={isOpen} type="info">
-      <form onSubmit={handleSubmit(onSubmitted)} className="file-form">
+    <Modal isOpen={isOpen} type="info" className="add-thesauriValue-modal">
+      <form
+        onSubmit={async e => {
+          e.preventDefault();
+          e.stopPropagation();
+          await handleSubmit(onSubmitted)(e);
+        }}
+        className="file-form"
+      >
         <Modal.Header>
           <Translate>Add thesaurus value</Translate>
         </Modal.Header>
         <Modal.Body>
-          {/* {errors.name && <div>{errors.name}</div>} */}
+          {errors.value && (
+            <p className="error" role="alert">
+              Selected group has the value provided. Duplicate values not allowed.
+            </p>
+          )}
           {selectValues.length > 1 && renderGroupSelect(selectValues)}
           <label htmlFor="newThesauriValue">
             <Translate>Value</Translate>
@@ -86,6 +102,7 @@ const AddThesauriValueModal = ({
           <input
             {...register('value', {
               required: true,
+              validate: () => validateDuplicates(getValues()),
             })}
             className="form-control"
             placeholder="value"
@@ -97,7 +114,10 @@ const AddThesauriValueModal = ({
           <button
             type="button"
             className="btn btn-default cancel-button"
-            onClick={() => onCancel()}
+            onClick={() => {
+              reset();
+              onCancel();
+            }}
           >
             <Translate>Cancel</Translate>
           </button>
