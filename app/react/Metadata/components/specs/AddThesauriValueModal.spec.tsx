@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import Immutable from 'immutable';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import AddThesauriValueModal, { AddThesauriValueModalProps } from '../AddThesauriValueModal';
@@ -21,40 +20,28 @@ describe('Add Add thesauri value', () => {
       isOpen: true,
       onAccept: jest.fn(),
       onCancel: () => {},
-      thesauri: {},
+      values: [],
     };
 
     it('should display groups', async () => {
-      props.thesauri = Immutable.fromJS({
-        _id: 1,
-        name: 'thesauri',
-        values: [
-          { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
-        ],
-      });
+      props.values = [
+        { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
+      ];
       render(props);
       const select = screen.getByRole('combobox');
       expect(select).toBeInTheDocument();
     });
 
     it('should not display groups', async () => {
-      props.thesauri = Immutable.fromJS({
-        _id: 2,
-        name: 'thesauri',
-        values: [{ label: 'label1', id: 'id1' }],
-      });
+      props.values = [{ label: 'label1', id: 'id1' }];
       render(props);
       expect(screen.queryByRole('combobox')).toBeNull();
     });
 
     it('should call onAccept when form submitted', async () => {
-      props.thesauri = Immutable.fromJS({
-        _id: 3,
-        name: 'thesauri',
-        values: [
-          { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
-        ],
-      });
+      props.values = [
+        { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
+      ];
       render(props);
       const valueInput: HTMLInputElement = screen.getByRole('textbox', { name: 'Value' });
       await waitFor(async () => {

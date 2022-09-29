@@ -89,8 +89,8 @@ class MetadataFormFields extends Component {
     };
   }
 
-  onAddThesauriValueSaved(newValue) {
-    const newThesauri = this.state.multiselectThesauri.toJS();
+  onAddThesauriValueSaved(thesauri, newValue) {
+    const newThesauri = thesauri.toJS();
     const newValueItem = { label: newValue.value, id: ID() };
     if (newValue.group === 'root') {
       newThesauri.values.push(newValueItem);
@@ -137,14 +137,16 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
+            <AddThesauriValueModal
+              values={translateOptions(thesauri)}
+              isOpen={this.state.showAddThesauriValueModal}
+              onCancel={() => this.setState({ showAddThesauriValueModal: false })}
+              onAccept={newValue => this.onAddThesauriValueSaved(thesauri, newValue)}
+            />
             <div className="multiselect-add-value">
               <button
                 type="button"
-                onClick={() =>
-                  this.setState({ multiselectThesauri: thesauri }, () =>
-                    this.setState({ showAddThesauriValueModal: true })
-                  )
-                }
+                onClick={() => this.setState({ showAddThesauriValueModal: true })}
               >
                 <Translate>add value</Translate>
               </button>
@@ -393,14 +395,6 @@ class MetadataFormFields extends Component {
               </FormGroup>
             );
           })}
-        {this.state.multiselectThesauri && (
-          <AddThesauriValueModal
-            thesauri={this.state.multiselectThesauri}
-            isOpen={this.state.showAddThesauriValueModal}
-            onCancel={() => this.setState({ showAddThesauriValueModal: false })}
-            onAccept={newValue => this.onAddThesauriValueSaved(newValue)}
-          />
-        )}
       </div>
     );
   }

@@ -2,11 +2,10 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { useForm } from 'react-hook-form';
 import Modal from '../../Layout/Modal';
-import { translateOptions } from './MetadataFormFields';
 
 interface AddThesauriValueModalProps {
   isOpen: boolean;
-  thesauri: any;
+  values: Array<any>;
   onAccept: Function;
   onCancel: Function;
 }
@@ -18,11 +17,10 @@ type FormInputs = {
 
 const AddThesauriValueModal = ({
   isOpen,
-  thesauri,
+  values,
   onAccept,
   onCancel,
 }: AddThesauriValueModalProps) => {
-  const values: any[] = translateOptions(thesauri);
   const {
     register,
     handleSubmit,
