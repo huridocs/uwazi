@@ -52,17 +52,22 @@ import { validateHomePageRoute } from './utils/routeHelpers';
 const onEnter = () => {
   trackPage();
 };
-
-const needsAuth = (_nxtState, replace) => {
-  if (!store.getState().user.get('_id')) {
-    replace('/login');
+const enterLogin = ({ location }) => {
+  if (location.action === 'REPLACE') {
+    window.location.assign('/login');
   }
 };
 
-const enterOnLibrary = (_nxtState, replace) => {
+const needsAuth = (_nxtState, _replace) => {
+  if (!store.getState().user.get('_id')) {
+    window.location.assign('/login');
+  }
+};
+
+const enterOnLibrary = (_nxtState, _replace) => {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
-    return replace('/login');
+    return window.location.assign('/login');
   }
 
   trackPage();
@@ -179,7 +184,7 @@ const routes = (
     <Route path="library/table" component={LibraryTable} onEnter={enterOnLibrary} />
     <Route path="review" component={OneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
-    <Route path="login" component={Login} />
+    <Route path="login" component={Login} onEnter={enterLogin} />
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
     <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
