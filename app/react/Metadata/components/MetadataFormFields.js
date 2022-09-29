@@ -85,7 +85,6 @@ class MetadataFormFields extends Component {
     super(props);
     this.state = {
       showAddThesauriValueModal: false,
-      multiselectThesauri: Immutable.fromJS({ values: [] }),
     };
   }
 

@@ -15,6 +15,15 @@ type FormInputs = {
   value: string;
 };
 
+const createSelectValues = (values: any[]) => {
+  const selectOptions = [{ value: 'root', label: '<root>' }];
+  if (!values) return selectOptions;
+  values
+    .filter((value: any) => value.values)
+    .forEach((value: any) => selectOptions.push({ value: value.id, label: value.label }));
+  return selectOptions;
+};
+
 const AddThesauriValueModal = ({
   isOpen,
   values,
@@ -31,15 +40,6 @@ const AddThesauriValueModal = ({
 
   const onSubmitted = (submittedValues: any) => {
     onAccept(submittedValues);
-  };
-
-  const createSelectValues = () => {
-    const selectOptions = [{ value: 'root', label: '<root>' }];
-    if (!values) return selectOptions;
-    values
-      .filter((value: any) => value.values)
-      .forEach((value: any) => selectOptions.push({ value: value.id, label: value.label }));
-    return selectOptions;
   };
 
   const renderGroupSelect = (selectValues: { value: string; label: string }[]) => (
@@ -72,7 +72,7 @@ const AddThesauriValueModal = ({
     return index === -1;
   };
 
-  const selectValues = createSelectValues();
+  const selectValues = createSelectValues(values);
 
   return (
     <Modal isOpen={isOpen} type="info" className="add-thesauriValue-modal">
@@ -90,7 +90,7 @@ const AddThesauriValueModal = ({
         <Modal.Body>
           {errors.value && (
             <p className="error" role="alert">
-              Selected group has the value provided. Duplicate values not allowed.
+              <Translate>Duplicate values not allowed.</Translate>
             </p>
           )}
           {selectValues.length > 1 && renderGroupSelect(selectValues)}

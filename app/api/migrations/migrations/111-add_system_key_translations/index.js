@@ -54,6 +54,7 @@ export default {
       { key: 'Add thesaurus value' },
       { key: 'Value' },
       { key: 'add value' },
+      { key: 'Duplicate values not allowed.' },
     ];
     await insertSystemKeys(db, systemKeys);
   },

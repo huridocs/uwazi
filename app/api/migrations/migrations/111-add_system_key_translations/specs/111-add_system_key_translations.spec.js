@@ -20,6 +20,10 @@ const newKeyValues = [
     key: 'add value',
     value: 'add value',
   },
+  {
+    key: 'Duplicate values not allowed.',
+    value: 'Duplicate values not allowed.',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
