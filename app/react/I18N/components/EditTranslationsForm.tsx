@@ -66,6 +66,8 @@ const EditTranslationsFormComponent = ({
     saveTranslations(translationsToSave);
   };
 
+  const noUntranslatedTerms = !formData.find(data => data.hasUntranslatedValues);
+
   return (
     <div className="EditTranslationForm">
       <form onSubmit={handleSubmit(submit)}>
@@ -85,44 +87,52 @@ const EditTranslationsFormComponent = ({
             </div>
           </div>
 
-          <ul className="list-group">
-            {formData.map((data, dataIndex) => (
-              <li
-                key={data.key}
-                className={
-                  showUntranslatedOnly && !data.hasUntranslatedValues
-                    ? 'list-group-item hidden'
-                    : 'list-group-item'
-                }
-              >
-                <h5>{data.key}</h5>
+          {noUntranslatedTerms && showUntranslatedOnly ? (
+            <h4>
+              <Translate>There are no untranslated terms</Translate>
+            </h4>
+          ) : (
+            <ul className="list-group">
+              {formData.map((data, dataIndex) => (
+                <li
+                  key={data.key}
+                  className={
+                    showUntranslatedOnly && !data.hasUntranslatedValues
+                      ? 'list-group-item hidden'
+                      : 'list-group-item'
+                  }
+                >
+                  <h5>{data.key}</h5>
 
-                {data.values.map((value: { locale: string; value: string }, valueIndex: number) => (
-                  <div key={value.locale} className="form-group">
-                    <div className="input-group">
-                      <span className="input-group-addon">{value.locale}</span>
-                      <input
-                        className="form-control"
-                        type="text"
-                        {...register(`formData.${dataIndex}.values.${valueIndex}.value`, {
-                          required: true,
-                        })}
-                      />
-                    </div>
-                    <ErrorMessage
-                      errors={errors}
-                      name={`formData.${dataIndex}.values.${valueIndex}.value`}
-                      render={() => (
-                        <p className="error" role="alert">
-                          {t('System', 'This field is required')}
-                        </p>
-                      )}
-                    />
-                  </div>
-                ))}
-              </li>
-            ))}
-          </ul>
+                  {data.values.map(
+                    (value: { locale: string; value: string }, valueIndex: number) => (
+                      <div key={value.locale} className="form-group">
+                        <div className="input-group">
+                          <span className="input-group-addon">{value.locale}</span>
+                          <input
+                            className="form-control"
+                            type="text"
+                            {...register(`formData.${dataIndex}.values.${valueIndex}.value`, {
+                              required: true,
+                            })}
+                          />
+                        </div>
+                        <ErrorMessage
+                          errors={errors}
+                          name={`formData.${dataIndex}.values.${valueIndex}.value`}
+                          render={() => (
+                            <p className="error" role="alert">
+                              {t('System', 'This field is required')}
+                            </p>
+                          )}
+                        />
+                      </div>
+                    )
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="settings-footer">
@@ -136,7 +146,11 @@ const EditTranslationsFormComponent = ({
                 <Translate>Cancel</Translate>
               </span>
             </I18NLink>
-            <button type="submit" className="btn btn-extra-padding btn-success save-template">
+            <button
+              type="submit"
+              className="btn btn-extra-padding btn-success save-template"
+              disabled={noUntranslatedTerms && showUntranslatedOnly}
+            >
               <span className="btn-label">
                 <Translate>Save</Translate>
               </span>

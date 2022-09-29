@@ -51,6 +51,10 @@ export default {
       {
         key: 'Untranslated Terms',
       },
+
+      {
+        key: 'There are no untranslated terms',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },

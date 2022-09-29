@@ -8,6 +8,10 @@ const newKeyValues = [
     key: 'Untranslated Terms',
     value: 'Untranslated Terms',
   },
+  {
+    key: 'There are no untranslated terms',
+    value: 'There are no untranslated terms',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',

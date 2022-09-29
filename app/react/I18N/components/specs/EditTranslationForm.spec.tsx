@@ -46,9 +46,9 @@ describe('EditTranslationForm', () => {
             },
           },
           {
-            type: 'Entity',
             label: 'Template name',
             id: '5bfbb1a0471dd0fc16ada146',
+            type: 'Entity',
             values: {
               Title: 'Title',
               'Untranslated entity property': 'Untranslated entity property',
@@ -89,6 +89,7 @@ describe('EditTranslationForm', () => {
       expect(screen.getByText('Home')).toBeInTheDocument();
       expect(screen.getByText('Search')).toBeInTheDocument();
       expect(screen.getByText('Library')).toBeInTheDocument();
+      expect(screen.queryByText('There are no untranslated terms')).not.toBeInTheDocument();
     });
 
     it('should render fields alphabetically', () => {
@@ -171,11 +172,14 @@ describe('EditTranslationForm', () => {
   });
 
   describe('filtering', () => {
-    beforeEach(() => {
-      jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
-      render('5bfbb1a0471dd0fc16ada146');
+    const renderAndFilter = (context: string) => {
+      render(context);
       const toggleButton = screen.getByRole('checkbox');
       fireEvent.click(toggleButton);
+    };
+
+    beforeEach(() => {
+      jest.spyOn(actions, 'saveTranslations').mockReturnValue(() => {});
     });
 
     afterEach(() => {
@@ -183,13 +187,23 @@ describe('EditTranslationForm', () => {
     });
 
     it('should filter to show only untranslated terms', () => {
+      renderAndFilter('5bfbb1a0471dd0fc16ada146');
       expect(screen.getByText('Title').parentElement!).toHaveClass('list-group-item hidden');
       expect(screen.getByText('Untranslated entity property').parentElement!).toHaveClass(
         'list-group-item'
       );
     });
 
+    it('should display a notice and disable saving if there are no untranslated terms', () => {
+      renderAndFilter('System');
+      const submitButton = screen.getByText('Save').parentElement!.parentElement!;
+      expect(submitButton).toBeDisabled();
+      expect(screen.getByText('There are no untranslated terms')).toBeInTheDocument();
+    });
+
     it('should submit with all the values even when filtering', async () => {
+      renderAndFilter('5bfbb1a0471dd0fc16ada146');
+
       const inputField = screen.getAllByDisplayValue('Untranslated entity property');
       const submitButton = screen.getByText('Save').parentElement!;
 
