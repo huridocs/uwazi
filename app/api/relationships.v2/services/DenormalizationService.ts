@@ -3,7 +3,7 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { RootQueryNode } from '../database/graphs/RootQueryNode';
+import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
 import { MongoGraphQueryParser } from '../database/MongoGraphQueryParser';
 
 async function getNewRelProps() {
@@ -52,7 +52,7 @@ export class DenormalizationService {
             [to.sharedId]: to,
           })
         );
-        const queries: RootQueryNode[] = [];
+        const queries: MatchQueryNode[] = [];
 
         reachingPathes.forEach(path => {
           if (path) {

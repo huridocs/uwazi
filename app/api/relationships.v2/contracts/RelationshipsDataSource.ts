@@ -1,6 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { Transactional } from 'api/common.v2/contracts/Transactional';
-import { RootQueryNode } from '../database/graphs/RootQueryNode';
+import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 import { RelationshipsQuery } from './RelationshipsQuery';
 
@@ -11,5 +11,5 @@ export interface RelationshipsDataSource extends Transactional {
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<any>;
   getByQuery(query: RelationshipsQuery): ResultSet<any>;
-  getByModelQuery(query: RootQueryNode): ResultSet<any>;
+  getByModelQuery(query: MatchQueryNode): ResultSet<any>;
 }

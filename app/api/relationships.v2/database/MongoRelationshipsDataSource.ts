@@ -11,8 +11,8 @@ import {
   JoinedRelationshipDBOType,
 } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { RootQueryNode } from './graphs/RootQueryNode';
 import { compileQuery } from './MongoGraphQueryCompiler';
+import { MatchQueryNode } from './graphs/MatchQueryNode';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -132,7 +132,7 @@ export class MongoRelationshipsDataSource
     return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
   }
 
-  getByModelQuery(query: RootQueryNode) {
+  getByModelQuery(query: MatchQueryNode) {
     const pipeline = compileQuery(query);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
