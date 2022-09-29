@@ -52,22 +52,27 @@ import { validateHomePageRoute } from './utils/routeHelpers';
 const onEnter = () => {
   trackPage();
 };
+
+const goToLogin = () => {
+  window.location.assign('/login');
+};
 const enterLogin = ({ location }) => {
   if (location.action === 'REPLACE') {
-    window.location.assign('/login');
+    goToLogin();
   }
 };
 
 const needsAuth = (_nxtState, _replace) => {
   if (!store.getState().user.get('_id')) {
-    window.location.assign('/login');
+    goToLogin();
   }
 };
 
 const enterOnLibrary = (_nxtState, _replace) => {
   const state = store.getState();
   if (blankState() && !state.user.get('_id')) {
-    return window.location.assign('/login');
+    goToLogin();
+    return () => {};
   }
 
   trackPage();
