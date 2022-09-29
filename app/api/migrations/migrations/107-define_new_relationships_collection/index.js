@@ -16,8 +16,8 @@ export default {
           additionalProperties: false,
           properties: {
             _id: { bsonType: 'objectId' },
-            from: { bsonType: 'objectId' },
-            to: { bsonType: 'objectId' },
+            from: { bsonType: 'string' },
+            to: { bsonType: 'string' },
             type: { bsonType: 'objectId' },
           },
           required: ['_id', 'from', 'to', 'type'],

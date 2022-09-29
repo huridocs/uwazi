@@ -7,16 +7,18 @@ let db;
 let collection;
 
 const baseRelationship = {
-  from: new ObjectId(),
-  to: new ObjectId(),
+  from: 'entity1',
+  to: 'entity2',
   type: new ObjectId(),
 };
 
-const properties = Object.keys(baseRelationship).map(key => ({
-  property: key,
-}));
+const properties = [
+  { property: 'from', type: 'string' },
+  { property: 'to', type: 'string' },
+  { property: 'from', type: 'objectId' },
+];
 
-beforeAll(async () => {
+;beforeAll(async () => {
   spyOn(process.stdout, 'write');
   await testingDB.setupFixturesAndContext({});
   db = testingDB.mongodb;
@@ -91,7 +93,7 @@ describe('the collection "relationships" after the migration', () => {
     expect(relationships).toHaveLength(0);
   });
 
-  it.each(properties)('should expect "$property" to be an "objectId"', async ({ property }) => {
+  it.each(properties)('should expect "$property" to be "$type"', async ({ property }) => {
     try {
       const relationship = { ...baseRelationship };
       relationship[property] = 0;
