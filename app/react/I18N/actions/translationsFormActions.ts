@@ -59,12 +59,12 @@ const prepareTranslationsToSave = (
   const preparedTranslations = currentTranslations.map(translation => {
     const { locale } = translation;
     const updatedContext = translation?.contexts?.map(context => {
-      const updatedValues = Object.keys(context.values || {}).reduce((updatedKeys, key) => {
-        const valuesForKey = formData.find(data => data.key === key);
+      const updatedValues = Object.keys(context.values || {}).reduce((updatedKeys, term) => {
+        const valuesForKey = formData.find(data => data.key === term);
         const updatedValue = valuesForKey?.values.find(value => value.locale === locale);
         return {
           ...updatedKeys,
-          [key]: updatedValue?.value,
+          [term]: updatedValue?.value,
         };
       }, {});
       return { ...context, values: updatedValues };

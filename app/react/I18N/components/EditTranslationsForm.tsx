@@ -96,6 +96,7 @@ const EditTranslationsFormComponent = ({
                 }
               >
                 <h5>{data.key}</h5>
+
                 {data.values.map((value: { locale: string; value: string }, valueIndex: number) => (
                   <div key={value.locale} className="form-group">
                     <div className="input-group">
