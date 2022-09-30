@@ -233,7 +233,10 @@
             "checksVoidReturn": false
           }
         ],
-        "@typescript-eslint/promise-function-async": "error"
+        "@typescript-eslint/promise-function-async": "error",
+        
+        "no-dupe-class-members": "off",
+        "@typescript-eslint/no-dupe-class-members": ["error"]
       }
     }
   ]

@@ -3,6 +3,7 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import entities from 'api/entities';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
@@ -12,6 +13,7 @@ import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
+import { DenormalizationService } from './DenormalizationService';
 
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
@@ -78,47 +80,43 @@ export class CreateRelationshipService {
 
         await Promise.all(
           insertedRelationships.map(async relationship => {
-            const db = getConnection();
-            const entities = db.collection('entities');
-            const entity = await entities.findOne(
-              { sharedId: relationship.from },
-              { projection: { template: 1 } }
+            const service = new DenormalizationService(this.relationshipsDS, this.entitiesDS);
+            const affectedEntities = await service.getCandidateEntitiesForRelationship(
+              relationship
             );
 
-            const templates = db.collection('templates');
-            const { properties } = await templates.findOne(
-              { _id: entity.template },
-              { projection: { properties: 1 } }
-            );
+            await entities.performNewRelationshipQueries(affectedEntities, this.relationshipsDS);
 
-            const relProperties = properties.filter(
-              (prop: { type: keyof typeof propertyTypes }) => prop.type === 'newRelationship'
-            );
+            console.log('affectedEntities', affectedEntities);
 
-            await Promise.all(
-              relProperties.map(async (relProperty: { query: { traverse: any } }) => {
-                const denormalizationQuery: RelationshipsQuery = {
-                  sharedId: relationship.from,
-                  traverse: relProperty.query.traverse,
-                };
+            // DISCUSS: start with cache instead of finishing this
+            await Promise.all(affectedEntities.map(async e => entities.save(e)));
 
-                const graphResults = this.relationshipsDS.getByQuery(denormalizationQuery);
+            //do the update
+            // await Promise.all(
+            //   relProperties.map(async (relProperty: { query: { traverse: any } }) => {
+            //     const denormalizationQuery: RelationshipsQuery = {
+            //       sharedId: relationship.from,
+            //       traverse: relProperty.query.traverse,
+            //     };
 
-                const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
+            //     const graphResults = this.relationshipsDS.getByQuery(denormalizationQuery);
 
-                await entities.updateOne(
-                  { sharedId: relationship.from },
-                  {
-                    $set: {
-                      'metadata.relProp': leafEntities.map(e => ({
-                        value: e.sharedId,
-                        label: e.sharedId,
-                      })),
-                    },
-                  }
-                );
-              })
-            );
+            //     const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
+
+            //     await entities.updateOne(
+            //       { sharedId: relationship.from },
+            //       {
+            //         $set: {
+            //           'metadata.relProp': leafEntities.map(e => ({
+            //             value: e.sharedId,
+            //             label: e.sharedId,
+            //           })),
+            //         },
+            //       }
+            //     );
+            //   })
+            // );
           })
         );
 

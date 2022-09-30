@@ -5,6 +5,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
 import { MongoGraphQueryParser } from '../database/MongoGraphQueryParser';
+import { Relationship } from '../model/Relationship';
 
 async function getNewRelProps() {
   const templates = await getConnection()
@@ -32,15 +33,24 @@ export class DenormalizationService {
     this.entitiesDS = entitiesDS;
   }
 
-  async getCandidateEntitiesForRelationship(id: string) {
+  // DISCUSS: typescript method overloading
+
+  async getCandidateEntitiesForRelationship(id: string): Promise<any[]>;
+
+  async getCandidateEntitiesForRelationship(rel: Relationship): Promise<any[]>;
+
+  async getCandidateEntitiesForRelationship(idOrRel: string | Relationship): Promise<any[]> {
     const parser = new MongoGraphQueryParser();
-    const [relationship] = await this.relationshipsDS.getById([id]).all();
-    const [from, to] = await this.entitiesDS.getByIds([relationship.from, relationship.to]).all();
+    const relationship =
+      idOrRel instanceof Relationship ? idOrRel : await this.relationshipsDS.getById([id]).all()[0];
+    const [from, to] = await this.entitiesDS.getByIds([relationship.from, relationship.to]).all(); // DISCUSS: find ordering depends on db, not input, assume it to be random
     const properties = await getNewRelProps();
 
     const entities: any[] = [];
     await Promise.all(
-      properties.map(async property => {
+      properties.map(async property => {  
+        // DISCUSS: consider returning only last in chain, since only leaves of the backward queries are the ones that need to be updated
+        // DISCUSS: consider also returning the property, for targeted update instead of the entire entity
         const { query } = property;
         const ast = parser.parseRoot(query);
 

@@ -27,6 +27,7 @@ const fixtures = {
     factory.entity('entity2', 'template2'),
     factory.entity('entity3', 'template1'),
     factory.entity('entity4', 'template3'),
+    factory.entity('entity5', 'template1'),
   ],
   relationships: [],
   relationtypes: [
@@ -60,6 +61,16 @@ const fixtures = {
               match: [
                 {
                   templates: [factory.id('template1').toHexString()],
+                },
+                {
+                  templates: [factory.id('template2').toHexString()],
+                  traverse: [
+                    {
+                      direction: 'out',
+                      types: [factory.id('rel4').toHexString()],
+                      match: [{ templates: [factory.id('template1').toHexString()] }],
+                    },
+                  ],
                 },
               ],
             },
@@ -253,7 +264,7 @@ describe('createMultiple()', () => {
     });
 
     // eslint-disable-next-line jest/no-focused-tests
-    it('should denormalize the fields', async () => {
+    it('should denormalize the fields over 1 hop', async () => {
       const connection = getConnection();
       const service = new CreateRelationshipService(
         new MongoRelationshipsDataSource(connection),
@@ -279,6 +290,39 @@ describe('createMultiple()', () => {
             { value: 'entity1', label: 'entity1' },
             { value: 'entity3', label: 'entity3' },
           ],
+        },
+      });
+      expect(entity1).toEqual(fixtures.entities[0]);
+      expect(entity3).toEqual(fixtures.entities[2]);
+    });
+
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should denormalize the fields over 2 hops', async () => {
+      const connection = getConnection();
+      const service = new CreateRelationshipService(
+        new MongoRelationshipsDataSource(connection),
+        new MongoRelationshipTypesDataSource(connection),
+        new MongoEntitiesDataSource(connection),
+        new MongoTransactionManager(getClient()),
+        MongoIdGenerator,
+        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
+      );
+
+      await service.createMultiple([
+        { from: 'entity4', to: 'entity2', type: factory.id('rel4').toHexString() },
+      ]);
+
+      await service.createMultiple([
+        { from: 'entity2', to: 'entity5', type: factory.id('rel4').toHexString() },
+      ]);
+
+      const [entity4] = await collectionInDb('entities').find({ sharedId: 'entity4' }).toArray();
+      const [entity1] = await collectionInDb('entities').find({ sharedId: 'entity1' }).toArray();
+      const [entity3] = await collectionInDb('entities').find({ sharedId: 'entity3' }).toArray();
+
+      expect(entity4).toMatchObject({
+        metadata: {
+          relProp: [{ value: 'entity5', label: 'entity5' }],
         },
       });
       expect(entity1).toEqual(fixtures.entities[0]);

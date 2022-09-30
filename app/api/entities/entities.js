@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
+import _ from 'lodash';
+
 import { applicationEventsBus } from 'api/eventsbus';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
@@ -445,7 +447,23 @@ export default {
     return withDocuments(entities, documentsFullText);
   },
 
-  async performNewRelationshipQueries(entities) {
+  async appendTemplateAndMetadata(entityObjects) {
+    const [hasTemplate, noTemplate] = _.partition(entityObjects, e => e.template);
+    if (noTemplate.length) {
+      const templatesByEntityId = objectIndex(
+        await this.get({ _id: { $in: noTemplate.map(e => e._id) } }),
+        e => e._id
+      );
+      noTemplate.forEach(e => {
+        e.template = templatesByEntityId[e._id].template;
+        e.metadata = templatesByEntityId[e._id].metadata;
+      });
+    }
+    return hasTemplate.concat(noTemplate);
+  },
+
+  async performNewRelationshipQueries(_entities, _relationshipsDataSource) {
+    const entities = await this.appendTemplateAndMetadata(_entities);
     const templateIdToProperties = objectIndex(
       await templates.get(
         { _id: entities.map(e => e.template) },
@@ -454,24 +472,31 @@ export default {
       t => t._id,
       t => t.properties.filter(prop => prop.type === 'newRelationship')
     );
+    const db = getConnection();
+    const relationshipsDataSource =
+      _relationshipsDataSource || new MongoRelationshipsDataSource(db);
 
     await Promise.all(
       entities.map(async entity => {
-        const db = getConnection();
+        console.log('entity', entity);
         const relProperties = templateIdToProperties[entity.template];
 
+        if (!relProperties) return;
+
+        console.log('relProperties', relProperties);
         await Promise.all(
           relProperties.map(async relProperty => {
             const denormalizationQuery = {
               sharedId: entity.sharedId,
               traverse: relProperty.query.traverse,
             };
+            console.log('relProperty', relProperty);
 
-            const graphResults = new MongoRelationshipsDataSource(db).getByQuery(
-              denormalizationQuery
-            );
+            const graphResults = relationshipsDataSource.getByQuery(denormalizationQuery);
 
             const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
+
+            console.log('leafEntities', leafEntities);
 
             entity.metadata[relProperty.name] = leafEntities.map(e => ({
               value: e.sharedId,
