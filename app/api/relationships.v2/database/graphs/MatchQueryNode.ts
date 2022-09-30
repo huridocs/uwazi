@@ -7,8 +7,14 @@ interface MatchFilters {
   templates?: string[];
 }
 
+// Temporal type definition
+interface Entity {
+  sharedId: string;
+  template: string;
+}
+
 interface EntitiesMap {
-  [sharedId: string]: { sharedId: string; template: string };
+  [sharedId: string]: Entity;
 }
 
 export class MatchQueryNode extends QueryNode {
@@ -73,7 +79,7 @@ export class MatchQueryNode extends QueryNode {
     return decomposition;
   }
 
-  wouldMatch(entity: { sharedId: string; template: string }) {
+  wouldMatch(entity: Entity) {
     return (
       (this.filters.sharedId ? this.filters.sharedId === entity.sharedId : true) &&
       (this.filters.templates ? this.filters.templates.includes(entity.template) : true)
@@ -94,11 +100,11 @@ export class MatchQueryNode extends QueryNode {
     return this.traversals[0] && this.traversals[0].reachesRelationship(relationship, entityData);
   }
 
-  reachesEntity(entity: { sharedId: string; template: string }): MatchQueryNode | undefined {
+  reachesEntity(entity: Entity): MatchQueryNode | undefined {
     this.validateIsChain();
 
     if (this.wouldMatch(entity)) {
-      return new MatchQueryNode({ sharedId: entity.sharedId });
+      return MatchQueryNode.forEntity(entity);
     }
 
     if (this.traversals[0]) {
@@ -113,5 +119,9 @@ export class MatchQueryNode extends QueryNode {
 
   shallowClone(traversals?: TraversalQueryNode[]) {
     return new MatchQueryNode({ ...this.filters }, traversals ?? []);
+  }
+
+  static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
+    return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }
 }

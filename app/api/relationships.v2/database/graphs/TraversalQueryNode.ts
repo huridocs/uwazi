@@ -12,8 +12,14 @@ const inverseOfDirection = {
   out: 'in',
 } as const;
 
+// Temporal type definition
+interface Entity {
+  sharedId: string;
+  template: string;
+}
+
 interface EntitiesMap {
-  [sharedId: string]: { sharedId: string; template: string };
+  [sharedId: string]: Entity;
 }
 
 export class TraversalQueryNode extends QueryNode {
@@ -150,9 +156,9 @@ export class TraversalQueryNode extends QueryNode {
       this.matches[0].wouldMatch(toMatchAfterTraverse);
 
     if (matchesRelationship) {
-      return new MatchQueryNode({ sharedId: toMatchBeforeTraverse.sharedId }, [
-        new TraversalQueryNode(this.direction, { _id: relationship._id }, [
-          new MatchQueryNode({ sharedId: toMatchAfterTraverse.sharedId }, []),
+      return MatchQueryNode.forEntity(toMatchBeforeTraverse, [
+        TraversalQueryNode.forRelationship(relationship, this.direction, [
+          MatchQueryNode.forEntity(toMatchAfterTraverse),
         ]),
       ]);
     }
@@ -165,7 +171,7 @@ export class TraversalQueryNode extends QueryNode {
     return undefined;
   }
 
-  reachesEntity(entity: { sharedId: string; template: string }) {
+  reachesEntity(entity: Entity) {
     this.validateIsChain();
     const nextReaches = this.matches[0].reachesEntity(entity);
     if (nextReaches) {
@@ -176,5 +182,13 @@ export class TraversalQueryNode extends QueryNode {
 
   shallowClone(matches?: MatchQueryNode[]) {
     return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
+  }
+
+  static forRelationship(
+    relationship: Relationship,
+    direction: 'in' | 'out',
+    matches?: MatchQueryNode[]
+  ) {
+    return new TraversalQueryNode(direction, { _id: relationship._id }, matches);
   }
 }
