@@ -193,6 +193,23 @@ export class MatchQueryNode extends QueryNode {
     return false;
   }
 
+  reachesEntity(entity: { sharedId: string; template: string }): MatchQueryNode | false {
+    this.validateIsChain();
+
+    if (this.wouldMatch(entity)) {
+      return new MatchQueryNode({ sharedId: entity.sharedId });
+    }
+
+    if (this.traversals[0]) {
+      const nextReaches = this.traversals[0].reachesEntity(entity);
+      if (nextReaches) {
+        return new MatchQueryNode({ ...this.filters }, [nextReaches]);
+      }
+    }
+
+    return false;
+  }
+
   inverse(next?: TraversalQueryNode): MatchQueryNode {
     this.validateIsChain();
     if (this.traversals[0]) {

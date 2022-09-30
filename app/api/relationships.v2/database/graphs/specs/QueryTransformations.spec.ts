@@ -206,6 +206,79 @@ describe('when calling reachesRelationship()', () => {
   });
 });
 
+describe('when calling reachesEntity()', () => {
+  it('should return false if no match node of the query would match the given entity', () => {
+    const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['temp2'] }, [
+          new TraversalQueryNode('in', { types: ['type2'] }, [
+            new MatchQueryNode({ templates: ['temp3'] }, []),
+          ]),
+        ]),
+      ]),
+    ]);
+
+    expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toBe(false);
+    expect(query.reachesEntity({ template: 'temp4', sharedId: 'root' })).toBe(false);
+  });
+
+  it('should return the narrowed query that would match the given entity', () => {
+    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['temp2'] }, [
+          new TraversalQueryNode('in', { types: ['type2'] }, [
+            new MatchQueryNode({ templates: ['temp3'] }, [
+              new TraversalQueryNode('out', { types: ['type3'] }, [
+                new MatchQueryNode({ templates: ['temp4'] }, []),
+              ]),
+            ]),
+          ]),
+        ]),
+      ]),
+    ]);
+
+    expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp1' })).toEqual(
+      new MatchQueryNode({ sharedId: 'entity1' }, [])
+    );
+
+    expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp2' })).toEqual(
+      new MatchQueryNode({ templates: ['temp1'] }, [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode({ sharedId: 'entity1' }, []),
+        ]),
+      ])
+    );
+
+    expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp3' })).toEqual(
+      new MatchQueryNode({ templates: ['temp1'] }, [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode({ templates: ['temp2'] }, [
+            new TraversalQueryNode('in', { types: ['type2'] }, [
+              new MatchQueryNode({ sharedId: 'entity1' }, []),
+            ]),
+          ]),
+        ]),
+      ])
+    );
+
+    expect(query.reachesEntity({ template: 'temp4', sharedId: 'entity1' })).toEqual(
+      new MatchQueryNode({ templates: ['temp1'] }, [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode({ templates: ['temp2'] }, [
+            new TraversalQueryNode('in', { types: ['type2'] }, [
+              new MatchQueryNode({ templates: ['temp3'] }, [
+                new TraversalQueryNode('out', { types: ['type3'] }, [
+                  new MatchQueryNode({ sharedId: 'entity1' }, []),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]),
+      ])
+    );
+  });
+});
+
 describe('when calling a method that only supports chain queries', () => {
   const query0 = new MatchQueryNode({ sharedId: 'root' }, [
     new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
@@ -236,6 +309,9 @@ describe('when calling a method that only supports chain queries', () => {
           entity1: { sharedId: 'entity1', template: 'fakeTemplate' },
           entity2: { sharedId: 'entity2', template: 'fakeTemplate' },
         });
+      }).toThrow(NonChainQueryError);
+      expect(() => {
+        query.reachesEntity({ sharedId: 'fakeEntity', template: 'fakeTemplate' });
       }).toThrow(NonChainQueryError);
     }
   );

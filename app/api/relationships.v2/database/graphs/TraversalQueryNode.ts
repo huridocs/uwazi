@@ -110,4 +110,13 @@ export class TraversalQueryNode extends QueryNode {
     );
     return this.matches[0].inverse(inversed);
   }
+
+  reachesEntity(entity: { sharedId: string; template: string }) {
+    this.validateIsChain();
+    const nextReaches = this.matches[0].reachesEntity(entity);
+    if (nextReaches) {
+      return new TraversalQueryNode(this.direction, { ...this.filters }, [nextReaches]);
+    }
+    return false;
+  }
 }
