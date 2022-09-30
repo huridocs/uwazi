@@ -1,6 +1,5 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode } from './MatchQueryNode';
-import { NonChainQueryError } from './NonChainQueryErrror';
 import { QueryNode } from './QueryNode';
 
 interface TraversalFilters {
@@ -12,6 +11,10 @@ const inverseOfDirection = {
   in: 'out',
   out: 'in',
 } as const;
+
+interface EntitiesMap {
+  [sharedId: string]: { sharedId: string; template: string };
+}
 
 export class TraversalQueryNode extends QueryNode {
   private direction: 'in' | 'out';
@@ -67,17 +70,14 @@ export class TraversalQueryNode extends QueryNode {
 
   chainsDecomposition(): TraversalQueryNode[] {
     if (!this.matches.length) {
-      return [new TraversalQueryNode(this.direction, { ...this.filters })];
+      return [this.shallowClone()];
     }
 
     const decomposition: TraversalQueryNode[] = [];
     const childrenDecompositions = this.matches.map(match => match.chainsDecomposition());
     childrenDecompositions.forEach(childDecompositions => {
       childDecompositions.forEach(childDecomposition => {
-        const newChain = new TraversalQueryNode(this.direction, { ...this.filters }, [
-          childDecomposition,
-        ]);
-        decomposition.push(newChain);
+        decomposition.push(this.shallowClone([childDecomposition]));
       });
     });
     return decomposition;
@@ -100,7 +100,7 @@ export class TraversalQueryNode extends QueryNode {
   }
 
   inverse(next: MatchQueryNode) {
-    if (this.matches.length > 1) throw new NonChainQueryError();
+    this.validateIsChain();
     const inversed = new TraversalQueryNode(
       inverseOfDirection[this.direction],
       {
@@ -111,12 +111,70 @@ export class TraversalQueryNode extends QueryNode {
     return this.matches[0].inverse(inversed);
   }
 
+  private sortEntitiesInTraversalOrder(entityData: EntitiesMap, relationship: Relationship) {
+    const relSideGivenDirection = {
+      out: {
+        first: 'from',
+        second: 'to',
+      } as const,
+      in: {
+        first: 'to',
+        second: 'from',
+      } as const,
+    } as const;
+
+    const first = entityData[relationship[relSideGivenDirection[this.direction].first]];
+    const second = entityData[relationship[relSideGivenDirection[this.direction].second]];
+
+    return [first, second];
+  }
+
+  reachesRelationship(
+    relationship: Relationship,
+    entityData: EntitiesMap
+  ): MatchQueryNode | undefined {
+    this.validateIsChain();
+
+    const [toMatchBeforeTraverse, toMatchAfterTraverse] = this.sortEntitiesInTraversalOrder(
+      entityData,
+      relationship
+    );
+
+    const matchesRelationship =
+      this.parent!.wouldMatch(toMatchBeforeTraverse) &&
+      this.wouldTraverse(
+        toMatchBeforeTraverse.sharedId,
+        relationship,
+        toMatchAfterTraverse.sharedId
+      ) &&
+      this.matches[0].wouldMatch(toMatchAfterTraverse);
+
+    if (matchesRelationship) {
+      return new MatchQueryNode({ sharedId: toMatchBeforeTraverse.sharedId }, [
+        new TraversalQueryNode(this.direction, { _id: relationship._id }, [
+          new MatchQueryNode({ sharedId: toMatchAfterTraverse.sharedId }, []),
+        ]),
+      ]);
+    }
+
+    const nextReaches = this.matches[0].reachesRelationship(relationship, entityData);
+    if (nextReaches) {
+      return this.parent!.shallowClone([this.shallowClone([nextReaches])]);
+    }
+
+    return undefined;
+  }
+
   reachesEntity(entity: { sharedId: string; template: string }) {
     this.validateIsChain();
     const nextReaches = this.matches[0].reachesEntity(entity);
     if (nextReaches) {
-      return new TraversalQueryNode(this.direction, { ...this.filters }, [nextReaches]);
+      return this.shallowClone([nextReaches]);
     }
-    return false;
+    return undefined;
+  }
+
+  shallowClone(matches?: MatchQueryNode[]) {
+    return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
   }
 }

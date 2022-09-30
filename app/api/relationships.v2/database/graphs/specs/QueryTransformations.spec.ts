@@ -98,7 +98,7 @@ describe('when calling inverse()', () => {
 });
 
 describe('when calling reachesRelationship()', () => {
-  it('should return false if no segment <match, traverse, match> of the query would match the given relationship', () => {
+  it('should return undefined if no segment <match, traverse, match> of the query would match the given relationship', () => {
     const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
         new MatchQueryNode({ templates: ['temp2'] }, [
@@ -114,28 +114,28 @@ describe('when calling reachesRelationship()', () => {
         entity1: { template: 'temp1', sharedId: 'entity1' },
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
-    ).toBe(false);
+    ).toBe(undefined);
 
     expect(
       query.reachesRelationship(new Relationship('rel1', 'entity2', 'root', 'type1'), {
         root: { template: 'temp1', sharedId: 'root' },
         entity2: { template: 'temp1', sharedId: 'entity2' },
       })
-    ).toBe(false);
+    ).toBe(undefined);
 
     expect(
       query.reachesRelationship(new Relationship('rel1', 'entity1', 'entity2', 'type1'), {
         entity1: { template: 'temp2', sharedId: 'entity1' },
         entity2: { template: 'temp3', sharedId: 'entity2' },
       })
-    ).toBe(false);
+    ).toBe(undefined);
 
     expect(
       query.reachesRelationship(new Relationship('rel1', 'entity2', 'root', 'type1'), {
         root: { template: 'temp1', sharedId: 'root' },
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
-    ).toBe(false);
+    ).toBe(undefined);
   });
 
   it('should return the narrowed query that would match the given relationship', () => {
@@ -207,7 +207,7 @@ describe('when calling reachesRelationship()', () => {
 });
 
 describe('when calling reachesEntity()', () => {
-  it('should return false if no match node of the query would match the given entity', () => {
+  it('should return undefined if no match node of the query would match the given entity', () => {
     const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
         new MatchQueryNode({ templates: ['temp2'] }, [
@@ -218,8 +218,8 @@ describe('when calling reachesEntity()', () => {
       ]),
     ]);
 
-    expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toBe(false);
-    expect(query.reachesEntity({ template: 'temp4', sharedId: 'root' })).toBe(false);
+    expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toBe(undefined);
+    expect(query.reachesEntity({ template: 'temp4', sharedId: 'root' })).toBe(undefined);
   });
 
   it('should return the narrowed query that would match the given entity', () => {
