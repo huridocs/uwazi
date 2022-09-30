@@ -49,12 +49,12 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'Group',
+        key: 'Untranslated Terms',
       },
-      { key: 'Add thesaurus value' },
-      { key: 'Value' },
-      { key: 'add value' },
-      { key: 'Duplicate values not allowed.' },
+
+      {
+        key: 'There are no untranslated terms',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },

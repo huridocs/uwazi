@@ -5,24 +5,12 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Group',
-    value: 'Group',
+    key: 'Untranslated Terms',
+    value: 'Untranslated Terms',
   },
   {
-    key: 'Add thesaurus value',
-    value: 'Add thesaurus value',
-  },
-  {
-    key: 'Value',
-    value: 'Value',
-  },
-  {
-    key: 'add value',
-    value: 'add value',
-  },
-  {
-    key: 'Duplicate values not allowed.',
-    value: 'Duplicate values not allowed.',
+    key: 'There are no untranslated terms',
+    value: 'There are no untranslated terms',
   },
 ];
 const alreadyInAllContexts = {
