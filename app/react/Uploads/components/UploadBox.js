@@ -20,7 +20,7 @@ const extractTitle = file => {
   return title.charAt(0).toUpperCase() + title.slice(1);
 };
 
-export class UploadBox extends Component {
+class UploadBox extends Component {
   constructor(props) {
     super(props);
     this.onDrop = this.onDrop.bind(this);
@@ -42,26 +42,33 @@ export class UploadBox extends Component {
         className="upload-box force-ltr"
         style={{}}
         onDrop={this.onDrop}
-        accept="application/pdf"
+        accept={{
+          'application/pdf': ['.pdf'],
+        }}
       >
-        <div className="upload-box_wrapper">
-          <Icon icon="upload" />
-          <button type="button" className="upload-box_link">
-            <Translate>Browse your PDFs to upload</Translate>
-          </button>
-          &nbsp;<Translate>or drop your files here.</Translate>
-        </div>
-        <div className="protip">
-          <Icon icon="lightbulb" />
-          <b>
-            <Translate>ProTip!</Translate>
-          </b>
-          <span>
-            <Translate>
-              For better performance, upload your files in batches of 50 or less.
-            </Translate>
-          </span>
-        </div>
+        {({ getRootProps }) => (
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          <div {...getRootProps()}>
+            <div className="upload-box_wrapper">
+              <Icon icon="upload" />
+              <button type="button" className="upload-box_link">
+                <Translate>Browse your PDFs to upload</Translate>
+              </button>
+              &nbsp;<Translate>or drop your files here.</Translate>
+            </div>
+            <div className="protip">
+              <Icon icon="lightbulb" />
+              <b>
+                <Translate>ProTip!</Translate>
+              </b>
+              <span>
+                <Translate>
+                  For better performance, upload your files in batches of 50 or less.
+                </Translate>
+              </span>
+            </div>
+          </div>
+        )}
       </Dropzone>
     );
   }
@@ -88,4 +95,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
+export { UploadBox };
 export default connect(mapStateToProps, mapDispatchToProps)(UploadBox);
