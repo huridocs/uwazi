@@ -43,13 +43,14 @@ export class DenormalizationService {
     const parser = new MongoGraphQueryParser();
     const relationship =
       idOrRel instanceof Relationship ? idOrRel : await this.relationshipsDS.getById([id]).all()[0];
-    const [from, to] = await this.entitiesDS.getByIds([relationship.from, relationship.to]).all(); // DISCUSS: find ordering depends on db, not input, assume it to be random
+    const [entity1, entity2] = await this.entitiesDS
+      .getByIds([relationship.from, relationship.to])
+      .all();
     const properties = await getNewRelProps();
 
     const entities: any[] = [];
     await Promise.all(
-      properties.map(async property => {  
-        // DISCUSS: consider returning only last in chain, since only leaves of the backward queries are the ones that need to be updated
+      properties.map(async property => {
         // DISCUSS: consider also returning the property, for targeted update instead of the entire entity
         const { query } = property;
         const ast = parser.parseRoot(query);
@@ -57,8 +58,8 @@ export class DenormalizationService {
         const chains = ast.chainsDecomposition();
         const reachingPathes = chains.map(chain =>
           chain.reachesRelationship(relationship, {
-            [from.sharedId]: from,
-            [to.sharedId]: to,
+            [entity1.sharedId]: entity1,
+            [entity2.sharedId]: entity2,
           })
         );
         const queries: MatchQueryNode[] = [];
