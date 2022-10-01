@@ -42,7 +42,9 @@ export class DenormalizationService {
   async getCandidateEntitiesForRelationship(idOrRel: string | Relationship): Promise<any[]> {
     const parser = new MongoGraphQueryParser();
     const relationship =
-      idOrRel instanceof Relationship ? idOrRel : await this.relationshipsDS.getById([id]).all()[0];
+      idOrRel instanceof Relationship
+        ? idOrRel
+        : (await this.relationshipsDS.getById([idOrRel]).all())[0];
     const [entity1, entity2] = await this.entitiesDS
       .getByIds([relationship.from, relationship.to])
       .all();
