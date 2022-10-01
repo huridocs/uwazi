@@ -1,6 +1,7 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DenormalizationService } from '../DenormalizationService';
@@ -153,7 +154,8 @@ describe('when providing a new/updated relationship and a query', () => {
     const db = getConnection();
     const service = new DenormalizationService(
       new MongoRelationshipsDataSource(db),
-      new MongoEntitiesDataSource(db)
+      new MongoEntitiesDataSource(db),
+      new MongoTemplatesDataSource(db)
     );
 
     const result = await service.getCandidateEntitiesForRelationship(

@@ -8,9 +8,8 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
-import { propertyTypes } from 'shared/propertyTypes';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 import { DenormalizationService } from './DenormalizationService';
@@ -80,7 +79,11 @@ export class CreateRelationshipService {
 
         await Promise.all(
           insertedRelationships.map(async relationship => {
-            const service = new DenormalizationService(this.relationshipsDS, this.entitiesDS);
+            const service = new DenormalizationService(
+              this.relationshipsDS,
+              this.entitiesDS,
+              new MongoTemplatesDataSource(getConnection())
+            );
             const affectedEntities = await service.getCandidateEntitiesForRelationship(
               relationship
             );
