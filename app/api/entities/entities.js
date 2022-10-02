@@ -20,6 +20,7 @@ import ID from 'shared/uniqueID';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 
+import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
@@ -464,6 +465,7 @@ export default {
 
   async performNewRelationshipQueries(_entities, _relationshipsDataSource) {
     const entities = await this.appendTemplateAndMetadata(_entities);
+    console.log(entities);
     const templateIdToProperties = objectIndex(
       await templates.get(
         { _id: entities.map(e => e.template) },
@@ -472,38 +474,23 @@ export default {
       t => t._id,
       t => t.properties.filter(prop => prop.type === 'newRelationship')
     );
+    console.log('titp', templateIdToProperties);
     const db = getConnection();
-    const relationshipsDataSource =
-      _relationshipsDataSource || new MongoRelationshipsDataSource(db);
+    const entitiesDataSource = new MongoEntitiesDataSource(db);
 
     await Promise.all(
       entities.map(async entity => {
         console.log('entity', entity);
         const relProperties = templateIdToProperties[entity.template];
-
+        console.log('relProps', relProperties);
         if (!relProperties) return;
 
-        console.log('relProperties', relProperties);
-        await Promise.all(
-          relProperties.map(async relProperty => {
-            const denormalizationQuery = {
-              sharedId: entity.sharedId,
-              traverse: relProperty.query.traverse,
-            };
-            console.log('relProperty', relProperty);
+        const [queryedEntity] = await entitiesDataSource.getByIds([entity.sharedId]).all();
 
-            const graphResults = relationshipsDataSource.getByQuery(denormalizationQuery);
-
-            const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
-
-            console.log('leafEntities', leafEntities);
-
-            entity.metadata[relProperty.name] = leafEntities.map(e => ({
-              value: e.sharedId,
-              label: e.sharedId,
-            }));
-          })
-        );
+        console.log('queryedEntity', queryedEntity);
+        relProperties.forEach(relProperty => {
+          entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];
+        });
       })
     );
   },

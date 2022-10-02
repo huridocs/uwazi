@@ -2,7 +2,7 @@ import { AggregationCursor, Cursor } from 'mongodb';
 import { ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
-  (elem: T): U;
+  (elem: T): U | Promise<U>;
 }
 
 export type CountDocument = { total: number };
@@ -64,7 +64,9 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async all() {
     const results = await this.mongoCursor.toArray();
-    const mapped = results.map(this.mapper);
+    console.log('beforeMap', results);
+    const mapped = await Promise.all(results.map(item => this.mapper(item)));
+    console.log('afterMap', mapped);
     return mapped;
   }
 
