@@ -2,13 +2,10 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import entities from 'api/entities';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
@@ -27,6 +24,8 @@ export class CreateRelationshipService {
 
   private authService: AuthorizationService;
 
+  private denormalizationService: DenormalizationService;
+
   // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
@@ -34,7 +33,8 @@ export class CreateRelationshipService {
     entitiesDS: EntitiesDataSource,
     transactionManager: TransactionManager,
     idGenerator: IdGenerator,
-    authService: AuthorizationService
+    authService: AuthorizationService,
+    denormalizationService: DenormalizationService
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
@@ -42,6 +42,7 @@ export class CreateRelationshipService {
     this.transactionManager = transactionManager;
     this.idGenerator = idGenerator;
     this.authService = authService;
+    this.denormalizationService = denormalizationService;
   }
 
   async create(from: string, to: string, type: string) {
@@ -62,72 +63,30 @@ export class CreateRelationshipService {
 
     await this.authService.validateAccess('write', sharedIds);
 
-    return this.transactionManager.run(
-      async () => {
-        if (!(await this.relationshipTypesDS.typesExist(types))) {
-          throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
-        }
-        if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
-          throw new MissingEntityError('Must provide sharedIds from existing entities');
-        }
+    return this.transactionManager.run(async () => {
+      if (!(await this.relationshipTypesDS.typesExist(types))) {
+        throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
+      }
+      if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
+        throw new MissingEntityError('Must provide sharedIds from existing entities');
+      }
 
-        const insertedRelationships = await this.relationshipsDS.insert(
-          relationships.map(
-            r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type)
-          )
-        );
+      const insertedRelationships = await this.relationshipsDS.insert(
+        relationships.map(r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type))
+      );
 
-        await Promise.all(
-          insertedRelationships.map(async relationship => {
-            const service = new DenormalizationService(
-              this.relationshipsDS,
-              this.entitiesDS,
-              new MongoTemplatesDataSource(getConnection())
-            );
-            const affectedEntities = await service.getCandidateEntitiesForRelationship(
-              relationship
-            );
+      await Promise.all(
+        insertedRelationships.map(async insertedRelationship =>
+          this.denormalizationService.denormalizeBasedOnRelationship(insertedRelationship._id)
+        )
+      );
 
-            await entities.performNewRelationshipQueries(affectedEntities, this.relationshipsDS);
-
-            console.log('affectedEntities', affectedEntities);
-
-            // DISCUSS: start with cache instead of finishing this
-            await Promise.all(affectedEntities.map(async e => entities.save(e)));
-
-            //do the update
-            // await Promise.all(
-            //   relProperties.map(async (relProperty: { query: { traverse: any } }) => {
-            //     const denormalizationQuery: RelationshipsQuery = {
-            //       sharedId: relationship.from,
-            //       traverse: relProperty.query.traverse,
-            //     };
-
-            //     const graphResults = this.relationshipsDS.getByQuery(denormalizationQuery);
-
-            //     const leafEntities = (await graphResults.all()).map(path => path[path.length - 1]);
-
-            //     await entities.updateOne(
-            //       { sharedId: relationship.from },
-            //       {
-            //         $set: {
-            //           'metadata.relProp': leafEntities.map(e => ({
-            //             value: e.sharedId,
-            //             label: e.sharedId,
-            //           })),
-            //         },
-            //       }
-            //     );
-            //   })
-            // );
-          })
-        );
-
-        return insertedRelationships;
-      },
+      return insertedRelationships;
+    }, [
       this.entitiesDS,
       this.relationshipsDS,
-      this.relationshipTypesDS
-    );
+      this.relationshipTypesDS,
+      this.denormalizationService,
+    ]);
   }
 }

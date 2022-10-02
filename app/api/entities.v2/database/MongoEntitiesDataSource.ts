@@ -37,19 +37,21 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
     return new MongoResultSet(cursor, async ({ sharedId, template, joinedTemplate }) => {
       const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
       await Promise.all(
-        joinedTemplate[0].properties.map(async (property: any) => {
+        joinedTemplate[0]?.properties.map(async (property: any) => {
           if (property.type !== 'newRelationship') return;
 
           const parser = new MongoGraphQueryParser();
           const query = parser.parse({ ...property.query, sharedId });
           const relationshipsDS = new MongoRelationshipsDataSource(this.db);
+          if (this.session) relationshipsDS.setTransactionContext(this.session);
           const result = relationshipsDS.getByModelQuery(query);
           const leafEntities = (await result.all()).map(path => path[path.length - 1]);
           mappedMetadata[property.name] = leafEntities.map(e => ({
             value: e.sharedId,
             label: e.sharedId,
           }));
-        })
+          relationshipsDS.clearTransactionContext();
+        }) || []
       );
       return new Entity(sharedId, template.toHexString(), mappedMetadata);
     });

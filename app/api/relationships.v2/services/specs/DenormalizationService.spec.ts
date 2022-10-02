@@ -1,4 +1,5 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
@@ -155,7 +156,8 @@ describe('when providing a new/updated relationship and a query', () => {
     const service = new DenormalizationService(
       new MongoRelationshipsDataSource(db),
       new MongoEntitiesDataSource(db),
-      new MongoTemplatesDataSource(db)
+      new MongoTemplatesDataSource(db),
+      new MongoTransactionManager(getClient())
     );
 
     const result = await service.getCandidateEntitiesForRelationship(

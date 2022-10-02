@@ -37,6 +37,6 @@ export class DeleteRelationshipService {
       }
 
       return this.relationshipsDS.delete(_ids);
-    }, this.relationshipsDS);
+    }, [this.relationshipsDS]);
   }
 }

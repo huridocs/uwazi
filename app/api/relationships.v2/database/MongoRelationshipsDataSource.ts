@@ -61,7 +61,7 @@ export class MongoRelationshipsDataSource
 
   getById(_ids: string[]) {
     const ids = idsToDb(_ids);
-    const cursor = this.getCollection().find({ _id: { $in: ids } });
+    const cursor = this.getCollection().find({ _id: { $in: ids } }, { session: this.session });
     return new MongoResultSet<RelationshipDBOType, Relationship>(
       cursor,
       RelationshipMappers.toModel

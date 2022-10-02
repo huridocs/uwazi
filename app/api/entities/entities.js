@@ -464,7 +464,7 @@ export default {
   },
 
   async performNewRelationshipQueries(_entities, _relationshipsDataSource) {
-    const entities = await this.appendTemplateAndMetadata(_entities);
+    const entities = await this.appendTemplateAndMetadata(_entities); // DISCUSS: Is this necessary?
     console.log(entities);
     const templateIdToProperties = objectIndex(
       await templates.get(

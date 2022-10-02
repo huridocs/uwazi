@@ -70,18 +70,13 @@ describe('When every operation goes well', () => {
     const source1 = new Transactional1();
     const source2 = new Transactional2();
     const source3 = new Transactional3();
-    transactionResult = await transactionManager.run(
-      async () => {
-        await source1.do();
-        await source2.do();
-        const result = await source3.do();
+    transactionResult = await transactionManager.run(async () => {
+      await source1.do();
+      await source2.do();
+      const result = await source3.do();
 
-        return result;
-      },
-      source1,
-      source2,
-      source3
-    );
+      return result;
+    }, [source1, source2, source3]);
   });
 
   it('should be reflected in all of the collections affected', async () => {
@@ -109,16 +104,12 @@ describe('When one operation fails', () => {
     const source1 = new Transactional1();
     const source2 = new Transactional2();
     try {
-      await transactionManager.run(
-        async () => {
-          await source1.do();
-          throw error; // Mimics error thrown mid-execution
-          // eslint-disable-next-line no-unreachable
-          await source2.do();
-        },
-        source1,
-        source2
-      );
+      await transactionManager.run(async () => {
+        await source1.do();
+        throw error; // Mimics error thrown mid-execution
+        // eslint-disable-next-line no-unreachable
+        await source2.do();
+      }, [source1, source2]);
     } catch (e) {
       expect(e).toBe(error);
     }
@@ -128,5 +119,25 @@ describe('When one operation fails', () => {
 
     expect(col1).toEqual(fixtures.collection1);
     expect(col2).toEqual(fixtures.collection2);
+  });
+});
+
+describe('when a session is provided', () => {
+  it('should use the provided session', async () => {
+    const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
+    const transactionalDependency: Transactional<string> = {
+      setTransactionContext: jest.fn(),
+      clearTransactionContext: () => {},
+    };
+
+    await transactionManager.run(
+      async () => Promise.resolve(),
+      [transactionalDependency],
+      'dummy transaction context'
+    );
+
+    expect(transactionalDependency.setTransactionContext).toHaveBeenCalledWith(
+      'dummy transaction context'
+    );
   });
 });

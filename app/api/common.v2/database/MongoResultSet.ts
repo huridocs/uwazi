@@ -64,9 +64,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async all() {
     const results = await this.mongoCursor.toArray();
-    console.log('beforeMap', results);
     const mapped = await Promise.all(results.map(item => this.mapper(item)));
-    console.log('afterMap', mapped);
     return mapped;
   }
 

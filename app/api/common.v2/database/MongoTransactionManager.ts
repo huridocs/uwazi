@@ -9,19 +9,36 @@ export class MongoTransactionManager implements TransactionManager {
     this.mongoClient = mongoClient;
   }
 
-  async run<T>(callback: () => Promise<T>, ...deps: Transactional<ClientSession>[]): Promise<T> {
-    let returnValue: T;
-    await this.mongoClient.withSession(async session => {
-      deps.forEach(dep => {
-        dep.setTransactionContext(session);
-      });
-      await session.withTransaction(async () => {
-        returnValue = await callback();
-      });
+  // eslint-disable-next-line class-methods-use-this
+  async runInSession<T>(
+    callback: () => Promise<T>,
+    deps: Transactional<ClientSession>[],
+    session: ClientSession
+  ) {
+    deps.forEach(dep => {
+      dep.setTransactionContext(session);
     });
-
+    const result = await callback();
     deps.forEach(dep => {
       dep.clearTransactionContext();
+    });
+    return result;
+  }
+
+  async run<T>(
+    callback: () => Promise<T>,
+    deps: Transactional<ClientSession>[],
+    session?: ClientSession
+  ): Promise<T> {
+    if (session) {
+      return this.runInSession(callback, deps, session);
+    }
+
+    let returnValue: T;
+    await this.mongoClient.withSession(async newSession => {
+      await newSession.withTransaction(async () => {
+        returnValue = await this.runInSession(callback, deps, newSession);
+      });
     });
 
     return returnValue!;

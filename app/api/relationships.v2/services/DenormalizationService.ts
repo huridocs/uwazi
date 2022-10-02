@@ -1,24 +1,40 @@
+import { Transactional } from 'api/common.v2/contracts/Transactional';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 
-export class DenormalizationService {
+export class DenormalizationService implements Transactional {
   private relationshipsDS: RelationshipsDataSource;
 
   private entitiesDS: EntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
 
+  private transactionManager: TransactionManager;
+
+  private transactionContext?: unknown;
+
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
-    templatesDS: TemplatesDataSource
+    templatesDS: TemplatesDataSource,
+    transactionManager: TransactionManager
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
+    this.transactionManager = transactionManager;
+  }
+
+  setTransactionContext(context: unknown): void {
+    this.transactionContext = context;
+  }
+
+  clearTransactionContext(): void {
+    this.transactionContext = undefined;
   }
 
   // DISCUSS: typescript method overloading
@@ -67,5 +83,18 @@ export class DenormalizationService {
       })
     );
     return entities;
+  }
+
+  async denormalizeBasedOnRelationship(_id: string) {
+    await this.transactionManager.run(
+      async () => {
+        const candidates = await this.getCandidateEntitiesForRelationship(_id);
+        // TODO: reindex entities
+        // TODO: mark entities metadata relationships as invalid (for cache)
+        candidates.forEach(candidate => console.log('Should re-denormalize', candidate));
+      },
+      [this.relationshipsDS, this.entitiesDS, this.templatesDS],
+      this.transactionContext
+    );
   }
 }
