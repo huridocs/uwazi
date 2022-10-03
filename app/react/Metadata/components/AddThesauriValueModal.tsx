@@ -49,8 +49,7 @@ const AddThesauriValueModal = ({
       </label>
       <select
         {...register('group')}
-        className="form-control"
-        style={{ marginBottom: '10px' }}
+        className="form-control thesauri-group"
         defaultValue="root"
         id="group"
       >
@@ -111,15 +110,15 @@ const AddThesauriValueModal = ({
         <Modal.Footer>
           <button
             type="button"
-            className="btn btn-default cancel-button"
+            className="btn cancel-button"
             onClick={() => {
-              reset();
+              reset({ group: 'root', value: '' });
               onCancel();
             }}
           >
             <Translate>Cancel</Translate>
           </button>
-          <button type="submit" className="btn confirm-button">
+          <button type="submit" className="btn btn-success confirm-button">
             <Translate>Save</Translate>
           </button>
         </Modal.Footer>

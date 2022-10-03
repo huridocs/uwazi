@@ -84,11 +84,15 @@ class MetadataFormFields extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showAddThesauriValueModal: false,
+      showAddThesauriValue: {},
     };
   }
 
-  onAddThesauriValueSaved(thesauri, newValue) {
+  onAddThesauriValueSaved(thesauri, newValue, _model, propertyName) {
+    const { model, change, currentSelectedThesauriMetadata } = this.props;
+    const selectedValues = currentSelectedThesauriMetadata[propertyName]
+      ? currentSelectedThesauriMetadata[propertyName]
+      : [];
     const newThesauri = thesauri.toJS();
     const newValueItem = { label: newValue.value, id: ID() };
     if (newValue.group === 'root') {
@@ -102,7 +106,9 @@ class MetadataFormFields extends Component {
     }
     const sanitizedThesauri = sanitizeThesauri(newThesauri);
     this.props.saveThesaurus(sanitizedThesauri);
-    this.setState({ showAddThesauriValueModal: false });
+    this.setState({ showAddThesauriValue: { [propertyName]: false } });
+    const newSelectedMetadataValues = [...selectedValues, newValueItem.id];
+    change(`${model}${_model}`, newSelectedMetadataValues);
   }
 
   getField(property, _model, thesauris, formModel) {
@@ -138,14 +144,16 @@ class MetadataFormFields extends Component {
           <>
             <AddThesauriValueModal
               values={translateOptions(thesauri)}
-              isOpen={this.state.showAddThesauriValueModal}
-              onCancel={() => this.setState({ showAddThesauriValueModal: false })}
-              onAccept={newValue => this.onAddThesauriValueSaved(thesauri, newValue)}
+              isOpen={this.state.showAddThesauriValue[property.name]}
+              onCancel={() => this.setState({ showAddThesauriValue: { [property.name]: false } })}
+              onAccept={newValue => {
+                this.onAddThesauriValueSaved(thesauri, newValue, _model, property.name);
+              }}
             />
             <div className="multiselect-add-value">
               <button
                 type="button"
-                onClick={() => this.setState({ showAddThesauriValueModal: true })}
+                onClick={() => this.setState({ showAddThesauriValue: { [property.name]: true } })}
               >
                 <Translate>add value</Translate>
               </button>
@@ -418,6 +426,7 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string,
+  currentSelectedThesauriMetadata: PropTypes.arrayOf(PropTypes.string),
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
@@ -435,11 +444,13 @@ export const mapStateToProps = (state, ownProps) => {
 
   let attachments = Immutable.fromJS([]);
   let localAttachments;
+  let currentSelectedThesauriMetadata;
 
   if (storeKey === 'library') {
     const selectedDocuments = state.library.ui.get('selectedDocuments');
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
     localAttachments = state.library.sidepanel.metadata.attachments;
+    currentSelectedThesauriMetadata = state.library.sidepanel.metadata.metadata;
   }
 
   if (storeKey === 'documentViewer') {
@@ -461,6 +472,7 @@ export const mapStateToProps = (state, ownProps) => {
     attachments,
     localAttachments,
     locale,
+    currentSelectedThesauriMetadata,
   };
 };
 
