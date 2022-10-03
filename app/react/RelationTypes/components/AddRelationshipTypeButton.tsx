@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import Modal from 'app/Layout/Modal';
 import { Icon } from 'UI';
 import { saveRelationType } from '../actions/relationTypeActions';
+
+type FormInputs = {
+  relationshipType: string;
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
@@ -27,11 +31,15 @@ type mappedProps = ConnectedProps<typeof connector>;
 const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, errors } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInputs>({
     mode: 'onSubmit',
   });
 
-  const onSave = (data: { relationshipType: string }) => {
+  const onSave: SubmitHandler<FormInputs> = data => {
     const relationship = {
       name: data.relationshipType,
       properties: [],
@@ -66,9 +74,8 @@ const AddRelationshipTypeButton = ({ relationshipTypeSave, relationshipTypes }: 
             </label>
             <input
               type="text"
-              name="relationshipType"
               id="relationshipTypeInput"
-              ref={register({
+              {...register('relationshipType', {
                 required: true,
                 validate: {
                   duplicated: value => isNotDuplicated(value),

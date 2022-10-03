@@ -3,14 +3,13 @@ import 'app/Templates/scss/templates.scss';
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { DragDropContext } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import PropTypes from 'prop-types';
 import { resetTemplate, saveTemplate } from 'app/Templates/actions/templateActions';
 import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions';
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import { Translate } from 'app/I18N';
+import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 
 class TemplateCreator extends Component {
   componentWillUnmount() {
@@ -128,6 +127,4 @@ const mapStateToProps = ({ settings, relationTypes, thesauris, template }, props
 });
 
 export { TemplateCreator };
-export default DragDropContext(HTML5Backend)(
-  connect(mapStateToProps, mapDispatchToProps)(TemplateCreator)
-);
+export default DNDHTMLBackend(connect(mapStateToProps, mapDispatchToProps)(TemplateCreator));

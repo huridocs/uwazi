@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import Modal from 'app/Layout/Modal';
 import { IStore } from 'app/istore';
@@ -27,11 +27,15 @@ type mappedProps = ConnectedProps<typeof connector>;
 const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
   const [open, setOpen] = useState(false);
 
-  const { register, handleSubmit, errors } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ thesaurus: string }>({
     mode: 'onSubmit',
   });
 
-  const onSave = (data: { thesaurus: string }) => {
+  const onSave: SubmitHandler<{ thesaurus: string }> = data => {
     const thesaurus = {
       name: data.thesaurus,
       values: [],
@@ -73,9 +77,8 @@ const AddThesaurusButton = ({ thesaurusSave, thesauri }: mappedProps) => {
             </label>
             <input
               type="text"
-              name="thesaurus"
               id="thesaurusInput"
-              ref={register({
+              {...register('thesaurus', {
                 required: true,
                 validate: {
                   duplicated: value => isNotDuplicated(value),

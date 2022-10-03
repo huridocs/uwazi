@@ -10,9 +10,9 @@ import { tenants } from 'api/tenants/tenantContext';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import request from 'shared/JSONRequest';
 import { handleError } from 'api/utils';
-import { SegmentationModel } from './segmentationModel';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { FileType } from 'shared/types/fileType';
+import { SegmentationModel } from './segmentationModel';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
@@ -157,6 +157,7 @@ class PDFSegmentation {
     const { paragraphs, page_height, page_width } = data;
     await SegmentationModel.save({
       ...segmentation,
+      // eslint-disable-next-line camelcase
       segmentation: { page_height, page_width, paragraphs },
       autoexpire: null,
       xmlname: PDFSegmentation.getXMLNAme(filename),
