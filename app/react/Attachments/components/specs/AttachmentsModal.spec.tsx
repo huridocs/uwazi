@@ -1,18 +1,12 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import thunk from 'redux-thunk';
-import { shallow, ShallowWrapper } from 'enzyme';
-import ReactModal from 'react-modal';
-import configureMockStore from 'redux-mock-store';
-import { Provider } from 'react-redux';
-
-import { WebMediaResourceForm } from 'app/Attachments/components/WebMediaResourceForm';
+import { fireEvent, screen } from '@testing-library/react';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { AttachmentsModalCmp, AttachmentsModalProps } from '../AttachmentsModal';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({});
-
 describe('Attachments Modal', () => {
-  let component: ShallowWrapper;
   let props: AttachmentsModalProps;
 
   beforeEach(() => {
@@ -28,53 +22,56 @@ describe('Attachments Modal', () => {
   });
 
   const render = (otherProps = {}) => {
-    component = shallow(
-      <Provider store={store}>
-        <AttachmentsModalCmp {...props} {...otherProps} />
-      </Provider>
-    ).dive();
+    const renderProps = { ...props, ...otherProps };
+    renderConnectedContainer(<AttachmentsModalCmp {...renderProps} />, () => defaultState);
   };
 
-  it('Should pass isOpen props to attachments modal.', () => {
+  it('Should open the modal according to isOpen property value', () => {
     render({ isOpen: false });
-    expect(component.find(ReactModal).props().isOpen).toBe(false);
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument();
     render({ isOpen: true });
-    expect(component.find(ReactModal).props().isOpen).toBe(true);
+    expect(screen.queryAllByRole('heading').length).toBe(2);
   });
 
   it('Should match render of upload form', () => {
-    render();
-
-    expect(component).toMatchSnapshot();
+    render({ isOpen: true });
+    expect(screen.getByRole('dialog')).toMatchSnapshot();
   });
 
-  it('Should match render of web form', () => {
-    render();
+  describe('Attachment from web', () => {
+    beforeEach(() => {
+      render({ isOpen: true });
+      const webTab = screen.getByRole('tab', { name: 'Add from web' });
+      fireEvent.click(webTab);
+    });
 
-    component.find('.modal-tab-2').simulate('click');
+    it('Should match render of web form', () => {
+      expect(screen.getByRole('dialog')).toMatchSnapshot();
+    });
 
-    expect(component).toMatchSnapshot();
-  });
+    it('Should submit web form', () => {
+      render();
+      const urlInput = screen.getAllByRole('textbox');
+      const attachmentData = { url: 'http://test.test', name: 'testName' };
 
-  it('Should submit web form', () => {
-    render();
+      fireEvent.change(urlInput.at(0)!, { target: { value: attachmentData.url } });
+      fireEvent.change(urlInput.at(1)!, { target: { value: attachmentData.name } });
 
-    component.find('.modal-tab-2').simulate('click');
-    const form = component.find(WebMediaResourceForm).at(0);
-    const formData = { url: 'http://test.test', name: 'testName' };
-    form.props().handleSubmit(formData);
-    expect(props.uploadAttachmentFromUrl).toHaveBeenCalledWith(props.entitySharedId, formData, {
-      __reducerKey: props.storeKey,
-      model: '',
+      fireEvent.click(screen.getByRole('button', { name: 'Add from URL' }));
+      expect(props.uploadAttachmentFromUrl).toHaveBeenCalledWith(
+        props.entitySharedId,
+        attachmentData,
+        {
+          __reducerKey: props.storeKey,
+          model: '',
+        }
+      );
     });
   });
 
   it('Should call onClose', () => {
-    render();
-
-    const closeButton = component.find('.attachments-modal__close');
-    closeButton.simulate('click');
-
+    render({ isOpen: true });
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(props.onClose).toHaveBeenCalled();
   });
 });
