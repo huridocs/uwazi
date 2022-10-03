@@ -24,19 +24,23 @@ describe('Add Add thesauri value', () => {
       values: [],
     };
 
-    it('should display groups', async () => {
-      props.values = [
-        { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
-      ];
-      render(props);
-      const select = screen.getByRole('combobox');
-      expect(select).toBeInTheDocument();
+    describe('when thesauri has groups', () => {
+      it('should display groups', async () => {
+        props.values = [
+          { label: 'label1', id: 'id1', values: [{ label: 'innerlabel1', id: 'innerid2' }] },
+        ];
+        render(props);
+        const select = screen.getByRole('combobox');
+        expect(select).toBeInTheDocument();
+      });
     });
 
-    it('should not display groups', async () => {
-      props.values = [{ label: 'label1', id: 'id1' }];
-      render(props);
-      expect(screen.queryByRole('combobox')).toBeNull();
+    describe('when thesauri has NO groups', () => {
+      it('should not display groups', async () => {
+        props.values = [{ label: 'label1', id: 'id1' }];
+        render(props);
+        expect(screen.queryByRole('combobox')).toBeNull();
+      });
     });
 
     it('should call onAccept when form submitted', async () => {
@@ -52,6 +56,7 @@ describe('Add Add thesauri value', () => {
         expect(props.onAccept).toHaveBeenCalledWith({ group: 'root', value: 'testing' });
       });
     });
+
     it('should display error when duplicate root values are found', async () => {
       props.values = [{ label: 'label1', id: 'id1' }];
       render(props);
@@ -65,7 +70,8 @@ describe('Add Add thesauri value', () => {
         await expect(error.children[0].textContent).toMatch(/Duplicate/);
       });
     });
-    it('should display error when duplicate nested values are found', async () => {
+
+    it('should display error when duplicated nested values are found', async () => {
       props.values = [
         { label: 'label1', id: 'id1', values: [{ label: 'inner1', id: 'innerId1' }] },
       ];

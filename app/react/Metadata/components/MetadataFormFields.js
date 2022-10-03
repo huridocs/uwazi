@@ -426,7 +426,7 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string,
-  currentSelectedThesauriMetadata: PropTypes.arrayOf(PropTypes.string),
+  currentSelectedThesauriMetadata: PropTypes.arrayOf(PropTypes.string).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
