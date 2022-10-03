@@ -1,13 +1,14 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
-import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import { LocalForm } from 'react-redux-form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
-import PublicForm from '../PublicForm.js';
+import { Captcha } from 'app/ReactReduxForms';
+import api from 'app/utils/api';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
+import PublicForm from '../PublicForm';
 
 describe('PublicForm', () => {
   let props;
@@ -20,6 +21,15 @@ describe('PublicForm', () => {
     request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.callFake(async () => request);
   });
+  const prepareMocks = () => {
+    instance = component.instance();
+    instance.refreshCaptcha = jest.fn();
+    instance.formDispatch = jest.fn();
+    component.find(LocalForm).props().getDispatch(instance.formDispatch);
+    const captcha = component.find(Captcha);
+    captcha.props().refresh = instance.refreshCaptcha;
+    captcha.props().refresh(instance.refreshCaptcha);
+  };
 
   const render = (customProps, generatedId = false) => {
     props = {
@@ -43,17 +53,42 @@ describe('PublicForm', () => {
       submit,
       remote: false,
     };
+    const state = {
+      entityView: {
+        entity: Immutable.fromJS({
+          sharedId: 'entity1',
+          templatedId: 'template1',
+          title: 'Entity 1',
+          attachments: [],
+          metadata: [{ text: [] }],
+        }),
+        entityForm: { attachments: [] },
+      },
+      settings: { collection: Immutable.fromJS({ dateFormat: 'dateFormat' }) },
+      templates: Immutable.fromJS([
+        {
+          name: 'template1',
+          _id: 'templateId',
+          properties: [],
+          commonProperties: [{ name: 'title', label: 'Title' }],
+        },
+      ]),
+    };
     const mappedProps = { ...props, ...customProps };
-    component = shallow(<PublicForm.WrappedComponent {...mappedProps} />);
-    instance = component.instance();
-    instance.refreshCaptcha = jasmine.createSpy('refreshCaptcha');
-    instance.formDispatch = jasmine.createSpy('formDispatch');
-  };
+    spyOn(api, 'get').and.returnValue(
+      Promise.resolve({
+        json: {
+          data: [
+            { title: 'Southern Nights', documents: [], attachments: [] },
+            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+          ],
+        },
+      })
+    );
 
-  it('should render a form', () => {
-    render();
-    expect(component).toMatchSnapshot();
-  });
+    component = renderConnectedMount(PublicForm.WrappedComponent, state, mappedProps, true);
+    prepareMocks();
+  };
 
   it('should bind the MetadataFormFields change to this form', () => {
     render();
@@ -79,6 +114,7 @@ describe('PublicForm', () => {
     const formSubmit = component.find(LocalForm).props().onSubmit;
     await formSubmit({ title: 'test' });
 
+    component.update();
     const title1 = component.find('#title').at(0);
     expect(title1.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
     expect(title1).not.toEqual(title);
@@ -86,12 +122,19 @@ describe('PublicForm', () => {
 
   it('should enable remote captcha', () => {
     render({ remote: true });
-    expect(component).toMatchSnapshot();
+
+    expect(component.find(Captcha).props()).toMatchObject({
+      model: '.captcha',
+      refresh: expect.any(Function),
+      remote: true,
+    });
   });
 
   it('should render a form with file and attachments', () => {
     render({ file: true, attachments: true });
-    expect(component).toMatchSnapshot();
+    const formSubmit = component.find(LocalForm);
+    expect(formSubmit.length).toBe(1);
+    expect(component.find(Dropzone).length).toBe(2);
   });
 
   it('should submit the values wrapped', async () => {
@@ -116,12 +159,11 @@ describe('PublicForm', () => {
     render();
     const formSubmit = component.find(LocalForm).props().onSubmit;
     await formSubmit({ title: 'test' });
-
+    expect(instance.refreshCaptcha).toHaveBeenCalled();
     expect(instance.formDispatch).toHaveBeenCalledWith({
       model: 'publicform',
       type: 'rrf/reset',
     });
-    expect(instance.refreshCaptcha).toHaveBeenCalled();
   });
 
   it('should refresh captcha and NOT clear the form on submission error', async () => {
@@ -147,15 +189,16 @@ describe('PublicForm', () => {
     request = new Promise(resolve => {
       resolve({ promise: Promise.reject() });
     });
-    render({ attachments: true });
-    const formSubmit = component.find(LocalForm).props().onSubmit;
+
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
+    render({ attachments: true });
     const attachments = component.find('.preview-title');
     expect(attachments.length).toEqual(0);
-
-    component.find(Dropzone).simulate('drop', [newFile]);
+    const formSubmit = component.find(LocalForm).props().onSubmit;
+    component.find(Dropzone).props().onDrop([newFile]);
+    component.update();
     await formSubmit({ title: 'test' });
     request.then(uploadCompletePromise => {
       uploadCompletePromise.promise
