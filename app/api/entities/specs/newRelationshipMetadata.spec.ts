@@ -7,11 +7,31 @@ const factory = getFixturesFactory();
 
 let db = testingDB.mongodb;
 
+const query = {
+  traverse: [
+    {
+      direction: 'out',
+      types: [factory.id('rtype1').toHexString()],
+      match: [
+        {
+          templates: [factory.id('template1').toHexString()],
+        },
+      ],
+    },
+  ],
+};
+
 const fixtures = {
   entities: [
-    factory.entity('entity1', 'template1'),
-    factory.entity('entity2', 'template1'),
-    factory.entity('entity3', 'template1'),
+    factory.entity('entity1', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
+    factory.entity('entity2', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
+    factory.entity('entity3', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
+    factory.entity(
+      'entity4',
+      'template2',
+      { relProp2: [{ value: 'existing_value' }] },
+      { obsoleteMetadata: [] }
+    ),
   ],
   relationships: [
     {
@@ -40,23 +60,8 @@ const fixtures = {
     },
   ],
   templates: [
-    factory.template('template1', [
-      factory.property('relProp', 'newRelationship', {
-        query: {
-          traverse: [
-            {
-              direction: 'out',
-              types: [factory.id('rtype1').toHexString()],
-              match: [
-                {
-                  templates: [factory.id('template1').toHexString()],
-                },
-              ],
-            },
-          ],
-        },
-      }),
-    ]),
+    factory.template('template1', [factory.property('relProp', 'newRelationship', { query })]),
+    factory.template('template2', [factory.property('relProp2', 'newRelationship', { query })]),
   ],
 };
 
@@ -71,7 +76,7 @@ afterAll(async () => {
 
 describe('entities.get()', () => {
   it('should denormalize newRelationship metadata', async () => {
-    const allEntities = await entities.get({});
+    const allEntities = await entities.get({ template: factory.id('template1') });
     expect(allEntities).toMatchObject([
       {
         sharedId: 'entity1',
@@ -81,16 +86,64 @@ describe('entities.get()', () => {
             { value: 'entity3', label: 'entity3' },
           ],
         },
+        obsoleteMetadata: [],
       },
       {
         sharedId: 'entity2',
         metadata: {
           relProp: [{ value: 'entity1', label: 'entity1' }],
         },
+        obsoleteMetadata: [],
       },
       {
         sharedId: 'entity3',
         metadata: {},
+        obsoleteMetadata: [],
+      },
+    ]);
+  });
+
+  it('should persist changes in the database', async () => {
+    let allEntities = await entities.get({ template: factory.id('template1') });
+    allEntities = await db
+      ?.collection('entities')
+      .find({ template: factory.id('template1') })
+      .toArray();
+    expect(allEntities).toMatchObject([
+      {
+        sharedId: 'entity1',
+        metadata: {
+          relProp: [
+            { value: 'entity2', label: 'entity2' },
+            { value: 'entity3', label: 'entity3' },
+          ],
+        },
+        obsoleteMetadata: [],
+      },
+      {
+        sharedId: 'entity2',
+        metadata: {
+          relProp: [{ value: 'entity1', label: 'entity1' }],
+        },
+        obsoleteMetadata: [],
+      },
+      {
+        sharedId: 'entity3',
+        metadata: {},
+        obsoleteMetadata: [],
+      },
+    ]);
+  });
+
+  it('should only read when not obsolete', async () => {
+    const allEntities = await entities.get({ template: factory.id('template2') });
+    expect(allEntities).toMatchObject([
+      {
+        sharedId: 'entity4',
+        metadata: {
+          relProp2: [{ value: 'existing_value' }],
+        },
+        obsoleteMetadata: [],
       },
     ]);
   });

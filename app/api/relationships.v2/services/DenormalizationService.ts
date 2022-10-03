@@ -37,8 +37,6 @@ export class DenormalizationService implements Transactional {
     this.transactionContext = undefined;
   }
 
-  // DISCUSS: typescript method overloading
-
   async getCandidateEntitiesForRelationship(id: string): Promise<any[]>;
 
   async getCandidateEntitiesForRelationship(rel: Relationship): Promise<any[]>;

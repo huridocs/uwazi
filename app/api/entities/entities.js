@@ -18,7 +18,6 @@ import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
@@ -493,6 +492,7 @@ export default {
         });
       })
     );
+    await entitiesDataSource.writeNewRelationshipMetadataChanges(entities);
   },
 
   async get(query, select, options = {}) {
