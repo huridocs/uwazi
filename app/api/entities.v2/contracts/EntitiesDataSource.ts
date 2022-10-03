@@ -5,4 +5,7 @@ import { Entity } from '../model/Entity';
 export interface EntitiesDataSource extends Transactional {
   entitiesExist(sharedIds: string[]): Promise<boolean>;
   getByIds(sharedIds: string[]): ResultSet<Entity>;
+  markMetadataAsChanged(
+    propData: { sharedId: string; propertiesToBeMarked: string[] }[]
+  ): Promise<void>;
 }

@@ -16,7 +16,6 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
     return countInExistence === sharedIds.length;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async writeNewRelationshipMetadataChanges(
     entities: {
       _id: ObjectId;
@@ -37,6 +36,23 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
         this.session
       );
       entity.obsoleteMetadata = [];
+    }
+    await stream.flush();
+  }
+
+  async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
+    const stream = new BulkWriteStream(this.db.collection('entities'));
+    for (let i = 0; i < propData.length; i += 1) {
+      const data = propData[i];
+      for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {
+        const prop = data.propertiesToBeMarked[j];
+        // eslint-disable-next-line no-await-in-loop
+        await stream.update(
+          { sharedId: data.sharedId },
+          { $push: { obsoleteMetadata: prop } },
+          this.session
+        );
+      }
     }
     await stream.flush();
   }

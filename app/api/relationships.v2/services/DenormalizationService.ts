@@ -75,7 +75,12 @@ export class DenormalizationService implements Transactional {
           queries.map(async q => {
             const result = this.relationshipsDS.getByModelQuery(q);
             const leafEntities = (await result.all()).map(path => path[path.length - 1]);
-            leafEntities.forEach(entity => entities.push(entity));
+            leafEntities.forEach(entity =>
+              entities.push({
+                ...entity,
+                propertiesToBeMarked: [property.name],
+              })
+            );
           })
         );
       })
@@ -90,6 +95,7 @@ export class DenormalizationService implements Transactional {
         // TODO: reindex entities
         // TODO: mark entities metadata relationships as invalid (for cache)
         candidates.forEach(candidate => console.log('Should re-denormalize', candidate));
+        await this.entitiesDS.markMetadataAsChanged(candidates);
       },
       [this.relationshipsDS, this.entitiesDS, this.templatesDS],
       this.transactionContext

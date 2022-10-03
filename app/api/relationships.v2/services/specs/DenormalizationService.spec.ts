@@ -5,6 +5,7 @@ import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/Mong
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Db } from 'mongodb';
 import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
@@ -142,24 +143,27 @@ const fixtures = {
   ],
 };
 
+let db: Db;
+let service: DenormalizationService;
+
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
+
+  db = getConnection();
+  service = new DenormalizationService(
+    new MongoRelationshipsDataSource(db),
+    new MongoEntitiesDataSource(db),
+    new MongoTemplatesDataSource(db),
+    new MongoTransactionManager(getClient())
+  );
 });
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('when providing a new/updated relationship and a query', () => {
+describe('getCandidateEntitiesForRelationship()', () => {
   it('should return the entities that may need denormalization', async () => {
-    const db = getConnection();
-    const service = new DenormalizationService(
-      new MongoRelationshipsDataSource(db),
-      new MongoEntitiesDataSource(db),
-      new MongoTemplatesDataSource(db),
-      new MongoTransactionManager(getClient())
-    );
-
     const result = await service.getCandidateEntitiesForRelationship(
       factory.id('rel3').toHexString()
     );
@@ -167,9 +171,37 @@ describe('when providing a new/updated relationship and a query', () => {
     expect(result.length).toBe(3);
     expect(result).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ sharedId: 'entity4' }),
-        expect.objectContaining({ sharedId: 'entity1' }),
-        expect.objectContaining({ sharedId: 'entity7' }),
+        expect.objectContaining({
+          sharedId: 'entity4',
+          propertiesToBeMarked: ['relationshipProp3'],
+        }),
+        expect.objectContaining({
+          sharedId: 'entity1',
+          propertiesToBeMarked: ['relationshipProp1'],
+        }),
+        expect.objectContaining({
+          sharedId: 'entity7',
+          propertiesToBeMarked: ['relationshipProp2'],
+        }),
+      ])
+    );
+  });
+});
+
+describe('denormalizeBasedOnRelationship()', () => {
+  it('should mark the metadata in entities that may need denormalization as obsolete', async () => {
+    await service.denormalizeBasedOnRelationship(factory.id('rel3').toHexString());
+
+    const entities = await db
+      .collection('entities')
+      .find({ sharedId: { $in: ['entity1', 'entity4', 'entity7'] } })
+      .toArray();
+
+    expect(entities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ sharedId: 'entity4', obsoleteMetadata: ['relationshipProp3'] }),
+        expect.objectContaining({ sharedId: 'entity1', obsoleteMetadata: ['relationshipProp1'] }),
+        expect.objectContaining({ sharedId: 'entity7', obsoleteMetadata: ['relationshipProp2'] }),
       ])
     );
   });
