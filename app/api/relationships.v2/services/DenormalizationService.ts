@@ -93,8 +93,6 @@ export class DenormalizationService implements Transactional {
       async () => {
         const candidates = await this.getCandidateEntitiesForRelationship(_id);
         // TODO: reindex entities
-        // TODO: mark entities metadata relationships as invalid (for cache)
-        candidates.forEach(candidate => console.log('Should re-denormalize', candidate));
         await this.entitiesDS.markMetadataAsChanged(candidates);
       },
       [this.relationshipsDS, this.entitiesDS, this.templatesDS],

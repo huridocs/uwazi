@@ -464,7 +464,6 @@ export default {
 
   async performNewRelationshipQueries(_entities, _relationshipsDataSource) {
     const entities = await this.appendTemplateAndMetadata(_entities); // DISCUSS: Is this necessary?
-    console.log(entities);
     const templateIdToProperties = objectIndex(
       await templates.get(
         { _id: entities.map(e => e.template) },
@@ -473,26 +472,21 @@ export default {
       t => t._id,
       t => t.properties.filter(prop => prop.type === 'newRelationship')
     );
-    console.log('titp', templateIdToProperties);
     const db = getConnection();
     const entitiesDataSource = new MongoEntitiesDataSource(db);
 
     await Promise.all(
       entities.map(async entity => {
-        console.log('entity', entity);
         const relProperties = templateIdToProperties[entity.template];
-        console.log('relProps', relProperties);
         if (!relProperties) return;
 
         const [queryedEntity] = await entitiesDataSource.getByIds([entity.sharedId]).all();
 
-        console.log('queryedEntity', queryedEntity);
         relProperties.forEach(relProperty => {
           entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];
         });
       })
     );
-    await entitiesDataSource.writeNewRelationshipMetadataChanges(entities);
   },
 
   async get(query, select, options = {}) {

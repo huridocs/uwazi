@@ -16,30 +16,6 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
     return countInExistence === sharedIds.length;
   }
 
-  async writeNewRelationshipMetadataChanges(
-    entities: {
-      _id: ObjectId;
-      obsoleteMetadata: string[];
-      metadata: Record<string, { value: string; label: string }>;
-    }[]
-  ) {
-    const stream = new BulkWriteStream(this.db.collection('entities'));
-    for (let i = 0; i < entities.length; i += 1) {
-      const entity = entities[i];
-      const metadataChanges = Object.fromEntries(
-        entity.obsoleteMetadata.map(name => [`metadata.${name}`, entity.metadata[name]])
-      );
-      // eslint-disable-next-line no-await-in-loop
-      await stream.update(
-        { _id: entity._id },
-        { $set: { obsoleteMetadata: [], ...metadataChanges } },
-        this.session
-      );
-      entity.obsoleteMetadata = [];
-    }
-    await stream.flush();
-  }
-
   async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
     const stream = new BulkWriteStream(this.db.collection('entities'));
     for (let i = 0; i < propData.length; i += 1) {
@@ -85,29 +61,36 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
       cursor,
       async ({ sharedId, template, metadata, obsoleteMetadata, joinedTemplate }) => {
         const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
-        const obsoleteMetadataSet = obsoleteMetadata ? new Set(obsoleteMetadata) : new Set();
+        const relationshipsDS = new MongoRelationshipsDataSource(this.db);
+        if (this.session) relationshipsDS.setTransactionContext(this.session);
+        const stream = new BulkWriteStream(this.db.collection('entities'));
         await Promise.all(
           // eslint-disable-next-line max-statements
           joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
             if (property.type !== 'newRelationship') return;
-            if (!obsoleteMetadataSet.has(property.name)) {
-              mappedMetadata[property.name] = metadata[property.name];
+            if ((obsoleteMetadata || []).includes(property.name)) {
+              const parser = new MongoGraphQueryParser();
+              const query = parser.parse({ ...property.query, sharedId });
+              const result = relationshipsDS.getByModelQuery(query);
+              const leafEntities = (await result.all()).map(path => path[path.length - 1]);
+              mappedMetadata[property.name] = leafEntities.map(e => ({
+                value: e.sharedId,
+                label: e.sharedId,
+              }));
+              await stream.update(
+                { sharedId },
+                { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } },
+                this.session
+              );
               return;
             }
 
-            const parser = new MongoGraphQueryParser();
-            const query = parser.parse({ ...property.query, sharedId });
-            const relationshipsDS = new MongoRelationshipsDataSource(this.db);
-            if (this.session) relationshipsDS.setTransactionContext(this.session);
-            const result = relationshipsDS.getByModelQuery(query);
-            const leafEntities = (await result.all()).map(path => path[path.length - 1]);
-            mappedMetadata[property.name] = leafEntities.map(e => ({
-              value: e.sharedId,
-              label: e.sharedId,
-            }));
-            relationshipsDS.clearTransactionContext();
+            mappedMetadata[property.name] = metadata[property.name];
           }) || []
         );
+        await stream.update({ sharedId }, { $set: { obsoleteMetadata: [] } }, this.session);
+        await stream.flush();
+        relationshipsDS.clearTransactionContext();
         return new Entity(sharedId, template.toHexString(), mappedMetadata);
       }
     );

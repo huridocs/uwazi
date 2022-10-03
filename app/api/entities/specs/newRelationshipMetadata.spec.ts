@@ -86,19 +86,16 @@ describe('entities.get()', () => {
             { value: 'entity3', label: 'entity3' },
           ],
         },
-        obsoleteMetadata: [],
       },
       {
         sharedId: 'entity2',
         metadata: {
           relProp: [{ value: 'entity1', label: 'entity1' }],
         },
-        obsoleteMetadata: [],
       },
       {
         sharedId: 'entity3',
         metadata: {},
-        obsoleteMetadata: [],
       },
     ]);
   });
