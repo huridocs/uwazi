@@ -11,14 +11,17 @@ import {
 const isRestricted = (entry: PermissionType): entry is RestrictedPermissionType =>
   entry.refId !== 'public';
 
-export class MongoPermissionsDataSource extends MongoDataSource implements PermissionsDataSource {
+export class MongoPermissionsDataSource
+  extends MongoDataSource<EntityPermissionsDBOType>
+  implements PermissionsDataSource
+{ // eslint-disable-line
+  protected collectionName = 'entities';
+
   getByEntities(sharedIds: string[]) {
-    const cursor = this.db
-      .collection<EntityPermissionsDBOType>('entities')
-      .find(
-        { sharedId: { $in: sharedIds } },
-        { projection: { sharedId: 1, permissions: 1 }, session: this.session }
-      );
+    const cursor = this.getCollection().find(
+      { sharedId: { $in: sharedIds } },
+      { projection: { sharedId: 1, permissions: 1 }, session: this.session }
+    );
     return new MongoResultSet(
       cursor,
       entityPermission =>

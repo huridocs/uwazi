@@ -6,9 +6,11 @@ import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 
 export class MongoTemplatesDataSource extends MongoDataSource implements TemplatesDataSource {
+  protected collectionName = 'templates';
+
   getAllRelationshipProperties(): ResultSet<RelationshipProperty> {
     const parser = new MongoGraphQueryParser();
-    const cursor = this.db.collection('templates').aggregate(
+    const cursor = this.getCollection().aggregate(
       [
         {
           $match: {

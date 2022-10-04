@@ -2,10 +2,14 @@ import { ClientSession, Db } from 'mongodb';
 import { Transactional } from '../contracts/Transactional';
 import { TransactionContextAlreadySetError } from './errors/TransactionContextAlreadySetError';
 
-export abstract class MongoDataSource implements Transactional<ClientSession> {
+export abstract class MongoDataSource<CollectionSchema = any>
+  implements Transactional<ClientSession>
+{ // eslint-disable-line
   protected db: Db;
 
   protected session?: ClientSession;
+
+  protected abstract collectionName: string;
 
   constructor(db: Db) {
     this.db = db;
@@ -21,5 +25,9 @@ export abstract class MongoDataSource implements Transactional<ClientSession> {
 
   clearTransactionContext(): void {
     this.session = undefined;
+  }
+
+  getCollection() {
+    return this.db.collection<CollectionSchema>(this.collectionName);
   }
 }

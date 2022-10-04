@@ -7,9 +7,7 @@ import { UserDBOType } from './schemas/userTypes';
 import { User } from '../model/User';
 
 export class MongoRelationshipsDataSource extends MongoDataSource implements UserDataSource {
-  private getCollection() {
-    return this.db.collection('users');
-  }
+  protected collectionName = 'users';
 
   get(_id: string) {
     const id = MongoIdGenerator.mapToDb(_id);

@@ -31,12 +31,10 @@ type RelationshipAggregatedResultType = Omit<
 };
 
 export class MongoRelationshipsDataSource
-  extends MongoDataSource
+  extends MongoDataSource<RelationshipDBOType>
   implements RelationshipsDataSource
 { // eslint-disable-line
-  private getCollection() {
-    return this.db.collection<RelationshipDBOType>('relationships');
-  }
+  protected collectionName = 'relationships';
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
     const items = relationships.map(r => RelationshipMappers.toDBO(r));
