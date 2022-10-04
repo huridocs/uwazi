@@ -1,6 +1,7 @@
 import { Transactional } from 'api/common.v2/contracts/Transactional';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
@@ -89,14 +90,15 @@ export class DenormalizationService implements Transactional {
   }
 
   async denormalizeBasedOnRelationship(_id: string) {
+    let candidates: any[] = [];
     await this.transactionManager.run(
       async () => {
-        const candidates = await this.getCandidateEntitiesForRelationship(_id);
-        // TODO: reindex entities
+        candidates = await this.getCandidateEntitiesForRelationship(_id);
         await this.entitiesDS.markMetadataAsChanged(candidates);
       },
       [this.relationshipsDS, this.entitiesDS, this.templatesDS],
       this.transactionContext
     );
+    return candidates;
   }
 }

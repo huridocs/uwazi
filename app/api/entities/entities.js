@@ -433,14 +433,14 @@ export default {
   },
 
   async getWithoutDocuments(query, select, options = {}) {
-    const entities = model.getUnrestricted(query, select, options);
+    const entities = await model.getUnrestricted(query, select, options);
     await this.performNewRelationshipQueries(entities);
     return entities;
   },
 
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
-    const entities = model.getUnrestricted(query, extendedSelect, options);
+    const entities = await model.getUnrestricted(query, extendedSelect, options);
     await this.performNewRelationshipQueries(entities);
     return entities;
   },
@@ -475,6 +475,9 @@ export default {
         });
       })
     );
+    entities.forEach(entity => {
+      entity.obsoleteMetadata = [];
+    });
   },
 
   async get(query, select, options = {}) {
@@ -553,7 +556,7 @@ export default {
   },
 
   async getAllLanguages(sharedId) {
-    const entities = model.get({ sharedId });
+    const entities = await model.get({ sharedId });
     await this.performNewRelationshipQueries(entities);
     return entities;
   },
@@ -570,7 +573,7 @@ export default {
       ...(onlyPublished ? { published: true } : {}),
     };
     const queryLimit = limit ? { limit } : {};
-    const entities = model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
     await this.performNewRelationshipQueries(entities);
     return entities;
   },

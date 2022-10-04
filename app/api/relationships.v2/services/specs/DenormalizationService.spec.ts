@@ -2,6 +2,7 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { search } from 'api/search';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -183,6 +184,16 @@ describe('getCandidateEntitiesForRelationship()', () => {
 });
 
 describe('denormalizeBasedOnRelationship()', () => {
+  let indexSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    indexSpy = jest.spyOn(search, 'indexEntities').mockImplementation(async () => {});
+  });
+
+  afterEach(() => {
+    indexSpy.mockRestore();
+  });
+
   it('should mark the metadata in entities that may need denormalization as obsolete', async () => {
     await service.denormalizeBasedOnRelationship(factory.id('rel3').toHexString());
 
@@ -198,5 +209,12 @@ describe('denormalizeBasedOnRelationship()', () => {
         expect.objectContaining({ sharedId: 'entity7', obsoleteMetadata: ['relationshipProp2'] }),
       ])
     );
+  });
+
+  it('should send entities to indexing', async () => {
+    await service.denormalizeBasedOnRelationship(factory.id('rel3').toHexString());
+
+    expect(indexSpy).toHaveBeenCalledTimes(1);
+    expect(indexSpy).toHaveBeenCalledWith({ sharedId: { $in: ['entity1', 'entity7', 'entity4'] } });
   });
 });

@@ -4,12 +4,14 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
+import { applicationEventsBus } from 'api/eventsbus';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 import { DenormalizationService } from './DenormalizationService';
+import { RelationshipsCreatedEvent } from '../events/RelationshipsCreatedEvent';
 
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
@@ -63,30 +65,39 @@ export class CreateRelationshipService {
 
     await this.authService.validateAccess('write', sharedIds);
 
-    return this.transactionManager.run(async () => {
-      if (!(await this.relationshipTypesDS.typesExist(types))) {
-        throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
-      }
-      if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
-        throw new MissingEntityError('Must provide sharedIds from existing entities');
-      }
+    const { candidates: markedEntities, insertedRelationships: newRelationships } =
+      await this.transactionManager.run(async () => {
+        if (!(await this.relationshipTypesDS.typesExist(types))) {
+          throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
+        }
+        if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
+          throw new MissingEntityError('Must provide sharedIds from existing entities');
+        }
 
-      const insertedRelationships = await this.relationshipsDS.insert(
-        relationships.map(r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type))
-      );
+        const insertedRelationships = await this.relationshipsDS.insert(
+          relationships.map(
+            r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type)
+          )
+        );
 
-      await Promise.all(
-        insertedRelationships.map(async insertedRelationship =>
-          this.denormalizationService.denormalizeBasedOnRelationship(insertedRelationship._id)
-        )
-      );
+        const candidates = (
+          await Promise.all(
+            insertedRelationships.map(async insertedRelationship =>
+              this.denormalizationService.denormalizeBasedOnRelationship(insertedRelationship._id)
+            )
+          )
+        ).flat();
+        return { candidates, insertedRelationships };
+      }, [
+        this.entitiesDS,
+        this.relationshipsDS,
+        this.relationshipTypesDS,
+        this.denormalizationService,
+      ]);
 
-      return insertedRelationships;
-    }, [
-      this.entitiesDS,
-      this.relationshipsDS,
-      this.relationshipTypesDS,
-      this.denormalizationService,
-    ]);
+    await applicationEventsBus.emit(
+      new RelationshipsCreatedEvent({ relationships: newRelationships, markedEntities })
+    );
+    return newRelationships;
   }
 }
