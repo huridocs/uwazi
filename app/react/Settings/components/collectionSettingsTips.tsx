@@ -2,36 +2,31 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 
 export const landingPageTip = (
-  <>
-    <Translate>Configure the default landing page for your site.</Translate>
-    <hr />
-    <Translate>Examples</Translate>:
-    <br />
-    <Translate>- Site page:</Translate>
-    <i no-translate>/page/dicxg0oagy3xgr7ixef80k9</i>
-    <br />
-    <Translate>- Library search:</Translate>
-    <i no-translate>/library/?searchTerm=testAn </i>
-    <br />
-    <Translate>- Entity:</Translate>
-    <i no-translate>/entity/9htbkgpkyy7j5rk9A</i>
-    <br />
-    <Translate>
-      Always use URLs relative to your site, starting with / and skipping the domain name. Example:
-    </Translate>
-    <i>
-      <Translate>https://yoursite.com/</Translate>
-    </i>
-  </>
+  <Translate translationKey="Landing page description">
+    {`The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here.
+      For example:
+      
+      A page: */page/dicxg0oagy3xgr7ixef80k9*
+      A filtered view in Uwazi: */library/?searchTerm=test*
+      An entity: */entity/9htbkgpkyy7j5rk9*
+      A document: */document/4y9i99fadjp833di*
+      
+      Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage
+      `}
+  </Translate>
 );
 
 export const customFavIcon = (
-  <>
-    <Translate>Favicon is an icon that appears in the browser tab and bookmarks.</Translate>
-    <br />
-    <br />
-    <Translate>You will need to reload the page after updating your Favicon.</Translate>
-  </>
+  <Translate translationKey="Favicon description">
+    {`A favicon is a small icon that represents your collection in browser tabs and bookmarks. The
+      default favicon is the Uwazi logo. To use your own:
+
+        1. Upload your icon in Custom Uploads.
+        2. Copy its URL.
+        3. Choose "Custom Icon" and paste the URL in the indicated field.
+        4. Reload the page to see your favicon in action.
+      `}
+  </Translate>
 );
 
 export const publicSharing = (
@@ -51,21 +46,27 @@ export const emails = [
     Here you can set up the contact email and the email that appears when Uwazi sends a notification
     to a user
   </Translate>,
-  <Translate>
-    If you have added a contact form on one of your pages, this is the email address that receives
-    the information from that form.
+  <Translate translationKey="Receiving email description">
+    If you have a contact form, this is the email address that will receive the form's submissions.
+    Click here to learn how to add and confirgure a contact form on a webpage.
   </Translate>,
-  <Translate>
-    You can configure the email that will appear as the sender when any email is sent to the user.
-    If this email is not set, “no-reply@uwazi.io” will be used instead.
+  <Translate translationKey="Sending email description">
+    {`This is the email address that will appear as the sender when an email is sent from your Uwazi
+    collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom
+    one by including your desired email address here.`}
   </Translate>,
 ];
 
 export const characterSupport = (
   <>
     <Translate translationKey="Character support description">
-      Toggling this button enhances support for non-latin languages as default languages. This will
-      update all template properties automatically.
+      This option enhances support for non-Latin languages as default languages of your collection.
+      Selecting this option will update all template properties automatically. The process could
+      take several minutes. Selecting this option will likely change the URLs of library filters. As
+      a consequence, if you have menus or links using such URLs, they will probably stop working.
+      You will need to update them manually. After selecting this option, you will not be able to
+      revert back to using legacy property naming. If you are not facing issues with your template
+      property names, we recommend leaving this unchecked.
     </Translate>
     <br />
     <b>
@@ -100,11 +101,12 @@ export const publicForm = [
     Here you can configure the public form destination and the whitelisted templates
   </Translate>,
   <Translate translationKey="Public form URL description">
-    You can configure the URL of a different Uwazi to receive the submits from your Public Form
+    If you have configured a public form and would like a different Uwazi collection to receive the
+    submissions, enter its URL here.
   </Translate>,
   <Translate translationKey="Public form whitelist description">
-    If you wish to include a public form on your page, you must white-list the template by selecting
-    it from the list.
+    If you wish to include Public Forms on your pages, you must white-list the template IDs for
+    which Public Forms are expected.
   </Translate>,
 ];
 
