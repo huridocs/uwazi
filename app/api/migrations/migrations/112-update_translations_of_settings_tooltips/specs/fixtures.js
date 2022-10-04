@@ -1,6 +1,22 @@
 import db from 'api/utils/testing_db';
 
-export default {
+const templateContext = {
+  id: db.id(),
+  label: 'default template',
+  type: 'Entity',
+  values: [
+    {
+      key: 'default template',
+      value: 'default template',
+    },
+    {
+      key: 'Title',
+      value: 'Title',
+    },
+  ],
+};
+
+const fixturesDB = {
   translations: [
     {
       _id: db.id(),
@@ -10,41 +26,25 @@ export default {
           _id: db.id(),
           type: 'Uwazi UI',
           label: 'User Interface',
-          id: 'Uwazi UI',
+          id: 'System',
           values: [
             {
+              key: 'existing-key-in-system',
+              value: 'existing-key-in-system',
+            },
+            {
               _id: db.id(),
-              key: 'Search',
-              value: 'Search',
+              key: 'Configure the default landing page for your site.',
+              value: 'Configure the default landing page for your site. changed',
+            },
+            {
+              _id: db.id(),
+              key: '- Site page:',
+              value: '- Site page:',
             },
           ],
         },
-        {
-          _id: db.id(),
-          type: 'Connection',
-          label: 'Related',
-          id: 'relationship_type_1',
-          values: [
-            {
-              _id: db.id(),
-              key: 'Related',
-              value: 'Related',
-            },
-          ],
-        },
-        {
-          _id: db.id(),
-          type: 'Connection',
-          label: 'Inherited',
-          id: 'relationship_type_2',
-          values: [
-            {
-              _id: db.id(),
-              key: 'Inherited',
-              value: 'Inherited',
-            },
-          ],
-        },
+        templateContext,
       ],
     },
     {
@@ -55,42 +55,58 @@ export default {
           _id: db.id(),
           type: 'Uwazi UI',
           label: 'User Interface',
-          id: 'Uwazi UI',
+          id: 'System',
           values: [
             {
+              key: 'existing-key-in-system',
+              value: 'existing-key-in-system',
+            },
+            {
               _id: db.id(),
-              key: 'Search',
-              value: 'Buscar',
+              key: 'Configure the default landing page for your site.',
+              value: 'Configurar la pagina de inicio para tu sitio.',
+            },
+            {
+              _id: db.id(),
+              key: '- Site page:',
+              value: '- Sito:',
             },
           ],
         },
+        templateContext,
+      ],
+    },
+    {
+      _id: db.id(),
+      locale: 'pr',
+      contexts: [
         {
           _id: db.id(),
-          type: 'Connection',
-          label: 'Related',
-          id: 'relationship_type_1',
+          type: 'Uwazi UI',
+          label: 'User Interface',
+          id: 'System',
           values: [
             {
+              key: 'existing-key-in-system',
+              value: 'existing-key-in-system',
+            },
+            {
               _id: db.id(),
-              key: 'Related',
-              value: 'Relacionado',
+              key: 'Configure the default landing page for your site.',
+              value: 'Configure the default landing page for your site.',
+            },
+            {
+              _id: db.id(),
+              key: '- Site page:',
+              value: '- Site page:',
             },
           ],
         },
-        {
-          _id: db.id(),
-          type: 'Connection',
-          label: 'Inherited',
-          id: 'relationship_type_2',
-          values: [
-            {
-              _id: db.id(),
-              key: 'Inherited',
-              value: 'Heredado',
-            },
-          ],
-        },
+        templateContext,
       ],
     },
   ],
 };
+
+export { templateContext };
+export default fixturesDB;

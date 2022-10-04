@@ -14,8 +14,7 @@ Favicon is an icon that appears in the browser tab and bookmarks.,Favicon descri
 2. Copy its URL.
 3. Choose ""Custom Icon"" and paste the URL in the indicated field.
 4. Reload the page to see your favicon in action."
-"If you have added a contact form on one of your pages, this is the email address that receives the information from that form.",Receiving email description,"If you have added a contact form on one of your pages, this is the email address that receives the information from that form.","If you have a contact form, this is the email address that will receive the form's submissions.
-Click here to learn how to add and configure a contact form on a webpage."
+"If you have added a contact form on one of your pages, this is the email address that receives the information from that form.",Receiving email description,"If you have added a contact form on one of your pages, this is the email address that receives the information from that form.","If you have a contact form, this is the email address that will receive the form's submissions."
 "You can configure the email that will appear as the sender when any email is sent to the user.
 If this email is not set, “no-reply@uwazi.io” will be used instead.",Sending email description,"You can configure the email that will appear as the sender when any email is sent to the user.
 If this email is not set, “no-reply@uwazi.io” will be used instead.",This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
