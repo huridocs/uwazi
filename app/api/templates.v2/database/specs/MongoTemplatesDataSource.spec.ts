@@ -1,30 +1,27 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MatchQueryNode } from 'api/relationships.v2/database/graphs/MatchQueryNode';
 import { MongoGraphQueryParser } from 'api/relationships.v2/database/MongoGraphQueryParser';
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
 
-const parser = new MongoGraphQueryParser();
-
 const factory = getFixturesFactory();
 
-const createDBRelationshipQuery = (index: number) => ({
-  traverse: [
-    {
-      types: [factory.id(`type${index}`).toHexString()],
-      direction: 'out' as const,
-      match: [
-        {
-          templates: [factory.id(`template${index}`).toHexString()],
-        },
-      ],
-    },
-  ],
-});
+const createDBRelationshipQuery = (index: number) => [
+  {
+    types: [factory.id(`type${index}`).toHexString()],
+    direction: 'out' as const,
+    match: [
+      {
+        templates: [factory.id(`template${index}`).toHexString()],
+      },
+    ],
+  },
+];
 
-const createRelationshipQuery = (index: number) => parser.parse(createDBRelationshipQuery(index));
+const createRelationshipQuery = (index: number) =>
+  createDBRelationshipQuery(index).map(q => MongoGraphQueryParser.parseTraversal(q));
 
 const fixtures = {
   templates: [
@@ -69,13 +66,22 @@ describe('when requesting the relationship properties configured in the system',
     const result = await dataSource.getAllRelationshipProperties().all();
     expect(result.length).toBe(3);
     result.forEach(prop => {
-      expect(prop).toBeInstanceOf(RelationshipProperty);
-      expect(prop.query).toBeInstanceOf(MatchQueryNode);
+      expect(prop.property).toBeInstanceOf(RelationshipProperty);
+      expect(prop.property.query[0]).toBeInstanceOf(TraversalQueryNode);
     });
-    expect(result).toEqual([
-      expect.objectContaining({ name: 'relationshipProp1', query: createRelationshipQuery(1) }),
-      expect.objectContaining({ name: 'relationshipProp2', query: createRelationshipQuery(2) }),
-      expect.objectContaining({ name: 'relationshipProp3', query: createRelationshipQuery(3) }),
+    expect(result).toMatchObject([
+      {
+        property: { name: 'relationshipProp1', query: createRelationshipQuery(1) },
+        template: factory.id('template1').toHexString(),
+      },
+      {
+        property: { name: 'relationshipProp2', query: createRelationshipQuery(2) },
+        template: factory.id('template2').toHexString(),
+      },
+      {
+        property: { name: 'relationshipProp3', query: createRelationshipQuery(3) },
+        template: factory.id('template3').toHexString(),
+      },
     ]);
   });
 });

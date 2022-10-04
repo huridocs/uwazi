@@ -41,30 +41,28 @@ const fixtures = {
         name: 'relationshipProp1',
         type: 'newRelationship',
         label: 'relationshipProp1',
-        query: {
-          traverse: [
-            {
-              types: [factory.id('nullType').toHexString()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [factory.id('formerHubsTemplate').toHexString()],
-                  traverse: [
-                    {
-                      types: [factory.id('relType1').toHexString()],
-                      direction: 'in',
-                      match: [
-                        {
-                          templates: [factory.id('template4').toHexString()],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        query: [
+          {
+            types: [factory.id('nullType').toHexString()],
+            direction: 'out',
+            match: [
+              {
+                templates: [factory.id('formerHubsTemplate').toHexString()],
+                traverse: [
+                  {
+                    types: [factory.id('relType1').toHexString()],
+                    direction: 'in',
+                    match: [
+                      {
+                        templates: [factory.id('template4').toHexString()],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     ]),
     factory.template('template7', [
@@ -72,30 +70,28 @@ const fixtures = {
         name: 'relationshipProp2',
         type: 'newRelationship',
         label: 'relationshipProp2',
-        query: {
-          traverse: [
-            {
-              types: [factory.id('relType5').toHexString()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [factory.id('template4').toHexString()],
-                  traverse: [
-                    {
-                      types: [factory.id('relType1').toHexString()],
-                      direction: 'out',
-                      match: [
-                        {
-                          templates: [factory.id('formerHubsTemplate').toHexString()],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        query: [
+          {
+            types: [factory.id('relType5').toHexString()],
+            direction: 'out',
+            match: [
+              {
+                templates: [factory.id('template4').toHexString()],
+                traverse: [
+                  {
+                    types: [factory.id('relType1').toHexString()],
+                    direction: 'out',
+                    match: [
+                      {
+                        templates: [factory.id('formerHubsTemplate').toHexString()],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     ]),
     factory.template('template4', [
@@ -103,41 +99,39 @@ const fixtures = {
         name: 'relationshipProp3',
         type: 'newRelationship',
         label: 'relationshipProp3',
-        query: {
-          traverse: [
-            {
-              types: [factory.id('relType1').toHexString()],
-              direction: 'out',
-              match: [
-                {
-                  templates: [factory.id('formerHubsTemplate').toHexString()],
-                  traverse: [
-                    {
-                      types: [factory.id('nullType').toHexString()],
-                      direction: 'in',
-                      match: [
-                        {
-                          templates: [factory.id('template1').toHexString()],
-                          traverse: [
-                            {
-                              types: [factory.id('nullType').toHexString()],
-                              direction: 'in',
-                              match: [
-                                {
-                                  templates: [factory.id('formerHubsTemplate').toHexString()],
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        query: [
+          {
+            types: [factory.id('relType1').toHexString()],
+            direction: 'out',
+            match: [
+              {
+                templates: [factory.id('formerHubsTemplate').toHexString()],
+                traverse: [
+                  {
+                    types: [factory.id('nullType').toHexString()],
+                    direction: 'in',
+                    match: [
+                      {
+                        templates: [factory.id('template1').toHexString()],
+                        traverse: [
+                          {
+                            types: [factory.id('nullType').toHexString()],
+                            direction: 'in',
+                            match: [
+                              {
+                                templates: [factory.id('formerHubsTemplate').toHexString()],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
     ]),
   ],

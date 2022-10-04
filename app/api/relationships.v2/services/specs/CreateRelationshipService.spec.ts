@@ -56,29 +56,27 @@ const fixtures = {
     factory.template('template2'),
     factory.template('template3', [
       factory.property('relProp', 'newRelationship', {
-        query: {
-          traverse: [
-            {
-              direction: 'out',
-              types: [factory.id('rel4').toHexString()],
-              match: [
-                {
-                  templates: [factory.id('template1').toHexString()],
-                },
-                {
-                  templates: [factory.id('template2').toHexString()],
-                  traverse: [
-                    {
-                      direction: 'out',
-                      types: [factory.id('rel4').toHexString()],
-                      match: [{ templates: [factory.id('template1').toHexString()] }],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        query: [
+          {
+            direction: 'out',
+            types: [factory.id('rel4').toHexString()],
+            match: [
+              {
+                templates: [factory.id('template1').toHexString()],
+              },
+              {
+                templates: [factory.id('template2').toHexString()],
+                traverse: [
+                  {
+                    direction: 'out',
+                    types: [factory.id('rel4').toHexString()],
+                    match: [{ templates: [factory.id('template1').toHexString()] }],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       }),
     ]),
   ],
@@ -317,9 +315,9 @@ describe('createMultiple()', () => {
         )
       );
 
-      // await service.createMultiple([
-      //   { from: 'entity4', to: 'entity2', type: factory.id('rel4').toHexString() },
-      // ]);
+      await service.createMultiple([
+        { from: 'entity4', to: 'entity2', type: factory.id('rel4').toHexString() },
+      ]);
 
       await service.createMultiple([
         { from: 'entity2', to: 'entity5', type: factory.id('rel4').toHexString() },

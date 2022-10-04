@@ -12,7 +12,7 @@ import {
 } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
-import { MatchQueryNode } from './graphs/MatchQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode';
 
 function unrollTraversal({ traversal, ...rest }: any): any {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
@@ -114,8 +114,7 @@ export class MongoRelationshipsDataSource
   }
 
   getByQuery(query: RelationshipsQuery) {
-    const parser = new MongoGraphQueryParser();
-    const parsed = parser.parse(query);
+    const parsed = MongoGraphQueryParser.parseMatch(query);
     const pipeline = compileQuery(parsed);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(

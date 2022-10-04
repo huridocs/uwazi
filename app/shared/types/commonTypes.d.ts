@@ -154,7 +154,7 @@ export interface PropertySchema {
   relationType?: string;
   query?: {
     [k: string]: unknown | undefined;
-  };
+  }[];
   inherit?: {
     property?: string;
     type?:

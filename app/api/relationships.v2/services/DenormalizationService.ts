@@ -3,7 +3,7 @@ import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 
 export class DenormalizationService implements Transactional {
@@ -53,9 +53,9 @@ export class DenormalizationService implements Transactional {
 
     const entities: any[] = [];
     await Promise.all(
-      properties.map(async property => {
-        // DISCUSS: consider also returning the property, for targeted update instead of the entire entity
-        const chains = property.query.chainsDecomposition();
+      properties.map(async ({ property, template }) => {
+        const rootedQuery = new MatchQueryNode({ templates: [template] }, property.query);
+        const chains = rootedQuery.chainsDecomposition();
         const reachingPathes = chains.map(chain =>
           chain.reachesRelationship(relationship, {
             [entity1.sharedId]: entity1,

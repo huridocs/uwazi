@@ -1,4 +1,4 @@
-import { MatchQueryNode } from 'api/relationships.v2/database/graphs/MatchQueryNode';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 
 export class RelationshipProperty {
   readonly type = 'newRelationship';
@@ -7,9 +7,9 @@ export class RelationshipProperty {
 
   readonly label: string;
 
-  readonly query: MatchQueryNode;
+  readonly query: MatchQueryNode['traversals'];
 
-  constructor(name: string, label: string, query: MatchQueryNode) {
+  constructor(name: string, label: string, query: MatchQueryNode['traversals']) {
     this.name = name;
     this.label = label;
     this.query = query;

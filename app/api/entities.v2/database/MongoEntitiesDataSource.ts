@@ -26,8 +26,10 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
     entity.joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
-        const parser = new MongoGraphQueryParser();
-        const query = parser.parse({ ...property.query, sharedId: entity.sharedId });
+        const query = MongoGraphQueryParser.parseMatch({
+          ...property.query,
+          sharedId: entity.sharedId,
+        });
         const result = relationshipsDS.getByModelQuery(query);
         const leafEntities = (await result.all()).map(path => path[path.length - 1]);
         mappedMetadata[property.name] = leafEntities.map(e => ({
