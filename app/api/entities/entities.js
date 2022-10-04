@@ -447,23 +447,7 @@ export default {
     return withDocuments(entities, documentsFullText);
   },
 
-  async appendTemplateAndMetadata(entityObjects) {
-    const [hasTemplate, noTemplate] = _.partition(entityObjects, e => e.template);
-    if (noTemplate.length) {
-      const templatesByEntityId = objectIndex(
-        await this.get({ _id: { $in: noTemplate.map(e => e._id) } }),
-        e => e._id
-      );
-      noTemplate.forEach(e => {
-        e.template = templatesByEntityId[e._id].template;
-        e.metadata = templatesByEntityId[e._id].metadata;
-      });
-    }
-    return hasTemplate.concat(noTemplate);
-  },
-
-  async performNewRelationshipQueries(_entities, _relationshipsDataSource) {
-    const entities = await this.appendTemplateAndMetadata(_entities); // DISCUSS: Is this necessary?
+  async performNewRelationshipQueries(entities, _relationshipsDataSource) {
     const templateIdToProperties = objectIndex(
       await templates.get(
         { _id: entities.map(e => e.template) },
