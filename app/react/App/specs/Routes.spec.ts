@@ -36,30 +36,37 @@ describe('Routes', () => {
       expect(googleAnalytics.trackPage).not.toHaveBeenCalled();
     });
 
-    it('should replace the route to login if there is not a user', async () => {
-      currentUser = {};
-      currentPath = 'library/en';
-      jest.spyOn(store(), 'getState').mockReturnValue(getState() as IStore);
-      const callBack = jest.fn().mockImplementation((_nextState, props) => props);
-      jest.spyOn(googleAnalytics, 'trackPage').mockImplementation(jest.fn());
-      const replaceMock = jest.fn();
-      const res = getIndexRoute('nextState', callBack);
-      res.onEnter('nextState', replaceMock);
-      expect(replaceMock).toHaveBeenCalledWith('/login');
-      expect(googleAnalytics.trackPage).not.toHaveBeenCalled();
-    });
+    describe('not logged user', () => {
+      beforeAll(() => {
+        currentUser = {};
+        currentPath = 'library/en';
+      });
 
-    it('should replace the route to the default library if there is not user and it is not a blank state', async () => {
-      currentUser = {};
-      currentPath = 'library/en';
-      currentThesauris = fromJS([{ values: ['a', 'b'] }]);
-      jest.spyOn(store(), 'getState').mockReturnValue(getState() as IStore);
-      const callBack = jest.fn().mockImplementation((_nextState, props) => props);
-      jest.spyOn(googleAnalytics, 'trackPage').mockImplementation(jest.fn());
-      const replaceMock = jest.fn();
-      const res = getIndexRoute('nextState', callBack);
-      res.onEnter('nextState', replaceMock);
-      expect(googleAnalytics.trackPage).toHaveBeenCalled();
+      it('should go to login if there is not a user', async () => {
+        jest.spyOn(store(), 'getState').mockReturnValue(getState() as IStore);
+        const callBack = jest.fn().mockImplementation((_nextState, props) => props);
+        jest.spyOn(googleAnalytics, 'trackPage').mockImplementation(jest.fn());
+        // @ts-ignore
+        delete window.location;
+        window.location = { ...window.location, assign: jest.fn() };
+        const res = getIndexRoute('nextState', callBack);
+        const replaceMock = jest.fn();
+        res.onEnter('nextState', replaceMock);
+
+        expect(window.location.assign).toHaveBeenCalledWith('/login');
+        expect(googleAnalytics.trackPage).not.toHaveBeenCalled();
+      });
+
+      it('should replace the route to the default library if there is not user and it is not a blank state', async () => {
+        currentThesauris = fromJS([{ values: ['a', 'b'] }]);
+        jest.spyOn(store(), 'getState').mockReturnValue(getState() as IStore);
+        const callBack = jest.fn().mockImplementation((_nextState, props) => props);
+        jest.spyOn(googleAnalytics, 'trackPage').mockImplementation(jest.fn());
+        const replaceMock = jest.fn();
+        const res = getIndexRoute('nextState', callBack);
+        res.onEnter('nextState', replaceMock);
+        expect(googleAnalytics.trackPage).toHaveBeenCalled();
+      });
     });
 
     it('should track page when home page is a valid public page path', async () => {
