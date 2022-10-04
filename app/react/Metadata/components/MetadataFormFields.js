@@ -37,7 +37,7 @@ import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
-import AddThesauriValueModal from './AddThesauriValueModal';
+import { AddThesauriValueButton } from './AddThesauriValueButton';
 
 const translateOptions = thesauri =>
   thesauri
@@ -81,15 +81,8 @@ const groupSameRelationshipFields = fields =>
     .filter(f => f);
 
 class MetadataFormFields extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showAddThesauriValue: {},
-    };
-  }
-
-  async onAddThesauriValueSaved(thesauri, newValue, _model, propertyName) {
-    const { model, push } = this.props;
+  async onAddThesauriValueSaved(thesauri, newValue, _model, isMultiSelect) {
+    const { model, push, change } = this.props;
     const newThesauri = thesauri.toJS();
     const newValueItem = { label: newValue.value, id: ID() };
     if (newValue.group === 'root') {
@@ -103,8 +96,12 @@ class MetadataFormFields extends Component {
     }
     const sanitizedThesauri = sanitizeThesauri(newThesauri);
     await this.props.saveThesaurus(sanitizedThesauri);
-    this.setState({ showAddThesauriValue: { [propertyName]: false } });
-    push(`${model}${_model}`, newValueItem.id);
+    const formModel = `${model}${_model}`;
+    if (isMultiSelect) {
+      push(formModel, newValueItem.id);
+    } else {
+      change(formModel, newValueItem.id);
+    }
   }
 
   getField(property, _model, thesauris, formModel) {
@@ -127,33 +124,31 @@ class MetadataFormFields extends Component {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
-          <Select
-            model={_model}
-            optionsValue="id"
-            options={translateOptions(thesauri)}
-            placeholder="Select..."
-          />
+          <>
+            <AddThesauriValueButton
+              values={translateOptions(thesauri)}
+              onModalAccept={async newValue => {
+                await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+              }}
+            />
+            <Select
+              model={_model}
+              optionsValue="id"
+              options={translateOptions(thesauri)}
+              placeholder="Select..."
+            />
+          </>
         );
       case 'multiselect':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueModal
+            <AddThesauriValueButton
               values={translateOptions(thesauri)}
-              isOpen={this.state.showAddThesauriValue[property.name]}
-              onCancel={() => this.setState({ showAddThesauriValue: { [property.name]: false } })}
-              onAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, property.name);
+              onModalAccept={async newValue => {
+                await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
               }}
             />
-            <div className="multiselect-add-value">
-              <button
-                type="button"
-                onClick={() => this.setState({ showAddThesauriValue: { [property.name]: true } })}
-              >
-                <Translate>add value</Translate>
-              </button>
-            </div>
             <MultiSelect
               model={_model}
               optionsValue="id"
