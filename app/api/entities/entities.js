@@ -433,12 +433,16 @@ export default {
   },
 
   async getWithoutDocuments(query, select, options = {}) {
-    return model.getUnrestricted(query, select, options);
+    const entities = model.getUnrestricted(query, select, options);
+    await this.performNewRelationshipQueries(entities);
+    return entities;
   },
 
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
-    return model.getUnrestricted(query, extendedSelect, options);
+    const entities = model.getUnrestricted(query, extendedSelect, options);
+    await this.performNewRelationshipQueries(entities);
+    return entities;
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
@@ -499,6 +503,7 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
+    await this.performNewRelationshipQueries([doc]);
     return doc;
   },
 
@@ -547,8 +552,10 @@ export default {
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
-  getAllLanguages(sharedId) {
-    return model.get({ sharedId });
+  async getAllLanguages(sharedId) {
+    const entities = model.get({ sharedId });
+    await this.performNewRelationshipQueries(entities);
+    return entities;
   },
 
   countByTemplate(template, language) {
@@ -556,14 +563,16 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, limit, onlyPublished = true) {
+  async getByTemplate(template, language, limit, onlyPublished = true) {
     const query = {
       template,
       language,
       ...(onlyPublished ? { published: true } : {}),
     };
     const queryLimit = limit ? { limit } : {};
-    return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    const entities = model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    await this.performNewRelationshipQueries(entities);
+    return entities;
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
