@@ -88,11 +88,8 @@ class MetadataFormFields extends Component {
     };
   }
 
-  onAddThesauriValueSaved(thesauri, newValue, _model, propertyName) {
-    const { model, change, currentSelectedThesauriMetadata } = this.props;
-    const selectedValues = currentSelectedThesauriMetadata[propertyName]
-      ? currentSelectedThesauriMetadata[propertyName]
-      : [];
+  async onAddThesauriValueSaved(thesauri, newValue, _model, propertyName) {
+    const { model, push } = this.props;
     const newThesauri = thesauri.toJS();
     const newValueItem = { label: newValue.value, id: ID() };
     if (newValue.group === 'root') {
@@ -105,10 +102,9 @@ class MetadataFormFields extends Component {
       });
     }
     const sanitizedThesauri = sanitizeThesauri(newThesauri);
-    this.props.saveThesaurus(sanitizedThesauri);
+    await this.props.saveThesaurus(sanitizedThesauri);
     this.setState({ showAddThesauriValue: { [propertyName]: false } });
-    const newSelectedMetadataValues = [...selectedValues, newValueItem.id];
-    change(`${model}${_model}`, newSelectedMetadataValues);
+    push(`${model}${_model}`, newValueItem.id);
   }
 
   getField(property, _model, thesauris, formModel) {
@@ -146,8 +142,8 @@ class MetadataFormFields extends Component {
               values={translateOptions(thesauri)}
               isOpen={this.state.showAddThesauriValue[property.name]}
               onCancel={() => this.setState({ showAddThesauriValue: { [property.name]: false } })}
-              onAccept={newValue => {
-                this.onAddThesauriValueSaved(thesauri, newValue, _model, property.name);
+              onAccept={async newValue => {
+                await this.onAddThesauriValueSaved(thesauri, newValue, _model, property.name);
               }}
             />
             <div className="multiselect-add-value">
@@ -426,7 +422,6 @@ MetadataFormFields.propTypes = {
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string,
-  currentSelectedThesauriMetadata: PropTypes.arrayOf(PropTypes.string).isRequired,
   multipleEdition: PropTypes.bool,
   dateFormat: PropTypes.string,
   showSubset: PropTypes.arrayOf(PropTypes.string),
@@ -436,6 +431,7 @@ MetadataFormFields.propTypes = {
   attachments: PropTypes.instanceOf(Immutable.List),
   localAttachments: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
   change: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
   locale: PropTypes.string,
 };
 
@@ -444,13 +440,11 @@ export const mapStateToProps = (state, ownProps) => {
 
   let attachments = Immutable.fromJS([]);
   let localAttachments;
-  let currentSelectedThesauriMetadata;
 
   if (storeKey === 'library') {
     const selectedDocuments = state.library.ui.get('selectedDocuments');
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
     localAttachments = state.library.sidepanel.metadata.attachments;
-    currentSelectedThesauriMetadata = state.library.sidepanel.metadata.metadata;
   }
 
   if (storeKey === 'documentViewer') {
@@ -472,7 +466,6 @@ export const mapStateToProps = (state, ownProps) => {
     attachments,
     localAttachments,
     locale,
-    currentSelectedThesauriMetadata,
   };
 };
 
@@ -480,7 +473,10 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   if (ownProps.boundChange) {
     return { change: ownProps.boundChange };
   }
-  return bindActionCreators({ saveThesaurus, change: formActions.change }, dispatch);
+  return bindActionCreators(
+    { saveThesaurus, change: formActions.change, push: formActions.push },
+    dispatch
+  );
 };
 
 export { MetadataFormFields, translateOptions };
