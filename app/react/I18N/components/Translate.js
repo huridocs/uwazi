@@ -4,7 +4,22 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions } from 'app/I18N';
 
-export class Translate extends Component {
+const parseMarkdownItalicMarker = line => {
+  const matches = line.match(/\*(?<italic>.*)\*/);
+  if (matches === null) {
+    return <>{line}</>;
+  }
+  const parts = matches.input.split(matches[0]);
+  return (
+    <>
+      {parts[0]}
+      <i>{matches.groups.italic}</i>
+      {parts[1]}
+    </>
+  );
+};
+
+class Translate extends Component {
   static resetCachedTranslation() {
     Translate.translation = null;
   }
@@ -23,12 +38,21 @@ export class Translate extends Component {
   }
 
   render() {
+    const lines = this.props.children.split('\n');
     return (
       <span
         onClick={this.onClick}
         className={this.props.i18nmode ? 'translation active' : 'translation'}
       >
-        {this.props.children}
+        {lines.map((line, index) => {
+          const parsedLine = parseMarkdownItalicMarker(line);
+          return (
+            <>
+              {parsedLine}
+              {index < lines.length - 1 && <br />}
+            </>
+          );
+        })}
       </span>
     );
   }
@@ -49,7 +73,7 @@ Translate.propTypes = {
   children: PropTypes.string.isRequired,
 };
 
-export const mapStateToProps = (state, props) => {
+const mapStateToProps = (state, props) => {
   if (!Translate.translation || Translate.translation.locale !== state.locale) {
     const translations = state.translations.toJS();
     Translate.translation = translations.find(t => t.locale === state.locale) || { contexts: [] };
@@ -69,4 +93,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ edit: actions.inlineEditTranslation }, dispatch);
 }
 
+export { mapStateToProps, Translate };
 export default connect(mapStateToProps, mapDispatchToProps)(Translate);

@@ -1,0 +1,9 @@
+key
+Configure the default landing page for your site.
+Examples
+- Site page:
+- Library search:
+- Entity:
+Always use URLs relative to your site, starting with / and skipping the domain name. Example:
+https://yoursite.com/
+You will need to reload the page after updating your Favicon.
