@@ -130,7 +130,7 @@
     "html-to-react": "^1.5.0",
     "htmlparser2": "^3.9.2",
     "immutable": "^3.7.6",
-    "is-reachable": "^5.1.1",
+    "is-reachable": "^5.2.1",
     "isomorphic-fetch": "3.0.0",
     "joi": "^13.6.0",
     "joi-objectid": "^2.0.0",

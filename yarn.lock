@@ -8954,10 +8954,10 @@ is-promise@^2.2.2:
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.2.2.tgz#39ab959ccbf9a774cf079f7b40c7a26f763135f1"
   integrity sha512-+lP4/6lKUBfQjZ2pdxThZvLUAafmZb8OAxFb8XXtiQmS35INgr85hdOGoEs124ez1FCnZJt6jau/T+alh58QFQ==
 
-is-reachable@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.npmjs.org/is-reachable/-/is-reachable-5.1.1.tgz"
-  integrity sha512-CIZlnpOha9mgqHjLaodY3OeYEX62ElsuYvtI8HmJz4uJEHfaeQ+vNBCAkUsyfCrYawSbCOSufUHM6lHaP4hG8Q==
+is-reachable@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/is-reachable/-/is-reachable-5.2.1.tgz#4bba5ba32f60723404d5f95b7ecd895644c776f3"
+  integrity sha512-ViPrrlmt9FTTclYbz6mL/PFyF1TXSpJ9y/zw9QMVJxbhU/7DFkvk/5cTv7S0sXtqbJj32zZ+jKpNAjrYTUZBPQ==
   dependencies:
     arrify "^2.0.1"
     got "^11.7.0"
@@ -8966,7 +8966,7 @@ is-reachable@^5.1.1:
     p-timeout "^3.2.0"
     prepend-http "^3.0.1"
     router-ips "^1.0.0"
-    url-parse "^1.5.3"
+    url-parse "^1.5.10"
 
 is-regex@^1.0.5, is-regex@^1.1.0:
   version "1.1.1"
@@ -14730,7 +14730,7 @@ url-join@^4.0.1:
   resolved "https://registry.npmjs.org/url-join/-/url-join-4.0.1.tgz"
   integrity sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==
 
-url-parse@^1.5.3:
+url-parse@^1.5.10:
   version "1.5.10"
   resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
   integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
