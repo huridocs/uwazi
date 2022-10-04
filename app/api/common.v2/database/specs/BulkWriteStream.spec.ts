@@ -26,7 +26,7 @@ describe('BulkWriteStream', () => {
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    stream = new BulkWriteStream(db.mongodb?.collection('values'), stackLimit);
+    stream = new BulkWriteStream(db.mongodb?.collection('values'), undefined, stackLimit);
   });
 
   afterAll(async () => {
@@ -60,27 +60,27 @@ describe('BulkWriteStream', () => {
   });
 
   it('should empty actions when flushing', async () => {
-    expect(stream.actions.length).toBe(0);
+    expect(stream.actionCount).toBe(0);
     await stream.insert(newValues[0]);
-    expect(stream.actions.length).toBe(1);
+    expect(stream.actionCount).toBe(1);
     await stream.delete({ value: -1 });
-    expect(stream.actions.length).toBe(2);
+    expect(stream.actionCount).toBe(2);
     await stream.insert(newValues[2]);
     await stream.update({ value: 0 }, { $set: { value: 99 } });
     await stream.flush();
-    expect(stream.actions.length).toBe(0);
+    expect(stream.actionCount).toBe(0);
   });
 
   it('should automatically flush when reaching the set limit', async () => {
-    expect(stream.actions.length).toBe(0);
+    expect(stream.actionCount).toBe(0);
     await Promise.all(newValues.slice(0, 4).map(async u => stream.insert(u)));
-    expect(stream.actions.length).toBe(4);
+    expect(stream.actionCount).toBe(4);
     await stream.insert(newValues[4]);
-    expect(stream.actions.length).toBe(0);
+    expect(stream.actionCount).toBe(0);
     await Promise.all(newValues.slice(5).map(async u => stream.insert(u)));
-    expect(stream.actions.length).toBe(1);
+    expect(stream.actionCount).toBe(1);
     await stream.flush();
-    expect(stream.actions.length).toBe(0);
+    expect(stream.actionCount).toBe(0);
     expect((await db.mongodb?.collection('values').find({}).toArray())?.length).toBe(13);
   });
 });

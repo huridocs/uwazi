@@ -20,7 +20,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
   const relationshipsDS = new MongoRelationshipsDataSource(this.db);
   if (this.session) relationshipsDS.setTransactionContext(this.session);
-  const stream = new BulkWriteStream(this.getCollection());
+  const stream = new BulkWriteStream(this.getCollection(), this.session);
   await Promise.all(
     // eslint-disable-next-line max-statements
     entity.joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
@@ -38,8 +38,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
         }));
         await stream.update(
           { sharedId: entity.sharedId },
-          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } },
-          this.session
+          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
         );
         return;
       }
@@ -47,11 +46,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
       mappedMetadata[property.name] = entity.metadata[property.name];
     }) || []
   );
-  await stream.update(
-    { sharedId: entity.sharedId },
-    { $set: { obsoleteMetadata: [] } },
-    this.session
-  );
+  await stream.update({ sharedId: entity.sharedId }, { $set: { obsoleteMetadata: [] } });
   await stream.flush();
   relationshipsDS.clearTransactionContext();
   return new Entity(entity.sharedId, entity.template.toHexString(), mappedMetadata);
@@ -69,17 +64,13 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
   }
 
   async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
-    const stream = new BulkWriteStream(this.getCollection());
+    const stream = new BulkWriteStream(this.getCollection(), this.session);
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
       for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {
         const prop = data.propertiesToBeMarked[j];
         // eslint-disable-next-line no-await-in-loop
-        await stream.update(
-          { sharedId: data.sharedId },
-          { $addToSet: { obsoleteMetadata: prop } },
-          this.session
-        );
+        await stream.update({ sharedId: data.sharedId }, { $addToSet: { obsoleteMetadata: prop } });
       }
     }
     await stream.flush();

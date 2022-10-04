@@ -7,50 +7,61 @@ class BulkWriteStream {
 
   ordered: boolean | undefined;
 
-  actions: any[];
+  session?: ClientSession;
 
-  constructor(collection?: Collection, stackLimit?: number, ordered?: boolean) {
+  protected actions: any[];
+
+  constructor(
+    collection?: Collection,
+    session?: ClientSession,
+    stackLimit?: number,
+    ordered?: boolean
+  ) {
     if (!collection) throw new Error('Collection is required.');
     this.collection = collection;
+    this.session = session;
     this.actions = [];
     this.stackLimit = stackLimit || 1000;
     this.ordered = ordered;
   }
 
-  async flush(session?: ClientSession) {
+  async flush() {
     const toPerform = this.actions;
     this.actions = [];
-    return this.collection.bulkWrite(toPerform, { ordered: this.ordered, session });
+    return this.collection.bulkWrite(toPerform, { ordered: this.ordered, session: this.session });
   }
 
-  async check(session?: ClientSession) {
+  async check() {
     if (this.actions.length >= this.stackLimit) {
-      return this.flush(session);
+      return this.flush();
     }
     return null;
   }
 
-  async insert(document: any, session?: ClientSession) {
+  async insert(document: any) {
     this.actions.push({ insertOne: { document } });
-    return this.check(session);
+    return this.check();
   }
 
-  async delete(filter: any, session?: ClientSession, collation?: any) {
+  async delete(filter: any, collation?: any) {
     this.actions.push({ deleteOne: { filter, collation } });
-    return this.check(session);
+    return this.check();
   }
 
   async update(
     filter: any,
     update: any,
-    session?: ClientSession,
     upsert?: boolean,
     collation?: any,
     arrayFilters?: any[],
     hint?: any
   ) {
     this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters, hint } });
-    return this.check(session);
+    return this.check();
+  }
+
+  public get actionCount() {
+    return this.actions.length;
   }
 }
 
