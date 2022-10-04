@@ -41,15 +41,31 @@ export const cookiePolicy = (
   </Translate>
 );
 
+export const receivingEmail = (
+  <>
+    <Translate translationKey="Receiving email description">
+      If you have a contact form, this is the email address that will receive the form's
+      submissions.
+    </Translate>
+    &nbsp;
+    <Translate>Click</Translate>&nbsp;
+    <a
+      href="https://uwazi.readthedocs.io/en/latest/admin-docs/managing-settings.html#how-to-configure-a-contact-form-or-submission-form"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <Translate>here</Translate>
+    </a>
+    &nbsp;
+    <Translate>to learn how to add and configure a contact form on a webpage.</Translate>
+  </>
+);
 export const emails = [
   <Translate>
     Here you can set up the contact email and the email that appears when Uwazi sends a notification
     to a user
   </Translate>,
-  <Translate translationKey="Receiving email description">
-    If you have a contact form, this is the email address that will receive the form's submissions.
-    Click here to learn how to add and confirgure a contact form on a webpage.
-  </Translate>,
+
   <Translate translationKey="Sending email description">
     {`This is the email address that will appear as the sender when an email is sent from your Uwazi
     collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom
@@ -60,13 +76,13 @@ export const emails = [
 export const characterSupport = (
   <>
     <Translate translationKey="Character support description">
-      This option enhances support for non-Latin languages as default languages of your collection.
-      Selecting this option will update all template properties automatically. The process could
-      take several minutes. Selecting this option will likely change the URLs of library filters. As
-      a consequence, if you have menus or links using such URLs, they will probably stop working.
-      You will need to update them manually. After selecting this option, you will not be able to
-      revert back to using legacy property naming. If you are not facing issues with your template
-      property names, we recommend leaving this unchecked.
+      This option enhances support for non-Latin languages as the default languages of your
+      collection. Selecting this option will update all template properties automatically. The
+      process could take several minutes. Selecting this option will likely change the URLs of
+      library filters. As a consequence, if you have menus or links using such URLs, they will
+      probably stop working. You will need to update them manually. After selecting this option, you
+      will not be able to revert back to using legacy property naming. If you are not facing issues
+      with your template property names, we recommend leaving this unchecked.
     </Translate>
     <br />
     <b>
