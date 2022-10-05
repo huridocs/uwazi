@@ -31,6 +31,7 @@ const fixturesSnippetsSearch: DBFixture = {
         { name: 'text_field', type: 'text' },
         { name: 'markdown_field', type: 'markdown' },
         { name: 'thesaurus_property', type: 'select', content: thesaurusId.toString() },
+        { name: 'numeric_property', type: 'numeric' },
       ],
     },
   ],
@@ -57,6 +58,7 @@ const fixturesSnippetsSearch: DBFixture = {
         text_field: [{ value: "A short string that we know it's going to come with a snippet" }],
         markdown_field: [{ value: 'Another short string' }],
         thesaurus_property: [{ value: 'country_two' }],
+        numeric_property: [{ value: 6 }],
       },
     },
     {
