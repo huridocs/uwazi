@@ -1,5 +1,8 @@
 import { elastic } from 'api/search';
 import { SearchQuery } from 'shared/types/SearchQueryType';
+import templatesModel from 'api/templates/templates';
+import propertiesHelper from 'shared/comonProperties';
+import { PropertySchema } from 'shared/types/commonTypes';
 
 export const cleanUp = (value: any) => value;
 
@@ -19,17 +22,17 @@ const extractFullTextGroups = (searchString: string) => {
 };
 
 // eslint-disable-next-line max-statements
-async function extractSearchParams(query: SearchQuery): Promise<{
-  fullText?: {
-    string?: string;
-    method: string;
-  };
-  search?: {
-    string?: string;
-    method: string;
-  };
-}> {
-  if (query.filter && query.filter.searchString && typeof query.filter.searchString === 'string') {
+async function extractSearchParams(query: SearchQuery) {
+  const templates = await templatesModel.get();
+  const uniqueProperties = (propertiesHelper.allUniqueProperties(templates) as PropertySchema[])
+    .map(prop =>
+      ['text', 'markdown', 'generatedid'].includes(prop.type)
+        ? `metadata.${prop.name}.value`
+        : `metadata.${prop.name}.label`
+    )
+    .concat(['title']);
+
+  if (query.filter && query.filter.searchString) {
     const { searchString } = query.filter;
     const fullTextGroups = extractFullTextGroups(searchString);
 
@@ -48,6 +51,7 @@ async function extractSearchParams(query: SearchQuery): Promise<{
       search: {
         string: searchString,
         method: searchMethod,
+        properties: uniqueProperties,
       },
       fullText: {
         string: searchString,
@@ -59,11 +63,12 @@ async function extractSearchParams(query: SearchQuery): Promise<{
     search: {
       string: query.filter?.searchString,
       method: 'query_string',
+      properties: uniqueProperties,
     },
   };
 }
 
-function snippetsHighlight(query: SearchQuery) {
+function snippetsHighlight(query: SearchQuery, fields: { [key: string]: {} }[] | undefined) {
   const snippets = query.fields && query.fields.includes('snippets');
   return snippets
     ? {
@@ -73,12 +78,10 @@ function snippetsHighlight(query: SearchQuery) {
           post_tags: ['</b>'],
           encoder: 'html',
           number_of_fragments: 9999,
-          type: 'fvh',
+          ...(fields?.[0].hasOwnProperty('fullText_*') ? { type: 'fvh' } : {}),
           fragment_size: 300,
           fragmenter: 'span',
-          fields: {
-            'fullText_*': {},
-          },
+          fields,
         },
       }
     : {};
