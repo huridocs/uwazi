@@ -78,7 +78,7 @@ const fixturesDB = {
     },
     {
       _id: db.id(),
-      locale: 'pr',
+      locale: 'pt',
       contexts: [
         {
           _id: db.id(),
