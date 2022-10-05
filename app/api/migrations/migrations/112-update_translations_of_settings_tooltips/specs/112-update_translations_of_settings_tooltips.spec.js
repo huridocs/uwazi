@@ -79,7 +79,7 @@ describe('migration update translations of settings tooltips', () => {
         ],
       }),
       expect.objectContaining({
-        locale: 'pr',
+        locale: 'pt',
         contexts: [defaultContextContent, templateContext],
       }),
     ]);
