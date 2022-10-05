@@ -155,6 +155,7 @@ describe('search filters path', () => {
       await expect(page).toClick('.logotype > div:nth-child(1) > a:nth-child(1)', {
         text: 'Uwazi',
       });
+      await waitForEvent('DOMContentLoaded');
     });
     it('should order them by aggregated value', async () => {
       await selectFilterOption('Ordenes de la corte', 2);
