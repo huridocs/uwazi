@@ -59,18 +59,18 @@ const fixtures = {
         query: [
           {
             direction: 'out',
-            types: [factory.id('rel4').toHexString()],
+            types: [factory.id('rel4')],
             match: [
               {
-                templates: [factory.id('template1').toHexString()],
+                templates: [factory.id('template1')],
               },
               {
-                templates: [factory.id('template2').toHexString()],
+                templates: [factory.id('template2')],
                 traverse: [
                   {
                     direction: 'out',
-                    types: [factory.id('rel4').toHexString()],
-                    match: [{ templates: [factory.id('template1').toHexString()] }],
+                    types: [factory.id('rel4')],
+                    match: [{ templates: [factory.id('template1')] }],
                   },
                 ],
               },

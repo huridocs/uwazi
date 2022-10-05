@@ -10,11 +10,11 @@ const factory = getFixturesFactory();
 
 const createDBRelationshipQuery = (index: number) => [
   {
-    types: [factory.id(`type${index}`).toHexString()],
+    types: [factory.id(`type${index}`)],
     direction: 'out' as const,
     match: [
       {
-        templates: [factory.id(`template${index}`).toHexString()],
+        templates: [factory.id(`template${index}`)],
       },
     ],
   },

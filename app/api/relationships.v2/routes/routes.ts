@@ -9,6 +9,7 @@ import { getValidatorMiddleware } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { User } from 'api/users.v2/model/User';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import needsAuthorization from '../../auth/authMiddleware';
 import { MongoRelationshipsDataSource } from '../database/MongoRelationshipsDataSource';
 import {
@@ -17,6 +18,7 @@ import {
 } from './schemas/relationshipInputValidators';
 import { CreateRelationshipService } from '../services/CreateRelationshipService';
 import { DeleteRelationshipService } from '../services/DeleteRelationshipService';
+import { DenormalizationService } from '../services/DenormalizationService';
 
 export default (app: Application) => {
   //   app.post(
@@ -44,7 +46,13 @@ export default (app: Application) => {
         new MongoEntitiesDataSource(connection),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
-        new AuthorizationService(new MongoPermissionsDataSource(connection), user)
+        new AuthorizationService(new MongoPermissionsDataSource(connection), user),
+        new DenormalizationService(
+          new MongoRelationshipsDataSource(connection),
+          new MongoEntitiesDataSource(connection),
+          new MongoTemplatesDataSource(connection),
+          new MongoTransactionManager(getClient())
+        )
       );
       const created = await service.createMultiple(req.body);
       res.json(created);

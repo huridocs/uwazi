@@ -1,8 +1,7 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { Transactional } from 'api/common.v2/contracts/Transactional';
-import { MatchQueryNode } from '../database/graphs/MatchQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
-import { RelationshipsQuery } from './RelationshipsQuery';
 
 export interface RelationshipsDataSource extends Transactional {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
@@ -10,6 +9,5 @@ export interface RelationshipsDataSource extends Transactional {
   exists(ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<any>;
-  getByQuery(query: RelationshipsQuery): ResultSet<any>;
-  getByModelQuery(query: MatchQueryNode): ResultSet<any>;
+  getByQuery(query: MatchQueryNode): ResultSet<any>;
 }

@@ -3,8 +3,6 @@ import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResul
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
-import { MongoGraphQueryParser } from './MongoGraphQueryParser';
-import { RelationshipsQuery } from '../contracts/RelationshipsQuery';
 import {
   RelationshipDBOType,
   EntityInfoType,
@@ -113,23 +111,7 @@ export class MongoRelationshipsDataSource
     );
   }
 
-  getByQuery(query: RelationshipsQuery) {
-    const parsed = MongoGraphQueryParser.parseMatch(query);
-    const pipeline = compileQuery(parsed);
-    const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
-    const count = this.db.collection('entities').aggregate(
-      [
-        ...pipeline,
-        {
-          $count: 'total',
-        },
-      ],
-      { session: this.session }
-    );
-    return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
-  }
-
-  getByModelQuery(query: MatchQueryNode) {
+  getByQuery(query: MatchQueryNode) {
     const pipeline = compileQuery(query);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(

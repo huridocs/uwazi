@@ -1,4 +1,5 @@
-import { RelationshipsQuery } from 'api/relationships.v2/contracts/RelationshipsQuery';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -44,15 +45,9 @@ afterAll(async () => {
 describe('When getting by query', () => {
   it('should allow traversing 1 hop', async () => {
     const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
-    const query: RelationshipsQuery = {
-      sharedId: 'entity1',
-      traverse: [
-        {
-          direction: 'out',
-          match: [{}],
-        },
-      ],
-    };
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+    ]);
 
     const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
@@ -71,24 +66,11 @@ describe('When getting by query', () => {
 
   it('should allow traversing 2 hops', async () => {
     const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
-    const query: RelationshipsQuery = {
-      sharedId: 'entity1',
-      traverse: [
-        {
-          direction: 'out',
-          match: [
-            {
-              traverse: [
-                {
-                  direction: 'in',
-                  match: [{}],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
+      ]),
+    ]);
 
     const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
@@ -125,24 +107,11 @@ describe('When getting by query', () => {
 
   it('should be paginable', async () => {
     const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
-    const query: RelationshipsQuery = {
-      sharedId: 'entity1',
-      traverse: [
-        {
-          direction: 'out',
-          match: [
-            {
-              traverse: [
-                {
-                  direction: 'in',
-                  match: [{}],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
+      ]),
+    ]);
 
     const result = await ds.getByQuery(query).page(2, 2);
     expect(result.total).toBe(4);
@@ -166,32 +135,20 @@ describe('When getting by query', () => {
 
   it('should allow to add filters to the query', async () => {
     const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
-    const query: RelationshipsQuery = {
-      sharedId: 'entity1',
-      traverse: [
-        {
-          direction: 'out',
-          match: [
-            {
-              traverse: [
-                {
-                  direction: 'in',
-                  types: [factory.id('relType3').toHexString()],
-                  match: [
-                    {
-                      templates: [
-                        factory.id('template3').toHexString(),
-                        factory.id('template4').toHexString(),
-                      ],
-                    },
-                  ],
-                },
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
+            new MatchQueryNode({
+              templates: [
+                factory.id('template3').toHexString(),
+                factory.id('template4').toHexString(),
               ],
-            },
-          ],
-        },
-      ],
-    };
+            }),
+          ]),
+        ]),
+      ]),
+    ]);
 
     const result = await ds.getByQuery(query).all();
     expect(result).toEqual([
@@ -207,36 +164,22 @@ describe('When getting by query', () => {
 
   it('should allow to query branches', async () => {
     const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
-    const query: RelationshipsQuery = {
-      sharedId: 'entity1',
-      traverse: [
-        {
-          direction: 'out',
-          match: [
-            {
-              traverse: [
-                {
-                  direction: 'in',
-                  types: [factory.id('relType3').toHexString()],
-                  match: [
-                    {
-                      templates: [
-                        factory.id('template3').toHexString(),
-                        factory.id('template4').toHexString(),
-                      ],
-                    },
-                  ],
-                },
+
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
+            new MatchQueryNode({
+              templates: [
+                factory.id('template3').toHexString(),
+                factory.id('template4').toHexString(),
               ],
-            },
-          ],
-        },
-        {
-          direction: 'in',
-          match: [{}],
-        },
-      ],
-    };
+            }),
+          ]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
 
     const result = await ds.getByQuery(query).all();
     expect(result).toEqual([

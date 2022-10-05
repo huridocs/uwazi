@@ -30,7 +30,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
           ...property.query,
           sharedId: entity.sharedId,
         });
-        const result = relationshipsDS.getByModelQuery(query);
+        const result = relationshipsDS.getByQuery(query);
         const leafEntities = (await result.all()).map(path => path[path.length - 1]);
         mappedMetadata[property.name] = leafEntities.map(e => ({
           value: e.sharedId,

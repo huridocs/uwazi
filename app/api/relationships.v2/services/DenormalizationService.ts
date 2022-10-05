@@ -1,7 +1,6 @@
 import { Transactional } from 'api/common.v2/contracts/Transactional';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { search } from 'api/search';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
@@ -63,6 +62,7 @@ export class DenormalizationService implements Transactional {
             [entity2.sharedId]: entity2,
           })
         );
+
         const queries: MatchQueryNode[] = [];
 
         reachingPathes.forEach(path => {
@@ -74,7 +74,7 @@ export class DenormalizationService implements Transactional {
 
         await Promise.all(
           queries.map(async q => {
-            const result = this.relationshipsDS.getByModelQuery(q);
+            const result = this.relationshipsDS.getByQuery(q);
             const leafEntities = (await result.all()).map(path => path[path.length - 1]);
             leafEntities.forEach(entity =>
               entities.push({

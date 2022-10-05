@@ -1,19 +1,19 @@
-import { EdgeQuery, InternalNodeQuery } from '../contracts/RelationshipsQuery';
+import { MatchQueryDBO, TraverseQueryDBO } from '../contracts/RelationshipsQuery';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { TraversalQueryNode } from '../model/TraversalQueryNode';
 
 export const MongoGraphQueryParser = {
-  parseMatch(subquery: InternalNodeQuery): MatchQueryNode {
+  parseMatch(query: MatchQueryDBO): MatchQueryNode {
     return new MatchQueryNode(
-      { templates: subquery.templates, sharedId: subquery.sharedId },
-      subquery.traverse?.map(traversal => this.parseTraversal(traversal))
+      { templates: query.templates?.map(t => t.toHexString()), sharedId: query.sharedId },
+      query.traverse?.map(traversal => this.parseTraversal(traversal))
     );
   },
 
-  parseTraversal(subquery: EdgeQuery): TraversalQueryNode {
+  parseTraversal(subquery: TraverseQueryDBO): TraversalQueryNode {
     return new TraversalQueryNode(
       subquery.direction,
-      { types: subquery.types },
+      { types: subquery.types?.map(t => t.toHexString()) },
       subquery.match?.map(match => this.parseMatch(match))
     );
   },

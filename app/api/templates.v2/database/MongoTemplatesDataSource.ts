@@ -1,7 +1,7 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { EdgeQuery } from 'api/relationships.v2/contracts/RelationshipsQuery';
+import { TraverseQueryDBO } from 'api/relationships.v2/contracts/RelationshipsQuery';
 import { MongoGraphQueryParser } from 'api/relationships.v2/database/MongoGraphQueryParser';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -37,7 +37,7 @@ export class MongoTemplatesDataSource extends MongoDataSource implements Templat
       property: new RelationshipProperty(
         elem.properties.name,
         elem.properties.label,
-        (elem.properties.query || []).map((query: EdgeQuery) =>
+        (elem.properties.query || []).map((query: TraverseQueryDBO) =>
           MongoGraphQueryParser.parseTraversal(query)
         )
       ),

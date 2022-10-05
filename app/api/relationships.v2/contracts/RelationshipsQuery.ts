@@ -1,18 +1,13 @@
-interface NodeQuery {
-  traverse?: EdgeQuery[];
-}
+import { ObjectId } from 'mongodb';
 
-export interface RootNodeQuery extends NodeQuery {
-  templates?: string[];
+export interface MatchQueryDBO {
+  templates?: ObjectId[];
   sharedId?: string;
+  traverse?: TraverseQueryDBO[];
 }
 
-export type InternalNodeQuery = RootNodeQuery;
-
-export interface EdgeQuery {
+export interface TraverseQueryDBO {
   direction: 'in' | 'out';
-  types?: string[];
-  match: InternalNodeQuery[];
+  types?: ObjectId[];
+  match: MatchQueryDBO[];
 }
-
-export type RelationshipsQuery = RootNodeQuery;
