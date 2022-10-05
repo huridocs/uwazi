@@ -43,8 +43,8 @@ describe('PublicForm', () => {
           },
         ],
         properties: [
-          { type: 'text', name: 'text' },
-          { type: 'image', name: 'image' },
+          { type: 'text', name: 'text', label: 'Text' },
+          { type: 'image', name: 'image', label: 'Image' },
         ],
       }),
       thesauris: Immutable.fromJS([]),
