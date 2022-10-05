@@ -7,7 +7,6 @@ import disableTransitions from '../helpers/disableTransitions';
 import { host } from '../config';
 
 const getAllEntitiesTitles = async (number: number) => {
-  await page.$$('div.main-wrapper > div.item-group > div.item-document');
   await page.waitForSelector(
     `div.main-wrapper > div.item-group > div.item-document:nth-child(${number})`
   );
@@ -20,20 +19,9 @@ const getAllEntitiesTitles = async (number: number) => {
 };
 
 const getSearchFilters = async () => {
-  await page.$$('#filtersForm > div:nth-child(5) > ul > li.wide > ul');
   return page.$$eval(
     '#filtersForm > div:nth-child(5) > ul > li.wide > ul > li.multiselectItem',
     filterElems => filterElems.map(filter => filter?.getAttribute('title'))
-  );
-};
-
-const selectFilterOption = async (text: string, position: number) => {
-  await expect(page).toClick(
-    `li.multiselectItem:nth-child(${position}) > label:nth-child(2) > span:nth-child(2) > span:nth-child(1)`,
-    { text }
-  );
-  await page.waitForSelector(
-    `li.multiselectItem:nth-child(${position}) > label:nth-child(2) > span:nth-child(2) > span:nth-child(1)`
   );
 };
 
@@ -49,6 +37,14 @@ const waitForEvent = async (eventName: string, seconds: number = 2) =>
 
     page.waitForTimeout(seconds * 1000),
   ]);
+
+const selectFilterOption = async (text: string, position: number) => {
+  await expect(page).toClick(
+    `li.multiselectItem:nth-child(${position}) > label:nth-child(2) > span:nth-child(2) > span:nth-child(1)`,
+    { text }
+  );
+  await waitForEvent('DOMContentLoaded');
+};
 
 describe('search filters path', () => {
   beforeAll(async () => {
