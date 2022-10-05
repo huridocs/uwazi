@@ -1,10 +1,10 @@
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoGraphQueryParser } from 'api/relationships.v2/database/MongoGraphQueryParser';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
+import { mapPropertyQuery } from '../QueryMapper';
 
 const factory = getFixturesFactory();
 
@@ -21,7 +21,7 @@ const createDBRelationshipQuery = (index: number) => [
 ];
 
 const createRelationshipQuery = (index: number) =>
-  createDBRelationshipQuery(index).map(q => MongoGraphQueryParser.parseTraversal(q));
+  mapPropertyQuery(createDBRelationshipQuery(index));
 
 const fixtures = {
   templates: [

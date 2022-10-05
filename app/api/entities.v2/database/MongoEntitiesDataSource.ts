@@ -1,8 +1,9 @@
 import { BulkWriteStream } from 'api/common.v2/database/BulkWriteStream';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoGraphQueryParser } from 'api/relationships.v2/database/MongoGraphQueryParser';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { ObjectId } from 'mongodb';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
@@ -26,11 +27,10 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
     entity.joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
-        const query = MongoGraphQueryParser.parseMatch({
-          ...property.query,
-          sharedId: entity.sharedId,
-        });
-        const result = relationshipsDS.getByQuery(query);
+        const configuredQuery = mapPropertyQuery(property.query);
+        const result = relationshipsDS.getByQuery(
+          new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery)
+        );
         const leafEntities = (await result.all()).map(path => path[path.length - 1]);
         mappedMetadata[property.name] = leafEntities.map(e => ({
           value: e.sharedId,

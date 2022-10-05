@@ -6,17 +6,18 @@ const QueryMapper = {
   parseMatch(query: MatchQueryDBO): MatchQueryNode {
     return new MatchQueryNode(
       { templates: query.templates?.map(t => t.toHexString()), sharedId: query.sharedId },
-      query.traverse?.map(traversal => this.parseTraversal(traversal))
+      query.traverse?.map(traversal => QueryMapper.parseTraversal(traversal))
     );
   },
 
-  parseTraversal(subquery: TraverseQueryDBO): TraversalQueryNode {
+  parseTraversal(query: TraverseQueryDBO): TraversalQueryNode {
     return new TraversalQueryNode(
-      subquery.direction,
-      { types: subquery.types?.map(t => t.toHexString()) },
-      subquery.match?.map(match => this.parseMatch(match))
+      query.direction,
+      { types: query.types?.map(t => t.toHexString()) },
+      query.match?.map(match => QueryMapper.parseMatch(match))
     );
   },
 };
 
-export const mapQuery = QueryMapper.parseTraversal;
+export const mapPropertyQuery = (query: TraverseQueryDBO[]) =>
+  query.map(QueryMapper.parseTraversal);
