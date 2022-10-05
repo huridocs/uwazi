@@ -325,7 +325,7 @@
     "stream-mock": "^2.0.5",
     "supertest": "6.2.3",
     "terser-webpack-plugin": "^5.3.3",
-    "ts-node": "^10.8.1",
+    "ts-node": "^10.9.1",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.5.0",

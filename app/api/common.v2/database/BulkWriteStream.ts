@@ -43,6 +43,14 @@ class BulkWriteStream {
     return this.check();
   }
 
+  async insertMany(documents: any[]) {
+    for (let i = 0; i < documents.length; i += 1) {
+      const doc = documents[i];
+      // eslint-disable-next-line no-await-in-loop
+      await this.insert(doc);
+    }
+  }
+
   async delete(filter: any, collation?: any) {
     this.actions.push({ deleteOne: { filter, collation } });
     return this.check();
