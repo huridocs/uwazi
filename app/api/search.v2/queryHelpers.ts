@@ -24,14 +24,13 @@ const extractFullTextGroups = (searchString: string) => {
 // eslint-disable-next-line max-statements
 async function extractSearchParams(query: SearchQuery) {
   const templates = await templatesModel.get();
-  const uniqueProperties = (
-    propertiesHelper.allUniqueProperties(templates) as PropertySchema[]
-  ).reduce(
-    (acc, property) => {
-      return acc.concat([`metadata.${property.name}.value`, `metadata.${property.name}.label`]);
-    },
-    ['title']
-  );
+  const uniqueProperties = (propertiesHelper.allUniqueProperties(templates) as PropertySchema[])
+    .map(prop =>
+      ['text', 'markdown', 'generatedid'].includes(prop.type)
+        ? `metadata.${prop.name}.value`
+        : `metadata.${prop.name}.label`
+    )
+    .concat(['title']);
 
   if (query.filter && query.filter.searchString) {
     const { searchString } = query.filter;
