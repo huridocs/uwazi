@@ -52,7 +52,7 @@ export default {
         key: 'Click',
       },
       { key: 'here' },
-      { key: 'to learn how to add and confirgure a contact form on a webpage.' },
+      { key: 'to learn how to add and configure a contact form on a webpage.' },
     ];
     Object.entries(locToSystemContext).forEach(([loc, context]) => {
       const keysToAdd = [...systemKeys];

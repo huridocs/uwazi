@@ -7,6 +7,7 @@ import { actions } from 'app/I18N';
 const parseMarkdownItalicMarker = line => {
   const matches = line.match(/\*(?<italic>.*)\*/);
   if (matches === null) {
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     return <>{line}</>;
   }
   const parts = matches.input.split(matches[0]);
