@@ -1,8 +1,8 @@
-import { MatchQueryDBO, TraverseQueryDBO } from '../contracts/RelationshipsQuery';
-import { MatchQueryNode } from '../model/MatchQueryNode';
-import { TraversalQueryNode } from '../model/TraversalQueryNode';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
+import { MatchQueryDBO, TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 
-export const MongoGraphQueryParser = {
+const QueryMapper = {
   parseMatch(query: MatchQueryDBO): MatchQueryNode {
     return new MatchQueryNode(
       { templates: query.templates?.map(t => t.toHexString()), sharedId: query.sharedId },
@@ -18,3 +18,5 @@ export const MongoGraphQueryParser = {
     );
   },
 };
+
+export const mapQuery = QueryMapper.parseTraversal;
