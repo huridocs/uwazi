@@ -39,8 +39,8 @@ describe('migration update translations of settings tooltips', () => {
         value: 'here',
       }),
       expect.objectContaining({
-        key: 'to learn how to add and confirgure a contact form on a webpage.',
-        value: 'to learn how to add and confirgure a contact form on a webpage.',
+        key: 'to learn how to add and configure a contact form on a webpage.',
+        value: 'to learn how to add and configure a contact form on a webpage.',
       }),
     ];
     const defaultContextContent = expect.objectContaining({
