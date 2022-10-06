@@ -304,7 +304,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "29.0.1",
     "jest-environment-jsdom": "29.0.1",
-    "jest-extended": "2.0.0",
+    "jest-extended": "3.1.0",
     "jest-image-snapshot": "^5.1.0",
     "jest-jasmine2": "^29.0.1",
     "jest-puppeteer": "6.1.0",
