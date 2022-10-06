@@ -1,10 +1,17 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
+// Run with ts-node, explicitly passing tsconfig, and ignore the compile errors. From the project root:
+// yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/migrateRelationshipsToV2.ts
 import process from 'process';
 
 import mongodb, { Collection, Cursor, Db, MongoError, ObjectId } from 'mongodb';
 
 import { BulkWriteStream } from '../app/api/common.v2/database/BulkWriteStream';
+import date from '../app/api/utils/date';
+import ID from '../app/shared/uniqueID';
+import { Settings } from '../app/shared/types/settingsType';
+import { TemplateSchema } from '../app/shared/types/templateType';
+import { UserSchema } from '../app/shared/types/userType';
 
 type HubType = {
   _id: ObjectId;
@@ -30,8 +37,8 @@ const getClient = async () => {
 
 const getNextBatch = async <T>(cursor: Cursor<T>, size: number = batchsize) => {
   const returned: T[] = [];
-  while (await cursor.hasNext() || returned.length < size) {
-    returned.push(await cursor.next() as T);
+  while ((await cursor.hasNext()) || returned.length < size) {
+    returned.push((await cursor.next()) as T);
   }
   return returned;
 };
@@ -43,9 +50,7 @@ const insertHubs = async (_ids: ObjectId[], hubCollection: Collection<HubType>) 
     .toArray();
   const existing = new Set(hubs.map(({ _id }) => _id.toString()));
   ids = ids.filter(id => !existing.has(id));
-  return hubCollection.insertMany(
-    ids.map(id => ({ _id: new ObjectId(id) }))
-  );
+  return hubCollection.insertMany(ids.map(id => ({ _id: new ObjectId(id) })));
 };
 
 const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collection) => {
@@ -54,7 +59,7 @@ const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collect
 
   let toBeInserted: mongodb.ObjectId[] = [];
   while (await connectionsCursor.hasNext()) {
-    const next = await connectionsCursor.next() as ConnectionType;
+    const next = (await connectionsCursor.next()) as ConnectionType;
     const { hub } = next;
     toBeInserted.push(hub);
     if (toBeInserted.length > batchsize) {
@@ -66,13 +71,13 @@ const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collect
   process.stdout.write('Temporary hub collection done\n.');
 };
 
-const createTempCollection = async (db: Db, name:string) => {
+const createTempCollection = async (db: Db, name: string) => {
   try {
-    await db.createCollection(name);  
+    await db.createCollection(name);
   } catch (error) {
     if (!(error instanceof MongoError)) throw error;
-    if (!(error.message.endsWith('already exists'))) throw error;
-  }  
+    if (!error.message.endsWith('already exists')) throw error;
+  }
 };
 
 // const handleProperties = async templatesCollection => {
@@ -94,7 +99,7 @@ const createTempCollection = async (db: Db, name:string) => {
 //   }
 // };
 
-let HUBTEMPLATE = {
+const HUBTEMPLATE: TemplateSchema = {
   name: '__former_hub',
   commonProperties: [
     {
@@ -132,33 +137,62 @@ const writeHubTemplate = async (templatesCollection: Collection) => {
     await templatesCollection.insert(HUBTEMPLATE);
     templates = await templatesCollection.find({ name: HUBTEMPLATE.name }).toArray();
   }
-  [HUBTEMPLATE] = templates;
+  const [template] = templates;
+  return template;
 };
+
+const hubToEntity = (
+  hub: HubType,
+  language: string,
+  template: TemplateSchema,
+  user: UserSchema
+) => ({
+  title: hub._id.toHexString(),
+  template: template._id,
+  shared: ID(),
+  published: false,
+  metadata: {},
+  type: 'document',
+  user: user._id,
+  creationDate: date.currentUTC(),
+  editDate: date.currentUTC(),
+  language,
+  generatedToc: false,
+});
+
+const getDefaultLanguage = async (db: Db) => {
+  const settings = await db.collection<Settings>('settings').findOne({}, { projection: { languages: 1 }}) as Settings;
+  return settings.languages.find(l => l.default)
+};
+
+const getAnAdmin = async (db: Db) => db.collection('users').findOne({ role: 'admin' });
 
 const liftHubs = async (
   hubsCollection: Collection<HubType>,
   newEntitiesCollection: Collection,
   templatesCollection: Collection,
   connectionsCollection: Collection,
-  relationshipsCollection: Collection
-  ) => {
-  await writeHubTemplate(templatesCollection);
-  const hubWriter = new BulkWriteStream(newEntitiesCollection, undefined, batchsize);
+  relationshipsCollection: Collection,
+  language: string,
+  template: TemplateSchema,
+  user: UserSchema
+) => {
+  const entityWriter = new BulkWriteStream(newEntitiesCollection, undefined, batchsize);
   const connectionWriter = new BulkWriteStream(connectionsCollection, undefined, batchsize);
 
   const hubs = hubsCollection.find({});
-  while(!hubs.isClosed()){
+  while (!hubs.isClosed()) {
     const hubBatch = await getNextBatch(hubs);
-    await hubWriter.insertMany(hubBatch.map(hub => ({
-      name: hub._id.toHexString(),
-    })));
+    await entityWriter.insertMany(hubBatch.map(hub => hubToEntity(hub, language, template, user)));
   }
-  await hubWriter.flush();
+  await entityWriter.flush();
 };
 
 const migrate = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
+  const defaultLanguage = (await getDefaultLanguage(db)).key;
+  const adminUser = await getAnAdmin(db);
 
   // await db.dropCollection(temporaryHubCollectionName);
   await createTempCollection(db, temporaryHubCollectionName);
@@ -177,12 +211,21 @@ const migrate = async () => {
 
   // await gatherHubs(connections, hubsCollection);
 
-  await liftHubs(hubsCollection, newEntitiesCollection, templatesCollection, connectionsCollection, tempRelationshipsCollection);
+  const hubtemplate = await writeHubTemplate(templatesCollection);
+  await liftHubs(
+    hubsCollection,
+    newEntitiesCollection,
+    templatesCollection,
+    connectionsCollection,
+    tempRelationshipsCollection,
+    defaultLanguage,
+    hubtemplate,
+    adminUser
+  );
 
   // await db.dropCollection(temporaryHubCollectionName);
-
-
-  client.close();
+  await client.close();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 migrate();
