@@ -377,32 +377,47 @@ describe('Entities', () => {
   });
 
   describe('new thesauri values shortcut', () => {
-    it('should add a thesauri value on a multiselect field and select it', async () => {
+    beforeAll(async () => {
       await changeLanguage('English');
       await expect(page).toClick('li[title=Published]');
-      await expect(page).toMatchElement('span', { text: 'Voto Separado' });
-      await expect(page).toClick('span', { text: 'Voto Separado' });
+      await expect(page).toMatchElement('span', { text: 'Ordenes de la corte' });
+      await expect(page).toClick('span', { text: 'Ordenes de la corte' });
       await expect(page).toClick('.item-document', {
-        text: 'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012. Vote Vio Grossi',
+        text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
       });
       await expect(page).toClick('button.edit-metadata', { text: 'Edit' });
-      await expect(page).toClick('.multiselect-add-value > button > span', { text: 'add value' });
+    });
+
+    it('should add a thesauri value on a multiselect field and select it', async () => {
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span',
+        { text: 'add value' }
+      );
       await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
       await expect(page).toClick('.confirm-button', { text: 'Save' });
       await expect(page).toMatchElement(
-        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li > div > ul > li:nth-child(6) > label > .multiselectItem-name',
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
         { text: 'New Value' }
       );
       const selectedItems = await getContentBySelector(
-        '#metadataForm > div:nth-child(3) > div.form-group.multiselect > ul > li.wide > div > ul > li > label > span.multiselectItem-name'
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li.wide > div > ul > li > label > .multiselectItem-name'
       );
       expect(selectedItems).toEqual([
+        'De asunto',
+        'Medidas Provisionales',
+        'New Value',
         'Excepciones Preliminares',
         'Fondo',
-        'Reparaciones',
-        'Costas',
-        'New Value',
       ]);
+    });
+
+    it('should add a thesauti value on a single select field and select it', async () => {
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > .form-group.select > ul > .wide > div > div > button > span',
+        { text: 'add value' }
+      );
+      await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      await expect(page).toClick('.confirm-button', { text: 'Save' });
     });
   });
 
