@@ -65,21 +65,24 @@ describe('when requesting the relationship properties configured in the system',
     const dataSource = new MongoTemplatesDataSource(getConnection());
     const result = await dataSource.getAllRelationshipProperties().all();
     expect(result.length).toBe(3);
-    result.forEach(prop => {
-      expect(prop.property).toBeInstanceOf(RelationshipProperty);
-      expect(prop.property.query[0]).toBeInstanceOf(TraversalQueryNode);
+    result.forEach(property => {
+      expect(property).toBeInstanceOf(RelationshipProperty);
+      expect(property.query[0]).toBeInstanceOf(TraversalQueryNode);
     });
     expect(result).toMatchObject([
       {
-        property: { name: 'relationshipProp1', query: createRelationshipQuery(1) },
+        name: 'relationshipProp1',
+        query: createRelationshipQuery(1),
         template: factory.id('template1').toHexString(),
       },
       {
-        property: { name: 'relationshipProp2', query: createRelationshipQuery(2) },
+        name: 'relationshipProp2',
+        query: createRelationshipQuery(2),
         template: factory.id('template2').toHexString(),
       },
       {
-        property: { name: 'relationshipProp3', query: createRelationshipQuery(3) },
+        name: 'relationshipProp3',
+        query: createRelationshipQuery(3),
         template: factory.id('template3').toHexString(),
       },
     ]);

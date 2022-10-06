@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
-import _ from 'lodash';
 
 import { applicationEventsBus } from 'api/eventsbus';
 import { PDF, files } from 'api/files';

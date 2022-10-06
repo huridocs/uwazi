@@ -1,4 +1,3 @@
-import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
@@ -8,7 +7,7 @@ import { mapPropertyQuery } from './QueryMapper';
 export class MongoTemplatesDataSource extends MongoDataSource implements TemplatesDataSource {
   protected collectionName = 'templates';
 
-  getAllRelationshipProperties(): ResultSet<{ property: RelationshipProperty; template: string }> {
+  getAllRelationshipProperties() {
     const cursor = this.getCollection().aggregate(
       [
         {
@@ -32,13 +31,15 @@ export class MongoTemplatesDataSource extends MongoDataSource implements Templat
       { session: this.session }
     );
 
-    return new MongoResultSet(cursor, elem => ({
-      property: new RelationshipProperty(
-        elem.properties.name,
-        elem.properties.label,
-        mapPropertyQuery(elem.properties.query)
-      ),
-      template: elem._id.toHexString(),
-    }));
+    return new MongoResultSet(
+      cursor,
+      elem =>
+        new RelationshipProperty(
+          elem.properties.name,
+          elem.properties.label,
+          mapPropertyQuery(elem.properties.query),
+          elem._id.toHexString()
+        )
+    );
   }
 }

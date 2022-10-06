@@ -121,6 +121,39 @@ export class MatchQueryNode extends QueryNode {
     return new MatchQueryNode({ ...this.filters }, traversals ?? []);
   }
 
+  private invertingAlgorithm(
+    fittingCallback: (subquery: MatchQueryNode) => MatchQueryNode | undefined
+  ) {
+    const subqueries = this.chainsDecomposition();
+    const invertedFittingQueries: MatchQueryNode[] = [];
+    subqueries.forEach(subquery => {
+      const fittingQuery = fittingCallback(subquery);
+      if (fittingQuery) {
+        invertedFittingQueries.push(fittingQuery.inverse());
+      }
+    });
+    return invertedFittingQueries;
+  }
+
+  invertFromRelationship(relationship: Relationship, entitiesInRelationship: Entity[]) {
+    const entityMap = {
+      [relationship.from]: entitiesInRelationship.find(
+        entity => entity.sharedId === relationship.from
+      )!,
+      [relationship.to]: entitiesInRelationship.find(
+        entity => entity.sharedId === relationship.to
+      )!,
+    };
+
+    return this.invertingAlgorithm(subquery =>
+      subquery.reachesRelationship(relationship, entityMap)
+    );
+  }
+
+  invertFromEntity(entity: Entity) {
+    return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
+  }
+
   static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
     return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }

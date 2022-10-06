@@ -3,7 +3,6 @@ import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 
 export class DenormalizationService implements Transactional {
@@ -46,59 +45,44 @@ export class DenormalizationService implements Transactional {
       idOrRel instanceof Relationship
         ? idOrRel
         : (await this.relationshipsDS.getById([idOrRel]).all())[0];
-    const [entity1, entity2] = await this.entitiesDS
+
+    const relatedEntities = await this.entitiesDS
       .getByIds([relationship.from, relationship.to])
       .all();
+
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
 
     const entities: any[] = [];
     await Promise.all(
-      properties.map(async ({ property, template }) => {
-        const rootedQuery = new MatchQueryNode({ templates: [template] }, property.query);
-        const chains = rootedQuery.chainsDecomposition();
-        const reachingPathes = chains.map(chain =>
-          chain.reachesRelationship(relationship, {
-            [entity1.sharedId]: entity1,
-            [entity2.sharedId]: entity2,
-          })
-        );
-
-        const queries: MatchQueryNode[] = [];
-
-        reachingPathes.forEach(path => {
-          if (path) {
-            const inversePath = path.inverse();
-            queries.push(inversePath);
-          }
-        });
-
-        await Promise.all(
-          queries.map(async q => {
-            const result = this.relationshipsDS.getByQuery(q);
-            const leafEntities = (await result.all()).map(path => path[path.length - 1]);
-            leafEntities.forEach(entity =>
-              entities.push({
-                ...entity,
-                propertiesToBeMarked: [property.name],
-              })
-            );
-          })
-        );
-      })
+      properties.map(async property =>
+        Promise.all(
+          property
+            .buildQueryInvertedFromRelationship(relationship, relatedEntities)
+            .map(async query => {
+              const result = this.relationshipsDS.getByQuery(query);
+              const leafEntities = (await result.all()).map(path => path[path.length - 1]);
+              leafEntities.forEach(entity =>
+                entities.push({
+                  ...entity,
+                  propertiesToBeMarked: [property.name],
+                })
+              );
+            })
+        )
+      )
     );
     return entities;
   }
 
   async denormalizeBasedOnRelationship(_id: string) {
-    let candidates: any[] = [];
-    await this.transactionManager.run(
+    return this.transactionManager.run(
       async () => {
-        candidates = await this.getCandidateEntitiesForRelationship(_id);
+        const candidates = await this.getCandidateEntitiesForRelationship(_id);
         await this.entitiesDS.markMetadataAsChanged(candidates);
+        return candidates;
       },
       [this.relationshipsDS, this.entitiesDS, this.templatesDS],
       this.transactionContext
     );
-    return candidates;
   }
 }

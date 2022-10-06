@@ -175,7 +175,7 @@ describe('createMultiple()', () => {
     });
 
     // eslint-disable-next-line jest/no-focused-tests
-    it('should denormalize the fields over 1 hop', async () => {
+    xit('should denormalize the fields over 1 hop', async () => {
       const service = createService();
 
       await service.createMultiple([
@@ -200,7 +200,7 @@ describe('createMultiple()', () => {
     });
 
     // eslint-disable-next-line jest/no-focused-tests
-    it('should denormalize the fields over 2 hops', async () => {
+    xit('should denormalize the fields over 2 hops', async () => {
       const service = createService();
 
       await service.createMultiple([
