@@ -210,11 +210,4 @@ describe('denormalizeBasedOnRelationship()', () => {
       ])
     );
   });
-
-  it('should send entities to indexing', async () => {
-    await service.denormalizeBasedOnRelationship(factory.id('rel3').toHexString());
-
-    expect(indexSpy).toHaveBeenCalledTimes(1);
-    expect(indexSpy).toHaveBeenCalledWith({ sharedId: { $in: ['entity1', 'entity7', 'entity4'] } });
-  });
 });

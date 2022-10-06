@@ -19,6 +19,7 @@ import {
 import { CreateRelationshipService } from '../services/CreateRelationshipService';
 import { DeleteRelationshipService } from '../services/DeleteRelationshipService';
 import { DenormalizationService } from '../services/DenormalizationService';
+import { applicationEventsBus } from 'api/eventsbus';
 
 export default (app: Application) => {
   //   app.post(
@@ -52,7 +53,8 @@ export default (app: Application) => {
           new MongoEntitiesDataSource(connection),
           new MongoTemplatesDataSource(connection),
           new MongoTransactionManager(getClient())
-        )
+        ),
+        applicationEventsBus
       );
       const created = await service.createMultiple(req.body);
       res.json(created);

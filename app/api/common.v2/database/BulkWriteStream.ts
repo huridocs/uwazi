@@ -28,19 +28,23 @@ class BulkWriteStream {
   async flush() {
     const toPerform = this.actions;
     this.actions = [];
-    return this.collection.bulkWrite(toPerform, { ordered: this.ordered, session: this.session });
+    if (toPerform.length) {
+      await this.collection.bulkWrite(toPerform, {
+        ordered: this.ordered,
+        session: this.session,
+      });
+    }
   }
 
   async check() {
     if (this.actions.length >= this.stackLimit) {
-      return this.flush();
+      await this.flush();
     }
-    return null;
   }
 
   async insert(document: any) {
     this.actions.push({ insertOne: { document } });
-    return this.check();
+    await this.check();
   }
 
   async insertMany(documents: any[]) {
@@ -53,7 +57,7 @@ class BulkWriteStream {
 
   async delete(filter: any, collation?: any) {
     this.actions.push({ deleteOne: { filter, collation } });
-    return this.check();
+    await this.check();
   }
 
   async update(
@@ -65,7 +69,7 @@ class BulkWriteStream {
     hint?: any
   ) {
     this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters, hint } });
-    return this.check();
+    await this.check();
   }
 
   public get actionCount() {

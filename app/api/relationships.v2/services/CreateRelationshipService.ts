@@ -4,9 +4,9 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
-import { applicationEventsBus } from 'api/eventsbus';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
+import { EventsBus } from 'api/eventsbus';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
@@ -28,6 +28,8 @@ export class CreateRelationshipService {
 
   private denormalizationService: DenormalizationService;
 
+  private eventsBus: EventsBus;
+
   // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
@@ -36,7 +38,8 @@ export class CreateRelationshipService {
     transactionManager: TransactionManager,
     idGenerator: IdGenerator,
     authService: AuthorizationService,
-    denormalizationService: DenormalizationService
+    denormalizationService: DenormalizationService,
+    eventsBus: EventsBus
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
@@ -45,10 +48,7 @@ export class CreateRelationshipService {
     this.idGenerator = idGenerator;
     this.authService = authService;
     this.denormalizationService = denormalizationService;
-  }
-
-  async create(from: string, to: string, type: string) {
-    return this.createMultiple([{ from, to, type }]).then(created => created[0]);
+    this.eventsBus = eventsBus;
   }
 
   async createMultiple(relationships: { from: string; to: string; type: string }[]) {
@@ -95,7 +95,7 @@ export class CreateRelationshipService {
         this.denormalizationService,
       ]);
 
-    await applicationEventsBus.emit(
+    await this.eventsBus.emit(
       new RelationshipsCreatedEvent({ relationships: newRelationships, markedEntities })
     );
     return newRelationships;

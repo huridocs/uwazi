@@ -1,6 +1,5 @@
 import { ClientSession, Db } from 'mongodb';
 import { Transactional } from '../contracts/Transactional';
-import { TransactionContextAlreadySetError } from './errors/TransactionContextAlreadySetError';
 
 export abstract class MongoDataSource<CollectionSchema = any>
   implements Transactional<ClientSession>
@@ -16,10 +15,6 @@ export abstract class MongoDataSource<CollectionSchema = any>
   }
 
   setTransactionContext(session: ClientSession) {
-    if (this.session) {
-      throw new TransactionContextAlreadySetError();
-    }
-
     this.session = session;
   }
 
