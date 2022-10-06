@@ -81,6 +81,33 @@ describe('Entities', () => {
     await saveEntityAndClosePanel();
   });
 
+  describe('new thesauri values shortcut', () => {
+    it('should add a thesauri value on a multiselect field and select it', async () => {
+      await expect(page).toClick('span', { text: 'Voto Separado' });
+      await expect(page).toClick('.item-document', {
+        text: 'Artavia Murillo et al. Preliminary Objections, Merits, Reparations and Costs. Judgment. November 28, 2012. Vote Vio Grossi',
+      });
+      await expect(page).toClick('button.edit-metadata', { text: 'Edit' });
+      await expect(page).toClick('.multiselect-add-value > button > span', { text: 'add value' });
+      await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      await expect(page).toClick('.confirm-button', { text: 'Save' });
+      await expect(page).toMatchElement(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li > div > ul > li:nth-child(6) > label > .multiselectItem-name',
+        { text: 'New Value' }
+      );
+      const selectedItems = await getContentBySelector(
+        '#metadataForm > div:nth-child(3) > div.form-group.multiselect > ul > li.wide > div > ul > li > label > span.multiselectItem-name'
+      );
+      expect(selectedItems).toEqual([
+        'Excepciones Preliminares',
+        'Fondo',
+        'Reparaciones',
+        'Costas',
+        'New Value',
+      ]);
+    });
+  });
+
   describe('Rich text fields', () => {
     it('should create an entity with HTML on a rich text field', async () => {
       await expect(page).toClick('button', { text: 'Create entity' });
