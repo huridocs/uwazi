@@ -7,7 +7,9 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { applicationEventsBus } from 'api/eventsbus';
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { RelationshipsCreatedEvent } from 'api/relationships.v2/events/RelationshipsCreatedEvent';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { User } from 'api/users.v2/model/User';
@@ -174,11 +176,11 @@ describe('createMultiple()', () => {
       ]);
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    xit('should denormalize the fields over 1 hop', async () => {
+    it('should denormalize the fields over 1 hop', async () => {
+      const emitSpy = spyOnEmit();
       const service = createService();
 
-      await service.createMultiple([
+      const created = await service.createMultiple([
         { from: 'entity4', to: 'entity1', type: factory.id('rel4').toHexString() },
         { from: 'entity4', to: 'entity3', type: factory.id('rel4').toHexString() },
       ]);
@@ -188,40 +190,53 @@ describe('createMultiple()', () => {
       const [entity3] = await collectionInDb('entities').find({ sharedId: 'entity3' }).toArray();
 
       expect(entity4).toMatchObject({
-        metadata: {
-          relProp: [
-            { value: 'entity1', label: 'entity1' },
-            { value: 'entity3', label: 'entity3' },
-          ],
-        },
+        obsoleteMetadata: ['relProp'],
       });
-      expect(entity1).toEqual(fixtures.entities[0]);
-      expect(entity3).toEqual(fixtures.entities[2]);
+      expect(entity1).toMatchObject(fixtures.entities[0]);
+      expect(entity3).toMatchObject(fixtures.entities[2]);
+
+      emitSpy.expectToEmitEventWith(RelationshipsCreatedEvent, {
+        relationships: created,
+        markedEntities: expect.arrayContaining(['entity4']),
+      });
+
+      emitSpy.restore();
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    xit('should denormalize the fields over 2 hops', async () => {
+    it('should denormalize the fields over 2 hops', async () => {
+      let emitSpy = spyOnEmit();
       const service = createService();
 
-      await service.createMultiple([
+      const [created1] = await service.createMultiple([
         { from: 'entity4', to: 'entity2', type: factory.id('rel4').toHexString() },
       ]);
 
-      await service.createMultiple([
+      emitSpy.expectToEmitEventWith(RelationshipsCreatedEvent, {
+        relationships: [created1],
+        markedEntities: expect.arrayContaining(['entity4']),
+      });
+
+      emitSpy = spyOnEmit();
+      const [created2] = await service.createMultiple([
         { from: 'entity2', to: 'entity5', type: factory.id('rel4').toHexString() },
       ]);
+
+      emitSpy.expectToEmitEventWith(RelationshipsCreatedEvent, {
+        relationships: [created2],
+        markedEntities: expect.arrayContaining(['entity4']),
+      });
 
       const [entity4] = await collectionInDb('entities').find({ sharedId: 'entity4' }).toArray();
       const [entity1] = await collectionInDb('entities').find({ sharedId: 'entity1' }).toArray();
       const [entity3] = await collectionInDb('entities').find({ sharedId: 'entity3' }).toArray();
 
       expect(entity4).toMatchObject({
-        metadata: {
-          relProp: [{ value: 'entity5', label: 'entity5' }],
-        },
+        obsoleteMetadata: ['relProp'],
       });
       expect(entity1).toEqual(fixtures.entities[0]);
       expect(entity3).toEqual(fixtures.entities[2]);
+
+      emitSpy.restore();
     });
   });
 

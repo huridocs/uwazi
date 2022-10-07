@@ -2,7 +2,6 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { search } from 'api/search';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -178,35 +177,6 @@ describe('getCandidateEntitiesForRelationship()', () => {
           sharedId: 'entity7',
           propertiesToBeMarked: ['relationshipProp2'],
         }),
-      ])
-    );
-  });
-});
-
-describe('denormalizeBasedOnRelationship()', () => {
-  let indexSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    indexSpy = jest.spyOn(search, 'indexEntities').mockImplementation(async () => {});
-  });
-
-  afterEach(() => {
-    indexSpy.mockRestore();
-  });
-
-  it('should mark the metadata in entities that may need denormalization as obsolete', async () => {
-    await service.denormalizeBasedOnRelationship(factory.id('rel3').toHexString());
-
-    const entities = await db
-      .collection('entities')
-      .find({ sharedId: { $in: ['entity1', 'entity4', 'entity7'] } })
-      .toArray();
-
-    expect(entities).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ sharedId: 'entity4', obsoleteMetadata: ['relationshipProp3'] }),
-        expect.objectContaining({ sharedId: 'entity1', obsoleteMetadata: ['relationshipProp1'] }),
-        expect.objectContaining({ sharedId: 'entity7', obsoleteMetadata: ['relationshipProp2'] }),
       ])
     );
   });

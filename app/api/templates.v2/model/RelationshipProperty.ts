@@ -27,4 +27,8 @@ export class RelationshipProperty {
   buildQueryInvertedFromRelationship(relationship: Relationship, entities: Entity[]) {
     return this.buildQueryRootedInTemplate().invertFromRelationship(relationship, entities);
   }
+
+  buildQueryInvertedFromEntity(entity: Entity) {
+    return this.buildQueryRootedInTemplate().invertFromEntity(entity);
+  }
 }

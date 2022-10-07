@@ -2,8 +2,9 @@ import { Transactional } from 'api/common.v2/contracts/Transactional';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { Relationship } from '../model/Relationship';
+import { MatchQueryNode } from '../model/MatchQueryNode';
 
 export class DenormalizationService implements Transactional {
   private relationshipsDS: RelationshipsDataSource;
@@ -36,53 +37,57 @@ export class DenormalizationService implements Transactional {
     this.transactionContext = undefined;
   }
 
-  async getCandidateEntitiesForRelationship(id: string): Promise<any[]>;
+  private async inTransaction<T>(callback: () => Promise<T>) {
+    return this.transactionManager.run<T>(
+      callback,
+      [this.relationshipsDS, this.entitiesDS, this.templatesDS],
+      this.transactionContext
+    );
+  }
 
-  async getCandidateEntitiesForRelationship(rel: Relationship): Promise<any[]>;
-
-  async getCandidateEntitiesForRelationship(idOrRel: string | Relationship): Promise<any[]> {
-    const relationship =
-      idOrRel instanceof Relationship
-        ? idOrRel
-        : (await this.relationshipsDS.getById([idOrRel]).all())[0];
-
-    const relatedEntities = await this.entitiesDS
-      .getByIds([relationship.from, relationship.to])
-      .all();
-
+  private async getCandidateEntities(
+    invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[]
+  ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
 
     const entities: any[] = [];
     await Promise.all(
       properties.map(async property =>
         Promise.all(
-          property
-            .buildQueryInvertedFromRelationship(relationship, relatedEntities)
-            .map(async query => {
-              const result = this.relationshipsDS.getByQuery(query);
-              const leafEntities = (await result.all()).map(path => path[path.length - 1]);
-              leafEntities.forEach(entity =>
-                entities.push({
-                  ...entity,
-                  propertiesToBeMarked: [property.name],
-                })
-              );
-            })
+          invertQueryCallback(property).map(async query => {
+            const result = this.relationshipsDS.getByQuery(query);
+            const leafEntities = (await result.all()).map(path => path[path.length - 1]);
+            leafEntities.forEach(entity =>
+              entities.push({
+                ...entity,
+                propertiesToBeMarked: [property.name],
+              })
+            );
+          })
         )
       )
     );
     return entities;
   }
 
-  async denormalizeBasedOnRelationship(_id: string) {
-    return this.transactionManager.run(
-      async () => {
-        const candidates = await this.getCandidateEntitiesForRelationship(_id);
-        await this.entitiesDS.markMetadataAsChanged(candidates);
-        return candidates;
-      },
-      [this.relationshipsDS, this.entitiesDS, this.templatesDS],
-      this.transactionContext
-    );
+  async getCandidateEntitiesForRelationship(_id: string): Promise<any[]> {
+    return this.inTransaction(async () => {
+      const [relationship] = await this.relationshipsDS.getById([_id]).all();
+
+      const relatedEntities = await this.entitiesDS
+        .getByIds([relationship.from, relationship.to])
+        .all();
+
+      return this.getCandidateEntities(property =>
+        property.buildQueryInvertedFromRelationship(relationship, relatedEntities)
+      );
+    });
+  }
+
+  async getCandidateEntitiesForEntity(sharedId: string): Promise<any[]> {
+    return this.inTransaction(async () => {
+      const [entity] = await this.entitiesDS.getByIds([sharedId]).all();
+      return this.getCandidateEntities(property => property.buildQueryInvertedFromEntity(entity));
+    });
   }
 }

@@ -83,11 +83,16 @@ export class CreateRelationshipService {
         const candidates = (
           await Promise.all(
             insertedRelationships.map(async insertedRelationship =>
-              this.denormalizationService.denormalizeBasedOnRelationship(insertedRelationship._id)
+              this.denormalizationService.getCandidateEntitiesForRelationship(
+                insertedRelationship._id
+              )
             )
           )
         ).flat();
-        return { candidates, insertedRelationships };
+
+        await this.entitiesDS.markMetadataAsChanged(candidates);
+
+        return { candidates: candidates.map(c => c.sharedId), insertedRelationships };
       }, [
         this.entitiesDS,
         this.relationshipsDS,

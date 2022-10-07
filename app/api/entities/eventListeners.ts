@@ -5,7 +5,7 @@ import { RelationshipsCreatedEvent } from 'api/relationships.v2/events/Relations
 const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(RelationshipsCreatedEvent, async ({ markedEntities }) => {
     if (markedEntities.length) {
-      await search.indexEntities({ sharedId: { $in: markedEntities.map(e => e.sharedId) } });
+      await search.indexEntities({ sharedId: { $in: markedEntities } });
     }
   });
 };

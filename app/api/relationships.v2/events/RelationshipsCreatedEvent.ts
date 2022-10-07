@@ -3,7 +3,7 @@ import { Relationship } from '../model/Relationship';
 
 interface RelationshipCreationData {
   relationships: Relationship[];
-  markedEntities: any[];
+  markedEntities: string[];
 }
 
 class RelationshipsCreatedEvent extends AbstractEvent<RelationshipCreationData> {}

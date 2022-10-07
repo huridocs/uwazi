@@ -331,6 +331,10 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
+  async denormalizeNewRelationships(_sharedId) {
+    // TODO: Find affected entities, mark their obsolete metadata and return their sharedIds for indexation.
+  },
+
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
@@ -371,8 +375,13 @@ export default {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
 
+    const entitiesToIndex = this.denormalizeNewRelationships(sharedId);
+
     if (index) {
-      await search.indexEntities({ sharedId }, '+fullText');
+      await search.indexEntities(
+        { sharedId: { $in: entitiesToIndex.concat([sharedId]) } },
+        '+fullText'
+      );
     }
 
     return entity;
