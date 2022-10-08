@@ -3,6 +3,7 @@ import traverse from '@babel/traverse';
 import mongodb from 'mongodb';
 
 import { resolve } from 'path';
+// eslint-disable-next-line node/no-restricted-import
 import { promises } from 'fs';
 
 async function getFiles(dir) {
@@ -35,7 +36,7 @@ const parserOptions = {
   ],
 };
 
-const wordRegexp = new RegExp(/\b[a-zA-Z]+\b/g);
+const wordRegexp = /\b[a-zA-Z]+\b/g;
 
 const processTextNode = (path, file) => {
   const text = path.node.value.trim();
@@ -65,38 +66,54 @@ const processTFunction = (path, file) => {
   return { text: text || key, container: 't', file: shortName, key };
 };
 
-async function parseFile(file) {
+const comparableString = text => text.replaceAll(/['\s;]|&(#39|#x27|quot|rsquo|apos);/g, '');
+
+async function parseFile(file, translations) {
   const result = [];
   const fileContents = await promises.readFile(file, 'utf8');
 
-  const ast = parser.parse(fileContents, parserOptions);
+  if (!file.includes('/migrations/')) {
+    const comparableContent = comparableString(fileContents);
 
-  traverse.default(ast, {
-    enter(path) {
-      if (
-        path.isCallExpression() &&
-        path.node.callee.name === 't' &&
-        path.node.arguments[0].value === 'System'
-      ) {
-        result.push(processTFunction(path, file));
-      }
-
-      if (path.isJSXElement()) {
-        const noTranslate = path.node.openingElement.attributes.find(
-          a => a.name?.name === 'no-translate'
-        );
-        if (noTranslate) {
-          path.skip();
+    translations
+      .filter(translation => !translation.used)
+      .forEach(translation => {
+        if (
+          comparableContent.includes(translation.plainValue) ||
+          comparableContent.includes(translation.plainKey)
+        ) {
+          translation.used = true;
         }
-      }
+      });
+  }
 
-      if (path.isJSXText()) {
-        result.push(processTextNode(path, file));
-      }
-    },
-  });
-
-  return result.filter(t => t);
+  if (file.includes('app/react')) {
+    const ast = parser.parse(fileContents, parserOptions);
+    traverse.default(ast, {
+      enter(path) {
+        if (
+          path.isCallExpression() &&
+          path.node.callee.name === 't' &&
+          path.node.arguments[0].value === 'System'
+        ) {
+          result.push(processTFunction(path, file));
+        }
+        if (path.isJSXElement()) {
+          const noTranslate = path.node.openingElement.attributes.find(
+            a => a.name?.name === 'no-translate'
+          );
+          if (noTranslate) {
+            path.skip();
+          }
+        }
+        if (path.isJSXText()) {
+          result.push(processTextNode(path, file));
+        }
+      },
+    });
+    return result.filter(t => t);
+  }
+  return [];
 }
 
 const getClient = async () => {
@@ -107,20 +124,29 @@ const getClient = async () => {
   return client;
 };
 
-const checkSystemKeys = async allTexts => {
+const getSystemUITranslations = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
   const collection = db.collection('translations');
   const [firstTranslation] = await collection.find().toArray();
   const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
-  systemContext.values.forEach(t => {});
+  client.close();
+  const translations = systemContext.values;
+  const comparableTranslations = translations.map(t => ({
+    ...t,
+    plainValue: comparableString(t.value),
+    plainKey: comparableString(t.key),
+  }));
+  return { translations, comparableTranslations };
+};
+
+const checkSystemKeys = async (allTexts, translations) => {
   const textsNotInTranslations = allTexts.filter(text => {
     let key = text.key || text.text;
     key = key.trim().replace(/\n\s*/g, ' ');
-    return !systemContext.values.find(t => t.key === key);
+    return !translations.find(t => t.key === key);
   });
 
-  client.close();
   return textsNotInTranslations;
 };
 
@@ -151,18 +177,41 @@ const reportnotInTranslations = textsNotInTranslations => {
   );
 };
 
-async function checkTranslations(dir) {
-  const files = await getFiles(dir);
+const checkForPotentialObsoleteTranslations = comparableTranslations => {
+  const nonUsed = comparableTranslations.filter(translation => !translation.used);
+  if (!nonUsed.length) {
+    return [];
+  }
+  nonUsed.forEach(({ key, value }) => {
+    process.stdout.write(` \x1b[36m ${key} \x1b[37m ${value}\x1b[0m \n`);
+  });
 
-  const results = await Promise.all(files.map(file => parseFile(file)));
+  process.stdout.write(
+    ` === Found \x1b[31m ${nonUsed.length} \x1b[0m potential obsolete translations ===\n`
+  );
+
+  return nonUsed;
+};
+
+const checkForMissingTranslations = async (translations, results) => {
   const allTexts = results.flat();
-  const textsNotInTranslations = await checkSystemKeys(allTexts);
+  const textsNotInTranslations = await checkSystemKeys(allTexts, translations);
   const textsWithoutTranslateElement = allTexts.filter(
     t => t.container !== 'Translate' && t.container !== 't'
   );
   reportNoTranslateElement(textsWithoutTranslateElement);
   reportnotInTranslations(textsNotInTranslations);
-  if (textsNotInTranslations.length || textsWithoutTranslateElement.length) {
+  return { textsNotInTranslations, textsWithoutTranslateElement };
+};
+
+async function checkTranslations(dir) {
+  const files = await getFiles(dir);
+  const { translations, comparableTranslations } = await getSystemUITranslations();
+  const results = await Promise.all(files.map(file => parseFile(file, comparableTranslations)));
+  const nonUsed = checkForPotentialObsoleteTranslations(comparableTranslations);
+  const { textsNotInTranslations, textsWithoutTranslateElement } =
+    await checkForMissingTranslations(translations, results);
+  if (textsNotInTranslations.length || textsWithoutTranslateElement.length || nonUsed.length) {
     process.exit(1);
   } else {
     process.stdout.write('\x1b[32m All good! \x1b[0m\n');
@@ -170,4 +219,4 @@ async function checkTranslations(dir) {
   }
 }
 
-checkTranslations('./app/react');
+checkTranslations('./app');
