@@ -62,7 +62,7 @@ export const receivingEmail = (
   </>
 );
 export const emails = [
-  <Translate>
+  <Translate translationKey="Contact email description">
     Here you can set up the contact email and the email that appears when Uwazi sends a notification
     to a user
   </Translate>,
