@@ -125,6 +125,9 @@ export function scrollTomark() {
 }
 
 export async function scrollToToc(toc) {
+  if (!toc.selectionRectangles || !toc.selectionRectangles[0]) {
+    return;
+  }
   const { page, top: offset } = toc.selectionRectangles[0];
   await scroller.to(`.document-viewer div#page-${page}`, '.document-viewer', {
     duration: 1,

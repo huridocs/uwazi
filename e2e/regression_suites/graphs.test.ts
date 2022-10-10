@@ -65,7 +65,6 @@ describe('Graphs in Page ', () => {
     });
 
     it('should navigate back to the edit page and insert a Pie chart graph', async () => {
-      await page.goBack();
       await insertChart(graphs.pieChart, 'Pie chart graph');
       await savePage();
     });
@@ -77,7 +76,6 @@ describe('Graphs in Page ', () => {
     });
 
     it('should navigate back to the edit page and insert a List chart graph', async () => {
-      await page.goBack();
       await insertChart(graphs.listChart, 'List chart graph');
       await savePage();
     });
@@ -91,47 +89,35 @@ describe('Graphs in Page ', () => {
 
   describe('Graphs with nested thesaurus', () => {
     let graphsPage: any;
-    beforeEach(async () => {
-      graphsPage = await displayGraph();
-    });
     it('should insert Bar chart graph in created page', async () => {
-      const pageContentsInput = await page.$eval(
-        localSelectors.pageContentsInput,
-        el => el.textContent
-      );
-      await expect(page).toFill('input[name="page.data.title"]', 'Bar chart with nested graph');
-      expect(pageContentsInput).toContain('<Dataset />');
-
-      await page.type(localSelectors.pageContentsInput, graphs.barChartScatter);
+      await insertChart(graphs.barChartScatter, 'Bar chart with nested graph');
       await savePage();
     });
 
     it('should display Bar chart graph in page', async () => {
+      graphsPage = await displayGraph();
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
     });
 
     it('should navigate back to the edit page and insert a Pie chart graph', async () => {
-      await page.goBack();
-      await expect(page).toFill('input[name="page.data.title"]', 'Pie chart with nested graph');
-      await expect(page).toFill(localSelectors.pageContentsInput, '<Dataset />');
-      await page.type(localSelectors.pageContentsInput, graphs.pieChartScatter);
       await insertChart(graphs.pieChartScatter, 'Pie chart with nested graph');
       await savePage();
     });
 
     it('should display Pie chart graph in page', async () => {
+      graphsPage = await displayGraph();
       await testSelectorShot('.recharts-responsive-container', { page: graphsPage });
       await graphsPage.close();
     });
 
     it('should navigate back to the edit page and insert a List chart graph', async () => {
-      await page.goBack();
       await insertChart(graphs.listChartScatter, 'List chart with nested graph');
       await savePage();
     });
 
     it('should display List chart graph in page', async () => {
+      graphsPage = await displayGraph();
       await testSelectorShot('.ListChart', { page: graphsPage });
       await graphsPage.close();
     });
