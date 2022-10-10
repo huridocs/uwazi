@@ -40,20 +40,8 @@ mongoose.Promise = Promise;
 
 const app = express();
 const metricsMiddleware = promBundle({
-  normalizePath: [
-    ['^/api/files/(.*\\..*)', '/api/files/#filename'],
-    ['^/uploaded_documents/(.*\\..*)', '/uploaded_documents/#filename'],
-    ['^/.*\\.(js|css).*', '/#filename'],
-    ['^/public/(.*\\..*)', '/public/#filename'],
-    ['^/flags/.*', '/flags/#filename'],
-    ['^/assets/(.*\\..*)', '/assets/#filename'],
-    ['.*/entity/.*', '/entity/#id'],
-    ['.*/document/.*', '/document/#id'],
-    ['.*/page/.*', '/page/#id'],
-    ['.*/library', '/library/'],
-  ],
-  includeMethod: true,
-  includePath: true,
+  includeMethod: false,
+  includePath: false,
   customLabels: {
     port: config.PORT,
     env: config.ENVIRONMENT,
