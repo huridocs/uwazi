@@ -11,6 +11,7 @@ import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { RelationshipsCreatedEvent } from 'api/relationships.v2/events/RelationshipsCreatedEvent';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -32,16 +33,19 @@ const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
 const createService = () => {
   const connection = getConnection();
+
+  const SettingsDataSource = new MongoSettingsDataSource(connection);
+
   return new CreateRelationshipService(
     new MongoRelationshipsDataSource(connection),
     new MongoRelationshipTypesDataSource(connection),
-    new MongoEntitiesDataSource(connection),
+    new MongoEntitiesDataSource(connection, SettingsDataSource),
     new MongoTransactionManager(getClient()),
     MongoIdGenerator,
     new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser),
     new DenormalizationService(
       new MongoRelationshipsDataSource(connection),
-      new MongoEntitiesDataSource(connection),
+      new MongoEntitiesDataSource(connection, SettingsDataSource),
       new MongoTemplatesDataSource(connection),
       new MongoTransactionManager(getClient())
     ),
@@ -105,6 +109,22 @@ const fixtures = {
       }),
     ]),
   ],
+  settings: [
+    {
+      languages: [
+        {
+          default: true,
+          label: 'English',
+          key: 'en',
+        },
+        {
+          default: true,
+          label: 'Hungarian',
+          key: 'hu',
+        },
+      ],
+    },
+  ],
 };
 
 beforeEach(async () => {
@@ -119,6 +139,7 @@ describe('createMultiple()', () => {
   describe('When the entities exist', () => {
     it('should return new connections', async () => {
       const service = createService();
+
       const relationship = await service.createMultiple([
         { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
         { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
@@ -196,7 +217,7 @@ describe('createMultiple()', () => {
         obsoleteMetadata: ['relProp'],
       });
       expect(entity1).toMatchObject(fixtures.entities[0]);
-      expect(entity3).toMatchObject(fixtures.entities[2]);
+      expect(entity3).toMatchObject(fixtures.entities[4]);
 
       emitSpy.expectToEmitEventWith(RelationshipsCreatedEvent, {
         relationships: created,
@@ -237,7 +258,7 @@ describe('createMultiple()', () => {
         obsoleteMetadata: ['relProp'],
       });
       expect(entity1).toEqual(fixtures.entities[0]);
-      expect(entity3).toEqual(fixtures.entities[2]);
+      expect(entity3).toEqual(fixtures.entities[4]);
 
       emitSpy.restore();
     });

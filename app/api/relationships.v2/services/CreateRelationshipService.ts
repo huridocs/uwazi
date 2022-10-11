@@ -30,6 +30,8 @@ export class CreateRelationshipService {
 
   private eventsBus: EventsBus;
 
+  private _defaultLanguage: string | undefined = undefined;
+
   // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
