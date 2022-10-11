@@ -3,8 +3,9 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity } from '../model/Entity';
@@ -57,12 +58,20 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
 export class MongoEntitiesDataSource extends MongoDataSource implements EntitiesDataSource {
   protected collectionName = 'entities';
 
+  protected settingsDS: MongoSettingsDataSource;
+
+  constructor(db: Db, settingsDS: MongoSettingsDataSource) {
+    super(db);
+    this.settingsDS = settingsDS;
+  }
+
   async entitiesExist(sharedIds: string[]) {
+    const languages = await this.settingsDS.getLanguageKeys();
     const countInExistence = await this.getCollection().countDocuments(
       { sharedId: { $in: sharedIds } },
       { session: this.session }
     );
-    return countInExistence === sharedIds.length;
+    return countInExistence === sharedIds.length * languages.length;
   }
 
   async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {

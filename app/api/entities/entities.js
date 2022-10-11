@@ -7,6 +7,7 @@ import * as filesystem from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
@@ -469,7 +470,7 @@ export default {
       t => t.properties.filter(prop => prop.type === 'newRelationship')
     );
     const db = getConnection();
-    const entitiesDataSource = new MongoEntitiesDataSource(db);
+    const entitiesDataSource = new MongoEntitiesDataSource(db, new MongoSettingsDataSource(db));
 
     await Promise.all(
       entities.map(async entity => {

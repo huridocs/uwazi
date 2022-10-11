@@ -7,8 +7,10 @@ import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getValidatorMiddleware } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
+import { applicationEventsBus } from 'api/eventsbus';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { User } from 'api/users.v2/model/User';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import needsAuthorization from '../../auth/authMiddleware';
 import { MongoRelationshipsDataSource } from '../database/MongoRelationshipsDataSource';
@@ -19,7 +21,6 @@ import {
 import { CreateRelationshipService } from '../services/CreateRelationshipService';
 import { DeleteRelationshipService } from '../services/DeleteRelationshipService';
 import { DenormalizationService } from '../services/DenormalizationService';
-import { applicationEventsBus } from 'api/eventsbus';
 
 export default (app: Application) => {
   //   app.post(
@@ -41,16 +42,18 @@ export default (app: Application) => {
       const user = User.fromRequest(req);
       const connection = getConnection();
 
+      const SettingsDataSource = new MongoSettingsDataSource(connection);
+
       const service = new CreateRelationshipService(
         new MongoRelationshipsDataSource(connection),
         new MongoRelationshipTypesDataSource(connection),
-        new MongoEntitiesDataSource(connection),
+        new MongoEntitiesDataSource(connection, SettingsDataSource),
         new MongoTransactionManager(getClient()),
         MongoIdGenerator,
         new AuthorizationService(new MongoPermissionsDataSource(connection), user),
         new DenormalizationService(
           new MongoRelationshipsDataSource(connection),
-          new MongoEntitiesDataSource(connection),
+          new MongoEntitiesDataSource(connection, SettingsDataSource),
           new MongoTemplatesDataSource(connection),
           new MongoTransactionManager(getClient())
         ),
