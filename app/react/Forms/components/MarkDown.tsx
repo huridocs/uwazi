@@ -17,7 +17,7 @@ export class MarkDown extends Component<MarkDownType> {
       <div className="markdownEditor">
         <Tabs renderActiveTabContentOnly>
           <div className="tab-nav">
-            <TabLink to="edit" default>
+            <TabLink to="edit" default component="div">
               <Translate>Edit</Translate>
             </TabLink>
             {showPreview && (
