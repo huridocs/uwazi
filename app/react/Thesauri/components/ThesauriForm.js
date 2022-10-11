@@ -286,6 +286,6 @@ function bindActions(dispatch) {
   );
 }
 
-export { ThesauriForm, mapStateToProps };
+export { ThesauriForm, mapStateToProps, sanitizeThesauri };
 
 export default connect(mapStateToProps, bindActions, null, { withRef: true })(ThesauriForm);
