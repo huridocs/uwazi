@@ -159,7 +159,8 @@ afterAll(async () => {
 describe('getCandidateEntitiesForRelationship()', () => {
   it('should return the entities that may need denormalization', async () => {
     const result = await service.getCandidateEntitiesForRelationship(
-      factory.id('rel3').toHexString()
+      factory.id('rel3').toHexString(),
+      'en'
     );
 
     expect(result.length).toBe(3);

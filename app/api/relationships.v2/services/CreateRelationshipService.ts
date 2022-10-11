@@ -84,7 +84,8 @@ export class CreateRelationshipService {
           await Promise.all(
             insertedRelationships.map(async insertedRelationship =>
               this.denormalizationService.getCandidateEntitiesForRelationship(
-                insertedRelationship._id
+                insertedRelationship._id,
+                'en' // TODO: any language should be good in this case, could be default language as a standard
               )
             )
           )

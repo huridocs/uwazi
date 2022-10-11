@@ -25,6 +25,9 @@ const factory = getFixturesFactory();
 
 const collectionInDb = (collection = 'relationships') => testingDB.mongodb?.collection(collection)!;
 
+const entityInLanguages = (langs: string[], id: string, template?: string) =>
+  langs.map(lang => factory.entity(id, template, {}, { language: lang }));
+
 const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
 const createService = () => {
@@ -48,11 +51,11 @@ const createService = () => {
 
 const fixtures = {
   entities: [
-    factory.entity('entity1', 'template1'),
-    factory.entity('entity2', 'template2'),
-    factory.entity('entity3', 'template1'),
-    factory.entity('entity4', 'template3'),
-    factory.entity('entity5', 'template1'),
+    ...entityInLanguages(['en', 'hu'], 'entity1', 'template1'),
+    ...entityInLanguages(['en', 'hu'], 'entity2', 'template2'),
+    ...entityInLanguages(['en', 'hu'], 'entity3', 'template1'),
+    ...entityInLanguages(['en', 'hu'], 'entity4', 'template3'),
+    ...entityInLanguages(['en', 'hu'], 'entity5', 'template1'),
   ],
   relationships: [],
   relationtypes: [

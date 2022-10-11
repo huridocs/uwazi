@@ -31,7 +31,7 @@ type RelationshipAggregatedResultType = Omit<
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
   implements RelationshipsDataSource
-{ // eslint-disable-line
+{ //eslint-disable-line
   protected collectionName = 'relationships';
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
@@ -111,8 +111,8 @@ export class MongoRelationshipsDataSource
     );
   }
 
-  getByQuery(query: MatchQueryNode) {
-    const pipeline = compileQuery(query);
+  getByQuery(query: MatchQueryNode, language: string) {
+    const pipeline = compileQuery(query, language);
     const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
     const count = this.db.collection('entities').aggregate(
       [

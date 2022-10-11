@@ -46,7 +46,8 @@ export class DenormalizationService implements Transactional {
   }
 
   private async getCandidateEntities(
-    invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[]
+    invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[],
+    language: string
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
 
@@ -55,7 +56,7 @@ export class DenormalizationService implements Transactional {
       properties.map(async property =>
         Promise.all(
           invertQueryCallback(property).map(async query => {
-            const result = this.relationshipsDS.getByQuery(query);
+            const result = this.relationshipsDS.getByQuery(query, language);
             const leafEntities = (await result.all()).map(path => path[path.length - 1]);
             leafEntities.forEach(entity =>
               entities.push({
@@ -70,7 +71,7 @@ export class DenormalizationService implements Transactional {
     return entities;
   }
 
-  async getCandidateEntitiesForRelationship(_id: string): Promise<any[]> {
+  async getCandidateEntitiesForRelationship(_id: string, language: string): Promise<any[]> {
     return this.inTransaction(async () => {
       const [relationship] = await this.relationshipsDS.getById([_id]).all();
 
@@ -78,16 +79,20 @@ export class DenormalizationService implements Transactional {
         .getByIds([relationship.from, relationship.to])
         .all();
 
-      return this.getCandidateEntities(property =>
-        property.buildQueryInvertedFromRelationship(relationship, relatedEntities)
+      return this.getCandidateEntities(
+        property => property.buildQueryInvertedFromRelationship(relationship, relatedEntities),
+        language
       );
     });
   }
 
-  async getCandidateEntitiesForEntity(sharedId: string): Promise<any[]> {
+  async getCandidateEntitiesForEntity(sharedId: string, language: string): Promise<any[]> {
     return this.inTransaction(async () => {
       const [entity] = await this.entitiesDS.getByIds([sharedId]).all();
-      return this.getCandidateEntities(property => property.buildQueryInvertedFromEntity(entity));
+      return this.getCandidateEntities(
+        property => property.buildQueryInvertedFromEntity(entity),
+        language
+      );
     });
   }
 }

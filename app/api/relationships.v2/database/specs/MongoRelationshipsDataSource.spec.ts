@@ -7,6 +7,9 @@ import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
 
+const entityInLanguages = (langs: string[], id: string, template?: string) =>
+  langs.map(lang => factory.entity(id, template, {}, { language: lang }));
+
 const fixtures = {
   relationships: [
     { _id: factory.id('rel1'), from: 'entity1', to: 'hub1', type: factory.id('nullType') },
@@ -20,17 +23,17 @@ const fixtures = {
     { _id: factory.id('rel9'), from: 'entity7', to: 'entity1', type: factory.id('relType5') },
   ],
   entities: [
-    factory.entity('entity1', 'template1'),
-    factory.entity('entity2'),
-    factory.entity('hub1', 'formerHubsTemplate'),
-    factory.entity('entity3', 'template2'),
-    factory.entity('entity4', 'template4'),
-    factory.entity('hub2', 'formerHubsTemplate'),
-    factory.entity('entity5', 'template2'),
-    factory.entity('entity6', 'template3'),
-    factory.entity('hub3'),
-    factory.entity('entity7'),
-    factory.entity('entity8'),
+    ...entityInLanguages(['en', 'es'], 'entity1', 'template1'),
+    ...entityInLanguages(['en', 'es'], 'entity2'),
+    ...entityInLanguages(['en', 'es'], 'hub1', 'formerHubsTemplate'),
+    ...entityInLanguages(['en', 'es'], 'entity3', 'template2'),
+    ...entityInLanguages(['en', 'es'], 'entity4', 'template4'),
+    ...entityInLanguages(['en', 'es'], 'hub2', 'formerHubsTemplate'),
+    ...entityInLanguages(['en', 'es'], 'entity5', 'template2'),
+    ...entityInLanguages(['en', 'es'], 'entity6', 'template3'),
+    ...entityInLanguages(['en', 'es'], 'hub3'),
+    ...entityInLanguages(['en', 'es'], 'entity7'),
+    ...entityInLanguages(['en', 'es'], 'entity8'),
   ],
 };
 
@@ -49,7 +52,7 @@ describe('When getting by query', () => {
       new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
     ]);
 
-    const result = await ds.getByQuery(query).all();
+    const result = await ds.getByQuery(query, 'en').all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -72,7 +75,7 @@ describe('When getting by query', () => {
       ]),
     ]);
 
-    const result = await ds.getByQuery(query).all();
+    const result = await ds.getByQuery(query, 'en').all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -113,7 +116,7 @@ describe('When getting by query', () => {
       ]),
     ]);
 
-    const result = await ds.getByQuery(query).page(2, 2);
+    const result = await ds.getByQuery(query, 'en').page(2, 2);
     expect(result.total).toBe(4);
     expect(result.data).toEqual([
       [
@@ -150,7 +153,7 @@ describe('When getting by query', () => {
       ]),
     ]);
 
-    const result = await ds.getByQuery(query).all();
+    const result = await ds.getByQuery(query, 'en').all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -181,7 +184,7 @@ describe('When getting by query', () => {
       new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
     ]);
 
-    const result = await ds.getByQuery(query).all();
+    const result = await ds.getByQuery(query, 'en').all();
     expect(result).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
@@ -194,6 +197,57 @@ describe('When getting by query', () => {
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel9'), type: factory.id('relType5') },
         { _id: factory.id('entity7-en'), sharedId: 'entity7' },
+      ],
+    ]);
+  });
+
+  it('should return the same entities when querying different languages', async () => {
+    const ds = new MongoRelationshipsDataSource(testingDB.mongodb!);
+
+    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
+            new MatchQueryNode({
+              templates: [
+                factory.id('template3').toHexString(),
+                factory.id('template4').toHexString(),
+              ],
+            }),
+          ]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    const resultInEnglish = await ds.getByQuery(query, 'en').all();
+    const resultInSpanish = await ds.getByQuery(query, 'es').all();
+    expect(resultInEnglish).toEqual([
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+        { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+      [
+        { _id: factory.id('entity1-en'), sharedId: 'entity1' },
+        { _id: factory.id('rel9'), type: factory.id('relType5') },
+        { _id: factory.id('entity7-en'), sharedId: 'entity7' },
+      ],
+    ]);
+    expect(resultInSpanish).toEqual([
+      [
+        { _id: factory.id('entity1-es'), sharedId: 'entity1' },
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('hub2-es'), sharedId: 'hub2' },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+        { _id: factory.id('entity6-es'), sharedId: 'entity6' },
+      ],
+      [
+        { _id: factory.id('entity1-es'), sharedId: 'entity1' },
+        { _id: factory.id('rel9'), type: factory.id('relType5') },
+        { _id: factory.id('entity7-es'), sharedId: 'entity7' },
       ],
     ]);
   });

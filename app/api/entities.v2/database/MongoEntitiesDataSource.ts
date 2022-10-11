@@ -11,6 +11,7 @@ import { Entity } from '../model/Entity';
 
 interface EntityJoinTemplate {
   sharedId: string;
+  language: string;
   template: ObjectId;
   metadata: Record<string, { value: string; label: string }[]>;
   obsoleteMetadata: string[];
@@ -29,7 +30,8 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
         const result = relationshipsDS.getByQuery(
-          new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery)
+          new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
+          entity.language
         );
         const leafEntities = (await result.all()).map(path => path[path.length - 1]);
         mappedMetadata[property.name] = leafEntities.map(e => ({

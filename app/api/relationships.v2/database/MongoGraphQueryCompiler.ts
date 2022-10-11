@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { MatchQueryNode } from './graphs/MatchQueryNode';
-import { TraversalQueryNode } from './graphs/TraversalQueryNode';
+import { MatchQueryNode } from '../model/MatchQueryNode';
+import { TraversalQueryNode } from '../model/TraversalQueryNode';
 
 const parentDirectionToField = {
   in: 'from',
@@ -30,7 +30,7 @@ function unwind(childrenCount: number) {
 }
 
 const compilers = {
-  traversal(query: TraversalQueryNode, index: number): object[] {
+  traversal(query: TraversalQueryNode, index: number, language: string): object[] {
     const filters = query.getFilters();
     return [
       {
@@ -62,7 +62,7 @@ const compilers = {
               .getMatches()
               .reduce<object[]>(
                 (reduced, nested, nestedIndex) =>
-                  reduced.concat(compilers.match(nested, nestedIndex)),
+                  reduced.concat(compilers.match(nested, nestedIndex, language)),
                 []
               ),
             ...projectAndArrangeTraversals(query.getProjection(), query.getMatches().length),
@@ -73,7 +73,7 @@ const compilers = {
     ];
   },
 
-  match(query: MatchQueryNode, index: number): object[] {
+  match(query: MatchQueryNode, index: number, language: string): object[] {
     const filters = query.getFilters();
     const sourceField = parentDirectionToField[query.getParent()!.getDirection()];
     return [
@@ -89,6 +89,7 @@ const compilers = {
                   $and: [
                     ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
                     { $eq: [`$$${sourceField}`, '$sharedId'] },
+                    { $eq: ['$language', language] },
                     ...(filters.templates?.length
                       ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
                       : []),
@@ -105,7 +106,7 @@ const compilers = {
               .getTraversals()
               .reduce<object[]>(
                 (reduced, nested, nestedIndex) =>
-                  reduced.concat(compilers.traversal(nested, nestedIndex)),
+                  reduced.concat(compilers.traversal(nested, nestedIndex, language)),
                 []
               ),
             ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),
@@ -116,7 +117,7 @@ const compilers = {
     ];
   },
 
-  root(query: MatchQueryNode): object[] {
+  root(query: MatchQueryNode, language: string): object[] {
     const filters = query.getFilters();
     return [
       {
@@ -124,6 +125,7 @@ const compilers = {
           $expr: {
             $and: [
               ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
+              { $eq: ['$language', language] },
               ...(filters.templates?.length
                 ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
                 : []),
@@ -140,7 +142,7 @@ const compilers = {
         .getTraversals()
         .reduce<object[]>(
           (reduced, nested, nestedIndex) =>
-            reduced.concat(compilers.traversal(nested, nestedIndex)),
+            reduced.concat(compilers.traversal(nested, nestedIndex, language)),
           []
         ),
       ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),

@@ -9,5 +9,5 @@ export interface RelationshipsDataSource extends Transactional {
   exists(ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<any>;
-  getByQuery(query: MatchQueryNode): ResultSet<any>;
+  getByQuery(query: MatchQueryNode, language: string): ResultSet<any>;
 }
