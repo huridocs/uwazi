@@ -16,9 +16,9 @@ const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
 
 const getTranslationChanges = async () => {
   const keysToUpdatePath =
-    'app/api/migrations/migrations/112-update_translations_of_settings_tooltips/tooltips_updated_keys.csv';
+    'app/api/migrations/migrations/113-update_translations_of_settings_tooltips/tooltips_updated_keys.csv';
   const keysToDeletePath =
-    'app/api/migrations/migrations/112-update_translations_of_settings_tooltips/removed_keys.csv';
+    'app/api/migrations/migrations/113-update_translations_of_settings_tooltips/removed_keys.csv';
 
   let fstream = fs.createReadStream(keysToUpdatePath);
   const keysToUpdate = await csv(fstream).read();
