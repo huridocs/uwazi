@@ -159,7 +159,7 @@ class Viewer extends Component {
                 />
               )}
             </ShowIf>
-            <ShowIf if={sidepanelTab === 'connections'}>
+            <ShowIf if={sidepanelTab === 'connections' || sidepanelTab === 'relationships'}>
               <ConnectionsList hideFooter searchCentered />
             </ShowIf>
             <TargetDocument />
