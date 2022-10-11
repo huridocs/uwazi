@@ -430,3 +430,23 @@ $c-sidebar: $c-white;
     }
   }
 }
+
+.add-thesauriValue-modal {
+  .error {
+    color: $c-type-1;
+    font-size: 0.9em;
+  }
+
+  .thesauri-group {
+    margin-bottom: 10px;
+  }
+
+  .cancel-button {
+    background-color: #eceff1;
+    border-color: #cfd8dc;
+    &:hover {
+      border-color: #3655ba;
+      color: #3655ba;
+    }
+  }
+}
