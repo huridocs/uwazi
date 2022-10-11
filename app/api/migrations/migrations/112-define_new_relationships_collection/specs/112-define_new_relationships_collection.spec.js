@@ -18,7 +18,7 @@ const properties = [
   { property: 'from', type: 'objectId' },
 ];
 
-;beforeAll(async () => {
+beforeAll(async () => {
   spyOn(process.stdout, 'write');
   await testingDB.setupFixturesAndContext({});
   db = testingDB.mongodb;
@@ -36,7 +36,7 @@ afterAll(async () => {
 
 describe('migration define_new_relationships_collection', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(107);
+    expect(migration.delta).toBe(112);
   });
 
   it('should create the relationships collection', async () => {

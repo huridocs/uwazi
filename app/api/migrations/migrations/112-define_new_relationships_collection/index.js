@@ -1,5 +1,5 @@
 export default {
-  delta: 107,
+  delta: 112,
 
   name: 'define_new_relationships_collection',
 
