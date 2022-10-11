@@ -82,6 +82,7 @@ async function parseFile(file, translations) {
           comparableContent.includes(translation.plainValue) ||
           comparableContent.includes(translation.plainKey)
         ) {
+          // eslint-disable-next-line no-param-reassign
           translation.used = true;
         }
       });

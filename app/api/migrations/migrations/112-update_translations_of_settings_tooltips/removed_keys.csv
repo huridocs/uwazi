@@ -80,4 +80,4 @@ This action will unselect all the entities.
 To get resource from web:
 Upload documents and create entities
 "We provide a default key, you can set your own MapTiler API key"
-For better performance, upload your documents in batches of 50 or less.
+"For better performance, upload your documents in batches of 50 or less."
