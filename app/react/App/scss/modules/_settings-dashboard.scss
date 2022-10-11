@@ -1,0 +1,38 @@
+.settings {
+  .settings-dashboard {
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .card {
+        border: 1px solid $c-grey;
+        border-radius: 6px;
+        padding: 16px;
+        flex: 1 0 33%;
+
+        @media (max-width: 1023px) {
+          flex: 100%;
+        }
+
+        .heading {
+          padding-bottom: 12px;
+
+          h2 {
+            margin: 0;
+            padding: 0;
+            border: unset;
+            font-size: $f-size-lg;
+          }
+        }
+
+        .body {
+          p {
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}
