@@ -7,11 +7,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 
 const Dashboard = () => {
   const [users, setUsers] = useState<UserSchema[]>([]);
-  const [userBrakdown, setUserBrakdown] = useState<Dictionary<UserSchema[]>>({
-    admin: [],
-    editor: [],
-    collaborator: [],
-  });
+  const [userBrakdown, setUserBrakdown] = useState<Dictionary<UserSchema[]>>({});
 
   useEffect(() => {
     UsersAPI.get(new RequestParams())
@@ -40,15 +36,21 @@ const Dashboard = () => {
                   {users.length} <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
-                  <p>
-                    {userBrakdown.admin.length} <Translate>Admins</Translate>
-                  </p>
-                  <p>
-                    {userBrakdown.editor?.length || 0} <Translate>Editors</Translate>
-                  </p>
-                  <p>
-                    {userBrakdown.collaborator?.length || 0} <Translate>Collaborators</Translate>
-                  </p>
+                  {userBrakdown.admin && (
+                    <p>
+                      {userBrakdown.admin.length} <Translate>Admins</Translate>
+                    </p>
+                  )}
+                  {userBrakdown.editor && (
+                    <p>
+                      {userBrakdown.editor.length} <Translate>Editors</Translate>
+                    </p>
+                  )}
+                  {userBrakdown.collaborator && (
+                    <p>
+                      {userBrakdown.collaborator.length} <Translate>Collaborators</Translate>
+                    </p>
+                  )}
                 </div>
               </article>
 
