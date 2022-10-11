@@ -12,25 +12,26 @@
         padding: 16px;
         flex: 1 0 33%;
 
+        h2 {
+          margin: 0;
+          padding: 0;
+          border: unset;
+          font-size: $f-size-lg;
+        }
+        p {
+          margin: 0;
+        }
+
         @media (max-width: 1023px) {
           flex: 100%;
         }
 
         .heading {
           padding-bottom: 12px;
-
-          h2 {
-            margin: 0;
-            padding: 0;
-            border: unset;
-            font-size: $f-size-lg;
-          }
         }
 
-        .body {
-          p {
-            margin: 0;
-          }
+        .footer {
+          padding-top: 12px;
         }
       }
     }
