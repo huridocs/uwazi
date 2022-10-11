@@ -376,6 +376,51 @@ describe('Entities', () => {
     });
   });
 
+  describe('new thesauri values shortcut', () => {
+    beforeAll(async () => {
+      await changeLanguage('English');
+      await expect(page).toClick('li[title=Published]');
+      await expect(page).toMatchElement('span', { text: 'Ordenes de la corte' });
+      await expect(page).toClick('span', { text: 'Ordenes de la corte' });
+      await expect(page).toClick('.item-document', {
+        text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
+      });
+      await expect(page).toClick('button.edit-metadata', { text: 'Edit' });
+    });
+
+    it('should add a thesauri value on a multiselect field and select it', async () => {
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span',
+        { text: 'add value' }
+      );
+      await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      await expect(page).toClick('.confirm-button', { text: 'Save' });
+      await expect(page).toMatchElement(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
+        { text: 'New Value' }
+      );
+      const selectedItems = await getContentBySelector(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li.wide > div > ul > li > label > .multiselectItem-name'
+      );
+      expect(selectedItems).toEqual([
+        'De asunto',
+        'Medidas Provisionales',
+        'New Value',
+        'Excepciones Preliminares',
+        'Fondo',
+      ]);
+    });
+
+    it('should add a thesauti value on a single select field and select it', async () => {
+      await expect(page).toClick(
+        '#metadataForm > div:nth-child(3) > .form-group.select > ul > .wide > div > div > button > span',
+        { text: 'add value' }
+      );
+      await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      await expect(page).toClick('.confirm-button', { text: 'Save' });
+    });
+  });
+
   afterAll(async () => {
     await logout();
   });
