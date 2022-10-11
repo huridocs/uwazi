@@ -13,7 +13,7 @@ describe('migration update translations of settings tooltips', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(112);
+    expect(migration.delta).toBe(113);
   });
 
   it('should update the keys that have changed', async () => {

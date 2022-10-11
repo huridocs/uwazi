@@ -31,7 +31,7 @@ const getTranslationChanges = async () => {
 };
 
 export default {
-  delta: 112,
+  delta: 113,
 
   reindex: false,
 
