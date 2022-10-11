@@ -7,12 +7,61 @@
     text-transform: uppercase;
     color: $c-grey-dark;
   }
+
+  .panel-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    .context {
+      max-width: 50vw;
+      .translation,
+      svg {
+        margin-right: 5px;
+      }
+    }
+
+    .translation-filter {
+      display: flex;
+      margin-right: 5px;
+
+      span {
+        font-size: 14px;
+        margin-right: 5px;
+      }
+      .toggleButton {
+        height: 18px;
+        width: 34px;
+
+        .slider::before {
+          height: 17px;
+          width: 17px;
+        }
+
+        input:checked + .slider:before {
+          -webkit-transform: translateX(15px);
+          -ms-transform: translateX(15px);
+          transform: translateX(15px);
+        }
+      }
+    }
+  }
+  .alert-info {
+    margin-top: 15px;
+  }
+  .error {
+    font-size: $f-size-sm;
+    margin-top: 5px;
+    margin-left: 5px;
+    font-weight: bold;
+    color: $c-type-0;
+  }
 }
 
 .TranslationsList {
   .item-type {
     display: inline-block;
-    max-width: 90px;
+    max-width: 150px;
     width: auto;
     margin-right: 15px;
     position: relative;

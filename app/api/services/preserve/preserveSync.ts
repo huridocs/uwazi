@@ -20,6 +20,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { PreserveConfig } from 'shared/types/settingsType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Readable } from 'stream';
+import mimetypes from 'mime-types';
 import { preserveSyncModel } from './preserveSyncModel';
 
 const thesauriValueId = async (thesauriId: ObjectIdSchema, valueLabel: string) => {
@@ -131,6 +132,7 @@ const saveEvidence =
               type: 'attachment',
               filename: fileName,
               originalname: path.basename(download.path),
+              mimetype: mimetypes.lookup(path.extname(fileName)) || 'application/octet-stream',
             });
           }
         })

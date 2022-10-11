@@ -1,17 +1,16 @@
+/**
+ * @jest-environment jsdom
+ */
 import Immutable from 'immutable';
-import React from 'react';
-
-import { shallow } from 'enzyme';
 import api from 'app/utils/api';
 import { ConfirmButton } from 'app/Layout';
 import { RequestParams } from 'app/utils/RequestParams';
-
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { CustomUploads, mapStateToProps } from '../CustomUploads';
 
 describe('CustomUploads', () => {
   let component;
   let props;
-  let context;
 
   beforeEach(() => {
     spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: 'uploads' }));
@@ -19,12 +18,12 @@ describe('CustomUploads', () => {
       upload: jasmine.createSpy('upload'),
       deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),
       customUploads: Immutable.fromJS([]),
+      params: { lang: 'es' },
     };
   });
 
   const render = () => {
-    context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
-    component = shallow(<CustomUploads {...props} />, { context });
+    component = renderConnectedMount(CustomUploads, {}, props, true);
   };
 
   it('should render CustomUploads component with uploaded files', () => {

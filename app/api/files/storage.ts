@@ -17,6 +17,7 @@ import {
 } from './filesystem';
 import { S3Storage } from './S3Storage';
 import { pipeline } from 'stream/promises';
+import path from 'path';
 
 type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
@@ -46,7 +47,7 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
   });
 
 const s3KeyWithPath = (filename: string, type: FileTypes) =>
-  paths[type](filename).split('/').slice(-2).join('/');
+  path.join(tenants.current().name, paths[type](filename).split('/').slice(-2).join('/'));
 
 const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> => {
   try {

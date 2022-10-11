@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DragDropContext, DropTarget } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DropTarget } from 'react-dnd';
+import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 import ID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';
 import DragAndDropItem from './DragAndDropItem';
@@ -110,4 +110,4 @@ const dragAndDropContainer = DropTarget('DRAG_AND_DROP_ITEM', containerTarget, c
   connectDropTarget: connect.dropTarget(),
 }))(DragAndDropContainer);
 
-export default DragDropContext(HTML5Backend)(dragAndDropContainer);
+export default DNDHTMLBackend(dragAndDropContainer);

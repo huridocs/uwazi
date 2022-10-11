@@ -16,6 +16,7 @@ import {
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
+import { advancedSort } from 'app/utils/advancedSort';
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -328,6 +329,7 @@ describe('suggestions routes', () => {
       const set = await settings.get();
       expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
     });
+
     it('should create placeholder suggestions', async () => {
       const superPowerSugg = await IXSuggestionsModel.get({
         propertyName: 'super_powers',
@@ -351,10 +353,8 @@ describe('suggestions routes', () => {
           status: 'ready',
         },
       ]);
-      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' }, null, {
-        sort: { entityId: 1 },
-      });
-      expect(enemySugg).toMatchObject([
+      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([
         {
           entityId: 'shared5',
           propertyName: 'enemy',

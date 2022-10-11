@@ -6,28 +6,34 @@ import { connect, ConnectedProps } from 'react-redux';
 import { difference } from 'lodash';
 import { Icon } from 'UI';
 import { I18NLink, t, Translate } from 'app/I18N';
-import { IStore } from 'app/istore';
+import { ClientTranslationSchema, IStore } from 'app/istore';
 import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { IImmutable } from 'shared/types/Immutable';
-import { TranslationContext, TranslationType } from 'shared/translationType';
+import { TranslationContext } from 'shared/translationType';
 
 const TranslationCtx = ({ context }: { context: TranslationContext }) => (
   <>
     <div>
-      <span className="item-type item-type-empty">
-        <span className="item-type__name">{context.type}</span>
-      </span>
-      <I18NLink to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}>
-        {context.label}
-      </I18NLink>
+      {context.type && (
+        <span className="item-type item-type-empty">
+          <span className="item-type__name">
+            <Translate>{context.type}</Translate>
+          </span>
+        </span>
+      )}
+      {context.label && (
+        <I18NLink to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}>
+          <Translate>{context.label}</Translate>
+        </I18NLink>
+      )}
     </div>
     <div className="list-group-item-actions">
       <I18NLink
         to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}
         className="btn btn-default btn-xs"
       >
-        <Icon icon="language" /> {t('System', 'Translate')}
+        <Icon icon="language" /> <Translate>Translate</Translate>
       </I18NLink>
     </div>
   </>
@@ -45,7 +51,7 @@ type MappedProps = ConnectedProps<typeof connector>;
 
 const TranslationsList = ({ languages, translations }: MappedProps) => {
   const defaultLanguage = languages!.find(lang => lang!.get('default') === true).get('key');
-  const trans: IImmutable<TranslationType[]> = translations || fromJS([]);
+  const trans: IImmutable<ClientTranslationSchema[]> = translations || fromJS([]);
 
   const defaultTranslationContexts = trans
     .find(translation => translation!.get('locale') === defaultLanguage)!

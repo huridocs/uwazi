@@ -1,20 +1,20 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import Immutable from 'immutable';
-import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { LocalForm, actions, Control } from 'react-redux-form';
+import { bindActionCreators } from 'redux';
+import { BrowserView, MobileView } from 'react-device-detect';
+import Immutable from 'immutable';
+import Dropzone from 'react-dropzone';
+import PropTypes from 'prop-types';
+import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
-import { bindActionCreators } from 'redux';
 import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
 import Loader from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
-import Dropzone from 'react-dropzone';
-import { BrowserView, MobileView } from 'react-device-detect';
 import { generateID } from 'shared/IDGenerator';
 
 class PublicForm extends Component {
@@ -69,33 +69,6 @@ class PublicForm extends Component {
     this.state = { submiting: false, files: [], generatedIdTitle };
   }
 
-  fileDropped(files) {
-    const uploadedFiles = files;
-    this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({ files: uploadedFiles });
-  }
-
-  async removeAttachment(removedFile) {
-    await this.setState(prevState => ({
-      files: prevState.files.filter(file => file !== removedFile),
-    }));
-    if (!this.state.files.length) {
-      const input = document.querySelector('input[name="publicform.file"]');
-      input.value = '';
-    }
-  }
-
-  attachDispatch(dispatch) {
-    this.formDispatch = dispatch;
-  }
-
-  resetForm() {
-    this.formDispatch(actions.reset('publicform'));
-    if (this.state.generatedIdTitle) {
-      this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
-    }
-  }
-
   async handleSubmit(_values) {
     const { submit, remote } = this.props;
     const values = await prepareMetadataAndFiles(
@@ -115,6 +88,33 @@ class PublicForm extends Component {
     this.refreshCaptcha();
   }
 
+  attachDispatch(dispatch) {
+    this.formDispatch = dispatch;
+  }
+
+  async removeAttachment(removedFile) {
+    await this.setState(prevState => ({
+      files: prevState.files.filter(file => file !== removedFile),
+    }));
+    if (!this.state.files.length) {
+      const input = document.querySelector('input[name="publicform.file"]');
+      input.value = '';
+    }
+  }
+
+  resetForm() {
+    this.formDispatch(actions.reset('publicform'));
+    if (this.state.generatedIdTitle) {
+      this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
+    }
+  }
+
+  fileDropped(files) {
+    const uploadedFiles = files;
+    this.state.files.forEach(file => uploadedFiles.push(file));
+    this.setState({ files: uploadedFiles });
+  }
+
   renderFileField(id, options) {
     const defaults = { className: 'form-control on-mobile', model: `.${id}` };
     const props = Object.assign(defaults, options);
@@ -127,23 +127,34 @@ class PublicForm extends Component {
               <Dropzone
                 onDrop={this.fileDropped}
                 className="dropzone"
-                accept={id === 'file' ? '.pdf' : undefined}
+                accept={
+                  id === 'file'
+                    ? {
+                        'application/pdf': ['.pdf'],
+                      }
+                    : undefined
+                }
               >
-                <label>
-                  <div className="text-content">
-                    <div id="icon">
-                      <Icon icon="cloud-upload-alt" />
-                    </div>
-                    <div id="upload-text">
-                      <Translate>Drop your files here to upload or</Translate>
-                    </div>
-                    <div id="upload-button">
-                      <div id="button">
-                        <Translate>Select files on your device</Translate>
+                {({ getRootProps }) => (
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  <div {...getRootProps()}>
+                    <label>
+                      <div className="text-content">
+                        <div id="icon">
+                          <Icon icon="cloud-upload-alt" />
+                        </div>
+                        <div id="upload-text">
+                          <Translate>Drop your files here to upload or</Translate>
+                        </div>
+                        <div id="upload-button">
+                          <div id="button">
+                            <Translate>Select files on your device</Translate>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </label>
                   </div>
-                </label>
+                )}
               </Dropzone>
             </BrowserView>
             <MobileView>
