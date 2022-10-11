@@ -306,7 +306,7 @@
     "jest-environment-jsdom": "29.0.1",
     "jest-extended": "3.1.0",
     "jest-image-snapshot": "^5.1.0",
-    "jest-jasmine2": "^29.0.1",
+    "jest-jasmine2": "^29.1.2",
     "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mutationobserver-shim": "^0.3.7",
