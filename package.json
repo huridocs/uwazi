@@ -73,7 +73,7 @@
     "@types/react": "^16.8.6"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.154.0",
+    "@aws-sdk/client-s3": "3.186.0",
     "@elastic/elasticsearch": "7.11",
     "@fast-csv/format": "^4.3.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
