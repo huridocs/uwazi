@@ -200,6 +200,17 @@ dl.metadata-type-geolocation_group {
 .metadata-extractor-container {
   position: relative;
 
+  .multiselect-add-value {
+    button {
+      border: none;
+      background: none;
+      font-size: $f-size-xs;
+      color: $c-primary;
+      padding-left: 0px;
+      margin: 0.2em 0 0 auto;
+    }
+  }
+
   .extraction-button {
     position: absolute;
     background: none;
