@@ -579,7 +579,7 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  currentSidepanelView: PropTypes.string,
+  currentSidepanelView: PropTypes.string.isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
