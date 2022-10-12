@@ -245,11 +245,11 @@ const CollectionSettings = ({
                 setValue('senderEmail', '');
               }}
             >
-              <SettingsFormElement label="Receiving email" tip={tips.emails[1]}>
+              <SettingsFormElement label="Receiving email" tip={tips.receivingEmail}>
                 <input type="text" {...register('contactEmail')} className="form-control" />
               </SettingsFormElement>
 
-              <SettingsFormElement label="Sending email" tip={tips.emails[2]}>
+              <SettingsFormElement label="Sending email" tip={tips.emails[1]}>
                 <input
                   type="text"
                   {...register('senderEmail')}

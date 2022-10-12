@@ -24,7 +24,7 @@ class PropertyConfigOptions extends Component {
           model={`template.data.properties[${index}].required`}
         >
           <Tip>
-            <Translate>
+            <Translate translationKey="empty property tip">
               You won&#39;t be able to save an entity if this property is empty.
             </Translate>
           </Tip>

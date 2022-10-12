@@ -23,7 +23,9 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -70,7 +72,9 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -166,7 +170,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -232,7 +238,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -298,7 +306,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -364,7 +374,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -430,7 +442,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -526,7 +540,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -622,7 +638,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -718,7 +736,9 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
@@ -814,7 +834,9 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       icon="question-circle"
       position=""
     >
-      <Connect(Translate)>
+      <Connect(Translate)
+        translationKey="empty property tip"
+      >
         You won't be able to save an entity if this property is empty.
       </Connect(Translate)>
     </Tip>
