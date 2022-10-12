@@ -4,6 +4,7 @@ import { Translate } from 'app/I18N';
 import { UserSchema } from 'shared/types/userType';
 import UsersAPI from 'app/Users/UsersAPI';
 import { RequestParams } from 'app/utils/RequestParams';
+import { ProgressBar } from 'app/UI';
 
 const Dashboard = () => {
   const [users, setUsers] = useState<UserSchema[]>([]);
@@ -67,7 +68,7 @@ const Dashboard = () => {
                     <span className="used">8 GB </span>
                     <span className="total">16 GB</span>
                   </div>
-                  <div className="graph">Storage graph</div>
+                  <ProgressBar max={16} value={8} useProgressColors showNumericValue={false} />
                 </div>
               </article>
 

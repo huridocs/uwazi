@@ -85,7 +85,5 @@ describe('Dashboard', () => {
 
       expect((await screen.findByText('16 GB')).parentElement?.textContent).toBe('8 GB 16 GB');
     });
-
-    it('should show a usage graph', () => {});
   });
 });
