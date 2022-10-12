@@ -13,14 +13,14 @@ const getClient = async () => {
   return client;
 };
 
-const getKeysFromDB = async () => {
+const getTranslationsFromDB = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
   const collection = db.collection('translations');
   const [firstTranslation] = await collection.find().toArray();
   const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
   client.close();
-  return systemContext.values.map(translation => translation.key);
+  return systemContext.values;
 };
 
 const getKeysFromRepository = async locale => {
@@ -31,11 +31,13 @@ const getKeysFromRepository = async locale => {
     },
   });
   const fileContent = await response.text();
-  const repoTranslations = await csvtojson({ delimiter: [',', ';'], quote: '"' }).fromString(
-    fileContent
-  );
+  const repoTranslations = await csvtojson({
+    delimiter: [',', ';'],
+    quote: '"',
+    headers: ['key', 'value'],
+  }).fromString(fileContent);
 
-  return repoTranslations.map(translation => translation.Key);
+  return repoTranslations;
 };
 
 const reportResult = (keys, message) => {
@@ -45,18 +47,39 @@ const reportResult = (keys, message) => {
 
   process.stdout.write(` === Found \x1b[31m ${keys.length} \x1b[0m ${message} === \n`);
 };
+
+const reportUntraslated = translations => {
+  translations.forEach(({ key, value }) => {
+    process.stdout.write(`\x1b[36m ${key}\x1b[37m ${value} \n`);
+  });
+
+  process.stdout.write(
+    ` === Found \x1b[31m ${translations.length} \x1b[0m posible unstraslated keys === \n`
+  );
+};
+
 // eslint-disable-next-line max-statements
 async function compareTranslations(locale) {
   try {
-    const keysFromDB = await getKeysFromDB();
-    const keysInRepository = await getKeysFromRepository(locale);
+    const dbTranslations = await getTranslationsFromDB();
+    const keysFromDB = dbTranslations.map(translation => translation.key);
+    const valuesFromDB = dbTranslations.map(translation => translation.value);
+    const repositoryTranslations = await getKeysFromRepository(locale);
+    const keysInRepository = repositoryTranslations.map(translation => translation.key);
+    const valuesInRepository = repositoryTranslations.map(translation => translation.value);
+    const unTranslatedValues = _.intersection(valuesFromDB, valuesInRepository);
+    const unTranslated = repositoryTranslations.filter(translation =>
+      unTranslatedValues.includes(translation.value)
+    );
+
     const obsoleteTranslations = _.difference(keysInRepository, keysFromDB);
     const missingTranslations = _.difference(keysFromDB, keysInRepository);
 
     reportResult(obsoleteTranslations, 'posible obsolete translations in repository');
     reportResult(missingTranslations, 'missing keys in repository');
+    reportUntraslated(unTranslated);
 
-    if (obsoleteTranslations.length > 0 || missingTranslations.length > 0) {
+    if (obsoleteTranslations.length > 0 || missingTranslations.length > 0 || unTranslated.length) {
       process.exit(1);
     } else {
       process.stdout.write('\x1b[32m All good! \x1b[0m\n');
