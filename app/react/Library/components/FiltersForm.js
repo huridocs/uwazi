@@ -101,7 +101,7 @@ class FiltersForm extends Component {
                   <Translate>No common filters</Translate>
                 </h4>
                 <p>
-                  <Translate>
+                  <Translate translationKey="no filters for templates">
                     The combination of entity types doesn&#39;t have any filters in common.
                   </Translate>
                 </p>

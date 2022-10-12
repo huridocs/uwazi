@@ -38,7 +38,7 @@ class FormConfigNested extends Component {
             <span className="property-help">
               <Icon icon="question-circle" />
               <div className="property-description">
-                <Translate>
+                <Translate translationKey="empty property tip">
                   You won&#39;t be able to save an entity if this property is empty.
                 </Translate>
               </div>

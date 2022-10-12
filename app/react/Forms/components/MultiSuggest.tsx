@@ -127,7 +127,7 @@ export class MultiSuggestBase extends Component<MultiSuggestProps> {
                 <div className="property-help no-margin">
                   <Translate>Reject</Translate>
                   <div className="property-description-top-left">
-                    <Translate>
+                    <Translate translationKey="incorrect suggestion check">
                       Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the
                       suggestions it makes
                     </Translate>

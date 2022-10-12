@@ -69,7 +69,7 @@ class ThesaurusCockpitBase extends RouteHandler {
             <span className="property-help confidence-bubble low">
               <Translate>low</Translate>
               <div className="property-description">
-                <Translate>
+                <Translate translationKey="topic suggestions tip">
                   Improve the quality of this topic's suggestions by finding more sample documents
                   with this label.
                 </Translate>

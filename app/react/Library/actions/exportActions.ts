@@ -65,7 +65,7 @@ const requestHandler = (params: any, dispatch: Dispatch<any>, captcha?: CaptchaV
       if (err.status === 403) {
         dispatch(notify(t('System', 'Invalid captcha'), 'danger'));
       } else {
-        dispatch(notify(t('System', 'An error has occured during data export'), 'danger'));
+        dispatch(notify(t('System', 'An error has occurred during data export'), 'danger'));
       }
       return err;
     });
