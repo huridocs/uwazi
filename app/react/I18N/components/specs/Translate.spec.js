@@ -57,7 +57,7 @@ describe('Translate', () => {
   describe('markdown support', () => {
     it('should parse line break in multiline text', () => {
       component = shallow(
-        <Translate>
+        <Translate edit={props.edit}>
           {`this
       is
       multiline
@@ -71,7 +71,7 @@ describe('Translate', () => {
 
     it('should parse italic text in translation value', () => {
       component = shallow(
-        <Translate>
+        <Translate edit={props.edit}>
           {`this
       is
       *an italic*
