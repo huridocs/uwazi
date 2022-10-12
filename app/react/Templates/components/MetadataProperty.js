@@ -149,7 +149,7 @@ class MetadataProperty extends Component {
           {this.props.isRelationDuplicated && (
             <span className="validation-error">
               <Icon icon="exclamation-triangle" />
-              <Translate>
+              <Translate translationKey="relationship consistency warning">
                 Cannot use &apos;any entity or document&apos; if another relationship of the same
                 type is already with a specific entity.
               </Translate>

@@ -101,7 +101,7 @@ exports[`TemplateCreator Property Options should include document specific optio
               <Connect(Translate)
                 translationKey="No relationship types warning"
               >
-                Relationship fields can not be added untill you have at least one relationship type to select.
+                Relationship fields can not be added until you have at least one relationship type to select.
               </Connect(Translate)>
             </div>
           </div>
@@ -213,7 +213,7 @@ exports[`TemplateCreator Property Options should include most common options by 
               <Connect(Translate)
                 translationKey="No relationship types warning"
               >
-                Relationship fields can not be added untill you have at least one relationship type to select.
+                Relationship fields can not be added until you have at least one relationship type to select.
               </Connect(Translate)>
             </div>
           </div>

@@ -116,12 +116,12 @@ class Configure2fa extends Component<Configure2faProps, State> {
                         </Translate>
                       </li>
                       <li>
-                        <Translate>
+                        <Translate translationKey="2fa add account tip">
                           Open the app and select &quot;Add Account&quot; (usually a plus symbol)
                         </Translate>
                       </li>
                       <li>
-                        <Translate>
+                        <Translate translationKey="2fa QA scan tip">
                           Scan the following QR code selecting the &quot;scan barcode&quot; option:
                         </Translate>
                         <div className="qr-code">
@@ -138,7 +138,9 @@ class Configure2fa extends Component<Configure2faProps, State> {
                         </div>
                         <Translate>Or enter this secret key into your Authenticator app</Translate>
                         <br />
-                        <Translate>(please keep this key secret and don&#39;t share it):</Translate>
+                        <Translate translationKey="secret key recommendation">
+                          (please keep this key secret and don&#39;t share it):
+                        </Translate>
                         <div className="secret-key">
                           <span>{secret}</span>
                         </div>
