@@ -24,6 +24,7 @@ const TranslationCtx = ({ context }: { context: TranslationContext }) => (
       )}
       {context.label && (
         <I18NLink to={`/settings/translations/edit/${encodeURIComponent(context.id!)}`}>
+          {/* expected translations ['User Interface'] */}
           <Translate>{context.label}</Translate>
         </I18NLink>
       )}

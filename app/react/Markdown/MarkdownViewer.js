@@ -15,7 +15,7 @@ class MarkdownViewer extends Component {
         <strong>
           <i>
             <Translate translationKey="Custom component error">
-              Custom component markup error: unsuported values! Please check your configuration
+              Custom component markup error: unsupported values! Please check your configuration
             </Translate>
           </i>
         </strong>

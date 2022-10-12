@@ -54,6 +54,36 @@ describe('Translate', () => {
     });
   });
 
+  describe('markdown support', () => {
+    it('should parse line break in multiline text', () => {
+      component = shallow(
+        <Translate>
+          {`this
+      is
+      multiline
+      text`}
+        </Translate>
+      );
+      expect(component.find('span').html()).toBe(
+        '<span class="translation">this<br/>      is<br/>      multiline<br/>      text</span>'
+      );
+    });
+
+    it('should parse italic text in translation value', () => {
+      component = shallow(
+        <Translate>
+          {`this
+      is
+      *an italic*
+      text`}
+        </Translate>
+      );
+      expect(component.find('span').html()).toBe(
+        '<span class="translation">this<br/>      is<br/>      <i>an italic</i><br/>      text</span>'
+      );
+    });
+  });
+
   describe('resetCachedTranslation', () => {
     it('should set null the current catched translation', () => {
       Translate.translation = 'some catched translation';
