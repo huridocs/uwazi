@@ -54,7 +54,7 @@ const reportUntraslated = translations => {
   });
 
   process.stdout.write(
-    ` === Found \x1b[31m ${translations.length} \x1b[0m posible unstraslated keys === \n`
+    ` === Found \x1b[31m ${translations.length} \x1b[0m possible untranslated === \n`
   );
 };
 
@@ -75,8 +75,8 @@ async function compareTranslations(locale) {
     const obsoleteTranslations = _.difference(keysInRepository, keysFromDB);
     const missingTranslations = _.difference(keysFromDB, keysInRepository);
 
-    reportResult(obsoleteTranslations, 'posible obsolete translations in repository');
-    reportResult(missingTranslations, 'missing keys in repository');
+    reportResult(obsoleteTranslations, 'possible obsolete translations in the repository');
+    reportResult(missingTranslations, 'missing keys in the repository');
     reportUntraslated(unTranslated);
 
     if (obsoleteTranslations.length > 0 || missingTranslations.length > 0 || unTranslated.length) {
