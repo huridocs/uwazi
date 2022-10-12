@@ -3,14 +3,15 @@
     .cards {
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: 20px;
       flex-wrap: wrap;
 
       .card {
         border: 1px solid $c-grey;
         border-radius: 6px;
+        box-shadow: 1px 0px 1px $c-grey-light;
         padding: 16px;
-        flex: 1 0 33%;
+        flex: 33%;
 
         h2 {
           margin: 0;
@@ -27,11 +28,52 @@
         }
 
         .heading {
-          padding-bottom: 12px;
+          padding-bottom: 10px;
+        }
+
+        .body {
+          .usage {
+            .used {
+              margin: 0;
+            }
+          }
+
+          .count,
+          .used {
+            font-weight: bold;
+            margin-right: 10px;
+          }
+
+          .count {
+            font-size: $f-size-sl;
+          }
+
+          .translation,
+          .total {
+            color: $c-grey;
+            font-weight: bold;
+          }
         }
 
         .footer {
-          padding-top: 12px;
+          padding-top: 10px;
+          display: flex;
+          gap: 10px;
+
+          p:not(:last-child):after {
+            content: '|';
+            margin-left: 10px;
+            color: $c-grey;
+          }
+
+          .count {
+            font-weight: bold;
+          }
+
+          .translation {
+            color: $c-grey;
+            font-weight: bold;
+          }
         }
       }
     }

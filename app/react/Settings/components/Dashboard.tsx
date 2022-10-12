@@ -33,42 +33,28 @@ const Dashboard = () => {
                   <h2>Users</h2>
                 </div>
                 <div className="body">
-                  {users.length} <Translate>Total users</Translate>
+                  <p className="count">{users.length} </p>
+                  <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
                   {userBrakdown.admin && (
                     <p>
-                      {userBrakdown.admin.length} <Translate>Admins</Translate>
+                      <span className="count">{userBrakdown.admin.length} </span>
+                      <Translate>Admins</Translate>
                     </p>
                   )}
                   {userBrakdown.editor && (
                     <p>
-                      {userBrakdown.editor.length} <Translate>Editors</Translate>
+                      <span className="count">{userBrakdown.editor.length} </span>
+                      <Translate>Editors</Translate>
                     </p>
                   )}
                   {userBrakdown.collaborator && (
                     <p>
-                      {userBrakdown.collaborator.length} <Translate>Collaborators</Translate>
+                      <span className="count">{userBrakdown.collaborator.length} </span>
+                      <Translate>Collaborators</Translate>
                     </p>
                   )}
-                </div>
-              </article>
-
-              <article className="card">
-                <div className="heading">
-                  <h2>Entities</h2>
-                </div>
-                <div className="body">
-                  <p>Entities info</p>
-                </div>
-              </article>
-
-              <article className="card">
-                <div className="heading">
-                  <h2>Files</h2>
-                </div>
-                <div className="body">
-                  <p>Files info</p>
                 </div>
               </article>
 
@@ -77,7 +63,32 @@ const Dashboard = () => {
                   <h2>Storage</h2>
                 </div>
                 <div className="body">
-                  <p>Storage info</p>
+                  <div className="usage">
+                    <span className="used">8 GB </span>
+                    <span className="total">16 GB </span>
+                    <Translate>per month</Translate>
+                  </div>
+                  <div className="graph">Storage graph</div>
+                </div>
+              </article>
+
+              <article className="card">
+                <div className="heading">
+                  <h2>Entities</h2>
+                </div>
+                <div className="body">
+                  <span className="count">56327</span>
+                  <Translate>Total entities</Translate>
+                </div>
+              </article>
+
+              <article className="card">
+                <div className="heading">
+                  <h2>Files</h2>
+                </div>
+                <div className="body">
+                  <span className="count">2500</span>
+                  <Translate>Total files</Translate>
                 </div>
               </article>
             </div>
