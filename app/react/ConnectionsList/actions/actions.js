@@ -27,7 +27,6 @@ export function searchReferences() {
     const relationshipsList = getState().relationships.list;
     const results = await search(new RequestParams(relationshipsList));
     dispatch(actions.set('relationships/list/searchResults', results));
-    dispatch(uiActions.showTab('connections'));
   };
 }
 
