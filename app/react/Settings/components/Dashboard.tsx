@@ -33,7 +33,7 @@ const Dashboard = () => {
                   <h2>Users</h2>
                 </div>
                 <div className="body">
-                  <p className="count">{users.length} </p>
+                  <span className="count">{users.length} </span>
                   <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
@@ -65,8 +65,7 @@ const Dashboard = () => {
                 <div className="body">
                   <div className="usage">
                     <span className="used">8 GB </span>
-                    <span className="total">16 GB </span>
-                    <Translate>per month</Translate>
+                    <span className="total">16 GB</span>
                   </div>
                   <div className="graph">Storage graph</div>
                 </div>
@@ -77,7 +76,7 @@ const Dashboard = () => {
                   <h2>Entities</h2>
                 </div>
                 <div className="body">
-                  <span className="count">56327</span>
+                  <span className="count">56327 </span>
                   <Translate>Total entities</Translate>
                 </div>
               </article>
@@ -87,7 +86,7 @@ const Dashboard = () => {
                   <h2>Files</h2>
                 </div>
                 <div className="body">
-                  <span className="count">2500</span>
+                  <span className="count">2500 </span>
                   <Translate>Total files</Translate>
                 </div>
               </article>

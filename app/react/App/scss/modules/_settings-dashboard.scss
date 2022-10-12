@@ -36,12 +36,14 @@
             .used {
               margin: 0;
             }
+            .total::before {
+              content: '/ ';
+            }
           }
 
           .count,
           .used {
             font-weight: bold;
-            margin-right: 10px;
           }
 
           .count {

@@ -55,6 +55,37 @@ describe('Dashboard', () => {
 
       expect((await screen.findByText('Admins')).parentElement?.textContent).toBe('1 Admins');
       expect((await screen.findByText('Editors')).parentElement?.textContent).toBe('2 Editors');
+      expect(screen.queryByText('Collaborators')).not.toBeInTheDocument();
     });
+  });
+
+  describe('Files report', () => {
+    it('should show the total number of files', async () => {
+      render();
+
+      expect((await screen.findByText('Total files')).parentElement?.textContent).toBe(
+        '2500 Total files'
+      );
+    });
+  });
+
+  describe('Entities report', () => {
+    it('should show the total number of files', async () => {
+      render();
+
+      expect((await screen.findByText('Total entities')).parentElement?.textContent).toBe(
+        '56327 Total entities'
+      );
+    });
+  });
+
+  describe('Storage report', () => {
+    it('should show the amount of store used out of the total', async () => {
+      render();
+
+      expect((await screen.findByText('16 GB')).parentElement?.textContent).toBe('8 GB 16 GB');
+    });
+
+    it('should show a usage graph', () => {});
   });
 });
