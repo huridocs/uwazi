@@ -96,12 +96,7 @@ export class CreateRelationshipService {
         await this.entitiesDS.markMetadataAsChanged(candidates);
 
         return { candidates: candidates.map(c => c.sharedId), insertedRelationships };
-      }, [
-        this.entitiesDS,
-        this.relationshipsDS,
-        this.relationshipTypesDS,
-        this.denormalizationService,
-      ]);
+      }, [this.entitiesDS, this.relationshipsDS, this.relationshipTypesDS]);
 
     await this.eventsBus.emit(
       new RelationshipsCreatedEvent({ relationships: newRelationships, markedEntities })

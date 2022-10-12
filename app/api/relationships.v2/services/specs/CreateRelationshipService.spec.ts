@@ -35,19 +35,20 @@ const createService = () => {
   const connection = getConnection();
 
   const SettingsDataSource = new MongoSettingsDataSource(connection);
+  const transactionManager = new MongoTransactionManager(getClient());
 
   return new CreateRelationshipService(
     new MongoRelationshipsDataSource(connection),
     new MongoRelationshipTypesDataSource(connection),
     new MongoEntitiesDataSource(connection, SettingsDataSource),
-    new MongoTransactionManager(getClient()),
+    transactionManager,
     MongoIdGenerator,
     new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser),
     new DenormalizationService(
       new MongoRelationshipsDataSource(connection),
       new MongoEntitiesDataSource(connection, SettingsDataSource),
       new MongoTemplatesDataSource(connection),
-      new MongoTransactionManager(getClient())
+      transactionManager
     ),
     applicationEventsBus
   );

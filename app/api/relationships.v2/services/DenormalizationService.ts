@@ -1,4 +1,3 @@
-import { Transactional } from 'api/common.v2/contracts/Transactional';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
@@ -6,7 +5,7 @@ import { RelationshipProperty } from 'api/templates.v2/model/RelationshipPropert
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 
-export class DenormalizationService implements Transactional {
+export class DenormalizationService {
   private relationshipsDS: RelationshipsDataSource;
 
   private entitiesDS: EntitiesDataSource;
@@ -14,8 +13,6 @@ export class DenormalizationService implements Transactional {
   private templatesDS: TemplatesDataSource;
 
   private transactionManager: TransactionManager;
-
-  private transactionContext?: unknown;
 
   constructor(
     relationshipsDS: RelationshipsDataSource,
@@ -29,20 +26,12 @@ export class DenormalizationService implements Transactional {
     this.transactionManager = transactionManager;
   }
 
-  setTransactionContext(context: unknown): void {
-    this.transactionContext = context;
-  }
-
-  clearTransactionContext(): void {
-    this.transactionContext = undefined;
-  }
-
   private async inTransaction<T>(callback: () => Promise<T>) {
-    return this.transactionManager.run<T>(
-      callback,
-      [this.relationshipsDS, this.entitiesDS, this.templatesDS],
-      this.transactionContext
-    );
+    return this.transactionManager.run<T>(callback, [
+      this.relationshipsDS,
+      this.entitiesDS,
+      this.templatesDS,
+    ]);
   }
 
   private async getCandidateEntities(

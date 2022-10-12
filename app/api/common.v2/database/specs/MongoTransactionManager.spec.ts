@@ -122,22 +122,49 @@ describe('When one operation fails', () => {
   });
 });
 
-describe('when a session is provided', () => {
-  it('should use the provided session', async () => {
+describe('when calling run() within another call', () => {
+  it('should use same transaction', async () => {
     const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
-    const transactionalDependency: Transactional<string> = {
+
+    const transactionalDependency1 = {
       setTransactionContext: jest.fn(),
       clearTransactionContext: () => {},
     };
 
-    await transactionManager.run(
-      async () => Promise.resolve(),
-      [transactionalDependency],
-      'dummy transaction context'
-    );
+    const transactionalDependency2 = {
+      setTransactionContext: jest.fn(),
+      clearTransactionContext: () => {},
+    };
 
-    expect(transactionalDependency.setTransactionContext).toHaveBeenCalledWith(
-      'dummy transaction context'
+    await transactionManager.run(async () => {
+      await transactionManager.run(async () => Promise.resolve(), [transactionalDependency2]);
+    }, [transactionalDependency1]);
+
+    expect(transactionalDependency1.setTransactionContext.mock.calls[0][0]).toBe(
+      transactionalDependency2.setTransactionContext.mock.calls[0][0]
+    );
+  });
+});
+
+describe('when calling run() two separate times', () => {
+  it('should use different transactions', async () => {
+    const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
+
+    const transactionalDependency1 = {
+      setTransactionContext: jest.fn(),
+      clearTransactionContext: () => {},
+    };
+
+    const transactionalDependency2 = {
+      setTransactionContext: jest.fn(),
+      clearTransactionContext: () => {},
+    };
+
+    await transactionManager.run(async () => Promise.resolve(), [transactionalDependency1]);
+    await transactionManager.run(async () => Promise.resolve(), [transactionalDependency2]);
+
+    expect(transactionalDependency1.setTransactionContext.mock.calls[0][0]).not.toBe(
+      transactionalDependency2.setTransactionContext.mock.calls[0][0]
     );
   });
 });
