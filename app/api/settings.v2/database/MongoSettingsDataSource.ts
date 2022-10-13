@@ -10,7 +10,7 @@ export class MongoSettingsDataSource
   protected collectionName = 'settings';
 
   protected async readSettings(): Promise<SettingsType | null> {
-    return this.getCollection().findOne({});
+    return this.getCollection().findOne({}, { session: this.session });
   }
 
   protected async readLanguages(): Promise<SettingsType['languages']> {

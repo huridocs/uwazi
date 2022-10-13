@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import { validateUserInputSchema } from 'api/users.v2/database/schemas/userValidators';
 
 type UserRole = 'admin' | 'editor' | 'collaborator';
@@ -19,7 +21,7 @@ export class User {
     return ['admin', 'editor'].includes(this.role);
   }
 
-  static fromRequest = (request: any): User => {
+  static fromRequest = (request: Request): User => {
     const _user = request.user;
     if (validateUserInputSchema(_user)) {
       const id = _user._id.toHexString();
