@@ -1,7 +1,14 @@
-import { ClientSession, Collection } from 'mongodb';
+import {
+  BulkWriteOperation,
+  ClientSession,
+  Collection,
+  FilterQuery,
+  OptionalId,
+  UpdateQuery,
+} from 'mongodb';
 
-class BulkWriteStream {
-  collection: Collection;
+class BulkWriteStream<CollSchema extends { [key: string]: any }> {
+  collection: Collection<CollSchema>;
 
   stackLimit: number;
 
@@ -9,10 +16,10 @@ class BulkWriteStream {
 
   session?: ClientSession;
 
-  protected actions: any[];
+  protected actions: Array<BulkWriteOperation<CollSchema>>;
 
   constructor(
-    collection?: Collection,
+    collection?: Collection<CollSchema>,
     session?: ClientSession,
     stackLimit?: number,
     ordered?: boolean
@@ -42,12 +49,12 @@ class BulkWriteStream {
     }
   }
 
-  async insert(document: any) {
+  async insert(document: OptionalId<CollSchema>) {
     this.actions.push({ insertOne: { document } });
     await this.check();
   }
 
-  async insertMany(documents: any[]) {
+  async insertMany(documents: OptionalId<CollSchema>[]) {
     for (let i = 0; i < documents.length; i += 1) {
       const doc = documents[i];
       // eslint-disable-next-line no-await-in-loop
@@ -55,20 +62,19 @@ class BulkWriteStream {
     }
   }
 
-  async delete(filter: any, collation?: any) {
+  async delete(filter: FilterQuery<CollSchema>, collation?: object | undefined) {
     this.actions.push({ deleteOne: { filter, collation } });
     await this.check();
   }
 
   async update(
-    filter: any,
-    update: any,
+    filter: FilterQuery<CollSchema>,
+    update: UpdateQuery<CollSchema>,
     upsert?: boolean,
-    collation?: any,
-    arrayFilters?: any[],
-    hint?: any
+    collation?: object,
+    arrayFilters?: object[]
   ) {
-    this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters, hint } });
+    this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters } });
     await this.check();
   }
 

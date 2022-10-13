@@ -10,12 +10,15 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity } from '../model/Entity';
 
-interface EntityJoinTemplate {
+interface EntityDBOType {
   sharedId: string;
   language: string;
   template: ObjectId;
   metadata: Record<string, { value: string; label: string }[]>;
   obsoleteMetadata: string[];
+}
+
+interface EntityJoinTemplate extends EntityDBOType {
   joinedTemplate: any;
 }
 
@@ -23,7 +26,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
   const relationshipsDS = new MongoRelationshipsDataSource(this.db);
   if (this.session) relationshipsDS.setTransactionContext(this.session);
-  const stream = new BulkWriteStream(this.getCollection(), this.session);
+  const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.session);
   await Promise.all(
     // eslint-disable-next-line max-statements
     entity.joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
@@ -55,7 +58,10 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
   return new Entity(entity.sharedId, entity.template.toHexString(), mappedMetadata);
 }
 
-export class MongoEntitiesDataSource extends MongoDataSource implements EntitiesDataSource {
+export class MongoEntitiesDataSource
+  extends MongoDataSource<EntityDBOType>
+  // eslint-disable-next-line prettier/prettier
+  implements EntitiesDataSource {
   protected collectionName = 'entities';
 
   protected settingsDS: MongoSettingsDataSource;
@@ -75,7 +81,7 @@ export class MongoEntitiesDataSource extends MongoDataSource implements Entities
   }
 
   async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
-    const stream = new BulkWriteStream(this.getCollection(), this.session);
+    const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.session);
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
       for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {

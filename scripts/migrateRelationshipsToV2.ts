@@ -4,9 +4,10 @@
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/migrateRelationshipsToV2.ts
 import process from 'process';
 
-import mongodb, { Collection, Cursor, Db, MongoError, ObjectId } from 'mongodb';
+import mongodb, { Collection, Cursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
 
 import { BulkWriteStream } from '../app/api/common.v2/database/BulkWriteStream';
+import { RelationshipDBOType } from '../app/api/relationships.v2/database/schemas/relationshipTypes'
 import date from '../app/api/utils/date';
 import { objectIndex } from '../app/shared/data_utils/objectIndex';
 import { EntitySchema } from '../app/shared/types/entityType';
@@ -24,6 +25,8 @@ type HubType = {
 type ConnectionType = {
   _id: ObjectId;
   hub: ObjectId;
+  entity: string;
+  template: ObjectId;
 };
 
 type RelTypeType = {
@@ -62,7 +65,7 @@ const insertHubs = async (_ids: ObjectId[], hubCollection: Collection<HubType>) 
   return hubCollection.insertMany(ids.map(id => ({ _id: new ObjectId(id) })));
 };
 
-const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collection) => {
+const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collection<HubType>) => {
   process.stdout.write('Writing temporary hub collection...\n');
   const connectionsCursor = connections.find({}, { projection: { hub: 1 } });
 
@@ -133,7 +136,7 @@ const DEFAULT_RELTYPE: Omit<RelTypeType, '_id'> = {
   name: '__no_type',
 }
 
-const writeHubTemplate = async (templatesCollection: Collection) => {
+const writeHubTemplate = async (templatesCollection: Collection<TemplateSchema>) => {
   print('Setting up hub template...\n');
   let templates = await templatesCollection.find({ name: HUBTEMPLATE.name }).toArray();
   if (!templates.length) {
@@ -184,10 +187,19 @@ const getLanguages = async (db: Db) => {
   return { languages, defaultLanguage };
 };
 
-const getAnAdmin = async (db: Db) => db.collection('users').findOne({ role: 'admin' });
+const getAnAdmin = async (db: Db) => {
+  const admin = await db.collection<UserSchema>('users').findOne({ role: 'admin' });
+  if(!admin) throw new Error('Admin not found.');
+  return admin;
+};
 
 
-const hubsToRelationships = async (hubs: EntitySchema[], connectionsCollection: Collection, relationshipsCollection: Collection, defaultRelType: RelTypeType) => {
+const hubsToRelationships = async (
+  hubs: EntitySchema[], 
+  connectionsCollection: Collection<ConnectionType>, 
+  relationshipsCollection: Collection<RelationshipDBOType>, 
+  defaultRelType: RelTypeType
+) => {
   const hubIdToSharedId = objectIndex(hubs, h => h.title, h => h.sharedId);
   const hubIds = Object.keys(hubIdToSharedId).map(title => new ObjectId(title));
   const connections = connectionsCollection.find({ hub: { $in: hubIds } });
@@ -207,9 +219,9 @@ const hubsToRelationships = async (hubs: EntitySchema[], connectionsCollection: 
 
 const liftHubs = async (
   hubsCollection: Collection<HubType>,
-  newEntitiesCollection: Collection,
-  connectionsCollection: Collection,
-  relationshipsCollection: Collection,
+  newEntitiesCollection: Collection<EntitySchema>,
+  connectionsCollection: Collection<ConnectionType>,
+  relationshipsCollection: Collection<RelationshipDBOType>,
   languages: string[],
   template: TemplateSchema,
   user: UserSchema,
@@ -217,7 +229,6 @@ const liftHubs = async (
 ) => {
   print('Writing hub entities and relationships to temporary collections...\n');
   const entityWriter = new BulkWriteStream(newEntitiesCollection, undefined, batchsize);
-  const connectionWriter = new BulkWriteStream(connectionsCollection, undefined, batchsize);
 
   const hubs = hubsCollection.find({});
   while ((!hubs.isClosed())) {
@@ -232,12 +243,12 @@ const liftHubs = async (
   print('Writing hub entities and relationships to temporary collections done.\n');
 };
 
-const copyCollection = async (db: Db, source: Collection, target: Collection) => {
+const copyCollection = async <T extends { [key: string]: any; }>(db: Db, source: Collection<T>, target: Collection<T>) => {
   const sourceCursor = source.find({});
   const targetWriter = new BulkWriteStream(target, undefined, batchsize);
   while (await sourceCursor.hasNext()) {
-    const next = await sourceCursor.next();
-    await targetWriter.insert(next);
+    const next = await sourceCursor.next() as OptionalId<T>;
+    if (next) await targetWriter.insert(next);
   }
   await targetWriter.flush();
 };
@@ -267,12 +278,12 @@ const migrate = async () => {
   await createTempCollections(db, [temporaryHubCollectionName, temporaryRelationshipsCollectionName,  temporaryEntityCollectionName]);
 
   const hubsCollection = db.collection<HubType>(temporaryHubCollectionName);
-  const newEntitiesCollection = db.collection(temporaryEntityCollectionName);
-  const templatesCollection = db.collection('templates');
-  const entitiesCollection = db.collection('entities');
+  const newEntitiesCollection = db.collection<EntitySchema>(temporaryEntityCollectionName);
+  const templatesCollection = db.collection<TemplateSchema>('templates');
+  const entitiesCollection = db.collection<EntitySchema>('entities');
   const connectionsCollection = db.collection<ConnectionType>('connections');
-  const relationshipsCollection = db.collection('relationships');
-  const tempRelationshipsCollection = db.collection(temporaryRelationshipsCollectionName);
+  const relationshipsCollection = db.collection<RelationshipDBOType>('relationships');
+  const tempRelationshipsCollection = db.collection<RelationshipDBOType>(temporaryRelationshipsCollectionName);
 
   await gatherHubs(connectionsCollection, hubsCollection);
 

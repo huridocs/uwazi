@@ -5,7 +5,9 @@ const fixtures = {
   values: [{ value: -1 }, { value: 0 }],
 };
 
-const newValues = Array(11)
+type NumberValueType = { value: number };
+
+const newValues: NumberValueType[] = Array(11)
   .fill(0)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   .map((value: any, index: number) => ({
@@ -13,20 +15,24 @@ const newValues = Array(11)
   }));
 
 const checkValues = async (expectedValues: number[]) => {
-  const inDbUserNames = (await db.mongodb?.collection('values').find({}).toArray())?.map(
-    v => v.value
-  );
+  const inDbUserNames = (
+    await db.mongodb?.collection<NumberValueType>('values').find({}).toArray()
+  )?.map(v => v.value);
   expect(inDbUserNames).toMatchObject(expectedValues);
 };
 
 const stackLimit = 5;
 
 describe('BulkWriteStream', () => {
-  let stream: BulkWriteStream;
+  let stream: BulkWriteStream<NumberValueType>;
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    stream = new BulkWriteStream(db.mongodb?.collection('values'), undefined, stackLimit);
+    stream = new BulkWriteStream(
+      db.mongodb?.collection<NumberValueType>('values'),
+      undefined,
+      stackLimit
+    );
   });
 
   afterAll(async () => {
