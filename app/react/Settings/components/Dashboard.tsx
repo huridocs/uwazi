@@ -16,9 +16,9 @@ const Dashboard = () => {
       .then((response: UserSchema[]) => {
         setUsers(response);
         setUserBrakdown(groupBy(response, 'role'));
-        setStorage({ current: 4, total: 8 });
       })
       .catch(() => {});
+    setStorage({ current: 5.32, total: 8 });
   }, []);
 
   return (

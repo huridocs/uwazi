@@ -53,9 +53,9 @@ describe('Dashboard', () => {
         '3 Total users'
       );
 
-      expect((await screen.findByText('Admins')).parentElement?.textContent).toBe('1 Admins');
-      expect((await screen.findByText('Editors')).parentElement?.textContent).toBe('2 Editors');
-      expect(screen.queryByText('Collaborators')).not.toBeInTheDocument();
+      expect((await screen.findByText('Admin')).parentElement?.textContent).toBe('1 Admin');
+      expect((await screen.findByText('Editor')).parentElement?.textContent).toBe('2 Editor');
+      expect(screen.queryByText('Collaborator')).not.toBeInTheDocument();
     });
   });
 
@@ -83,7 +83,7 @@ describe('Dashboard', () => {
     it('should show the amount of store used out of the total', async () => {
       render();
 
-      expect((await screen.findByText('16 GB')).parentElement?.textContent).toBe('8 GB 16 GB');
+      expect((await screen.findByText('8 GB')).parentElement?.textContent).toBe('5.32 GB 8 GB');
     });
   });
 });
