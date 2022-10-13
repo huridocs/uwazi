@@ -9,12 +9,14 @@ import { ProgressBar } from 'app/UI';
 const Dashboard = () => {
   const [users, setUsers] = useState<UserSchema[]>([]);
   const [userBrakdown, setUserBrakdown] = useState<Dictionary<UserSchema[]>>({});
+  const [storage, setStorage] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     UsersAPI.get(new RequestParams())
       .then((response: UserSchema[]) => {
         setUsers(response);
         setUserBrakdown(groupBy(response, 'role'));
+        setStorage({ current: 4, total: 8 });
       })
       .catch(() => {});
   }, []);
@@ -69,10 +71,15 @@ const Dashboard = () => {
                 </div>
                 <div className="body">
                   <div className="usage">
-                    <span className="used">8 GB </span>
-                    <span className="total">16 GB</span>
+                    <span className="used">{`${storage.current} GB`} </span>
+                    <span className="total">{`${storage.total} GB`}</span>
                   </div>
-                  <ProgressBar max={16} value={8} useProgressColors showNumericValue={false} />
+                  <ProgressBar
+                    max={storage.total}
+                    value={storage.current}
+                    useProgressColors
+                    showNumericValue={false}
+                  />
                 </div>
                 <div className="footer">
                   <p className="card-info">
