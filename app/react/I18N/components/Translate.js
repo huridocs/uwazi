@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions } from 'app/I18N';
@@ -48,10 +48,10 @@ class Translate extends Component {
         {lines.map((line, index) => {
           const parsedLine = parseMarkdownItalicMarker(line);
           return (
-            <>
+            <Fragment key={line}>
               {parsedLine}
               {index < lines.length - 1 && <br />}
-            </>
+            </Fragment>
           );
         })}
       </span>

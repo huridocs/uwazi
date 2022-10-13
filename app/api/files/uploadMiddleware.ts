@@ -93,10 +93,10 @@ const multipleUpload = async (req: Request, res: Response, next: NextFunction) =
     await new Promise<void>((resolve, reject) => {
       multer({ storage: defaultStorage }).any()(req, res, err => {
         if (err) reject(err);
-        applyFilesOriginalnames(req);
         resolve();
       });
     });
+    applyFilesOriginalnames(req);
     next();
   } catch (e) {
     next(e);
