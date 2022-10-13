@@ -1,5 +1,9 @@
 .settings {
   .settings-dashboard {
+    .panel-heading {
+      margin-bottom: 30px;
+    }
+
     .cards {
       display: flex;
       justify-content: center;
@@ -18,6 +22,7 @@
           padding: 0;
           border: unset;
           font-size: $f-size-lg;
+          font-weight: bold;
         }
         p {
           margin: 0;
@@ -32,6 +37,8 @@
         }
 
         .body {
+          height: 60px;
+
           .usage {
             .used {
               margin: 0;
@@ -39,6 +46,18 @@
             .total::before {
               content: '/ ';
             }
+          }
+
+          .uw-progress-bar--container {
+            margin-top: 6px;
+          }
+
+          .uw-progress-bar {
+            height: 20px;
+          }
+
+          .uw-progress-bar--progress {
+            animation: progress 900ms ease-in-out 1;
           }
 
           .count,
@@ -58,9 +77,22 @@
         }
 
         .footer {
-          padding-top: 10px;
+          // padding-top: 10px;
           display: flex;
           gap: 10px;
+
+          .user-info {
+            .translation {
+              color: $c-grey;
+              font-weight: bold;
+            }
+          }
+
+          .card-info {
+            .translation {
+              font-style: italic;
+            }
+          }
 
           p:not(:last-child):after {
             content: '|';
@@ -71,13 +103,14 @@
           .count {
             font-weight: bold;
           }
-
-          .translation {
-            color: $c-grey;
-            font-weight: bold;
-          }
         }
       }
     }
+  }
+}
+
+@keyframes progress {
+  from {
+    width: 0;
   }
 }

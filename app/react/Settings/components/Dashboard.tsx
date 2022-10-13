@@ -39,19 +39,19 @@ const Dashboard = () => {
                 </div>
                 <div className="footer">
                   {userBrakdown.admin && (
-                    <p>
+                    <p className="user-info">
                       <span className="count">{userBrakdown.admin.length} </span>
                       <Translate>Admins</Translate>
                     </p>
                   )}
                   {userBrakdown.editor && (
-                    <p>
+                    <p className="user-info">
                       <span className="count">{userBrakdown.editor.length} </span>
                       <Translate>Editors</Translate>
                     </p>
                   )}
                   {userBrakdown.collaborator && (
-                    <p>
+                    <p className="user-info">
                       <span className="count">{userBrakdown.collaborator.length} </span>
                       <Translate>Collaborators</Translate>
                     </p>
@@ -70,6 +70,11 @@ const Dashboard = () => {
                   </div>
                   <ProgressBar max={16} value={8} useProgressColors showNumericValue={false} />
                 </div>
+                <div className="footer">
+                  <p className="card-info">
+                    <Translate>File system storage</Translate>
+                  </p>
+                </div>
               </article>
 
               <article className="card">
@@ -80,6 +85,11 @@ const Dashboard = () => {
                   <span className="count">56327 </span>
                   <Translate>Total entities</Translate>
                 </div>
+                <div className="footer card-info">
+                  <p className="card-info">
+                    <Translate>Entities across all languages</Translate>
+                  </p>
+                </div>
               </article>
 
               <article className="card">
@@ -89,6 +99,13 @@ const Dashboard = () => {
                 <div className="body">
                   <span className="count">2500 </span>
                   <Translate>Total files</Translate>
+                </div>
+                <div className="footer card-info">
+                  <p className="card-info">
+                    <Translate>
+                      Total files from main documents, supporting files and custom uploads
+                    </Translate>
+                  </p>
                 </div>
               </article>
             </div>
