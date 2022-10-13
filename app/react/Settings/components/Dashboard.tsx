@@ -31,7 +31,9 @@ const Dashboard = () => {
             <div className="cards">
               <article className="card">
                 <div className="heading">
-                  <h2>Users</h2>
+                  <h2>
+                    <Translate>Users</Translate>
+                  </h2>
                 </div>
                 <div className="body">
                   <span className="count">{users.length} </span>
@@ -41,19 +43,19 @@ const Dashboard = () => {
                   {userBrakdown.admin && (
                     <p className="user-info">
                       <span className="count">{userBrakdown.admin.length} </span>
-                      <Translate>Admins</Translate>
+                      <Translate>Admin</Translate>
                     </p>
                   )}
                   {userBrakdown.editor && (
                     <p className="user-info">
                       <span className="count">{userBrakdown.editor.length} </span>
-                      <Translate>Editors</Translate>
+                      <Translate>Editor</Translate>
                     </p>
                   )}
                   {userBrakdown.collaborator && (
                     <p className="user-info">
                       <span className="count">{userBrakdown.collaborator.length} </span>
-                      <Translate>Collaborators</Translate>
+                      <Translate>Collaborator</Translate>
                     </p>
                   )}
                 </div>
@@ -61,7 +63,9 @@ const Dashboard = () => {
 
               <article className="card">
                 <div className="heading">
-                  <h2>Storage</h2>
+                  <h2>
+                    <Translate>Storage</Translate>
+                  </h2>
                 </div>
                 <div className="body">
                   <div className="usage">
@@ -79,7 +83,9 @@ const Dashboard = () => {
 
               <article className="card">
                 <div className="heading">
-                  <h2>Entities</h2>
+                  <h2>
+                    <Translate>Entities</Translate>
+                  </h2>
                 </div>
                 <div className="body">
                   <span className="count">56327 </span>
@@ -94,7 +100,9 @@ const Dashboard = () => {
 
               <article className="card">
                 <div className="heading">
-                  <h2>Files</h2>
+                  <h2>
+                    <Translate>Files</Translate>
+                  </h2>
                 </div>
                 <div className="body">
                   <span className="count">2500 </span>
