@@ -24,15 +24,19 @@ interface LibraryFooterActions {
 type LibraryFooterProps = LibraryFooterActions & LibraryFooterOwnProps;
 
 const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: LibraryFooterProps) => {
-  const [footerVisible, setFooterVisible] = useState(false);
+  const [footerVisible, setFooterVisible] = useState(true);
+  const toggleFooterVisible = () => {
+    setFooterVisible(!footerVisible);
+  };
   return (
     <>
-      <div className="library-footer with-sidepanel remove-nesting">
+      <div
+        className={`library-footer with-sidepanel remove-nesting ${!footerVisible ? 'closed' : ''}`}
+      >
         <div className="close-actions-button">
-          <button type="button">
+          <button type="button" className="toggle-footer-button" onClick={toggleFooterVisible}>
             <Translate>Close actions</Translate>
           </button>
-          <hr />
         </div>
         <div className="btn-cluster">
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -61,8 +65,8 @@ const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: Librar
           <Export className="sm-order-1" storeKey={storeKey} />
         </div>
       </div>
-      <div className="open-actions-button">
-        <button type="button">
+      <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>
+        <button type="button" className="toggle-footer-button" onClick={toggleFooterVisible}>
           <Translate>Open actions</Translate>
         </button>
       </div>

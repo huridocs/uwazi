@@ -203,42 +203,40 @@ footer {
   }
 }
 
+.toggle-footer-button {
+  border: transparent;
+  border-radius: 12px 12px 0px 0px;
+  webkit-box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  -moz-box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  padding: 4px 12px;
+  width: 107px;
+  min-width: 90px;
+  height: 24px;
+  left: 100px;
+  background-color: $c-white;
+  z-index: 1;
+}
+
 .library-footer {
-  //   visibility: hidden;
-  @media (min-width: 1024px) {
-    border-color: blue;
+  padding: 0;
+  border-top: none;
+  background-color: transparent;
+
+  &.closed {
+    visibility: hidden;
   }
-}
-.open-actions-button {
-  visibility: hidden;
 
-  //   display: flex;
-  //   position: fixed;
-  //   bottom: 50px;
-  //   justify-content: center;
-  //   left: 50%;
-  //   width: 150px;
-  //   text-overflow: ellipsis;
-  //   margin-left: -80px;
+  .btn-cluster {
+    -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    box-shadow: 10px 0px 1px white, 2px -2px 4px lightgray;
+    padding: 10px 10px 0px 10px;
+    width: 100%;
+    background-color: white;
+  }
 
-  //   button {
-  //     border: transparent;
-  //     border-radius: 12px 12px 0px 0px;
-  //     box-shadow: 0px -3px 9px -2px $c-grey;
-  //     padding: 4px 12px;
-  //     width: 107px;
-  //     height: 24px;
-  //     background-color: $c-white;
-  //   }
-
-  //   @media (min-width: 1024px) {
-  //     visibility: hidden;
-  //   }
-}
-
-.library-footer {
   .close-actions-button {
-    visibility: visible;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
@@ -246,33 +244,32 @@ footer {
     width: 100%;
     text-overflow: ellipsis;
     background-color: transparent;
-    margin-bottom: 10px;
-
-    button {
-      border: transparent;
-      border-radius: 12px 12px 0px 0px;
-      box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
-      padding: 4px 12px;
-      width: 107px;
-      min-width: 90px;
-      height: 24px;
-      left: 100px;
-      background-color: $c-white;
-      z-index: 1;
-    }
-
-    hr {
-      box-shadow: 0px -1px 3px 0px grey;
-      margin: 0px;
-      width: 100%;
-      border-color: lightgrey;
-    }
 
     @media (min-width: 1024px) {
       visibility: hidden;
     }
   }
 }
+
+.open-actions-button {
+  display: flex;
+  position: fixed;
+  bottom: 0px;
+  justify-content: center;
+  left: 50%;
+  width: 150px;
+  text-overflow: ellipsis;
+  margin-left: -80px;
+
+  &.closed {
+    visibility: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    visibility: hidden;
+  }
+}
+
 .entity-footer,
 .library-footer,
 .settings-footer {
