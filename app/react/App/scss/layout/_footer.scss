@@ -224,7 +224,7 @@ footer {
   background-color: transparent;
 
   &.closed {
-    visibility: hidden;
+    display: none;
   }
 
   .btn-cluster {
@@ -246,7 +246,7 @@ footer {
     background-color: transparent;
 
     @media (min-width: 1024px) {
-      visibility: hidden;
+      display: none;
     }
   }
 }
@@ -262,11 +262,11 @@ footer {
   margin-left: -80px;
 
   &.closed {
-    visibility: hidden;
+    display: none;
   }
 
   @media (min-width: 1024px) {
-    visibility: hidden;
+    display: none;
   }
 }
 

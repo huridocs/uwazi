@@ -10,7 +10,7 @@ import {
   selectDocuments,
   unselectAllDocuments,
 } from 'app/Library/actions/libraryActions';
-import SearchBar from 'app/Library/components/SearchBar';
+import { SearchBar } from 'app/Library/components/SearchBar';
 import { t } from 'app/I18N';
 
 class MapViewComponent extends Component {

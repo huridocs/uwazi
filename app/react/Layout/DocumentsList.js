@@ -4,14 +4,14 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
-import SearchBar from 'app/Library/components/SearchBar';
-import SortButtons from 'app/Library/components/SortButtons';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
+
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
+import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';
@@ -76,13 +76,16 @@ class DocumentsList extends Component {
     );
   }
 
+  selectAllDocuments1(command) {
+    command.selectAllDocuments();
+  }
+
   render() {
     const {
       documents,
       connections,
       GraphView,
       view,
-      searchCentered,
       hideFooter,
       connectionsGroups,
       LoadMoreButton,
@@ -109,12 +112,6 @@ class DocumentsList extends Component {
       />
     );
 
-    const Search = this.props.SearchBar;
-    const ActionButtons = this.props.ActionButtons ? (
-      <div className="search-list-actions">
-        <this.props.ActionButtons />
-      </div>
-    ) : null;
     const FooterComponent = !hideFooter ? <Footer /> : null;
 
     const libraryContent = () => {
@@ -185,34 +182,13 @@ class DocumentsList extends Component {
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-            {ActionButtons} {Search && <Search storeKey={this.props.storeKey} />}
-          </div>
-          <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
-            <span className="documents-counter-sort">
-              <Translate>sorted by</Translate>
-            </span>
-            <SortButtons
-              sortCallback={this.props.searchDocuments}
-              selectedTemplates={this.props.filters.get('documentTypes')}
-              stateProperty={this.props.sortButtonsStateProperty}
-              storeKey={this.props.storeKey}
-            />
-            <NeedAuthorization>
-              <div className="select-all-documents">
-                <button
-                  type="button"
-                  className="btn btn-default btn-xs"
-                  onClick={this.selectAllDocuments}
-                >
-                  <Translate>Select all</Translate>
-                </button>
-              </div>
-            </NeedAuthorization>
-            <div className="documents-counter">
-              <span className="documents-counter-label">{counter}</span>
-            </div>
-          </div>
+          <LibraryHeader
+            counter={counter}
+            storeKey={this.props.storeKey}
+            selectAllDocuments={() => {
+              this.selectAllDocuments1(this);
+            }}
+          />
           {blankState() && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
@@ -236,7 +212,6 @@ class DocumentsList extends Component {
 }
 
 DocumentsList.defaultProps = {
-  SearchBar,
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
   selectedDocuments: {},
@@ -248,8 +223,6 @@ DocumentsList.propTypes = {
   filters: PropTypes.object,
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
-  SearchBar: PropTypes.func,
-  ActionButtons: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
