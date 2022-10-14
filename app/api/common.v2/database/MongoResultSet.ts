@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { AggregationCursor, Cursor } from 'mongodb';
 import { ResultSet } from '../contracts/ResultSet';
 
@@ -68,14 +69,25 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
+  async forEach(callback: (item: U) => void) {
+    return this.mongoCursor.forEach(async item => {
+      callback(await this.mapper(item));
+    });
+  }
+
+  map<V>(transform: (item: U) => V) {
+    return new MongoResultSet(
+      this.mongoCursor.map(async elem => this.mapper(elem)),
+      async item => transform(await item)
+    );
+  }
+
   async every(predicate: (item: U) => boolean): Promise<boolean> {
     let result = true;
     let counter = 0;
 
-    // eslint-disable-next-line no-await-in-loop
     while (await this.hasNext()) {
       counter += 1;
-      // eslint-disable-next-line no-await-in-loop
       const item = await this.next();
       if (predicate(item!) === false) {
         result = false;
@@ -85,6 +97,12 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
     await this.close();
     return counter > 0 && result;
+  }
+
+  async first() {
+    this.mongoCursor.limit(1);
+    const [result] = await this.all();
+    return result || null;
   }
 
   async close() {

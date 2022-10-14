@@ -477,7 +477,7 @@ export default {
         const relProperties = templateIdToProperties[entity.template];
         if (!relProperties) return;
 
-        const [queryedEntity] = await entitiesDataSource.getByIds([entity.sharedId]).all();
+        const queryedEntity = await entitiesDataSource.getByIds([entity.sharedId]).first();
 
         relProperties.forEach(relProperty => {
           entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];

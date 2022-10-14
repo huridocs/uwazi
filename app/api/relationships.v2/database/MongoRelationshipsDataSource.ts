@@ -3,30 +3,12 @@ import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResul
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
-import {
-  RelationshipDBOType,
-  EntityInfoType,
-  JoinedRelationshipDBOType,
-} from './schemas/relationshipTypes';
+import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 
-function unrollTraversal({ traversal, ...rest }: any): any {
-  return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
-}
-
 const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
-
-type RelationshipAggregatedResultType = Omit<
-  RelationshipDBOType,
-  '_id' | 'type' | 'from' | 'to'
-> & {
-  _id: string;
-  type: string;
-  from: EntityInfoType;
-  to: EntityInfoType;
-};
 
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
@@ -104,11 +86,7 @@ export class MongoRelationshipsDataSource
       },
     ]);
 
-    return new MongoResultSet<JoinedRelationshipDBOType, RelationshipAggregatedResultType>(
-      dataCursor,
-      totalCursor,
-      RelationshipMappers.toAggregatedResult
-    );
+    return new MongoResultSet(dataCursor, totalCursor, RelationshipMappers.toAggregatedResult);
   }
 
   getByQuery(query: MatchQueryNode, language: string) {
@@ -123,6 +101,6 @@ export class MongoRelationshipsDataSource
       ],
       { session: this.session }
     );
-    return new MongoResultSet(cursor, count, elem => unrollTraversal(elem));
+    return new MongoResultSet(cursor, count, RelationshipMappers.toGraphQueryResult);
   }
 }

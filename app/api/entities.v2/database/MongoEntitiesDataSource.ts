@@ -33,15 +33,19 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
-        const result = relationshipsDS.getByQuery(
-          new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
-          entity.language
-        );
-        const leafEntities = (await result.all()).map(path => path[path.length - 1]);
-        mappedMetadata[property.name] = leafEntities.map(e => ({
-          value: e.sharedId,
-          label: e.sharedId,
-        }));
+        const results = await relationshipsDS
+          .getByQuery(
+            new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
+            entity.language
+          )
+          .all();
+        mappedMetadata[property.name] = results.map(result => {
+          const targetEntity = result.leaf();
+          return {
+            value: targetEntity.sharedId,
+            label: targetEntity.sharedId,
+          };
+        });
         await stream.update(
           { sharedId: entity.sharedId },
           { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }

@@ -53,7 +53,7 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toEqual([
+    expect(result.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel1'), type: factory.id('nullType') },
@@ -76,7 +76,7 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toEqual([
+    expect(result.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel1'), type: factory.id('nullType') },
@@ -118,7 +118,7 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query, 'en').page(2, 2);
     expect(result.total).toBe(4);
-    expect(result.data).toEqual([
+    expect(result.data.map(d => d.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },
@@ -154,7 +154,7 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toEqual([
+    expect(result.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },
@@ -185,7 +185,7 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toEqual([
+    expect(result.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },
@@ -222,7 +222,7 @@ describe('When getting by query', () => {
 
     const resultInEnglish = await ds.getByQuery(query, 'en').all();
     const resultInSpanish = await ds.getByQuery(query, 'es').all();
-    expect(resultInEnglish).toEqual([
+    expect(resultInEnglish.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },
@@ -236,7 +236,7 @@ describe('When getting by query', () => {
         { _id: factory.id('entity7-en'), sharedId: 'entity7' },
       ],
     ]);
-    expect(resultInSpanish).toEqual([
+    expect(resultInSpanish.map(r => r.path)).toEqual([
       [
         { _id: factory.id('entity1-es'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },

@@ -83,18 +83,84 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
+      expect(cursor?.isClosed()).toBe(true);
     });
 
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc1'))).toBe(false);
+      expect(cursor?.isClosed()).toBe(true);
     });
 
     it('should return false if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(false);
+      expect(cursor?.isClosed()).toBe(true);
+    });
+  });
+
+  describe('using forEach(...)', () => {
+    it('should execute the callback for every item', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[] = [];
+      await resultSet.forEach(item => {
+        visited.push(item);
+      });
+      expect(visited).toEqual(['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6']);
+      expect(cursor?.isClosed()).toBe(true);
+    });
+  });
+
+  describe('using map(...)', () => {
+    it('should transform every item synchronously', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const transformed = await resultSet.map(async item => `transformed ${item}`).all();
+
+      expect(transformed).toEqual([
+        'transformed doc1',
+        'transformed doc2',
+        'transformed doc3',
+        'transformed doc4',
+        'transformed doc5',
+        'transformed doc6',
+      ]);
+      expect(cursor?.isClosed()).toBe(true);
+    });
+
+    it('should transform every item asynchronously', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const transformed = await resultSet
+        .map(async item => {
+          await new Promise(resolve => {
+            setTimeout(resolve, 10);
+          });
+          return `transformed ${item}`;
+        })
+        .all();
+
+      expect(transformed).toEqual([
+        'transformed doc1',
+        'transformed doc2',
+        'transformed doc3',
+        'transformed doc4',
+        'transformed doc5',
+        'transformed doc6',
+      ]);
+      expect(cursor?.isClosed()).toBe(true);
+    });
+  });
+
+  describe('when calling first()', () => {
+    it('should return the first result and close the cursors', async () => {
+      const cursor = buildCursor();
+      const result = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await result.first()).toEqual('doc1');
+      expect(cursor?.isClosed()).toBe(true);
     });
   });
 });

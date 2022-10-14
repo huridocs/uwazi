@@ -1,6 +1,13 @@
 import { ObjectId } from 'mongodb';
+import { GraphQueryResult } from '../model/GraphQueryResult';
 import { Relationship } from '../model/Relationship';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
+
+type TraversalResult = { traversal?: TraversalResult; [k: string]: any };
+
+function unrollTraversal({ traversal, ...rest }: TraversalResult): any[] {
+  return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
+}
 
 export const RelationshipMappers = {
   toDBO(relationship: Relationship) {
@@ -34,5 +41,9 @@ export const RelationshipMappers = {
       },
       type: joined.type.toHexString(),
     };
+  },
+
+  toGraphQueryResult(traversal: unknown) {
+    return new GraphQueryResult(unrollTraversal(traversal));
   },
 };
