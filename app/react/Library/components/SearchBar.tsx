@@ -4,7 +4,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
 
 import { Icon } from 'UI';
-import { searchDocuments, processFilters } from 'app/Library/actions/libraryActions';
+import {
+  searchDocuments as searchDocumentsAction,
+  processFilters,
+} from 'app/Library/actions/libraryActions';
 import { t, Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import ModalTips from 'app/App/ModalTips';
@@ -27,7 +30,7 @@ const mapStateToProps = (state: IStore, props: SearchBarOwnProps) => {
 const mapDispatchToProps = (dispatch: Dispatch<{}>, props: SearchBarOwnProps) =>
   bindActionCreators(
     {
-      searchDocuments,
+      searchDocuments: searchDocumentsAction,
       change: formActions.change,
       semanticSearch: submitNewSearch,
     },
@@ -68,7 +71,7 @@ const SearchBarComponent = ({
 
   return (
     <div className="search-box">
-      <Form model={model} onSubmit={runSearch} autoComplete="off">
+      <Form model={model} onSubmit={runSearch}>
         <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
           <Field model=".searchTerm">
             <input

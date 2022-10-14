@@ -61,13 +61,13 @@ interface SortButtonsOwnProps {
 }
 
 const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
-  let { templates } = state;
+  let templates;
   const stateProperty = ownProps.stateProperty
     ? ownProps.stateProperty
     : `${ownProps.storeKey}.search`;
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
-    templates = templates.filter(
+    templates = state.templates.filter(
       i => i !== undefined && ownProps.selectedTemplates.includes(i.get('_id'))
     )!;
   }
@@ -79,7 +79,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
         Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null,
       state
     );
-  return { stateProperty, search, templates };
+  return { stateProperty, search, templates: templates || state.templates };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>, props: SortButtonsOwnProps) =>
@@ -111,6 +111,7 @@ const SortButtonsComponent = ({
     // TEST!!!
     const filters = { ...search, ...newSort, userSelectedSorting: true };
     // -------
+    //@ts-ignore
     delete filters.treatAs;
 
     if (sortCallback) {
