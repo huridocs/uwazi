@@ -7,19 +7,17 @@ const factory = getFixturesFactory();
 
 let db = testingDB.mongodb;
 
-const query = {
-  traverse: [
-    {
-      direction: 'out',
-      types: [factory.id('rtype1').toHexString()],
-      match: [
-        {
-          templates: [factory.id('template1').toHexString()],
-        },
-      ],
-    },
-  ],
-};
+const query = [
+  {
+    direction: 'out',
+    types: [factory.id('rtype1')],
+    match: [
+      {
+        templates: [factory.id('template1')],
+      },
+    ],
+  },
+];
 
 const fixtures = {
   entities: [
