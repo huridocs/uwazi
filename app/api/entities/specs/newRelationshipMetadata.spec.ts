@@ -1,6 +1,7 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
 
 const factory = getFixturesFactory();
@@ -19,7 +20,10 @@ const query = [
   },
 ];
 
+const adminUser = factory.user('admin', UserRole.ADMIN);
+
 const fixtures = {
+  users: [adminUser],
   entities: [
     factory.entity('entity1', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
     factory.entity('entity2', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
@@ -60,6 +64,18 @@ const fixtures = {
   templates: [
     factory.template('template1', [factory.property('relProp', 'newRelationship', { query })]),
     factory.template('template2', [factory.property('relProp2', 'newRelationship', { query })]),
+  ],
+  settings: [
+    {
+      languages: [
+        {
+          default: true,
+          label: 'English',
+          key: 'en',
+          localized_label: 'English',
+        },
+      ],
+    },
   ],
 };
 
@@ -141,5 +157,55 @@ describe('entities.get()', () => {
         obsoleteMetadata: [],
       },
     ]);
+  });
+});
+
+describe('entities.createEntity()', () => {
+  it('should mark newRelationship metadata as as obsolete when creating new entity', async () => {
+    const performSpy = jest.spyOn(entities, 'performNewRelationshipQueries').mockReturnValue([{}]);
+
+    await entities.save(
+      {
+        template: factory.id('template1'),
+        title: 'new_entity',
+      },
+      { user: adminUser, language: 'en' }
+    );
+    const inDb = await db?.collection('entities').findOne({ title: 'new_entity' });
+    expect(inDb).toMatchObject({
+      title: 'new_entity',
+      obsoleteMetadata: ['relProp'],
+    });
+
+    performSpy.mockRestore();
+  });
+
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should mark newRelationship metadata of affected entities as obsolete', async () => {
+    expect(await entities.get({ sharedId: 'entity1' })).toMatchObject([
+      {
+        sharedId: 'entity1',
+        obsoleteMetadata: [],
+      },
+    ]);
+
+    const performSpy = jest.spyOn(entities, 'performNewRelationshipQueries').mockReturnValue([{}]);
+
+    await entities.save(
+      {
+        _id: factory.id('entity2'),
+        sharedId: 'entity2',
+        template: factory.id('template1'),
+        title: 'entity2-renamed',
+      },
+      { user: adminUser, language: 'en' }
+    );
+    const inDb = await db?.collection('entities').findOne({ sharedId: 'entity1' });
+    expect(inDb).toMatchObject({
+      sharedId: 'entity1',
+      obsoleteMetadata: ['relProp'],
+    });
+
+    performSpy.mockRestore();
   });
 });

@@ -7,7 +7,6 @@ import * as filesystem from 'api/files';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships/relationships';
 import { search } from 'api/search';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
@@ -17,9 +16,11 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
@@ -27,6 +28,9 @@ import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -41,7 +45,24 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
+const markNewRelationshipsOfAffected = async ({ sharedId, language }) => {
+  console.log(sharedId, language);
+  const db = getConnection();
+  const client = getClient();
+  const entitiesDataSource = new MongoEntitiesDataSource(db);
+  const service = new DenormalizationService(
+    new MongoRelationshipsDataSource(db),
+    entitiesDataSource,
+    new MongoTemplatesDataSource(db),
+    new MongoTransactionManager(client)
+  );
+  const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
+  entitiesDataSource.markMetadataAsChanged(candidates);
+  console.log(candidates);
+};
+
 async function updateEntity(entity, _template, unrestricted = false) {
+  console.log(entity);
   const docLanguages = await this.getAllLanguages(entity.sharedId);
 
   if (
@@ -138,11 +159,16 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
+  await markNewRelationshipsOfAffected(docLanguages[0]);
+
   return result;
 }
 
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
+  const newRelationshipPropertyNames =
+    docTemplate.properties.filter(p => p.type === propertyTypes.newRelationship).map(p => p.name) ||
+    [];
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
   return Promise.all(
     languages.map(async lang => {
@@ -166,6 +192,8 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
         langDoc.template.toString(),
         thesauriByKey
       );
+
+      langDoc.obsoleteMetadata = newRelationshipPropertyNames;
 
       return model.save(langDoc);
     })
@@ -332,10 +360,6 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  async denormalizeNewRelationships(_sharedId) {
-    // TODO: Find affected entities, mark their obsolete metadata and return their sharedIds for indexation.
-  },
-
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
@@ -375,16 +399,6 @@ export default {
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
-
-    const entitiesToIndex = this.denormalizeNewRelationships(sharedId);
-
-    if (index) {
-      await search.indexEntities(
-        { sharedId: { $in: entitiesToIndex.concat([sharedId]) } },
-        '+fullText'
-      );
-    }
-
     return entity;
   },
 
