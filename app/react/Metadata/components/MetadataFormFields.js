@@ -6,6 +6,7 @@ import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import ID from 'shared/uniqueID';
 import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -14,6 +15,8 @@ import { generateID } from 'shared/IDGenerator';
 import { bindActionCreators } from 'redux';
 import Tip from 'app/Layout/Tip';
 
+import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
+import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
 import {
   DatePicker,
   DateRange,
@@ -34,6 +37,7 @@ import MultipleEditionFieldWarning from './MultipleEditionFieldWarning';
 import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
+import { AddThesauriValueButton } from './AddThesauriValueButton';
 
 const translateOptions = thesauri =>
   thesauri
@@ -77,6 +81,29 @@ const groupSameRelationshipFields = fields =>
     .filter(f => f);
 
 class MetadataFormFields extends Component {
+  async onAddThesauriValueSaved(thesauri, newValue, _model, isMultiSelect) {
+    const { model, push, change } = this.props;
+    const newThesauri = thesauri.toJS();
+    const newValueItem = { label: newValue.value, id: ID() };
+    if (newValue.group === 'root') {
+      newThesauri.values.push(newValueItem);
+    } else {
+      newThesauri.values.forEach(value => {
+        if (value.id === newValue.group) {
+          value.values.push(newValueItem);
+        }
+      });
+    }
+    const sanitizedThesauri = sanitizeThesauri(newThesauri);
+    await this.props.saveThesaurus(sanitizedThesauri);
+    const formModel = `${model}${_model}`;
+    if (isMultiSelect) {
+      push(formModel, newValueItem.id);
+    } else {
+      change(formModel, newValueItem.id);
+    }
+  }
+
   getField(property, _model, thesauris, formModel) {
     let thesauri;
     let totalPossibleOptions = 0;
@@ -97,28 +124,44 @@ class MetadataFormFields extends Component {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
-          <Select
-            model={_model}
-            optionsValue="id"
-            options={translateOptions(thesauri)}
-            placeholder="Select..."
-          />
+          <>
+            <AddThesauriValueButton
+              values={translateOptions(thesauri)}
+              onModalAccept={async newValue => {
+                await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+              }}
+            />
+            <Select
+              model={_model}
+              optionsValue="id"
+              options={translateOptions(thesauri)}
+              placeholder="Select..."
+            />
+          </>
         );
       case 'multiselect':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
-          <MultiSelect
-            model={_model}
-            optionsValue="id"
-            options={translateOptions(thesauri)}
-            prefix={_model}
-            forceHoist={version === 'OneUp'}
-            placeholder={
-              version === 'OneUp'
-                ? `${t('System', 'Search', null, false)} '${thesauri.get('name')}'`
-                : null
-            }
-          />
+          <>
+            <AddThesauriValueButton
+              values={translateOptions(thesauri)}
+              onModalAccept={async newValue => {
+                await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
+              }}
+            />
+            <MultiSelect
+              model={_model}
+              optionsValue="id"
+              options={translateOptions(thesauri)}
+              prefix={_model}
+              forceHoist={version === 'OneUp'}
+              placeholder={
+                version === 'OneUp'
+                  ? `${t('System', 'Search', null, false)} '${thesauri.get('name')}'`
+                  : null
+              }
+            />
+          </>
         );
       case 'relationship':
         if (property.content) {
@@ -369,6 +412,7 @@ MetadataFormFields.defaultProps = {
 };
 
 MetadataFormFields.propTypes = {
+  saveThesaurus: PropTypes.func.isRequired,
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   model: PropTypes.string.isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -382,6 +426,7 @@ MetadataFormFields.propTypes = {
   attachments: PropTypes.instanceOf(Immutable.List),
   localAttachments: PropTypes.arrayOf(PropTypes.instanceOf(Object)),
   change: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
   locale: PropTypes.string,
 };
 
@@ -423,7 +468,10 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   if (ownProps.boundChange) {
     return { change: ownProps.boundChange };
   }
-  return bindActionCreators({ change: formActions.change }, dispatch);
+  return bindActionCreators(
+    { saveThesaurus, change: formActions.change, push: formActions.push },
+    dispatch
+  );
 };
 
 export { MetadataFormFields, translateOptions };

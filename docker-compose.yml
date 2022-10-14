@@ -1,37 +1,50 @@
-version: "3"
+version: '3'
 services:
   elasticsearch:
     build:
       context: .
       dockerfile: elastic-icu-7.11.2.Dockerfile
     container_name: uwazi-elasticsearch
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - '9200:9200'
     environment:
-        - bootstrap.memory_lock=true
-        - indices.query.bool.max_clause_count=2048
-        - discovery.type=single-node
-        - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-        - cluster.routing.allocation.disk.threshold_enabled=false
+      - bootstrap.memory_lock=true
+      - indices.query.bool.max_clause_count=2048
+      - discovery.type=single-node
+      - 'ES_JAVA_OPTS=-Xms2g -Xmx2g'
+      - cluster.routing.allocation.disk.threshold_enabled=false
+
   mongo:
-    image: "mongo:4.2"
+    image: 'mongo:4.2'
     container_name: uwazi-mongo
+    volumes:
+      - mongodata:/data/db
     ports:
-      - "27017:27017"
+      - '27017:27017'
+
   redis:
-    image: "redis:5.0.14"
+    image: 'redis:5.0.14'
     container_name: uwazi-redis
     command: redis-server
     ports:
-      - "6379:6379"
+      - '6379:6379'
     environment:
       - REDIS_REPLICATION_MODE=master
+
   minio:
     image: minio/minio
     container_name: uwazi-s3
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - ./storage/minio:/data
     command: server /data --console-address :9001
+
+volumes:
+  esdata01:
+    driver: local
+  mongodata:
+    driver: local

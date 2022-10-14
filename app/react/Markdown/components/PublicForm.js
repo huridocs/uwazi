@@ -47,7 +47,7 @@ class PublicForm extends Component {
     return (
       <div className="public-form submiting">
         <h3>
-          <Translate>Submiting</Translate>
+          <Translate>Submitting</Translate>
         </h3>
         <Loader />
       </div>
