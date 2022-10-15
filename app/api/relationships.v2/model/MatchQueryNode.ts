@@ -103,10 +103,6 @@ export class MatchQueryNode extends QueryNode {
   reachesEntity(entity: Entity): MatchQueryNode | undefined {
     this.validateIsChain();
 
-    if (this.wouldMatch(entity)) {
-      return MatchQueryNode.forEntity(entity);
-    }
-
     if (this.traversals[0]) {
       const nextReaches = this.traversals[0].reachesEntity(entity);
       if (nextReaches) {

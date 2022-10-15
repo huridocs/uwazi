@@ -222,6 +222,16 @@ describe('when calling reachesEntity()', () => {
     expect(query.reachesEntity({ template: 'temp4', sharedId: 'root' })).toBe(undefined);
   });
 
+  it('should not match if it does not need to traverse a relationship', () => {
+    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['temp2'] }, []),
+      ]),
+    ]);
+
+    expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp1' })).toBe(undefined);
+  });
+
   it('should return the narrowed query that would match the given entity', () => {
     const query = new MatchQueryNode({ templates: ['temp1'] }, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
@@ -236,10 +246,6 @@ describe('when calling reachesEntity()', () => {
         ]),
       ]),
     ]);
-
-    expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp1' })).toEqual(
-      new MatchQueryNode({ sharedId: 'entity1' }, [])
-    );
 
     expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp2' })).toEqual(
       new MatchQueryNode({ templates: ['temp1'] }, [
@@ -310,9 +316,12 @@ describe('when calling a method that only supports chain queries', () => {
           entity2: { sharedId: 'entity2', template: 'fakeTemplate' },
         });
       }).toThrow(NonChainQueryError);
-      expect(() => {
-        query.reachesEntity({ sharedId: 'fakeEntity', template: 'fakeTemplate' });
-      }).toThrow(NonChainQueryError);
+
+      if (query !== query2) {
+        expect(() => {
+          query.reachesEntity({ sharedId: 'fakeEntity', template: 'fakeTemplate' });
+        }).toThrow(NonChainQueryError);
+      }
     }
   );
 });

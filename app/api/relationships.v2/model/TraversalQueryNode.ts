@@ -173,6 +173,11 @@ export class TraversalQueryNode extends QueryNode {
 
   reachesEntity(entity: Entity) {
     this.validateIsChain();
+
+    if (this.matches[0].wouldMatch(entity)) {
+      return this.shallowClone([MatchQueryNode.forEntity(entity)]);
+    }
+
     const nextReaches = this.matches[0].reachesEntity(entity);
     if (nextReaches) {
       return this.shallowClone([nextReaches]);
