@@ -31,20 +31,21 @@ type SortType = {
   type: string;
   context?: ObjectIdSchema;
 };
+const isSortable = (property: PropertySchema) =>
+  property.filter &&
+  (isSortableType(property.type) || (property.inherit && isSortableType(property.inherit.type!)));
+
+const getSortString = (property: PropertySchema) =>
+  `metadata.${property.name}${property.inherit ? '.inheritedValue' : ''}`;
+
 const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
   templates.toJS().reduce((sorts: SortType[], template: ClientTemplateSchema) => {
-    template.properties?.forEach((property: PropertySchema) => {
-      const sortable =
-        property.filter &&
-        (isSortableType(property.type) ||
-          (property.inherit && isSortableType(property.inherit.type!)));
-
-      if (sortable && !sorts.find(s => s.name === property.name)) {
-        const sortString = `metadata.${property.name}${property.inherit ? '.inheritedValue' : ''}`;
+    (template.properties || []).forEach((property: PropertySchema) => {
+      if (isSortable(property) && !sorts.find(s => s.name === property.name)) {
         sorts.push({
           label: property.label,
           name: property.name,
-          value: sortString,
+          value: getSortString(property),
           type: property.type,
           context: template._id,
         });
@@ -56,6 +57,7 @@ const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
 interface SortButtonsOwnProps {
   storeKey: 'library' | 'uploads';
   stateProperty: string;
+  // eslint-disable-next-line react/no-unused-prop-types
   selectedTemplates: IImmutable<string[]>;
   sortCallback: Function;
 }
@@ -154,8 +156,7 @@ const SortButtonsComponent = ({
 
   return (
     <div className="sort-buttons">
-      {/*
-        // @ts-ignore */}
+      {/*  @ts-ignore */}
       <DropdownList
         className="sort-dropdown"
         value={search.sort}
