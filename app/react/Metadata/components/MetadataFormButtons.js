@@ -19,7 +19,6 @@ class MetadataFormButtons extends Component {
 
     const ViewButton = (
       <I18NLink
-        component="button"
         to={`entity/${data.sharedId}`}
         className="edit-metadata btn btn-default"
         tabIndex="0"
@@ -38,7 +37,7 @@ class MetadataFormButtons extends Component {
     return (
       <>
         <div className="btn-cluster">
-          {this.props.includeViewButton && ViewButton}
+          {this.props.includeViewButton && data.sharedId && ViewButton}
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
             {!entityBeingEdited && (
               <button
