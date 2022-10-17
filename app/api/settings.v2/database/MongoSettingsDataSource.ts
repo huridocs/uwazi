@@ -30,4 +30,9 @@ export class MongoSettingsDataSource
     }
     return defaultLanguage.key;
   }
+
+  async readNewRelationshipsAllowed(): Promise<boolean> {
+    const settings = await this.readSettings();
+    return !!settings?.features?.newRelationships;
+  }
 }

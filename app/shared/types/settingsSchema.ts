@@ -268,6 +268,7 @@ const settingsSchema = {
             },
           },
         },
+        newRelationships: { type: 'boolean' },
       },
     },
     mapStartingPoint: geolocationSchema,
