@@ -99,7 +99,7 @@ const SortButtonsComponent = ({
   templates,
   sortCallback,
 }: mappedProps) => {
-  const sorting = (property: string, defaultTreatAs: string, selectedSort?: string) => {
+  const doSort = (property: string, defaultTreatAs: string, selectedSort?: string) => {
     const treatAs = defaultTreatAs;
     let order = selectedSort;
 
@@ -122,7 +122,7 @@ const SortButtonsComponent = ({
   };
 
   const changeOrder = () => {
-    sorting(search.sort, search.treatAs, search.order === 'asc' ? 'desc' : 'asc');
+    doSort(search.sort, search.treatAs, search.order === 'asc' ? 'desc' : 'asc');
   };
 
   const validateSearch = () => {
@@ -159,12 +159,12 @@ const SortButtonsComponent = ({
       {/*  @ts-ignore */}
       <DropdownList
         className="sort-dropdown"
-        value={search.sort}
+        value={validatedSearch.sort}
         data={sortOptions}
         valueField="value"
         textField="label"
         onChange={(selected: SortType) =>
-          sorting(
+          doSort(
             selected.value,
             selected.type === 'text' || selected.type === 'select' ? 'string' : 'number'
           )
@@ -185,4 +185,5 @@ const SortButtonsComponent = ({
 };
 
 const container = connector(SortButtonsComponent);
-export { container as SortButtons };
+export type { SortButtonsOwnProps };
+export { container as SortButtons, mapStateToProps };

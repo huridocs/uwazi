@@ -1,24 +1,42 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow } from 'enzyme';
-import { fromJS as immutable } from 'immutable';
+import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
-import { SortButtons, mapStateToProps } from '../SortButtons';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import { fromJS, fromJS as immutable } from 'immutable';
+
+import { IStore } from 'app/istore';
+import { actions } from 'react-redux-form';
+import { IImmutable } from 'shared/types/Immutable';
+import { SortButtons, SortButtonsOwnProps, mapStateToProps } from '../SortButtons';
 
 describe('SortButtons', () => {
-  let component;
-  let instance;
-  let props;
+  let props: SortButtonsOwnProps;
+  let state: Partial<Omit<IStore, 'library'>> & {
+    library: { search: { searchTerm?: string; sort?: string; order?: string; treatAs?: string } };
+  };
+  let renderResult: RenderResult;
 
   const render = () => {
-    component = shallow(<SortButtons {...props} />);
-    instance = component.instance();
+    ({ renderResult } = renderConnectedContainer(<SortButtons {...props} />, () => state));
   };
 
+  const openDropdown = () => {
+    const openBtn = renderResult.container.getElementsByClassName('rw-btn-select')[0];
+    fireEvent.click(openBtn);
+    const options = screen.getAllByRole('option');
+    const optionsLabel = options.map(option => option.textContent);
+    return { options, optionsLabel };
+  };
+  const selectOption = (options: Element[], label: string) => {
+    const optionToSelect = options.find(option => option.textContent === label);
+    fireEvent.click(optionToSelect!);
+  };
   beforeEach(() => {
-    props = {
-      sortCallback: jasmine.createSpy('sortCallback'),
-      merge: jasmine.createSpy('merge'),
-      search: { order: 'desc', sort: 'title' },
+    state = {
+      ...defaultState,
       templates: immutable([
         {
           _id: 'id',
@@ -49,20 +67,28 @@ describe('SortButtons', () => {
           ],
         },
       ]),
-      stateProperty: 'search',
+      library: {
+        search: {
+          sort: 'asc',
+        },
+      },
+    };
+    props = {
+      sortCallback: jasmine.createSpy('sortCallback'),
+      stateProperty: 'library.search',
       storeKey: 'library',
+      selectedTemplates: fromJS([]),
     };
   });
 
   describe('Sort options', () => {
     it('should use templates sortable properties as options (with asc and desc for each)', () => {
       render();
-      expect(component).toMatchSnapshot();
+      expect(renderResult.asFragment()).toMatchSnapshot();
     });
-
     describe('when multiple options have the same name', () => {
       it('should not duplicate the entry', () => {
-        props.templates = immutable([
+        state.templates = immutable([
           {
             _id: 'id',
             properties: [
@@ -89,83 +115,78 @@ describe('SortButtons', () => {
           },
         ]);
         render();
-        expect(component.find('.sort-dropdown').props().data.length).toBe(4);
-        expect(component.find('.sort-dropdown').props().data).toContainEqual({
-          context: 'id',
-          label: 'sortableProperty',
-          name: 'sortable_name',
-          type: 'text',
-          value: 'metadata.sortable_name',
-        });
+        const { options, optionsLabel } = openDropdown();
+        expect(options.length).toBe(4);
+        expect(optionsLabel).toEqual(['Title', 'Date added', 'Date modified', 'sortableProperty']);
       });
     });
-
     describe('when there is an active search term', () => {
       it('should display sort by search relevance option', () => {
-        props.search.searchTerm = 'keyword';
+        state.library.search.searchTerm = 'keyword';
         render();
-        expect(component.find('.sort-dropdown').props().data).toContainEqual({
-          context: 'System',
-          label: 'Search relevance',
-          type: 'number',
-          value: '_score',
-        });
+        const { optionsLabel } = openDropdown();
+        expect(optionsLabel).toContain('Search relevance');
       });
 
       it('should disable the sort button and show the sort down icon', () => {
-        props.search.searchTerm = 'keyword';
-        props.search.sort = '_score';
+        state.library.search.searchTerm = 'keyword';
+        state.library.search.sort = '_score';
         render();
-        expect(component.find('.sorting-toggle').props().disabled).toBe(true);
-        expect(component.find('.sorting-toggle').props().children.props.icon).toBe('arrow-down');
+        const toggleBtn = renderResult.container.getElementsByClassName(
+          'sorting-toggle'
+        )[0] as HTMLElement;
+        expect(toggleBtn.attributes.getNamedItem('disabled')).toBeDefined();
+        expect(toggleBtn.children[0].attributes.getNamedItem('data-icon')?.value).toBe(
+          'arrow-down'
+        );
       });
     });
-
     describe('when relevance sorting is active and there is no search term', () => {
       it('should fall back to sorting by most recent creation date', () => {
-        props.search.sort = '_score';
+        state.library.search.sort = '_score';
+        state.library.search.searchTerm = '';
         render();
-        expect(component).toMatchSnapshot();
+        const combobox = screen.getByRole('combobox');
+        expect(combobox.textContent).toBe('Date added');
+        expect(renderResult.asFragment()).toMatchSnapshot();
       });
     });
 
     describe('when active', () => {
       it('should set the option active', () => {
-        props.search.sort = 'metadata.sortable_name';
+        state.library.search.sort = 'metadata.sortable_name';
         render();
-        expect(component.find('.sort-dropdown').props().value).toBe('metadata.sortable_name');
+        const combobox = screen.getByRole('combobox');
+        expect(combobox.textContent).toBe('sortableProperty');
       });
     });
-
     describe('clicking an option', () => {
       it('should sort by that property with default order (asc for text and desc for date)', () => {
         render();
-        component
-          .find('.sort-dropdown')
-          .simulate('change', { value: 'metadata.sortable_name', type: 'select' });
+        const { options } = openDropdown();
+        selectOption(options, 'sortableProperty');
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'metadata.sortable_name', order: 'asc', userSelectedSorting: true } },
           'library'
         );
-
-        component
-          .find('.sort-dropdown')
-          .simulate('change', { value: 'metadata.different_name', type: 'date' });
+        selectOption(options, 'date');
         expect(props.sortCallback).toHaveBeenCalledWith(
-          { search: { sort: 'metadata.different_name', order: 'desc', userSelectedSorting: true } },
+          { search: { sort: 'metadata.date', order: 'desc', userSelectedSorting: true } },
           'library'
         );
       });
     });
   });
-
   describe('sort', () => {
     it('should not fail if no sortCallback', () => {
+      /*  @ts-ignore */
       delete props.sortCallback;
       render();
       let error;
+      state.library.search.sort = 'title';
       try {
-        instance.sort('title');
+        const searchBtn = screen.getByRole('button');
+        fireEvent.click(searchBtn);
       } catch (err) {
         error = err;
       }
@@ -173,37 +194,34 @@ describe('SortButtons', () => {
     });
 
     it('should change sorting order when using the order button', () => {
-      props.search = { order: 'asc', sort: 'title' };
+      state.library.search = { order: 'asc', sort: 'title' };
       render();
-      component.find('button[type="button"]').simulate('click');
+      const searchBtn = screen.getByRole('button');
+      fireEvent.click(searchBtn);
       expect(props.sortCallback).toHaveBeenCalledWith(
         { search: { sort: 'title', order: 'desc', userSelectedSorting: true } },
         'library'
       );
     });
     describe('when changing property being sorted', () => {
-      it('should use default order', () => {
-        props.search = { order: 'desc', sort: 'title' };
+      const rerenderSortButtons = () => {
+        state.library.search = { order: 'desc', sort: 'title' };
         render();
-        instance.sort('title', 'string');
+        // @ts-ignore
+        props.sortCallback.calls.reset();
+      };
+      it('should use default order', () => {
+        rerenderSortButtons();
+        fireEvent.click(screen.getByRole('button'));
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'title', order: 'asc', userSelectedSorting: true } },
           'library'
         );
-
-        props.sortCallback.calls.reset();
-        props.search = { order: 'desc', sort: 'title' };
-        render();
-        instance.sort('creationDate', 'number');
-        expect(props.sortCallback).toHaveBeenCalledWith(
-          { search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } },
-          'library'
-        );
-
-        props.sortCallback.calls.reset();
-        props.search = { order: 'desc', sort: 'title' };
-        render();
-        instance.sort('creationDate', 'number');
+        renderResult.unmount();
+        rerenderSortButtons();
+        const { options } = openDropdown();
+        selectOption(options, 'Date added');
+        fireEvent.click(screen.getByRole('button'));
         expect(props.sortCallback).toHaveBeenCalledWith(
           { search: { sort: 'creationDate', order: 'desc', userSelectedSorting: true } },
           'library'
@@ -213,11 +231,13 @@ describe('SortButtons', () => {
 
     describe('when changing order', () => {
       it('should keep the treatAs property', () => {
-        props.search = { order: 'desc', sort: 'title', treatAs: 'number' };
+        jest.spyOn(actions, 'merge');
+        state.library.search = { order: 'desc', sort: 'title', treatAs: 'number' };
         render();
-        instance.sort('title', 'number');
-        instance.changeOrder();
-        expect(props.merge).toHaveBeenCalledWith('search', {
+        const { options } = openDropdown();
+        selectOption(options, 'Title');
+        fireEvent.click(screen.getByRole('button'));
+        expect(actions.merge).toHaveBeenCalledWith('library.search', {
           sort: 'title',
           order: 'asc',
           treatAs: 'number',
@@ -225,29 +245,30 @@ describe('SortButtons', () => {
       });
     });
   });
-
   describe('when filtering number property', () => {
     it('should set value to number', () => {
-      props.search = { order: 'asc', sort: 'number' };
+      state.library.search = { order: 'asc', sort: 'number' };
       render();
-      expect(component.find('.sort-dropdown').props().value).toBe('number');
+      const combobox = screen.getByRole('combobox');
+      expect(combobox.textContent).toBe('number');
     });
   });
 
   describe('mapStateToProps', () => {
-    let templates;
+    let templates: IImmutable<any>[];
 
     it('should send all templates from state', () => {
-      const state = { templates: immutable(['item']), library: { search: {} } };
+      const stateToMap = { templates: immutable(['item']), library: { search: {} } };
       const _props = { storeKey: 'library' };
-      expect(mapStateToProps(state, _props).templates.get(0)).toBe('item');
+      // @ts-ignore
+      expect(mapStateToProps(stateToMap, _props).templates.get(0)).toBe('item');
     });
-
     it('should only send selectedTemplates if array passed in ownProps', () => {
       templates = immutable([{ _id: 'a' }, { _id: 'b' }]);
-      const state = { templates, library: { search: {} } };
+      const stateToMap = { templates, library: { search: {} } };
       const _props = { selectedTemplates: immutable(['b']), storeKey: 'library' };
-      expect(mapStateToProps(state, _props).templates.getIn([0, '_id'])).toBe('b');
+      // @ts-ignore
+      expect(mapStateToProps(stateToMap, _props).templates.getIn([0, '_id'])).toBe('b');
     });
 
     describe('search', () => {
@@ -256,26 +277,32 @@ describe('SortButtons', () => {
       });
 
       it('should be selected from the state according to the store key', () => {
-        const state = { templates, library: { search: 'correct search' } };
+        const stateValues = { templates, library: { search: 'correct search' } };
         const _props = { storeKey: 'library' };
-        expect(mapStateToProps(state, _props).search).toBe('correct search');
+        // @ts-ignore
+        expect(mapStateToProps(stateValues, _props).search).toBe('correct search');
       });
-
       it('should be selected from the state according to the stateProperty (if passed)', () => {
-        let state = { templates, library: { search: 'incorrect search', sort: 'correct search' } };
+        let stateToMap = {
+          templates,
+          library: { search: 'incorrect search', sort: 'correct search' },
+        };
         let _props = { storeKey: 'library', stateProperty: 'library.sort' };
-        expect(mapStateToProps(state, _props).search).toBe('correct search');
+        // @ts-ignore
+        expect(mapStateToProps(stateToMap, _props).search).toBe('correct search');
 
-        state = {
+        stateToMap = {
           templates,
           library: {
             search: 'incorrect search',
             sort: 'incorrect search',
+            // @ts-ignore
             nested: { dashed: 'correct search' },
           },
         };
         _props = { storeKey: 'library', stateProperty: 'library/nested.dashed' };
-        expect(mapStateToProps(state, _props).search).toBe('correct search');
+        // @ts-ignore
+        expect(mapStateToProps(stateToMap, _props).search).toBe('correct search');
       });
     });
   });
