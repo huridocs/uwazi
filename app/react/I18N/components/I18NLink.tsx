@@ -11,6 +11,7 @@ const defaultProps = {
   onClick: (_e: any) => {},
   confirmTitle: '',
   confirmMessage: '',
+  component: 'link',
 };
 
 export type I18NLinkProps = typeof defaultProps & {
@@ -19,6 +20,7 @@ export type I18NLinkProps = typeof defaultProps & {
   onClick: (_e: any) => void;
   confirmTitle: string;
   confirmMessage: string;
+  component?: string; // button or link
 };
 
 export class I18NLink extends Component<I18NLinkProps> {
@@ -62,13 +64,19 @@ export class I18NLink extends Component<I18NLinkProps> {
   }
 
   render() {
+    const { component } = this.props;
     const props = objectWithoutKeys(this.props, [
       'dispatch',
       'onClick',
       'confirmTitle',
       'confirmMessage',
+      'component',
     ]);
-    return <Link onClick={this.onClick} {...props} />;
+    return component === 'button' ? (
+      <button type="button" onClick={this.onClick} {...props} />
+    ) : (
+      <Link onClick={this.onClick} {...props} />
+    );
   }
 }
 
