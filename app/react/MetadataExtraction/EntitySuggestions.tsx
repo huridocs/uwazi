@@ -302,7 +302,7 @@ export const EntitySuggestions = ({
     sending_labeled_data: 'Sending labeled data...',
     processing_model: 'Training model...',
     processing_suggestions: 'Finding suggestions',
-    cancel: 'Cancelling...',
+    cancel: 'Canceling...',
     error: 'Error',
   };
 

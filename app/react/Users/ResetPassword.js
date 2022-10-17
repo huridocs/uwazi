@@ -90,7 +90,9 @@ class ResetPassword extends RouteHandler {
                 />
                 {this.state.error && (
                   <div className="required">
-                    <Translate>Passwords don&rsquo;t match</Translate>
+                    <Translate translationKey="mismatched passwords">
+                      Passwords don&rsquo;t match
+                    </Translate>
                   </div>
                 )}
               </div>
