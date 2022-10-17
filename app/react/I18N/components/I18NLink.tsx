@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import objectWithoutKeys from 'app/utils/objectWithoutKeys';
+import t from '../t';
 
 const defaultProps = {
   disabled: false,
@@ -72,11 +73,11 @@ export class I18NLink extends Component<I18NLinkProps> {
       'confirmMessage',
       'component',
     ]);
-    return component === 'button' ? (
-      <button type="button" onClick={this.onClick} {...props} />
-    ) : (
-      <Link onClick={this.onClick} {...props} />
-    );
+    if (component === 'button') {
+      const buttonProps = objectWithoutKeys(props, ['to']);
+      return <button type="button" onClick={this.onClick} {...buttonProps} />;
+    }
+    return <Link onClick={this.onClick} {...props} />;
   }
 }
 
