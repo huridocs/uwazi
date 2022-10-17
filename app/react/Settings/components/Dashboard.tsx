@@ -83,7 +83,7 @@ const Dashboard = () => {
                 </div>
                 <div className="footer">
                   <p className="card-info">
-                    <Translate>File system storage</Translate>
+                    <Translate>Files and database usage</Translate>
                   </p>
                 </div>
               </article>

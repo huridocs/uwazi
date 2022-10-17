@@ -61,8 +61,8 @@ export default {
         value: 'Storage',
       },
       {
-        key: 'File system storage',
-        value: 'File system storage',
+        key: 'Files and database usage',
+        value: 'Files and database usage',
       },
       {
         key: 'Total entities',

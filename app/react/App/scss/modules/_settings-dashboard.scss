@@ -1,5 +1,7 @@
 .settings {
   .settings-dashboard {
+    color: $c-gray-900;
+
     .panel-heading {
       margin-bottom: 30px;
     }
@@ -71,8 +73,8 @@
 
           .translation,
           .total {
-            color: $c-grey;
-            font-weight: bold;
+            color: $c-gray-600;
+            font-weight: 400;
           }
         }
 
@@ -83,21 +85,23 @@
 
           .user-info {
             .translation {
-              color: $c-grey;
-              font-weight: bold;
+              color: $c-gray-600;
+              font-weight: 500;
             }
           }
 
           .card-info {
             .translation {
               font-style: italic;
+              color: $c-gray-600;
+              font-weight: 400;
             }
           }
 
           p:not(:last-child):after {
             content: '|';
             margin-left: 10px;
-            color: $c-grey;
+            color: $c-gray-600;
           }
 
           .count {
