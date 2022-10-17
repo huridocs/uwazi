@@ -11,6 +11,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
+import { searching } from 'app/Relationships/actions/uiActions';
 
 const isSortableType = (type: PropertySchema['type']) => {
   switch (type) {
@@ -71,7 +72,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
     templates = state.templates.filter(
       i => i !== undefined && ownProps.selectedTemplates.includes(i.get('_id'))
-    )!;
+    )! as IImmutable<ClientTemplateSchema[]>;
   }
 
   const search = stateProperty
@@ -91,6 +92,12 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & SortButtonsOwnProps;
 
+const getPropertySortType = (selected: SortType): string =>
+  selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';
+
+const getToggleSearchIcon = (search: { order?: 'asc' | 'desc'; sort?: string }) =>
+  search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down';
+
 const SortButtonsComponent = ({
   storeKey,
   search,
@@ -101,12 +108,7 @@ const SortButtonsComponent = ({
 }: mappedProps) => {
   const doSort = (property: string, defaultTreatAs: string, selectedSort?: string) => {
     const treatAs = defaultTreatAs;
-    let order = selectedSort;
-
-    if (treatAs && !selectedSort) {
-      order = treatAs === 'string' ? 'asc' : 'desc';
-    }
-
+    const order = selectedSort || (treatAs === 'string' ? 'asc' : 'desc');
     const newSort = { sort: property, order, treatAs };
     merge(stateProperty, newSort);
 
@@ -116,25 +118,22 @@ const SortButtonsComponent = ({
     //@ts-ignore
     delete filters.treatAs;
 
-    if (sortCallback) {
-      sortCallback({ search: filters }, storeKey);
-    }
+    return sortCallback && sortCallback({ search: filters }, storeKey);
   };
 
   const changeOrder = () => {
     doSort(search.sort, search.treatAs, search.order === 'asc' ? 'desc' : 'asc');
   };
 
-  const validateSearch = () => {
-    const _search = { ...search };
-    if (_search.sort === '_score' && !_search.searchTerm) {
-      _search.sort = 'creationDate';
-      _search.order = 'desc';
-    }
-    return _search;
-  };
+  const validatedSearch =
+    search.sort === '_score' && !search.searchTerm
+      ? {
+          sort: 'creationDate',
+          order: 'desc',
+          searchTerm: search.searchTerm,
+        }
+      : { searchTerm: search.searchTerm, sort: search.sort };
 
-  const validatedSearch = validateSearch();
   const metadataSorts = getMetadataSorts(templates);
   const commonSorts = [
     { label: 'Title', value: 'title', type: 'text', context: 'System' },
@@ -163,12 +162,7 @@ const SortButtonsComponent = ({
         data={sortOptions}
         valueField="value"
         textField="label"
-        onChange={(selected: SortType) =>
-          doSort(
-            selected.value,
-            selected.type === 'text' || selected.type === 'select' ? 'string' : 'number'
-          )
-        }
+        onChange={(selected: SortType) => doSort(selected.value, getPropertySortType(selected))}
       />
       <button
         type="button"
@@ -176,9 +170,7 @@ const SortButtonsComponent = ({
         className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
         onClick={changeOrder}
       >
-        <Icon
-          icon={search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down'}
-        />
+        <Icon icon={getToggleSearchIcon(search)} />
       </button>
     </div>
   );
