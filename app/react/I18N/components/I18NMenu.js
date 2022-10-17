@@ -6,8 +6,6 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { actions, Translate, t } from 'app/I18N';
 
-import { DropdownList } from 'app/Forms';
-
 const prepareDropdownValues = (languageMap, locale, user) => {
   const languages = languageMap.toJS();
 
@@ -21,19 +19,6 @@ const prepareDropdownValues = (languageMap, locale, user) => {
   }
 
   return { languages, selectedLanguage, loggedUser };
-};
-
-const listItem = (item, i18nmode) => {
-  if (!item.type) {
-    return <span>{item.localized_label || item.label}</span>;
-  }
-
-  return (
-    <div className="live-translate">
-      <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-      <Translate>{item.label}</Translate>
-    </div>
-  );
 };
 
 const locationSearch = location => {
@@ -89,27 +74,38 @@ class I18NMenu extends Component {
         aria-label="Languages"
       >
         {!i18nmode && (
-          <DropdownList
-            data={languages}
-            id="key"
-            defaultValue={selectedLanguage.key}
-            textField="localized_label"
-            className="menuNav-language"
-            itemComponent={({ item }) => listItem(item)}
-            valueField="key"
-            valueComponent={({ item }) => listItem(item)}
-            onSelect={selected => {
-              if (selected.type === 'livetranslate') {
-                toggleInlineEdit();
-              } else {
-                const url = `/${selected.key}${path}${
+          <div className="menuNav-language">
+            <ul>
+              {languages.map(language => {
+                const url = `/${language.key}${path}${
                   path.match('document') ? '' : location.search
                 }`;
-                I18NMenu.reload(url);
-              }
-            }}
-          />
+
+                if (!language.type) {
+                  return (
+                    <li key={language._id} className="menuNav-item">
+                      <a href={url} className="btn menuNav-btn">
+                        {language.localized_label || language.label}
+                      </a>
+                    </li>
+                  );
+                }
+
+                return (
+                  <button
+                    className="live-translate"
+                    type="button"
+                    onClick={() => toggleInlineEdit()}
+                  >
+                    <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                    <Translate>{language.label}</Translate>
+                  </button>
+                );
+              })}
+            </ul>
+          </div>
         )}
+
         {i18nmode && (
           <div className="menuNav-language">
             <button
