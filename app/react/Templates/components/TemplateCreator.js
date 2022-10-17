@@ -78,7 +78,7 @@ class TemplateCreator extends Component {
                     {this.props.noRelationtypes && (
                       <div className="alert alert-warning">
                         <Translate translationKey="No relationship types warning">
-                          Relationship fields can not be added untill you have at least one
+                          Relationship fields can not be added until you have at least one
                           relationship type to select.
                         </Translate>
                       </div>

@@ -208,7 +208,7 @@ const LanguageList = ({
               <Translate>Are you sure you want to delete</Translate>&nbsp;{deletingLanguage.label}
               &nbsp;
               <Translate>language?</Translate>&nbsp;
-              <Translate>
+              <Translate translationKey="delete language warning">
                 This action may take some time, can not be undone and will delete all the
                 information in that language.
               </Translate>
