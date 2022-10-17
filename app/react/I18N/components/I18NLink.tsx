@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, browserHistory } from 'react-router';
 import objectWithoutKeys from 'app/utils/objectWithoutKeys';
-import t from '../t';
 
 const defaultProps = {
   disabled: false,
