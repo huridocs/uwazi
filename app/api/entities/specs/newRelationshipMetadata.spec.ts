@@ -160,7 +160,7 @@ describe('entities.get()', () => {
   });
 });
 
-describe('entities.createEntity()', () => {
+describe('entities.save()', () => {
   it('should mark newRelationship metadata as as obsolete when creating new entity', async () => {
     const performSpy = jest.spyOn(entities, 'performNewRelationshipQueries').mockReturnValue([{}]);
 
@@ -180,8 +180,7 @@ describe('entities.createEntity()', () => {
     performSpy.mockRestore();
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should mark newRelationship metadata of affected entities as obsolete', async () => {
+  it('should mark newRelationship metadata of affected entities as obsolete, when updating existing entity', async () => {
     expect(await entities.get({ sharedId: 'entity1' })).toMatchObject([
       {
         sharedId: 'entity1',

@@ -46,7 +46,6 @@ const FIELD_TYPES_TO_SYNC = [
 ];
 
 const markNewRelationshipsOfAffected = async ({ sharedId, language }) => {
-  console.log(sharedId, language);
   const db = getConnection();
   const client = getClient();
   const entitiesDataSource = new MongoEntitiesDataSource(db);
@@ -58,11 +57,9 @@ const markNewRelationshipsOfAffected = async ({ sharedId, language }) => {
   );
   const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
   entitiesDataSource.markMetadataAsChanged(candidates);
-  console.log(candidates);
 };
 
 async function updateEntity(entity, _template, unrestricted = false) {
-  console.log(entity);
   const docLanguages = await this.getAllLanguages(entity.sharedId);
 
   if (
@@ -399,6 +396,14 @@ export default {
     if (updateRelationships) {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
+
+    // if (index) {
+    //   await search.indexEntities(
+    //     { sharedId: { $in: entitiesToIndex.concat([sharedId]) } },
+    //     '+fullText'
+    //   );
+    // }
+
     return entity;
   },
 
