@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
@@ -11,7 +10,6 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
-import { searching } from 'app/Relationships/actions/uiActions';
 
 const isSortableType = (type: PropertySchema['type']) => {
   switch (type) {
@@ -32,6 +30,13 @@ type SortType = {
   type: string;
   context?: ObjectIdSchema;
 };
+
+type SearchOptions = {
+  order?: 'asc' | 'desc';
+  sort?: string;
+  searchTerm?: string;
+};
+
 const isSortable = (property: PropertySchema) =>
   property.filter &&
   (isSortableType(property.type) || (property.inherit && isSortableType(property.inherit.type!)));
@@ -94,9 +99,37 @@ type mappedProps = ConnectedProps<typeof connector> & SortButtonsOwnProps;
 
 const getPropertySortType = (selected: SortType): string =>
   selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';
-
-const getToggleSearchIcon = (search: { order?: 'asc' | 'desc'; sort?: string }) =>
+const getToggleSearchIcon = (search: SearchOptions) =>
   search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down';
+
+const defaultSorts = [
+  { label: 'Title', value: 'title', type: 'text', context: 'System' },
+  { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
+  { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
+];
+
+const getCommonSorts = (search: SearchOptions) => [
+  ...defaultSorts,
+  ...(search.searchTerm
+    ? [
+        {
+          label: 'Search relevance',
+          value: '_score',
+          type: 'number',
+          context: 'System',
+        },
+      ]
+    : []),
+];
+
+const validateSearch = (search: SearchOptions): SearchOptions =>
+  search.sort === '_score' && !search.searchTerm
+    ? {
+        sort: 'creationDate',
+        order: 'desc',
+        searchTerm: search.searchTerm,
+      }
+    : { searchTerm: search.searchTerm, sort: search.sort };
 
 const SortButtonsComponent = ({
   storeKey,
@@ -111,13 +144,9 @@ const SortButtonsComponent = ({
     const order = selectedSort || (treatAs === 'string' ? 'asc' : 'desc');
     const newSort = { sort: property, order, treatAs };
     merge(stateProperty, newSort);
-
-    // TEST!!!
     const filters = { ...search, ...newSort, userSelectedSorting: true };
-    // -------
     //@ts-ignore
     delete filters.treatAs;
-
     return sortCallback && sortCallback({ search: filters }, storeKey);
   };
 
@@ -125,29 +154,11 @@ const SortButtonsComponent = ({
     doSort(search.sort, search.treatAs, search.order === 'asc' ? 'desc' : 'asc');
   };
 
-  const validatedSearch =
-    search.sort === '_score' && !search.searchTerm
-      ? {
-          sort: 'creationDate',
-          order: 'desc',
-          searchTerm: search.searchTerm,
-        }
-      : { searchTerm: search.searchTerm, sort: search.sort };
-
   const metadataSorts = getMetadataSorts(templates);
-  const commonSorts = [
-    { label: 'Title', value: 'title', type: 'text', context: 'System' },
-    { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
-    { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
-  ];
-  if (validatedSearch.searchTerm) {
-    commonSorts.push({
-      label: 'Search relevance',
-      value: '_score',
-      type: 'number',
-      context: 'System',
-    });
-  }
+
+  const validatedSearch = validateSearch(search);
+  const commonSorts = getCommonSorts(validatedSearch);
+
   const sortOptions = [...commonSorts, ...metadataSorts].map(option => ({
     ...option,
     label: t(option.context, option.label, undefined, false),
