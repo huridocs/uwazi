@@ -19,6 +19,7 @@ class MetadataFormButtons extends Component {
 
     const ViewButton = (
       <I18NLink
+        component="button"
         to={`entity/${data.sharedId}`}
         className="edit-metadata btn btn-default"
         tabIndex="0"
