@@ -40,6 +40,13 @@ interface ClientTranslationContextSchema extends Omit<TranslationContext, 'value
   values?: { [key: string]: string };
 }
 
+interface InlineEdit {
+  inlineEdit: boolean;
+  context: string;
+  key: string;
+  showInlineEditForm: string;
+}
+
 export interface ClientTranslationSchema extends Omit<TranslationType, 'contexts'> {
   contexts?: ClientTranslationContextSchema[];
 }
@@ -179,4 +186,6 @@ export interface IStore {
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
   translations: IImmutable<ClientTranslationSchema[]>;
+  inlineEdit: IImmutable<InlineEdit>;
+  locale: string;
 }
