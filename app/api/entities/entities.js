@@ -17,9 +17,12 @@ import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -28,9 +31,7 @@ import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -45,7 +46,7 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.numeric,
 ];
 
-const markNewRelationshipsOfAffected = async ({ sharedId, language }) => {
+const markNewRelationshipsOfAffected = async ({ sharedId, language }, index = true) => {
   const db = getConnection();
   const client = getClient();
   const entitiesDataSource = new MongoEntitiesDataSource(db);
@@ -56,7 +57,12 @@ const markNewRelationshipsOfAffected = async ({ sharedId, language }) => {
     new MongoTransactionManager(client)
   );
   const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
+
   entitiesDataSource.markMetadataAsChanged(candidates);
+
+  if (index && candidates.length > 0) {
+    await search.indexEntities({ sharedId: { $in: candidates.map(c => c.sharedId) } }, '+fullText');
+  }
 };
 
 async function updateEntity(entity, _template, unrestricted = false) {
@@ -155,8 +161,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
       targetLanguageKey: entity.language,
     })
   );
-
-  await markNewRelationshipsOfAffected(docLanguages[0]);
 
   return result;
 }
@@ -357,6 +361,7 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
+  markNewRelationshipsOfAffected,
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
@@ -397,12 +402,9 @@ export default {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
 
-    // if (index) {
-    //   await search.indexEntities(
-    //     { sharedId: { $in: entitiesToIndex.concat([sharedId]) } },
-    //     '+fullText'
-    //   );
-    // }
+    if (await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed()) {
+      await this.markNewRelationshipsOfAffected(entity, index);
+    }
 
     return entity;
   },
@@ -480,6 +482,10 @@ export default {
   },
 
   async performNewRelationshipQueries(entities, _relationshipsDataSource) {
+    if (!(await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed())) {
+      return;
+    }
+
     const templateIdToProperties = objectIndex(
       await templates.get(
         { _id: entities.map(e => e.template) },

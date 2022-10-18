@@ -75,6 +75,9 @@ const fixtures = {
           localized_label: 'English',
         },
       ],
+      features: {
+        newRelationships: true,
+      },
     },
   ],
 };
@@ -161,34 +164,44 @@ describe('entities.get()', () => {
 });
 
 describe('entities.save()', () => {
-  it('should mark newRelationship metadata as as obsolete when creating new entity', async () => {
-    const performSpy = jest.spyOn(entities, 'performNewRelationshipQueries').mockReturnValue([{}]);
+  it('should mark newRelationship metadata as obsolete when creating new entity', async () => {
+    const performSpy = jest
+      .spyOn(entities, 'performNewRelationshipQueries')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .mockImplementation(async (e: any, rds: any) => Promise.resolve());
+    const markSpy = jest
+      .spyOn(entities, 'markNewRelationshipsOfAffected')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .mockImplementation(async (e: any, i: any) => Promise.resolve());
 
-    await entities.save(
+    const expected = {
+      title: 'new_entity',
+      obsoleteMetadata: ['relProp'],
+    };
+    const saved = await entities.save(
       {
         template: factory.id('template1'),
         title: 'new_entity',
       },
       { user: adminUser, language: 'en' }
     );
+    expect(saved).toMatchObject(expected);
     const inDb = await db?.collection('entities').findOne({ title: 'new_entity' });
-    expect(inDb).toMatchObject({
-      title: 'new_entity',
-      obsoleteMetadata: ['relProp'],
-    });
+    expect(inDb).toMatchObject(expected);
 
     performSpy.mockRestore();
+    markSpy.mockRestore();
   });
 
-  it('should mark newRelationship metadata of affected entities as obsolete, when updating existing entity', async () => {
-    expect(await entities.get({ sharedId: 'entity1' })).toMatchObject([
-      {
-        sharedId: 'entity1',
-        obsoleteMetadata: [],
-      },
-    ]);
+  it('should mark newRelationship metadata of related entities as obsolete', async () => {
+    await db
+      ?.collection('entities')
+      .updateOne({ sharedId: 'entity1' }, { $set: { obsoleteMetadata: [] } });
 
-    const performSpy = jest.spyOn(entities, 'performNewRelationshipQueries').mockReturnValue([{}]);
+    const spy = jest
+      .spyOn(entities, 'performNewRelationshipQueries')
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      .mockImplementation(async (e: any, rds: any) => Promise.resolve());
 
     await entities.save(
       {
@@ -205,6 +218,6 @@ describe('entities.save()', () => {
       obsoleteMetadata: ['relProp'],
     });
 
-    performSpy.mockRestore();
+    spy.mockRestore();
   });
 });
