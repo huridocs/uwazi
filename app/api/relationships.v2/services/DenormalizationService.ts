@@ -46,7 +46,7 @@ export class DenormalizationService {
         Promise.all(
           invertQueryCallback(property).map(async query => {
             await this.relationshipsDS.getByQuery(query, language).forEach(result => {
-              const entity = result.leaf();
+              const entity = result.leaf() as { sharedId: string };
               return entities.push({
                 ...entity,
                 propertiesToBeMarked: [property.name],
@@ -63,6 +63,8 @@ export class DenormalizationService {
     return this.inTransaction(async () => {
       const relationship = await this.relationshipsDS.getById([_id]).first();
 
+      if (!relationship) throw new Error('missing relationship');
+
       const relatedEntities = await this.entitiesDS
         .getByIds([relationship.from, relationship.to])
         .all();
@@ -77,6 +79,7 @@ export class DenormalizationService {
   async getCandidateEntitiesForEntity(sharedId: string, language: string): Promise<any[]> {
     return this.inTransaction(async () => {
       const entity = await this.entitiesDS.getByIds([sharedId]).first();
+      if (!entity) throw new Error('missing entity');
       return this.getCandidateEntities(
         property => property.buildQueryInvertedFromEntity(entity),
         language

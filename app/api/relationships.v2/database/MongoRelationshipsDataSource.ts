@@ -10,6 +10,10 @@ import { MatchQueryNode } from '../model/MatchQueryNode';
 
 const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
 
+type TraversalResult = {
+  traversal?: TraversalResult;
+};
+
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
   implements RelationshipsDataSource
@@ -91,8 +95,10 @@ export class MongoRelationshipsDataSource
 
   getByQuery(query: MatchQueryNode, language: string) {
     const pipeline = compileQuery(query, language);
-    const cursor = this.db.collection('entities').aggregate(pipeline, { session: this.session });
-    const count = this.db.collection('entities').aggregate(
+    const cursor = this.db
+      .collection('entities')
+      .aggregate<TraversalResult>(pipeline, { session: this.session });
+    const count = this.db.collection<CountDocument>('entities').aggregate(
       [
         ...pipeline,
         {

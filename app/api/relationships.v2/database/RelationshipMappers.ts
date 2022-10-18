@@ -3,9 +3,11 @@ import { GraphQueryResult } from '../model/GraphQueryResult';
 import { Relationship } from '../model/Relationship';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 
-type TraversalResult = { traversal?: TraversalResult; [k: string]: any };
+type TraversalResult = {
+  traversal?: TraversalResult;
+};
 
-function unrollTraversal({ traversal, ...rest }: TraversalResult): any[] {
+function unrollTraversal({ traversal, ...rest }: TraversalResult): unknown[] {
   return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
 }
 
@@ -43,7 +45,7 @@ export const RelationshipMappers = {
     };
   },
 
-  toGraphQueryResult(traversal: unknown) {
+  toGraphQueryResult(traversal: TraversalResult) {
     return new GraphQueryResult(unrollTraversal(traversal));
   },
 };

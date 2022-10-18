@@ -6,7 +6,6 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db, ObjectId } from 'mongodb';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity } from '../model/Entity';
 
@@ -19,7 +18,13 @@ interface EntityDBOType {
 }
 
 interface EntityJoinTemplate extends EntityDBOType {
-  joinedTemplate: any;
+  joinedTemplate: {
+    properties: {
+      type: 'newRelationship';
+      name: string;
+      query: any;
+    }[];
+  }[];
 }
 
 async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJoinTemplate) {
@@ -29,7 +34,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
   const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.session);
   await Promise.all(
     // eslint-disable-next-line max-statements
-    entity.joinedTemplate[0]?.properties.map(async (property: PropertySchema) => {
+    entity.joinedTemplate[0]?.properties.map(async property => {
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
@@ -40,7 +45,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
           )
           .all();
         mappedMetadata[property.name] = results.map(result => {
-          const targetEntity = result.leaf();
+          const targetEntity = result.leaf() as { sharedId: string };
           return {
             value: targetEntity.sharedId,
             label: targetEntity.sharedId,

@@ -1,11 +1,11 @@
 export class GraphQueryResult {
-  readonly entities: any[] = [];
+  readonly entities: unknown[] = [];
 
-  readonly relationships: any[] = [];
+  readonly relationships: unknown[] = [];
 
-  readonly path: any[];
+  readonly path: unknown[];
 
-  constructor(path: any[]) {
+  constructor(path: unknown[]) {
     this.path = path;
     path.forEach((elem, index) => {
       if (index % 2) {
