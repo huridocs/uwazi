@@ -57,8 +57,7 @@ const LibraryHeaderComponent = ({
     <>
       <div className="library-header">
         <div className="search-list ">
-          {' '}
-          <SearchBar storeKey={storeKey} counter={counter} />{' '}
+          <SearchBar storeKey={storeKey} />{' '}
         </div>
         <div className="sort-by">
           <span className="documents-counter-sort">

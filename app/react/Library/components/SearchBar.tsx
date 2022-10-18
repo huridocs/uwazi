@@ -18,12 +18,12 @@ import { IStore } from 'app/istore';
 
 interface SearchBarOwnProps {
   storeKey: 'library' | 'uploads';
-  counter: React.ReactElement;
 }
 const mapStateToProps = (state: IStore, props: SearchBarOwnProps) => {
-  const search = processFilters(state[props.storeKey].search, state[props.storeKey].filters.toJS());
+  const { search, filters } = state[props.storeKey];
   return {
-    search,
+    initSearch: search,
+    initFilters: filters,
   };
 };
 
@@ -42,12 +42,14 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & SearchBarOwnProps;
 // eslint-disable-next-line import/exports-last
 const SearchBarComponent = ({
-  search,
+  initSearch,
+  initFilters,
   storeKey,
   searchDocuments,
   change,
   semanticSearch,
 }: mappedProps) => {
+  const search = processFilters(initSearch, initFilters.toJS());
   const resetSearch = () => {
     change(`${storeKey}.search.searchTerm`, '');
     const newSearch = { ...search };
@@ -59,19 +61,14 @@ const SearchBarComponent = ({
     semanticSearch(search);
   };
 
-  const submitSearch = () => {
-    searchDocuments(search, storeKey);
-  };
-
-  const runSearch = (newSearch: any) => {
+  const doSearch = (newSearch: any) => {
     searchDocuments({ search: newSearch }, storeKey);
   };
 
   const model = `${storeKey}.search`;
-
   return (
     <div className="search-box">
-      <Form model={model} onSubmit={runSearch}>
+      <Form model={model} onSubmit={doSearch}>
         <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
           <Field model=".searchTerm">
             <input
@@ -83,7 +80,9 @@ const SearchBarComponent = ({
             />
             <Icon icon="times" onClick={resetSearch} aria-label="Reset Search input" />
           </Field>
-          <Icon icon="search" onClick={submitSearch} aria-label="Search button" />
+          <button type="submit" className="search-icon-wrapper">
+            <Icon icon="search" aria-label="Search button" />
+          </button>
         </div>
         <FeatureToggleSemanticSearch>
           <button

@@ -80,6 +80,11 @@
     border-bottom: 1px solid $c-primary-light;
     cursor: pointer;
   }
+  .search-icon-wrapper {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+  }
 }
 
 .search-button {
