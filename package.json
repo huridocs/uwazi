@@ -145,7 +145,7 @@
     "markdown-it-container": "3.0.0",
     "mime-types": "^2.1.35",
     "moment": "^2.29.4",
-    "moment-timezone": "0.5.37",
+    "moment-timezone": "0.5.38",
     "mongodb": "3.7.1",
     "mongoose": "5.13.9",
     "multer": "^1.4.5-lts.1",
