@@ -67,7 +67,6 @@ export class I18NLink extends Component<I18NLinkProps> {
       'onClick',
       'confirmTitle',
       'confirmMessage',
-      'component',
     ]);
     return <Link onClick={this.onClick} {...props} />;
   }
