@@ -19,7 +19,6 @@ describe('I18NLink', () => {
       onClick: clickAction,
       onMouseOver: mouseOverAction,
       dispatch: () => {},
-      component: 'link',
     };
   });
 
@@ -28,33 +27,16 @@ describe('I18NLink', () => {
   };
 
   describe('render', () => {
-    beforeEach(() => {
+    it('should pass other props, except for dispatch', () => {
       I18NLink.navigate = jasmine.createSpy('navigate');
       spyOn(props, 'onClick');
-    });
-
-    describe('as link', () => {
-      it('should pass other props, except for dispatch', () => {
-        render();
-        const link = component.find(Link);
-        expect(link.props().onMouseOver).toBe(mouseOverAction);
-        expect(link.props().dispatch).toBeUndefined();
-        component.simulate('click', event);
-        expect(props.onClick).toHaveBeenCalledWith(event);
-        expect(I18NLink.navigate).toHaveBeenCalledWith(props.to);
-      });
-    });
-    describe('as button', () => {
-      it('should pass other props, except for dispatch', () => {
-        props.component = 'button';
-        render();
-        const link = component.find('button');
-        expect(link.props().onMouseOver).toBe(mouseOverAction);
-        expect(link.props().dispatch).toBeUndefined();
-        component.simulate('click', event);
-        expect(props.onClick).toHaveBeenCalledWith(event);
-        expect(I18NLink.navigate).toHaveBeenCalledWith(props.to);
-      });
+      render();
+      const link = component.find(Link);
+      expect(link.props().onMouseOver).toBe(mouseOverAction);
+      expect(link.props().dispatch).toBeUndefined();
+      component.simulate('click', event);
+      expect(props.onClick).toHaveBeenCalledWith(event);
+      expect(I18NLink.navigate).toHaveBeenCalledWith(props.to);
     });
   });
 
