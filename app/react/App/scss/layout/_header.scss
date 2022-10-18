@@ -119,6 +119,23 @@ header {
     }
   }
 
+  .dropdown-menu {
+    &.expanded {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: $header-height + 2px;
+      li {
+        display: flex;
+        flex-direction: column;
+        a {
+          padding: 8px 10px;
+          text-align: left;
+        }
+      }
+    }
+  }
+
   .no-i18nmenu {
     padding-top: 20px;
   }
@@ -145,6 +162,7 @@ header {
 
   .menuNav-language {
     display: flex;
+    position: relative;
     align-self: center;
     text-transform: none;
     min-width: 150px;
@@ -335,23 +353,6 @@ header {
     &:hover {
       .tab-link-label {
         display: block;
-      }
-    }
-
-    .dropdown-menu {
-      &.expanded {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: $header-height + 2px;
-        li {
-          display: flex;
-          flex-direction: column;
-          a {
-            padding: 8px 10px;
-            text-align: left;
-          }
-        }
       }
     }
   }

@@ -33,7 +33,7 @@ class I18NMenu extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { currentLanguage: props.locale };
+    this.state = { currentLanguage: props.locale, showing: false };
   }
 
   render() {
@@ -61,13 +61,14 @@ class I18NMenu extends Component {
     if (languageMap.size === 0) {
       return null;
     }
+
     if (this.state.currentLanguage !== selectedLanguage.key) {
       I18NMenu.reload(path);
     }
 
     return languageMap.count() > 1 || user.size ? (
       <div
-        className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : ' '} ${
+        className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : null} ${
           languageMap.count() === 1 ? ' one-language' : ' '
         } `}
         role="navigation"
@@ -75,7 +76,17 @@ class I18NMenu extends Component {
       >
         {!i18nmode && (
           <div className="menuNav-language">
-            <ul>
+            <div className="menuNav-language">
+              <button
+                className="singleItem"
+                type="button"
+                onClick={() => this.setState(prevState => ({ showing: !prevState.showing }))}
+              >
+                <span>{selectedLanguage.localized_label}</span>
+              </button>
+            </div>
+
+            <ul className={`dropdown-menu ${this.state.showing ? 'expanded' : ''} `}>
               {languages.map(language => {
                 const url = `/${language.key}${path}${
                   path.match('document') ? '' : location.search
