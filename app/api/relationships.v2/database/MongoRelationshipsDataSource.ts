@@ -1,7 +1,11 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
-import { Relationship } from '../model/Relationship';
+import {
+  ApplicationRelationshipType,
+  Relationship,
+  RelationshipValueQuery,
+} from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
@@ -39,6 +43,20 @@ export class MongoRelationshipsDataSource
   async exists(ids: string[]) {
     const existingCount = await this.count(ids);
     return existingCount === ids.length;
+  }
+
+  async countBy(propValues: Partial<ApplicationRelationshipType>): Promise<number> {
+    const query = RelationshipMappers.partialToDBO(propValues);
+    return this.getCollection().find(query).count();
+  }
+
+  getBy(values: RelationshipValueQuery) {
+    const query = RelationshipMappers.partialToDBO(values);
+    const cursor = this.getCollection().find(query);
+    return new MongoResultSet<RelationshipDBOType, Relationship>(
+      cursor,
+      RelationshipMappers.toModel
+    );
   }
 
   getById(_ids: string[]) {
@@ -108,5 +126,12 @@ export class MongoRelationshipsDataSource
       { session: this.session }
     );
     return new MongoResultSet(cursor, count, RelationshipMappers.toGraphQueryResult);
+  }
+
+  async deleteBy(values: Partial<ApplicationRelationshipType>): Promise<Relationship[]> {
+    const query = RelationshipMappers.partialToDBO(values);
+    const deleted = await this.getBy(values).all();
+    await this.getCollection().deleteMany(query, { session: this.session });
+    return deleted;
   }
 }

@@ -1,5 +1,11 @@
 import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { GetRelationshipsService } from 'api/relationships.v2/services/GetRelationshipsService';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
@@ -99,16 +105,27 @@ export default {
     });
   },
 
-  delete(id) {
-    return relationships.countByRelationType(id).then(relationshipsUsingIt => {
-      if (relationshipsUsingIt === 0) {
-        return translations
-          .deleteContext(id)
-          .then(() => model.delete(id))
-          .then(() => true);
-      }
+  async delete(id) {
+    const db = getConnection();
+    const getService = new GetRelationshipsService(
+      new MongoRelationshipsDataSource(db),
+      new AuthorizationService(new MongoPermissionsDataSource(db), undefined)
+    );
 
-      return false;
-    });
+    const connectionCount = await relationships.countByRelationType(id);
+    const newRelationshipsAllowed = await new MongoSettingsDataSource(
+      db
+    ).readNewRelationshipsAllowed();
+    const newRelationshipCount = newRelationshipsAllowed
+      ? await getService.countByType(id.toString())
+      : 0;
+
+    if (connectionCount === 0 && newRelationshipCount === 0) {
+      await translations.deleteContext(id);
+      await model.delete(id);
+      return true;
+    }
+
+    return false;
   },
 };

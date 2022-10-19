@@ -20,9 +20,12 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
+import { DeleteRelationshipService } from 'api/relationships.v2/services/DeleteRelationshipService';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -31,7 +34,6 @@ import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
-
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -725,6 +727,17 @@ export default {
     );
   },
 
+  async deleteRelatedNewRelationships(sharedId) {
+    const client = getClient();
+    const db = getConnection();
+    const service = new DeleteRelationshipService(
+      new MongoRelationshipsDataSource(db),
+      new MongoTransactionManager(client),
+      new AuthorizationService(new MongoPermissionsDataSource(db), undefined)
+    );
+    await service.deleteByEntity(sharedId);
+  },
+
   async delete(sharedId, deleteIndex = true) {
     const docs = await this.get({ sharedId });
     if (!docs.length) {
@@ -746,6 +759,10 @@ export default {
     ]);
 
     await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
+
+    if (await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed()) {
+      await this.deleteRelatedNewRelationships(sharedId);
+    }
 
     return docs;
   },

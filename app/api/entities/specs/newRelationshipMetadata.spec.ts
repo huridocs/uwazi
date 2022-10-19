@@ -221,3 +221,16 @@ describe('entities.save()', () => {
     spy.mockRestore();
   });
 });
+
+describe('entities.delete()', () => {
+  it('should delete related new relationships', async () => {
+    await entities.delete('entity2', false);
+    const inDb = await db?.collection('relationships').find({}).toArray();
+    expect(inDb).toMatchObject([
+      {
+        from: 'entity1',
+        to: 'entity3',
+      },
+    ]);
+  });
+});
