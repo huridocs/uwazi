@@ -60,7 +60,7 @@ export const getTemplatesModels = async (templateIds: string[]): Promise<Templat
   Promise.all(templateIds.filter(hasValue).map(async (id: string) => templates.getById(id))).then(
     results =>
       results.reduce<any>(
-        (memo, template) => (template ? { ...memo, [template._id]: template } : memo),
+        (memo, template) => (template ? { ...memo, [template._id.toString()]: template } : memo),
         {}
       )
   );

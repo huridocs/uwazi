@@ -1,4 +1,4 @@
-import mongoose, { Connection, ConnectionOptions } from 'mongoose';
+import mongoose, { Connection, ConnectOptions } from 'mongoose';
 import { config } from 'api/config';
 
 let connection: Connection;
@@ -8,14 +8,15 @@ let connection: Connection;
 mongoose.set('strictQuery', false);
 
 const DB = {
-  async connect(uri: string = config.DBHOST, auth: ConnectionOptions = {}) {
+  async connect(uri: string = config.DBHOST, auth: ConnectOptions = {}) {
     connection = await mongoose
       .createConnection(uri, {
         ...auth,
-        useUnifiedTopology: true,
-        useNewUrlParser: true,
+        // useUnifiedTopology: true,
+        // useNewUrlParser: true,
         // poolSize: config.mongo_connection_pool_size,
-      }).asPromise();
+      })
+      .asPromise();
 
     return this.getConnection();
   },

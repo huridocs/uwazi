@@ -73,7 +73,8 @@ describe('files routes', () => {
     it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
       const emitSpy = spyOnEmit();
 
-      const original = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      const original =
+        (await db.mongodb?.collection('files').findOne({ _id: uploadId })) || ({} as FileType);
 
       await request(app)
         .post('/api/files')
@@ -90,7 +91,8 @@ describe('files routes', () => {
           ],
         });
 
-      const after = await db.mongodb?.collection('files').findOne({ _id: uploadId });
+      const after =
+        (await db.mongodb?.collection('files').findOne({ _id: uploadId })) || ({} as FileType);
       emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
       emitSpy.restore();
     });
@@ -104,10 +106,10 @@ describe('files routes', () => {
         language: 'eng',
       };
       const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
-      await expect(caller).toEmitEventWith(FileCreatedEvent, {
+      expect(caller).toEmitEventWith(FileCreatedEvent, {
         newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
       });
-      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
+      expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
 
     describe('when external url file', () => {
@@ -254,7 +256,7 @@ describe('files routes', () => {
         const file = await db.mongodb?.collection('files').findOne({ _id: uploadId2 });
         await request(app).delete('/api/files').query({ _id: uploadId2.toString() });
 
-        emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file] });
+        emitSpy.expectToEmitEventWith(FilesDeletedEvent, { files: [file!] });
         emitSpy.restore();
       });
     });

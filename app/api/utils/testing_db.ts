@@ -1,5 +1,5 @@
 import mongoose, { Connection } from 'mongoose';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { PageType } from 'shared/types/pageType';
@@ -71,7 +71,7 @@ const testingDB: {
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
   tearDown: () => Promise<void>;
-  id: (id?: string | undefined) => ObjectIdSchema;
+  id: (id?: string | undefined) => ObjectId;
   clear: (collections?: string[] | undefined) => Promise<void>;
   /**
    * @deprecated
@@ -123,7 +123,7 @@ const testingDB: {
   },
 
   id(id = undefined) {
-    return mongoose.Types.ObjectId(id);
+    return new ObjectId(id);
   },
 
   async clear(collections = undefined) {

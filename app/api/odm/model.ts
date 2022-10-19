@@ -1,11 +1,5 @@
-import { WithId as _WithId } from 'mongodb';
-import mongoose, {
-  Schema,
-  UpdateQuery,
-  ModelUpdateOptions,
-  FilterQuery,
-  QueryOptions,
-} from 'mongoose';
+import { ObjectId, WithId as _WithId } from 'mongodb';
+import mongoose, { Schema, UpdateQuery, FilterQuery, QueryOptions } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { ModelBulkWriteStream } from './modelBulkWriteStream';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
@@ -20,9 +14,9 @@ import { createUpdateLogHelper, UpdateLogger } from './logHelper';
 
 export type DataType<T> = T & { _id?: ObjectIdSchema };
 
-export type WithId<T> = _WithId<T>;
+export type WithId<T> = T & { _id: ObjectId };
 
-export type EnforcedWithId<T> = WithId<mongoose.EnforceDocument<DataType<T>, {}>>;
+export type EnforcedWithId<T> = T & { _id: ObjectId };
 
 export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
@@ -135,7 +129,7 @@ export class OdmModel<T> {
   async updateMany(
     conditions: UwaziFilterQuery<DataType<T>>,
     doc: UwaziUpdateQuery<T>,
-    options: ModelUpdateOptions = {}
+    options?: UwaziQueryOptions
   ) {
     await this.logHelper.upsertLogMany(conditions);
     return this.db._updateMany(conditions, doc, options);
