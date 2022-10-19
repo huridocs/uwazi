@@ -540,6 +540,7 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
+    console.log(doc);
     await this.performNewRelationshipQueries([doc]);
     return doc;
   },

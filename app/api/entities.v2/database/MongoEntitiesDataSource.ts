@@ -45,10 +45,10 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
           )
           .all();
         mappedMetadata[property.name] = results.map(result => {
-          const targetEntity = result.leaf() as { sharedId: string };
+          const targetEntity = result.leaf() as { sharedId: string; title: string };
           return {
             value: targetEntity.sharedId,
-            label: targetEntity.sharedId,
+            label: targetEntity.title,
           };
         });
         await stream.update(

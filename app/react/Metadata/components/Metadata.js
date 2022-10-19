@@ -64,6 +64,7 @@ export const showByType = (prop, compact, templateId) => {
       result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
+    case 'newRelationship':
       result = renderRelationshipLinks(prop, compact);
       break;
     default:

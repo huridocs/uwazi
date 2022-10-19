@@ -36,7 +36,7 @@ afterAll(async () => {
 
 describe('migration define_new_relationships_collection', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(112);
+    expect(migration.delta).toBe(114);
   });
 
   it('should create the relationships collection', async () => {

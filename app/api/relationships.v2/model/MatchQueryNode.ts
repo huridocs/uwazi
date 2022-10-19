@@ -38,6 +38,7 @@ export class MatchQueryNode extends QueryNode {
   getProjection() {
     return {
       sharedId: 1,
+      title: 1,
     } as const;
   }
 
