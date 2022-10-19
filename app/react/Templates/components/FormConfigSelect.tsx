@@ -107,7 +107,7 @@ const FormConfigSelectComponent = ({
         </label>
         {warning && (
           <Warning inline>
-            <Translate>
+            <Translate translationKey="Impact of property change warning">
               All entities and documents that have already this property assigned will loose its
               current value
             </Translate>

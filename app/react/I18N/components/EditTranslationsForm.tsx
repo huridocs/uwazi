@@ -112,9 +112,9 @@ const EditTranslationsFormComponent = ({
                       <div key={value.locale} className="form-group">
                         <div className="input-group">
                           <span className="input-group-addon">{value.locale}</span>
-                          <input
+                          <textarea
                             className="form-control"
-                            type="text"
+                            rows={1}
                             {...register(`formData.${dataIndex}.values.${valueIndex}.value`, {
                               required: true,
                             })}
