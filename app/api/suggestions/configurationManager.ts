@@ -96,7 +96,7 @@ const getTemplateDifference = (
 };
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
-  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).exec();
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
 
 const fetchEntitiesSharedIds = async (
   template: ISettingsTemplate['template'],

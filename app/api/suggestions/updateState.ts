@@ -76,8 +76,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema): Aggregatio
         },
       },
     ])
-    .cursor()
-    .exec();
+    .cursor();
 
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
