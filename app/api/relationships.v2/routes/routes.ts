@@ -18,7 +18,7 @@ import {
   validateStringArray,
 } from './schemas/relationshipInputValidators';
 import { CreateRelationshipService } from '../services/CreateRelationshipService';
-import { DeleteRelationshipService } from '../services/DeleteRelationshipService';
+import { DeleteRelationshipService } from '../services/__sandbox';
 import { DenormalizationService } from '../services/DenormalizationService';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -72,12 +72,7 @@ export default (app: Application) => {
       const idArray = req.body;
       if (validateStringArray(idArray)) {
         const user = User.fromRequest(req);
-        const connection = getConnection();
-        const service = new DeleteRelationshipService(
-          new MongoRelationshipsDataSource(connection),
-          new MongoTransactionManager(getClient()),
-          new AuthorizationService(new MongoPermissionsDataSource(connection), user)
-        );
+        const service = DeleteRelationshipService(user);
         const created = await service.deleteMultiple(idArray);
         res.json(created);
       }
