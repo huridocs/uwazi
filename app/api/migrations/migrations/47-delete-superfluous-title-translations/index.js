@@ -34,7 +34,9 @@ export default {
           }
         })
       );
-      await db.collection('translations').updateOne({_id: translation._id}, { $set: translation });
+      await db
+        .collection('translations')
+        .updateOne({ _id: translation._id }, { $set: translation });
     }
   },
 };

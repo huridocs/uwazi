@@ -1,4 +1,4 @@
-import { ObjectId, WithId as _WithId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import mongoose, { Schema, UpdateQuery, FilterQuery, QueryOptions } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { ModelBulkWriteStream } from './modelBulkWriteStream';
