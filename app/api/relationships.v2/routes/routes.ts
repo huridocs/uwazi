@@ -42,19 +42,20 @@ export default (app: Application) => {
         const connection = getConnection();
 
         const SettingsDataSource = new MongoSettingsDataSource(connection);
+        const TransactionManager = new MongoTransactionManager(getClient());
 
         const service = new CreateRelationshipService(
           new MongoRelationshipsDataSource(connection),
           new MongoRelationshipTypesDataSource(connection),
           new MongoEntitiesDataSource(connection, SettingsDataSource),
-          new MongoTransactionManager(getClient()),
+          TransactionManager,
           MongoIdGenerator,
           new AuthorizationService(new MongoPermissionsDataSource(connection), user),
           new DenormalizationService(
             new MongoRelationshipsDataSource(connection),
             new MongoEntitiesDataSource(connection, SettingsDataSource),
             new MongoTemplatesDataSource(connection),
-            new MongoTransactionManager(getClient())
+            TransactionManager
           ),
           applicationEventsBus
         );
