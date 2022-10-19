@@ -39,4 +39,13 @@ export class DeleteRelationshipService {
       return this.relationshipsDS.delete(_ids);
     }, [this.relationshipsDS]);
   }
+
+  async deleteByEntity(sharedId: string) {
+    await this.relationshipsDS.deleteBy({ from: sharedId });
+    await this.relationshipsDS.deleteBy({ to: sharedId });
+  }
+
+  async deleteByType(reltype: string) {
+    await this.relationshipsDS.deleteBy({ type: reltype });
+  }
 }
