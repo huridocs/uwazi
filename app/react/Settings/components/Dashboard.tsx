@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Dictionary, groupBy } from 'lodash';
 import { Translate } from 'app/I18N';
-import { UserSchema } from 'shared/types/userType';
-import UsersAPI from 'app/Users/UsersAPI';
-import { RequestParams } from 'app/utils/RequestParams';
 import { ProgressBar } from 'app/UI';
 
+const dummyapi = {
+  get: async () =>
+    Promise.resolve({
+      users: { total: 12, admin: 2, editor: 4, collaborator: 6 },
+      entities: { total: 25445 },
+      files: { total: 1267 },
+      storage: { total: 45000, available: 100000 },
+    }),
+};
+
 const Dashboard = () => {
-  const [users, setUsers] = useState<UserSchema[]>([]);
-  const [userBrakdown, setUserBrakdown] = useState<Dictionary<UserSchema[]>>({});
-  const [storage, setStorage] = useState({ current: 0, total: 0 });
+  const [systemStats, setSystemStats] = useState({
+    users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
+    entities: { total: 0 },
+    files: { total: 0 },
+    storage: { total: 0, available: 100 },
+  });
 
   useEffect(() => {
-    UsersAPI.get(new RequestParams())
-      .then((response: UserSchema[]) => {
-        setUsers(response);
-        setUserBrakdown(groupBy(response, 'role'));
+    dummyapi
+      .get()
+      .then(response => {
+        setSystemStats(response);
       })
       .catch(() => {});
-    setStorage({ current: 5.32, total: 8 });
   }, []);
 
   return (
@@ -38,25 +46,25 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="body">
-                  <span className="count">{users.length} </span>
+                  <span className="count">{systemStats.users.total} </span>
                   <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
-                  {userBrakdown.admin && (
+                  {systemStats.users.admin > 0 && (
                     <p className="user-info">
-                      <span className="count">{userBrakdown.admin.length} </span>
+                      <span className="count">{systemStats.users.admin} </span>
                       <Translate>Admin</Translate>
                     </p>
                   )}
-                  {userBrakdown.editor && (
+                  {systemStats.users.editor > 0 && (
                     <p className="user-info">
-                      <span className="count">{userBrakdown.editor.length} </span>
+                      <span className="count">{systemStats.users.editor} </span>
                       <Translate>Editor</Translate>
                     </p>
                   )}
-                  {userBrakdown.collaborator && (
+                  {systemStats.users.collaborator > 0 && (
                     <p className="user-info">
-                      <span className="count">{userBrakdown.collaborator.length} </span>
+                      <span className="count">{systemStats.users.collaborator} </span>
                       <Translate>Collaborator</Translate>
                     </p>
                   )}
@@ -71,12 +79,14 @@ const Dashboard = () => {
                 </div>
                 <div className="body">
                   <div className="usage">
-                    <span className="used">{`${storage.current} GB`} </span>
-                    <span className="total">{`${storage.total} GB`}</span>
+                    <span className="used">{`${systemStats.storage.total / 1000} GB`} </span>
+                    <span className="available">
+                      {`${systemStats.storage.available / 1000} GB`}
+                    </span>
                   </div>
                   <ProgressBar
-                    max={storage.total}
-                    value={storage.current}
+                    max={systemStats.storage.available}
+                    value={systemStats.storage.total}
                     useProgressColors
                     showNumericValue={false}
                   />
@@ -95,7 +105,7 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="body">
-                  <span className="count">56327 </span>
+                  <span className="count">{systemStats.entities.total} </span>
                   <Translate>Total entities</Translate>
                 </div>
                 <div className="footer card-info">
@@ -112,7 +122,7 @@ const Dashboard = () => {
                   </h2>
                 </div>
                 <div className="body">
-                  <span className="count">2500 </span>
+                  <span className="count">{systemStats.files.total} </span>
                   <Translate>Total files</Translate>
                 </div>
                 <div className="footer card-info">
@@ -131,4 +141,4 @@ const Dashboard = () => {
   );
 };
 
-export { Dashboard };
+export { Dashboard, dummyapi };

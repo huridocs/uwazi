@@ -4,8 +4,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import UsersAPI from 'app/Users/UsersAPI';
-import { Dashboard } from '../Dashboard';
+import { Dashboard, dummyapi } from '../Dashboard';
 
 describe('Dashboard', () => {
   const render = () => {
@@ -15,37 +14,35 @@ describe('Dashboard', () => {
     renderConnectedContainer(<Dashboard />, () => store);
   };
 
+  let apiResposne = {
+    users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
+    entities: { total: 0 },
+    files: { total: 0 },
+    storage: { total: 0, available: 0 },
+  };
+
+  beforeEach(() => {
+    apiResposne = {
+      users: { total: 12, admin: 2, editor: 4, collaborator: 6 },
+      entities: { total: 56327 },
+      files: { total: 2500 },
+      storage: { total: 45000, available: 100000 },
+    };
+
+    jest.spyOn(dummyapi, 'get').mockResolvedValue(apiResposne);
+  });
+
   describe('Users report', () => {
     it('should display the total number of users', async () => {
-      jest.spyOn(UsersAPI, 'get').mockResolvedValueOnce([
-        {
-          username: 'admin',
-          role: 'admin',
-        },
-      ]);
-
       render();
 
       expect((await screen.findByText('Total users')).parentElement?.textContent).toBe(
-        '1 Total users'
+        '12 Total users'
       );
     });
 
-    it('should show a breakdown of user types', async () => {
-      jest.spyOn(UsersAPI, 'get').mockResolvedValueOnce([
-        {
-          username: 'admin',
-          role: 'admin',
-        },
-        {
-          username: 'editor 1',
-          role: 'editor',
-        },
-        {
-          username: 'editor 2',
-          role: 'editor',
-        },
-      ]);
+    it('should show a breakdown of user types and not show empty user types', async () => {
+      apiResposne.users = { total: 3, admin: 1, editor: 2, collaborator: 0 };
 
       render();
 
@@ -83,7 +80,7 @@ describe('Dashboard', () => {
     it('should show the amount of store used out of the total', async () => {
       render();
 
-      expect((await screen.findByText('8 GB')).parentElement?.textContent).toBe('5.32 GB 8 GB');
+      expect((await screen.findByText('100 GB')).parentElement?.textContent).toBe('45 GB 100 GB');
     });
   });
 });
