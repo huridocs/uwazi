@@ -1,4 +1,4 @@
-import HtmlParser from 'htmlparser2/lib/Parser';
+import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
 import rison from 'rison-node';
 import Big from 'big.js';
@@ -32,7 +32,7 @@ const conformValues = attribs => (attribs.entity ? attribs : conformUrl(attribs)
 
 const parseDatasets = markdown => {
   const result = {};
-  const parser = new HtmlParser(
+  const parser = new HTMLParser(
     {
       onopentag(name, attribs) {
         if (name === 'dataset') {
