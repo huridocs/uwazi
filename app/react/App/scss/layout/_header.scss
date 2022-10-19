@@ -255,6 +255,15 @@ header {
       padding-left: 1em;
     }
 
+    button.dropdown {
+      display: flex;
+      padding-left: 1em;
+      width: 100%;
+      padding-right: 1em;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
     .singleItem {
       @media (min-width: 1024px) {
         color: $c-white;

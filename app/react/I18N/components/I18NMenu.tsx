@@ -60,13 +60,13 @@ const i18NMenuComponent = ({
     return <div className="no-i18nmenu" />;
   }
 
-  const [showing, setShowing] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
     useCallback(() => {
-      setShowing(false);
+      setDropdownOpen(false);
     }, [])
   );
 
@@ -96,12 +96,18 @@ const i18NMenuComponent = ({
       {!i18nmode && (
         <div className="menuNav-language">
           <div className="menuNav-language">
-            <button className="singleItem" type="button" onClick={() => setShowing(!showing)}>
+            <button
+              className="singleItem dropdown"
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
               <span>{selectedLanguage?.localized_label}</span>
+              &nbsp;
+              <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
             </button>
           </div>
 
-          <ul className={`dropdown-menu ${showing ? 'expanded' : ''} `}>
+          <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
             {languages.map(language => {
               const url = `/${language.key}${path}${path.match('document') ? '' : location.search}`;
 
@@ -121,7 +127,7 @@ const i18NMenuComponent = ({
                   type="button"
                   onClick={() => {
                     toggleInlineEdit();
-                    setShowing(false);
+                    setDropdownOpen(false);
                   }}
                 >
                   <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
