@@ -404,6 +404,10 @@ export default {
       await relationships.saveEntityBasedReferences(entity, language, docTemplate);
     }
 
+    if (index) {
+      await search.indexEntities({ sharedId }, '+fullText');
+    }
+
     if (await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed()) {
       await this.markNewRelationshipsOfAffected(entity, index);
     }
@@ -542,7 +546,6 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-    console.log(doc);
     await this.performNewRelationshipQueries([doc]);
     return doc;
   },
