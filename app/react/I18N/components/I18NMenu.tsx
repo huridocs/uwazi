@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { withRouter, WithRouterProps } from 'react-router';
@@ -8,6 +8,7 @@ import { UserSchema } from 'shared/types/userType';
 import { actions, Translate, t } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { Icon } from 'UI';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 const prepareDropdownValues = (
   languageMap: IImmutable<LanguagesListSchema>,
@@ -55,11 +56,19 @@ const i18NMenuComponent = ({
   locale,
   toggleInlineEdit,
 }: mappedProps) => {
-  if (!languageMap || languageMap.size === 0) {
-    return null;
+  if (!languageMap || languageMap!.size < 1 || !user.get('_id')) {
+    return <div className="no-i18nmenu" />;
   }
 
   const [showing, setShowing] = useState(false);
+  const menuRef = useRef(null);
+
+  useOnClickOutsideElement<HTMLDivElement>(
+    menuRef,
+    useCallback(() => {
+      setShowing(false);
+    }, [])
+  );
 
   const { languages, selectedLanguage, loggedUser } = prepareDropdownValues(
     languageMap!,
@@ -75,13 +84,14 @@ const i18NMenuComponent = ({
 
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
 
-  return languageMap!.size > 1 || user.get('_id') ? (
+  return (
     <div
       className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : null} ${
         languageMap!.size === 1 ? ' one-language' : ' '
       } `}
       role="navigation"
       aria-label="Languages"
+      ref={menuRef}
     >
       {!i18nmode && (
         <div className="menuNav-language">
@@ -141,8 +151,6 @@ const i18NMenuComponent = ({
         </div>
       )}
     </div>
-  ) : (
-    <div className="no-i18nmenu" />
   );
 };
 
