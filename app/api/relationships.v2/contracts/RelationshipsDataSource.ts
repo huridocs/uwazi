@@ -25,5 +25,6 @@ export interface RelationshipsDataSource extends Transactional {
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<RelationshipAggregatedResultType>;
   deleteBy(propValues: RelationshipValueQuery): Promise<Relationship[]>;
+  countBy(propValues: RelationshipValueQuery): Promise<number>;
   getByQuery(query: MatchQueryNode, language: string): ResultSet<GraphQueryResult>;
 }

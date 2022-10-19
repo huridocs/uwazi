@@ -15,4 +15,8 @@ export class GetRelationshipsService {
     await this.authService.validateAccess('read', [sharedId]);
     return this.relationshipsDS.getByEntity(sharedId);
   }
+
+  async countByType(type: string) {
+    return this.relationshipsDS.countBy({ type });
+  }
 }

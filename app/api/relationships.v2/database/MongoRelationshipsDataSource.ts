@@ -45,6 +45,11 @@ export class MongoRelationshipsDataSource
     return existingCount === ids.length;
   }
 
+  async countBy(propValues: Partial<ApplicationRelationshipType>): Promise<number> {
+    const query = RelationshipMappers.partialToDBO(propValues);
+    return this.getCollection().find(query).count();
+  }
+
   getBy(values: RelationshipValueQuery) {
     const query = RelationshipMappers.partialToDBO(values);
     const cursor = this.getCollection().find(query);
