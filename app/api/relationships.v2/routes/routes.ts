@@ -5,7 +5,6 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getValidatorMiddleware } from 'api/common.v2/validation/ajvInstances';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { applicationEventsBus } from 'api/eventsbus';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
@@ -36,30 +35,32 @@ export default (app: Application) => {
     '/api/relationships.v2',
     featureRequired,
     needsAuthorization(['admin', 'editor']),
-    getValidatorMiddleware(validateRelationshipInputArray),
     async (req, res) => {
-      const user = User.fromRequest(req);
-      const connection = getConnection();
+      const relationshipInputArray = req.body;
+      if (validateRelationshipInputArray(relationshipInputArray)) {
+        const user = User.fromRequest(req);
+        const connection = getConnection();
 
-      const SettingsDataSource = new MongoSettingsDataSource(connection);
+        const SettingsDataSource = new MongoSettingsDataSource(connection);
 
-      const service = new CreateRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoRelationshipTypesDataSource(connection),
-        new MongoEntitiesDataSource(connection, SettingsDataSource),
-        new MongoTransactionManager(getClient()),
-        MongoIdGenerator,
-        new AuthorizationService(new MongoPermissionsDataSource(connection), user),
-        new DenormalizationService(
+        const service = new CreateRelationshipService(
           new MongoRelationshipsDataSource(connection),
+          new MongoRelationshipTypesDataSource(connection),
           new MongoEntitiesDataSource(connection, SettingsDataSource),
-          new MongoTemplatesDataSource(connection),
-          new MongoTransactionManager(getClient())
-        ),
-        applicationEventsBus
-      );
-      const created = await service.createMultiple(req.body);
-      res.json(created);
+          new MongoTransactionManager(getClient()),
+          MongoIdGenerator,
+          new AuthorizationService(new MongoPermissionsDataSource(connection), user),
+          new DenormalizationService(
+            new MongoRelationshipsDataSource(connection),
+            new MongoEntitiesDataSource(connection, SettingsDataSource),
+            new MongoTemplatesDataSource(connection),
+            new MongoTransactionManager(getClient())
+          ),
+          applicationEventsBus
+        );
+        const created = await service.createMultiple(relationshipInputArray);
+        res.json(created);
+      }
     }
   );
 
@@ -67,18 +68,19 @@ export default (app: Application) => {
     '/api/relationships.v2',
     featureRequired,
     needsAuthorization(['admin', 'editor']),
-    getValidatorMiddleware(validateStringArray),
     async (req, res) => {
-      const user = User.fromRequest(req);
-      const connection = getConnection();
-
-      const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), user)
-      );
-      const created = await service.deleteMultiple(req.body);
-      res.json(created);
+      const idArray = req.body;
+      if (validateStringArray(idArray)) {
+        const user = User.fromRequest(req);
+        const connection = getConnection();
+        const service = new DeleteRelationshipService(
+          new MongoRelationshipsDataSource(connection),
+          new MongoTransactionManager(getClient()),
+          new AuthorizationService(new MongoPermissionsDataSource(connection), user)
+        );
+        const created = await service.deleteMultiple(idArray);
+        res.json(created);
+      }
     }
   );
 };
