@@ -5,13 +5,15 @@ import React from 'react';
 import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
-
+import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
 
 describe('LibraryHeader', () => {
+  let renderResult: RenderResult;
   const props: LibraryHeaderOwnProps = {
     storeKey: 'library',
     counter: <span>counter</span>,
@@ -39,10 +41,32 @@ describe('LibraryHeader', () => {
 
   state = {
     ...defaultState,
-    templates: fromJS([]),
+    templates: fromJS([
+      {
+        _id: 'template1',
+        name: 'Template 1',
+        properties: [
+          { _id: 'property2', name: 'number', label: 'number', type: 'number', filter: true },
+        ],
+      },
+      {
+        _id: 'template2',
+        name: 'Template 2',
+        properties: [
+          { _id: 'property1', name: 'text', label: 'text', type: 'text', filter: true },
+          {
+            _id: 'property3',
+            name: 'geolocation',
+            label: 'geolocation',
+            type: 'geolocation',
+            filter: true,
+          },
+        ],
+      },
+    ]),
     library: {
       ui: fromJS({ filtersPanel: [], selectedDocuments: [], zoomLevel: 2 }),
-      filters: fromJS({ documentTypes: [], properties: [] }),
+      filters: fromJS({ documentTypes: ['template2'], properties: [] }),
       search: {
         sort: 'desc',
       },
@@ -51,19 +75,46 @@ describe('LibraryHeader', () => {
     settings: {
       collection: fromJS({}),
     },
-    user: fromJS({ _id: '1234' }),
+    user: fromJS({}),
   };
 
   const render = () => {
-    renderConnectedContainer(<LibraryHeader {...props} />, () => state);
+    ({ renderResult } = renderConnectedContainer(<LibraryHeader {...props} />, () => state));
   };
 
-  it.todo('should hold sortButtons with search callback and selectedTemplates');
-  // expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
-  // expect(component.find(SortButtons).props().selectedTemplates).toBe(
-  //   props.filters.get('documentTypes')
-  // );
+  it('should hold sortButtons with search callback and selectedTemplates', () => {
+    jest.spyOn(libraryActions, 'searchDocuments');
+    render();
+    screen.debug();
+    fireEvent.click(screen.getByTitle('open dropdown'));
 
-  it.todo('should render a Select All button only if authorized');
-  // expect(component.find('.select-all-documents').parent().is(NeedAuthorization)).toBe(true);
+    const options = screen.getAllByRole('option');
+    fireEvent.click(options[1]);
+
+    expect(options.map(option => option.textContent)).toEqual([
+      'Title',
+      'Date added',
+      'Date modified',
+      'text',
+    ]);
+    expect(libraryActions.searchDocuments).toHaveBeenCalledWith(
+      {
+        search: {
+          order: 'desc',
+          sort: 'creationDate',
+          userSelectedSorting: true,
+        },
+      },
+      'library'
+    );
+  });
+
+  it('should render a Select All button only if authorized', () => {
+    render();
+    expect(screen.queryByText('Select all')).not.toBeInTheDocument();
+    state.user = fromJS({ _id: 'user1', role: 'admin' });
+    renderResult.unmount();
+    render();
+    expect(screen.queryByText('Select all')).toBeInTheDocument();
+  });
 });
