@@ -40,7 +40,7 @@ export class RetrieveStats {
     const elasticSize = elasticIndex.body[0]['store.size'];
 
     return {
-      total: parseInt(filesSize.totalSize) + parseInt(elasticSize),
+      total: parseInt(filesSize.totalSize, 10) + parseInt(elasticSize, 10),
     };
   }
 
