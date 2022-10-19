@@ -91,4 +91,5 @@ const LibraryHeaderComponent = ({
 };
 
 const container = connector(LibraryHeaderComponent);
+export type { LibraryHeaderOwnProps };
 export { container as LibraryHeader };

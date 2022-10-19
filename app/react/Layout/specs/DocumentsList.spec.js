@@ -3,12 +3,12 @@ import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
-import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
-import { NeedAuthorization } from 'app/Auth';
 
+import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { TilesViewer } from 'app/Layout/TilesViewer';
 import { TableViewer } from 'app/Layout/TableViewer';
+import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {
@@ -36,6 +36,7 @@ describe('DocumentsList', () => {
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } },
       selectedDocuments: {},
+      selectAllDocuments: jasmine.createSpy('loadMoreDocuments'),
     };
   });
 
@@ -73,31 +74,18 @@ describe('DocumentsList', () => {
     });
   });
 
-  it('should render action buttons if passed as props', () => {
+  it('should render a LibraryHeader with the expected props', () => {
     render();
-    expect(component.find('.search-list-actions').length).toBe(0);
+    const libraryHeader = component.find(LibraryHeader);
 
-    const ActionButtons = () => <div>action buttons</div>;
-    props.ActionButtons = ActionButtons;
+    expect(libraryHeader.props()).toEqual({
+      counter: <DocumentCounter entityListCount={2} entityTotal={10} />,
+      storeKey: 'library',
+      selectAllDocuments: expect.any(Function),
+    });
 
-    render();
-    expect(component.find('.search-list-actions').length).toBe(1);
-    expect(
-      component.find('.search-list-actions').childAt(0).getElements()[0].type().props.children
-    ).toBe('action buttons');
-  });
-
-  it('should hold sortButtons with search callback and selectedTemplates', () => {
-    render();
-    expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
-    expect(component.find(SortButtons).props().selectedTemplates).toBe(
-      props.filters.get('documentTypes')
-    );
-  });
-
-  it('should render a Select All button only if authorized', () => {
-    render();
-    expect(component.find('.select-all-documents').parent().is(NeedAuthorization)).toBe(true);
+    libraryHeader.props().selectAllDocuments();
+    expect(props.selectAllDocuments).toHaveBeenCalled();
   });
 
   it('should bind to the clickOnDocument', () => {

@@ -16,6 +16,10 @@ import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';
 
+const selectAllEntities = command => {
+  command.selectAllDocuments();
+};
+
 class DocumentsList extends Component {
   constructor(props, context) {
     super(props, context);
@@ -74,10 +78,6 @@ class DocumentsList extends Component {
         {amount} {t('System', 'x more')}
       </Link>
     );
-  }
-
-  selectAllDocuments1(command) {
-    command.selectAllDocuments();
   }
 
   render() {
@@ -186,7 +186,7 @@ class DocumentsList extends Component {
             counter={counter}
             storeKey={this.props.storeKey}
             selectAllDocuments={() => {
-              this.selectAllDocuments1(this);
+              selectAllEntities(this);
             }}
           />
           {blankState() && <Welcome />}
