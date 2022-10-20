@@ -369,6 +369,7 @@ const fixtures: DBFixture = {
       entity: 'newDoc1SharedId',
       type: 'attachment',
       filename: 'test2.txt',
+      fullText: { 1: 'first page' },
     },
     {
       _id: file2,
