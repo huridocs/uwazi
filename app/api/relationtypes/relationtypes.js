@@ -1,10 +1,9 @@
 import translations from 'api/i18n/translations';
 import relationships from 'api/relationships/relationships';
-import { GetRelationshipsService } from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
+import { getNewRelationshipCount } from './v2_support';
 
 const checkDuplicated = relationtype =>
   model.get().then(response => {
@@ -102,13 +101,8 @@ export default {
   },
 
   async delete(id) {
-    const service = GetRelationshipsService(undefined);
-
     const connectionCount = await relationships.countByRelationType(id);
-    const newRelationshipsAllowed = await DefaultSettingsDataSource().readNewRelationshipsAllowed();
-    const newRelationshipCount = newRelationshipsAllowed
-      ? await service.countByType(id.toString())
-      : 0;
+    const newRelationshipCount = await getNewRelationshipCount(id);
 
     if (connectionCount === 0 && newRelationshipCount === 0) {
       await translations.deleteContext(id);
