@@ -18,7 +18,7 @@ import {
   validateStringArray,
 } from './schemas/relationshipInputValidators';
 import { CreateRelationshipService } from '../services/CreateRelationshipService';
-import { DeleteRelationshipService } from '../services/__sandbox';
+import { DeleteRelationshipService } from '../services/service_factories';
 import { DenormalizationService } from '../services/DenormalizationService';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

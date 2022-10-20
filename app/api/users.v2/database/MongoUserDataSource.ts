@@ -6,7 +6,7 @@ import { UserMappers } from './UserMappers';
 import { UserDBOType } from './schemas/userTypes';
 import { User } from '../model/User';
 
-export class MongoRelationshipsDataSource extends MongoDataSource implements UserDataSource {
+export class MongoUserDataSource extends MongoDataSource implements UserDataSource {
   protected collectionName = 'users';
 
   get(_id: string) {
