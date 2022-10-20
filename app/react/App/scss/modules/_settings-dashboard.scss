@@ -87,6 +87,12 @@
               color: $c-gray-600;
               font-weight: 400;
             }
+
+            &:not(:last-child):after {
+              content: '|';
+              margin-left: 10px;
+              color: $c-gray-600;
+            }
           }
 
           .card-info {
@@ -95,12 +101,6 @@
               color: $c-gray-600;
               font-weight: 400;
             }
-          }
-
-          p:not(:last-child):after {
-            content: '|';
-            margin-left: 10px;
-            color: $c-gray-600;
           }
 
           .count {
