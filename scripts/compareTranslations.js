@@ -24,7 +24,8 @@ const getTranslationsFromDB = async () => {
 };
 
 const getKeysFromRepository = async locale => {
-  const url = `https://raw.githubusercontent.com/huridocs/uwazi-contents/3605-tooltips-changes/ui-translations/${locale}.csv`;
+  const url = `https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/${locale}.csv`;
+
   const response = await fetch(url, {
     headers: {
       accept: 'application/vnd.github.v4.raw',
