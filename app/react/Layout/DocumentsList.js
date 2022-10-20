@@ -190,7 +190,7 @@ class DocumentsList extends Component {
               selectAllEntities(this);
             }}
             sortButtonsStateProperty={this.props.sortButtonsStateProperty}
-            Search={this.props.SearchBar}
+            SearchBar={this.props.SearchBar}
             searchCentered={this.props.searchCentered}
           />
           {blankState() && <Welcome />}

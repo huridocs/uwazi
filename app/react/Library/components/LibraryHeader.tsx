@@ -48,7 +48,7 @@ const LibraryHeaderComponent = ({
   selectAllDocuments,
   counter,
   searchDocuments,
-  SearchBar: Search,
+  SearchBar,
   searchCentered,
 }: mappedProps) => {
   const [footerVisible, setFooterVisible] = useState(true);
@@ -59,9 +59,9 @@ const LibraryHeaderComponent = ({
   return (
     <>
       <div className="library-header">
-        {Search !== undefined && (
+        {SearchBar !== undefined && (
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-            {Search && <Search storeKey={storeKey} />}
+            <SearchBar storeKey={storeKey} />
           </div>
         )}
         <div className="sort-by">
