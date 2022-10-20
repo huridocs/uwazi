@@ -552,21 +552,11 @@ header {
     border-right: 1px solid transparentize($c-black, 0.6);
     border-left: 1px solid transparentize($c-black, 0.6);
   }
+
   @media (max-width: 1023px) {
     padding: 20px 15px;
-
-    &.only-language {
-      .rw-list-option:last-child {
-        display: none;
-      }
-    }
-    &.one-language {
-      padding: 10px;
-      div {
-        display: none;
-      }
-    }
   }
+
   .menuNav-btn {
     font-size: $f-size-sm;
   }

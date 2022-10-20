@@ -4,29 +4,19 @@ import { connect, ConnectedProps } from 'react-redux';
 import { withRouter, WithRouterProps } from 'react-router';
 import { IImmutable } from 'shared/types/Immutable';
 import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
-import { UserSchema } from 'shared/types/userType';
+import { Icon } from 'UI';
 import { actions, Translate, t } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { Icon } from 'UI';
+import { NeedAuthorization } from 'app/Auth';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
-const prepareDropdownValues = (
-  languageMap: IImmutable<LanguagesListSchema>,
-  locale: string,
-  user: IImmutable<UserSchema>
-) => {
+const prepareLanguageValues = (languageMap: IImmutable<LanguagesListSchema>, locale: string) => {
   const languages: Array<LanguageSchema & { type?: string }> = languageMap.toJS();
 
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
-  const loggedUser = user.get('_id') && user.get('role') !== 'collaborator';
-
-  if (loggedUser) {
-    languages.push({ label: 'Live translate', key: 'livetranslate', type: 'livetranslate' });
-  }
-
-  return { languages, selectedLanguage, loggedUser };
+  return { languages, selectedLanguage };
 };
 
 const locationSearch = (location: WithRouterProps['location']) => {
@@ -38,7 +28,6 @@ const mapStateToProps = (state: IStore) => ({
   languages: state.settings.collection.get('languages'),
   i18nmode: state.inlineEdit.get('inlineEdit'),
   locale: state.locale,
-  user: state.user,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -51,17 +40,19 @@ type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 const i18NMenuComponent = ({
   location,
   languages: languageMap,
-  user,
   i18nmode,
   locale,
   toggleInlineEdit,
 }: mappedProps) => {
-  if (!languageMap || languageMap!.size < 1 || !user.get('_id')) {
+  if (!languageMap || languageMap!.size < 1) {
     return <div className="no-i18nmenu" />;
   }
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
+  const urlLocation = location;
+  const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
+  const { languages, selectedLanguage } = prepareLanguageValues(languageMap!, locale);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
@@ -70,25 +61,13 @@ const i18NMenuComponent = ({
     }, [])
   );
 
-  const { languages, selectedLanguage, loggedUser } = prepareDropdownValues(
-    languageMap!,
-    locale,
-    user
-  );
-
-  const urlLocation = location;
-
   if (location.search.match(/page=/)) {
     urlLocation.search = locationSearch(location);
   }
 
-  const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
-
   return (
     <div
-      className={`menuNav-I18NMenu ${!loggedUser === false ? ' only-language' : null} ${
-        languageMap!.size === 1 ? ' one-language' : ' '
-      } `}
+      className={`menuNav-I18NMenu ${languageMap!.size === 1 ? 'one-language' : null}`}
       role="navigation"
       aria-label="Languages"
       ref={menuRef}
@@ -109,52 +88,53 @@ const i18NMenuComponent = ({
 
           <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
             {languages.map(language => {
-              const url = `/${language.key}${path}${path.match('document') ? '' : location.search}`;
-
-              if (!language.type) {
-                return (
-                  <li key={language._id as string} className="menuNav-item">
-                    <a href={url} className="btn menuNav-btn">
-                      {language.localized_label || language.label}
-                    </a>
-                  </li>
-                );
-              }
-
+              const url = `/${language.key}${path}${
+                path.match('document') ? '' : urlLocation.search
+              }`;
               return (
-                <button
-                  className="live-translate"
-                  type="button"
-                  onClick={() => {
-                    toggleInlineEdit();
-                    setDropdownOpen(false);
-                  }}
-                >
-                  <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-                  <Translate>{language.label}</Translate>
-                </button>
+                <li key={language._id as string} className="menuNav-item">
+                  <a href={url} className="btn menuNav-btn">
+                    {language.localized_label || language.label}
+                  </a>
+                </li>
               );
             })}
+
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <button
+                className="live-translate"
+                type="button"
+                onClick={() => {
+                  toggleInlineEdit();
+                  setDropdownOpen(false);
+                }}
+              >
+                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                <Translate>Live translate</Translate>
+              </button>
+            </NeedAuthorization>
           </ul>
         </div>
       )}
 
       {i18nmode && (
-        <div className="menuNav-language">
-          <button
-            className="singleItem"
-            type="button"
-            onClick={toggleInlineEdit}
-            aria-label={t('System', 'Turn off inline translation', null, false)}
-          >
-            <div className="live-translate">
-              <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-            </div>
-          </button>
-          <span className="singleItem">
-            <Translate>Live translate</Translate>
-          </span>
-        </div>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <div className="menuNav-language">
+            <button
+              className="singleItem"
+              type="button"
+              onClick={toggleInlineEdit}
+              aria-label={t('System', 'Turn off inline translation', null, false)}
+            >
+              <div className="live-translate">
+                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+              </div>
+            </button>
+            <span className="singleItem">
+              <Translate>Live translate</Translate>
+            </span>
+          </div>
+        </NeedAuthorization>
       )}
     </div>
   );
