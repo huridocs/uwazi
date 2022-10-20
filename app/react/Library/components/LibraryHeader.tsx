@@ -5,7 +5,6 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { NeedAuthorization } from 'app/Auth';
-import { SearchBar } from 'app/Library/components/SearchBar';
 import { SortButtons } from 'app/Library/components/SortButtons';
 import { IStore } from 'app/istore';
 import { wrapDispatch } from 'app/Multireducer';
@@ -16,6 +15,8 @@ interface LibraryHeaderOwnProps {
   counter: React.ReactElement;
   selectAllDocuments: () => {};
   sortButtonsStateProperty: string;
+  SearchBar?: Function;
+  searchCentered?: boolean;
 }
 
 const mapStateToProps = (state: IStore) => ({
@@ -47,6 +48,8 @@ const LibraryHeaderComponent = ({
   selectAllDocuments,
   counter,
   searchDocuments,
+  SearchBar: Search,
+  searchCentered,
 }: mappedProps) => {
   const [footerVisible, setFooterVisible] = useState(true);
   const toggleFooterVisible = () => {
@@ -56,9 +59,11 @@ const LibraryHeaderComponent = ({
   return (
     <>
       <div className="library-header">
-        <div className="search-list ">
-          <SearchBar storeKey={storeKey} />{' '}
-        </div>
+        {Search !== undefined && (
+          <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
+            {Search && <Search storeKey={storeKey} />}
+          </div>
+        )}
         <div className="sort-by">
           <span className="documents-counter-sort">
             <Translate>sorted by</Translate>

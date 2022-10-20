@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
+import { SearchBar } from 'app/Library/components/SearchBar';
 import Loader from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 
@@ -188,6 +189,9 @@ class DocumentsList extends Component {
             selectAllDocuments={() => {
               selectAllEntities(this);
             }}
+            sortButtonsStateProperty={this.props.sortButtonsStateProperty}
+            Search={this.props.SearchBar}
+            searchCentered={this.props.searchCentered}
           />
           {blankState() && <Welcome />}
 
@@ -212,6 +216,7 @@ class DocumentsList extends Component {
 }
 
 DocumentsList.defaultProps = {
+  SearchBar,
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
   selectedDocuments: {},
@@ -223,6 +228,7 @@ DocumentsList.propTypes = {
   filters: PropTypes.object,
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
+  SearchBar: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,

@@ -20,7 +20,7 @@ interface EntityDisplayState {
     selectedDocuments: EntitySchema[];
     tableViewColumns: TableViewColumn[];
     zoomLevel: number;
-    filtersPanel: [];
+    filtersPanel: boolean;
   }>;
   sidepanel: {
     metadata: ClientEntitySchema;

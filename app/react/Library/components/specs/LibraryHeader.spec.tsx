@@ -7,10 +7,12 @@ import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
+import { SearchBar } from '../SearchBar';
 
 describe('LibraryHeader', () => {
   let renderResult: RenderResult;
@@ -19,6 +21,8 @@ describe('LibraryHeader', () => {
     counter: <span>counter</span>,
     selectAllDocuments: jest.fn(),
     sortButtonsStateProperty: 'library.search',
+    SearchBar,
+    searchCentered: false,
   };
 
   const reducer = combineReducers({
@@ -27,19 +31,16 @@ describe('LibraryHeader', () => {
       sort: 'title',
     }),
   });
+  const storeState = createStore(reducer).getState() as { form: FormState };
 
-  let state: Partial<Omit<IStore, 'library'>> & {
+  const state: Partial<Omit<IStore, 'library'>> & {
     library: {
       ui: IImmutable<{}>;
       search: { searchTerm?: string; sort?: string };
       filters: IImmutable<{}>;
       searchForm: any;
     };
-  };
-
-  const storeState = createStore(reducer).getState() as { form: FormState };
-
-  state = {
+  } = {
     ...defaultState,
     templates: fromJS([
       {
@@ -85,7 +86,6 @@ describe('LibraryHeader', () => {
   it('should hold sortButtons with search callback and selectedTemplates', () => {
     jest.spyOn(libraryActions, 'searchDocuments');
     render();
-    screen.debug();
     fireEvent.click(screen.getByTitle('open dropdown'));
 
     const options = screen.getAllByRole('option');
