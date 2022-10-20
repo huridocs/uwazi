@@ -19,12 +19,11 @@ export type RelationshipAggregatedResultType = {
 
 export interface RelationshipsDataSource extends Transactional {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
-  delete(_ids: string[]): Promise<Relationship[]>;
+  delete(_ids: string[]): Promise<void>;
   exists(ids: string[]): Promise<boolean>;
-  getBy(values: RelationshipValueQuery): ResultSet<Relationship>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<RelationshipAggregatedResultType>;
-  deleteBy(propValues: RelationshipValueQuery): Promise<Relationship[]>;
+  deleteBy(propValues: RelationshipValueQuery): Promise<void>;
   countBy(propValues: RelationshipValueQuery): Promise<number>;
   getByQuery(query: MatchQueryNode, language: string): ResultSet<GraphQueryResult>;
 }

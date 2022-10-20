@@ -1,11 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
-import {
-  ApplicationRelationshipType,
-  Relationship,
-  RelationshipValueQuery,
-} from '../model/Relationship';
+import { ApplicationRelationshipType, Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
@@ -50,15 +46,6 @@ export class MongoRelationshipsDataSource
     return this.getCollection().find(query).count();
   }
 
-  getBy(values: RelationshipValueQuery) {
-    const query = RelationshipMappers.partialToDBO(values);
-    const cursor = this.getCollection().find(query);
-    return new MongoResultSet<RelationshipDBOType, Relationship>(
-      cursor,
-      RelationshipMappers.toModel
-    );
-  }
-
   getById(_ids: string[]) {
     const ids = idsToDb(_ids);
     const cursor = this.getCollection().find({ _id: { $in: ids } }, { session: this.session });
@@ -70,9 +57,7 @@ export class MongoRelationshipsDataSource
 
   async delete(_ids: string[]) {
     const ids = idsToDb(_ids);
-    const deleted = await this.getById(_ids).all();
     await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.session });
-    return deleted;
   }
 
   getByEntity(sharedId: string) {
@@ -128,10 +113,8 @@ export class MongoRelationshipsDataSource
     return new MongoResultSet(cursor, count, RelationshipMappers.toGraphQueryResult);
   }
 
-  async deleteBy(values: Partial<ApplicationRelationshipType>): Promise<Relationship[]> {
+  async deleteBy(values: Partial<ApplicationRelationshipType>) {
     const query = RelationshipMappers.partialToDBO(values);
-    const deleted = await this.getBy(values).all();
     await this.getCollection().deleteMany(query, { session: this.session });
-    return deleted;
   }
 }

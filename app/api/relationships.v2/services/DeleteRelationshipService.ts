@@ -21,31 +21,23 @@ export class DeleteRelationshipService {
     this.authService = authService;
   }
 
-  async delete(_id: string) {
-    const deleted = await this.deleteMultiple([_id]);
-    return deleted[0];
-  }
-
-  async deleteMultiple(_ids: string[]) {
-    const toBeDeleted = await this.relationshipsDS.getById(_ids).all();
+  async delete(_ids: string | string[]) {
+    const ids = Array.isArray(_ids) ? _ids : [_ids];
+    const toBeDeleted = await this.relationshipsDS.getById(ids).all();
     const sharedIds = toBeDeleted.map(r => [r.from, r.to]).flat();
     await this.authService.validateAccess('write', sharedIds);
 
-    return this.transactionManager.run(async () => {
-      if (!(await this.relationshipsDS.exists(_ids))) {
+    await this.transactionManager.run(async () => {
+      if (!(await this.relationshipsDS.exists(ids))) {
         throw new MissingRelationshipError('Some relationships to be deleted are missing.');
       }
 
-      return this.relationshipsDS.delete(_ids);
+      return this.relationshipsDS.delete(ids);
     }, [this.relationshipsDS]);
   }
 
   async deleteByEntity(sharedId: string) {
     await this.relationshipsDS.deleteBy({ from: sharedId });
     await this.relationshipsDS.deleteBy({ to: sharedId });
-  }
-
-  async deleteByType(reltype: string) {
-    await this.relationshipsDS.deleteBy({ type: reltype });
   }
 }

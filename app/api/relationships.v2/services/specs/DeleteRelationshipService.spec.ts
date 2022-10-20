@@ -71,24 +71,7 @@ afterAll(async () => {
 
 describe('delete()', () => {
   describe('When the entities exist', () => {
-    it('should return the deleted entry', async () => {
-      const connection = getConnection();
-      const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
-      );
-      const relationship = await service.delete(factory.id('rel1').toHexString());
-
-      expect(relationship).toEqual({
-        _id: expect.any(String),
-        from: 'entity1',
-        to: 'entity2',
-        type: factory.id('rtype1').toHexString(),
-      });
-    });
-
-    it('should delete the relationship', async () => {
+    it('should delete a single relationship', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection),
@@ -102,67 +85,15 @@ describe('delete()', () => {
         .toArray();
       expect(relatinshipsInDb).toEqual([]);
     });
-  });
 
-  describe('When the relationship does not exist', () => {
-    it('should throw a validation error', async () => {
+    it('should delete multiple relationships', async () => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection),
         new MongoTransactionManager(getClient()),
         new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
-      try {
-        await service.delete(factory.id('non-existing').toHexString());
-        fail('should throw error');
-      } catch (e) {
-        expect(e).toBeInstanceOf(MissingRelationshipError);
-      }
-    });
-  });
-});
-
-describe('deleteMultiple()', () => {
-  describe('When the entities exist', () => {
-    it('should return the deleted relationships', async () => {
-      const connection = getConnection();
-      const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
-      );
-      const relationships = await service.deleteMultiple([
-        factory.id('rel1').toHexString(),
-        factory.id('rel3').toHexString(),
-      ]);
-
-      expect(relationships).toEqual([
-        {
-          _id: expect.any(String),
-          from: 'entity1',
-          to: 'entity2',
-          type: factory.id('rtype1').toHexString(),
-        },
-        {
-          _id: expect.any(String),
-          from: 'entity3',
-          to: 'entity1',
-          type: factory.id('rtype3').toHexString(),
-        },
-      ]);
-    });
-
-    it('should delete the relationships', async () => {
-      const connection = getConnection();
-      const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
-      );
-      await service.deleteMultiple([
-        factory.id('rel1').toHexString(),
-        factory.id('rel3').toHexString(),
-      ]);
+      await service.delete([factory.id('rel1').toHexString(), factory.id('rel3').toHexString()]);
 
       const relatinshipsInDb = await collectionInDb().find({}).toArray();
 
@@ -177,8 +108,15 @@ describe('deleteMultiple()', () => {
     });
   });
 
-  describe('When an relationship does not exist', () => {
-    it('should throw a validation error', async () => {
+  describe('When a relationship does not exist', () => {
+    it.each([
+      {
+        toDelete: factory.id('non-existing').toHexString(),
+      },
+      {
+        toDelete: [factory.id('non-existing').toHexString(), factory.id('rel1').toHexString()],
+      },
+    ])('should throw a validation error', async ({ toDelete }) => {
       const connection = getConnection();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection),
@@ -186,10 +124,7 @@ describe('deleteMultiple()', () => {
         new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
       );
       try {
-        await service.deleteMultiple([
-          factory.id('rel1').toHexString(),
-          factory.id('non-existing').toHexString(),
-        ]);
+        await service.delete(toDelete);
         fail('should throw error');
       } catch (e) {
         expect(e).toBeInstanceOf(MissingRelationshipError);

@@ -74,7 +74,7 @@ export default (app: Application) => {
       if (validateStringArray(idArray)) {
         const user = User.fromRequest(req);
         const service = DeleteRelationshipService(user);
-        const created = await service.deleteMultiple(idArray);
+        const created = await service.delete(idArray);
         res.json(created);
       }
     }
