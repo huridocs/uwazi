@@ -16,16 +16,12 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { DeleteRelationshipService } from 'api/relationships.v2/services/DeleteRelationshipService';
-import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import {
+  DeleteRelationshipService,
+  DenormalizationService,
+} from 'api/relationships.v2/services/service_factories';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
@@ -49,21 +45,19 @@ const FIELD_TYPES_TO_SYNC = [
 ];
 
 const markNewRelationshipsOfAffected = async ({ sharedId, language }, index = true) => {
-  const db = getConnection();
-  const client = getClient();
-  const entitiesDataSource = new MongoEntitiesDataSource(db);
-  const service = new DenormalizationService(
-    new MongoRelationshipsDataSource(db),
-    entitiesDataSource,
-    new MongoTemplatesDataSource(db),
-    new MongoTransactionManager(client)
-  );
-  const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
+  if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
+    const entitiesDataSource = DefaultEntitiesDataSource();
+    const service = DenormalizationService();
+    const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
 
-  entitiesDataSource.markMetadataAsChanged(candidates);
+    entitiesDataSource.markMetadataAsChanged(candidates);
 
-  if (index && candidates.length > 0) {
-    await search.indexEntities({ sharedId: { $in: candidates.map(c => c.sharedId) } }, '+fullText');
+    if (index && candidates.length > 0) {
+      await search.indexEntities(
+        { sharedId: { $in: candidates.map(c => c.sharedId) } },
+        '+fullText'
+      );
+    }
   }
 };
 
@@ -408,9 +402,7 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
-    if (await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed()) {
-      await this.markNewRelationshipsOfAffected(entity, index);
-    }
+    await this.markNewRelationshipsOfAffected(entity, index);
 
     return entity;
   },
@@ -488,7 +480,7 @@ export default {
   },
 
   async performNewRelationshipQueries(entities, _relationshipsDataSource) {
-    if (!(await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed())) {
+    if (!(await DefaultSettingsDataSource().readNewRelationshipsAllowed())) {
       return;
     }
 
@@ -500,8 +492,7 @@ export default {
       t => t._id,
       t => t.properties.filter(prop => prop.type === 'newRelationship')
     );
-    const db = getConnection();
-    const entitiesDataSource = new MongoEntitiesDataSource(db, new MongoSettingsDataSource(db));
+    const entitiesDataSource = DefaultEntitiesDataSource();
 
     await Promise.all(
       entities.map(async entity => {
@@ -731,14 +722,10 @@ export default {
   },
 
   async deleteRelatedNewRelationships(sharedId) {
-    const client = getClient();
-    const db = getConnection();
-    const service = new DeleteRelationshipService(
-      new MongoRelationshipsDataSource(db),
-      new MongoTransactionManager(client),
-      new AuthorizationService(new MongoPermissionsDataSource(db), undefined)
-    );
-    await service.deleteByEntity(sharedId);
+    if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
+      const service = DeleteRelationshipService();
+      await service.deleteByEntity(sharedId);
+    }
   },
 
   async delete(sharedId, deleteIndex = true) {
@@ -763,9 +750,7 @@ export default {
 
     await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
 
-    if (await new MongoSettingsDataSource(getConnection()).readNewRelationshipsAllowed()) {
-      await this.deleteRelatedNewRelationships(sharedId);
-    }
+    await this.deleteRelatedNewRelationships(sharedId);
 
     return docs;
   },
