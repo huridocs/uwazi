@@ -1,36 +1,45 @@
 import { Application, NextFunction, Request, Response } from 'express';
 
-import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
-import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
-import { applicationEventsBus } from 'api/eventsbus';
-import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { User } from 'api/users.v2/model/User';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import needsAuthorization from '../../auth/authMiddleware';
-import { MongoRelationshipsDataSource } from '../database/MongoRelationshipsDataSource';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import {
   validateRelationshipInputArray,
+  validateString,
   validateStringArray,
 } from './schemas/relationshipInputValidators';
-import { CreateRelationshipService } from '../services/CreateRelationshipService';
-import { DeleteRelationshipService } from '../services/service_factories';
-import { DenormalizationService } from '../services/DenormalizationService';
+import needsAuthorization from '../../auth/authMiddleware';
+import {
+  CreateRelationshipService,
+  DeleteRelationshipService,
+  GetRelationshipsService,
+} from '../services/service_factories';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const featureRequired = async (req: Request, res: Response, next: NextFunction) => {
-  const db = getConnection();
-  if (!(await new MongoSettingsDataSource(db).readNewRelationshipsAllowed())) {
+  if (!(await DefaultSettingsDataSource().readNewRelationshipsAllowed())) {
     return res.sendStatus(404);
   }
-  next();
+  return next();
 };
 
 export default (app: Application) => {
+  app.get(
+    '/api/relationships.v2',
+    featureRequired,
+    needsAuthorization(['admin', 'editor']),
+    async (req, res) => {
+      const sharedId = req.body;
+      if (validateString(sharedId)) {
+        const user = User.fromRequest(req);
+
+        const service = GetRelationshipsService(user);
+
+        const got = await service.getByEntity(sharedId);
+        res.json(got);
+      }
+    }
+  );
+
   app.post(
     '/api/relationships.v2',
     featureRequired,
@@ -39,26 +48,9 @@ export default (app: Application) => {
       const relationshipInputArray = req.body;
       if (validateRelationshipInputArray(relationshipInputArray)) {
         const user = User.fromRequest(req);
-        const connection = getConnection();
 
-        const SettingsDataSource = new MongoSettingsDataSource(connection);
-        const TransactionManager = new MongoTransactionManager(getClient());
+        const service = CreateRelationshipService(user);
 
-        const service = new CreateRelationshipService(
-          new MongoRelationshipsDataSource(connection),
-          new MongoRelationshipTypesDataSource(connection),
-          new MongoEntitiesDataSource(connection, SettingsDataSource),
-          TransactionManager,
-          MongoIdGenerator,
-          new AuthorizationService(new MongoPermissionsDataSource(connection), user),
-          new DenormalizationService(
-            new MongoRelationshipsDataSource(connection),
-            new MongoEntitiesDataSource(connection, SettingsDataSource),
-            new MongoTemplatesDataSource(connection),
-            TransactionManager
-          ),
-          applicationEventsBus
-        );
         const created = await service.createMultiple(relationshipInputArray);
         res.json(created);
       }
@@ -74,8 +66,8 @@ export default (app: Application) => {
       if (validateStringArray(idArray)) {
         const user = User.fromRequest(req);
         const service = DeleteRelationshipService(user);
-        const created = await service.delete(idArray);
-        res.json(created);
+        await service.delete(idArray);
+        res.status(200);
       }
     }
   );
