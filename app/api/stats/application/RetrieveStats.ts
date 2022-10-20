@@ -9,12 +9,12 @@ export class RetrieveStats {
   }
 
   async execute() {
-    const userStats = await this.calculateUserStats();
-    const fileStats = await this.calculateFileStats();
-    const entityStats = await this.calculateEntityStats();
-    const storageStats = await this.calculateStorageStats();
-
-    return { users: userStats, files: fileStats, entities: entityStats, storage: storageStats };
+    return {
+      users: await this.calculateUserStats(),
+      files: await this.calculateFileStats(),
+      entities: await this.calculateEntityStats(),
+      storage: await this.calculateStorageStats(),
+    };
   }
 
   private async calculateStorageStats() {
