@@ -23,6 +23,7 @@ describe('LibraryHeader', () => {
     SearchBar,
     searchCentered: false,
     searchDocuments: jest.fn(),
+    filters: fromJS([]),
   };
 
   const reducer = combineReducers({

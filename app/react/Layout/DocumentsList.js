@@ -184,8 +184,8 @@ class DocumentsList extends Component {
       <div className="documents-list">
         <div className="main-wrapper">
           <LibraryHeader
-            counter={counter}
             storeKey={this.props.storeKey}
+            counter={counter}
             selectAllDocuments={() => {
               selectAllEntities(this);
             }}
@@ -193,6 +193,7 @@ class DocumentsList extends Component {
             SearchBar={this.props.SearchBar}
             searchCentered={this.props.searchCentered}
             searchDocuments={this.props.searchDocuments}
+            filters={this.props.filters}
           />
           {blankState() && <Welcome />}
 

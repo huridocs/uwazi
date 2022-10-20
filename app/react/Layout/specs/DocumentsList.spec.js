@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
 import Footer from 'app/App/Footer';
@@ -16,7 +16,7 @@ describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  const documents = Immutable.fromJS({
+  const documents = fromJS({
     rows: [
       { title: 'Document one', _id: '1' },
       { title: 'Document two', _id: '2' },
@@ -28,7 +28,7 @@ describe('DocumentsList', () => {
     props = {
       documents,
       search: { sort: 'sort' },
-      filters: Immutable.fromJS({ documentTypes: [] }),
+      filters: fromJS({ documentTypes: [] }),
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
@@ -52,7 +52,7 @@ describe('DocumentsList', () => {
     beforeEach(() => {
       props.view = 'graph';
       props.connections = { totalRows: 2 };
-      props.connectionsGroups = Immutable.fromJS([
+      props.connectionsGroups = fromJS([
         {
           templates: [
             {
@@ -89,6 +89,7 @@ describe('DocumentsList', () => {
       searchDocuments: props.searchDocuments,
       sortButtonsStateProperty: '',
       storeKey: 'library',
+      filters: fromJS({ documentTypes: [] }),
     });
 
     libraryHeader.props().selectAllDocuments();

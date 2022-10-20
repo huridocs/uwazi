@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import { SortButtons } from 'app/Library/components/SortButtons';
 import { IStore } from 'app/istore';
+import { IImmutable } from 'shared/types/Immutable';
 
 interface LibraryHeaderOwnProps {
   storeKey: 'library' | 'uploads';
@@ -14,11 +15,10 @@ interface LibraryHeaderOwnProps {
   SearchBar?: Function;
   searchCentered?: boolean;
   searchDocuments: Function;
+  filters: IImmutable<{ documentTypes: string[] }>;
 }
 
 const mapStateToProps = (state: IStore) => ({
-  documents: state.library.documents,
-  filters: state.library.filters,
   filtersPanel: state.library.ui.get('filtersPanel'),
   search: state.library.search,
   selectedDocuments: state.library.ui.get('selectedDocuments'),
