@@ -6,10 +6,8 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
-import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
-import { UserSchema } from 'shared/types/userType';
-import { Settings } from 'shared/types/settingsType';
+import { ClientUserSchema, ClientUserGroupSchema, Settings } from 'app/apiResponseTypes';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
@@ -168,9 +166,9 @@ export interface IStore {
   settings: {
     collection: IImmutable<Settings>;
   };
-  user: IImmutable<UserSchema>;
-  users: IImmutable<UserSchema[]>;
-  userGroups: IImmutable<UserGroupSchema[]>;
+  user: IImmutable<ClientUserSchema>;
+  users: IImmutable<ClientUserSchema[]>;
+  userGroups: IImmutable<ClientUserGroupSchema[]>;
   page: {
     data: PageType;
     uiState: IImmutable<{ savingPage: boolean }>;

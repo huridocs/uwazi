@@ -1,4 +1,4 @@
-import { Settings } from 'shared/types/settingsType';
+import { Settings } from 'app/apiResponseTypes';
 import { SearchParams } from 'shared/types/searchParams.d';
 
 export const tocGenerationUtils = {

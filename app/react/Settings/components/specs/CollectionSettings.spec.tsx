@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { Settings } from 'shared/types/settingsType';
+import { Settings } from 'app/apiResponseTypes';
 
 import { MultiSelect } from 'app/Forms';
 import { CollectionSettings } from '../CollectionSettings';

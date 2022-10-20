@@ -3,7 +3,7 @@
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { Settings } from 'shared/types/settingsType';
+import { Settings } from 'app/apiResponseTypes';
 import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
 import { SubmitHandler, useForm } from 'react-hook-form';

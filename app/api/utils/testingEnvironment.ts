@@ -2,9 +2,9 @@ import { appContext } from 'api/utils/AppContext';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingTenants } from 'api/utils/testingTenants';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import { UserSchema } from 'shared/types/userType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { setupTestUploadedPaths } from 'api/files';
+import { UserSchema } from 'shared/types/userType';
 
 const testingEnvironment = {
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {

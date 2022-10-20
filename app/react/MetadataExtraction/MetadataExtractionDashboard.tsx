@@ -10,7 +10,7 @@ import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { Settings } from 'shared/types/settingsType';
+import { Settings } from 'app/apiResponseTypes';
 import { saveConfigurations } from './actions/actions';
 import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
 
