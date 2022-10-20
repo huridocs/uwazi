@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Map } from 'immutable';
 import { Icon } from 'UI';
 import Doc from 'app/Library/components/Doc';
-import DropdownList from 'app/Forms/components/DropdownList';
+import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '../actions/actions';
 import HubRelationshipMetadata from './HubRelationshipMetadata';
 
