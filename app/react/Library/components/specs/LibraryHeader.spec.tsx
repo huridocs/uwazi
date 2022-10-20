@@ -8,7 +8,6 @@ import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 
-import * as libraryActions from 'app/Library/actions/libraryActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
@@ -23,6 +22,7 @@ describe('LibraryHeader', () => {
     sortButtonsStateProperty: 'library.search',
     SearchBar,
     searchCentered: false,
+    searchDocuments: jest.fn(),
   };
 
   const reducer = combineReducers({
@@ -84,7 +84,6 @@ describe('LibraryHeader', () => {
   };
 
   it('should hold sortButtons with search callback and selectedTemplates', () => {
-    jest.spyOn(libraryActions, 'searchDocuments');
     render();
     fireEvent.click(screen.getByTitle('open dropdown'));
 
@@ -97,7 +96,7 @@ describe('LibraryHeader', () => {
       'Date modified',
       'text',
     ]);
-    expect(libraryActions.searchDocuments).toHaveBeenCalledWith(
+    expect(props.searchDocuments).toHaveBeenCalledWith(
       {
         search: {
           order: 'desc',

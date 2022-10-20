@@ -9,6 +9,7 @@ import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { TilesViewer } from 'app/Layout/TilesViewer';
 import { TableViewer } from 'app/Layout/TableViewer';
 import { LibraryHeader } from 'app/Library/components/LibraryHeader';
+import { SearchBar } from 'app/Library/components/SearchBar';
 import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {
@@ -32,11 +33,13 @@ describe('DocumentsList', () => {
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
       storeKey: 'library',
-      searchDocuments: () => {},
+      searchDocuments: jest.fn(),
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } },
       selectedDocuments: {},
-      selectAllDocuments: jasmine.createSpy('loadMoreDocuments'),
+      selectAllDocuments: jest.fn(),
+      searchCentered: false,
+      sortButtonsStateProperty: '',
     };
   });
 
@@ -79,9 +82,13 @@ describe('DocumentsList', () => {
     const libraryHeader = component.find(LibraryHeader);
 
     expect(libraryHeader.props()).toEqual({
+      SearchBar,
       counter: <DocumentCounter entityListCount={2} entityTotal={10} />,
-      storeKey: 'library',
       selectAllDocuments: expect.any(Function),
+      searchCentered: false,
+      searchDocuments: props.searchDocuments,
+      sortButtonsStateProperty: '',
+      storeKey: 'library',
     });
 
     libraryHeader.props().selectAllDocuments();

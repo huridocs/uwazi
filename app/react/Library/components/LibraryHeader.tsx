@@ -1,14 +1,10 @@
 import { Translate } from 'app/I18N';
 import React, { useState } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
-
 import { connect, ConnectedProps } from 'react-redux';
 
 import { NeedAuthorization } from 'app/Auth';
 import { SortButtons } from 'app/Library/components/SortButtons';
 import { IStore } from 'app/istore';
-import { wrapDispatch } from 'app/Multireducer';
-import { searchDocuments as searchDocumentsAction } from 'app/Library/actions/libraryActions';
 
 interface LibraryHeaderOwnProps {
   storeKey: 'library' | 'uploads';
@@ -17,6 +13,7 @@ interface LibraryHeaderOwnProps {
   sortButtonsStateProperty: string;
   SearchBar?: Function;
   searchCentered?: boolean;
+  searchDocuments: Function;
 }
 
 const mapStateToProps = (state: IStore) => ({
@@ -29,15 +26,7 @@ const mapStateToProps = (state: IStore) => ({
   rowListZoomLevel: state.library.ui.get('zoomLevel'),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, props: LibraryHeaderOwnProps) =>
-  bindActionCreators(
-    {
-      searchDocuments: searchDocumentsAction,
-    },
-    wrapDispatch(dispatch, props.storeKey)
-  );
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
+const connector = connect(mapStateToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & LibraryHeaderOwnProps;
 

@@ -192,6 +192,7 @@ class DocumentsList extends Component {
             sortButtonsStateProperty={this.props.sortButtonsStateProperty}
             SearchBar={this.props.SearchBar}
             searchCentered={this.props.searchCentered}
+            searchDocuments={this.props.searchDocuments}
           />
           {blankState() && <Welcome />}
 
