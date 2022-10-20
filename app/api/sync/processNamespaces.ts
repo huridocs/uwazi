@@ -288,7 +288,10 @@ class ProcessNamespaces {
 
   private async files() {
     const { mongoId } = this.change;
-    const data = ensure<WithId<FileType>>(await filesModel.getById(mongoId), noDataFound);
+    const data = ensure<WithId<FileType>>(
+      await filesModel.getById(mongoId, '+fullText'),
+      noDataFound
+    );
 
     if (data.type === 'custom') {
       return { data };
