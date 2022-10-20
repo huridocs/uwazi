@@ -24,6 +24,7 @@ describe('Stats routes', () => {
 
   describe('GET /api/stats', () => {
     it('returns the aggregated stats', async () => {
+      // @ts-ignore
       jest.spyOn(elastic.cat, 'indices').mockResolvedValue({ body: [{ 'store.size': 5000 }] });
       const { body } = await request(app).get('/api/stats').expect(200);
       expect(body).toEqual({
