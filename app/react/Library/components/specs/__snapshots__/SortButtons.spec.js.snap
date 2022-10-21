@@ -4,7 +4,7 @@ exports[`SortButtons Sort options should use templates sortable properties as op
 <div
   className="sort-buttons"
 >
-  <Uncontrolled(DropdownList)
+  <ForwardRef
     className="sort-dropdown"
     data={
       Array [
@@ -85,7 +85,7 @@ exports[`SortButtons Sort options when relevance sorting is active and there is 
 <div
   className="sort-buttons"
 >
-  <Uncontrolled(DropdownList)
+  <ForwardRef
     className="sort-dropdown"
     data={
       Array [

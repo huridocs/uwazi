@@ -51,27 +51,8 @@ export interface ClientSettings
   filters?: ClientSettingsFilterSchema[];
   languages?: ClientLanguageSchema[];
   links?: ClientSettingsLinkSchema[];
-  features?: {
-    _id?: string;
-    tocGeneration?: {
-      url: string;
-    };
-    topicClassification?: boolean;
-    favorites?: boolean;
+  features?: Omit<Settings['features'], 'preserve | metadataExtraction'> & {
     preserve?: ClientPreserveConfig;
-    ocr?: {
-      url: string;
-    };
-    segmentation?: {
-      url: string;
-    };
-    twitterIntegration?: {
-      searchQueries: string[];
-      hashtagsTemplateName: string;
-      tweetsTemplateName: string;
-      language: string;
-      tweetsLanguages: string[];
-    };
     metadataExtraction?: {
       url: string;
       templates?: {
