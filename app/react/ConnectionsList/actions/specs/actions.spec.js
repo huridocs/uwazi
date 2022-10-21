@@ -79,7 +79,6 @@ describe('ConnectionsList actions', () => {
         type: 'relationships/list/searchResults/SET',
         value: 'searchResults',
       });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
     });
 
     it('should fetch the connections with the default state when filters is undefined', async () => {
@@ -100,7 +99,6 @@ describe('ConnectionsList actions', () => {
         type: 'relationships/list/searchResults/SET',
         value: 'searchResults',
       });
-      expect(dispatch).toHaveBeenCalledWith({ type: 'SHOW_TAB', tab: 'connections' });
     });
 
     it('should fetch the connections with custom text search', async () => {
