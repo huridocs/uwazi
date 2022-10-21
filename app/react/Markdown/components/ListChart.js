@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 import rison from 'rison-node';
 import qs from 'qs';
 
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import MarkdownLink from './MarkdownLink';
 import markdownDatasets from '../markdownDatasets';

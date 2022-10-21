@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
 import { ProgressBar } from 'app/UI';
+import { LoadingWrapper } from 'app/components/Elements/LoadingWrapper';
 
 const dummyapi = {
   get: async () =>
@@ -19,14 +20,20 @@ const Dashboard = () => {
     files: { total: 0 },
     storage: { total: 0, available: 100 },
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dummyapi
       .get()
       .then(response => {
         setSystemStats(response);
+        setLoading(false);
       })
       .catch(() => {});
+
+    return () => {
+      setLoading(true);
+    };
   }, []);
 
   return (
@@ -45,30 +52,32 @@ const Dashboard = () => {
                     <Translate>Users</Translate>
                   </h2>
                 </div>
-                <div className="body">
-                  <span className="count">{systemStats.users.total} </span>
-                  <Translate>Total users</Translate>
-                </div>
-                <div className="footer">
-                  {systemStats.users.admin > 0 && (
-                    <p className="user-info">
-                      <span className="count">{systemStats.users.admin} </span>
-                      <Translate>Admin</Translate>
-                    </p>
-                  )}
-                  {systemStats.users.editor > 0 && (
-                    <p className="user-info">
-                      <span className="count">{systemStats.users.editor} </span>
-                      <Translate>Editor</Translate>
-                    </p>
-                  )}
-                  {systemStats.users.collaborator > 0 && (
-                    <p className="user-info">
-                      <span className="count">{systemStats.users.collaborator} </span>
-                      <Translate>Collaborator</Translate>
-                    </p>
-                  )}
-                </div>
+                <LoadingWrapper isLoading={loading}>
+                  <div className="body">
+                    <span className="count">{systemStats.users.total} </span>
+                    <Translate>Total users</Translate>
+                  </div>
+                  <div className="footer">
+                    {systemStats.users.admin > 0 && (
+                      <p className="user-info">
+                        <span className="count">{systemStats.users.admin} </span>
+                        <Translate>Admin</Translate>
+                      </p>
+                    )}
+                    {systemStats.users.editor > 0 && (
+                      <p className="user-info">
+                        <span className="count">{systemStats.users.editor} </span>
+                        <Translate>Editor</Translate>
+                      </p>
+                    )}
+                    {systemStats.users.collaborator > 0 && (
+                      <p className="user-info">
+                        <span className="count">{systemStats.users.collaborator} </span>
+                        <Translate>Collaborator</Translate>
+                      </p>
+                    )}
+                  </div>
+                </LoadingWrapper>
               </article>
 
               <article className="card">
@@ -77,20 +86,22 @@ const Dashboard = () => {
                     <Translate>Storage</Translate>
                   </h2>
                 </div>
-                <div className="body">
-                  <div className="usage">
-                    <span className="used">{`${systemStats.storage.total / 1000} GB`} </span>
-                    <span className="available">
-                      {`${systemStats.storage.available / 1000} GB`}
-                    </span>
+                <LoadingWrapper isLoading={loading}>
+                  <div className="body">
+                    <div className="usage">
+                      <span className="used">{`${systemStats.storage.total / 1000} GB`} </span>
+                      <span className="available">
+                        {`${systemStats.storage.available / 1000} GB`}
+                      </span>
+                    </div>
+                    <ProgressBar
+                      max={systemStats.storage.available}
+                      value={systemStats.storage.total}
+                      useProgressColors
+                      showNumericValue={false}
+                    />
                   </div>
-                  <ProgressBar
-                    max={systemStats.storage.available}
-                    value={systemStats.storage.total}
-                    useProgressColors
-                    showNumericValue={false}
-                  />
-                </div>
+                </LoadingWrapper>
                 <div className="footer">
                   <p className="card-info">
                     <Translate>Files and database usage</Translate>
@@ -104,10 +115,12 @@ const Dashboard = () => {
                     <Translate>Entities</Translate>
                   </h2>
                 </div>
-                <div className="body">
-                  <span className="count">{systemStats.entities.total} </span>
-                  <Translate>Total entities</Translate>
-                </div>
+                <LoadingWrapper isLoading={loading}>
+                  <div className="body">
+                    <span className="count">{systemStats.entities.total} </span>
+                    <Translate>Total entities</Translate>
+                  </div>
+                </LoadingWrapper>
                 <div className="footer card-info">
                   <p className="card-info">
                     <Translate>Entities across all languages</Translate>
@@ -121,10 +134,12 @@ const Dashboard = () => {
                     <Translate>Files</Translate>
                   </h2>
                 </div>
-                <div className="body">
-                  <span className="count">{systemStats.files.total} </span>
-                  <Translate>Total files</Translate>
-                </div>
+                <LoadingWrapper isLoading={loading}>
+                  <div className="body">
+                    <span className="count">{systemStats.files.total} </span>
+                    <Translate>Total files</Translate>
+                  </div>
+                </LoadingWrapper>
                 <div className="footer card-info">
                   <p className="card-info">
                     <Translate>

@@ -6,7 +6,7 @@ import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
 import SearchBar from 'app/Library/components/SearchBar';
 import SortButtons from 'app/Library/components/SortButtons';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
