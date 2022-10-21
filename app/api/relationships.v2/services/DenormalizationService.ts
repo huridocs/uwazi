@@ -1,4 +1,3 @@
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
@@ -12,26 +11,14 @@ export class DenormalizationService {
 
   private templatesDS: TemplatesDataSource;
 
-  private transactionManager: TransactionManager;
-
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
-    templatesDS: TemplatesDataSource,
-    transactionManager: TransactionManager
+    templatesDS: TemplatesDataSource
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
-    this.transactionManager = transactionManager;
-  }
-
-  private async inTransaction<T>(callback: () => Promise<T>) {
-    return this.transactionManager.run<T>(callback, [
-      this.relationshipsDS,
-      this.entitiesDS,
-      this.templatesDS,
-    ]);
   }
 
   private async getCandidateEntities(
@@ -60,30 +47,26 @@ export class DenormalizationService {
   }
 
   async getCandidateEntitiesForRelationship(_id: string, language: string): Promise<any[]> {
-    return this.inTransaction(async () => {
-      const relationship = await this.relationshipsDS.getById([_id]).first();
+    const relationship = await this.relationshipsDS.getById([_id]).first();
 
-      if (!relationship) throw new Error('missing relationship');
+    if (!relationship) throw new Error('missing relationship');
 
-      const relatedEntities = await this.entitiesDS
-        .getByIds([relationship.from, relationship.to])
-        .all();
+    const relatedEntities = await this.entitiesDS
+      .getByIds([relationship.from, relationship.to])
+      .all();
 
-      return this.getCandidateEntities(
-        property => property.buildQueryInvertedFromRelationship(relationship, relatedEntities),
-        language
-      );
-    });
+    return this.getCandidateEntities(
+      property => property.buildQueryInvertedFromRelationship(relationship, relatedEntities),
+      language
+    );
   }
 
   async getCandidateEntitiesForEntity(sharedId: string, language: string): Promise<any[]> {
-    return this.inTransaction(async () => {
-      const entity = await this.entitiesDS.getByIds([sharedId]).first();
-      if (!entity) throw new Error('missing entity');
-      return this.getCandidateEntities(
-        property => property.buildQueryInvertedFromEntity(entity),
-        language
-      );
-    });
+    const entity = await this.entitiesDS.getByIds([sharedId]).first();
+    if (!entity) throw new Error('missing entity');
+    return this.getCandidateEntities(
+      property => property.buildQueryInvertedFromEntity(entity),
+      language
+    );
   }
 }

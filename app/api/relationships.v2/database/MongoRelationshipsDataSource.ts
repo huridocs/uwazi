@@ -23,7 +23,7 @@ export class MongoRelationshipsDataSource
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
     const items = relationships.map(r => RelationshipMappers.toDBO(r));
     const { ops: created } = (await this.getCollection().insertMany(items, {
-      session: this.session,
+      session: this.getSession(),
     })) as { ops: RelationshipDBOType[] };
 
     return created.map(item => RelationshipMappers.toModel(item));
@@ -32,7 +32,7 @@ export class MongoRelationshipsDataSource
   private async count(ids: string[]) {
     return this.getCollection().countDocuments(
       { _id: { $in: idsToDb(ids) } },
-      { session: this.session }
+      { session: this.getSession() }
     );
   }
 
@@ -48,7 +48,7 @@ export class MongoRelationshipsDataSource
 
   getById(_ids: string[]) {
     const ids = idsToDb(_ids);
-    const cursor = this.getCollection().find({ _id: { $in: ids } }, { session: this.session });
+    const cursor = this.getCollection().find({ _id: { $in: ids } }, { session: this.getSession() });
     return new MongoResultSet<RelationshipDBOType, Relationship>(
       cursor,
       RelationshipMappers.toModel
@@ -57,7 +57,7 @@ export class MongoRelationshipsDataSource
 
   async delete(_ids: string[]) {
     const ids = idsToDb(_ids);
-    await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.session });
+    await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.getSession() });
   }
 
   getByEntity(sharedId: string) {
@@ -100,7 +100,7 @@ export class MongoRelationshipsDataSource
     const pipeline = compileQuery(query, language);
     const cursor = this.db
       .collection('entities')
-      .aggregate<TraversalResult>(pipeline, { session: this.session });
+      .aggregate<TraversalResult>(pipeline, { session: this.getSession() });
     const count = this.db.collection<CountDocument>('entities').aggregate(
       [
         ...pipeline,
@@ -108,13 +108,13 @@ export class MongoRelationshipsDataSource
           $count: 'total',
         },
       ],
-      { session: this.session }
+      { session: this.getSession() }
     );
     return new MongoResultSet(cursor, count, RelationshipMappers.toGraphQueryResult);
   }
 
   async deleteBy(values: Partial<ApplicationRelationshipType>) {
     const query = RelationshipMappers.partialToDBO(values);
-    await this.getCollection().deleteMany(query, { session: this.session });
+    await this.getCollection().deleteMany(query, { session: this.getSession() });
   }
 }

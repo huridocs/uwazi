@@ -33,7 +33,7 @@ export class DeleteRelationshipService {
       }
 
       return this.relationshipsDS.delete(ids);
-    }, [this.relationshipsDS]);
+    });
   }
 
   async deleteByEntity(sharedId: string) {

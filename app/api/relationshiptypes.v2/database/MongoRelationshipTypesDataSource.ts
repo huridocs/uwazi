@@ -11,7 +11,7 @@ export class MongoRelationshipTypesDataSource
     const uniqueIds = Array.from(new Set(ids));
     const countInExistence = await this.getCollection().countDocuments(
       { _id: { $in: uniqueIds.map(id => new ObjectId(id)) } },
-      { session: this.session }
+      { session: this.getSession() }
     );
     return countInExistence === uniqueIds.length;
   }

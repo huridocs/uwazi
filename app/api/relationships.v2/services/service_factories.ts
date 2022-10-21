@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { DefaultPermissionsDataSource } from 'api/authorization.v2/database/data_source_defaults';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import {
@@ -18,20 +19,19 @@ import { DenormalizationService as GenericDenormalizationService } from './Denor
 import { GetRelationshipsService as GenericGetRelationshipsService } from './GetRelationshipsService';
 
 const CreateRelationshipService = (user: User) => {
-  const relationshipsDS = DefaultRelationshipDataSource();
-  const relationshipTypesDS = DefaultRelationshipTypesDataSource();
-  const entitiesDS = DefaultEntitiesDataSource();
   const transactionManager = DefaultTransactionManager();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const idGenerator = DefaultIdGenerator;
-  const permissionsDS = DefaultPermissionsDataSource();
-  const templatesDS = DefaultTemplatesDataSource();
+  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, user);
   const denormalizationService = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
-    templatesDS,
-    transactionManager
+    templatesDS
   );
 
   const service = new GenericCreateRelationshipService(
@@ -49,9 +49,9 @@ const CreateRelationshipService = (user: User) => {
 };
 
 const DeleteRelationshipService = (user?: User) => {
-  const relationshipsDS = DefaultRelationshipDataSource();
   const transactionManager = DefaultTransactionManager();
-  const permissionsDS = DefaultPermissionsDataSource();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, user);
 
@@ -65,24 +65,20 @@ const DeleteRelationshipService = (user?: User) => {
 };
 
 const DenormalizationService = () => {
-  const relationshipsDS = DefaultRelationshipDataSource();
-  const entitiesDS = DefaultEntitiesDataSource();
-  const templatesDS = DefaultTemplatesDataSource();
   const transactionManager = DefaultTransactionManager();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
 
-  const service = new GenericDenormalizationService(
-    relationshipsDS,
-    entitiesDS,
-    templatesDS,
-    transactionManager
-  );
+  const service = new GenericDenormalizationService(relationshipsDS, entitiesDS, templatesDS);
 
   return service;
 };
 
-const GetRelationshipsService = (user: User) => {
-  const relationshipsDS = DefaultRelationshipDataSource();
-  const permissionsDS = DefaultPermissionsDataSource();
+const GetRelationshipsService = (user?: User) => {
+  const transactionManager = DefaultTransactionManager();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, user);
 

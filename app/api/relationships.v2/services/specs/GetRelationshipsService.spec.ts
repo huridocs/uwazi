@@ -1,7 +1,8 @@
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -39,9 +40,13 @@ afterAll(async () => {
 
 describe('when getting the relationships for an entity', () => {
   it('should return the incoming and outcomming relationships, paginated', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
     const service = new GetRelationshipsService(
-      new MongoRelationshipsDataSource(getConnection()),
-      new AuthorizationService(new MongoPermissionsDataSource(getConnection()), mockUser)
+      new MongoRelationshipsDataSource(getConnection(), transactionManager),
+      new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection(), transactionManager),
+        mockUser
+      )
     );
 
     const page1 = await (await service.getByEntity('entity1')).page(1, 2);

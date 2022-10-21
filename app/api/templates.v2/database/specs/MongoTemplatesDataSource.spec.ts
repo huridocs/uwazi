@@ -1,4 +1,5 @@
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -62,7 +63,10 @@ afterAll(async () => {
 
 describe('when requesting the relationship properties configured in the system', () => {
   it('should return all the relationship properties', async () => {
-    const dataSource = new MongoTemplatesDataSource(getConnection());
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      new MongoTransactionManager(getClient())
+    );
     const result = await dataSource.getAllRelationshipProperties().all();
     expect(result.length).toBe(3);
     result.forEach(property => {

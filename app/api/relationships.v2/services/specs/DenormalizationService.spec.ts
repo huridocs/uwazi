@@ -156,11 +156,17 @@ beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
 
   db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
+  const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   service = new DenormalizationService(
-    new MongoRelationshipsDataSource(db),
-    new MongoEntitiesDataSource(db, new MongoSettingsDataSource(db)),
-    new MongoTemplatesDataSource(db),
-    new MongoTransactionManager(getClient())
+    relationshipsDataSource,
+    new MongoEntitiesDataSource(
+      db,
+      relationshipsDataSource,
+      new MongoSettingsDataSource(db, transactionManager),
+      transactionManager
+    ),
+    new MongoTemplatesDataSource(db, transactionManager)
   );
 });
 

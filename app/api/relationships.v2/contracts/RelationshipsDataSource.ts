@@ -1,5 +1,4 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { Transactional } from 'api/common.v2/contracts/Transactional';
 import { GraphQueryResult } from '../model/GraphQueryResult';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship, RelationshipValueQuery } from '../model/Relationship';
@@ -17,7 +16,7 @@ export type RelationshipAggregatedResultType = {
   };
 };
 
-export interface RelationshipsDataSource extends Transactional {
+export interface RelationshipsDataSource {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
   delete(_ids: string[]): Promise<void>;
   exists(ids: string[]): Promise<boolean>;

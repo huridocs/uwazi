@@ -1,5 +1,4 @@
 import { MongoClient, ClientSession } from 'mongodb';
-import { Transactional } from '../contracts/Transactional';
 import { TransactionManager } from '../contracts/TransactionManager';
 
 export class MongoTransactionManager implements TransactionManager {
@@ -7,44 +6,59 @@ export class MongoTransactionManager implements TransactionManager {
 
   private session?: ClientSession;
 
+  private onCommitHandlers: (() => Promise<void>)[];
+
+  private finished = false;
+
   constructor(mongoClient: MongoClient) {
+    this.onCommitHandlers = [];
     this.mongoClient = mongoClient;
   }
 
-  private async runWithSession<T>(
-    callback: () => Promise<T>,
-    deps: Transactional<ClientSession>[]
-  ) {
-    deps.forEach(dep => {
-      dep.setTransactionContext(this.session!);
-    });
-    const result = await callback();
-    deps.forEach(dep => {
-      dep.clearTransactionContext();
-    });
-    return result;
+  private async executeOnCommitHandlers() {
+    return Promise.all(this.onCommitHandlers.map(async handler => handler()));
   }
 
-  private async initiateTransactionAndRun<T>(
-    callback: () => Promise<T>,
-    deps: Transactional<ClientSession>[]
-  ) {
-    let returnValue: T;
-    await this.mongoClient.withSession(async newSession => {
-      this.session = newSession;
-      await newSession.withTransaction(async () => {
-        returnValue = await this.runWithSession(callback, deps);
-      });
-    });
-    this.session = undefined;
-    return returnValue!;
-  }
-
-  async run<T>(callback: () => Promise<T>, deps: Transactional<ClientSession>[]): Promise<T> {
+  private validateState() {
     if (this.session) {
-      return this.runWithSession(callback, deps);
-    }
+      if (this.finished) {
+        throw new Error('Transaction already finished.');
+      }
 
-    return this.initiateTransactionAndRun(callback, deps);
+      throw new Error('Transaction already in progress.');
+    }
+  }
+
+  private async commitTransaction() {
+    await this.session!.commitTransaction();
+    this.finished = true;
+  }
+
+  private startTransaction() {
+    this.session!.startTransaction();
+  }
+
+  async run(callback: () => Promise<void>) {
+    this.validateState();
+
+    this.session = this.mongoClient.startSession();
+
+    try {
+      this.startTransaction();
+      const returnValue = await callback();
+      await this.commitTransaction();
+      await this.executeOnCommitHandlers();
+      return returnValue;
+    } finally {
+      this.session.endSession();
+    }
+  }
+
+  getSession() {
+    return this.session;
+  }
+
+  onCommmitted(handler: () => Promise<void>) {
+    this.onCommitHandlers.push(handler);
   }
 }

@@ -67,40 +67,41 @@ export class CreateRelationshipService {
 
     await this.authService.validateAccess('write', sharedIds);
 
-    const { candidates: markedEntities, insertedRelationships: newRelationships } =
-      await this.transactionManager.run(async () => {
-        if (!(await this.relationshipTypesDS.typesExist(types))) {
-          throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
-        }
-        if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
-          throw new MissingEntityError('Must provide sharedIds from existing entities');
-        }
+    let result: { candidates: any[]; insertedRelationships: Relationship[] };
+    await this.transactionManager.run(async () => {
+      if (!(await this.relationshipTypesDS.typesExist(types))) {
+        throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
+      }
+      if (!(await this.entitiesDS.entitiesExist(sharedIds))) {
+        throw new MissingEntityError('Must provide sharedIds from existing entities');
+      }
 
-        const insertedRelationships = await this.relationshipsDS.insert(
-          relationships.map(
-            r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type)
-          )
-        );
+      const insertedRelationships = await this.relationshipsDS.insert(
+        relationships.map(r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type))
+      );
 
-        const candidates = (
-          await Promise.all(
-            insertedRelationships.map(async insertedRelationship =>
-              this.denormalizationService.getCandidateEntitiesForRelationship(
-                insertedRelationship._id,
-                'en' // TODO: any language should be good in this case, could be default language as a standard
-              )
+      const candidates = (
+        await Promise.all(
+          insertedRelationships.map(async insertedRelationship =>
+            this.denormalizationService.getCandidateEntitiesForRelationship(
+              insertedRelationship._id,
+              'en' // TODO: any language should be good in this case, could be default language as a standard
             )
           )
-        ).flat();
+        )
+      ).flat();
 
-        await this.entitiesDS.markMetadataAsChanged(candidates);
+      await this.entitiesDS.markMetadataAsChanged(candidates);
 
-        return { candidates: candidates.map(c => c.sharedId), insertedRelationships };
-      }, [this.entitiesDS, this.relationshipsDS, this.relationshipTypesDS]);
+      result = { candidates: candidates.map(c => c.sharedId), insertedRelationships };
+    });
 
     await this.eventsBus.emit(
-      new RelationshipsCreatedEvent({ relationships: newRelationships, markedEntities })
+      new RelationshipsCreatedEvent({
+        relationships: result!.insertedRelationships,
+        markedEntities: result!.candidates,
+      })
     );
-    return newRelationships;
+    return result!.insertedRelationships;
   }
 }

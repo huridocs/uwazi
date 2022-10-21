@@ -33,22 +33,33 @@ const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
 
 const createService = () => {
   const connection = getConnection();
-
-  const SettingsDataSource = new MongoSettingsDataSource(connection);
   const transactionManager = new MongoTransactionManager(getClient());
+  const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
 
   return new CreateRelationshipService(
-    new MongoRelationshipsDataSource(connection),
-    new MongoRelationshipTypesDataSource(connection),
-    new MongoEntitiesDataSource(connection, SettingsDataSource),
+    new MongoRelationshipsDataSource(connection, transactionManager),
+    new MongoRelationshipTypesDataSource(connection, transactionManager),
+    new MongoEntitiesDataSource(
+      connection,
+      new MongoRelationshipsDataSource(connection, transactionManager),
+      SettingsDataSource,
+      transactionManager
+    ),
     transactionManager,
     MongoIdGenerator,
-    new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser),
+    new AuthorizationService(
+      new MongoPermissionsDataSource(connection, transactionManager),
+      mockUser
+    ),
     new DenormalizationService(
-      new MongoRelationshipsDataSource(connection),
-      new MongoEntitiesDataSource(connection, SettingsDataSource),
-      new MongoTemplatesDataSource(connection),
-      transactionManager
+      new MongoRelationshipsDataSource(connection, transactionManager),
+      new MongoEntitiesDataSource(
+        connection,
+        new MongoRelationshipsDataSource(connection, transactionManager),
+        SettingsDataSource,
+        transactionManager
+      ),
+      new MongoTemplatesDataSource(connection, transactionManager)
     ),
     applicationEventsBus
   );
@@ -230,9 +241,9 @@ describe('createMultiple()', () => {
 
     it('should denormalize the fields over 2 hops', async () => {
       let emitSpy = spyOnEmit();
-      const service = createService();
+      const service1 = createService();
 
-      const [created1] = await service.createMultiple([
+      const [created1] = await service1.createMultiple([
         { from: 'entity4', to: 'entity2', type: factory.id('rel4').toHexString() },
       ]);
 
@@ -242,7 +253,8 @@ describe('createMultiple()', () => {
       });
 
       emitSpy = spyOnEmit();
-      const [created2] = await service.createMultiple([
+      const service2 = createService();
+      const [created2] = await service2.createMultiple([
         { from: 'entity2', to: 'entity5', type: factory.id('rel4').toHexString() },
       ]);
 

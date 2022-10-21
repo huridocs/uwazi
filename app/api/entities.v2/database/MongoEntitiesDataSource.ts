@@ -1,6 +1,7 @@
 import { BulkWriteStream } from 'api/common.v2/database/BulkWriteStream';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
@@ -27,18 +28,16 @@ interface EntityJoinTemplate extends EntityDBOType {
   }[];
 }
 
-async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJoinTemplate) {
+async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
-  const relationshipsDS = new MongoRelationshipsDataSource(this.db);
-  if (this.session) relationshipsDS.setTransactionContext(this.session);
-  const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.session);
+  const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.getSession());
   await Promise.all(
     // eslint-disable-next-line max-statements
     entity.joinedTemplate[0]?.properties.map(async property => {
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
-        const results = await relationshipsDS
+        const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
             entity.language
@@ -66,7 +65,6 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
     { $set: { obsoleteMetadata: [] } }
   );
   await stream.flush();
-  relationshipsDS.clearTransactionContext();
   return new Entity(
     entity.sharedId,
     entity.language,
@@ -81,24 +79,32 @@ export class MongoEntitiesDataSource
   implements EntitiesDataSource {
   protected collectionName = 'entities';
 
-  protected settingsDS: MongoSettingsDataSource;
+  private settingsDS: MongoSettingsDataSource;
 
-  constructor(db: Db, settingsDS: MongoSettingsDataSource) {
-    super(db);
+  protected relationshipsDS: MongoRelationshipsDataSource;
+
+  constructor(
+    db: Db,
+    relationshipsDS: MongoRelationshipsDataSource,
+    settingsDS: MongoSettingsDataSource,
+    transactionManager: MongoTransactionManager
+  ) {
+    super(db, transactionManager);
     this.settingsDS = settingsDS;
+    this.relationshipsDS = relationshipsDS;
   }
 
   async entitiesExist(sharedIds: string[]) {
     const languages = await this.settingsDS.getLanguageKeys();
     const countInExistence = await this.getCollection().countDocuments(
       { sharedId: { $in: sharedIds } },
-      { session: this.session }
+      { session: this.getSession() }
     );
     return countInExistence === sharedIds.length * languages.length;
   }
 
   async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
-    const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.session);
+    const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.getSession());
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
       for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {
@@ -127,7 +133,7 @@ export class MongoEntitiesDataSource
           },
         },
       ],
-      { session: this.session }
+      { session: this.getSession() }
     );
 
     return new MongoResultSet(cursor, entityMapper.bind(this));

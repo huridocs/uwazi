@@ -2,6 +2,8 @@ import { Application, NextFunction, Request, Response } from 'express';
 
 import { User } from 'api/users.v2/model/User';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import {
   validateRelationshipInputArray,
   validateString,
@@ -14,9 +16,12 @@ import {
   GetRelationshipsService,
 } from '../services/service_factories';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const featureRequired = async (req: Request, res: Response, next: NextFunction) => {
-  if (!(await DefaultSettingsDataSource().readNewRelationshipsAllowed())) {
+const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
+  if (
+    !(await DefaultSettingsDataSource(
+      new MongoTransactionManager(getClient())
+    ).readNewRelationshipsAllowed())
+  ) {
     return res.sendStatus(404);
   }
   return next();

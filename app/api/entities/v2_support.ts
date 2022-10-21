@@ -10,6 +10,8 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { EntitySchema } from 'shared/types/entityType';
 import { ObjectId } from 'mongodb';
 import { MetadataSchema } from 'shared/types/commonTypes';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 
 const entityTypeCheck = (
   entity: EntitySchema
@@ -20,7 +22,8 @@ const entityTypeCheck = (
 } => !!entity.template && !!entity.sharedId && !!entity.metadata;
 
 const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
-  if (!(await DefaultSettingsDataSource().readNewRelationshipsAllowed())) {
+  const transactionManager = new MongoTransactionManager(getClient());
+  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return;
   }
 
@@ -29,7 +32,7 @@ const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
     t => t._id.toString(),
     t => t.properties.filter((prop: any) => prop.type === 'newRelationship')
   );
-  const entitiesDataSource = DefaultEntitiesDataSource();
+  const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
 
   await Promise.all(
     entities.filter(entityTypeCheck).map(async entity => {
@@ -53,7 +56,11 @@ const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
-  if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
+  if (
+    await DefaultSettingsDataSource(
+      new MongoTransactionManager(getClient())
+    ).readNewRelationshipsAllowed()
+  ) {
     const service = DeleteRelationshipService(undefined);
     await service.deleteByEntity(sharedId);
   }
@@ -63,8 +70,9 @@ const markNewRelationshipsOfAffected = async (
   { sharedId, language }: { sharedId: string; language: string },
   index: boolean = true
 ) => {
-  if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
-    const entitiesDataSource = DefaultEntitiesDataSource();
+  const transactionManager = new MongoTransactionManager(getClient());
+  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
+    const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
     const service = DenormalizationService();
     const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
 

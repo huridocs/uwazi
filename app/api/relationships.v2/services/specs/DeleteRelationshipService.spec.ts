@@ -73,10 +73,14 @@ describe('delete()', () => {
   describe('When the entities exist', () => {
     it('should delete a single relationship', async () => {
       const connection = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
+        new MongoRelationshipsDataSource(connection, transactionManager),
+        transactionManager,
+        new AuthorizationService(
+          new MongoPermissionsDataSource(connection, transactionManager),
+          mockUser
+        )
       );
       await service.delete(factory.id('rel1').toHexString());
 
@@ -88,10 +92,14 @@ describe('delete()', () => {
 
     it('should delete multiple relationships', async () => {
       const connection = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
+        new MongoRelationshipsDataSource(connection, transactionManager),
+        transactionManager,
+        new AuthorizationService(
+          new MongoPermissionsDataSource(connection, transactionManager),
+          mockUser
+        )
       );
       await service.delete([factory.id('rel1').toHexString(), factory.id('rel3').toHexString()]);
 
@@ -118,10 +126,14 @@ describe('delete()', () => {
       },
     ])('should throw a validation error', async ({ toDelete }) => {
       const connection = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
-        new MongoRelationshipsDataSource(connection),
-        new MongoTransactionManager(getClient()),
-        new AuthorizationService(new MongoPermissionsDataSource(connection), mockUser)
+        new MongoRelationshipsDataSource(connection, transactionManager),
+        transactionManager,
+        new AuthorizationService(
+          new MongoPermissionsDataSource(connection, transactionManager),
+          mockUser
+        )
       );
       try {
         await service.delete(toDelete);

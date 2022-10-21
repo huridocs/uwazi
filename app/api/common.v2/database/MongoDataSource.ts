@@ -1,28 +1,23 @@
-import { ClientSession, Db } from 'mongodb';
-import { Transactional } from '../contracts/Transactional';
+import { Db } from 'mongodb';
+import { MongoTransactionManager } from './MongoTransactionManager';
 
-export abstract class MongoDataSource<CollectionSchema = any>
-  implements Transactional<ClientSession>
-{ // eslint-disable-line
+export abstract class MongoDataSource<CollectionSchema = any> {
   protected db: Db;
-
-  protected session?: ClientSession;
 
   protected abstract collectionName: string;
 
-  constructor(db: Db) {
+  private transactionManager: MongoTransactionManager;
+
+  constructor(db: Db, transactionManager: MongoTransactionManager) {
     this.db = db;
-  }
-
-  setTransactionContext(session: ClientSession) {
-    this.session = session;
-  }
-
-  clearTransactionContext(): void {
-    this.session = undefined;
+    this.transactionManager = transactionManager;
   }
 
   getCollection() {
     return this.db.collection<CollectionSchema>(this.collectionName);
+  }
+
+  protected getSession() {
+    return this.transactionManager.getSession();
   }
 }

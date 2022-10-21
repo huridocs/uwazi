@@ -28,7 +28,7 @@ export class MongoTemplatesDataSource extends MongoDataSource implements Templat
           },
         },
       ],
-      { session: this.session }
+      { session: this.getSession() }
     );
 
     return new MongoResultSet(

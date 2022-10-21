@@ -1,10 +1,7 @@
 /* eslint-disable max-classes-per-file */
-import { Transactional } from 'api/common.v2/contracts/Transactional';
-import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { ClientSession } from 'mongodb';
 import { getClient } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 
@@ -23,15 +20,11 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-abstract class TestBase implements Transactional<ClientSession> {
-  protected session?: ClientSession;
+abstract class TestBase {
+  protected tm: MongoTransactionManager;
 
-  setTransactionContext(session: ClientSession): void {
-    this.session = session;
-  }
-
-  clearTransactionContext(): void {
-    this.session = undefined;
+  constructor(tm: MongoTransactionManager) {
+    this.tm = tm;
   }
 }
 
@@ -39,10 +32,14 @@ class Transactional1 extends TestBase {
   async do() {
     await testingDB.mongodb
       ?.collection('collection1')
-      .insertOne({ _id: ids('doc3'), name: 'doc3' }, { session: this.session });
+      .insertOne({ _id: ids('doc3'), name: 'doc3' }, { session: this.tm.getSession() });
     await testingDB.mongodb
       ?.collection('collection1')
-      .updateOne({ _id: ids('doc1') }, { $set: { updated: true } }, { session: this.session });
+      .updateOne(
+        { _id: ids('doc1') },
+        { $set: { updated: true } },
+        { session: this.tm.getSession() }
+      );
   }
 }
 
@@ -50,7 +47,7 @@ class Transactional2 extends TestBase {
   async do() {
     await testingDB.mongodb
       ?.collection('collection2')
-      .deleteOne({ _id: ids('doc2') }, { session: this.session });
+      .deleteOne({ _id: ids('doc2') }, { session: this.tm.getSession() });
   }
 }
 
@@ -58,25 +55,22 @@ class Transactional3 extends TestBase {
   async do() {
     return testingDB
       .mongodb!.collection('collection1')
-      .find({ _id: ids('doc1') }, { session: this.session })
+      .find({ _id: ids('doc1') }, { session: this.tm.getSession() })
       .toArray();
   }
 }
 
 describe('When every operation goes well', () => {
-  let transactionResult: any;
   beforeEach(async () => {
     const transactionManager = new MongoTransactionManager(getClient());
-    const source1 = new Transactional1();
-    const source2 = new Transactional2();
-    const source3 = new Transactional3();
-    transactionResult = await transactionManager.run(async () => {
+    const source1 = new Transactional1(transactionManager);
+    const source2 = new Transactional2(transactionManager);
+    const source3 = new Transactional3(transactionManager);
+    await transactionManager.run(async () => {
       await source1.do();
       await source2.do();
-      const result = await source3.do();
-
-      return result;
-    }, [source1, source2, source3]);
+      await source3.do();
+    });
   });
 
   it('should be reflected in all of the collections affected', async () => {
@@ -90,26 +84,22 @@ describe('When every operation goes well', () => {
 
     expect(col2).toEqual([]);
   });
-
-  it('should return what the callback returned', async () => {
-    expect(transactionResult).toEqual([{ _id: ids('doc1'), name: 'doc1', updated: true }]);
-  });
 });
 
 describe('When one operation fails', () => {
   // eslint-disable-next-line max-statements
   it('should not write any changes to the database and re-throw the error', async () => {
-    const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = new MongoTransactionManager(getClient());
     const error = new Error('Simulated error');
-    const source1 = new Transactional1();
-    const source2 = new Transactional2();
+    const source1 = new Transactional1(transactionManager);
+    const source2 = new Transactional2(transactionManager);
     try {
       await transactionManager.run(async () => {
         await source1.do();
         throw error; // Mimics error thrown mid-execution
         // eslint-disable-next-line no-unreachable
         await source2.do();
-      }, [source1, source2]);
+      });
     } catch (e) {
       expect(e).toBe(error);
     }
@@ -122,49 +112,114 @@ describe('When one operation fails', () => {
   });
 });
 
-describe('when calling run() within another call', () => {
-  it('should use same transaction', async () => {
-    const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
+describe('when calling run() when a transaction is running', () => {
+  const cases = [
+    {
+      cb: async (transactionManager: MongoTransactionManager) =>
+        transactionManager.run(async () => {
+          await transactionManager.run(async () => Promise.resolve());
+        }),
+      name: 'nested',
+    },
+    {
+      cb: async (transactionManager: MongoTransactionManager) =>
+        Promise.all([
+          transactionManager.run(
+            async () =>
+              new Promise(resolve => {
+                setTimeout(resolve, 100);
+              })
+          ),
+          new Promise<void>((resolve, reject) => {
+            setTimeout(() => {
+              transactionManager
+                .run(async () => {})
+                .then(resolve)
+                .catch(reject);
+            }, 50);
+          }),
+        ]),
+    },
+  ];
 
-    const transactionalDependency1 = {
-      setTransactionContext: jest.fn(),
-      clearTransactionContext: () => {},
-    };
+  it.each<typeof cases[number]>(cases)('should throw "transaction in progress"', async ({ cb }) => {
+    const transactionManager = new MongoTransactionManager(getClient());
 
-    const transactionalDependency2 = {
-      setTransactionContext: jest.fn(),
-      clearTransactionContext: () => {},
-    };
-
-    await transactionManager.run(async () => {
-      await transactionManager.run(async () => Promise.resolve(), [transactionalDependency2]);
-    }, [transactionalDependency1]);
-
-    expect(transactionalDependency1.setTransactionContext.mock.calls[0][0]).toBe(
-      transactionalDependency2.setTransactionContext.mock.calls[0][0]
-    );
+    try {
+      await cb(transactionManager);
+    } catch (e) {
+      await expect(e.message).toMatch('progress');
+    }
   });
 });
 
-describe('when calling run() two separate times', () => {
-  it('should use different transactions', async () => {
-    const transactionManager: TransactionManager = new MongoTransactionManager(getClient());
+describe('when calling run() after the transaction was commited', () => {
+  it('should throw "transaction finished"', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
 
-    const transactionalDependency1 = {
-      setTransactionContext: jest.fn(),
-      clearTransactionContext: () => {},
-    };
+    try {
+      await transactionManager.run(async () => Promise.resolve());
+      await transactionManager.run(async () => Promise.resolve());
+    } catch (e) {
+      await expect(e.message).toMatch('finished');
+    }
+  });
+});
 
-    const transactionalDependency2 = {
-      setTransactionContext: jest.fn(),
-      clearTransactionContext: () => {},
-    };
+describe('when registering onCommitted event handlers', () => {
+  it('should trigger the handlers after committing', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
 
-    await transactionManager.run(async () => Promise.resolve(), [transactionalDependency1]);
-    await transactionManager.run(async () => Promise.resolve(), [transactionalDependency2]);
+    const checkpoints = [1];
 
-    expect(transactionalDependency1.setTransactionContext.mock.calls[0][0]).not.toBe(
-      transactionalDependency2.setTransactionContext.mock.calls[0][0]
-    );
+    await transactionManager.run(async () => {
+      checkpoints.push(2);
+      transactionManager.onCommmitted(async () => {
+        checkpoints.push(6);
+      });
+      await new Promise<void>(resolve => {
+        setTimeout(() => {
+          checkpoints.push(4);
+          transactionManager.onCommmitted(async () => {
+            checkpoints.push(6);
+          });
+          resolve();
+        }, 50);
+        checkpoints.push(3);
+      });
+      checkpoints.push(5);
+    });
+
+    expect(checkpoints).toEqual([1, 2, 3, 4, 5, 6, 6]);
+  });
+
+  it('should not trigger the handlers if aborted', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
+
+    const checkpoints = [1];
+
+    try {
+      await transactionManager.run(async () => {
+        checkpoints.push(2);
+        transactionManager.onCommmitted(async () => {
+          checkpoints.push(6);
+        });
+        await new Promise<void>((_resolve, reject) => {
+          setTimeout(() => {
+            checkpoints.push(4);
+            transactionManager.onCommmitted(async () => {
+              checkpoints.push(6);
+            });
+            reject(new Error('expected'));
+          }, 50);
+          checkpoints.push(3);
+        });
+      });
+
+      fail('should have failed');
+    } catch (e) {
+      expect(e.message).toBe('expected');
+      expect(checkpoints).toEqual([1, 2, 3, 4]);
+    }
   });
 });
