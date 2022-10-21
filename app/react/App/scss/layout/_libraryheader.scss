@@ -1,0 +1,43 @@
+.library-header {
+  padding: 0;
+  border-top: none;
+  background-color: transparent;
+
+  &.closed {
+    display: none;
+  }
+
+  .toggle-toolbar-button {
+    border: transparent;
+    border-radius: 0px 0px 12px 12px;
+    webkit-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+    -moz-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+    box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+    padding: 4px 12px;
+    width: 107px;
+    min-width: 90px;
+    height: 24px;
+    left: 100px;
+    background-color: $c-white;
+    z-index: 1;
+  }
+}
+
+.open-toolbar-button {
+  display: flex;
+  position: fixed;
+  top: 50px;
+  justify-content: center;
+  left: 50%;
+  width: 150px;
+  text-overflow: ellipsis;
+  margin-left: -80px;
+
+  &.closed {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}

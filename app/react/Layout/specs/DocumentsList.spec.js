@@ -90,6 +90,7 @@ describe('DocumentsList', () => {
       sortButtonsStateProperty: '',
       storeKey: 'library',
       filters: fromJS({ documentTypes: [] }),
+      tableViewMode: false,
     });
 
     libraryHeader.props().selectAllDocuments();

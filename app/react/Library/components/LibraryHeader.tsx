@@ -1,9 +1,16 @@
 import { Translate } from 'app/I18N';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import { wrapDispatch } from 'app/Multireducer';
 
 import { NeedAuthorization } from 'app/Auth';
 import { SortButtons } from 'app/Library/components/SortButtons';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import {
+  zoomIn as zoomInAction,
+  zoomOut as zoomOutAction,
+} from 'app/Library/actions/libraryActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 
@@ -16,6 +23,7 @@ interface LibraryHeaderOwnProps {
   searchCentered?: boolean;
   searchDocuments: Function;
   filters: IImmutable<{ documentTypes: string[] }>;
+  tableViewMode: boolean;
 }
 
 const mapStateToProps = (state: IStore) => ({
@@ -26,7 +34,13 @@ const mapStateToProps = (state: IStore) => ({
   rowListZoomLevel: state.library.ui.get('zoomLevel'),
 });
 
-const connector = connect(mapStateToProps);
+const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
+  bindActionCreators(
+    { zoomIn: zoomInAction, zoomOut: zoomOutAction },
+    wrapDispatch(dispatch, 'library')
+  );
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & LibraryHeaderOwnProps;
 
@@ -39,15 +53,18 @@ const LibraryHeaderComponent = ({
   searchDocuments,
   SearchBar,
   searchCentered,
+  zoomIn,
+  zoomOut,
+  tableViewMode,
 }: mappedProps) => {
-  const [footerVisible, setFooterVisible] = useState(true);
-  const toggleFooterVisible = () => {
-    setFooterVisible(!footerVisible);
+  const [toolbarVisible, setToolbarVisible] = useState(true);
+  const toggleToolbarVisible = () => {
+    setToolbarVisible(!toolbarVisible);
   };
 
   return (
     <>
-      <div className="library-header">
+      <div className={`library-header ${!toolbarVisible ? 'closed' : ''}`}>
         {SearchBar !== undefined && (
           <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
             <SearchBar storeKey={storeKey} />
@@ -74,10 +91,25 @@ const LibraryHeaderComponent = ({
             <span className="documents-counter-label">{counter}</span>
           </div>
         </div>
+        <LibraryModeToggleButtons
+          storeKey="library"
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          tableViewMode={tableViewMode}
+          zoomLevel={0}
+          searchUrl=""
+          showGeolocation={false}
+        />
+        <div className="close-toolbar-button">
+          <button type="button" className="toggle-toolbar-button" onClick={toggleToolbarVisible}>
+            <Translate>Close toolbar</Translate>
+          </button>
+        </div>
       </div>
-      <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>
-        <button type="button" className="toggle-footer-button" onClick={toggleFooterVisible}>
-          <Translate>Open actions</Translate>
+
+      <div className={`open-toolbar-button ${toolbarVisible ? 'closed' : ''}`}>
+        <button type="button" className="toggle-toolbar-button" onClick={toggleToolbarVisible}>
+          <Translate>Open toolbar</Translate>
         </button>
       </div>
     </>

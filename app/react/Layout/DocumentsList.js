@@ -194,6 +194,7 @@ class DocumentsList extends Component {
             searchCentered={this.props.searchCentered}
             searchDocuments={this.props.searchDocuments}
             filters={this.props.filters}
+            tableViewMode={this.props.tableViewMode}
           />
           {blankState() && <Welcome />}
 
@@ -222,6 +223,7 @@ DocumentsList.defaultProps = {
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
   selectedDocuments: {},
+  tableViewMode: false,
 };
 
 DocumentsList.propTypes = {
@@ -252,6 +254,7 @@ DocumentsList.propTypes = {
     query: PropTypes.object,
   }),
   CollectionViewer: PropTypes.func,
+  tableViewMode: PropTypes.bool,
 };
 
 export { DocumentsList };

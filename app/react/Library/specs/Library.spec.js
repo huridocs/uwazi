@@ -4,7 +4,6 @@ import Library from 'app/Library/Library';
 import RouteHandler from 'app/App/RouteHandler';
 import createStore from 'app/store';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 
 describe('Library', () => {
   const templates = [
@@ -42,15 +41,6 @@ describe('Library', () => {
   it('should render the DocumentsList (by default)', () => {
     expect(component.find(DocumentsList).length).toBe(1);
     expect(component.find(DocumentsList).props().storeKey).toBe('library');
-  });
-
-  it('should include the Toggle Buttons with zoom in and out functionality', () => {
-    const libraryButtons = component.find(LibraryModeToggleButtons);
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY']);
-    libraryButtons.props().zoomIn();
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN']);
-    libraryButtons.props().zoomOut();
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN', 'ZOOM_OUT']);
   });
 
   describe('urlHasChanged', () => {

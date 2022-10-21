@@ -2,7 +2,6 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
@@ -49,13 +48,13 @@ export default class Library extends RouteHandler {
     const tableViewMode = this.props.viewer === TableViewer;
     return (
       <LibraryLayout sidePanelMode={this.props.sidePanelMode}>
-        <LibraryModeToggleButtons
+        <DocumentsList
           storeKey="library"
+          CollectionViewer={this.props.viewer}
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
           tableViewMode={tableViewMode}
         />
-        <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>
     );
   }

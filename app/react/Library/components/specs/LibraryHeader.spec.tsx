@@ -7,6 +7,7 @@ import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
 import { fireEvent, RenderResult, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
+import * as libraryActions from 'app/Library/actions/libraryActions';
 
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
@@ -24,6 +25,7 @@ describe('LibraryHeader', () => {
     searchCentered: false,
     searchDocuments: jest.fn(),
     filters: fromJS([]),
+    tableViewMode: false,
   };
 
   const reducer = combineReducers({
@@ -116,5 +118,20 @@ describe('LibraryHeader', () => {
     renderResult.unmount();
     render();
     expect(screen.queryByText('Select all')).toBeInTheDocument();
+  });
+
+  it('should include the Toggle Buttons with zoom in and out functionality', () => {
+    jest.spyOn(libraryActions, 'zoomIn');
+    jest.spyOn(libraryActions, 'zoomOut');
+
+    render();
+    fireEvent.click(screen.getByLabelText('Zoom out library view'));
+    expect(libraryActions.zoomOut).toHaveBeenCalled();
+
+    fireEvent.click(screen.getByLabelText('Zoom in library view'));
+    expect(libraryActions.zoomIn).toHaveBeenCalled();
+
+    expect(screen.queryByLabelText('library list view')).toBeInTheDocument();
+    expect(screen.queryByLabelText('library table view')).toBeInTheDocument();
   });
 });
