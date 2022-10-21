@@ -1,5 +1,5 @@
-import { elastic } from 'api/search';
 import { Db } from 'mongodb';
+import { elastic } from 'api/search';
 
 export class RetrieveStats {
   private readonly db: Db;

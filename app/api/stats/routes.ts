@@ -6,8 +6,8 @@ import { DB } from 'api/odm';
 
 export default (app: Application) => {
   app.get('/api/stats', needsAuthorization(['admin']), async (_req, res, _next) => {
-    const action = new RetrieveStats(DB.connectionForDB(tenants.current().dbName).db);
-
+    const { db } = DB.connectionForDB(tenants.current().dbName);
+    const action = new RetrieveStats(db);
     const stats = await action.execute();
 
     res.json(stats);

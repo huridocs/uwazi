@@ -18,21 +18,9 @@ describe('RetrieveStats', () => {
       .mockResolvedValue({ body: [{ 'store.size': 5000 }] });
     const { db } = await testingDB.connect();
     jest.spyOn(db, 'stats').mockResolvedValue({
-      db: 'uwazi_testing',
-      collections: 4,
-      views: 0,
-      objects: 16,
-      avgObjSize: 134.6875,
-      dataSize: 2155,
       storageSize: 15000,
-      numExtents: 0,
-      indexes: 4,
-      indexSize: 15000,
-      scaleFactor: 1,
-      fsUsedSize: 28738330624,
-      fsTotalSize: 62671097856,
-      ok: 1,
     });
+    // TODO pass elastic on constructor
     const actionResult = await new RetrieveStats(db).execute();
 
     expect(elasticMock).toHaveBeenCalledWith({
