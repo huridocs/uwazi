@@ -48,7 +48,7 @@ const CreateRelationshipService = (user: User) => {
   return service;
 };
 
-const DeleteRelationshipService = (user: User) => {
+const DeleteRelationshipService = (user?: User) => {
   const relationshipsDS = DefaultRelationshipDataSource();
   const transactionManager = DefaultTransactionManager();
   const permissionsDS = DefaultPermissionsDataSource();

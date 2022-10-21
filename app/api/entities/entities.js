@@ -11,23 +11,20 @@ import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
-import { objectIndex } from 'shared/data_utils/objectIndex';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
-
-import {
-  DeleteRelationshipService,
-  DenormalizationService,
-} from 'api/relationships.v2/services/service_factories';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
+import {
+  deleteRelatedNewRelationships,
+  markNewRelationshipsOfAffected,
+  performNewRelationshipQueries,
+} from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
 
@@ -43,23 +40,6 @@ const FIELD_TYPES_TO_SYNC = [
   propertyTypes.geolocation,
   propertyTypes.numeric,
 ];
-
-const markNewRelationshipsOfAffected = async ({ sharedId, language }, index = true) => {
-  if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
-    const entitiesDataSource = DefaultEntitiesDataSource();
-    const service = DenormalizationService();
-    const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
-
-    entitiesDataSource.markMetadataAsChanged(candidates);
-
-    if (index && candidates.length > 0) {
-      await search.indexEntities(
-        { sharedId: { $in: candidates.map(c => c.sharedId) } },
-        '+fullText'
-      );
-    }
-  }
-};
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
@@ -357,7 +337,6 @@ export default {
   updateEntity,
   createEntity,
   getEntityTemplate,
-  markNewRelationshipsOfAffected,
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
     await validateEntity(_doc);
@@ -402,7 +381,7 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
-    await this.markNewRelationshipsOfAffected(entity, index);
+    await markNewRelationshipsOfAffected(entity, index);
 
     return entity;
   },
@@ -462,14 +441,14 @@ export default {
 
   async getWithoutDocuments(query, select, options = {}) {
     const entities = await model.getUnrestricted(query, select, options);
-    await this.performNewRelationshipQueries(entities);
+    await performNewRelationshipQueries(entities);
     return entities;
   },
 
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
     const entities = await model.getUnrestricted(query, extendedSelect, options);
-    await this.performNewRelationshipQueries(entities);
+    await performNewRelationshipQueries(entities);
     return entities;
   },
 
@@ -479,43 +458,11 @@ export default {
     return withDocuments(entities, documentsFullText);
   },
 
-  async performNewRelationshipQueries(entities, _relationshipsDataSource) {
-    if (!(await DefaultSettingsDataSource().readNewRelationshipsAllowed())) {
-      return;
-    }
-
-    const templateIdToProperties = objectIndex(
-      await templates.get(
-        { _id: entities.map(e => e.template) },
-        { projection: { properties: 1 } }
-      ),
-      t => t._id,
-      t => t.properties.filter(prop => prop.type === 'newRelationship')
-    );
-    const entitiesDataSource = DefaultEntitiesDataSource();
-
-    await Promise.all(
-      entities.map(async entity => {
-        const relProperties = templateIdToProperties[entity.template];
-        if (!relProperties) return;
-
-        const queryedEntity = await entitiesDataSource.getByIds([entity.sharedId]).first();
-
-        relProperties.forEach(relProperty => {
-          entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];
-        });
-      })
-    );
-    entities.forEach(entity => {
-      entity.obsoleteMetadata = [];
-    });
-  },
-
   async get(query, select, options = {}) {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
     const entities = await model.get(query, extendedSelect, restOfOptions);
-    await this.performNewRelationshipQueries(entities);
+    await performNewRelationshipQueries(entities);
 
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
@@ -537,7 +484,7 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-    await this.performNewRelationshipQueries([doc]);
+    await performNewRelationshipQueries([doc]);
     return doc;
   },
 
@@ -588,7 +535,7 @@ export default {
 
   async getAllLanguages(sharedId) {
     const entities = await model.get({ sharedId });
-    await this.performNewRelationshipQueries(entities);
+    await performNewRelationshipQueries(entities);
     return entities;
   },
 
@@ -605,7 +552,7 @@ export default {
     };
     const queryLimit = limit ? { limit } : {};
     const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
-    await this.performNewRelationshipQueries(entities);
+    await performNewRelationshipQueries(entities);
     return entities;
   },
 
@@ -721,13 +668,6 @@ export default {
     );
   },
 
-  async deleteRelatedNewRelationships(sharedId) {
-    if (await DefaultSettingsDataSource().readNewRelationshipsAllowed()) {
-      const service = DeleteRelationshipService();
-      await service.deleteByEntity(sharedId);
-    }
-  },
-
   async delete(sharedId, deleteIndex = true) {
     const docs = await this.get({ sharedId });
     if (!docs.length) {
@@ -750,7 +690,7 @@ export default {
 
     await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
 
-    await this.deleteRelatedNewRelationships(sharedId);
+    await deleteRelatedNewRelationships(sharedId);
 
     return docs;
   },

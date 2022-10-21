@@ -3,6 +3,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
+import * as v2Support from '../v2_support';
 
 const factory = getFixturesFactory();
 
@@ -22,17 +23,42 @@ const query = [
 
 const adminUser = factory.user('admin', UserRole.ADMIN);
 
+const languages = ['en', 'es'];
+
 const fixtures = {
   users: [adminUser],
   entities: [
-    factory.entity('entity1', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
-    factory.entity('entity2', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
-    factory.entity('entity3', 'template1', {}, { obsoleteMetadata: ['relProp'] }),
-    factory.entity(
+    ...factory.entityInMultipleLanguages(
+      languages,
+      'entity1',
+      'template1',
+      {},
+      { obsoleteMetadata: ['relProp'] },
+      { en: { title: 'entity1-en' }, es: { title: 'entity1-es' } }
+    ),
+    ...factory.entityInMultipleLanguages(
+      languages,
+      'entity2',
+      'template1',
+      {},
+      { obsoleteMetadata: ['relProp'] },
+      { en: { title: 'entity2-en' }, es: { title: 'entity2-es' } }
+    ),
+    ...factory.entityInMultipleLanguages(
+      languages,
+      'entity3',
+      'template1',
+      {},
+      { obsoleteMetadata: ['relProp'] },
+      { en: { title: 'entity3-en' }, es: { title: 'entity3-es' } }
+    ),
+    ...factory.entityInMultipleLanguages(
+      languages,
       'entity4',
       'template2',
       { relProp2: [{ value: 'existing_value' }] },
-      { obsoleteMetadata: [] }
+      { obsoleteMetadata: ['relProp'] },
+      { en: { title: 'entity4-en' }, es: { title: 'entity4-es' } }
     ),
   ],
   relationships: [
@@ -74,6 +100,10 @@ const fixtures = {
           key: 'en',
           localized_label: 'English',
         },
+        {
+          label: 'Spanish',
+          key: 'es',
+        },
       ],
       features: {
         newRelationships: true,
@@ -92,29 +122,56 @@ afterAll(async () => {
 });
 
 describe('entities.get()', () => {
+  const expected = [
+    {
+      _id: factory.id('entity1-en'),
+      sharedId: 'entity1',
+      metadata: {
+        relProp: [
+          { value: 'entity2', label: 'entity2-en' },
+          { value: 'entity3', label: 'entity3-en' },
+        ],
+      },
+    },
+    {
+      _id: factory.id('entity1-es'),
+      sharedId: 'entity1',
+      metadata: {
+        relProp: [
+          { value: 'entity2', label: 'entity2-es' },
+          { value: 'entity3', label: 'entity3-es' },
+        ],
+      },
+    },
+    {
+      _id: factory.id('entity2-en'),
+      sharedId: 'entity2',
+      metadata: {
+        relProp: [{ value: 'entity1', label: 'entity1-en' }],
+      },
+    },
+    {
+      _id: factory.id('entity2-es'),
+      sharedId: 'entity2',
+      metadata: {
+        relProp: [{ value: 'entity1', label: 'entity1-es' }],
+      },
+    },
+    {
+      _id: factory.id('entity3-en'),
+      sharedId: 'entity3',
+      metadata: {},
+    },
+    {
+      _id: factory.id('entity3-es'),
+      sharedId: 'entity3',
+      metadata: {},
+    },
+  ];
+
   it('should denormalize newRelationship metadata', async () => {
     const allEntities = await entities.get({ template: factory.id('template1') });
-    expect(allEntities).toMatchObject([
-      {
-        sharedId: 'entity1',
-        metadata: {
-          relProp: [
-            { value: 'entity2', label: 'entity2' },
-            { value: 'entity3', label: 'entity3' },
-          ],
-        },
-      },
-      {
-        sharedId: 'entity2',
-        metadata: {
-          relProp: [{ value: 'entity1', label: 'entity1' }],
-        },
-      },
-      {
-        sharedId: 'entity3',
-        metadata: {},
-      },
-    ]);
+    expect(allEntities).toMatchObject(expected);
   });
 
   it('should persist changes in the database', async () => {
@@ -123,30 +180,7 @@ describe('entities.get()', () => {
       ?.collection('entities')
       .find({ template: factory.id('template1') })
       .toArray();
-    expect(allEntities).toMatchObject([
-      {
-        sharedId: 'entity1',
-        metadata: {
-          relProp: [
-            { value: 'entity2', label: 'entity2' },
-            { value: 'entity3', label: 'entity3' },
-          ],
-        },
-        obsoleteMetadata: [],
-      },
-      {
-        sharedId: 'entity2',
-        metadata: {
-          relProp: [{ value: 'entity1', label: 'entity1' }],
-        },
-        obsoleteMetadata: [],
-      },
-      {
-        sharedId: 'entity3',
-        metadata: {},
-        obsoleteMetadata: [],
-      },
-    ]);
+    expect(allEntities).toMatchObject(expected);
   });
 
   it('should only read when not obsolete', async () => {
@@ -154,6 +188,15 @@ describe('entities.get()', () => {
     expect(allEntities).toMatchObject([
       {
         sharedId: 'entity4',
+        language: 'en',
+        metadata: {
+          relProp2: [{ value: 'existing_value' }],
+        },
+        obsoleteMetadata: [],
+      },
+      {
+        sharedId: 'entity4',
+        language: 'es',
         metadata: {
           relProp2: [{ value: 'existing_value' }],
         },
@@ -166,11 +209,11 @@ describe('entities.get()', () => {
 describe('entities.save()', () => {
   it('should mark newRelationship metadata as obsolete when creating new entity', async () => {
     const performSpy = jest
-      .spyOn(entities, 'performNewRelationshipQueries')
+      .spyOn(v2Support, 'performNewRelationshipQueries')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any, rds: any) => Promise.resolve());
+      .mockImplementation(async (e: any) => Promise.resolve());
     const markSpy = jest
-      .spyOn(entities, 'markNewRelationshipsOfAffected')
+      .spyOn(v2Support, 'markNewRelationshipsOfAffected')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation(async (e: any, i: any) => Promise.resolve());
 
@@ -186,8 +229,8 @@ describe('entities.save()', () => {
       { user: adminUser, language: 'en' }
     );
     expect(saved).toMatchObject(expected);
-    const inDb = await db?.collection('entities').findOne({ title: 'new_entity' });
-    expect(inDb).toMatchObject(expected);
+    const inDb = await db?.collection('entities').find({ title: 'new_entity' }).toArray();
+    expect(inDb).toMatchObject([expected, expected]);
 
     performSpy.mockRestore();
     markSpy.mockRestore();
@@ -199,9 +242,9 @@ describe('entities.save()', () => {
       .updateOne({ sharedId: 'entity1' }, { $set: { obsoleteMetadata: [] } });
 
     const spy = jest
-      .spyOn(entities, 'performNewRelationshipQueries')
+      .spyOn(v2Support, 'performNewRelationshipQueries')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any, rds: any) => Promise.resolve());
+      .mockImplementation(async (e: any) => Promise.resolve());
 
     await entities.save(
       {
@@ -212,11 +255,12 @@ describe('entities.save()', () => {
       },
       { user: adminUser, language: 'en' }
     );
-    const inDb = await db?.collection('entities').findOne({ sharedId: 'entity1' });
-    expect(inDb).toMatchObject({
+    const inDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
+    const expected = {
       sharedId: 'entity1',
       obsoleteMetadata: ['relProp'],
-    });
+    };
+    expect(inDb).toMatchObject([expected, expected]);
 
     spy.mockRestore();
   });

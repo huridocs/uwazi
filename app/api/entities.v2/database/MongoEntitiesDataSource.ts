@@ -52,7 +52,7 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
           };
         });
         await stream.update(
-          { sharedId: entity.sharedId },
+          { sharedId: entity.sharedId, language: entity.language },
           { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
         );
         return;
@@ -61,10 +61,18 @@ async function entityMapper<T extends MongoDataSource>(this: T, entity: EntityJo
       mappedMetadata[property.name] = entity.metadata[property.name];
     }) || []
   );
-  await stream.update({ sharedId: entity.sharedId }, { $set: { obsoleteMetadata: [] } });
+  await stream.update(
+    { sharedId: entity.sharedId, language: entity.language },
+    { $set: { obsoleteMetadata: [] } }
+  );
   await stream.flush();
   relationshipsDS.clearTransactionContext();
-  return new Entity(entity.sharedId, entity.template.toHexString(), mappedMetadata);
+  return new Entity(
+    entity.sharedId,
+    entity.language,
+    entity.template.toHexString(),
+    mappedMetadata
+  );
 }
 
 export class MongoEntitiesDataSource
@@ -102,10 +110,14 @@ export class MongoEntitiesDataSource
     await stream.flush();
   }
 
-  getByIds(sharedIds: string[]) {
+  getByIds(sharedIds: string[], language?: string) {
+    const match: { sharedId: { $in: string[] }; language?: string } = {
+      sharedId: { $in: sharedIds },
+    };
+    if (language) match.language = language;
     const cursor = this.getCollection().aggregate<EntityJoinTemplate>(
       [
-        { $match: { sharedId: { $in: sharedIds } } },
+        { $match: match },
         {
           $lookup: {
             from: 'templates',
