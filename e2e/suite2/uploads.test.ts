@@ -13,7 +13,7 @@ const firstEntitySelector = 'main > div.documents-list div.item-group > div:nth-
 
 const getText = async (selector: string) => {
   const elem = await page.$(selector);
-  return page.evaluate(el => el.textContent, elem);
+  return page.evaluate(el => el?.textContent, elem);
 };
 
 describe('Uploads', () => {
