@@ -12,7 +12,6 @@ describe('RetrieveStats', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   it('calculates the aggregated stats ', async () => {
-    // TODO dbsize
     const elasticMock = jest
       .spyOn(elastic.cat, 'indices')
       // @ts-ignore
