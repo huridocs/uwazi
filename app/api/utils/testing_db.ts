@@ -16,7 +16,6 @@ import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import path from 'path';
 
-// mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 let connected = false;
 let mongodb: Db;
