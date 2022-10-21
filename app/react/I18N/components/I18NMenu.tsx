@@ -3,7 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { withRouter, WithRouterProps } from 'react-router';
 import { IImmutable } from 'shared/types/Immutable';
-import { LanguageSchema, LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { Icon } from 'UI';
 import { actions, Translate, t } from 'app/I18N';
 import { IStore } from 'app/istore';
@@ -11,7 +11,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
 const prepareLanguageValues = (languageMap: IImmutable<LanguagesListSchema>, locale: string) => {
-  const languages: Array<LanguageSchema & { type?: string }> = languageMap.toJS();
+  const languages: LanguagesListSchema = languageMap.toJS();
 
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
@@ -37,6 +37,24 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 
+const getDropDownList = (
+  languages: LanguagesListSchema,
+  urlLocation: WithRouterProps['location'],
+  locale: string
+) =>
+  languages.map(language => {
+    const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
+    const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search}`;
+
+    return (
+      <li key={language._id as string} className="menuNav-item">
+        <a href={url} className="btn menuNav-btn">
+          {language.localized_label || language.label}
+        </a>
+      </li>
+    );
+  });
+
 const i18NMenuComponent = ({
   location,
   languages: languageMap,
@@ -51,7 +69,6 @@ const i18NMenuComponent = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const urlLocation = location;
-  const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
   const { languages, selectedLanguage } = prepareLanguageValues(languageMap!, locale);
 
   useOnClickOutsideElement<HTMLDivElement>(
@@ -72,52 +89,7 @@ const i18NMenuComponent = ({
       aria-label="Languages"
       ref={menuRef}
     >
-      {!i18nmode && (
-        <div className="menuNav-language">
-          <div className="menuNav-language">
-            <button
-              className="singleItem dropdown"
-              type="button"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <span>{selectedLanguage?.localized_label}</span>
-              &nbsp;
-              <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
-            </button>
-          </div>
-
-          <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
-            {languages.map(language => {
-              const url = `/${language.key}${path}${
-                path.match('document') ? '' : urlLocation.search
-              }`;
-              return (
-                <li key={language._id as string} className="menuNav-item">
-                  <a href={url} className="btn menuNav-btn">
-                    {language.localized_label || language.label}
-                  </a>
-                </li>
-              );
-            })}
-
-            <NeedAuthorization roles={['admin', 'editor']}>
-              <button
-                className="live-translate"
-                type="button"
-                onClick={() => {
-                  toggleInlineEdit();
-                  setDropdownOpen(false);
-                }}
-              >
-                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-                <Translate>Live translate</Translate>
-              </button>
-            </NeedAuthorization>
-          </ul>
-        </div>
-      )}
-
-      {i18nmode && (
+      {i18nmode ? (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="menuNav-language">
             <button
@@ -135,6 +107,38 @@ const i18NMenuComponent = ({
             </span>
           </div>
         </NeedAuthorization>
+      ) : (
+        <div className="menuNav-language">
+          <div className="menuNav-language">
+            <button
+              className="singleItem dropdown"
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <span>{selectedLanguage?.localized_label}</span>
+              &nbsp;
+              <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
+            </button>
+          </div>
+
+          <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
+            {getDropDownList(languages, urlLocation, locale)}
+
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <button
+                className="live-translate"
+                type="button"
+                onClick={() => {
+                  toggleInlineEdit();
+                  setDropdownOpen(false);
+                }}
+              >
+                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                <Translate>Live translate</Translate>
+              </button>
+            </NeedAuthorization>
+          </ul>
+        </div>
       )}
     </div>
   );
