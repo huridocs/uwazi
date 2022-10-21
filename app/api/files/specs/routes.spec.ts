@@ -73,8 +73,7 @@ describe('files routes', () => {
     it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
       const emitSpy = spyOnEmit();
 
-      const original =
-        (await db.mongodb?.collection('files').findOne({ _id: uploadId })) || ({} as FileType);
+      const [original] = await files.get({ _id: uploadId });
 
       await request(app)
         .post('/api/files')
@@ -91,8 +90,7 @@ describe('files routes', () => {
           ],
         });
 
-      const after =
-        (await db.mongodb?.collection('files').findOne({ _id: uploadId })) || ({} as FileType);
+      const [after] = await files.get({ _id: uploadId });
       emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
       emitSpy.restore();
     });
