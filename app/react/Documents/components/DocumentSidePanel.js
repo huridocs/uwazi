@@ -308,7 +308,6 @@ class DocumentSidePanel extends Component {
       isTargetDoc,
       relationships,
       defaultLanguage,
-      currentSidepanelView,
     } = this.props;
 
     const TocForm = this.props.tocFormComponent;
@@ -349,7 +348,7 @@ class DocumentSidePanel extends Component {
             />
           </div>
         </ShowIf>
-        <ShowIf if={this.props.tab === 'relationships' && currentSidepanelView === 'library'}>
+        <ShowIf if={this.props.tab === 'relationships'}>
           <div className="sidepanel-footer">
             <div className="relationships-left-buttons">
               <ViewDocButton icon="file" sharedId={doc.get('sharedId')} />
@@ -579,7 +578,6 @@ DocumentSidePanel.propTypes = {
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  currentSidepanelView: PropTypes.string.isRequired,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -607,7 +605,6 @@ const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
-    currentSidepanelView: state.library.sidepanel.view,
   };
 };
 

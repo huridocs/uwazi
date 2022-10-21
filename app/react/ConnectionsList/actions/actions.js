@@ -6,6 +6,8 @@ import { fromJS as Immutable } from 'immutable';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { RequestParams } from 'app/utils/RequestParams';
 
+import * as uiActions from 'app/Entities/actions/uiActions';
+
 export function search(requestParams) {
   const { sharedId, sort, filters } = requestParams.data;
   const searchTerm =
@@ -25,6 +27,7 @@ export function searchReferences() {
     const relationshipsList = getState().relationships.list;
     const results = await search(new RequestParams(relationshipsList));
     dispatch(actions.set('relationships/list/searchResults', results));
+    dispatch(uiActions.showTab('connections'));
   };
 }
 
