@@ -1,10 +1,10 @@
-import { Connection } from 'mongoose';
 import { elastic } from 'api/search';
+import { Db } from 'mongodb';
 
 export class RetrieveStats {
-  private readonly db: Connection;
+  private readonly db: Db;
 
-  constructor(db: Connection) {
+  constructor(db: Db) {
     this.db = db;
   }
 
@@ -30,6 +30,7 @@ export class RetrieveStats {
       ])
       .toArray();
 
+    const dbStats = await this.db.stats();
     const elasticIndex = await elastic.cat.indices({
       pretty: true,
       format: 'application/json',
@@ -40,7 +41,10 @@ export class RetrieveStats {
     const elasticSize = elasticIndex.body[0]['store.size'];
 
     return {
-      total: parseInt(filesSize.totalSize, 10) + parseInt(elasticSize, 10),
+      total:
+        parseInt(filesSize.totalSize, 10) +
+        parseInt(elasticSize, 10) +
+        parseInt(dbStats.storageSize, 10),
     };
   }
 
