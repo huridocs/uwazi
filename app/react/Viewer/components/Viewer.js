@@ -54,10 +54,6 @@ class Viewer extends Component {
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
-  componentWillUnmount() {
-    this.props.showTab('metadata');
-  }
-
   handlePlainTextClick() {
     const { showTab } = this.props;
     showTab('metadata');
@@ -151,7 +147,7 @@ class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={!['connections', 'relationships'].includes(sidepanelTab) && !targetDoc}>
+            <ShowIf if={sidepanelTab !== 'connections' && !targetDoc}>
               {raw || firstRender ? (
                 <div className={`${determineDirection(file)} raw-text`}>{pageText}</div>
               ) : (
@@ -163,7 +159,7 @@ class Viewer extends Component {
                 />
               )}
             </ShowIf>
-            <ShowIf if={sidepanelTab === 'connections' || sidepanelTab === 'relationships'}>
+            <ShowIf if={sidepanelTab === 'connections'}>
               <ConnectionsList hideFooter searchCentered />
             </ShowIf>
             <TargetDocument />
