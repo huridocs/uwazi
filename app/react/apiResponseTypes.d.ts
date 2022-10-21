@@ -1,6 +1,12 @@
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import { UserSchema } from 'shared/types/userType';
-import { Settings as SettingsServer } from 'shared/types/settingsType';
+import {
+  PreserveConfig,
+  Settings,
+  SettingsFilterSchema,
+  SettingsLinkSchema,
+} from 'shared/types/settingsType';
+import { LanguageSchema } from 'shared/types/commonTypes';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -19,6 +25,60 @@ export interface ClientUserSchema extends Omit<UserSchema, '_id' | 'groups'> {
   }[];
 }
 
-export interface Settings extends Omit<SettingsServer, '_id'> {
+export interface ClientSettingsFilterSchema extends Omit<SettingsFilterSchema, '_id'> {
   _id?: string;
+}
+
+export interface ClientSettingsLinkSchema extends Omit<SettingsLinkSchema, '_id'> {
+  _id?: string;
+}
+
+export interface ClientPreserveConfig extends Omit<PreserveConfig, 'config'> {
+  config: {
+    token: string;
+    template: string;
+    user?: string;
+  }[];
+}
+
+export interface ClientLanguageSchema extends Omit<LanguageSchema, '_id'> {
+  _id?: string;
+}
+
+export interface ClientSettings
+  extends Omit<Settings, '_id | filters | links | features | languages'> {
+  _id?: string;
+  filters?: ClientSettingsFilterSchema[];
+  languages?: ClientLanguageSchema[];
+  links?: ClientSettingsLinkSchema[];
+  features?: {
+    _id?: string;
+    tocGeneration?: {
+      url: string;
+    };
+    topicClassification?: boolean;
+    favorites?: boolean;
+    preserve?: ClientPreserveConfig;
+    ocr?: {
+      url: string;
+    };
+    segmentation?: {
+      url: string;
+    };
+    twitterIntegration?: {
+      searchQueries: string[];
+      hashtagsTemplateName: string;
+      tweetsTemplateName: string;
+      language: string;
+      tweetsLanguages: string[];
+    };
+    metadataExtraction?: {
+      url: string;
+      templates?: {
+        template: string;
+        properties: string[];
+      }[];
+    };
+    [k: string]: unknown | undefined;
+  };
 }

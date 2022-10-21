@@ -57,7 +57,10 @@ export const PermissionsFilterUncontrolled = connect(
     onChange,
     aggregations,
     user,
-  }: PermissionsFilterProps & { user: IImmutable<ClientUserSchema>; value: PermissionsValue[] }) => {
+  }: PermissionsFilterProps & {
+    user: IImmutable<ClientUserSchema>;
+    value: PermissionsValue[];
+  }) => {
     const refIds: string[] = useMemo(
       () => [user.get('_id') as string, ...(user.toJS().groups?.map(g => g._id as string) || [])],
       [user]

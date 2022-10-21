@@ -7,7 +7,7 @@ import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonType
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
 import { ConnectionSchema } from 'shared/types/connectionType';
-import { ClientUserSchema, ClientUserGroupSchema, Settings } from 'app/apiResponseTypes';
+import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/apiResponseTypes';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
@@ -164,7 +164,7 @@ export interface IStore {
     state?: IImmutable<OneUpState>;
   };
   settings: {
-    collection: IImmutable<Settings>;
+    collection: IImmutable<ClientSettings>;
   };
   user: IImmutable<ClientUserSchema>;
   users: IImmutable<ClientUserSchema[]>;

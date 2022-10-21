@@ -10,7 +10,7 @@ import Icons from 'app/Templates/components/Icons';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { Settings } from 'app/apiResponseTypes';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { saveConfigurations } from './actions/actions';
 import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
 
@@ -172,7 +172,7 @@ class MetadataExtractionComponent extends React.Component<
 
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
-  settings: IImmutable<Settings>;
+  settings: IImmutable<ClientSettings>;
   saveConfigurations: (configurations: IXTemplateConfiguration[]) => void;
 }
 
