@@ -101,7 +101,7 @@ describe('Share publicly', () => {
     it('should not display the entity among the restricted ones', async () => {
       await refreshIndex();
       await page.reload();
-      await page.waitFor('.item-document');
+      await page.waitForSelector('.item-document');
       await expect(page).not.toMatchElement('.item-document', {
         text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
       });
@@ -113,7 +113,7 @@ describe('Share publicly', () => {
       await logout();
       await login('colla', 'borator');
       await disableTransitions();
-      await page.waitFor('.item-document');
+      await page.waitForSelector('.item-document');
       await expect(page).toClick('.item-document', {
         text: 'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012',
       });

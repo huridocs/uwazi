@@ -204,7 +204,7 @@ describe('Share entities', () => {
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Edited title');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toClick('div.alert', { text: 'Entity updated' });
-    await page.waitFor('.item-document');
+    await page.waitForSelector('.item-document');
     await expect(page).toMatchElement('.item-document .item-info > div > span', {
       text: 'Edited title',
     });
@@ -212,7 +212,7 @@ describe('Share entities', () => {
 
   it('should be able to see only published entities', async () => {
     await goToPublishedEntities();
-    await page.waitFor('.item-document');
+    await page.waitForSelector('.item-document');
     await expect(page).toFill(
       'input[name="library.search.searchTerm"]',
       '"Resolución de la Corte IDH."'
