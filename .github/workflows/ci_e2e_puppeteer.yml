@@ -45,7 +45,6 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Install chrome
         uses: browser-actions/setup-chrome@latest
-        run: chrome --version
       - name: install dependencies
         run: yarn install
       - run: sudo apt update
