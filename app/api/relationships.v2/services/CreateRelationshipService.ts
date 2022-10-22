@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
@@ -6,12 +5,10 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
-import { EventsBus } from 'api/eventsbus';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { SelfReferenceError } from '../errors/relationshipErrors';
 import { Relationship } from '../model/Relationship';
 import { DenormalizationService } from './DenormalizationService';
-import { RelationshipsCreatedEvent } from '../events/RelationshipsCreatedEvent';
 
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
@@ -28,10 +25,6 @@ export class CreateRelationshipService {
 
   private denormalizationService: DenormalizationService;
 
-  private eventsBus: EventsBus;
-
-  private _defaultLanguage: string | undefined = undefined;
-
   // eslint-disable-next-line max-params
   constructor(
     relationshipsDS: RelationshipsDataSource,
@@ -40,8 +33,7 @@ export class CreateRelationshipService {
     transactionManager: TransactionManager,
     idGenerator: IdGenerator,
     authService: AuthorizationService,
-    denormalizationService: DenormalizationService,
-    eventsBus: EventsBus
+    denormalizationService: DenormalizationService
   ) {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
@@ -50,7 +42,6 @@ export class CreateRelationshipService {
     this.idGenerator = idGenerator;
     this.authService = authService;
     this.denormalizationService = denormalizationService;
-    this.eventsBus = eventsBus;
   }
 
   async createMultiple(relationships: { from: string; to: string; type: string }[]) {
@@ -67,8 +58,7 @@ export class CreateRelationshipService {
 
     await this.authService.validateAccess('write', sharedIds);
 
-    let result: { candidates: any[]; insertedRelationships: Relationship[] };
-    await this.transactionManager.run(async () => {
+    const created = await this.transactionManager.run(async () => {
       if (!(await this.relationshipTypesDS.typesExist(types))) {
         throw new MissingRelationshipTypeError('Must provide id for existing relationship type');
       }
@@ -80,28 +70,11 @@ export class CreateRelationshipService {
         relationships.map(r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type))
       );
 
-      const candidates = (
-        await Promise.all(
-          insertedRelationships.map(async insertedRelationship =>
-            this.denormalizationService.getCandidateEntitiesForRelationship(
-              insertedRelationship._id,
-              'en' // TODO: any language should be good in this case, could be default language as a standard
-            )
-          )
-        )
-      ).flat();
+      await this.denormalizationService.denormalizeForNewRelationships(insertedRelationships);
 
-      await this.entitiesDS.markMetadataAsChanged(candidates);
-
-      result = { candidates: candidates.map(c => c.sharedId), insertedRelationships };
+      return insertedRelationships;
     });
 
-    await this.eventsBus.emit(
-      new RelationshipsCreatedEvent({
-        relationships: result!.insertedRelationships,
-        markedEntities: result!.candidates,
-      })
-    );
-    return result!.insertedRelationships;
+    return created;
   }
 }

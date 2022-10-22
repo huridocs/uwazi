@@ -166,7 +166,7 @@ describe('when calling run() after the transaction was commited', () => {
   });
 });
 
-describe('when registering onCommitted event handlers', () => {
+describe('when registering onCommitted event handlers within the run() callback', () => {
   it('should trigger the handlers after committing', async () => {
     const transactionManager = new MongoTransactionManager(getClient());
 
@@ -174,13 +174,13 @@ describe('when registering onCommitted event handlers', () => {
 
     await transactionManager.run(async () => {
       checkpoints.push(2);
-      transactionManager.onCommmitted(async () => {
+      transactionManager.onCommitted(async () => {
         checkpoints.push(6);
       });
       await new Promise<void>(resolve => {
         setTimeout(() => {
           checkpoints.push(4);
-          transactionManager.onCommmitted(async () => {
+          transactionManager.onCommitted(async () => {
             checkpoints.push(6);
           });
           resolve();
@@ -201,13 +201,13 @@ describe('when registering onCommitted event handlers', () => {
     try {
       await transactionManager.run(async () => {
         checkpoints.push(2);
-        transactionManager.onCommmitted(async () => {
+        transactionManager.onCommitted(async () => {
           checkpoints.push(6);
         });
         await new Promise<void>((_resolve, reject) => {
           setTimeout(() => {
             checkpoints.push(4);
-            transactionManager.onCommmitted(async () => {
+            transactionManager.onCommitted(async () => {
               checkpoints.push(6);
             });
             reject(new Error('expected'));
@@ -221,5 +221,31 @@ describe('when registering onCommitted event handlers', () => {
       expect(e.message).toBe('expected');
       expect(checkpoints).toEqual([1, 2, 3, 4]);
     }
+  });
+});
+
+describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {
+  it('should trigger the handlers with the result after committing', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
+
+    const checkpoints = [1];
+    let transactionResult: string = '';
+
+    await transactionManager
+      .runHandlingOnCommitted(async () => {
+        checkpoints.push(2);
+        transactionManager.onCommitted(async () => {
+          checkpoints.push(4);
+        });
+        checkpoints.push(3);
+        return 'transaction result';
+      })
+      .onCommitted(async result => {
+        transactionResult = result;
+        checkpoints.push(4);
+      });
+
+    expect(checkpoints).toEqual([1, 2, 3, 4, 4]);
+    expect(transactionResult).toBe('transaction result');
   });
 });

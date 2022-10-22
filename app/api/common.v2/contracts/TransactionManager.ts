@@ -1,4 +1,9 @@
+interface OnCommitEmitter<T> {
+  onCommitted(handler: (value: T) => Promise<void>): Promise<T>;
+}
+
 export interface TransactionManager {
-  run(callback: () => Promise<void>): Promise<void>;
-  onCommmitted(handler: () => Promise<void>): void;
+  run<T>(callback: () => Promise<T>): Promise<T>;
+  onCommitted(handler: () => Promise<void>): this;
+  runHandlingOnCommitted<T>(callback: () => Promise<T>): OnCommitEmitter<T>;
 }

@@ -6,7 +6,7 @@ export class MongoTransactionManager implements TransactionManager {
 
   private session?: ClientSession;
 
-  private onCommitHandlers: (() => Promise<void>)[];
+  private onCommitHandlers: ((returnValue: any) => Promise<void>)[];
 
   private finished = false;
 
@@ -15,8 +15,8 @@ export class MongoTransactionManager implements TransactionManager {
     this.mongoClient = mongoClient;
   }
 
-  private async executeOnCommitHandlers() {
-    return Promise.all(this.onCommitHandlers.map(async handler => handler()));
+  private async executeOnCommitHandlers(returnValue: unknown) {
+    return Promise.all(this.onCommitHandlers.map(async handler => handler(returnValue)));
   }
 
   private validateState() {
@@ -38,7 +38,7 @@ export class MongoTransactionManager implements TransactionManager {
     this.session!.startTransaction();
   }
 
-  async run(callback: () => Promise<void>) {
+  async run<T>(callback: () => Promise<T>) {
     this.validateState();
 
     this.session = this.mongoClient.startSession();
@@ -47,18 +47,28 @@ export class MongoTransactionManager implements TransactionManager {
       this.startTransaction();
       const returnValue = await callback();
       await this.commitTransaction();
-      await this.executeOnCommitHandlers();
+      await this.executeOnCommitHandlers(returnValue);
       return returnValue;
     } finally {
       this.session.endSession();
     }
   }
 
+  runHandlingOnCommitted<T>(callback: () => Promise<T>) {
+    return {
+      onCommitted: async (handler: (returnValue: T) => Promise<void>) => {
+        this.onCommitHandlers.push(handler);
+        return this.run(callback);
+      },
+    };
+  }
+
   getSession() {
     return this.session;
   }
 
-  onCommmitted(handler: () => Promise<void>) {
+  onCommitted(handler: () => Promise<void>) {
     this.onCommitHandlers.push(handler);
+    return this;
   }
 }

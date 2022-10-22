@@ -59,9 +59,10 @@ const createService = () => {
         SettingsDataSource,
         transactionManager
       ),
-      new MongoTemplatesDataSource(connection, transactionManager)
-    ),
-    applicationEventsBus
+      new MongoTemplatesDataSource(connection, transactionManager),
+      transactionManager,
+      applicationEventsBus
+    )
   );
 };
 
