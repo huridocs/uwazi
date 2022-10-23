@@ -2,6 +2,7 @@
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import { MongoError } from 'mongodb';
 import { getClient } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 
@@ -61,7 +62,7 @@ class Transactional3 extends TestBase {
 }
 
 describe('When every operation goes well', () => {
-  beforeEach(async () => {
+  it('should be reflected in all of the collections affected', async () => {
     const transactionManager = new MongoTransactionManager(getClient());
     const source1 = new Transactional1(transactionManager);
     const source2 = new Transactional2(transactionManager);
@@ -71,9 +72,7 @@ describe('When every operation goes well', () => {
       await source2.do();
       await source3.do();
     });
-  });
 
-  it('should be reflected in all of the collections affected', async () => {
     const col1 = await testingDB.mongodb?.collection('collection1').find({}).toArray();
     const col2 = await testingDB.mongodb?.collection('collection2').find({}).toArray();
 
@@ -247,5 +246,63 @@ describe('when registering onCommitted event handlers with the runHandlingOnComm
 
     expect(checkpoints).toEqual([1, 2, 3, 4, 4]);
     expect(transactionResult).toBe('transaction result');
+  });
+});
+
+// https://www.mongodb.com/docs/manual/core/transactions-in-applications/#std-label-transient-transaction-error
+describe('when the some operation throws a TransientTransactionError', () => {
+  it('should retry the whole transaction', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
+
+    let throwed = false;
+    const checkpoints: number[] = [];
+    await transactionManager
+      .runHandlingOnCommitted(async () => {
+        checkpoints.push(1);
+        if (!throwed) {
+          const error = new MongoError({ errorLabels: ['TransientTransactionError'] });
+          throwed = true;
+          throw error;
+        }
+      })
+      .onCommitted(async () => {
+        checkpoints.push(2);
+      });
+
+    expect(checkpoints).toEqual([1, 1, 2]);
+  });
+});
+
+// https://www.mongodb.com/docs/manual/core/transactions-in-applications/#unknowntransactioncommitresult
+describe('when the commit operation throws a UnknownTransactionCommitResult', () => {
+  it('should retry the commit', async () => {
+    let throwed = false;
+    const commitTransactionMock = jest.fn().mockImplementation(async () => {
+      if (!throwed) {
+        throwed = true;
+        throw new MongoError({ errorLabels: ['UnknownTransactionCommitResult'] });
+      }
+    });
+    const clientMock = {
+      startSession: () => ({
+        commitTransaction: commitTransactionMock,
+        startTransaction: async () => {},
+        abortTransaction: async () => {},
+        endSession: () => {},
+      }),
+    };
+    const transactionManager = new MongoTransactionManager(clientMock as any);
+
+    const checkpoints: number[] = [];
+    await transactionManager
+      .runHandlingOnCommitted(async () => {
+        checkpoints.push(1);
+      })
+      .onCommitted(async () => {
+        checkpoints.push(2);
+      });
+
+    expect(checkpoints).toEqual([1, 2]);
+    expect(commitTransactionMock).toHaveBeenCalledTimes(2);
   });
 });

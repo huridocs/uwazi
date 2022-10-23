@@ -29,13 +29,49 @@ export class MongoTransactionManager implements TransactionManager {
     }
   }
 
-  private async commitTransaction() {
-    await this.session!.commitTransaction();
-    this.finished = true;
+  private async commitWithRetry() {
+    try {
+      await this.session!.commitTransaction();
+      this.finished = true;
+    } catch (error) {
+      if (error.hasErrorLabel && error.hasErrorLabel('UnknownTransactionCommitResult')) {
+        await this.commitWithRetry();
+      } else {
+        throw error;
+      }
+    }
   }
 
   private startTransaction() {
     this.session!.startTransaction();
+  }
+
+  private async abortTransaction() {
+    await this.session!.abortTransaction();
+  }
+
+  private async runInTransaction<T>(callback: () => Promise<T>) {
+    this.startTransaction();
+    try {
+      const returnValue = await callback();
+      await this.commitWithRetry();
+      return returnValue;
+    } catch (error) {
+      await this.abortTransaction();
+      throw error;
+    }
+  }
+
+  private async runWithRetry<T>(callback: () => Promise<T>): Promise<T> {
+    try {
+      return await this.runInTransaction(callback);
+    } catch (error) {
+      if (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
+        return this.runWithRetry(callback);
+      }
+
+      throw error;
+    }
   }
 
   async run<T>(callback: () => Promise<T>) {
@@ -44,9 +80,7 @@ export class MongoTransactionManager implements TransactionManager {
     this.session = this.mongoClient.startSession();
 
     try {
-      this.startTransaction();
-      const returnValue = await callback();
-      await this.commitTransaction();
+      const returnValue = await this.runWithRetry(callback);
       await this.executeOnCommitHandlers(returnValue);
       return returnValue;
     } finally {
