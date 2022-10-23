@@ -6,7 +6,7 @@ import { getContentBySelector } from '../helpers/selectorUtils';
 
 const selectors = {
   searchInLibrary:
-    '#app > div.content > div > div > div > main > div.list-view-mode > div.buttons-group.toggle-button.only-mobile > button',
+    '.library-header > div.list-view-mode > div.buttons-group.toggle-button.only-mobile > button',
   sidePanelFiltersTitle:
     '#app > div.content > div > div > div > aside.is-active > div.sidepanel-body > div.sidepanel-title > div:nth-child(1) > span',
   firstEntityView:
@@ -37,7 +37,7 @@ describe('Custom home page and styles', () => {
   });
 
   describe('Entity view', () => {
-    it('should show attachments', async () => {
+    it('should s\index.htmlhow attachments', async () => {
       await expect(page).toClick(selectors.firstEntityView);
       await expect(page).toMatchElement('div.file > div.file-originalname');
       const [filename] = await getContentBySelector('div.file > div.file-originalname');
