@@ -31,7 +31,9 @@ const CreateRelationshipService = (user: User) => {
   const denormalizationService = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
-    templatesDS
+    templatesDS,
+    transactionManager,
+    applicationEventsBus
   );
 
   const service = new GenericCreateRelationshipService(
@@ -41,8 +43,7 @@ const CreateRelationshipService = (user: User) => {
     transactionManager,
     idGenerator,
     authService,
-    denormalizationService,
-    applicationEventsBus
+    denormalizationService
   );
 
   return service;
@@ -70,7 +71,13 @@ const DenormalizationService = () => {
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
 
-  const service = new GenericDenormalizationService(relationshipsDS, entitiesDS, templatesDS);
+  const service = new GenericDenormalizationService(
+    relationshipsDS,
+    entitiesDS,
+    templatesDS,
+    transactionManager,
+    applicationEventsBus
+  );
 
   return service;
 };
