@@ -1,4 +1,4 @@
-import { CollectionBulkWriteOptions } from 'mongodb';
+import { BulkWriteOptions } from 'mongodb';
 import mongoose, { Schema } from 'mongoose';
 import {
   DataType,
@@ -58,7 +58,7 @@ class MultiTenantMongooseModel<T> {
   async _updateMany(
     conditions: UwaziFilterQuery<DataType<T>>,
     doc: UwaziUpdateQuery<DataType<T>>,
-    options: UwaziQueryOptions
+    options?: UwaziQueryOptions
   ) {
     return this.dbForCurrentTenant().updateMany(conditions, doc, options);
   }
@@ -100,7 +100,7 @@ class MultiTenantMongooseModel<T> {
     return this.dbForCurrentTenant().updateOne(conditions, doc);
   }
 
-  async bulkWrite(writes: Array<any>, options?: CollectionBulkWriteOptions) {
+  async bulkWrite(writes: Array<any>, options?: BulkWriteOptions) {
     return this.dbForCurrentTenant().bulkWrite(writes, options);
   }
 

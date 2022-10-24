@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { IStore } from 'app/istore';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import {
@@ -13,11 +13,11 @@ import { loadUsers } from 'app/Users/actions/actions';
 import { UserGroupSidePanel } from './UserGroupSidePanel';
 
 export interface UserGroupProps {
-  userGroups: IImmutable<UserGroupSchema[]>;
+  userGroups: IImmutable<ClientUserGroupSchema[]>;
   users: IImmutable<GroupMemberSchema[]>;
   loadUserGroups: () => any;
-  saveUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
-  deleteUserGroup: (userGroup: UserGroupSchema) => Promise<void>;
+  saveUserGroup: (userGroup: ClientUserGroupSchema) => Promise<void>;
+  deleteUserGroup: (userGroup: ClientUserGroupSchema) => Promise<void>;
   loadUsers: () => Promise<void>;
 }
 
@@ -30,7 +30,7 @@ const UserGroupsComponent = ({
   loadUsers: loadAllUsers,
 }: UserGroupProps) => {
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState<UserGroupSchema>();
+  const [selectedGroup, setSelectedGroup] = useState<ClientUserGroupSchema>();
   const groupList = userGroups ? userGroups.toJS() : [];
   const userList = users ? users.toJS() : [];
 
@@ -46,7 +46,7 @@ const UserGroupsComponent = ({
   }
 
   const handlers = {
-    handleSelect: (userGroup: UserGroupSchema) => {
+    handleSelect: (userGroup: ClientUserGroupSchema) => {
       setSelectedGroup(userGroup);
       setSidePanelOpened(true);
     },
@@ -54,7 +54,7 @@ const UserGroupsComponent = ({
       setSelectedGroup({ name: '', members: [] });
       setSidePanelOpened(true);
     },
-    handleSave: async (userGroup: UserGroupSchema) => {
+    handleSave: async (userGroup: ClientUserGroupSchema) => {
       if (!userGroup._id) {
         delete userGroup._id;
       }
@@ -62,7 +62,7 @@ const UserGroupsComponent = ({
       await loadAllUsers();
       closeSidePanel();
     },
-    handleDelete: async (userGroup: UserGroupSchema) => {
+    handleDelete: async (userGroup: ClientUserGroupSchema) => {
       await deleteGroup(userGroup);
       await loadAllUsers();
       closeSidePanel();
