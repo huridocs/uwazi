@@ -131,6 +131,17 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
       }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
+const sortDirection = (condition: string) => {
+  switch (condition) {
+    case 'desc':
+    case 'string':
+      return 'asc';
+    case 'asc':
+    default:
+      return 'desc';
+  }
+};
+
 const SortButtonsComponent = ({
   storeKey,
   search,
@@ -141,7 +152,7 @@ const SortButtonsComponent = ({
 }: mappedProps) => {
   const doSort = (property: string, defaultTreatAs: string, selectedSort?: string) => {
     const treatAs = defaultTreatAs;
-    const order = selectedSort || (treatAs === 'string' ? 'asc' : 'desc');
+    const order = selectedSort || sortDirection(treatAs);
     const newSort = { sort: property, order, treatAs };
     merge(stateProperty, newSort);
     const filters = { ...search, ...newSort, userSelectedSorting: true };
@@ -151,7 +162,7 @@ const SortButtonsComponent = ({
   };
 
   const changeOrder = () => {
-    doSort(search.sort, search.treatAs, search.order === 'asc' ? 'desc' : 'asc');
+    doSort(search.sort, search.treatAs, sortDirection(search.order));
   };
 
   const metadataSorts = getMetadataSorts(templates);
