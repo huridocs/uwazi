@@ -4,7 +4,7 @@
 import Immutable from 'immutable';
 import { ReactElement } from 'react';
 import { ShallowWrapper } from 'enzyme';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { renderConnected, renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserGroupList } from 'app/Users/components/usergroups/UserGroupList';
 import { UserGroupSidePanel } from 'app/Users/components/usergroups/UserGroupSidePanel';
@@ -28,7 +28,7 @@ jest.mock('app/Users/actions/actions', () => ({
 
 describe('UserGroups', () => {
   let component: ShallowWrapper;
-  const userGroups: UserGroupSchema[] = [
+  const userGroups: ClientUserGroupSchema[] = [
     {
       _id: 'group1',
       name: 'Group 1',
