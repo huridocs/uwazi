@@ -128,8 +128,8 @@ const suggestionsTable = (
               <h5>{t('System', SuggestionState.labelMatch, SuggestionState.labelMatch, false)}</h5>
               <div>
                 <Translate translationKey="labelMatchDesc">
-                  It has a current value and a text selection matching with the modelsuggested value
-                  and selection. It will be used as a training sample.
+                  It has a current value and a text selection matching with the model suggested
+                  value and selection. It will be used as a training sample.
                 </Translate>
               </div>
               <h5>
@@ -147,7 +147,7 @@ const suggestionsTable = (
               <h5>{t('System', SuggestionState.labelEmpty, SuggestionState.labelEmpty, false)}</h5>
               <div>
                 <Translate translationKey="labelEmptyDesc">
-                  Accepting is not available since there is no suggestion.If the value is correct
+                  Accepting is not available since there is no suggestion. If the value is correct
                   and the suggestion is wrong no action is needed. It will be used as a training
                   sample.
                 </Translate>

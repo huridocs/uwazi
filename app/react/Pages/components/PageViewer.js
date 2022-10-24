@@ -50,7 +50,7 @@ class PageViewer extends Component {
     return (
       <div className="alert alert-danger">
         <Icon icon="exclamation-triangle" />
-        <Translate>
+        <Translate translationKey="custom page error warning">
           There is an unexpected error on this custom page, it may not work properly. Please contact
           an admin for details.
         </Translate>

@@ -43,12 +43,16 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
                 </Connect(Translate)>
               </li>
               <li>
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="2fa add account tip"
+                >
                   Open the app and select "Add Account" (usually a plus symbol)
                 </Connect(Translate)>
               </li>
               <li>
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="2fa QA scan tip"
+                >
                   Scan the following QR code selecting the "scan barcode" option:
                 </Connect(Translate)>
                 <div
@@ -67,7 +71,9 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
                   Or enter this secret key into your Authenticator app
                 </Connect(Translate)>
                 <br />
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="secret key recommendation"
+                >
                   (please keep this key secret and don't share it):
                 </Connect(Translate)>
                 <div
@@ -215,12 +221,16 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
                 </Connect(Translate)>
               </li>
               <li>
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="2fa add account tip"
+                >
                   Open the app and select "Add Account" (usually a plus symbol)
                 </Connect(Translate)>
               </li>
               <li>
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="2fa QA scan tip"
+                >
                   Scan the following QR code selecting the "scan barcode" option:
                 </Connect(Translate)>
                 <div
@@ -239,7 +249,9 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
                   Or enter this secret key into your Authenticator app
                 </Connect(Translate)>
                 <br />
-                <Connect(Translate)>
+                <Connect(Translate)
+                  translationKey="secret key recommendation"
+                >
                   (please keep this key secret and don't share it):
                 </Connect(Translate)>
                 <div

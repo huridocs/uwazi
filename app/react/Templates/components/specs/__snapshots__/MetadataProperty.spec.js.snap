@@ -21,7 +21,9 @@ exports[`MetadataProperty simple component when type is custom type errors shoul
   <Connect(Icon)
     icon="exclamation-triangle"
   />
-  <Connect(Translate)>
+  <Connect(Translate)
+    translationKey="relationship consistency warning"
+  >
     Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
   </Connect(Translate)>
 </span>
