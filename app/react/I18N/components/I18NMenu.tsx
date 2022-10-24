@@ -28,6 +28,7 @@ const mapStateToProps = (state: IStore) => ({
   languages: state.settings.collection.get('languages'),
   i18nmode: state.inlineEdit.get('inlineEdit'),
   locale: state.locale,
+  user: state.user,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -47,7 +48,10 @@ const getDropDownList = (
     const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search}`;
 
     return (
-      <li key={language._id as string} className="menuNav-item">
+      <li
+        key={language._id as string}
+        className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
+      >
         <a href={url} className="btn menuNav-btn">
           {language.localized_label || language.label}
         </a>
@@ -59,17 +63,18 @@ const i18NMenuComponent = ({
   location,
   languages: languageMap,
   i18nmode,
+  user,
   locale,
   toggleInlineEdit,
 }: mappedProps) => {
-  if (!languageMap || languageMap!.size < 1) {
+  if (!languageMap || languageMap.size < 1 || (languageMap!.size <= 1 && !user.get('_id'))) {
     return <div className="no-i18nmenu" />;
   }
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const urlLocation = location;
   const { languages, selectedLanguage } = prepareLanguageValues(languageMap!, locale);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
