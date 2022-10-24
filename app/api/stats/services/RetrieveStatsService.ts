@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 import { elastic } from 'api/search';
 
-export class RetrieveStats {
+export class RetrieveStatsService {
   private readonly db: Db;
 
   constructor(db: Db) {

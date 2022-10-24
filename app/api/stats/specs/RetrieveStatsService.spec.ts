@@ -1,4 +1,4 @@
-import { RetrieveStats } from 'api/stats/application/RetrieveStats';
+import { RetrieveStatsService } from 'api/stats/services/RetrieveStatsService';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures } from 'api/stats/specs/fixtures';
 import testingDB from 'api/utils/testing_db';
@@ -21,7 +21,7 @@ describe('RetrieveStats', () => {
       storageSize: 15000,
     });
     // TODO pass elastic on constructor
-    const actionResult = await new RetrieveStats(db).execute();
+    const actionResult = await new RetrieveStatsService(db).execute();
 
     expect(elasticMock).toHaveBeenCalledWith({
       pretty: true,
