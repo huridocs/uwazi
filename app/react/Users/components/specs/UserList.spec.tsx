@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { Translate } from 'app/I18N';
 import { Pill } from 'app/Metadata/components/Pill';
@@ -9,7 +9,7 @@ import { UserList, UserListProps } from '../UserList';
 describe('UserList', () => {
   let component: ShallowWrapper;
 
-  const users: UserSchema[] = [
+  const users: ClientUserSchema[] = [
     {
       _id: 'user1',
       username: 'Juan Gonzales',

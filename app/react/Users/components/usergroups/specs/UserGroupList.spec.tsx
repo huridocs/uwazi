@@ -2,10 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { UserGroupList, UserGroupListProps } from 'app/Users/components/usergroups/UserGroupList';
 import { Pill } from 'app/Metadata/components/Pill';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 
 describe('UserGroupList', () => {
-  const group1: UserGroupSchema = {
+  const group1: ClientUserGroupSchema = {
     _id: 'group1Id',
     name: 'Group 1',
     members: [{ refId: 'user1' }, { refId: 'user2' }],

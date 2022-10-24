@@ -4,7 +4,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { Dispatch } from 'redux';
 import { IStore } from 'app/istore';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { t } from 'app/I18N';
 import UsersAPI from '../UsersAPI';
 
@@ -18,7 +18,7 @@ export function deleteUser(user: { _id: ObjectIdSchema }) {
     });
 }
 
-export function saveUser(user: UserSchema) {
+export function saveUser(user: ClientUserSchema) {
   return async (dispatch: Dispatch<IStore>) => {
     await UsersAPI.save(new RequestParams(user));
     const userToNotify = { ...user };
@@ -30,7 +30,7 @@ export function saveUser(user: UserSchema) {
   };
 }
 
-export function newUser(user: UserSchema) {
+export function newUser(user: ClientUserSchema) {
   return async (dispatch: Dispatch<IStore>) => {
     const createdUser = await UsersAPI.new(new RequestParams(user));
     const userToNotify = { ...user, ...createdUser };
