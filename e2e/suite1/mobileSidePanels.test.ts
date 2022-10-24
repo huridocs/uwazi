@@ -5,8 +5,7 @@ import disableTransitions from '../helpers/disableTransitions';
 import { getContentBySelector } from '../helpers/selectorUtils';
 
 const selectors = {
-  searchInLibrary:
-    '.library-header > div.list-view-mode > div.buttons-group.toggle-button.only-mobile > button',
+  searchInLibrary: '.library-header .library-toolbar .buttons-group.toggle-button.only-mobile',
   sidePanelFiltersTitle:
     '#app > div.content > div > div > div > aside.is-active > div.sidepanel-body > div.sidepanel-title > div:nth-child(1) > span',
   firstEntityView:

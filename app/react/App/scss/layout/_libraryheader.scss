@@ -24,10 +24,11 @@
     position: fixed;
     width: 95%;
     top: 50px;
-  }
+    margin-left: -15px;
 
-  &.closed {
-    display: none;
+    &.closed {
+      display: none;
+    }
   }
 
   .close-toolbar-button {
@@ -68,15 +69,16 @@
 }
 
 .library-toolbar {
-  background-color: white;
+  @media (max-width: 1023px) {
+    background-color: white;
+    -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    box-shadow: 10px 0px 1px white, 2px 1px 4px lightgrey;
+    padding: 10px 10px 1px 10px;
+    width: 100%;
+  }
 
   @media (min-width: 1024px) {
     background-color: transparent;
   }
-
-  -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
-  -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
-  box-shadow: 10px 0px 1px white, 2px 1px 4px lightgrey;
-  padding: 10px 10px 1px 10px;
-  width: 100%;
 }

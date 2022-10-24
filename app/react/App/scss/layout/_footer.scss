@@ -223,8 +223,10 @@ footer {
   border-top: none;
   background-color: transparent;
 
-  &.closed {
-    display: none;
+  @media (max-width: 1023px) {
+    &.closed {
+      display: none;
+    }
   }
 
   .btn-cluster {

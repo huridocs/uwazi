@@ -57,7 +57,7 @@ const LibraryHeaderComponent = ({
   zoomOut,
   tableViewMode,
 }: mappedProps) => {
-  const [toolbarVisible, setToolbarVisible] = useState(true);
+  const [toolbarVisible, setToolbarVisible] = useState(false);
   const toggleToolbarVisible = () => {
     setToolbarVisible(!toolbarVisible);
   };
