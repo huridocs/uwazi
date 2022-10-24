@@ -1,19 +1,18 @@
-import mongoose, { Connection, ConnectionOptions } from 'mongoose';
+import mongoose, { Connection, ConnectOptions } from 'mongoose';
 import { config } from 'api/config';
 
 let connection: Connection;
 
-// setting this on createConnection directly is not working, maybe mongoose bug?
-mongoose.set('useCreateIndex', true);
+mongoose.set('strictQuery', false);
 
 const DB = {
-  async connect(uri: string = config.DBHOST, auth: ConnectionOptions = {}) {
-    connection = await mongoose.createConnection(uri, {
-      ...auth,
-      useUnifiedTopology: true,
-      useNewUrlParser: true,
-      poolSize: config.mongo_connection_pool_size,
-    });
+  async connect(uri: string = config.DBHOST, auth: ConnectOptions = {}) {
+    connection = await mongoose
+      .createConnection(uri, {
+        ...auth,
+        maxPoolSize: config.mongo_connection_pool_size,
+      })
+      .asPromise();
 
     return this.getConnection();
   },

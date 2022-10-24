@@ -80,10 +80,9 @@ describe('migration activity log sanitization', () => {
     it('should remove updatelog entries for activitylog', async () => {
       const unWantedEntries = await testingDB.mongodb
         .collection('updatelogs')
-        .find({ namespace: 'activitylog' })
-        .count();
+        .count({ namespace: 'activitylog' });
 
-      const remainingEntries = await testingDB.mongodb.collection('updatelogs').find({}).count();
+      const remainingEntries = await testingDB.mongodb.collection('updatelogs').count();
 
       expect(unWantedEntries).toBe(0);
       expect(remainingEntries).toBe(2);

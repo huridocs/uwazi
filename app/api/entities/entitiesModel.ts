@@ -28,7 +28,7 @@ const mongoSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
   },
-  { emitIndexErrors: true, minimize: false }
+  { minimize: false }
 );
 
 //mongodb types not updated yet for language_override?

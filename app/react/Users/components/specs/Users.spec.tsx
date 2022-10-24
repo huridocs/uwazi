@@ -12,7 +12,7 @@ import { UserSidePanel } from 'app/Users/components/UserSidePanel';
 import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 
 jest.mock('app/Users/actions/actions', () => ({
   loadUsers: jest.fn().mockReturnValue(async () => Promise.resolve()),
@@ -38,7 +38,7 @@ jest.mock('app/Users/components/usergroups/actions/actions', () => ({
 
 describe('Users', () => {
   let component: ShallowWrapper;
-  const users: UserSchema[] = [
+  const users: ClientUserSchema[] = [
     {
       _id: 'user1',
       username: 'User 1',

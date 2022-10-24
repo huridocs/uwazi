@@ -7,6 +7,6 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    await db.collection('updatelogs').removeMany({ mongoId: { $exists: false } });
+    await db.collection('updatelogs').deleteMany({ mongoId: { $exists: false } });
   },
 };
