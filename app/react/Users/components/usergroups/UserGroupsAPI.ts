@@ -1,13 +1,13 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-const getGroups = async (requestParams: RequestParams<UserGroupSchema>) => {
+const getGroups = async (requestParams: RequestParams<ClientUserGroupSchema>) => {
   const response = await api.get('usergroups', requestParams);
   return response.json;
 };
-const saveGroup = async (requestParams: RequestParams<UserGroupSchema>) => {
+const saveGroup = async (requestParams: RequestParams<ClientUserGroupSchema>) => {
   const response = await api.post('usergroups', requestParams);
   return response.json;
 };

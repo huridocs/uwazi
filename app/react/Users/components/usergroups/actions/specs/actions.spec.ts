@@ -1,6 +1,6 @@
 import * as api from 'app/Users/components/usergroups/UserGroupsAPI';
 import { Dispatch } from 'redux';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { IStore } from 'app/istore';
 import { RequestParams } from 'app/utils/RequestParams';
 import { notificationActions } from 'app/Notifications';
@@ -9,16 +9,16 @@ import * as actions from '../actions';
 jest.mock('app/Users/components/usergroups/UserGroupsAPI');
 
 describe('User Groups actions', () => {
-  const group2: UserGroupSchema = {
+  const group2: ClientUserGroupSchema = {
     _id: 'group2',
     name: 'Group 2',
     members: [{ refId: 'user1' }],
   };
-  const userGroups: UserGroupSchema[] = [
+  const userGroups: ClientUserGroupSchema[] = [
     { _id: 'group1', name: 'group1', members: [{ refId: 'user1' }, { refId: 'user2' }] },
     group2,
   ];
-  const newUserGroup: UserGroupSchema = {
+  const newUserGroup: ClientUserGroupSchema = {
     name: 'new group',
     members: [{ refId: 'user2' }],
   };
@@ -62,7 +62,7 @@ describe('User Groups actions', () => {
     });
 
     describe('Existing user group', () => {
-      let updatedGroup2: UserGroupSchema;
+      let updatedGroup2: ClientUserGroupSchema;
       beforeEach(async () => {
         updatedGroup2 = {
           ...group2,

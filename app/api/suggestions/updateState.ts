@@ -1,5 +1,3 @@
-import { AggregationCursor } from 'mongoose';
-
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -47,7 +45,7 @@ const getModelCreationDateStage = () => [
   },
 ];
 
-const findSuggestions = (query: any, languages: LanguagesListSchema): AggregationCursor =>
+const findSuggestions = (query: any, languages: LanguagesListSchema) =>
   IXSuggestionsModel.db
     .aggregateCursor<SuggestionsAggregationResult[]>([
       { $match: { ...query, status: { $ne: 'processing' } } },
@@ -76,8 +74,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema): Aggregatio
         },
       },
     ])
-    .cursor()
-    .exec();
+    .cursor();
 
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
