@@ -6,6 +6,7 @@ import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
 import { host, BROWSER_WINDOW_SIZE } from '../config';
+import disableTransitions from './disableTransitions';
 
 const DEFAULT_IMAGE_REGRESSION_THRESHOLD = 0.3;
 
@@ -30,6 +31,7 @@ const displayGraph = async () => {
   if (graphsPage === null) {
     throw TypeError('graphsPage should not be null ');
   }
+  await disableTransitions(graphsPage);
   // wait for the chart visualization animations to end
   await graphsPage.waitForTimeout(4000);
   return graphsPage;
