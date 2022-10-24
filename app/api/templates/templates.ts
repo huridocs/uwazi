@@ -6,7 +6,7 @@ import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ContextType } from 'shared/translationSchema';
 import { ensure } from 'shared/tsUtils';
@@ -146,7 +146,7 @@ const getRelatedThesauri = async (template: TemplateSchema) => {
   const thesauri = await dictionariesModel.get({ _id: { $in: thesauriIds } });
   const thesauriByKey: Record<any, TemplateSchema> = {};
   thesauri.forEach(t => {
-    thesauriByKey[t._id] = t;
+    thesauriByKey[t._id.toString()] = t;
   });
   return thesauriByKey;
 };
@@ -213,7 +213,7 @@ export default {
     return savedTemplate;
   },
 
-  async canDeleteProperty(template: ObjectID, property: ObjectID | string | undefined) {
+  async canDeleteProperty(template: ObjectId, property: ObjectId | string | undefined) {
     const tmps = await model.get();
     return tmps.every(iteratedTemplate =>
       (iteratedTemplate.properties || []).every(
@@ -250,7 +250,7 @@ export default {
     throw createError('Invalid ID');
   },
 
-  async getById(templateId: ObjectID | string) {
+  async getById(templateId: ObjectId | string) {
     return model.getById(templateId);
   },
 

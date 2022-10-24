@@ -32,9 +32,8 @@ Array [
     },
   ],
   Object {
+    "acknowledged": true,
     "deletedCount": 2,
-    "n": 2,
-    "ok": 1,
   },
 ]
 `;

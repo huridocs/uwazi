@@ -1,11 +1,11 @@
-import { ConnectionOptions } from 'mongoose';
+import { ConnectOptions } from 'mongoose';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { config } from 'api/config';
 import { errorLog } from 'api/log';
 import { migrator } from './migrator';
 
-let auth: ConnectionOptions;
+let auth: ConnectOptions;
 
 if (process.env.DBUSER) {
   auth = {

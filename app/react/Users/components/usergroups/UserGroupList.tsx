@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Icon } from 'UI';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { Pill } from 'app/Metadata/components/Pill';
 
 export interface UserGroupListProps {
-  userGroups: UserGroupSchema[];
-  handleSelect: (userGroup: UserGroupSchema) => void;
+  userGroups: ClientUserGroupSchema[];
+  handleSelect: (userGroup: ClientUserGroupSchema) => void;
   handleAddGroup: () => void;
   className: string;
 }
@@ -22,7 +22,7 @@ export const UserGroupList = ({
     setSelectedId(undefined);
     handleAddGroup();
   };
-  const selectRow = (userGroup: UserGroupSchema) => {
+  const selectRow = (userGroup: ClientUserGroupSchema) => {
     setSelectedId(userGroup._id?.toString());
     handleSelect(userGroup);
   };
@@ -40,7 +40,7 @@ export const UserGroupList = ({
           </tr>
         </thead>
         <tbody>
-          {userGroups.map((userGroup: UserGroupSchema) => (
+          {userGroups.map((userGroup: ClientUserGroupSchema) => (
             <tr
               className={selectedId === userGroup._id ? 'selected' : ''}
               key={userGroup._id as string}

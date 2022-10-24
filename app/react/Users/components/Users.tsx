@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IStore } from 'app/istore';
@@ -9,19 +9,19 @@ import { UserList } from 'app/Users/components/UserList';
 import { loadUsers, saveUser, deleteUser, newUser } from 'app/Users/actions/actions';
 import { loadUserGroups } from 'app/Users/components/usergroups/actions/actions';
 import { UserSidePanel } from 'app/Users/components/UserSidePanel';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { reset2fa } from 'app/Auth2fa/actions/actions';
 import { recoverPassword } from 'app/Auth/actions';
 
 interface UserProps {
-  users: IImmutable<UserSchema[]>;
-  userGroups: IImmutable<UserGroupSchema[]>;
+  users: IImmutable<ClientUserSchema[]>;
+  userGroups: IImmutable<ClientUserGroupSchema[]>;
   loadUsers: () => Promise<void>;
   loadUserGroups: () => Promise<void>;
-  newUser: (user: UserSchema) => Promise<void>;
-  saveUser: (user: UserSchema) => Promise<void>;
+  newUser: (user: ClientUserSchema) => Promise<void>;
+  saveUser: (user: ClientUserSchema) => Promise<void>;
   deleteUser: (user: { _id: ObjectIdSchema }) => Promise<void>;
-  reset2fa: (user: UserSchema) => Promise<void>;
+  reset2fa: (user: ClientUserSchema) => Promise<void>;
   recoverPassword: (email: string) => Promise<void>;
 }
 const UsersComponent = ({
@@ -37,7 +37,7 @@ const UsersComponent = ({
 }: UserProps) => {
   const userList = users ? users.toJS() : [];
   const userGroupList = userGroups ? userGroups.toJS() : [];
-  const [selectedUser, setSelectedUser] = useState<UserSchema>();
+  const [selectedUser, setSelectedUser] = useState<ClientUserSchema>();
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
 
   useEffect(() => {
@@ -59,12 +59,12 @@ const UsersComponent = ({
   };
 
   const handlers = {
-    handleSelect: (user: UserSchema) => {
+    handleSelect: (user: ClientUserSchema) => {
       setSelectedUser(user);
       setSidePanelOpened(true);
     },
 
-    handleSave: async (user: UserSchema) => {
+    handleSave: async (user: ClientUserSchema) => {
       if (!user.password) {
         delete user.password;
       }
@@ -79,7 +79,7 @@ const UsersComponent = ({
       closeSidePanel();
     },
 
-    handleDelete: async (user: UserSchema) => {
+    handleDelete: async (user: ClientUserSchema) => {
       await deleteUserData({ _id: user._id! });
       closeSidePanel();
     },
@@ -89,7 +89,7 @@ const UsersComponent = ({
       setSidePanelOpened(true);
     },
 
-    handleResetPassword: async (user: UserSchema) => {
+    handleResetPassword: async (user: ClientUserSchema) => {
       await resetUserPassword(user.email);
     },
   };
@@ -120,7 +120,7 @@ const UsersComponent = ({
   );
 };
 
-const mapStateToProps = (state: IStore & { users: IImmutable<UserSchema[]> }) => ({
+const mapStateToProps = (state: IStore & { users: IImmutable<ClientUserSchema[]> }) => ({
   users: state.users,
   userGroups: state.userGroups,
 });

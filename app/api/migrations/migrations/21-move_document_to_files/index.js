@@ -72,18 +72,17 @@ export default {
           .toArray();
 
         if (!alreadyExists) {
-          const {
-            ops: [created],
-          } = await db.collection('files').insertOne(fileToCreate);
+          // console.log(await db.collection('files').insertOne(fileToCreate));
+          const { insertedId } = await db.collection('files').insertOne(fileToCreate);
 
           db.collection('connections').updateMany(
-            { filename: created.filename },
-            { $set: { file: created._id.toString() }, $unset: { filename: '' } }
+            { filename: fileToCreate.filename },
+            { $set: { file: insertedId.toString() }, $unset: { filename: '' } }
           );
 
           if (await oldThumbnailExists(entity)) {
             const thumbnailToCreate = {
-              filename: `${created._id}.jpg`,
+              filename: `${insertedId}.jpg`,
               type: 'thumbnail',
             };
             await db.collection('files').insertOne(thumbnailToCreate);
