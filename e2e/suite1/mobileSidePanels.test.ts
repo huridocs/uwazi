@@ -37,7 +37,7 @@ describe('Custom home page and styles', () => {
   });
 
   describe('Entity view', () => {
-    it('should s\index.htmlhow attachments', async () => {
+    it('should show attachments', async () => {
       await expect(page).toClick(selectors.firstEntityView);
       await expect(page).toMatchElement('div.file > div.file-originalname');
       const [filename] = await getContentBySelector('div.file > div.file-originalname');

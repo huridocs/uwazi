@@ -1,25 +1,47 @@
+.toggle-toolbar-button {
+  border: transparent;
+  border-radius: 0px 0px 12px 12px;
+  webkit-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+  -moz-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+  box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
+  padding: 1px 1px;
+  width: 107px;
+  min-width: 90px;
+  height: 18px;
+  left: 100px;
+  background-color: white;
+  margin-top: 5px;
+  z-index: 2;
+}
+
 .library-header {
   padding: 0;
   border-top: none;
   background-color: transparent;
+  z-index: 2;
+
+  @media (max-width: 1023px) {
+    position: fixed;
+    width: 95%;
+    top: 50px;
+  }
 
   &.closed {
     display: none;
   }
 
-  .toggle-toolbar-button {
-    border: transparent;
-    border-radius: 0px 0px 12px 12px;
-    webkit-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
-    -moz-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
-    box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
-    padding: 4px 12px;
-    width: 107px;
-    min-width: 90px;
-    height: 24px;
-    left: 100px;
-    background-color: $c-white;
-    z-index: 1;
+  .close-toolbar-button {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    left: 50%;
+    width: 100%;
+    text-overflow: ellipsis;
+    background-color: transparent;
+
+    @media (min-width: 1024px) {
+      display: none;
+    }
   }
 }
 
@@ -32,6 +54,7 @@
   width: 150px;
   text-overflow: ellipsis;
   margin-left: -80px;
+  z-index: 1;
 
   &.closed {
     display: none;
@@ -40,4 +63,13 @@
   @media (min-width: 1024px) {
     display: none;
   }
+}
+
+.library-toolbar {
+  background-color: white;
+  -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+  box-shadow: 10px 0px 1px white, 2px 1px 4px lightgrey;
+  padding: 10px 10px 1px 10px;
+  width: 100%;
 }
