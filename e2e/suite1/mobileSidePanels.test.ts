@@ -29,9 +29,11 @@ describe('Custom home page and styles', () => {
 
   describe('library view', () => {
     it('when clicking on the search button a side panel should appear', async () => {
+      await expect(page).toClick('.open-toolbar-button .toggle-toolbar-button');
       await expect(page).toClick(selectors.searchInLibrary);
       await expect(page).toMatchElement(selectors.sidePanelFiltersTitle, { text: 'Filters' });
       await expect(page).toClick('button[aria-label="Close side panel"]');
+      await expect(page).toClick('.close-toolbar-button .toggle-toolbar-button');
     });
   });
 
