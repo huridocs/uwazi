@@ -2,19 +2,19 @@ import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { Pill } from 'app/Metadata/components/Pill';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { roleTranslationKey } from '../UserManagement';
 
 export interface UserListProps {
-  users: UserSchema[];
-  handleSelect: (user: UserSchema) => void;
+  users: ClientUserSchema[];
+  handleSelect: (user: ClientUserSchema) => void;
   handleAddUser: () => void;
   className: string;
 }
 
 export const UserList = ({ users, handleSelect, handleAddUser, className }: UserListProps) => {
   const [selectedId, setSelectedId] = useState<string | undefined>();
-  const selectRow = (user: UserSchema) => {
+  const selectRow = (user: ClientUserSchema) => {
     handleSelect(user);
     setSelectedId(user._id?.toString());
   };
@@ -43,7 +43,7 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
           </tr>
         </thead>
         <tbody>
-          {sortedUsers.map((user: UserSchema) => (
+          {sortedUsers.map((user: ClientUserSchema) => (
             <tr
               className={selectedId === user._id ? 'selected' : ''}
               key={user._id?.toString()}

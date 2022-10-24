@@ -6,7 +6,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { Translate } from 'app/I18N';
 import { Control } from 'react-redux-form';
 import { connect } from 'react-redux';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import Immutable from 'immutable';
 import { FiltrableLevel, filtrableLevels } from './FiltrablePermissionsLevels';
@@ -48,7 +48,7 @@ const generateOptions = (aggregations: Aggregations) => [
 ];
 
 export const PermissionsFilterUncontrolled = connect(
-  ({ user }: { user: IImmutable<UserSchema> }) => ({
+  ({ user }: { user: IImmutable<ClientUserSchema> }) => ({
     user,
   })
 )(
@@ -57,7 +57,10 @@ export const PermissionsFilterUncontrolled = connect(
     onChange,
     aggregations,
     user,
-  }: PermissionsFilterProps & { user: IImmutable<UserSchema>; value: PermissionsValue[] }) => {
+  }: PermissionsFilterProps & {
+    user: IImmutable<ClientUserSchema>;
+    value: PermissionsValue[];
+  }) => {
     const refIds: string[] = useMemo(
       () => [user.get('_id') as string, ...(user.toJS().groups?.map(g => g._id as string) || [])],
       [user]

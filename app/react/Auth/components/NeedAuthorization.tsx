@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { PermissionSchema } from 'shared/types/permissionType';
 import { EntitySchema } from 'shared/types/entityType';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 
 type PropTypes = {
   children: React.ReactNode;
   roles?: string[];
   orWriteAccessTo?: EntitySchema[];
-  user: UserSchema;
+  user: ClientUserSchema;
 };
 
 const checkWritePermissions = (

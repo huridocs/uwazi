@@ -10,7 +10,6 @@ const mongoSchema = new mongoose.Schema(
     entityViewPage: { type: String, default: '' },
   },
   {
-    emitIndexErrors: true,
     strict: false,
   }
 );

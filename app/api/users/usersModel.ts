@@ -12,7 +12,7 @@ export interface User {
   accountLocked?: boolean;
   accountUnlockCode?: string;
   using2fa?: boolean;
-  secret?: string;
+  secret?: string | null;
 }
 
 const userSchema = new mongoose.Schema({
