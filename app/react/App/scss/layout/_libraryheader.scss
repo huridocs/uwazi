@@ -7,10 +7,10 @@
   padding: 1px 1px;
   width: 107px;
   min-width: 90px;
-  height: 18px;
+  height: 24px;
   left: 100px;
   background-color: white;
-  margin-top: 5px;
+  justify-content: center;
   z-index: 2;
 }
 
@@ -53,7 +53,9 @@
   left: 50%;
   width: 150px;
   text-overflow: ellipsis;
-  margin-left: -80px;
+  margin-left: -75px;
+  min-width: 90px;
+
   z-index: 1;
 
   &.closed {
@@ -67,6 +69,11 @@
 
 .library-toolbar {
   background-color: white;
+
+  @media (min-width: 1024px) {
+    background-color: transparent;
+  }
+
   -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
   -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
   box-shadow: 10px 0px 1px white, 2px 1px 4px lightgrey;

@@ -259,7 +259,8 @@ footer {
   left: 50%;
   width: 150px;
   text-overflow: ellipsis;
-  margin-left: -80px;
+  margin-left: -75px;
+  height: 18px;
 
   &.closed {
     display: none;
