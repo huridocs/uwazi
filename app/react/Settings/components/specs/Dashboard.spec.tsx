@@ -4,7 +4,8 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { Dashboard, dummyapi } from '../Dashboard';
+import api from 'app/utils/api';
+import { Dashboard } from '../Dashboard';
 
 describe('Dashboard', () => {
   const render = () => {
@@ -18,7 +19,7 @@ describe('Dashboard', () => {
     users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
     entities: { total: 0 },
     files: { total: 0 },
-    storage: { total: 0, available: 0 },
+    storage: { total: 0 },
   };
 
   beforeEach(() => {
@@ -26,10 +27,10 @@ describe('Dashboard', () => {
       users: { total: 12, admin: 2, editor: 4, collaborator: 6 },
       entities: { total: 56327 },
       files: { total: 2500 },
-      storage: { total: 45000, available: 100000 },
+      storage: { total: 45000 },
     };
 
-    jest.spyOn(dummyapi, 'get').mockResolvedValue(apiResposne);
+    jest.spyOn(api, 'get').mockResolvedValue({ json: apiResposne });
   });
 
   describe('Users report', () => {
@@ -77,10 +78,20 @@ describe('Dashboard', () => {
   });
 
   describe('Storage report', () => {
-    it('should show the amount of store used out of the total', async () => {
-      render();
-
-      expect((await screen.findByText('100 GB')).parentElement?.textContent).toBe('45 GB 100 GB');
-    });
+    it.each`
+      bytes                | expectedValue
+      ${0}                 | ${'0 Bytes'}
+      ${1000}              | ${'1000 Bytes'}
+      ${5242880}           | ${'5 MB'}
+      ${6764573491.2}      | ${'6.3 GB'}
+      ${2764543491.243474} | ${'2.57 GB'}
+    `(
+      'should show the expected formatted value of $expectedValue for $bytes bytes',
+      async ({ bytes, expectedValue }) => {
+        render();
+        apiResposne.storage.total = bytes;
+        expect(await screen.findByText(expectedValue)).toBeInTheDocument();
+      }
+    );
   });
 });

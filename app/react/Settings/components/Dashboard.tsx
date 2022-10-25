@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { ProgressBar } from 'app/UI';
 import { LoadingWrapper } from 'app/components/Elements/LoadingWrapper';
+import api from 'app/utils/api';
 
-const dummyapi = {
-  get: async () =>
-    Promise.resolve({
-      users: { total: 12, admin: 2, editor: 4, collaborator: 6 },
-      entities: { total: 25445 },
-      files: { total: 1267 },
-      storage: { total: 45000, available: 100000 },
-    }),
+const formatBytes = (bytes: number) => {
+  //Sourced from https://stackoverflow.com/questions/15900485
+  if (!+bytes) return '0 Bytes';
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const index = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${parseFloat((bytes / 1024 ** index).toFixed(2))} ${sizes[index]}`;
 };
 
 const Dashboard = () => {
@@ -18,15 +16,16 @@ const Dashboard = () => {
     users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
     entities: { total: 0 },
     files: { total: 0 },
-    storage: { total: 0, available: 100 },
+    storage: { total: 0 },
   });
   const [loading, setLoading] = useState(true);
+  const [storage, setStorage] = useState('');
 
   useEffect(() => {
-    dummyapi
-      .get()
-      .then(response => {
-        setSystemStats(response);
+    api
+      .get('stats')
+      .then((response: any) => {
+        setSystemStats(response.json);
         setLoading(false);
       })
       .catch(() => {});
@@ -35,6 +34,10 @@ const Dashboard = () => {
       setLoading(true);
     };
   }, []);
+
+  useEffect(() => {
+    setStorage(formatBytes(systemStats.storage.total));
+  }, [systemStats.storage.total]);
 
   return (
     <main className="settings-content">
@@ -80,7 +83,12 @@ const Dashboard = () => {
                 </LoadingWrapper>
               </article>
 
-              <article className="card">
+              {/*
+              Card for storage report with available and total,
+              disabled until we can report on total available storage effectivly.
+              */}
+
+              {/* <article className="card">
                 <div className="heading">
                   <h2>
                     <Translate>Storage</Translate>
@@ -103,6 +111,24 @@ const Dashboard = () => {
                   </div>
                 </LoadingWrapper>
                 <div className="footer">
+                  <p className="card-info">
+                    <Translate>Files and database usage</Translate>
+                  </p>
+                </div>
+              </article>  */}
+
+              <article className="card">
+                <div className="heading">
+                  <h2>
+                    <Translate>Storage</Translate>
+                  </h2>
+                </div>
+                <LoadingWrapper isLoading={loading}>
+                  <div className="body">
+                    <span className="count">{storage}</span>
+                  </div>
+                </LoadingWrapper>
+                <div className="footer card-info">
                   <p className="card-info">
                     <Translate>Files and database usage</Translate>
                   </p>
@@ -156,4 +182,4 @@ const Dashboard = () => {
   );
 };
 
-export { Dashboard, dummyapi };
+export { Dashboard };
