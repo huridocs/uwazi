@@ -42,7 +42,7 @@ export class RetrieveStatsService {
 
     return {
       total:
-        parseInt(filesSize.totalSize, 10) +
+        parseInt(filesSize?.totalSize || 0, 10) +
         parseInt(elasticSize, 10) +
         parseInt(dbStats.storageSize, 10),
     };
