@@ -40,13 +40,10 @@ export class RetrieveStatsService {
       h: 'store.size',
     });
 
-    const elasticSize = elasticIndex.body[0]['store.size'];
+    const elasticSize = parseInt(elasticIndex.body[0]['store.size'], 10);
 
     return {
-      total:
-        parseInt(filesSize?.totalSize || this.NO_FILES_SIZE, 10) +
-        parseInt(elasticSize, 10) +
-        parseInt(dbStats.storageSize, 10),
+      total: (filesSize?.totalSize || this.NO_FILES_SIZE) + elasticSize + dbStats.storageSize,
     };
   }
 
