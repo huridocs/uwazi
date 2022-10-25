@@ -4,7 +4,6 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
-import { Relationship } from '../model/Relationship';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -83,12 +82,12 @@ export class DenormalizationService {
     );
   }
 
-  async denormalizeForNewRelationships(relationships: Relationship[]) {
+  async denormalizeForNewRelationships(relationshipIds: string[]) {
     const candidates = (
       await Promise.all(
-        relationships.map(async rel =>
+        relationshipIds.map(async id =>
           this.getCandidateEntitiesForRelationship(
-            rel._id,
+            id,
             'en' // TODO: any language should be good in this case, could be default language as a standard
           )
         )

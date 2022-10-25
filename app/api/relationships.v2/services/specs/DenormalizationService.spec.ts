@@ -6,6 +6,7 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { DenormalizationService } from '../DenormalizationService';
 
@@ -22,6 +23,7 @@ const fixtures = {
     { _id: factory.id('rel7'), from: 'entity2', to: 'hub3', type: factory.id('relType4') },
     { _id: factory.id('rel8'), to: 'hub3', from: 'entity7', type: factory.id('relType5') },
     { _id: factory.id('rel9'), from: 'entity7', to: 'entity4', type: factory.id('relType5') },
+    { _id: factory.id('rel10'), from: 'entity9', to: 'entity4', type: factory.id('relType5') },
   ],
   entities: [
     factory.entity('entity1', 'template1'),
@@ -35,6 +37,8 @@ const fixtures = {
     factory.entity('hub3'),
     factory.entity('entity7', 'template7'),
     factory.entity('entity8'),
+    factory.entity('entity9', 'template7'),
+    factory.entity('entity10', 'template1'),
   ],
   templates: [
     factory.template('template1', [
@@ -176,29 +180,35 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('getCandidateEntitiesForRelationship()', () => {
-  it('should return the entities that may need denormalization', async () => {
-    const result = await service.getCandidateEntitiesForRelationship(
-      factory.id('rel3').toHexString(),
-      'en'
-    );
-
-    expect(result.length).toBe(3);
-    expect(result).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          sharedId: 'entity4',
-          propertiesToBeMarked: ['relationshipProp3'],
-        }),
-        expect.objectContaining({
-          sharedId: 'entity1',
-          propertiesToBeMarked: ['relationshipProp1'],
-        }),
-        expect.objectContaining({
-          sharedId: 'entity7',
-          propertiesToBeMarked: ['relationshipProp2'],
-        }),
-      ])
-    );
+describe('denormalizeForNewRelationships()', () => {
+  describe('when executing on a newly created relationship', () => {
+    it('should mark the relationship fields as invalid in the entities', async () => {
+      await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
+      const entities = await testingDB.mongodb
+        ?.collection('entities')
+        .find({ 'obsoleteMetadata.0': { $exists: true } })
+        .toArray();
+      expect(entities?.length).toBe(4);
+      expect(entities).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            sharedId: 'entity1',
+            obsoleteMetadata: ['relationshipProp1'],
+          }),
+          expect.objectContaining({
+            sharedId: 'entity4',
+            obsoleteMetadata: ['relationshipProp3'],
+          }),
+          expect.objectContaining({
+            sharedId: 'entity7',
+            obsoleteMetadata: ['relationshipProp2'],
+          }),
+          expect.objectContaining({
+            sharedId: 'entity9',
+            obsoleteMetadata: ['relationshipProp2'],
+          }),
+        ])
+      );
+    });
   });
 });

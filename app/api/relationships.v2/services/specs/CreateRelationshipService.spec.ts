@@ -197,7 +197,7 @@ describe('createMultiple()', () => {
         { from: 'entity4', to: 'entity3', type: factory.id('rel4').toHexString() },
       ]);
 
-      expect(denormalizeForNewRelationshipsMock).toHaveBeenCalledWith(created);
+      expect(denormalizeForNewRelationshipsMock).toHaveBeenCalledWith(created.map(c => c._id));
     });
   });
 

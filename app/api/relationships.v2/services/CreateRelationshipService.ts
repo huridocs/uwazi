@@ -70,7 +70,9 @@ export class CreateRelationshipService {
         relationships.map(r => new Relationship(this.idGenerator.generate(), r.from, r.to, r.type))
       );
 
-      await this.denormalizationService.denormalizeForNewRelationships(insertedRelationships);
+      await this.denormalizationService.denormalizeForNewRelationships(
+        insertedRelationships.map(relationship => relationship._id)
+      );
 
       return insertedRelationships;
     });
