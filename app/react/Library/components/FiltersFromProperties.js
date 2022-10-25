@@ -82,6 +82,7 @@ const FiltersFromProperties = ({
         onChange,
       };
 
+      console.log(props);
       const propertyOptions = property.options ? prepareOptions(property, props.location) : [];
 
       let filter = <TextFilter {...commonProps} />;
