@@ -17,6 +17,8 @@ export class RetrieveStatsService {
     };
   }
 
+  private readonly NO_FILES_SIZE = 0;
+
   private async calculateStorageStats() {
     const [filesSize] = await this.db
       .collection('files')
@@ -42,7 +44,7 @@ export class RetrieveStatsService {
 
     return {
       total:
-        parseInt(filesSize?.totalSize || 0, 10) +
+        parseInt(filesSize?.totalSize || this.NO_FILES_SIZE, 10) +
         parseInt(elasticSize, 10) +
         parseInt(dbStats.storageSize, 10),
     };
