@@ -208,6 +208,7 @@ describe('syncWorker', () => {
             t1Thesauri1Select: [{ value: thesauri1Value2.toString() }],
             t1Relationship1: [{ value: newDoc3.toString() }],
           },
+          obsoleteMetadata: [],
           __v: 0,
           documents: [],
           attachments: [
@@ -236,6 +237,7 @@ describe('syncWorker', () => {
             t1Property1: [{ value: 'another doc property 1' }],
             t1Property2: [{ value: 'another doc property 2' }],
           },
+          obsoleteMetadata: [],
           __v: 0,
           documents: [],
           attachments: [
@@ -260,6 +262,7 @@ describe('syncWorker', () => {
           attachments: [],
           documents: [],
           metadata: {},
+          obsoleteMetadata: [],
           sharedId: 'newDoc3SharedId',
           template: template2,
           title: 'New Doc 3',
