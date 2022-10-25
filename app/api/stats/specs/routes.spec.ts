@@ -16,7 +16,7 @@ describe('Stats routes', () => {
   const app: Application = setUpApp(statsRoutes);
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'stats');
+    await testingEnvironment.setUp(fixtures, 'stats.routes');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
