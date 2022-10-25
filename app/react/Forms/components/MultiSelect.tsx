@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
+import { Link } from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
 import { t, Translate } from 'app/I18N';
@@ -62,6 +63,7 @@ interface MultiSelectState {
   filter: string;
   showAll: boolean;
   ui: { [k: string]: boolean };
+  serverSideRender: boolean;
 }
 
 const isNotAnEmptyGroup = (option: Option) => !option.options || option.options.length;
@@ -76,12 +78,16 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   constructor(props: MultiSelectProps<ValueType>) {
     super(props);
-    this.state = { showAll: props.showAll, ui: {}, filter: '' };
+    this.state = { showAll: props.showAll, ui: {}, filter: '', serverSideRender: true };
     this.filter = this.filter.bind(this);
     this.resetFilter = this.resetFilter.bind(this);
     this.showAll = this.showAll.bind(this);
     this.focusSearch = this.focusSearch.bind(this);
     this.searchInputRef = createRef<HTMLInputElement>();
+  }
+
+  componentDidMount(): void {
+    this.setState({ serverSideRender: false });
   }
 
   static getDerivedStateFromProps(props: any) {
@@ -344,8 +350,13 @@ abstract class MultiSelectBase<ValueType> extends Component<
         </span>
         <span className="multiselectItem-name">
           <CustomIcon className="item-icon" data={option.icon} />
-          {option[optionsLabel]}
+          {this.state.serverSideRender ? (
+            <Link to={option.url}>{option[optionsLabel]}</Link>
+          ) : (
+            option[optionsLabel]
+          )}
         </span>
+        &nbsp;
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
           {option.options && (
@@ -396,6 +407,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   renderOption(option: Option, index: number, groupIndex = '', disabled = false) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     const key = `${groupIndex}${index}`;
+
     return (
       <li
         className="multiselectItem"
@@ -440,6 +452,10 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   renderOptionsCount(totalOptions: Option[], renderedOptions: Option[]) {
+    if (this.state.serverSideRender) {
+      return;
+    }
+
     const { totalPossibleOptions } = this.props;
     let count = `${totalPossibleOptions - renderedOptions.length}`;
     if (totalPossibleOptions > 1000) {
@@ -500,7 +516,11 @@ abstract class MultiSelectBase<ValueType> extends Component<
     }
 
     let options = totalOptions.slice();
-    const tooManyOptions = !this.state.showAll && options.length > this.props.optionsToShow;
+
+    const tooManyOptions =
+      !this.state.showAll &&
+      options.length > this.props.optionsToShow &&
+      !this.state.serverSideRender;
 
     if (this.props.sort) {
       options = this.sort(options);

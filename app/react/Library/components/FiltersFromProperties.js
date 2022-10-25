@@ -13,7 +13,29 @@ import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
 
-const prepareOptions = property => {
+import { withRouter } from 'react-router';
+import rison from 'rison-node';
+
+const optionUrl = (value, name, query) => {
+  const q = rison.encode({
+    ...query,
+    filters: { ...query.filters, [name]: { values: [value] } },
+    from: 0,
+    limit: 30,
+    includeUnpublished: false,
+    order: 'desc',
+    sort: 'creationDate',
+    unpublished: false,
+    allAggregations: false,
+  });
+
+  return `/library/?q=${q}`;
+};
+
+const prepareOptions = (property, location) => {
+  const { q = '(filters:())' } = location.query;
+
+  const query = rison.decode(q);
   const filteredProperty = {
     ...property,
     options: property.options.filter(option => option.id !== 'any'),
@@ -25,15 +47,18 @@ const prepareOptions = property => {
         option.id === 'missing'
           ? t('System', 'No Label', undefined, false)
           : t(filteredProperty.content, option.label, undefined, false),
+      url: optionUrl(option.value, property.name, query),
     };
 
     if (option.options) {
       const translatedSubOptions = option.options.map(subOption => ({
         ...subOption,
         label: t(filteredProperty.content, subOption.label, undefined, false),
+        url: optionUrl(subOption.value, property.name, query),
       }));
       finalTranslatedOption.options = translatedSubOptions;
     }
+
     return finalTranslatedOption;
   });
 };
@@ -57,7 +82,7 @@ const FiltersFromProperties = ({
         onChange,
       };
 
-      const propertyOptions = property.options ? prepareOptions(property) : [];
+      const propertyOptions = property.options ? prepareOptions(property, props.location) : [];
 
       let filter = <TextFilter {...commonProps} />;
 
@@ -121,6 +146,7 @@ FiltersFromProperties.propTypes = {
   storeKey: PropTypes.string.isRequired,
   aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
   properties: PropTypes.array.isRequired,
+  location: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -133,4 +159,4 @@ export function mapStateToProps(state, props) {
 }
 
 export { FiltersFromProperties };
-export default connect(mapStateToProps)(FiltersFromProperties);
+export default connect(mapStateToProps)(withRouter(FiltersFromProperties));
