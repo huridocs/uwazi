@@ -1,5 +1,11 @@
 import { Db } from 'mongodb';
 import { elastic } from 'api/search';
+import { UserSchema } from 'shared/types/userType';
+
+type RoleCount = {
+  _id: UserSchema['role'];
+  count: number;
+};
 
 export class RetrieveStatsService {
   private readonly db: Db;
@@ -58,7 +64,7 @@ export class RetrieveStatsService {
   private async calculateUserStats() {
     const users = await this.db
       .collection('users')
-      .aggregate([{ $group: { _id: '$role', count: { $sum: 1 } } }])
+      .aggregate<RoleCount>([{ $group: { _id: '$role', count: { $sum: 1 } } }])
       .toArray();
 
     return users.reduce(
@@ -67,7 +73,7 @@ export class RetrieveStatsService {
         userStats.total += role.count;
         return userStats;
       },
-      { total: 0 }
+      { total: 0, admin: 0, editor: 0, collaborator: 0 }
     );
   }
 }

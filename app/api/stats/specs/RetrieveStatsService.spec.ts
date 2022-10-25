@@ -10,7 +10,6 @@ describe('RetrieveStats', () => {
   let db: Db;
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'stats');
     elasticMock = jest
       .spyOn(elastic.cat, 'indices')
       // @ts-ignore
@@ -20,6 +19,10 @@ describe('RetrieveStats', () => {
       // @ts-ignore
       storageSize: 15000,
     });
+  });
+
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures, 'stats');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -54,7 +57,9 @@ describe('RetrieveStats', () => {
     });
   });
 
-  it('retrieves elastic stats with proper format', () => {
+  it('retrieves elastic stats with proper format', async () => {
+    await new RetrieveStatsService(db).execute();
+
     expect(elasticMock).toHaveBeenCalledWith({
       pretty: true,
       format: 'application/json',
