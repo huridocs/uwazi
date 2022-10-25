@@ -71,41 +71,42 @@ const LibraryHeaderComponent = ({
               <SearchBar storeKey={storeKey} />
             </div>
           )}
-
-          <div className="sort-by">
-            <span className="documents-counter-sort">
-              <Translate>sorted by</Translate>
-            </span>
-            <SortButtons
-              sortCallback={searchDocuments}
-              selectedTemplates={filters.get('documentTypes')}
-              stateProperty={sortButtonsStateProperty}
-              storeKey={storeKey}
+          <div className="header-bottom">
+            <div className="sort-by">
+              <span className="documents-counter-sort">
+                <Translate>sorted by</Translate>
+              </span>
+              <SortButtons
+                sortCallback={searchDocuments}
+                selectedTemplates={filters.get('documentTypes')}
+                stateProperty={sortButtonsStateProperty}
+                storeKey={storeKey}
+              />
+              <NeedAuthorization>
+                <div className="select-all-documents">
+                  <button
+                    type="button"
+                    className="btn btn-default btn-xs"
+                    onClick={selectAllDocuments}
+                  >
+                    <Translate>Select all</Translate>
+                  </button>
+                </div>
+              </NeedAuthorization>
+            </div>
+            <LibraryModeToggleButtons
+              storeKey="library"
+              zoomIn={zoomIn}
+              zoomOut={zoomOut}
+              tableViewMode={tableViewMode}
+              zoomLevel={0}
+              searchUrl=""
+              showGeolocation={false}
             />
-            <NeedAuthorization>
-              <div className="select-all-documents">
-                <button
-                  type="button"
-                  className="btn btn-default btn-xs"
-                  onClick={selectAllDocuments}
-                >
-                  <Translate>Select all</Translate>
-                </button>
-              </div>
-            </NeedAuthorization>
             <div className="documents-counter">
               <span className="documents-counter-label">{counter}</span>
             </div>
           </div>
-          <LibraryModeToggleButtons
-            storeKey="library"
-            zoomIn={zoomIn}
-            zoomOut={zoomOut}
-            tableViewMode={tableViewMode}
-            zoomLevel={0}
-            searchUrl=""
-            showGeolocation={false}
-          />
         </div>
         <div className="close-toolbar-button">
           <button type="button" className="toggle-toolbar-button" onClick={toggleToolbarVisible}>

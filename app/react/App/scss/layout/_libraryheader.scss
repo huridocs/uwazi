@@ -81,4 +81,107 @@
   @media (min-width: 1024px) {
     background-color: transparent;
   }
+
+  .search-box {
+    position: relative;
+    display: block;
+    max-width: 380px;
+
+    @media (min-width: 768px) {
+      width: calc(max(100% - 400px, 380px));
+    }
+
+    @media (min-width: 1024px) {
+      width: calc(max(100% - 400px, 350px));
+    }
+
+    @media (min-width: 1180px) {
+      width: calc(max(100% - 400px, 380px));
+    }
+  }
+}
+
+.header-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+
+  .sort-by {
+    flex-grow: 3;
+    margin: 0 auto 5px 0;
+    justify-content: space-between;
+    height: 2em;
+    max-width: 400px;
+    margin-bottom: 15px;
+    .sort-buttons {
+      min-width: 200px;
+      width: 79%;
+    }
+    .sort-dropdown {
+      width: 90%;
+      max-width: 250px;
+    }
+  }
+
+  .documents-counter {
+    margin-bottom: 5px;
+  }
+
+  .list-view-mode {
+    right: 0px;
+    position: inherit;
+    display: inline-flex;
+    width: 70%;
+    min-width: 200px;
+    margin: 0px 0px 5px -10px;
+  }
+
+  .documents-counter {
+    flex-grow: 1;
+    width: 30%;
+    min-width: 120px;
+  }
+
+  @media (min-width: 768px) {
+    .sort-by {
+      flex-grow: 1;
+      margin: 0 auto 5px 0;
+      height: 2em;
+      max-width: 400px;
+      margin-bottom: 15px;
+
+      .sort-buttons {
+        width: 58%;
+      }
+    }
+
+    .list-view-mode {
+      position: absolute;
+      right: 0;
+      width: auto;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .sort-by {
+      flex-grow: 1;
+      margin: 0 auto 5px 0;
+      height: 2em;
+      max-width: 400px;
+      margin-bottom: 15px;
+
+      .sort-buttons {
+        width: 58%;
+      }
+    }
+
+    .list-view-mode {
+      position: absolute;
+      right: 0;
+      width: auto;
+    }
+  }
 }
