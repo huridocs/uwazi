@@ -10,10 +10,6 @@ describe('RetrieveStats', () => {
   let db: Db;
 
   beforeAll(async () => {
-    elasticMock = jest
-      .spyOn(elastic.cat, 'indices')
-      // @ts-ignore
-      .mockResolvedValue({ body: [{ 'store.size': '5000' }] });
     db = (await testingDB.connect()).db;
     jest.spyOn(db, 'stats').mockResolvedValue({
       // @ts-ignore
@@ -23,6 +19,14 @@ describe('RetrieveStats', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'stats');
+    elasticMock = jest
+      .spyOn(elastic.cat, 'indices')
+      // @ts-ignore
+      .mockResolvedValue({ body: [{ 'store.size': '5000' }] });
+  });
+
+  afterEach(() => {
+    elasticMock.mockReset();
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -30,12 +34,6 @@ describe('RetrieveStats', () => {
   it('calculates the aggregated stats when collection has files', async () => {
     const stats = await new RetrieveStatsService(db).execute();
 
-    expect(elasticMock).toHaveBeenCalledWith({
-      pretty: true,
-      format: 'application/json',
-      bytes: 'b',
-      h: 'store.size',
-    });
     expect(stats).toEqual({
       users: { total: 3, admin: 1, editor: 1, collaborator: 1 },
       entities: { total: 10 },
