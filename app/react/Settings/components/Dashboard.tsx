@@ -5,7 +5,7 @@ import api from 'app/utils/api';
 
 const formatBytes = (bytes: number) => {
   //Sourced from https://stackoverflow.com/questions/15900485
-  if (!+bytes) return '0 Bytes';
+  if (!+bytes || +bytes < 0) return '0 Bytes';
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const index = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${parseFloat((bytes / 1024 ** index).toFixed(2))} ${sizes[index]}`;
@@ -19,7 +19,7 @@ const Dashboard = () => {
     storage: { total: 0 },
   });
   const [loading, setLoading] = useState(true);
-  const [storage, setStorage] = useState('');
+  const [storage, setStorage] = useState('0 Bytes');
 
   useEffect(() => {
     api

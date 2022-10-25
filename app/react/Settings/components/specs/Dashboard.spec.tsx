@@ -79,12 +79,17 @@ describe('Dashboard', () => {
 
   describe('Storage report', () => {
     it.each`
-      bytes                | expectedValue
-      ${0}                 | ${'0 Bytes'}
-      ${1000}              | ${'1000 Bytes'}
-      ${5242880}           | ${'5 MB'}
-      ${6764573491.2}      | ${'6.3 GB'}
-      ${2764543491.243474} | ${'2.57 GB'}
+      bytes                  | expectedValue
+      ${0}                   | ${'0 Bytes'}
+      ${null}                | ${'0 Bytes'}
+      ${undefined}           | ${'0 Bytes'}
+      ${-36654}              | ${'0 Bytes'}
+      ${1000}                | ${'1000 Bytes'}
+      ${'3456'}              | ${'3.38 KB'}
+      ${5242880}             | ${'5 MB'}
+      ${2764543491.243474}   | ${'2.57 GB'}
+      ${'2764543491.243474'} | ${'2.57 GB'}
+      ${6764573491.2}        | ${'6.3 GB'}
     `(
       'should show the expected formatted value of $expectedValue for $bytes bytes',
       async ({ bytes, expectedValue }) => {
