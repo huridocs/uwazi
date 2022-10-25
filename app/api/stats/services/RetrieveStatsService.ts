@@ -48,13 +48,11 @@ export class RetrieveStatsService {
   }
 
   private async calculateEntityStats() {
-    const entitiesCount = await this.db.collection('entities').countDocuments();
-    return { total: entitiesCount };
+    return { total: await this.db.collection('entities').countDocuments() };
   }
 
   private async calculateFileStats() {
-    const filesCount = await this.db.collection('files').countDocuments();
-    return { total: filesCount };
+    return { total: await this.db.collection('files').countDocuments() };
   }
 
   private async calculateUserStats() {
