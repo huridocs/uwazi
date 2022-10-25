@@ -2,7 +2,7 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { createPartialMock } from 'api/common.v2/testing/createPartialMock';
+import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
@@ -26,13 +26,13 @@ const entityInLanguages = (langs: string[], id: string, template?: string) =>
 
 const validateAccessMock = jest.fn().mockResolvedValue(undefined);
 
-const authServiceMock = createPartialMock<AuthorizationService>({
+const authServiceMock = partialImplementation<AuthorizationService>({
   validateAccess: validateAccessMock,
 });
 
 const denormalizeForNewRelationshipsMock = jest.fn().mockResolvedValue(undefined);
 
-const denormalizationServiceMock = createPartialMock<DenormalizationService>({
+const denormalizationServiceMock = partialImplementation<DenormalizationService>({
   denormalizeForNewRelationships: denormalizeForNewRelationshipsMock,
 });
 

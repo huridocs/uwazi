@@ -1,4 +1,4 @@
-import { createPartialMock } from '../createPartialMock';
+import { partialImplementation } from '../partialImplementation';
 
 interface ToBeMocked {
   one: Function;
@@ -7,7 +7,7 @@ interface ToBeMocked {
 }
 
 const mockedFunction = () => {};
-const mock = createPartialMock<ToBeMocked>({
+const mock = partialImplementation<ToBeMocked>({
   one: mockedFunction,
   two: 2,
 });
