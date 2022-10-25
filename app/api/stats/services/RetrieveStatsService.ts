@@ -64,10 +64,10 @@ export class RetrieveStatsService {
       .toArray();
 
     return users.reduce(
-      (previousValue, currentValue) => {
-        previousValue[currentValue._id] = currentValue.count;
-        previousValue.total += currentValue.count;
-        return previousValue;
+      (userStats, role) => {
+        userStats[role._id] = role.count;
+        userStats.total += role.count;
+        return userStats;
       },
       { total: 0 }
     );
