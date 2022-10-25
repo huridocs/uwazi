@@ -82,6 +82,12 @@ const elastic = {
       );
     },
   },
+
+  cat: {
+    async indices(params?: RequestParams.CatIndices, options?: TransportRequestOptions) {
+      return elasticClient.cat.indices({ ...params, index: tenants.current().indexName }, options);
+    },
+  },
 };
 
 export { elastic, elasticClient };
