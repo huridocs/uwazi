@@ -6,8 +6,8 @@ import {
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { applicationEventsBus } from 'api/eventsbus';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
+import { search } from 'api/search';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { User } from 'api/users.v2/model/User';
 
@@ -17,6 +17,12 @@ import { CreateRelationshipService as GenericCreateRelationshipService } from '.
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { GetRelationshipsService as GenericGetRelationshipsService } from './GetRelationshipsService';
+
+const indexEntitiesCallback = async (sharedIds: string[]) => {
+  if (sharedIds.length) {
+    await search.indexEntities({ sharedId: { $in: sharedIds } });
+  }
+};
 
 const CreateRelationshipService = (user: User) => {
   const transactionManager = DefaultTransactionManager();
@@ -33,7 +39,7 @@ const CreateRelationshipService = (user: User) => {
     entitiesDS,
     templatesDS,
     transactionManager,
-    applicationEventsBus
+    indexEntitiesCallback
   );
 
   const service = new GenericCreateRelationshipService(
@@ -76,7 +82,7 @@ const DenormalizationService = () => {
     entitiesDS,
     templatesDS,
     transactionManager,
-    applicationEventsBus
+    indexEntitiesCallback
   );
 
   return service;

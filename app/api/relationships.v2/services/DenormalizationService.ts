@@ -1,12 +1,14 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { EventsBus } from 'api/eventsbus';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { RelationshipsCreatedEvent } from '../events/RelationshipsCreatedEvent';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
+
+interface IndexEntitiesCallback {
+  (sharedIds: string[]): Promise<void>;
+}
 
 export class DenormalizationService {
   private relationshipsDS: RelationshipsDataSource;
@@ -17,20 +19,20 @@ export class DenormalizationService {
 
   private transactionManager: TransactionManager;
 
-  private eventsBus: EventsBus;
+  private indexEntities: IndexEntitiesCallback;
 
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
     templatesDS: TemplatesDataSource,
     transactionManager: TransactionManager,
-    eventsBus: EventsBus
+    indexEntitiesCallback: IndexEntitiesCallback
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
     this.transactionManager = transactionManager;
-    this.eventsBus = eventsBus;
+    this.indexEntities = indexEntitiesCallback;
   }
 
   private async getCandidateEntities(
@@ -38,8 +40,7 @@ export class DenormalizationService {
     language: string
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
-
-    const entities: any[] = [];
+    const entities: { sharedId: string; propertiesToBeMarked: string[] }[] = [];
     await Promise.all(
       properties.map(async property =>
         Promise.all(
@@ -58,7 +59,7 @@ export class DenormalizationService {
     return entities;
   }
 
-  async getCandidateEntitiesForRelationship(_id: string, language: string): Promise<any[]> {
+  async getCandidateEntitiesForRelationship(_id: string, language: string) {
     const relationship = await this.relationshipsDS.getById([_id]).first();
 
     if (!relationship) throw new Error('missing relationship');
@@ -73,7 +74,7 @@ export class DenormalizationService {
     );
   }
 
-  async getCandidateEntitiesForEntity(sharedId: string, language: string): Promise<any[]> {
+  async getCandidateEntitiesForEntity(sharedId: string, language: string) {
     const entity = await this.entitiesDS.getByIds([sharedId]).first();
     if (!entity) throw new Error('missing entity');
     return this.getCandidateEntities(
@@ -97,12 +98,7 @@ export class DenormalizationService {
     await this.entitiesDS.markMetadataAsChanged(candidates);
 
     this.transactionManager.onCommitted(async () => {
-      await this.eventsBus.emit(
-        new RelationshipsCreatedEvent({
-          relationships,
-          markedEntities: candidates.map(c => c.sharedId),
-        })
-      );
+      await this.indexEntities(candidates.map(c => c.sharedId));
     });
   }
 }
