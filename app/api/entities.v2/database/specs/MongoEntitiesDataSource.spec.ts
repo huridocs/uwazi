@@ -59,47 +59,49 @@ afterAll(async () => {
 });
 
 describe('Relationship fields caching strategy', () => {
-  it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
-    const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
-    const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
-    const ds = new MongoEntitiesDataSource(
-      getConnection(),
-      relationshipsDsMock,
-      settingsDsMock,
-      new MongoTransactionManager(getClient())
-    );
+  describe('When invalidating some field cache', () => {
+    it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
+      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
+      const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const ds = new MongoEntitiesDataSource(
+        getConnection(),
+        relationshipsDsMock,
+        settingsDsMock,
+        new MongoTransactionManager(getClient())
+      );
 
-    await ds.markMetadataAsChanged([
-      { sharedId: 'entity1', propertiesToBeMarked: ['relProp1'] },
-      { sharedId: 'entity2', propertiesToBeMarked: ['relProp2'] },
-    ]);
+      await ds.markMetadataAsChanged([
+        { sharedId: 'entity1', propertiesToBeMarked: ['relProp1'] },
+        { sharedId: 'entity2', propertiesToBeMarked: ['relProp2'] },
+      ]);
 
-    const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
-    expect(entities).toMatchObject([
-      { sharedId: 'entity1', language: 'en', obsoleteMetadata: ['relProp1'] },
-      { sharedId: 'entity1', language: 'pt', obsoleteMetadata: ['relProp1'] },
-      { sharedId: 'entity2', language: 'en', obsoleteMetadata: ['relProp2'] },
-      { sharedId: 'entity2', language: 'pt', obsoleteMetadata: ['relProp2'] },
-      { sharedId: 'entity3', language: 'en', obsoleteMetadata: ['relProp3'] },
-      { sharedId: 'entity3', language: 'pt', obsoleteMetadata: ['relProp3'] },
-      { sharedId: 'entity4', language: 'en', obsoleteMetadata: ['relProp4'] },
-      { sharedId: 'entity4', language: 'pt', obsoleteMetadata: ['relProp4'] },
-    ]);
+      const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
+      expect(entities).toMatchObject([
+        { sharedId: 'entity1', language: 'en', obsoleteMetadata: ['relProp1'] },
+        { sharedId: 'entity1', language: 'pt', obsoleteMetadata: ['relProp1'] },
+        { sharedId: 'entity2', language: 'en', obsoleteMetadata: ['relProp2'] },
+        { sharedId: 'entity2', language: 'pt', obsoleteMetadata: ['relProp2'] },
+        { sharedId: 'entity3', language: 'en', obsoleteMetadata: ['relProp3'] },
+        { sharedId: 'entity3', language: 'pt', obsoleteMetadata: ['relProp3'] },
+        { sharedId: 'entity4', language: 'en', obsoleteMetadata: ['relProp4'] },
+        { sharedId: 'entity4', language: 'pt', obsoleteMetadata: ['relProp4'] },
+      ]);
+    });
   });
 
-  describe('when loading some entities', () => {
+  describe('When loading some entities', () => {
     let counter = 0;
     let entities: any[];
     beforeAll(async () => {
       const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({
         getByQuery(_query, lang) {
+          counter += 1;
           return partialImplementation<MongoResultSet<any, GraphQueryResult>>({
             all: async () =>
               Promise.resolve([
                 new GraphQueryResult([
                   {
-                    // eslint-disable-next-line no-plusplus
-                    sharedId: `calculated${++counter}-${lang}`,
+                    sharedId: `calculated${counter}-${lang}`,
                     title: `calculated${counter}-${lang}`,
                   },
                 ]),
@@ -186,7 +188,7 @@ describe('Relationship fields caching strategy', () => {
   });
 });
 
-describe('entitiesExist()', () => {
+describe('When checking for the existence of entities', () => {
   const cases = [
     { ids: [], expected: true },
     { ids: ['entity1'], expected: true },
@@ -196,7 +198,7 @@ describe('entitiesExist()', () => {
   ];
 
   it.each(cases)(
-    'should return $expected checking for the existence of entities with sharedIds in $ids',
+    'should return $expected checking for sharedIds in $ids',
     async ({ ids, expected }) => {
       const ds = new MongoEntitiesDataSource(
         getConnection(),
