@@ -260,7 +260,8 @@ describe('when the some operation throws a TransientTransactionError', () => {
       .runHandlingOnCommitted(async () => {
         checkpoints.push(1);
         if (!throwed) {
-          const error = new MongoError({ errorLabels: ['TransientTransactionError'] });
+          const error = new MongoError('TransientTransactionError');
+          error.addErrorLabel('TransientTransactionError');
           throwed = true;
           throw error;
         }
@@ -280,7 +281,9 @@ describe('when the commit operation throws a UnknownTransactionCommitResult', ()
     const commitTransactionMock = jest.fn().mockImplementation(async () => {
       if (!throwed) {
         throwed = true;
-        throw new MongoError({ errorLabels: ['UnknownTransactionCommitResult'] });
+        const error = new MongoError('UnknownTransactionCommitResult');
+        error.addErrorLabel('UnknownTransactionCommitResult');
+        throw error;
       }
     });
     const clientMock = {
