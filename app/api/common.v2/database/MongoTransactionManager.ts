@@ -84,7 +84,7 @@ export class MongoTransactionManager implements TransactionManager {
       await this.executeOnCommitHandlers(returnValue);
       return returnValue;
     } finally {
-      this.session.endSession();
+      await this.session.endSession();
     }
   }
 

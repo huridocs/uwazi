@@ -555,7 +555,6 @@ export default {
     };
     const queryLimit = limit ? { limit } : {};
     const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
-    await performNewRelationshipQueries(entities);
     return entities;
   },
 
