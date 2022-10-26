@@ -33,14 +33,14 @@ describe('entities get searchString', () => {
   describe('GET', () => {
     it('should have a validation', async () => {
       const { body } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ not_allowed_property: { key: 'value' } });
 
       expect(body.error).toBe('validation failed');
     });
 
     it('should return all entities for the default language and required links', async () => {
-      const { body } = await request(app).get('/api/v2/entities').expect(200);
+      const { body } = await request(app).get('/api/v2/search').expect(200);
 
       expect(body.data).toEqual([
         {
@@ -75,12 +75,12 @@ describe('entities get searchString', () => {
         },
       ]);
 
-      expect(body.links.self).toBe('/api/v2/entities');
+      expect(body.links.self).toBe('/api/v2/search');
     });
 
     it('should return all entities for the passed language', async () => {
       const { body } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .set('content-language', 'es')
         .query({ fields: ['title', 'sharedId', 'language'] })
         .expect(200);
@@ -107,7 +107,7 @@ describe('entities get searchString', () => {
 
     it('should return entities that match the searchString', async () => {
       const { body: bodyEn } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: 'search' } })
         .expect(200);
 
@@ -117,7 +117,7 @@ describe('entities get searchString', () => {
       ]);
 
       const { body: bodyEs } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: 'title:(search)' } })
         .set('content-language', 'es')
         .expect(200);
@@ -125,7 +125,7 @@ describe('entities get searchString', () => {
       expect(bodyEs.data).toEqual([expect.objectContaining({ title: 'titulo to search one' })]);
 
       const { body: bodyFull } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: 'unique' } })
         .expect(200);
 
@@ -136,7 +136,7 @@ describe('entities get searchString', () => {
 
     it('should allow multiple fullText queries', async () => {
       const { body } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: 'fullText:(unique) fullText:(exquisite)' } })
         .expect(200);
 
@@ -148,7 +148,7 @@ describe('entities get searchString', () => {
 
     it('should return entities that match the searchString, when it is a number', async () => {
       const { body: bodyEn } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: '2' } })
         .expect(200);
 
@@ -160,7 +160,7 @@ describe('entities get searchString', () => {
 
     it('should still search with simple query for no valid lucene syntax', async () => {
       const { body } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ filter: { searchString: 'title:(title OR)' }, page: { limit: 2 } });
 
       expect(body.data).toEqual([
@@ -171,7 +171,7 @@ describe('entities get searchString', () => {
 
     it('should return only the requested fields', async () => {
       const { body } = await request(app)
-        .get('/api/v2/entities')
+        .get('/api/v2/search')
         .query({ fields: ['sharedId', 'language'] });
       expect(body.data).toEqual([
         {
@@ -190,7 +190,7 @@ describe('entities get searchString', () => {
       it('should handle errors on POST', async () => {
         spyOn(elastic, 'search').and.throwError('Error for test');
         spyOn(errorLog, 'error');
-        const { body, status } = await request(app).get('/api/v2/entities');
+        const { body, status } = await request(app).get('/api/v2/search');
 
         expect(status).toBe(500);
         expect(body.error).toContain('Error for test');
