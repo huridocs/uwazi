@@ -104,10 +104,10 @@ describe('files routes', () => {
         language: 'eng',
       };
       const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
-      expect(caller).toEmitEventWith(FileCreatedEvent, {
+      await expect(caller).toEmitEventWith(FileCreatedEvent, {
         newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
       });
-      expect(caller).not.toEmitEvent(FileUpdatedEvent);
+      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
 
     describe('when external url file', () => {

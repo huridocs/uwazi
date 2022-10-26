@@ -72,8 +72,8 @@ const toEmitEventWith = async <T>(
 };
 
 interface CustomMatchers<R = unknown> {
-  toEmitEvent<T>(event: EventConstructor<T>): R;
-  toEmitEventWith<T>(event: EventConstructor<T>, eventData: any): R;
+  toEmitEvent<T>(event: EventConstructor<T>): Promise<R>;
+  toEmitEventWith<T>(event: EventConstructor<T>, eventData: any): Promise<R>;
 }
 
 declare global {

@@ -25,7 +25,7 @@ type UwaziReq = Request & { query: SearchQuery };
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
 const link = (limit: number, offset: number) =>
-  `/api/v2/entities?${qs.stringify({
+  `/api/v2/search?${qs.stringify({
     page: { limit, offset },
   })}`;
 
@@ -54,7 +54,7 @@ const pagination = (currentUrl: string, totalResults: number, page?: Page) => {
 
 const searchRoutes = (app: Application) => {
   app.get(
-    '/api/v2/entities',
+    '/api/v2/search',
     validateAndCoerceRequest({
       type: 'object',
       properties: {
