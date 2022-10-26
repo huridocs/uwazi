@@ -29,10 +29,11 @@ export default class Geolocation extends Component {
     this.setState({ currentLatitude: newValue.lat, currentLongitude: newValue.lon });
     const { onChange, value } = this.props;
 
-    if (!isCoordinateValid(newValue.lat) || !isCoordinateValid(newValue.lon)) {
+    if (!newValue.lat && !newValue.lon) {
       onChange(this.emptyValue);
       return;
     }
+
     const valueToSend = value.slice(1);
     valueToSend.unshift(newValue);
     onChange(valueToSend);
