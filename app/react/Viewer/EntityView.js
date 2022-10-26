@@ -13,8 +13,6 @@ import EntityViewer from '../Entities/components/EntityViewer';
 import entitiesAPI from '../Entities/EntitiesAPI';
 import { prepareAssets } from './pageAssets';
 
-import * as uiActions from '../Entities/actions/uiActions';
-
 class Entity extends Component {
   static async requestState(requestParams, state) {
     const [[entity], relationTypes, [connectionsGroups, searchResults, sort, filters]] =
@@ -67,7 +65,6 @@ class Entity extends Component {
   }
 
   componentWillUnmount() {
-    this.context.store.dispatch(uiActions.resetUserSelectedTab());
     this.context.store.dispatch(actions.unset('page/pageView'));
     this.context.store.dispatch(actions.unset('page/itemLists'));
     this.context.store.dispatch(actions.unset('page/datasets'));

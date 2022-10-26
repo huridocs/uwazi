@@ -194,6 +194,7 @@ const routes = (
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
     <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
     <Route path="entity/:sharedId" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="entity/:sharedId/:tabView" component={ViewerRoute} onEnter={onEnter} />
     <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
     <Route path="page/:sharedId/:slug" component={PageView} onEnter={onEnter} />
     <Route

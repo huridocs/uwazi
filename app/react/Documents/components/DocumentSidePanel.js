@@ -9,7 +9,7 @@ import './scss/toc.scss';
 
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
-import { t, Translate } from 'app/I18N';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import Connections from 'app/Viewer/components/ConnectionsList';
@@ -148,7 +148,13 @@ class DocumentSidePanel extends Component {
       );
     }
 
-    const { excludeConnectionsTab, connectionsGroups, isTargetDoc, references } = this.props;
+    const {
+      excludeConnectionsTab,
+      connectionsGroups,
+      isTargetDoc,
+      references,
+      currentSidepanelView,
+    } = this.props;
 
     const summary = connectionsGroups.reduce(
       (summaryData, g) => {
@@ -183,10 +189,22 @@ class DocumentSidePanel extends Component {
                         aria-label={t('System', 'Semantic search results', null, false)}
                         component="div"
                       >
-                        <Icon icon="flask" />
-                        <span className="tab-link-tooltip">
-                          <Translate>Semantic search results</Translate>
-                        </span>
+                        <ShowIf if={currentSidepanelView === 'entity'}>
+                          <I18NLink to={`/entity/${doc.get('sharedId')}/semantic-search-results`}>
+                            <Icon icon="flask" />
+                            <span className="tab-link-tooltip">
+                              <Translate>Semantic search results</Translate>
+                            </span>
+                          </I18NLink>
+                        </ShowIf>
+                        <ShowIf if={currentSidepanelView === 'library'}>
+                          <>
+                            <Icon icon="flask" />
+                            <span className="tab-link-tooltip">
+                              <Translate>Semantic search results</Translate>
+                            </span>
+                          </>
+                        </ShowIf>
                       </TabLink>
                     </li>
                   );
@@ -203,7 +221,14 @@ class DocumentSidePanel extends Component {
                         aria-label={t('System', 'Search text', null, false)}
                         component="div"
                       >
-                        <SnippetsTab storeKey={this.props.storeKey} />
+                        <ShowIf if={currentSidepanelView === 'entity'}>
+                          <I18NLink to={`/entity/${doc.get('sharedId')}/text-search`}>
+                            <SnippetsTab storeKey={this.props.storeKey} />
+                          </I18NLink>
+                        </ShowIf>
+                        <ShowIf if={currentSidepanelView === 'library'}>
+                          <SnippetsTab storeKey={this.props.storeKey} />
+                        </ShowIf>
                       </TabLink>
                     </li>
                   );
@@ -220,8 +245,22 @@ class DocumentSidePanel extends Component {
                         aria-label={t('System', 'Table of Contents', null, false)}
                         component="div"
                       >
-                        <Icon icon="font" />
-                        <span className="tab-link-tooltip">{t('System', 'Table of Contents')}</span>
+                        <ShowIf if={currentSidepanelView === 'entity'}>
+                          <I18NLink to={`/entity/${doc.get('sharedId')}/toc`}>
+                            <Icon icon="font" />
+                            <span className="tab-link-tooltip">
+                              {t('System', 'Table of Contents')}
+                            </span>
+                          </I18NLink>
+                        </ShowIf>
+                        <ShowIf if={currentSidepanelView === 'library'}>
+                          <>
+                            <Icon icon="font" />
+                            <span className="tab-link-tooltip">
+                              {t('System', 'Table of Contents')}
+                            </span>
+                          </>
+                        </ShowIf>
                       </TabLink>
                     </li>
                   );
@@ -239,9 +278,20 @@ class DocumentSidePanel extends Component {
                         aria-label={t('System', 'References', null, false)}
                         component="div"
                       >
-                        <Icon icon="sitemap" />
-                        <span className="connectionsNumber">{references.size}</span>
-                        <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                        <ShowIf if={currentSidepanelView === 'entity'}>
+                          <I18NLink to={`/entity/${doc.get('sharedId')}/references`}>
+                            <Icon icon="sitemap" />
+                            <span className="connectionsNumber">{references.size}</span>
+                            <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                          </I18NLink>
+                        </ShowIf>
+                        <ShowIf if={currentSidepanelView === 'library'}>
+                          <>
+                            <Icon icon="sitemap" />
+                            <span className="connectionsNumber">{references.size}</span>
+                            <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                          </>
+                        </ShowIf>
                       </TabLink>
                     </li>
                   );
@@ -263,8 +313,18 @@ class DocumentSidePanel extends Component {
                   aria-label={t('System', 'Info', null, false)}
                   component="div"
                 >
-                  <Icon icon="info-circle" />
-                  <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                  <ShowIf if={currentSidepanelView === 'entity'}>
+                    <I18NLink to={`/entity/${doc.get('sharedId')}/metadata`}>
+                      <Icon icon="info-circle" />
+                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    </I18NLink>
+                  </ShowIf>
+                  <ShowIf if={currentSidepanelView === 'library'}>
+                    <>
+                      <Icon icon="info-circle" />
+                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    </>
+                  </ShowIf>
                 </TabLink>
               </li>
               {(() => {
@@ -278,9 +338,20 @@ class DocumentSidePanel extends Component {
                         aria-label={t('System', 'Relationships', null, false)}
                         component="div"
                       >
-                        <Icon icon="exchange-alt" />
-                        <span className="connectionsNumber">{summary.totalConnections}</span>
-                        <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                        <ShowIf if={currentSidepanelView === 'entity'}>
+                          <I18NLink to={`/entity/${doc.get('sharedId')}/relationships`}>
+                            <Icon icon="exchange-alt" />
+                            <span className="connectionsNumber">{summary.totalConnections}</span>
+                            <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                          </I18NLink>
+                        </ShowIf>
+                        <ShowIf if={currentSidepanelView === 'library'}>
+                          <>
+                            <Icon icon="exchange-alt" />
+                            <span className="connectionsNumber">{summary.totalConnections}</span>
+                            <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                          </>
+                        </ShowIf>
                       </TabLink>
                     </li>
                   );
@@ -576,6 +647,7 @@ DocumentSidePanel.propTypes = {
   excludeConnectionsTab: PropTypes.bool.isRequired,
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
+  locale: PropTypes.string,
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -606,6 +678,7 @@ const mapStateToProps = (state, ownProps) => {
     relationships: ownProps.references,
     defaultLanguage,
     templates: state.templates,
+    locale: state.locale,
     formData: state[ownProps.storeKey].sidepanel.metadata,
     currentSidepanelView: state.library.sidepanel.view,
   };
