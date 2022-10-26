@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 import Doc from 'app/Library/components/Doc';
-import DropdownList from 'app/Forms/components/DropdownList';
+import DropdownList from 'react-widgets/lib/DropdownList';
 
 import { RightRelationship } from '../RightRelationship';
 import HubRelationshipMetadata from '../HubRelationshipMetadata';

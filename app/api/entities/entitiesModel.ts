@@ -29,7 +29,7 @@ const mongoSchema = new mongoose.Schema(
     permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     obsoleteMetadata: { type: [String] },
   },
-  { emitIndexErrors: true, minimize: false }
+  { minimize: false }
 );
 
 //mongodb types not updated yet for language_override?

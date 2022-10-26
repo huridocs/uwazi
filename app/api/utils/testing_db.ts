@@ -1,5 +1,5 @@
 import mongoose, { Connection } from 'mongoose';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { PageType } from 'shared/types/pageType';
@@ -8,7 +8,6 @@ import { models } from 'api/odm/model';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import uniqueID from 'shared/uniqueID';
@@ -18,7 +17,6 @@ import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import path from 'path';
 
-mongoose.set('useFindAndModify', false);
 mongoose.Promise = Promise;
 let connected = false;
 let mongodb: Db;
@@ -80,7 +78,7 @@ const testingDB: {
   connect: (options?: { defaultTenant: boolean } | undefined) => Promise<Connection>;
   disconnect: () => Promise<void>;
   tearDown: () => Promise<void>;
-  id: (id?: string | undefined) => ObjectIdSchema;
+  id: (id?: string | undefined) => ObjectId;
   clear: (collections?: string[] | undefined) => Promise<void>;
   /**
    * @deprecated
@@ -132,7 +130,7 @@ const testingDB: {
   },
 
   id(id = undefined) {
-    return mongoose.Types.ObjectId(id);
+    return new ObjectId(id);
   },
 
   async clear(collections = undefined) {

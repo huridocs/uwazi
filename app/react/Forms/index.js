@@ -1,3 +1,4 @@
+import DropdownList from 'react-widgets/lib/DropdownList';
 import Select from './components/Select';
 import DatePicker from './components/DatePicker';
 import Captcha from './components/Captcha';
@@ -10,7 +11,6 @@ import Nested from './components/Nested';
 import NestedMultiselect from './components/NestedMultiselect';
 import MultiDate from './components/MultiDate';
 import MultiDateRange from './components/MultiDateRange';
-import DropdownList from './components/DropdownList';
 import IconSelector from './components/IconSelector';
 import Numeric from './components/Numeric';
 import NumericRange from './components/NumericRange';

@@ -762,7 +762,7 @@ describe('relationships', () => {
       expect(
         hub7Connections.filter(c => c._id.toString() === connectionID1.toString()).length
       ).toBe(0);
-      expect(response.ok).toBe(1);
+      expect(response.acknowledged).toBe(true);
     });
 
     it('should not leave a lone connection in the hub', async () => {

@@ -274,9 +274,9 @@ describe('syncWorker', () => {
   it('should sync files belonging to the entities synced', async () => {
     await runAllTenants();
     await tenants.run(async () => {
-      const syncedFiles = await files.get();
+      const syncedFiles = await files.get({}, '+fullText');
       expect(syncedFiles).toMatchObject([
-        { entity: 'newDoc1SharedId', type: 'attachment' },
+        { entity: 'newDoc1SharedId', type: 'attachment', fullText: { 1: 'first page' } },
         { entity: 'entitytest.txt', type: 'attachment' },
         { entity: 'newDoc1SharedId', type: 'attachment' },
         { type: 'custom' },

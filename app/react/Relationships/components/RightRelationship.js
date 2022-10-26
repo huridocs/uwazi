@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
-import DropdownList from 'app/Forms/components/DropdownList';
+import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '../actions/actions';
 import * as uiActions from '../actions/uiActions';
 import HubRelationshipMetadata from './HubRelationshipMetadata';
