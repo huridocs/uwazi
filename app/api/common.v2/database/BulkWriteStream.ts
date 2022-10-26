@@ -1,5 +1,6 @@
 import {
   BulkWriteOperation,
+  BulkWriteUpdateOperation,
   ClientSession,
   Collection,
   FilterQuery,
@@ -67,7 +68,7 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
     await this.check();
   }
 
-  async update(
+  async updateOne(
     filter: FilterQuery<CollSchema>,
     update: UpdateQuery<CollSchema>,
     upsert?: boolean,
@@ -75,6 +76,15 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
     arrayFilters?: object[]
   ) {
     this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters } });
+    await this.check();
+  }
+
+  async updateMany(
+    filter: FilterQuery<CollSchema>,
+    update: UpdateQuery<CollSchema>,
+    options: Omit<BulkWriteUpdateOperation<CollSchema>, 'filter' | 'update'> = {}
+  ) {
+    this.actions.push({ updateMany: { filter, update, ...options } });
     await this.check();
   }
 

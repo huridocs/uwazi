@@ -23,6 +23,7 @@ const checkValues = async (expectedValues: number[]) => {
 
 const stackLimit = 5;
 
+// eslint-disable-next-line max-statements
 describe('BulkWriteStream', () => {
   let stream: BulkWriteStream<NumberValueType>;
 
@@ -51,16 +52,22 @@ describe('BulkWriteStream', () => {
     await checkValues([0]);
   });
 
-  it('should be able to update', async () => {
-    await stream.update({ value: 0 }, { $set: { value: 99 } });
+  it('should be able to update one', async () => {
+    await stream.updateOne({ value: 0 }, { $set: { value: 99 } });
     await stream.flush();
     await checkValues([-1, 99]);
+  });
+
+  it('should be able to update many', async () => {
+    await stream.updateMany({ value: { $lt: 2 } }, { $set: { value: 99 } });
+    await stream.flush();
+    await checkValues([99, 99]);
   });
 
   it('should be able to mix cases', async () => {
     await stream.insert(newValues[0]);
     await stream.delete({ value: -1 });
-    await stream.update({ value: 0 }, { $set: { value: 99 } });
+    await stream.updateOne({ value: 0 }, { $set: { value: 99 } });
     await stream.flush();
     await checkValues([99, 1]);
   });
@@ -72,7 +79,7 @@ describe('BulkWriteStream', () => {
     await stream.delete({ value: -1 });
     expect(stream.actionCount).toBe(2);
     await stream.insert(newValues[2]);
-    await stream.update({ value: 0 }, { $set: { value: 99 } });
+    await stream.updateOne({ value: 0 }, { $set: { value: 99 } });
     await stream.flush();
     expect(stream.actionCount).toBe(0);
   });

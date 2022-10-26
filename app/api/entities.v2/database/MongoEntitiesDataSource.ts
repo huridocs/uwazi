@@ -50,7 +50,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
             label: targetEntity.title,
           };
         });
-        await stream.update(
+        await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
           { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
         );
@@ -60,7 +60,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
       mappedMetadata[property.name] = entity.metadata[property.name];
     }) || []
   );
-  await stream.update(
+  await stream.updateOne(
     { sharedId: entity.sharedId, language: entity.language },
     { $set: { obsoleteMetadata: [] } }
   );
@@ -110,7 +110,10 @@ export class MongoEntitiesDataSource
       for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {
         const prop = data.propertiesToBeMarked[j];
         // eslint-disable-next-line no-await-in-loop
-        await stream.update({ sharedId: data.sharedId }, { $addToSet: { obsoleteMetadata: prop } });
+        await stream.updateMany(
+          { sharedId: data.sharedId },
+          { $addToSet: { obsoleteMetadata: prop } }
+        );
       }
     }
     await stream.flush();

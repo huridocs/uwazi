@@ -12,6 +12,9 @@ import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
 
+const entityInLanguages = (langs: string[], id: string, template?: string) =>
+  langs.map(lang => factory.entity(id, template, {}, { language: lang }));
+
 const fixtures = {
   relationships: [
     { _id: factory.id('rel1'), from: 'entity1', to: 'hub1', type: factory.id('nullType') },
@@ -26,19 +29,19 @@ const fixtures = {
     { _id: factory.id('rel10'), from: 'entity9', to: 'entity4', type: factory.id('relType5') },
   ],
   entities: [
-    factory.entity('entity1', 'template1'),
-    factory.entity('entity2'),
-    factory.entity('hub1', 'formerHubsTemplate'),
-    factory.entity('entity3', 'template2'),
-    factory.entity('entity4', 'template4'),
-    factory.entity('hub2', 'formerHubsTemplate'),
-    factory.entity('entity5', 'template2'),
-    factory.entity('entity6', 'template3'),
-    factory.entity('hub3'),
-    factory.entity('entity7', 'template7'),
-    factory.entity('entity8'),
-    factory.entity('entity9', 'template7'),
-    factory.entity('entity10', 'template1'),
+    ...entityInLanguages(['en', 'es'], 'entity1', 'template1'),
+    ...entityInLanguages(['en', 'es'], 'entity2'),
+    ...entityInLanguages(['en', 'es'], 'hub1', 'formerHubsTemplate'),
+    ...entityInLanguages(['en', 'es'], 'entity3', 'template2'),
+    ...entityInLanguages(['en', 'es'], 'entity4', 'template4'),
+    ...entityInLanguages(['en', 'es'], 'hub2', 'formerHubsTemplate'),
+    ...entityInLanguages(['en', 'es'], 'entity5', 'template2'),
+    ...entityInLanguages(['en', 'es'], 'entity6', 'template3'),
+    ...entityInLanguages(['en', 'es'], 'hub3'),
+    ...entityInLanguages(['en', 'es'], 'entity7', 'template7'),
+    ...entityInLanguages(['en', 'es'], 'entity8'),
+    ...entityInLanguages(['en', 'es'], 'entity9', 'template7'),
+    ...entityInLanguages(['en', 'es'], 'entity10', 'template1'),
   ],
   templates: [
     factory.template('template1', [
@@ -182,33 +185,36 @@ afterAll(async () => {
 
 describe('denormalizeForNewRelationships()', () => {
   describe('when executing on a newly created relationship', () => {
-    it('should mark the relationship fields as invalid in the entities', async () => {
-      await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
-      const entities = await testingDB.mongodb
-        ?.collection('entities')
-        .find({ 'obsoleteMetadata.0': { $exists: true } })
-        .toArray();
-      expect(entities?.length).toBe(4);
-      expect(entities).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            sharedId: 'entity1',
-            obsoleteMetadata: ['relationshipProp1'],
-          }),
-          expect.objectContaining({
-            sharedId: 'entity4',
-            obsoleteMetadata: ['relationshipProp3'],
-          }),
-          expect.objectContaining({
-            sharedId: 'entity7',
-            obsoleteMetadata: ['relationshipProp2'],
-          }),
-          expect.objectContaining({
-            sharedId: 'entity9',
-            obsoleteMetadata: ['relationshipProp2'],
-          }),
-        ])
-      );
-    });
+    it.each(['en', 'es'])(
+      'should mark the relationship fields as invalid in the entities in "%s"',
+      async language => {
+        await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
+        const entities = await testingDB.mongodb
+          ?.collection('entities')
+          .find({ language, 'obsoleteMetadata.0': { $exists: true } })
+          .toArray();
+        expect(entities?.length).toBe(4);
+        expect(entities).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              sharedId: 'entity1',
+              obsoleteMetadata: ['relationshipProp1'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity4',
+              obsoleteMetadata: ['relationshipProp3'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity7',
+              obsoleteMetadata: ['relationshipProp2'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity9',
+              obsoleteMetadata: ['relationshipProp2'],
+            }),
+          ])
+        );
+      }
+    );
   });
 });
