@@ -193,7 +193,7 @@ describe('i18n translations routes', () => {
     });
 
     describe('api/translations/languages', () => {
-      it('should save the translation', async () => {
+      it('should return the saved translation', async () => {
         const chineseCsv = `Key,Chinese
       Search,搜索`;
 
@@ -445,6 +445,65 @@ describe('i18n translations routes', () => {
           .send({ context: 'context' })
           .expect(200);
         expect(loadTranslationsMock).toHaveBeenCalledWith('filder/filename.ext', 'context');
+      });
+    });
+  });
+
+  describe('DELETE', () => {
+    describe('api/translations/languages', () => {
+      it('should return the deleted translations', async () => {
+        const response = await request(app).delete('/api/translations/languages?key=es').send();
+
+        expect(response.body).toEqual({
+          _id: expect.anything(),
+          filters: [],
+          languages: [
+            {
+              _id: expect.anything(),
+              default: true,
+              key: 'en',
+              label: 'English',
+            },
+          ],
+          links: [],
+          mapStartingPoint: [
+            {
+              lat: 46,
+              lon: 6,
+            },
+          ],
+        });
+        expect(iosocket.emit.mock.calls).toEqual([
+          [
+            'updateSettings',
+            {
+              _id: expect.anything(),
+              filters: [],
+              languages: [
+                {
+                  _id: expect.anything(),
+                  default: true,
+                  key: 'en',
+                  label: 'English',
+                },
+              ],
+              links: [],
+              mapStartingPoint: [
+                {
+                  lat: 46,
+                  lon: 6,
+                },
+              ],
+            },
+          ],
+          [
+            'translationsChange',
+            {
+              acknowledged: true,
+              deletedCount: 1,
+            },
+          ],
+        ]);
       });
     });
   });
