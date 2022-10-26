@@ -647,7 +647,6 @@ DocumentSidePanel.propTypes = {
   excludeConnectionsTab: PropTypes.bool.isRequired,
   storeKey: PropTypes.string.isRequired,
   raw: PropTypes.bool,
-  locale: PropTypes.string,
   file: PropTypes.object,
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -678,7 +677,6 @@ const mapStateToProps = (state, ownProps) => {
     relationships: ownProps.references,
     defaultLanguage,
     templates: state.templates,
-    locale: state.locale,
     formData: state[ownProps.storeKey].sidepanel.metadata,
     currentSidepanelView: state.library.sidepanel.view,
   };

@@ -47,9 +47,10 @@ class ViewerRoute extends RouteHandler {
   }
 
   selectTab({ tabView }) {
-    if (!tabView) tabView = 'metadata';
-    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tabView));
-    this.context.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
+    let tab = tabView;
+    if (!tab) tab = 'metadata';
+    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tab));
+    this.context.store.dispatch(showTab(tab === 'metadata' ? 'info' : tab));
   }
 
   render() {
