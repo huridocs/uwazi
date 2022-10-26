@@ -23,7 +23,7 @@ describe('Settings routes', () => {
   const app: Application = setUpApp(settingsRoutes);
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockResolvedValue();
     const elasticIndex = 'settings_index';
     await testingEnvironment.setUp(fixtures, elasticIndex);
   });
@@ -74,7 +74,7 @@ describe('Settings routes', () => {
       });
 
       it('should only migrate in the newNameGeneration false to true scenario', async () => {
-        spyOn(templates, 'save').and.callFake(async () => Promise.resolve());
+        jest.spyOn(templates, 'save');
         await settingsModel.save({ ...(await settings.get()), newNameGeneration: true });
 
         await request(app).post('/api/settings').send({}).expect(200);
