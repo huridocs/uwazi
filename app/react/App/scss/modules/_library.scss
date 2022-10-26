@@ -117,75 +117,6 @@
     }
   }
 
-  .hidden-columns-dropdown {
-    margin: 4px;
-    width: 50px;
-
-    .rw-dropdown-list {
-      width: 177px;
-
-      .rw-widget-picker {
-        width: 50px;
-        height: 37px;
-
-        @media (min-width: 600px) {
-          width: 100%;
-        }
-      }
-
-      .rw-popup-container {
-        .rw-popup-transition {
-          .rw-popup {
-            width: 200px;
-            padding-left: 5px;
-            padding-right: 5px;
-
-            @media (min-width: 600px) {
-              width: 300px;
-            }
-
-            .rw-list {
-              max-height: 58vh;
-
-              @media (min-width: 700px) {
-                max-height: 72vh;
-              }
-            }
-          }
-        }
-
-        .rw-filter-input {
-          width: calc(100% - 8px);
-          left: 0;
-        }
-      }
-
-      .rw-input svg,
-      li input {
-        margin-right: 7px;
-        margin-left: 2px;
-      }
-
-      input {
-        padding-left: 4px;
-      }
-
-      li {
-        padding-top: 5px;
-        padding-bottom: 5px;
-      }
-    }
-
-    .columns-hint {
-      cursor: pointer;
-    }
-
-    @media (min-width: 600px) {
-      overflow: visible;
-      width: 177px;
-    }
-  }
-
   @mixin mobileFilterBtn() {
     .btn {
       width: 40px;
@@ -208,7 +139,7 @@
     }
     &.only-mobile {
       @include mobileFilterBtn;
-      @media (min-width: 1023px) {
+      @media (min-width: 1024px) {
         display: none;
       }
     }
@@ -223,7 +154,7 @@
           display: none;
         }
       }
-      @media (max-width: 600px) {
+      @media (max-width: 768px) {
         @include mobileFilterBtn;
       }
     }

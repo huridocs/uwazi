@@ -8,25 +8,13 @@ import { showFilters } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
-import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 export class LibraryModeToggleButtons extends Component {
   render() {
-    const {
-      zoomLevel,
-      zoomOut,
-      zoomIn,
-      showGeolocation,
-      searchUrl,
-      storeKey,
-      tableViewMode,
-      mapViewMode,
-    } = this.props;
+    const { zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl, tableViewMode, mapViewMode } =
+      this.props;
     return (
       <div className="list-view-mode">
-        {tableViewMode && (
-          <HiddenColumnsDropdown className="table-view-column-selector" storeKey={storeKey} />
-        )}
         {!mapViewMode && (
           <div
             className={`list-view-mode-zoom list-view-buttons-zoom-${zoomLevel} buttons-group ${
@@ -107,7 +95,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomIn: PropTypes.func,
   zoomOut: PropTypes.func,
   zoomLevel: PropTypes.number.isRequired,
-  storeKey: PropTypes.string.isRequired,
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
   showFilters: PropTypes.func,

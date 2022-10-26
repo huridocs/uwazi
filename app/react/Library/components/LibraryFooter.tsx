@@ -24,7 +24,7 @@ interface LibraryFooterActions {
 type LibraryFooterProps = LibraryFooterActions & LibraryFooterOwnProps;
 
 const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: LibraryFooterProps) => {
-  const [footerVisible, setFooterVisible] = useState(true);
+  const [footerVisible, setFooterVisible] = useState(false);
   const toggleFooterVisible = () => {
     setFooterVisible(!footerVisible);
   };

@@ -13,6 +13,7 @@ import {
 } from 'app/Library/actions/libraryActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
+import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 interface LibraryHeaderOwnProps {
   storeKey: 'library' | 'uploads';
@@ -103,6 +104,7 @@ const LibraryHeaderComponent = ({
               searchUrl=""
               showGeolocation={false}
             />
+            {tableViewMode && <HiddenColumnsDropdown />}
             <div className="documents-counter">
               <span className="documents-counter-label">{counter}</span>
             </div>
