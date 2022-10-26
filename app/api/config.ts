@@ -34,7 +34,7 @@ export const config = {
 
   DBHOST: MONGO_URI || onlyDBHOST(),
 
-  mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 10,
+  mongo_connection_pool_size: Number(MONGO_CONNECTION_POOL_SIZE) || 5,
 
   rootPath,
 
