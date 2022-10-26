@@ -52,49 +52,43 @@ describe('when getting the relationships for an entity', () => {
     const page1 = await (await service.getByEntity('entity1')).page(1, 2);
     const page2 = await (await service.getByEntity('entity1')).page(2, 2);
 
-    expect(page1).toEqual({
-      data: [
-        expect.objectContaining({
-          _id: factory.id('rel1').toHexString(),
-          from: {
-            sharedId: 'entity1',
-            title: 'entity1',
-          },
-          to: {
-            sharedId: 'entity2',
-            title: 'entity2',
-          },
-        }),
-        expect.objectContaining({
-          _id: factory.id('rel5').toHexString(),
-          from: {
-            sharedId: 'entity4',
-            title: 'entity4',
-          },
-          to: {
-            sharedId: 'entity1',
-            title: 'entity1',
-          },
-        }),
-      ],
-      total: 3,
-    });
+    expect(page1).toEqual([
+      expect.objectContaining({
+        _id: factory.id('rel1').toHexString(),
+        from: {
+          sharedId: 'entity1',
+          title: 'entity1',
+        },
+        to: {
+          sharedId: 'entity2',
+          title: 'entity2',
+        },
+      }),
+      expect.objectContaining({
+        _id: factory.id('rel5').toHexString(),
+        from: {
+          sharedId: 'entity4',
+          title: 'entity4',
+        },
+        to: {
+          sharedId: 'entity1',
+          title: 'entity1',
+        },
+      }),
+    ]);
 
-    expect(page2).toEqual({
-      data: [
-        expect.objectContaining({
-          _id: factory.id('rel6').toHexString(),
-          from: {
-            sharedId: 'entity5',
-            title: 'entity5',
-          },
-          to: {
-            sharedId: 'entity1',
-            title: 'entity1',
-          },
-        }),
-      ],
-      total: 3,
-    });
+    expect(page2).toEqual([
+      expect.objectContaining({
+        _id: factory.id('rel6').toHexString(),
+        from: {
+          sharedId: 'entity5',
+          title: 'entity5',
+        },
+        to: {
+          sharedId: 'entity1',
+          title: 'entity1',
+        },
+      }),
+    ]);
   });
 });

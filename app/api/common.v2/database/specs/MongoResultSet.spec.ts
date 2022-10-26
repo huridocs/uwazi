@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 
-import { CountDocument, MongoResultSet } from '../MongoResultSet';
+import { MongoResultSet } from '../MongoResultSet';
 
 const testDocuments = [
   { _id: new ObjectId(), name: 'doc1' },
@@ -21,11 +21,6 @@ const buildAggregationCursor = () =>
   testingDB.mongodb
     ?.collection<typeof testDocuments[number]>('testDocuments')
     .aggregate([{ $match: {} }]);
-
-const buildCountCursor = () =>
-  testingDB.mongodb
-    ?.collection<typeof testDocuments[number]>('testDocuments')
-    .aggregate<CountDocument>([{ $match: {} }, { $count: 'total' }]);
 
 beforeEach(async () => {
   await testingEnvironment.setUp({ testDocuments });
@@ -56,7 +51,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, MongoResultSet.NoOpMapper);
       expect(await resultSet.all()).toEqual(testDocuments);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
   });
 
@@ -73,9 +68,8 @@ describe('when built from a $type cursor', () => {
     const cursor = buildCursor();
     const resultSet = new MongoResultSet(cursor!, elem => elem.name);
     const result = await resultSet.page(page, 4);
-    expect(result.data).toEqual(testDocuments.slice(start, end).map(elem => elem.name));
-    expect(result.total).toBe(6);
-    expect(cursor?.isClosed()).toBe(true);
+    expect(result).toEqual(testDocuments.slice(start, end).map(elem => elem.name));
+    expect(cursor?.closed).toBe(true);
   });
 
   describe('using every(...) to check a predicate against every item', () => {
@@ -83,21 +77,21 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
 
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc1'))).toBe(false);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
 
     it('should return false if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       expect(await resultSet.every(item => item.startsWith('doc'))).toBe(false);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
   });
 
@@ -110,7 +104,7 @@ describe('when built from a $type cursor', () => {
         visited.push(item);
       });
       expect(visited).toEqual(['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6']);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
   });
 
@@ -128,7 +122,7 @@ describe('when built from a $type cursor', () => {
         'transformed doc5',
         'transformed doc6',
       ]);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
 
     it('should transform every item asynchronously', async () => {
@@ -151,7 +145,7 @@ describe('when built from a $type cursor', () => {
         'transformed doc5',
         'transformed doc6',
       ]);
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
   });
 
@@ -160,7 +154,7 @@ describe('when built from a $type cursor', () => {
       const cursor = buildCursor();
       const result = new MongoResultSet(cursor!, elem => elem.name);
       expect(await result.first()).toEqual('doc1');
-      expect(cursor?.isClosed()).toBe(true);
+      expect(cursor?.closed).toBe(true);
     });
   });
 });
@@ -168,12 +162,9 @@ describe('when built from a $type cursor', () => {
 describe('when built from an aggregation cursor', () => {
   it('should correctly count the result and use the mapper', async () => {
     const cursor = buildAggregationCursor();
-    const count = buildCountCursor();
-    const resultSet = new MongoResultSet(cursor!, count!, elem => elem.name);
+    const resultSet = new MongoResultSet(cursor!, elem => elem.name);
     const result = await resultSet.page(1, 4);
-    expect(result.data).toEqual(testDocuments.slice(0, 4).map(elem => elem.name));
-    expect(result.total).toBe(6);
-    expect(cursor?.isClosed()).toBe(true);
-    expect(count?.isClosed()).toBe(true);
+    expect(result).toEqual(testDocuments.slice(0, 4).map(elem => elem.name));
+    expect(cursor?.closed).toBe(true);
   });
 });

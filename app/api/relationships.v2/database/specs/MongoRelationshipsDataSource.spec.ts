@@ -128,8 +128,7 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').page(2, 2);
-    expect(result.total).toBe(4);
-    expect(result.data.map(d => d.path)).toMatchObject([
+    expect(result.map(d => d.path)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
         { _id: factory.id('rel4'), type: factory.id('nullType') },

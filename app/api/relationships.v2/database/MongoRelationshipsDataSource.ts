@@ -1,6 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { CountDocument, MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { ObjectId } from 'mongodb';
 import { ApplicationRelationshipType, Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
@@ -22,11 +23,11 @@ export class MongoRelationshipsDataSource
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
     const items = relationships.map(r => RelationshipMappers.toDBO(r));
-    const { ops: created } = (await this.getCollection().insertMany(items, {
+    await this.getCollection().insertMany(items, {
       session: this.getSession(),
-    })) as { ops: RelationshipDBOType[] };
+    });
 
-    return created.map(item => RelationshipMappers.toModel(item));
+    return relationships;
   }
 
   private async count(ids: string[]) {
@@ -61,20 +62,12 @@ export class MongoRelationshipsDataSource
   }
 
   getByEntity(sharedId: string) {
-    const matchStage = {
-      $match: {
-        $or: [{ from: sharedId }, { to: sharedId }],
-      },
-    };
-    const totalCursor = this.getCollection().aggregate<CountDocument>([
-      matchStage,
-      {
-        $count: 'total',
-      },
-    ]);
-
     const dataCursor = this.getCollection().aggregate<JoinedRelationshipDBOType>([
-      matchStage,
+      {
+        $match: {
+          $or: [{ from: sharedId }, { to: sharedId }],
+        },
+      },
       {
         $lookup: {
           from: 'entities',
@@ -93,7 +86,7 @@ export class MongoRelationshipsDataSource
       },
     ]);
 
-    return new MongoResultSet(dataCursor, totalCursor, RelationshipMappers.toAggregatedResult);
+    return new MongoResultSet(dataCursor, RelationshipMappers.toAggregatedResult);
   }
 
   getByQuery(query: MatchQueryNode, language: string) {
@@ -101,16 +94,7 @@ export class MongoRelationshipsDataSource
     const cursor = this.db
       .collection('entities')
       .aggregate<TraversalResult>(pipeline, { session: this.getSession() });
-    const count = this.db.collection<CountDocument>('entities').aggregate(
-      [
-        ...pipeline,
-        {
-          $count: 'total',
-        },
-      ],
-      { session: this.getSession() }
-    );
-    return new MongoResultSet(cursor, count, RelationshipMappers.toGraphQueryResult);
+    return new MongoResultSet(cursor, RelationshipMappers.toGraphQueryResult);
   }
 
   async deleteBy(values: Partial<ApplicationRelationshipType>) {

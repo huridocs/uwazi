@@ -1,53 +1,26 @@
 /* eslint-disable no-await-in-loop */
-import { AggregationCursor, Cursor } from 'mongodb';
+import { AggregationCursor, FindCursor } from 'mongodb';
 import { ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;
 }
 
-export type CountDocument = { total: number };
+type Cursor<T> = AggregationCursor<T> | FindCursor<T>;
+
 export class MongoResultSet<T, U = T> implements ResultSet<U> {
   private mongoCursor: Cursor<T>;
 
   private mapper: MapperFunc<T, U>;
 
-  private countCursor?: Cursor<CountDocument>;
-
-  constructor(mongoCursor: Cursor<T>, mapper: MapperFunc<T, U>);
-
-  constructor(
-    mongoCursor: AggregationCursor<T>,
-    countCursor: AggregationCursor<CountDocument>,
-    mapper: MapperFunc<T, U>
-  );
-
-  constructor(
-    mongoCursor: Cursor<T>,
-    countOrMapper: Cursor<CountDocument> | MapperFunc<T, U>,
-    mapper?: MapperFunc<T, U>
-  ) {
+  constructor(mongoCursor: Cursor<T>, mapper: MapperFunc<T, U>) {
     this.mongoCursor = mongoCursor;
-    this.countCursor = typeof countOrMapper === 'function' ? undefined : countOrMapper;
-    this.mapper = typeof countOrMapper === 'function' ? countOrMapper : mapper!;
-  }
-
-  private async getTotal() {
-    if (this.countCursor) {
-      const [count] = await this.countCursor.toArray();
-      return count.total;
-    }
-
-    return this.mongoCursor.count();
+    this.mapper = mapper;
   }
 
   async page(number: number, size: number) {
     this.mongoCursor.skip((number - 1) * size).limit(size);
-
-    const total = await this.getTotal();
-    const data = await this.all();
-
-    return { total, data };
+    return this.all();
   }
 
   async hasNext() {

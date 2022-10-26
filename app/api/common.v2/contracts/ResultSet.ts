@@ -1,10 +1,5 @@
-interface Page<T> {
-  total: number;
-  data: Array<T>;
-}
-
 export interface ResultSet<T> {
-  page(number: number, size: number): Promise<Page<T>>;
+  page(number: number, size: number): Promise<T[]>;
   all(): Promise<T[]>;
   forEach(callback: (item: T) => void): Promise<void>;
   map<U>(callback: (item: T) => U): ResultSet<U>;
