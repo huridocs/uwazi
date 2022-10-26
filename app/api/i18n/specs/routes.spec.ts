@@ -62,6 +62,10 @@ describe('i18n translations routes', () => {
     });
   });
 
+  afterEach(() => {
+    iosocket.emit.mockReset();
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
@@ -243,7 +247,8 @@ describe('i18n translations routes', () => {
           filters: [],
         };
         expect(response.body).toEqual(newSettings);
-        expect(iosocket.emit.calls.allArgs()).toEqual([
+        expect(iosocket.emit.mock.calls).toEqual([
+          ['updateSettings', newSettings],
           [
             'translationsChange',
             {
@@ -267,7 +272,6 @@ describe('i18n translations routes', () => {
               __v: 0,
             },
           ],
-          ['updateSettings', newSettings],
         ]);
       });
     });
