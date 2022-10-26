@@ -10,18 +10,30 @@ import { IStore } from 'app/istore';
 import { NeedAuthorization } from 'app/Auth';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 
-const prepareLanguageValues = (languageMap: IImmutable<LanguagesListSchema>, locale: string) => {
+const locationSearch = (location: WithRouterProps['location']) => {
+  const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
+  return cleanSearch === '?' ? '' : cleanSearch;
+};
+
+const prepareValues = (
+  languageMap: IImmutable<LanguagesListSchema>,
+  locale: string,
+  location: WithRouterProps['location']
+) => {
   const languages: LanguagesListSchema = languageMap.toJS();
 
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
-  return { languages, selectedLanguage };
-};
+  const urlLocation = location;
 
-const locationSearch = (location: WithRouterProps['location']) => {
-  const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
-  return cleanSearch === '?' ? '' : cleanSearch;
+  const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
+
+  if (location.search.match(/page=/)) {
+    urlLocation.search = locationSearch(location);
+  }
+
+  return { languages, selectedLanguage, urlLocation, path };
 };
 
 const mapStateToProps = (state: IStore) => ({
@@ -38,28 +50,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 
-const getDropDownList = (
-  languages: LanguagesListSchema,
-  urlLocation: WithRouterProps['location'],
-  locale: string,
-  path: string
-) =>
-  languages.map(language => {
-    const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search}`;
-
-    return (
-      <li
-        key={language._id as string}
-        className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
-      >
-        <a href={url} className="btn menuNav-btn">
-          {language.localized_label || language.label}
-        </a>
-      </li>
-    );
-  });
-
-// eslint-disable-next-line max-statements
 const i18NMenuComponent = ({
   location,
   languages: languageMap,
@@ -73,10 +63,13 @@ const i18NMenuComponent = ({
   }
 
   const menuRef = useRef(null);
-  const urlLocation = location;
-  const { languages, selectedLanguage } = prepareLanguageValues(languageMap!, locale);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
+
+  const { languages, selectedLanguage, path, urlLocation } = prepareValues(
+    languageMap!,
+    locale,
+    location
+  );
 
   useEffect(() => {
     if (locale !== selectedLanguage?.key) {
@@ -91,10 +84,6 @@ const i18NMenuComponent = ({
     }, [])
   );
 
-  if (location.search.match(/page=/)) {
-    urlLocation.search = locationSearch(location);
-  }
-
   return (
     <div
       className={`menuNav-I18NMenu ${languageMap!.size === 1 ? 'one-language' : null}`}
@@ -102,7 +91,7 @@ const i18NMenuComponent = ({
       aria-label="Languages"
       ref={menuRef}
     >
-      {i18nmode ? (
+      {i18nmode && (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="menuNav-language">
             <button
@@ -120,7 +109,9 @@ const i18NMenuComponent = ({
             </span>
           </div>
         </NeedAuthorization>
-      ) : (
+      )}
+
+      {!i18nmode && (
         <div className="menuNav-language">
           <div className="menuNav-language">
             <button
@@ -135,7 +126,22 @@ const i18NMenuComponent = ({
           </div>
 
           <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
-            {getDropDownList(languages, urlLocation, locale, path)}
+            {languages.map(language => {
+              const url = `/${language.key}${path}${
+                path.match('document') ? '' : urlLocation.search
+              }`;
+
+              return (
+                <li
+                  key={language._id as string}
+                  className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
+                >
+                  <a href={url} className="btn menuNav-btn">
+                    {language.localized_label || language.label}
+                  </a>
+                </li>
+              );
+            })}
 
             <NeedAuthorization roles={['admin', 'editor']}>
               <button
