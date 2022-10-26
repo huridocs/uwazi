@@ -188,6 +188,90 @@ describe('i18n translations routes', () => {
       });
     });
 
+    describe('api/translations/languages', () => {
+      it('should save the translation', async () => {
+        const chineseCsv = `Key,Chinese
+      Search,搜索`;
+
+        config.githubToken = 'gh_token';
+        backend.restore();
+
+        backend.get(
+          (url, opts) =>
+            url ===
+              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/ch.csv' &&
+            // @ts-ignore
+            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+            // @ts-ignore
+            opts?.headers?.accept === 'application/vnd.github.v4.raw',
+          { body: chineseCsv }
+        );
+
+        const response = await request(app).post('/api/translations/languages').send({
+          key: 'ch',
+          label: 'Chinese',
+        });
+
+        const newSettings = {
+          _id: expect.anything(),
+          languages: [
+            {
+              _id: expect.anything(),
+              key: 'en',
+              label: 'English',
+              default: true,
+            },
+            {
+              _id: expect.anything(),
+              key: 'es',
+              label: 'Spanish',
+              default: false,
+            },
+            {
+              _id: expect.anything(),
+              key: 'ch',
+              label: 'Chinese',
+            },
+          ],
+          mapStartingPoint: [
+            {
+              lon: 6,
+              lat: 46,
+            },
+          ],
+          links: [],
+          filters: [],
+        };
+        expect(response.body).toEqual(newSettings);
+        expect(iosocket.emit.calls.allArgs()).toEqual([
+          [
+            'translationsChange',
+            {
+              locale: 'ch',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: [
+                    {
+                      key: 'Search',
+                      value: 'Search',
+                      _id: expect.anything(),
+                    },
+                  ],
+                  _id: expect.anything(),
+                },
+              ],
+              _id: expect.anything(),
+              __v: 0,
+            },
+          ],
+          ['updateSettings', newSettings],
+        ]);
+      });
+    });
+
     describe('api/translations/populate', () => {
       afterEach(() => {
         backend.restore();
