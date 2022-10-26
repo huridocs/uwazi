@@ -8,7 +8,7 @@ export default {
   },
 
   searchSnippets(requestParams) {
-    return api.get('v2/entities', requestParams).then(response => response.json);
+    return api.get('v2/search', requestParams).then(response => response.json);
   },
 
   search(requestParams = new RequestParams()) {

@@ -69,7 +69,7 @@ describe('Metadata filters', () => {
           },
         };
 
-        const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+        const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
         expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
       }
@@ -85,7 +85,7 @@ describe('Metadata filters', () => {
         },
       };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 2' }]);
     });
@@ -100,7 +100,7 @@ describe('Metadata filters', () => {
         },
       };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject([{ title: 'Entity 2' }]);
     });
@@ -119,7 +119,7 @@ describe('Metadata filters', () => {
         },
       };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject(expected);
     });
@@ -133,7 +133,7 @@ describe('Metadata filters', () => {
         },
       };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject([{ title: 'Entity 1' }]);
     });
@@ -143,7 +143,7 @@ describe('Metadata filters', () => {
     it('should filter by exact text value', async () => {
       const query = { filter: { 'metadata.textPropertyName': 'small' } };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 3' }]);
     });
@@ -153,7 +153,7 @@ describe('Metadata filters', () => {
         filter: { 'metadata.textPropertyName': 'A*' },
       };
 
-      const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+      const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
       expect(body.data).toMatchObject([{ title: 'Entity 1' }, { title: 'Entity 3' }]);
     });
@@ -164,7 +164,7 @@ describe('Metadata filters', () => {
       filter: { template: factory.id('templateA').toString() },
     };
 
-    const { body } = await request(app).get('/api/v2/entities').query(query).expect(200);
+    const { body } = await request(app).get('/api/v2/search').query(query).expect(200);
 
     expect(body.data).toMatchObject([
       { title: 'Entity 1' },
