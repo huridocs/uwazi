@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { withRouter, WithRouterProps } from 'react-router';
@@ -41,10 +41,10 @@ type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 const getDropDownList = (
   languages: LanguagesListSchema,
   urlLocation: WithRouterProps['location'],
-  locale: string
+  locale: string,
+  path: string
 ) =>
   languages.map(language => {
-    const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
     const url = `/${language.key}${path}${path.match('document') ? '' : urlLocation.search}`;
 
     return (
@@ -59,6 +59,7 @@ const getDropDownList = (
     );
   });
 
+// eslint-disable-next-line max-statements
 const i18NMenuComponent = ({
   location,
   languages: languageMap,
@@ -75,6 +76,13 @@ const i18NMenuComponent = ({
   const urlLocation = location;
   const { languages, selectedLanguage } = prepareLanguageValues(languageMap!, locale);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
+
+  useEffect(() => {
+    if (locale !== selectedLanguage?.key) {
+      window.location.assign(path);
+    }
+  }, [languages.length]);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
@@ -127,7 +135,7 @@ const i18NMenuComponent = ({
           </div>
 
           <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
-            {getDropDownList(languages, urlLocation, locale)}
+            {getDropDownList(languages, urlLocation, locale, path)}
 
             <NeedAuthorization roles={['admin', 'editor']}>
               <button

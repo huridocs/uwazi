@@ -1,23 +1,28 @@
 /**
  * @jest-environment jsdom
  */
-
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
-import Immutable from 'immutable';
 import { act, fireEvent, RenderResult, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { MockStoreEnhanced } from 'redux-mock-store';
+import Immutable from 'immutable';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { i18NMenuComponent as I18NMenu } from '../I18NMenu';
 
 describe('I18NMenu', () => {
   let props: any;
   let renderResult: RenderResult;
+  let store: MockStoreEnhanced;
   const toggleInlineEditMock = jest.fn();
 
+  Reflect.deleteProperty(global.window, 'location');
+  window.location = { ...window.location, assign: jest.fn() };
+
   beforeEach(() => {
+    jest.clearAllMocks();
     const languages = [
-      { _id: '1', key: 'en', label: 'English', localized_label: 'English', default: true },
-      { _id: '2', key: 'es', label: 'Spanish', localized_label: 'Español' },
+      { _id: '1', key: 'en', label: 'English', localized_label: 'English' },
+      { _id: '2', key: 'es', label: 'Spanish', localized_label: 'Español', default: true },
     ];
 
     props = {
@@ -41,10 +46,13 @@ describe('I18NMenu', () => {
       ? Immutable.fromJS({ _id: 'user1', role: userType })
       : Immutable.fromJS({});
 
-    ({ renderResult } = renderConnectedContainer(<I18NMenu.WrappedComponent {...props} />, () => ({
-      ...defaultState,
-      user: storeUser,
-    })));
+    ({ renderResult, store } = renderConnectedContainer(
+      <I18NMenu.WrappedComponent {...props} />,
+      () => ({
+        ...defaultState,
+        user: storeUser,
+      })
+    ));
   };
 
   describe('Paths', () => {
@@ -107,7 +115,6 @@ describe('I18NMenu', () => {
   it('should display the language section if there is only one language and a user', () => {
     props.languages = Immutable.fromJS([{ _id: '1', key: 'en', label: 'English', default: true }]);
     render('collaborator');
-    screen.debug();
     expect(screen.queryByText('English')).toBeInTheDocument();
     expect(screen.getByRole('link').getAttribute('href')).toBe(
       '/en/templates/2452345?query=weneedmoreclerics'
@@ -130,5 +137,28 @@ describe('I18NMenu', () => {
       fireEvent.click(screen.getByText('Live translate').parentElement!);
     });
     expect(toggleInlineEditMock).toBeCalled();
+  });
+
+  it('should trigger a reload if the current language is deleted', async () => {
+    props.locale = 'en';
+    render('admin');
+    props.languages = Immutable.fromJS([
+      {
+        _id: '2',
+        key: 'es',
+        label: 'Spanish',
+        localized_label: 'Español',
+        default: true,
+      },
+    ]);
+
+    renderResult.rerender(
+      <Provider store={store}>
+        <I18NMenu.WrappedComponent {...props} />
+      </Provider>
+    );
+
+    expect(window.location.assign).toHaveBeenCalledTimes(1);
+    expect(window.location.assign).toHaveBeenCalledWith('/templates/2452345');
   });
 });
