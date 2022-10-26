@@ -26,7 +26,7 @@ describe('searchSnippets', () => {
   afterAll(async () => testingDB.disconnect());
 
   async function search(filter: SearchQuery['filter'], fields = ['snippets', 'title']) {
-    return request(app).get('/api/v2/entities').query(qs.stringify({ filter, fields })).expect(200);
+    return request(app).get('/api/v2/search').query(qs.stringify({ filter, fields })).expect(200);
   }
 
   it('should return fullText snippets of an entity', async () => {
@@ -128,7 +128,7 @@ describe('searchSnippets', () => {
 
   it('should return title snippets of an entity', async () => {
     const { body } = await request(app)
-      .get('/api/v2/entities')
+      .get('/api/v2/search')
       .query(
         qs.stringify({
           filter: { searchString: 'title:("entity:with")' },
@@ -183,7 +183,7 @@ describe('searchSnippets', () => {
     ];
 
     const { body } = await request(app)
-      .get('/api/v2/entities')
+      .get('/api/v2/search')
       .query(
         qs.stringify({
           filter: { searchString: 'short' },
