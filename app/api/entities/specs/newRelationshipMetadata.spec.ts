@@ -264,6 +264,18 @@ describe('entities.save()', () => {
 
     spy.mockRestore();
   });
+
+  it('should not overwrite newRelationship metadata', async () => {
+    const [entity] = await entities.get({ sharedId: 'entity4', language: 'en' });
+    const saved = await entities.save(
+      {
+        ...entity,
+        metadata: { relProp2: [{ value: 'overwriten_value' }] },
+      },
+      { user: adminUser, language: 'en' }
+    );
+    expect(saved.metadata).toEqual({ relProp2: [{ value: 'existing_value' }] });
+  });
 });
 
 describe('entities.delete()', () => {

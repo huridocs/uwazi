@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import templates from 'api/templates';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import {
@@ -6,12 +8,13 @@ import {
 } from 'api/relationships.v2/services/service_factories';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { EntitySchema } from 'shared/types/entityType';
-import { ObjectId } from 'mongodb';
-import { MetadataSchema } from 'shared/types/commonTypes';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { EntitySchema } from 'shared/types/entityType';
+import { MetadataSchema } from 'shared/types/commonTypes';
+import { propertyTypes } from 'shared/propertyTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 
 const entityTypeCheck = (
   entity: EntitySchema
@@ -87,8 +90,24 @@ const markNewRelationshipsOfAffected = async (
   }
 };
 
+const ignoreNewRelationshipsMetadata = async (
+  currentDoc: EntitySchema,
+  toSave: EntitySchema,
+  template: TemplateSchema
+) => {
+  const newrelationshipProperties =
+    template.properties?.filter(p => p.type === propertyTypes.newRelationship) || [];
+  newrelationshipProperties.forEach(({ name }) => {
+    if (toSave.metadata && currentDoc.metadata) {
+      // eslint-disable-next-line no-param-reassign
+      toSave.metadata[name] = currentDoc.metadata[name];
+    }
+  });
+};
+
 export {
   deleteRelatedNewRelationships,
+  ignoreNewRelationshipsMetadata,
   markNewRelationshipsOfAffected,
   performNewRelationshipQueries,
 };

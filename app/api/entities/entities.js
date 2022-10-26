@@ -22,6 +22,7 @@ import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import {
   deleteRelatedNewRelationships,
+  ignoreNewRelationshipsMetadata,
   markNewRelationshipsOfAffected,
   performNewRelationshipQueries,
 } from './v2_support';
@@ -87,6 +88,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
             thesauriByKey
           );
         }
+
+        ignoreNewRelationshipsMetadata(currentDoc, toSave, template);
 
         const fullEntity = { ...currentDoc, ...toSave };
 
