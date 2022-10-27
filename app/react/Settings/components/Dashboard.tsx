@@ -20,6 +20,10 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const DashboardComponent = ({ stats }: mappedProps) => {
+  if (!stats) {
+    return <div />;
+  }
+
   const storage = formatBytes(stats.get('storage').get('total'));
 
   return (

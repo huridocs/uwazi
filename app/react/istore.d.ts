@@ -171,7 +171,7 @@ export interface IStore {
   };
   settings: {
     collection: IImmutable<ClientSettings>;
-    stats: IImmutable<InstanceStats>;
+    stats?: IImmutable<InstanceStats>;
   };
   user: IImmutable<ClientUserSchema>;
   users: IImmutable<ClientUserSchema[]>;
