@@ -52,7 +52,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
         });
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
-          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
+          { $set: { metadata: { [property.name]: mappedMetadata[property.name] } } }
         );
         return;
       }

@@ -1,8 +1,7 @@
 export interface ResultSet<T> {
-  page(number: number, size: number): Promise<T[]>;
   all(): Promise<T[]>;
-  forEach(callback: (item: T) => void): Promise<void>;
-  map<U>(callback: (item: T) => U): ResultSet<U>;
-  every(predicate: (item: T) => boolean): Promise<boolean>;
+  page(number: number, size: number): Promise<T[]>;
   first(): Promise<T | null>;
+  forEach(callback: (item: T) => Promise<void> | void): Promise<void>;
+  every(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
 }

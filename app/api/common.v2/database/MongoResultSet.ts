@@ -28,9 +28,9 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   async next() {
-    const item = await this.mongoCursor.next();
+    const item: T | null = await this.mongoCursor.next();
     if (item) {
-      const mappedItem = this.mapper(item!);
+      const mappedItem = this.mapper(item);
       return mappedItem;
     }
     return null;
@@ -42,17 +42,11 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
-  async forEach(callback: (item: U) => void) {
-    return this.mongoCursor.forEach(async item => {
-      callback(await this.mapper(item));
-    });
-  }
-
-  map<V>(transform: (item: U) => V) {
-    return new MongoResultSet(
-      this.mongoCursor.map(async elem => this.mapper(elem)),
-      async item => transform(await item)
-    );
+  async forEach(callback: (item: U) => Promise<void> | void) {
+    while (await this.hasNext()) {
+      const item: U | null = await this.next();
+      await callback(item!);
+    }
   }
 
   async every(predicate: (item: U) => boolean): Promise<boolean> {
@@ -79,7 +73,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
   }
 
   async close() {
-    return Promise.all([this.countCursor?.close(), this.mongoCursor.close()]);
+    return this.mongoCursor.close();
   }
 
   static NoOpMapper = <V>(item: V) => item;

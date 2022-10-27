@@ -1,11 +1,12 @@
 import {
-  BulkWriteOperation,
-  BulkWriteUpdateOperation,
+  AnyBulkWriteOperation,
   ClientSession,
   Collection,
-  FilterQuery,
+  Filter,
   OptionalId,
-  UpdateQuery,
+  UpdateFilter,
+  CollationOptions,
+  UpdateManyModel,
 } from 'mongodb';
 
 class BulkWriteStream<CollSchema extends { [key: string]: any }> {
@@ -17,7 +18,7 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
 
   session?: ClientSession;
 
-  protected actions: Array<BulkWriteOperation<CollSchema>>;
+  protected actions: Array<AnyBulkWriteOperation<CollSchema>>;
 
   constructor(
     collection?: Collection<CollSchema>,
@@ -63,16 +64,16 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
     }
   }
 
-  async delete(filter: FilterQuery<CollSchema>, collation?: object | undefined) {
+  async delete(filter: Filter<CollSchema>, collation?: CollationOptions) {
     this.actions.push({ deleteOne: { filter, collation } });
     await this.check();
   }
 
   async updateOne(
-    filter: FilterQuery<CollSchema>,
-    update: UpdateQuery<CollSchema>,
+    filter: Filter<CollSchema>,
+    update: UpdateFilter<CollSchema>,
     upsert?: boolean,
-    collation?: object,
+    collation?: CollationOptions,
     arrayFilters?: object[]
   ) {
     this.actions.push({ updateOne: { filter, update, upsert, collation, arrayFilters } });
@@ -80,11 +81,10 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
   }
 
   async updateMany(
-    filter: FilterQuery<CollSchema>,
-    update: UpdateQuery<CollSchema>,
-    options: Omit<BulkWriteUpdateOperation<CollSchema>, 'filter' | 'update'> = {}
+    filter: UpdateManyModel<CollSchema>['filter'],
+    update: UpdateManyModel<CollSchema>['update']
   ) {
-    this.actions.push({ updateMany: { filter, update, ...options } });
+    this.actions.push({ updateMany: { filter, update } });
     await this.check();
   }
 

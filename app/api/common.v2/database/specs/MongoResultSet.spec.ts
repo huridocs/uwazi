@@ -96,7 +96,7 @@ describe('when built from a $type cursor', () => {
   });
 
   describe('using forEach(...)', () => {
-    it('should execute the callback for every item', async () => {
+    it('should execute the sync callback for every item', async () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
       const visited: string[] = [];
@@ -106,44 +106,31 @@ describe('when built from a $type cursor', () => {
       expect(visited).toEqual(['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6']);
       expect(cursor?.closed).toBe(true);
     });
-  });
 
-  describe('using map(...)', () => {
-    it('should transform every item synchronously', async () => {
+    it('should execute the async callback for every item', async () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
-      const transformed = await resultSet.map(async item => `transformed ${item}`).all();
-
-      expect(transformed).toEqual([
-        'transformed doc1',
-        'transformed doc2',
-        'transformed doc3',
-        'transformed doc4',
-        'transformed doc5',
-        'transformed doc6',
-      ]);
-      expect(cursor?.closed).toBe(true);
-    });
-
-    it('should transform every item asynchronously', async () => {
-      const cursor = buildCursor();
-      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
-      const transformed = await resultSet
-        .map(async item => {
-          await new Promise(resolve => {
-            setTimeout(resolve, 10);
-          });
-          return `transformed ${item}`;
-        })
-        .all();
-
-      expect(transformed).toEqual([
-        'transformed doc1',
-        'transformed doc2',
-        'transformed doc3',
-        'transformed doc4',
-        'transformed doc5',
-        'transformed doc6',
+      const visited: string[] = [];
+      await resultSet.forEach(async item => {
+        visited.push(item);
+        await new Promise(resolve => {
+          setTimeout(resolve, 2);
+        });
+        visited.push(item);
+      });
+      expect(visited).toEqual([
+        'doc1',
+        'doc1',
+        'doc2',
+        'doc2',
+        'doc3',
+        'doc3',
+        'doc4',
+        'doc4',
+        'doc5',
+        'doc5',
+        'doc6',
+        'doc6',
       ]);
       expect(cursor?.closed).toBe(true);
     });
