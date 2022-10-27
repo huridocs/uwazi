@@ -7,14 +7,13 @@ import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import { selectTemplates } from 'app/utils/coreSelectors';
+import { withRouter } from 'react-router';
+import rison from 'rison-node';
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
 import SelectFilter from './SelectFilter';
 import TextFilter from './TextFilter';
-
-import { withRouter } from 'react-router';
-import rison from 'rison-node';
 
 const optionUrl = (value, name, query) => {
   const q = rison.encode({
