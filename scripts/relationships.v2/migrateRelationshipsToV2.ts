@@ -6,15 +6,15 @@ import process from 'process';
 
 import mongodb, { Collection, Cursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
 
-import { BulkWriteStream } from '../app/api/common.v2/database/BulkWriteStream';
-import { RelationshipDBOType } from '../app/api/relationships.v2/database/schemas/relationshipTypes'
-import date from '../app/api/utils/date';
-import { objectIndex } from '../app/shared/data_utils/objectIndex';
-import { EntitySchema } from '../app/shared/types/entityType';
-import { Settings } from '../app/shared/types/settingsType';
-import { TemplateSchema } from '../app/shared/types/templateType';
-import { UserSchema } from '../app/shared/types/userType';
-import ID from '../app/shared/uniqueID';
+import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
+import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
+import date from '../../app/api/utils/date';
+import { objectIndex } from '../../app/shared/data_utils/objectIndex';
+import { EntitySchema } from '../../app/shared/types/entityType';
+import { Settings } from '../../app/shared/types/settingsType';
+import { TemplateSchema } from '../../app/shared/types/templateType';
+import { UserSchema } from '../../app/shared/types/userType';
+import ID from '../../app/shared/uniqueID';
 
 const print = (text: string) => process.stdout.write(text);
 
