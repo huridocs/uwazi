@@ -86,7 +86,7 @@ const i18NMenuComponent = ({
 
   return (
     <div
-      className={`menuNav-I18NMenu ${languageMap!.size === 1 ? 'one-language' : null}`}
+      className={languageMap!.size === 1 ? 'menuNav-I18NMenu one-language' : 'menuNav-I18NMenu'}
       role="navigation"
       aria-label="Languages"
       ref={menuRef}
@@ -113,19 +113,17 @@ const i18NMenuComponent = ({
 
       {!i18nmode && (
         <div className="menuNav-language">
-          <div className="menuNav-language">
-            <button
-              className="singleItem dropdown"
-              type="button"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              <span>{selectedLanguage?.localized_label}</span>
-              &nbsp;
-              <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
-            </button>
-          </div>
+          <button
+            className="singleItem dropdown"
+            type="button"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <span>{selectedLanguage?.localized_label}</span>
+            &nbsp;
+            <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
+          </button>
 
-          <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''} `}>
+          <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
             {languages.map(language => {
               const url = `/${language.key}${path}${
                 path.match('document') ? '' : urlLocation.search
@@ -136,25 +134,25 @@ const i18NMenuComponent = ({
                   key={language._id as string}
                   className={locale === language.key ? 'menuNav-item active' : 'menuNav-item'}
                 >
-                  <a href={url} className="btn menuNav-btn">
-                    {language.localized_label || language.label}
-                  </a>
+                  <a href={url}>{language.localized_label || language.label}</a>
                 </li>
               );
             })}
 
             <NeedAuthorization roles={['admin', 'editor']}>
-              <button
-                className="live-translate"
-                type="button"
-                onClick={() => {
-                  toggleInlineEdit();
-                  setDropdownOpen(false);
-                }}
-              >
-                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
-                <Translate>Live translate</Translate>
-              </button>
+              <li className="menuNav-item">
+                <button
+                  className="live-translate"
+                  type="button"
+                  onClick={() => {
+                    toggleInlineEdit();
+                    setDropdownOpen(false);
+                  }}
+                >
+                  <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                  <Translate>Live translate</Translate>
+                </button>
+              </li>
             </NeedAuthorization>
           </ul>
         </div>
