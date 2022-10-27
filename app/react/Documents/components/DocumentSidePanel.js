@@ -21,13 +21,13 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
+import { store } from '../../store';
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
-import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -141,6 +141,7 @@ class DocumentSidePanel extends Component {
     );
   }
 
+  // eslint-disable-next-line class-methods-use-this
   linkClassNames(selectedTabMatches) {
     return `${selectedTabMatches ? 'selected' : ''} entity-sidepanel-tab-link`;
   }
@@ -374,7 +375,7 @@ class DocumentSidePanel extends Component {
                     component="div"
                   >
                     <I18NLink
-                      className={this.linkClassNames(tab === 'metadata')}
+                      className={this.linkClassNames(tab === 'metadata' || tab === '')}
                       to={`/entity/${doc.get('sharedId')}/metadata`}
                       onClick={() =>
                         store.dispatch(actions.set('viewer.sidepanel.tab', 'metadata'))

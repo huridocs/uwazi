@@ -90,8 +90,9 @@ class EntityViewer extends Component {
     this.setState({ panelOpen: true });
   }
 
-  linkClassNames(selectedTabMatches) {
-    return `${selectedTabMatches ? 'selected' : ''} entity-sidepanel-tab-link`;
+  linkClassNames(tabsToSelect) {
+    const { tab: selectedTab } = this.props;
+    return `${tabsToSelect.includes(selectedTab) ? 'selected' : ''} entity-sidepanel-tab-link`;
   }
 
   render() {
@@ -237,7 +238,7 @@ class EntityViewer extends Component {
                       component="div"
                     >
                       <I18NLink
-                        className={this.linkClassNames(selectedTab === 'page')}
+                        className={this.linkClassNames(['page'])}
                         to={`/entity/${rawEntity.sharedId}/page`}
                       >
                         <Icon icon="file-image" />
@@ -255,7 +256,7 @@ class EntityViewer extends Component {
                     component="div"
                   >
                     <I18NLink
-                      className={this.linkClassNames(selectedTab === 'info' || selectedTab === '')}
+                      className={this.linkClassNames(['info', ''])}
                       to={`/entity/${rawEntity.sharedId}/info`}
                     >
                       <Icon icon="info-circle" />
@@ -272,7 +273,7 @@ class EntityViewer extends Component {
                     component="div"
                   >
                     <I18NLink
-                      className={this.linkClassNames(selectedTab === 'relationships')}
+                      className={this.linkClassNames(['relationships'])}
                       to={`/entity/${rawEntity.sharedId}/relationships`}
                     >
                       <Icon icon="exchange-alt" />
