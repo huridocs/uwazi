@@ -4,7 +4,7 @@
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/migrateRelationshipsToV2.ts
 import process from 'process';
 
-import mongodb, { Collection, Cursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
+import mongodb, { Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
 
 import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
 import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
@@ -30,7 +30,7 @@ type ConnectionType = {
 };
 
 type RelTypeType = {
-  _id: ObjectId;
+  _id?: ObjectId;
   name: string;
 }
 
@@ -41,13 +41,13 @@ const temporaryRelationshipsCollectionName = '__temporary_relationships_collecti
 
 const getClient = async () => {
   const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
-  const client = new mongodb.MongoClient(url, { useUnifiedTopology: true });
+  const client = new mongodb.MongoClient(url);
   await client.connect();
 
   return client;
 };
 
-const getNextBatch = async <T>(cursor: Cursor<T>, size: number = batchsize) => {
+const getNextBatch = async <T>(cursor: FindCursor<T>, size: number = batchsize) => {
   const returned: T[] = [];
   while ((await cursor.hasNext()) && returned.length < size) {
     returned.push((await cursor.next()) as T);
@@ -204,7 +204,7 @@ const hubsToRelationships = async (
   const hubIds = Object.keys(hubIdToSharedId).map(title => new ObjectId(title));
   const connections = connectionsCollection.find({ hub: { $in: hubIds } });
   const relationshipsWriter = new BulkWriteStream(relationshipsCollection, undefined, batchsize);
-  while(!connections.isClosed()){
+  while(!connections.closed){
     const connectionsBatch = await getNextBatch(connections); 
     const newRelationshipBatch = connectionsBatch.map(c => ({
       from: c.entity,
@@ -231,7 +231,7 @@ const liftHubs = async (
   const entityWriter = new BulkWriteStream(newEntitiesCollection, undefined, batchsize);
 
   const hubs = hubsCollection.find({});
-  while ((!hubs.isClosed())) {
+  while (!hubs.closed) {
     const hubBatch = await getNextBatch(hubs);
     const entitybatch = hubBatch.map(hub => languages.map(language => hubToEntity(hub, language, template, user))).flat();
     await entityWriter.insertMany(entitybatch);
@@ -253,7 +253,7 @@ const copyCollection = async <T extends { [key: string]: any; }>(db: Db, source:
   await targetWriter.flush();
 };
 
-const finalize = async(db: Db, sourceTargetPairs: [Collection, Collection][], toDrop: Collection[]) => {
+const finalize = async(db: Db, sourceTargetPairs: [Collection<any>, Collection<any>][], toDrop: Collection<any>[]) => {
   print('Copy from temp to final...\n');
   for(let i = 0; i < sourceTargetPairs.length; i+=1) {
     const [source, target] = sourceTargetPairs[i];
