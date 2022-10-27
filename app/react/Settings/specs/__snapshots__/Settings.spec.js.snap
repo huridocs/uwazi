@@ -6,6 +6,7 @@ Array [
     "type": "auth/user/SET",
     "value": Object {
       "name": "doe",
+      "role": "admin",
     },
   },
   Object {
@@ -33,5 +34,50 @@ Array [
       "siteName": "BatCave",
     },
   },
+  Object {
+    "type": "settings/stats/SET",
+    "value": Object {
+      "files": 3,
+      "users": 2,
+    },
+  },
+]
+`;
+
+exports[`Settings requestState should not request the stats if the user does not have admin role 1`] = `
+Array [
+  Object {
+    "type": "auth/user/SET",
+    "value": Object {
+      "name": "jane",
+      "role": "editor",
+    },
+  },
+  Object {
+    "type": "dictionaries/SET",
+    "value": Array [
+      Object {
+        "_id": 1,
+        "name": "Countries",
+      },
+    ],
+  },
+  Object {
+    "type": "translations/SET",
+    "value": Array [
+      Object {
+        "_id": 1,
+        "locale": "es",
+        "values": Object {},
+      },
+    ],
+  },
+  Object {
+    "type": "settings/collection/SET",
+    "value": Object {
+      "siteName": "BatCave",
+    },
+  },
+  undefined,
 ]
 `;

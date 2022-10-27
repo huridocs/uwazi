@@ -9,6 +9,7 @@ import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import UsersAPI from 'app/Users/UsersAPI';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import { getReadyToReviewSuggestionsQuery } from 'app/Settings/utils/suggestions';
+import { UserRole } from 'shared/types/userSchema';
 
 import { SettingsNavigation } from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
@@ -23,6 +24,8 @@ export class Settings extends RouteHandler {
       SettingsAPI.get(request),
       TemplatesAPI.get(requestParams.onlyHeaders()),
     ]);
+
+    const stats = user.role === UserRole.ADMIN ? await SettingsAPI.stats() : undefined;
 
     // This builds and queries elasticsearch for suggestion counts per thesaurus
     const props = thesauri
@@ -62,6 +65,7 @@ export class Settings extends RouteHandler {
       actions.set('dictionaries', thesauri),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),
+      stats && actions.set('settings/stats', stats),
     ];
   }
 
