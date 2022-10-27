@@ -21,11 +21,13 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
+import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
+import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -139,6 +141,10 @@ class DocumentSidePanel extends Component {
     );
   }
 
+  linkClassNames(selectedTabMatches) {
+    return `${selectedTabMatches ? 'selected' : ''} entity-sidepanel-tab-link`;
+  }
+
   renderHeader(tab, doc, isEntity) {
     if (this.state.copyFrom) {
       return (
@@ -182,30 +188,45 @@ class DocumentSidePanel extends Component {
                 if (!this.props.raw && doc.get('semanticSearch')) {
                   return (
                     <li>
-                      <TabLink
-                        to="semantic-search-results"
-                        role="button"
-                        tabIndex="0"
-                        aria-label={t('System', 'Semantic search results', null, false)}
-                        component="div"
-                      >
-                        <ShowIf if={currentSidepanelView === 'entity'}>
-                          <I18NLink to={`/entity/${doc.get('sharedId')}/semantic-search-results`}>
+                      <ShowIf if={currentSidepanelView === 'entity'}>
+                        <TabLink
+                          className=""
+                          to="semantic-search-results"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Semantic search results', null, false)}
+                          component="div"
+                        >
+                          <I18NLink
+                            className={this.linkClassNames(tab === 'semantic-search-results')}
+                            to={`/entity/${doc.get('sharedId')}/semantic-search-results`}
+                            onClick={() =>
+                              store.dispatch(
+                                actions.set('viewer.sidepanel.tab', 'semantic-search-results')
+                              )
+                            }
+                          >
                             <Icon icon="flask" />
                             <span className="tab-link-tooltip">
                               <Translate>Semantic search results</Translate>
                             </span>
                           </I18NLink>
-                        </ShowIf>
-                        <ShowIf if={currentSidepanelView === 'library'}>
-                          <>
-                            <Icon icon="flask" />
-                            <span className="tab-link-tooltip">
-                              <Translate>Semantic search results</Translate>
-                            </span>
-                          </>
-                        </ShowIf>
-                      </TabLink>
+                        </TabLink>
+                      </ShowIf>
+                      <ShowIf if={currentSidepanelView === 'library'}>
+                        <TabLink
+                          to="semantic-search-results"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Semantic search results', null, false)}
+                          component="div"
+                        >
+                          <Icon icon="flask" />
+                          <span className="tab-link-tooltip">
+                            <Translate>Semantic search results</Translate>
+                          </span>
+                        </TabLink>
+                      </ShowIf>
                     </li>
                   );
                 }
@@ -214,22 +235,36 @@ class DocumentSidePanel extends Component {
                 if (!this.props.raw) {
                   return (
                     <li>
-                      <TabLink
-                        to="text-search"
-                        role="button"
-                        tabIndex="0"
-                        aria-label={t('System', 'Search text', null, false)}
-                        component="div"
-                      >
-                        <ShowIf if={currentSidepanelView === 'entity'}>
-                          <I18NLink to={`/entity/${doc.get('sharedId')}/text-search`}>
+                      <ShowIf if={currentSidepanelView === 'entity'}>
+                        <TabLink
+                          to="text-search"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Search text', null, false)}
+                          component="div"
+                        >
+                          <I18NLink
+                            className={this.linkClassNames(tab === 'text-search')}
+                            to={`/entity/${doc.get('sharedId')}/text-search`}
+                            onClick={() =>
+                              store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'))
+                            }
+                          >
                             <SnippetsTab storeKey={this.props.storeKey} />
                           </I18NLink>
-                        </ShowIf>
-                        <ShowIf if={currentSidepanelView === 'library'}>
+                        </TabLink>
+                      </ShowIf>
+                      <ShowIf if={currentSidepanelView === 'library'}>
+                        <TabLink
+                          to="text-search"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Search text', null, false)}
+                          component="div"
+                        >
                           <SnippetsTab storeKey={this.props.storeKey} />
-                        </ShowIf>
-                      </TabLink>
+                        </TabLink>
+                      </ShowIf>
                     </li>
                   );
                 }
@@ -238,30 +273,42 @@ class DocumentSidePanel extends Component {
                 if (!isEntity && !this.props.raw) {
                   return (
                     <li>
-                      <TabLink
-                        to="toc"
-                        role="button"
-                        tabIndex="0"
-                        aria-label={t('System', 'Table of Contents', null, false)}
-                        component="div"
-                      >
-                        <ShowIf if={currentSidepanelView === 'entity'}>
-                          <I18NLink to={`/entity/${doc.get('sharedId')}/toc`}>
+                      <ShowIf if={currentSidepanelView === 'entity'}>
+                        <TabLink
+                          to="toc"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Table of Contents', null, false)}
+                          component="div"
+                        >
+                          <I18NLink
+                            className={this.linkClassNames(tab === 'toc')}
+                            to={`/entity/${doc.get('sharedId')}/toc`}
+                            onClick={() =>
+                              store.dispatch(actions.set('viewer.sidepanel.tab', 'toc'))
+                            }
+                          >
                             <Icon icon="font" />
                             <span className="tab-link-tooltip">
                               {t('System', 'Table of Contents')}
                             </span>
                           </I18NLink>
-                        </ShowIf>
-                        <ShowIf if={currentSidepanelView === 'library'}>
-                          <>
-                            <Icon icon="font" />
-                            <span className="tab-link-tooltip">
-                              {t('System', 'Table of Contents')}
-                            </span>
-                          </>
-                        </ShowIf>
-                      </TabLink>
+                        </TabLink>
+                      </ShowIf>
+                      <ShowIf if={currentSidepanelView === 'library'}>
+                        <TabLink
+                          to="toc"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Table of Contents', null, false)}
+                          component="div"
+                        >
+                          <Icon icon="font" />
+                          <span className="tab-link-tooltip">
+                            {t('System', 'Table of Contents')}
+                          </span>
+                        </TabLink>
+                      </ShowIf>
                     </li>
                   );
                 }
@@ -271,28 +318,40 @@ class DocumentSidePanel extends Component {
                 if (!isEntity && !this.props.raw) {
                   return (
                     <li>
-                      <TabLink
-                        to="references"
-                        role="button"
-                        tabIndex="0"
-                        aria-label={t('System', 'References', null, false)}
-                        component="div"
-                      >
-                        <ShowIf if={currentSidepanelView === 'entity'}>
-                          <I18NLink to={`/entity/${doc.get('sharedId')}/references`}>
+                      <ShowIf if={currentSidepanelView === 'entity'}>
+                        <TabLink
+                          to="references"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'References', null, false)}
+                          component="div"
+                        >
+                          <I18NLink
+                            className={this.linkClassNames(tab === 'references')}
+                            to={`/entity/${doc.get('sharedId')}/references`}
+                            onClick={() =>
+                              store.dispatch(actions.set('viewer.sidepanel.tab', 'references'))
+                            }
+                          >
                             <Icon icon="sitemap" />
                             <span className="connectionsNumber">{references.size}</span>
                             <span className="tab-link-tooltip">{t('System', 'References')}</span>
                           </I18NLink>
-                        </ShowIf>
-                        <ShowIf if={currentSidepanelView === 'library'}>
-                          <>
-                            <Icon icon="sitemap" />
-                            <span className="connectionsNumber">{references.size}</span>
-                            <span className="tab-link-tooltip">{t('System', 'References')}</span>
-                          </>
-                        </ShowIf>
-                      </TabLink>
+                        </TabLink>
+                      </ShowIf>
+                      <ShowIf if={currentSidepanelView === 'library'}>
+                        <TabLink
+                          to="references"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'References', null, false)}
+                          component="div"
+                        >
+                          <Icon icon="sitemap" />
+                          <span className="connectionsNumber">{references.size}</span>
+                          <span className="tab-link-tooltip">{t('System', 'References')}</span>
+                        </TabLink>
+                      </ShowIf>
                     </li>
                   );
                 }
@@ -305,54 +364,79 @@ class DocumentSidePanel extends Component {
                 return <span />;
               })()}
               <li>
-                <TabLink
-                  to="metadata"
-                  default
-                  role="button"
-                  tabIndex="0"
-                  aria-label={t('System', 'Info', null, false)}
-                  component="div"
-                >
-                  <ShowIf if={currentSidepanelView === 'entity'}>
-                    <I18NLink to={`/entity/${doc.get('sharedId')}/metadata`}>
+                <ShowIf if={currentSidepanelView === 'entity'}>
+                  <TabLink
+                    to="metadata"
+                    default
+                    role="button"
+                    tabIndex="0"
+                    aria-label={t('System', 'Info', null, false)}
+                    component="div"
+                  >
+                    <I18NLink
+                      className={this.linkClassNames(tab === 'metadata')}
+                      to={`/entity/${doc.get('sharedId')}/metadata`}
+                      onClick={() =>
+                        store.dispatch(actions.set('viewer.sidepanel.tab', 'metadata'))
+                      }
+                    >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                     </I18NLink>
-                  </ShowIf>
-                  <ShowIf if={currentSidepanelView === 'library'}>
-                    <>
-                      <Icon icon="info-circle" />
-                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
-                    </>
-                  </ShowIf>
-                </TabLink>
+                  </TabLink>
+                </ShowIf>
+                <ShowIf if={currentSidepanelView === 'library'}>
+                  <TabLink
+                    to="metadata"
+                    default
+                    role="button"
+                    tabIndex="0"
+                    aria-label={t('System', 'Info', null, false)}
+                    component="div"
+                  >
+                    <Icon icon="info-circle" />
+                    <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                  </TabLink>
+                </ShowIf>
               </li>
               {(() => {
                 if (!isTargetDoc && !excludeConnectionsTab) {
                   return (
                     <li>
-                      <TabLink
-                        to="relationships"
-                        role="button"
-                        tabIndex="0"
-                        aria-label={t('System', 'Relationships', null, false)}
-                        component="div"
-                      >
-                        <ShowIf if={currentSidepanelView === 'entity'}>
-                          <I18NLink to={`/entity/${doc.get('sharedId')}/relationships`}>
+                      <ShowIf if={currentSidepanelView === 'entity'}>
+                        <TabLink
+                          to="relationships"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Relationships', null, false)}
+                          component="div"
+                        >
+                          <I18NLink
+                            className={this.linkClassNames(tab === 'relationships')}
+                            to={`/entity/${doc.get('sharedId')}/relationships`}
+                            onClick={() =>
+                              store.dispatch(actions.set('viewer.sidepanel.tab', 'relationships'))
+                            }
+                          >
                             <Icon icon="exchange-alt" />
                             <span className="connectionsNumber">{summary.totalConnections}</span>
                             <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
                           </I18NLink>
-                        </ShowIf>
-                        <ShowIf if={currentSidepanelView === 'library'}>
-                          <>
-                            <Icon icon="exchange-alt" />
-                            <span className="connectionsNumber">{summary.totalConnections}</span>
-                            <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
-                          </>
-                        </ShowIf>
-                      </TabLink>
+                        </TabLink>
+                      </ShowIf>
+                      <ShowIf if={currentSidepanelView === 'library'}>
+                        <TabLink
+                          to="relationships"
+                          role="button"
+                          tabIndex="0"
+                          aria-label={t('System', 'Relationships', null, false)}
+                          component="div"
+                        >
+                          <Icon icon="exchange-alt" />
+                          <span className="connectionsNumber">{summary.totalConnections}</span>
+                          <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                        </TabLink>
+                      </ShowIf>
                     </li>
                   );
                 }

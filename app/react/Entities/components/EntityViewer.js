@@ -90,6 +90,10 @@ class EntityViewer extends Component {
     this.setState({ panelOpen: true });
   }
 
+  linkClassNames(selectedTabMatches) {
+    return `${selectedTabMatches ? 'selected' : ''} entity-sidepanel-tab-link`;
+  }
+
   render() {
     const {
       entity,
@@ -232,8 +236,13 @@ class EntityViewer extends Component {
                       aria-label={t('System', 'Page', null, false)}
                       component="div"
                     >
-                      <Icon icon="file-image" />
-                      <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                      <I18NLink
+                        className={this.linkClassNames(selectedTab === 'page')}
+                        to={`/entity/${rawEntity.sharedId}/page`}
+                      >
+                        <Icon icon="file-image" />
+                        <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                      </I18NLink>
                     </TabLink>
                   </li>
                 )}
@@ -245,7 +254,10 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Info', null, false)}
                     component="div"
                   >
-                    <I18NLink to={`/entity/${rawEntity.sharedId}/info`}>
+                    <I18NLink
+                      className={this.linkClassNames(selectedTab === 'info' || selectedTab === '')}
+                      to={`/entity/${rawEntity.sharedId}/info`}
+                    >
                       <Icon icon="info-circle" />
                       <span className="tab-link-tooltip">{t('System', 'Info')}</span>
                     </I18NLink>
@@ -259,7 +271,10 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Relationships', null, false)}
                     component="div"
                   >
-                    <I18NLink to={`/entity/${rawEntity.sharedId}/relationships`}>
+                    <I18NLink
+                      className={this.linkClassNames(selectedTab === 'relationships')}
+                      to={`/entity/${rawEntity.sharedId}/relationships`}
+                    >
                       <Icon icon="exchange-alt" />
                       <span className="connectionsNumber">{summary.totalConnections}</span>
                       <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
