@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { Translate } from 'app/I18N';
-import { LoadingWrapper } from 'app/components/Elements/LoadingWrapper';
-import api from 'app/utils/api';
+import { IStore } from 'app/istore';
 
 const formatBytes = (bytes: number) => {
   //Sourced from https://stackoverflow.com/questions/15900485
@@ -11,33 +11,16 @@ const formatBytes = (bytes: number) => {
   return `${parseFloat((bytes / 1024 ** index).toFixed(2))} ${sizes[index]}`;
 };
 
-const Dashboard = () => {
-  const [systemStats, setSystemStats] = useState({
-    users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
-    entities: { total: 0 },
-    files: { total: 0 },
-    storage: { total: 0 },
-  });
-  const [loading, setLoading] = useState(true);
-  const [storage, setStorage] = useState('0 Bytes');
+const mapStateToProps = (state: IStore) => ({
+  stats: state.settings.stats,
+});
 
-  useEffect(() => {
-    api
-      .get('stats')
-      .then((response: any) => {
-        setSystemStats(response.json);
-        setLoading(false);
-      })
-      .catch(() => {});
+const connector = connect(mapStateToProps);
 
-    return () => {
-      setLoading(true);
-    };
-  }, []);
+type mappedProps = ConnectedProps<typeof connector>;
 
-  useEffect(() => {
-    setStorage(formatBytes(systemStats.storage.total));
-  }, [systemStats.storage.total]);
+const DashboardComponent = ({ stats }: mappedProps) => {
+  const storage = formatBytes(stats.get('storage').get('total'));
 
   return (
     <main className="settings-content">
@@ -55,32 +38,31 @@ const Dashboard = () => {
                     <Translate>Users</Translate>
                   </h2>
                 </div>
-                <LoadingWrapper isLoading={loading}>
-                  <div className="body">
-                    <span className="count">{systemStats.users.total} </span>
-                    <Translate>Total users</Translate>
-                  </div>
-                  <div className="footer">
-                    {systemStats.users.admin > 0 && (
-                      <p className="user-info">
-                        <span className="count">{systemStats.users.admin} </span>
-                        <Translate>Admin</Translate>
-                      </p>
-                    )}
-                    {systemStats.users.editor > 0 && (
-                      <p className="user-info">
-                        <span className="count">{systemStats.users.editor} </span>
-                        <Translate>Editor</Translate>
-                      </p>
-                    )}
-                    {systemStats.users.collaborator > 0 && (
-                      <p className="user-info">
-                        <span className="count">{systemStats.users.collaborator} </span>
-                        <Translate>Collaborator</Translate>
-                      </p>
-                    )}
-                  </div>
-                </LoadingWrapper>
+
+                <div className="body">
+                  <span className="count">{stats.get('users').get('total')} </span>
+                  <Translate>Total users</Translate>
+                </div>
+                <div className="footer">
+                  {stats.get('users').get('admin') > 0 && (
+                    <p className="user-info">
+                      <span className="count">{stats.get('users').get('admin')} </span>
+                      <Translate>Admin</Translate>
+                    </p>
+                  )}
+                  {stats.get('users').get('editor') > 0 && (
+                    <p className="user-info">
+                      <span className="count">{stats.get('users').get('editor')} </span>
+                      <Translate>Editor</Translate>
+                    </p>
+                  )}
+                  {stats.get('users').get('collaborator') > 0 && (
+                    <p className="user-info">
+                      <span className="count">{stats.get('users').get('collaborator')} </span>
+                      <Translate>Collaborator</Translate>
+                    </p>
+                  )}
+                </div>
               </article>
 
               {/*
@@ -94,22 +76,22 @@ const Dashboard = () => {
                     <Translate>Storage</Translate>
                   </h2>
                 </div>
-                <LoadingWrapper isLoading={loading}>
+
                   <div className="body">
                     <div className="usage">
-                      <span className="used">{`${systemStats.storage.total / 1000} GB`} </span>
+                      <span className="used">{`${stats.storage.total / 1000} GB`} </span>
                       <span className="available">
-                        {`${systemStats.storage.available / 1000} GB`}
+                        {`${stats.storage.available / 1000} GB`}
                       </span>
                     </div>
                     <ProgressBar
-                      max={systemStats.storage.available}
-                      value={systemStats.storage.total}
+                      max={stats.storage.available}
+                      value={stats.storage.total}
                       useProgressColors
                       showNumericValue={false}
                     />
                   </div>
-                </LoadingWrapper>
+
                 <div className="footer">
                   <p className="card-info">
                     <Translate>Files and database usage</Translate>
@@ -123,11 +105,11 @@ const Dashboard = () => {
                     <Translate>Storage</Translate>
                   </h2>
                 </div>
-                <LoadingWrapper isLoading={loading}>
-                  <div className="body">
-                    <span className="count">{storage}</span>
-                  </div>
-                </LoadingWrapper>
+
+                <div className="body">
+                  <span className="count">{storage}</span>
+                </div>
+
                 <div className="footer card-info">
                   <p className="card-info">
                     <Translate>Files and database usage</Translate>
@@ -141,12 +123,12 @@ const Dashboard = () => {
                     <Translate>Entities</Translate>
                   </h2>
                 </div>
-                <LoadingWrapper isLoading={loading}>
-                  <div className="body">
-                    <span className="count">{systemStats.entities.total} </span>
-                    <Translate>Total entities</Translate>
-                  </div>
-                </LoadingWrapper>
+
+                <div className="body">
+                  <span className="count">{stats.get('entities').get('total')} </span>
+                  <Translate>Total entities</Translate>
+                </div>
+
                 <div className="footer card-info">
                   <p className="card-info">
                     <Translate>Entities across all languages</Translate>
@@ -160,12 +142,12 @@ const Dashboard = () => {
                     <Translate>Files</Translate>
                   </h2>
                 </div>
-                <LoadingWrapper isLoading={loading}>
-                  <div className="body">
-                    <span className="count">{systemStats.files.total} </span>
-                    <Translate>Total files</Translate>
-                  </div>
-                </LoadingWrapper>
+
+                <div className="body">
+                  <span className="count">{stats.get('files').get('total')} </span>
+                  <Translate>Total files</Translate>
+                </div>
+
                 <div className="footer card-info">
                   <p className="card-info">
                     <Translate>
@@ -182,4 +164,5 @@ const Dashboard = () => {
   );
 };
 
-export { Dashboard };
+const container = connector(DashboardComponent);
+export { container as Dashboard };

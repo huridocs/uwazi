@@ -12,6 +12,12 @@ import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
 
+interface InstanceStats {
+  users: { total: number; admin: number; editor: number; collaborator: number };
+  entities: { total: number };
+  files: { total: number };
+  storage: { total: number };
+}
 interface EntityDisplayState {
   documents: IImmutable<{ rows: EntitySchema[] }>;
   ui: IImmutable<{
@@ -165,6 +171,7 @@ export interface IStore {
   };
   settings: {
     collection: IImmutable<ClientSettings>;
+    stats: IImmutable<InstanceStats>;
   };
   user: IImmutable<ClientUserSchema>;
   users: IImmutable<ClientUserSchema[]>;

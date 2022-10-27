@@ -2,20 +2,14 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import Immutable from 'immutable';
 import { screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import api from 'app/utils/api';
+
 import { Dashboard } from '../Dashboard';
 
 describe('Dashboard', () => {
-  const render = () => {
-    const store = {
-      ...defaultState,
-    };
-    renderConnectedContainer(<Dashboard />, () => store);
-  };
-
-  let apiResposne = {
+  let systenStats = {
     users: { total: 0, admin: 0, editor: 0, collaborator: 0 },
     entities: { total: 0 },
     files: { total: 0 },
@@ -23,55 +17,50 @@ describe('Dashboard', () => {
   };
 
   beforeEach(() => {
-    apiResposne = {
+    systenStats = {
       users: { total: 12, admin: 2, editor: 4, collaborator: 6 },
       entities: { total: 56327 },
       files: { total: 2500 },
       storage: { total: 45000 },
     };
-
-    jest.spyOn(api, 'get').mockResolvedValue({ json: apiResposne });
   });
 
-  describe('Users report', () => {
-    it('should display the total number of users', async () => {
-      render();
+  const render = () => {
+    const store = {
+      ...defaultState,
+      settings: { stats: Immutable.fromJS(systenStats) },
+    };
+    renderConnectedContainer(<Dashboard />, () => store);
+  };
 
-      expect((await screen.findByText('Total users')).parentElement?.textContent).toBe(
-        '12 Total users'
-      );
+  describe('Users report', () => {
+    it('should display the total number of users', () => {
+      render();
+      expect(screen.getByText('Total users').parentElement?.textContent).toBe('12 Total users');
     });
 
-    it('should show a breakdown of user types and not show empty user types', async () => {
-      apiResposne.users = { total: 3, admin: 1, editor: 2, collaborator: 0 };
+    it('should show a breakdown of user types and not show empty user types', () => {
+      systenStats.users = { total: 3, admin: 1, editor: 2, collaborator: 0 };
 
       render();
-
-      expect((await screen.findByText('Total users')).parentElement?.textContent).toBe(
-        '3 Total users'
-      );
-
-      expect((await screen.findByText('Admin')).parentElement?.textContent).toBe('1 Admin');
-      expect((await screen.findByText('Editor')).parentElement?.textContent).toBe('2 Editor');
+      expect(screen.getByText('Total users').parentElement?.textContent).toBe('3 Total users');
+      expect(screen.getByText('Admin').parentElement?.textContent).toBe('1 Admin');
+      expect(screen.getByText('Editor').parentElement?.textContent).toBe('2 Editor');
       expect(screen.queryByText('Collaborator')).not.toBeInTheDocument();
     });
   });
 
   describe('Files report', () => {
-    it('should show the total number of files', async () => {
+    it('should show the total number of files', () => {
       render();
-
-      expect((await screen.findByText('Total files')).parentElement?.textContent).toBe(
-        '2500 Total files'
-      );
+      expect(screen.getByText('Total files').parentElement?.textContent).toBe('2500 Total files');
     });
   });
 
   describe('Entities report', () => {
-    it('should show the total number of files', async () => {
+    it('should show the total number of files', () => {
       render();
-
-      expect((await screen.findByText('Total entities')).parentElement?.textContent).toBe(
+      expect(screen.getByText('Total entities').parentElement?.textContent).toBe(
         '56327 Total entities'
       );
     });
@@ -92,10 +81,10 @@ describe('Dashboard', () => {
       ${6764573491.2}        | ${'6.3 GB'}
     `(
       'should show the expected formatted value of $expectedValue for $bytes bytes',
-      async ({ bytes, expectedValue }) => {
+      ({ bytes, expectedValue }) => {
+        systenStats.storage.total = bytes;
         render();
-        apiResposne.storage.total = bytes;
-        expect(await screen.findByText(expectedValue)).toBeInTheDocument();
+        expect(screen.getByText(expectedValue)).toBeInTheDocument();
       }
     );
   });
