@@ -20,18 +20,30 @@ import blankState from '../Library/helpers/blankState';
 const selectAllEntities = command => {
   command.selectAllDocuments();
 };
-
 class DocumentsList extends Component {
+  static getDerivedStateFromProps(newProps, prevState) {
+    const { scrollCount = 0, parentScrollCount = 0 } = prevState;
+    if (newProps.scrollCount !== parentScrollCount) {
+      return {
+        loading: false,
+        scrollCount: scrollCount + 1,
+        parentScrollCount: newProps.scrollCount,
+      };
+    }
+
+    return { loading: false };
+  }
+
   constructor(props, context) {
     super(props, context);
-    this.state = { loading: false };
+    this.state = {
+      loading: false,
+      scrollCount: 0,
+      parentScrollCount: 0,
+    };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
     this.loadNextGroupOfEntities = this.loadNextGroupOfEntities.bind(this);
-  }
-
-  componentWillReceiveProps() {
-    this.setState({ loading: false });
   }
 
   loadMoreDocuments(amount, from) {
@@ -195,11 +207,19 @@ class DocumentsList extends Component {
             searchDocuments={this.props.searchDocuments}
             filters={this.props.filters}
             tableViewMode={this.props.tableViewMode}
+            scrollCount={this.state.scrollCount}
           />
           {blankState() && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
-            <div className="library-load-container">
+            <div
+              className="library-load-container"
+              onScroll={() => {
+                this.setState((prevState, _props) => ({
+                  scrollCount: prevState.scrollCount + 1,
+                }));
+              }}
+            >
               {libraryContent()}
               {loadMoreSection}
             </div>
@@ -224,6 +244,7 @@ DocumentsList.defaultProps = {
   CollectionViewer: TilesViewer,
   selectedDocuments: {},
   tableViewMode: false,
+  scrollCount: 0,
 };
 
 DocumentsList.propTypes = {
@@ -255,6 +276,7 @@ DocumentsList.propTypes = {
   }),
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,
+  scrollCount: PropTypes.number,
 };
 
 export { DocumentsList };

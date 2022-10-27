@@ -1,5 +1,5 @@
 import { Translate } from 'app/I18N';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
@@ -25,6 +25,7 @@ interface LibraryHeaderOwnProps {
   searchDocuments: Function;
   filters: IImmutable<{ documentTypes: string[] }>;
   tableViewMode: boolean;
+  scrollCount: number;
 }
 
 const mapStateToProps = (state: IStore) => ({
@@ -57,11 +58,18 @@ const LibraryHeaderComponent = ({
   zoomIn,
   zoomOut,
   tableViewMode,
+  scrollCount = 0,
 }: mappedProps) => {
   const [toolbarVisible, setToolbarVisible] = useState(false);
   const toggleToolbarVisible = () => {
     setToolbarVisible(!toolbarVisible);
   };
+
+  useEffect(() => {
+    if (toolbarVisible && scrollCount > 0) {
+      setToolbarVisible(false);
+    }
+  }, [scrollCount]);
 
   return (
     <>

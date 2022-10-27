@@ -5,7 +5,7 @@ import React from 'react';
 import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
 import { fromJS } from 'immutable';
-import { fireEvent, RenderResult, screen } from '@testing-library/react';
+import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 
@@ -26,6 +26,7 @@ describe('LibraryHeader', () => {
     searchDocuments: jest.fn(),
     filters: fromJS([]),
     tableViewMode: false,
+    scrollCount: 0,
   };
 
   const reducer = combineReducers({
@@ -69,7 +70,16 @@ describe('LibraryHeader', () => {
       },
     ]),
     library: {
-      ui: fromJS({ filtersPanel: [], selectedDocuments: [], zoomLevel: 2 }),
+      ui: fromJS({
+        filtersPanel: [],
+        selectedDocuments: [],
+        zoomLevel: 2,
+        tableViewColumns: [
+          { name: 'title', label: 'Title' },
+          { name: 'dateAdded', label: 'Creation Date' },
+          { name: 'column1', label: 'Column 1' },
+        ],
+      }),
       filters: fromJS({ documentTypes: ['template2'], properties: [] }),
       search: {
         sort: 'desc',
@@ -133,5 +143,18 @@ describe('LibraryHeader', () => {
 
     expect(screen.queryByLabelText('library list view')).toBeInTheDocument();
     expect(screen.queryByLabelText('library table view')).toBeInTheDocument();
+  });
+  it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
+    props.tableViewMode = true;
+    props.storeKey = 'library';
+    render();
+    const hiddenColumnsDropDown = renderResult.container.getElementsByClassName(
+      'hidden-columns-dropdown'
+    )[0] as HTMLElement;
+    fireEvent.click(within(hiddenColumnsDropDown).getByTitle('open dropdown'));
+    screen.debug();
+    const options = screen.getAllByRole('option');
+    const optionsLabel = options.map(option => option.textContent);
+    expect(optionsLabel).toEqual(['Show all', 'Creation Date', 'Column 1']);
   });
 });

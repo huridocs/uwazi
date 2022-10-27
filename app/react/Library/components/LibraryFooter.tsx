@@ -1,7 +1,7 @@
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'app/UI';
-import React, { Dispatch, useState } from 'react';
+import React, { Dispatch, useEffect, useState } from 'react';
 import { bindActionCreators } from 'redux';
 import {
   newEntity as newEntityAction,
@@ -14,6 +14,7 @@ import { PDFUploadButton } from './PDFUploadButton';
 
 interface LibraryFooterOwnProps {
   storeKey: string;
+  scrollCount: number;
 }
 
 interface LibraryFooterActions {
@@ -23,11 +24,22 @@ interface LibraryFooterActions {
 
 type LibraryFooterProps = LibraryFooterActions & LibraryFooterOwnProps;
 
-const LibraryFooterComponent = ({ storeKey, newEntity, showImportPanel }: LibraryFooterProps) => {
+const LibraryFooterComponent = ({
+  storeKey,
+  newEntity,
+  showImportPanel,
+  scrollCount,
+}: LibraryFooterProps) => {
   const [footerVisible, setFooterVisible] = useState(false);
   const toggleFooterVisible = () => {
     setFooterVisible(!footerVisible);
   };
+  useEffect(() => {
+    if (footerVisible && scrollCount > 0) {
+      setFooterVisible(false);
+    }
+  }, [scrollCount]);
+
   return (
     <>
       <div

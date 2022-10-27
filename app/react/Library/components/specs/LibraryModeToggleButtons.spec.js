@@ -70,16 +70,6 @@ describe('LibraryModeToggleButtons', () => {
     });
   });
 
-  describe('when showColumnSelector is true', () => {
-    it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
-      props = defaultProps;
-      props.tableViewMode = true;
-      props.storeKey = 'library';
-      render();
-      const hideColumnsDropdownCount = component.find(HiddenColumnsDropdown);
-      expect(hideColumnsDropdownCount.props().storeKey).toBe('library');
-    });
-  });
   describe('when tableViewMode is false', () => {
     it('should not render HideColumnsDropdown', () => {
       props = defaultProps;
