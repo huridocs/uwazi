@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
 // Run with ts-node, explicitly passing tsconfig, and ignore the compile errors. From the project root:
-// yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/migrateRelationshipsToV2.ts
+// yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/simpleLiftHubs.ts
 import process from 'process';
 
 import mongodb, { Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
