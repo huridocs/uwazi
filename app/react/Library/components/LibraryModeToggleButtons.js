@@ -90,7 +90,6 @@ export class LibraryModeToggleButtons extends Component {
 }
 
 LibraryModeToggleButtons.propTypes = {
-  storeKey: PropTypes.string.isRequired,
   searchUrl: PropTypes.string.isRequired,
   showGeolocation: PropTypes.bool.isRequired,
   zoomIn: PropTypes.func,
@@ -125,7 +124,7 @@ export function mapStateToProps(state, props) {
   );
 
   return {
-    searchUrl: encodedSearch(state[props.storeKey]),
+    searchUrl: encodedSearch(state.library),
     showGeolocation,
     zoomLevel:
       Object.keys(props).indexOf('zoomLevel') !== -1

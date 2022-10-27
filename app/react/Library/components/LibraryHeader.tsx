@@ -104,7 +104,6 @@ const LibraryHeaderComponent = ({
               </NeedAuthorization>
             </div>
             <LibraryModeToggleButtons
-              storeKey="library"
               zoomIn={zoomIn}
               zoomOut={zoomOut}
               tableViewMode={tableViewMode}

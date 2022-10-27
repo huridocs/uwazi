@@ -91,6 +91,7 @@ describe('DocumentsList', () => {
       storeKey: 'library',
       filters: fromJS({ documentTypes: [] }),
       tableViewMode: false,
+      scrollCount: 0,
     });
 
     libraryHeader.props().selectAllDocuments();

@@ -18,7 +18,6 @@ describe('LibraryModeToggleButtons', () => {
     zoomIn: jasmine.createSpy('zoomIn'),
     zoomOut: jasmine.createSpy('zoomOut'),
     zoomLevel: 3,
-    storeKey: 'library',
   };
 
   const render = () => {
