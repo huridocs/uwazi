@@ -25,6 +25,11 @@ const DashboardComponent = ({ stats }: mappedProps) => {
   }
 
   const storage = formatBytes(stats.get('storage').get('total'));
+  const [adminUsers, editorUsers, collaboratorUsers] = [
+    stats.get('users').get('admin'),
+    stats.get('users').get('editor'),
+    stats.get('users').get('collaborator'),
+  ];
 
   return (
     <main className="settings-content">
@@ -48,21 +53,21 @@ const DashboardComponent = ({ stats }: mappedProps) => {
                   <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
-                  {stats.get('users').get('admin') > 0 && (
+                  {adminUsers > 0 && (
                     <p className="user-info">
-                      <span className="count">{stats.get('users').get('admin')} </span>
+                      <span className="count">{adminUsers} </span>
                       <Translate>Admin</Translate>
                     </p>
                   )}
-                  {stats.get('users').get('editor') > 0 && (
+                  {editorUsers > 0 && (
                     <p className="user-info">
-                      <span className="count">{stats.get('users').get('editor')} </span>
+                      <span className="count">{editorUsers} </span>
                       <Translate>Editor</Translate>
                     </p>
                   )}
-                  {stats.get('users').get('collaborator') > 0 && (
+                  {collaboratorUsers > 0 && (
                     <p className="user-info">
-                      <span className="count">{stats.get('users').get('collaborator')} </span>
+                      <span className="count">{collaboratorUsers} </span>
                       <Translate>Collaborator</Translate>
                     </p>
                   )}
