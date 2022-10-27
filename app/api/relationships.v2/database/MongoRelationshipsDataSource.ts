@@ -1,7 +1,6 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
-import { ObjectId } from 'mongodb';
 import { ApplicationRelationshipType, Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
