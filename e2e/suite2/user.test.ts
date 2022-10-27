@@ -52,9 +52,9 @@ describe('User', () => {
         }))
       );
       expect(groups.length).toBe(2);
-      expect(groups[0].groupName).toEqual('Activistas');
+      expect(groups[0].groupName?.trim()).toEqual('Activistas');
       expect(groups[0].checked).toBe(true);
-      expect(groups[1].groupName).toEqual('Asesores legales');
+      expect(groups[1].groupName?.trim()).toEqual('Asesores legales');
       expect(groups[1].checked).toBe(false);
     });
 
