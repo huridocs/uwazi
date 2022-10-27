@@ -1,7 +1,7 @@
-import { Db } from 'mongodb';
+import { Db, Document } from 'mongodb';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
-export abstract class MongoDataSource<CollectionSchema = any> {
+export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
 
   protected abstract collectionName: string;
