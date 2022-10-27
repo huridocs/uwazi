@@ -10,7 +10,6 @@ import React, { Component, createRef, RefObject } from 'react';
 import { Icon } from 'UI';
 
 type Option = { options?: Option[]; results?: number } & { [k: string]: any };
-
 enum SelectStates {
   OFF,
   PARTIAL,
