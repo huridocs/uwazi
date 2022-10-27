@@ -95,7 +95,11 @@ describe('I18NMenu', () => {
     render('editor');
     expect(screen.queryByText('Live translate')).toBeInTheDocument();
     const listItems = screen.getAllByRole('listitem');
-    expect(listItems.map(item => item.textContent)).toEqual(['English', 'Español']);
+    expect(listItems.map(item => item.textContent)).toEqual([
+      'English',
+      'Español',
+      'Live translate',
+    ]);
   });
 
   it('should show as active the current locale', async () => {
