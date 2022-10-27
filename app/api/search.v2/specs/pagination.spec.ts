@@ -36,16 +36,16 @@ describe('Pagination', () => {
 
   it('should allow limiting the results and return required links', async () => {
     const { body } = await request(app)
-      .get('/api/v2/entities')
+      .get('/api/v2/search')
       .query({ page: { limit: 2 } });
 
     expect(body.data).toMatchObject([{ title: 'First' }, { title: 'Second' }]);
-    expect(body.links.first).toEqual(`/api/v2/entities?${qs.stringify({ page: { limit: 2 } })}`);
+    expect(body.links.first).toEqual(`/api/v2/search?${qs.stringify({ page: { limit: 2 } })}`);
   });
 
   it('should paginate results', async () => {
     let { body } = await request(app)
-      .get('/api/v2/entities')
+      .get('/api/v2/search')
       .query({ page: { limit: 2 } })
       .expect(200);
 
@@ -61,7 +61,7 @@ describe('Pagination', () => {
 
   it('should omit prev and next values on search limits', async () => {
     let { body } = await request(app)
-      .get('/api/v2/entities')
+      .get('/api/v2/search')
       .query({ page: { limit: 2 } })
       .expect(200);
 

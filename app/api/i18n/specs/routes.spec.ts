@@ -62,6 +62,10 @@ describe('i18n translations routes', () => {
     });
   });
 
+  afterEach(() => {
+    iosocket.emit.mockReset();
+  });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
@@ -185,6 +189,90 @@ describe('i18n translations routes', () => {
             locale: 'es',
           })
         );
+      });
+    });
+
+    describe('api/translations/languages', () => {
+      it('should return the saved translation', async () => {
+        const chineseCsv = `Key,Chinese
+      Search,搜索`;
+
+        config.githubToken = 'gh_token';
+        backend.restore();
+
+        backend.get(
+          (url, opts) =>
+            url ===
+              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/ch.csv' &&
+            // @ts-ignore
+            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+            // @ts-ignore
+            opts?.headers?.accept === 'application/vnd.github.v4.raw',
+          { body: chineseCsv }
+        );
+
+        const response = await request(app).post('/api/translations/languages').send({
+          key: 'ch',
+          label: 'Chinese',
+        });
+
+        const newSettings = {
+          _id: expect.anything(),
+          languages: [
+            {
+              _id: expect.anything(),
+              key: 'en',
+              label: 'English',
+              default: true,
+            },
+            {
+              _id: expect.anything(),
+              key: 'es',
+              label: 'Spanish',
+              default: false,
+            },
+            {
+              _id: expect.anything(),
+              key: 'ch',
+              label: 'Chinese',
+            },
+          ],
+          mapStartingPoint: [
+            {
+              lon: 6,
+              lat: 46,
+            },
+          ],
+          links: [],
+          filters: [],
+        };
+        expect(response.body).toEqual(newSettings);
+        expect(iosocket.emit.mock.calls).toEqual([
+          ['updateSettings', newSettings],
+          [
+            'translationsChange',
+            {
+              locale: 'ch',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: [
+                    {
+                      key: 'Search',
+                      value: 'Search',
+                      _id: expect.anything(),
+                    },
+                  ],
+                  _id: expect.anything(),
+                },
+              ],
+              _id: expect.anything(),
+              __v: 0,
+            },
+          ],
+        ]);
       });
     });
 
@@ -357,6 +445,65 @@ describe('i18n translations routes', () => {
           .send({ context: 'context' })
           .expect(200);
         expect(loadTranslationsMock).toHaveBeenCalledWith('filder/filename.ext', 'context');
+      });
+    });
+  });
+
+  describe('DELETE', () => {
+    describe('api/translations/languages', () => {
+      it('should return the deleted translations', async () => {
+        const response = await request(app).delete('/api/translations/languages?key=es').send();
+
+        expect(response.body).toEqual({
+          _id: expect.anything(),
+          filters: [],
+          languages: [
+            {
+              _id: expect.anything(),
+              default: true,
+              key: 'en',
+              label: 'English',
+            },
+          ],
+          links: [],
+          mapStartingPoint: [
+            {
+              lat: 46,
+              lon: 6,
+            },
+          ],
+        });
+        expect(iosocket.emit.mock.calls).toEqual([
+          [
+            'updateSettings',
+            {
+              _id: expect.anything(),
+              filters: [],
+              languages: [
+                {
+                  _id: expect.anything(),
+                  default: true,
+                  key: 'en',
+                  label: 'English',
+                },
+              ],
+              links: [],
+              mapStartingPoint: [
+                {
+                  lat: 46,
+                  lon: 6,
+                },
+              ],
+            },
+          ],
+          [
+            'translationsChange',
+            {
+              acknowledged: true,
+              deletedCount: 1,
+            },
+          ],
+        ]);
       });
     });
   });
