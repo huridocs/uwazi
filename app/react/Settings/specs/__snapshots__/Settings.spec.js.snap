@@ -78,6 +78,9 @@ Array [
       "siteName": "BatCave",
     },
   },
-  undefined,
+  Object {
+    "type": "settings/stats/SET",
+    "value": Object {},
+  },
 ]
 `;

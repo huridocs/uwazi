@@ -22,10 +22,10 @@ export class Settings extends RouteHandler {
       ThesauriAPI.getThesauri(request),
       I18NApi.get(request),
       SettingsAPI.get(request),
-      TemplatesAPI.get(requestParams.onlyHeaders()),
+      TemplatesAPI.get(request),
     ]);
 
-    const stats = user.role === UserRole.ADMIN ? await SettingsAPI.stats() : undefined;
+    const stats = user.role === UserRole.ADMIN ? await SettingsAPI.stats(request) : {};
 
     // This builds and queries elasticsearch for suggestion counts per thesaurus
     const props = thesauri
@@ -65,7 +65,7 @@ export class Settings extends RouteHandler {
       actions.set('dictionaries', thesauri),
       actions.set('translations', translations),
       actions.set('settings/collection', collection),
-      stats && actions.set('settings/stats', stats),
+      actions.set('settings/stats', stats),
     ];
   }
 
