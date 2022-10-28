@@ -34,13 +34,7 @@ class Menu extends Component {
         if (url.startsWith('http')) {
           return (
             <li key={link.get('_id')} className="menuNav-item">
-              <a
-                href={url}
-                className="btn menuNav-btn"
-                activeClassName="active-link"
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={url} className="btn menuNav-btn" target="_blank" rel="noreferrer">
                 {t('Menu', link.get('title'))}
               </a>
             </li>
