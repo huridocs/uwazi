@@ -1,5 +1,6 @@
 import { renderConnected } from 'app/utils/test/renderConnected';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+import { ShallowWrapper } from 'enzyme';
 import { LibraryFooter } from '../LibraryFooter';
 
 describe('LibraryFooter', () => {
@@ -24,5 +25,43 @@ describe('LibraryFooter', () => {
     const createButton = component.find({ icon: 'import-csv' }).parent();
     createButton.simulate('click');
     expect(uploadActions.showImportPanel).toHaveBeenCalled();
+  });
+
+  describe('open/close actions', () => {
+    let component: ShallowWrapper;
+    it('should not have footer and open button as closed at the same time', () => {
+      const props = { storeKey: 'library' };
+      component = renderConnected(LibraryFooter, props, {});
+      expect(
+        component.find('.open-actions-button').find('.toggle-footer-button').props().className
+      ).not.toContain('closed');
+      expect(component.find('.library-footer').props().className).toContain('closed');
+    });
+
+    const openFooter = () => {
+      const openButton = component.find('.open-actions-button').find('.toggle-footer-button');
+      openButton.simulate('click');
+      component.update();
+    };
+    it('should allow opening the library-footer removing class "closed" from the element', () => {
+      const props = { storeKey: 'library' };
+      component = renderConnected(LibraryFooter, props, {});
+
+      expect(component.find('.library-footer').props().className).toContain('closed');
+      openFooter();
+      expect(component.find('.open-actions-button').props().className).toContain('closed');
+      expect(component.find('.library-footer').props().className).not.toContain('closed');
+    });
+
+    it('should allow closing the library-footer adding class "closed" to the element', () => {
+      const props = { storeKey: 'library' };
+      component = renderConnected(LibraryFooter, props, {});
+
+      openFooter();
+      const closeButton = component.find('.close-actions-button').find('.toggle-footer-button');
+      closeButton.simulate('click');
+      component.update();
+      expect(component.find('.library-footer').props().className).toContain('closed');
+    });
   });
 });
