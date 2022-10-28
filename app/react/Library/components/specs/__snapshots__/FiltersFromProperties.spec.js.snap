@@ -77,10 +77,12 @@ Array [
       Array [
         Object {
           "label": "option1",
+          "url": "/library/?q=(allAggregations:!f,filters:(selectFilter:(values:!())),from:0,includeUnpublished:!f,limit:30,order:desc,sort:creationDate,unpublished:!f)",
         },
         Object {
           "id": "missing",
           "label": "No Label",
+          "url": "/library/?q=(allAggregations:!f,filters:(selectFilter:(values:!())),from:0,includeUnpublished:!f,limit:30,order:desc,sort:creationDate,unpublished:!f)",
         },
       ]
     }
@@ -99,6 +101,7 @@ Array [
       Array [
         Object {
           "label": "option3",
+          "url": "/library/?q=(allAggregations:!f,filters:(multiselectFilter:(values:!())),from:0,includeUnpublished:!f,limit:30,order:desc,sort:creationDate,unpublished:!f)",
         },
       ]
     }
@@ -117,6 +120,7 @@ Array [
       Array [
         Object {
           "label": "option2",
+          "url": "/library/?q=(allAggregations:!f,filters:(relationshipFilter:(values:!())),from:0,includeUnpublished:!f,limit:30,order:desc,sort:creationDate,unpublished:!f)",
         },
       ]
     }
