@@ -19,6 +19,7 @@ import {
   restrictedUploadId2,
   adminUser,
   writerUser,
+  externalUrlFileId,
 } from './fixtures';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
@@ -183,6 +184,16 @@ describe('files routes', () => {
   describe('DELETE/api/files', () => {
     beforeEach(() => {
       testingEnvironment.setPermissions(adminUser);
+    });
+
+    it('should properly delete files that are external urls', async () => {
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: externalUrlFileId.toString() })
+        .expect(200);
+
+      const [file] = await files.get({ _id: externalUrlFileId.toString() });
+      expect(file).toBeUndefined();
     });
 
     it('should not allow any extra parameters aside from a properly typed id', async () => {
