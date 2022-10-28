@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showFilters } from 'app/Entities/actions/uiActions';
+import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
 import { bindActionCreators } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
@@ -129,16 +129,16 @@ export function mapStateToProps(state, props) {
     zoomLevel:
       Object.keys(props).indexOf('zoomLevel') !== -1
         ? props.zoomLevel
-        : state[props.storeKey].ui.get('zoomLevel'),
+        : state.library.ui.get('zoomLevel'),
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
-      showFilters,
+      showFilters: showFiltersAction,
     },
-    wrapDispatch(dispatch, props.storeKey)
+    wrapDispatch(dispatch, 'library')
   );
 }
 
