@@ -1,4 +1,4 @@
-import { renderConnected } from 'app/utils/test/renderConnected';
+import { renderConnected, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import { ShallowWrapper } from 'enzyme';
 import { LibraryFooter } from '../LibraryFooter';
