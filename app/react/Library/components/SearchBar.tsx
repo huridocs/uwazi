@@ -16,45 +16,43 @@ import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { IStore } from 'app/istore';
 
-interface SearchBarOwnProps {
-  storeKey: 'library' | 'uploads';
-}
-const mapStateToProps = (state: IStore, props: SearchBarOwnProps) => {
-  const { search, filters } = state[props.storeKey];
+interface SearchBarOwnProps {}
+const mapStateToProps = (state: IStore) => {
+  const { search, filters } = state.library;
   return {
     initSearch: search,
     initFilters: filters,
   };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, props: SearchBarOwnProps) =>
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     {
       searchDocuments: searchDocumentsAction,
       change: formActions.change,
       semanticSearch: submitNewSearch,
     },
-    wrapDispatch(dispatch, props.storeKey)
+    wrapDispatch(dispatch, 'library')
   );
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & SearchBarOwnProps;
-// eslint-disable-next-line import/exports-last
+
 const SearchBarComponent = ({
   initSearch,
   initFilters,
-  storeKey,
+
   searchDocuments,
   change,
   semanticSearch,
 }: mappedProps) => {
   const search = processFilters(initSearch, initFilters.toJS());
   const resetSearch = () => {
-    change(`${storeKey}.search.searchTerm`, '');
+    change('library.search.searchTerm', '');
     const newSearch = { ...search };
     newSearch.searchTerm = '';
-    searchDocuments({ search: newSearch }, storeKey);
+    searchDocuments({ search: newSearch }, 'library');
   };
 
   const submitSemanticSearch = () => {
@@ -62,13 +60,12 @@ const SearchBarComponent = ({
   };
 
   const doSearch = (newSearch: any) => {
-    searchDocuments({ search: newSearch }, storeKey);
+    searchDocuments({ search: newSearch }, 'library');
   };
 
-  const model = `${storeKey}.search`;
   return (
     <div className="search-box">
-      <Form model={model} onSubmit={doSearch}>
+      <Form model="library.search" onSubmit={doSearch}>
         <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
           <Field model=".searchTerm">
             <input

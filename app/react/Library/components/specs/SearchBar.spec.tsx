@@ -52,10 +52,7 @@ describe('SearchBar', () => {
       },
       settings: { collection: Immutable.fromJS({}) },
     };
-    ({ renderResult, store } = renderConnectedContainer(
-      <SearchBar storeKey="library" />,
-      () => state
-    ));
+    ({ renderResult, store } = renderConnectedContainer(<SearchBar />, () => state));
   });
 
   describe('form on submit', () => {
@@ -68,7 +65,7 @@ describe('SearchBar', () => {
       state.library.search.searchTerm = 'SEARCH MODEL VALUES';
       renderResult.rerender(
         <Provider store={store}>
-          <SearchBar storeKey="library" />
+          <SearchBar />
         </Provider>
       );
       fireEvent.click(screen.getByRole('button'));

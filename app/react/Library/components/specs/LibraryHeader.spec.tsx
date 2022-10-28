@@ -17,7 +17,6 @@ import { SearchBar } from '../SearchBar';
 describe('LibraryHeader', () => {
   let renderResult: RenderResult;
   const props: LibraryHeaderOwnProps = {
-    storeKey: 'library',
     counter: <span>counter</span>,
     selectAllDocuments: jest.fn(),
     sortButtonsStateProperty: 'library.search',
@@ -146,13 +145,11 @@ describe('LibraryHeader', () => {
   });
   it('should render HideColumnsDropdown dropdown list with the storeKey', () => {
     props.tableViewMode = true;
-    props.storeKey = 'library';
     render();
     const hiddenColumnsDropDown = renderResult.container.getElementsByClassName(
       'hidden-columns-dropdown'
     )[0] as HTMLElement;
     fireEvent.click(within(hiddenColumnsDropDown).getByTitle('open dropdown'));
-    screen.debug();
     const options = screen.getAllByRole('option');
     const optionsLabel = options.map(option => option.textContent);
     expect(optionsLabel).toEqual(['Show all', 'Creation Date', 'Column 1']);

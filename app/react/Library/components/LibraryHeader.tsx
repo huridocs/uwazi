@@ -16,7 +16,6 @@ import { IImmutable } from 'shared/types/Immutable';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 
 interface LibraryHeaderOwnProps {
-  storeKey: 'library' | 'uploads';
   counter: React.ReactElement;
   selectAllDocuments: () => {};
   sortButtonsStateProperty: string;
@@ -47,7 +46,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & LibraryHeaderOwnProps;
 
 const LibraryHeaderComponent = ({
-  storeKey,
   filters,
   sortButtonsStateProperty,
   selectAllDocuments,
@@ -77,7 +75,7 @@ const LibraryHeaderComponent = ({
         <div className="library-toolbar">
           {SearchBar !== undefined && (
             <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-              <SearchBar storeKey={storeKey} />
+              <SearchBar />
             </div>
           )}
           <div className="header-bottom">
@@ -89,7 +87,6 @@ const LibraryHeaderComponent = ({
                 sortCallback={searchDocuments}
                 selectedTemplates={filters.get('documentTypes')}
                 stateProperty={sortButtonsStateProperty}
-                storeKey={storeKey}
               />
               <NeedAuthorization>
                 <div className="select-all-documents">

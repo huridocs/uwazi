@@ -61,7 +61,6 @@ const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
   }, []);
 
 interface SortButtonsOwnProps {
-  storeKey: 'library' | 'uploads';
   stateProperty: string;
   // eslint-disable-next-line react/no-unused-prop-types
   selectedTemplates: IImmutable<string[]>;
@@ -70,9 +69,7 @@ interface SortButtonsOwnProps {
 
 const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   let templates;
-  const stateProperty = ownProps.stateProperty
-    ? ownProps.stateProperty
-    : `${ownProps.storeKey}.search`;
+  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
     templates = state.templates.filter(
@@ -90,8 +87,8 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
   return { stateProperty, search, templates: templates || state.templates };
 };
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, props: SortButtonsOwnProps) =>
-  bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, props.storeKey));
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ merge: actions.merge }, wrapDispatch(dispatch, 'library'));
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
@@ -143,7 +140,6 @@ const sortDirection = (condition: string) => {
 };
 
 const SortButtonsComponent = ({
-  storeKey,
   search,
   merge,
   stateProperty,
@@ -158,7 +154,7 @@ const SortButtonsComponent = ({
     const filters = { ...search, ...newSort, userSelectedSorting: true };
     //@ts-ignore
     delete filters.treatAs;
-    return sortCallback && sortCallback({ search: filters }, storeKey);
+    return sortCallback && sortCallback({ search: filters }, 'library');
   };
 
   const changeOrder = () => {
