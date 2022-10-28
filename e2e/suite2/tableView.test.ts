@@ -23,7 +23,6 @@ describe('Table view', () => {
   const selectAllColumns = async () => {
     await page.click('.hidden-columns-dropdown');
     const showAllSelector = "#rw_3_listbox > li:nth-child(1) > input[type='checkbox']";
-    const showAllSelector = "#rw_1_listbox > li:nth-child(1) > input[type='checkbox']";
     await page.$$eval(showAllSelector, item => {
       (<HTMLInputElement>item[0]).checked = false;
       (<HTMLInputElement>item[0]).click();
