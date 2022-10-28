@@ -26,7 +26,11 @@ describe('TemplatesFilter', () => {
     };
     component = renderConnected(
       TemplatesFilter,
-      { storeKey: 'library', filterDocumentTypes: jasmine.createSpy('deleteAttachment') },
+      {
+        storeKey: 'library',
+        filterDocumentTypes: jasmine.createSpy('deleteAttachment'),
+        location: { query: {} },
+      },
       store
     );
   };
@@ -38,14 +42,14 @@ describe('TemplatesFilter', () => {
       });
 
       it('should mark FEATURED as the default option', () => {
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().fromFilters).toBe(true);
       });
 
       it('should allows logged users to switch templates filter between ALL/FEATURED', () => {
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(false);
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().fromFilters).toBe(false);
       });
     });
@@ -55,7 +59,7 @@ describe('TemplatesFilter', () => {
         render();
         const documentTypesSwitcher = component.find('Switcher');
         expect(documentTypesSwitcher.length).toBe(0);
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().fromFilters).toBe(false);
       });
     });
@@ -64,7 +68,7 @@ describe('TemplatesFilter', () => {
       it('should list all templates if the library filters are not present in configured filters', () => {
         spyOn(redux, 'bindActionCreators').and.callFake(propsToBind => propsToBind);
         render([{ id: '1', name: 'Judge' }], ['2']);
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().fromFilters).toBe(false);
         expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
@@ -74,7 +78,7 @@ describe('TemplatesFilter', () => {
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
         expect(filterDocumentTypes).toHaveBeenCalledWith([]);
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().selectedTemplates.length).toBe(0);
       });
 
@@ -83,7 +87,7 @@ describe('TemplatesFilter', () => {
         render([{ id: '1', name: 'Judge', items: [{ id: '2' }] }], ['2']);
         const documentTypesSwitcher = component.find('Switcher');
         documentTypesSwitcher.props().onChange(true);
-        const documentTypesList = component.find('Connect(DocumentTypesList)');
+        const documentTypesList = component.find('Connect(withRouter(DocumentTypesList))');
         expect(documentTypesList.props().selectedTemplates).toEqual(['2']);
       });
     });
