@@ -47,6 +47,7 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
+      - run: node node_modules/puppeteer/install.js
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
