@@ -74,40 +74,6 @@ const DashboardComponent = ({ stats }: mappedProps) => {
                 </div>
               </article>
 
-              {/*
-              Card for storage report with available and total,
-              disabled until we can report on total available storage effectivly.
-              */}
-
-              {/* <article className="card">
-                <div className="heading">
-                  <h2>
-                    <Translate>Storage</Translate>
-                  </h2>
-                </div>
-
-                  <div className="body">
-                    <div className="usage">
-                      <span className="used">{`${stats.storage.total / 1000} GB`} </span>
-                      <span className="available">
-                        {`${stats.storage.available / 1000} GB`}
-                      </span>
-                    </div>
-                    <ProgressBar
-                      max={stats.storage.available}
-                      value={stats.storage.total}
-                      useProgressColors
-                      showNumericValue={false}
-                    />
-                  </div>
-
-                <div className="footer">
-                  <p className="card-info">
-                    <Translate>Files and database usage</Translate>
-                  </p>
-                </div>
-              </article>  */}
-
               <article className="card">
                 <div className="heading">
                   <h2>
