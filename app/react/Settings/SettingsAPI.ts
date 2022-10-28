@@ -25,4 +25,8 @@ export default {
   async get(query: RequestParams = new RequestParams()): Promise<Settings> {
     return api.get('settings', query).then((response: any) => response.json);
   },
+
+  async stats(query: RequestParams = new RequestParams()) {
+    return api.get('stats', query).then((response: any) => response.json);
+  },
 };

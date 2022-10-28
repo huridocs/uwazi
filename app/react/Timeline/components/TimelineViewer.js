@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { t as translate, I18NLink } from 'app/I18N';
 import ShowIf from 'app/App/ShowIf';
 

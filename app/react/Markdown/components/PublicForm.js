@@ -13,7 +13,7 @@ import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
 import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import { generateID } from 'shared/IDGenerator';
 

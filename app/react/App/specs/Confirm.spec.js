@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Modal from 'app/Layout/Modal';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import Confirm from '../Confirm';
 
 describe('CantDeleteTemplateAlert', () => {
