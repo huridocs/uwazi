@@ -1,6 +1,6 @@
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import * as uiActions from 'app/Entities/actions/uiActions';
 import { OneUpState } from 'app/istore';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';

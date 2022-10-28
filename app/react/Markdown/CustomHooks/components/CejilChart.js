@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { StackedDualBarChart, arrayUtils } from 'app/Charts';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { t } from 'app/I18N';
 
 export const countriesTemplate = '58b2f3a35d59f31e1345b480';
