@@ -11,6 +11,7 @@ import ThesauriList from './components/ThesauriList';
 import TranslationsList from './components/TranslationsList';
 import Settings from './Settings';
 import SettingsAPI from './SettingsAPI';
+import { Dashboard } from './components/Dashboard';
 import { PreserveSettings } from './components/PreserveSettings';
 
 export { default as CustomUploads } from './components/CustomUploads';
@@ -29,4 +30,5 @@ export {
   FiltersForm,
   LanguageList,
   Customisation,
+  Dashboard,
 };
