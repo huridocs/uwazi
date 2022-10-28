@@ -40,9 +40,9 @@ describe('User groups', () => {
           username: item.textContent,
         }))
       );
-      expect(users[0].username).toEqual('editor');
+      expect(users[0].username?.trim()).toEqual('editor');
       expect(users[0].checked).toBe(true);
-      expect(users[1].username).toEqual('admin');
+      expect(users[1].username?.trim()).toEqual('admin');
       expect(users[1].checked).toBe(false);
     });
 

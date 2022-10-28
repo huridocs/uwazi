@@ -159,6 +159,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         />
         Option1
       </span>
+       
       <span
         className="multiselectItem-results"
       >
@@ -225,6 +226,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         />
         Option2
       </span>
+       
       <span
         className="multiselectItem-results"
       >
@@ -291,6 +293,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
           />
           Sub Group
         </span>
+         
         <span
           className="multiselectItem-results"
         >
@@ -371,6 +374,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
               />
               Group option1
             </span>
+             
             <span
               className="multiselectItem-results"
             >
@@ -437,6 +441,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
               />
               Group option2
             </span>
+             
             <span
               className="multiselectItem-results"
             >

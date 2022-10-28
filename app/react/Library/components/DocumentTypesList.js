@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
+import { withRouter, Link } from 'react-router';
+import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
@@ -25,7 +27,12 @@ export class DocumentTypesList extends Component {
     super(props);
     this.state = {
       ui: {},
+      serverSideRender: true,
     };
+  }
+
+  componentDidMount() {
+    this.setState({ serverSideRender: false });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -124,8 +131,25 @@ export class DocumentTypesList extends Component {
     );
   }
 
+  optionUrl(value, query) {
+    const q = rison.encode({
+      ...query,
+      types: [value],
+      from: 0,
+      limit: 30,
+      includeUnpublished: false,
+      order: 'desc',
+      sort: 'creationDate',
+      unpublished: false,
+      allAggregations: false,
+    });
+    return `/library/?q=${q}`;
+  }
+
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
+    const { q = '(filters:())' } = this.props.location.query;
+    const query = rison.decode(q);
     return (
       <li className="multiselectItem" key={index} title={item.name}>
         <input
@@ -142,9 +166,16 @@ export class DocumentTypesList extends Component {
             <Icon icon="check" className="checkbox-checked" />
           </span>
           <span className="multiselectItem-name">
-            <Translate context={context}>{item.name}</Translate>
+            {this.state.serverSideRender ? (
+              <Link to={this.optionUrl(item.id, query)}>
+                <Translate context={context}>{item.name}</Translate>
+              </Link>
+            ) : (
+              <Translate context={context}>{item.name}</Translate>
+            )}
           </span>
         </label>
+        &nbsp;
         <span className="multiselectItem-results">{this.aggregations(item)}</span>
       </li>
     );
@@ -219,6 +250,7 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
+  location: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -234,4 +266,4 @@ function mapDispatchToProps(dispatch, _ownProps) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentTypesList);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(DocumentTypesList));
