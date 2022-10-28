@@ -542,6 +542,17 @@
     border-bottom: 1px solid;
     margin-bottom: -1px;
   }
+
+  a {
+    color: $c-grey-dark;
+    font-size: 1em;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 300;
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .multiselectItem-results {
