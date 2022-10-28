@@ -18,8 +18,10 @@ import {
 const getSuggestions = async (propertyName: string, size = 5) =>
   Suggestions.get({ propertyName }, { page: { size, number: 1 } });
 
-const findOneSuggestion = async (query: any) =>
-  db.mongodb?.collection('ixsuggestions').findOne({ ...query });
+const findOneSuggestion = async (query: any): Promise<IXSuggestionType> =>
+  db.mongodb
+    ?.collection('ixsuggestions')
+    .findOne({ ...query }) as unknown as Promise<IXSuggestionType>;
 
 const stateUpdateCases = [
   {

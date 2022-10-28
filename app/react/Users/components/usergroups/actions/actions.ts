@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { t } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { actions } from 'app/BasicReducer';
@@ -15,7 +15,7 @@ export function loadUserGroups() {
   };
 }
 
-export function saveUserGroup(userGroup: UserGroupSchema) {
+export function saveUserGroup(userGroup: ClientUserGroupSchema) {
   return async (dispatch: Dispatch<IStore>) => {
     const savedUserGroup = await saveGroup(new RequestParams(userGroup));
     const userGroupToDispatch = { ...savedUserGroup, members: userGroup.members };
@@ -29,7 +29,7 @@ export function saveUserGroup(userGroup: UserGroupSchema) {
   };
 }
 
-export function deleteUserGroup(userGroup: UserGroupSchema) {
+export function deleteUserGroup(userGroup: ClientUserGroupSchema) {
   return async (dispatch: Dispatch<IStore>) => {
     await deleteGroup(new RequestParams({ _id: ensure(userGroup._id) }));
     dispatch(actions.remove('userGroups', userGroup));

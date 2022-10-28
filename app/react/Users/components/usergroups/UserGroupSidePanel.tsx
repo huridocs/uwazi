@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { Icon } from 'UI';
 import { useForm } from 'react-hook-form';
-import { GroupMemberSchema, UserGroupSchema } from 'shared/types/userGroupType';
+import { GroupMemberSchema, ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 
 export interface UserGroupSidePanelProps {
-  userGroup: UserGroupSchema;
-  users: Partial<UserSchema>[];
-  userGroups: UserGroupSchema[];
+  userGroup: ClientUserGroupSchema;
+  users: Partial<ClientUserSchema>[];
+  userGroups: ClientUserGroupSchema[];
   opened: boolean;
   closePanel: (event: any) => void;
   onSave: (event: any) => void;
   onDelete: (event: any) => void;
 }
 
-const sortByName = (members: Partial<UserSchema>[]) =>
+const sortByName = (members: Partial<ClientUserSchema>[]) =>
   members.sort((m1, m2) => (m1.username || '').localeCompare(m2.username || ''));
 
 const mapUserIds = (members: GroupMemberSchema[]) =>
@@ -40,9 +40,9 @@ export const UserGroupSidePanel = ({
   } = useForm({ defaultValues: userGroup });
   const availableUsers = sortByName(users);
 
-  const saveGroup = (groupToSave: UserGroupSchema) => {
+  const saveGroup = (groupToSave: ClientUserGroupSchema) => {
     const updatedMembers = users
-      .filter((user: Partial<UserSchema>) => selectedUsers.includes(user._id as string))
+      .filter((user: Partial<ClientUserSchema>) => selectedUsers.includes(user._id as string))
       .map(user => ({
         refId: user._id,
       }));
