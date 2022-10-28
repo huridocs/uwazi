@@ -1,5 +1,5 @@
 import RouteHandler from 'app/App/RouteHandler';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { OneUpState } from 'app/istore';
 import { OneUpEntityViewer } from 'app/Review/components/OneUpEntityViewer';
 import { OneUpReviewBase, OneUpReviewProps } from 'app/Review/OneUpReview';

@@ -9,7 +9,8 @@ describe('SettingsAPI', () => {
     backend.restore();
     backend
       .post(`${APIURL}settings`, { body: JSON.stringify('ok') })
-      .get(`${APIURL}settings`, { body: JSON.stringify({ site_name: 'Uwazi' }) });
+      .get(`${APIURL}settings`, { body: JSON.stringify({ site_name: 'Uwazi' }) })
+      .get(`${APIURL}stats`, { body: JSON.stringify({ files: { total: 3 } }) });
   });
 
   afterEach(() => backend.restore());
@@ -39,6 +40,17 @@ describe('SettingsAPI', () => {
       SettingsAPI.get()
         .then(response => {
           expect(response).toEqual({ site_name: 'Uwazi' });
+          done();
+        })
+        .catch(catchErrors(done));
+    });
+  });
+
+  describe('stats()', () => {
+    it('should request the site stats', done => {
+      SettingsAPI.stats()
+        .then(response => {
+          expect(response).toEqual({ files: { total: 3 } });
           done();
         })
         .catch(catchErrors(done));
