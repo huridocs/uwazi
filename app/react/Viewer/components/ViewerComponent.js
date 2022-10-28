@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import EntityView from 'app/Viewer/EntityView';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { actions } from 'app/BasicReducer';
 import PDFView from '../PDFView';
 

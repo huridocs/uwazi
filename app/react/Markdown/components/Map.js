@@ -13,7 +13,7 @@ import {
 } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
 
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import markdownDatasets from '../markdownDatasets';
 
 const renderInfo = marker => (
