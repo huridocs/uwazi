@@ -40,9 +40,9 @@ class ViewerRoute extends RouteHandler {
   }
 
   urlHasChanged(nextProps) {
-    const { params: oldParams } = nextProps;
-    const { params: newParams } = this.props;
-    if (newParams.sharedId === oldParams.sharedId && newParams.lang === oldParams.lang) {
+    const { sharedId: oldSharedId, lang: oldLang } = nextProps.params;
+    const { sharedId: newSharedId, lang: newLang } = this.props.params;
+    if (newSharedId === oldSharedId && newLang === oldLang) {
       return false;
     }
     const { query } = this.props.location;
