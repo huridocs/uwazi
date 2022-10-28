@@ -38,6 +38,7 @@ beforeEach(() => {
   };
   props = mapStateToProps(state, { storeKey: 'library' });
   props.translationContext = 'oneContext';
+  props.location = { query: {} };
 });
 
 const render = () => {
