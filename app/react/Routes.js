@@ -32,6 +32,7 @@ import {
   Settings,
   ThesauriList,
   TranslationsList,
+  Dashboard,
 } from 'app/Settings';
 import EditTemplate from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
@@ -146,6 +147,7 @@ const routes = (
   <Route getIndexRoute={getIndexRoute}>
     <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
+      <Route path="dashboard" component={Dashboard} />
       <Route path="2fa" component={Configure2fa} />
       <Route path="collection" component={CollectionSettings} />
       <Route path="navlinks" component={NavlinksSettings} />
