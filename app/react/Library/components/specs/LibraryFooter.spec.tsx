@@ -1,6 +1,17 @@
-import { renderConnected, renderConnectedContainer } from 'app/utils/test/renderConnected';
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react';
+import {
+  defaultState,
+  renderConnected,
+  renderConnectedContainer,
+} from 'app/utils/test/renderConnected';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
 import { ShallowWrapper } from 'enzyme';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { fromJS } from 'immutable';
+import { Provider } from 'react-redux';
 import { LibraryFooter } from '../LibraryFooter';
 
 describe('LibraryFooter', () => {
@@ -62,6 +73,35 @@ describe('LibraryFooter', () => {
       closeButton.simulate('click');
       component.update();
       expect(component.find('.library-footer').props().className).toContain('closed');
+    });
+
+    it('should close the footer if when scrollcount increases', async () => {
+      const state = {
+        ...defaultState,
+        exportSearchResults: { exportSearchResultsProcessing: fromJS(false) },
+        user: fromJS({ _id: '1234' }),
+      };
+      const { renderResult, store } = renderConnectedContainer(
+        <LibraryFooter storeKey="library" scrollCount={0} />,
+        () => state
+      );
+
+      const openButton = screen.getByText('Open actions').parentElement!;
+      await act(async () => {
+        fireEvent.click(openButton);
+      });
+
+      expect(renderResult.container.firstElementChild!.getAttribute('class')).not.toContain(
+        'closed'
+      );
+
+      renderResult.rerender(
+        <Provider store={store}>
+          <LibraryFooter storeKey="library" scrollCount={1} />
+        </Provider>
+      );
+
+      expect(renderResult.container.firstElementChild!.getAttribute('class')).toContain('closed');
     });
   });
 });
