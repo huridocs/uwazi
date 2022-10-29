@@ -11,11 +11,15 @@ import * as libraryActions from 'app/Library/actions/libraryActions';
 
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
+import { Provider } from 'react-redux';
+import { MockStoreEnhanced } from 'redux-mock-store';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
 import { SearchBar } from '../SearchBar';
 
 describe('LibraryHeader', () => {
   let renderResult: RenderResult;
+  let store: MockStoreEnhanced;
+
   const props: LibraryHeaderOwnProps = {
     counter: <span>counter</span>,
     selectAllDocuments: jest.fn(),
@@ -92,7 +96,7 @@ describe('LibraryHeader', () => {
   };
 
   const render = () => {
-    ({ renderResult } = renderConnectedContainer(<LibraryHeader {...props} />, () => state));
+    ({ renderResult, store } = renderConnectedContainer(<LibraryHeader {...props} />, () => state));
   };
 
   it('should hold sortButtons with search callback and selectedTemplates', () => {
@@ -153,5 +157,73 @@ describe('LibraryHeader', () => {
     const options = screen.getAllByRole('option');
     const optionsLabel = options.map(option => option.textContent);
     expect(optionsLabel).toEqual(['Show all', 'Creation Date', 'Column 1']);
+  });
+
+  describe('open/close actions', () => {
+    it('should not have toolbar and open button as closed at the same time', () => {
+      render();
+      const openButtonWrapper = renderResult.container.getElementsByClassName(
+        'open-toolbar-button'
+      )[0] as HTMLElement;
+
+      expect(within(openButtonWrapper).getByRole('button').getAttribute('class')).not.toContain(
+        'closed'
+      );
+      expect(renderResult.container.firstElementChild!.getAttribute('class')).toContain('closed');
+    });
+
+    const toogleToolbar = (className: string) => {
+      const buttonWrapper = renderResult.container.getElementsByClassName(
+        className
+      )[0] as HTMLElement;
+      const toogleButton = within(buttonWrapper).getByRole('button');
+      fireEvent.click(toogleButton);
+    };
+
+    it('should allow opening the library-header removing class "closed" from the element', () => {
+      render();
+
+      expect(
+        renderResult.container.getElementsByClassName('library-header')[0].getAttribute('class')
+      ).toContain('closed');
+      toogleToolbar('open-toolbar-button');
+      expect(
+        renderResult.container
+          .getElementsByClassName('open-toolbar-button')[0]
+          .getAttribute('class')
+      ).toContain('closed');
+      expect(
+        renderResult.container.getElementsByClassName('library-header')[0].getAttribute('class')
+      ).not.toContain('closed');
+    });
+
+    it('should allow closing the library-header adding class "closed" to the element', () => {
+      render();
+      toogleToolbar('open-toolbar-button');
+      toogleToolbar('close-toolbar-button');
+      expect(
+        renderResult.container.getElementsByClassName('library-header')[0].getAttribute('class')
+      ).toContain('closed');
+    });
+
+    it('should close the footer if when scrollcount increases', async () => {
+      render();
+      toogleToolbar('open-toolbar-button');
+
+      expect(
+        renderResult.container.getElementsByClassName('library-header')[0].getAttribute('class')
+      ).not.toContain('closed');
+
+      const newProps = { ...props, scrollCount: 2 };
+      renderResult.rerender(
+        <Provider store={store}>
+          <LibraryHeader {...newProps} />
+        </Provider>
+      );
+
+      expect(
+        renderResult.container.getElementsByClassName('library-header')[0].getAttribute('class')
+      ).toContain('closed');
+    });
   });
 });

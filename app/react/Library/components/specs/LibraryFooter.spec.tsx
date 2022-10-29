@@ -91,9 +91,9 @@ describe('LibraryFooter', () => {
         fireEvent.click(openButton);
       });
 
-      expect(renderResult.container.firstElementChild!.getAttribute('class')).not.toContain(
-        'closed'
-      );
+      expect(
+        renderResult.container.getElementsByClassName('library-footer')[0].getAttribute('class')
+      ).not.toContain('closed');
 
       renderResult.rerender(
         <Provider store={store}>
@@ -101,7 +101,9 @@ describe('LibraryFooter', () => {
         </Provider>
       );
 
-      expect(renderResult.container.firstElementChild!.getAttribute('class')).toContain('closed');
+      expect(
+        renderResult.container.getElementsByClassName('library-footer')[0].getAttribute('class')
+      ).toContain('closed');
     });
   });
 });
