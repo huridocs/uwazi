@@ -76,7 +76,6 @@ describe('SortButtons', () => {
     props = {
       sortCallback: jasmine.createSpy('sortCallback'),
       stateProperty: 'library.search',
-      storeKey: 'library',
       selectedTemplates: fromJS([]),
     };
   });
