@@ -96,6 +96,7 @@
     "@types/react-modal": "^3.12.0",
     "@types/redis": "^2.8.31",
     "@types/redlock": "^4.0.2",
+    "@types/socket.io-parser": "^3.0.0",
     "@types/url-join": "^4.0.1",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
