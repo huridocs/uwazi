@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import cookieParser from 'cookie-parser';
-import mongoConnect from 'connect-mongo';
+import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import session from 'express-session';
 import svgCaptcha from 'svg-captcha';
@@ -16,19 +16,17 @@ import { validation } from '../utils';
 
 import './passport_conf.js';
 
-const MongoStore = mongoConnect(session);
-
 export default app => {
   app.use(cookieParser());
 
   app.use(
     session({
       secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
-      store: new MongoStore({
-        mongooseConnection: DB.connectionForDB(config.SHARED_DB, {
+      store: MongoStore.create({
+        client: DB.connectionForDB(config.SHARED_DB, {
           useCache: true,
           noListener: false,
-        }),
+        }).getClient(),
       }),
       resave: false,
       saveUninitialized: false,

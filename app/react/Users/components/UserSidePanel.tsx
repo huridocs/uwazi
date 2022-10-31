@@ -4,22 +4,22 @@ import { Icon } from 'UI';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
-import { UserGroupSchema } from 'shared/types/userGroupType';
+import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
 import { roleTranslationKey } from '../UserManagement';
 
 export interface UserSidePanelProps {
-  user: UserSchema;
-  users: UserSchema[];
-  groups: UserGroupSchema[];
+  user: ClientUserSchema;
+  users: ClientUserSchema[];
+  groups: ClientUserGroupSchema[];
   opened: boolean;
   closePanel: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  onSave: (user: UserSchema) => void;
-  onDelete: (user: UserSchema) => void;
-  onReset2fa: (user: UserSchema) => void;
-  onResetPassword: (user: UserSchema) => void;
+  onSave: (user: ClientUserSchema) => void;
+  onDelete: (user: ClientUserSchema) => void;
+  onReset2fa: (user: ClientUserSchema) => void;
+  onResetPassword: (user: ClientUserSchema) => void;
 }
 
 export const UserSidePanel = ({
@@ -45,7 +45,7 @@ export const UserSidePanel = ({
   const availableGroups = groups;
   const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
-  const saveUser = (userToSave: UserSchema) => {
+  const saveUser = (userToSave: ClientUserSchema) => {
     const updatedGroups = groups
       .filter(group => selectedGroups.includes(group._id as string))
       .map(group => ({

@@ -1,0 +1,122 @@
+.settings {
+  .settings-dashboard {
+    color: $c-gray-900;
+
+    .panel-heading {
+      margin-bottom: 30px;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      .card {
+        border: 1px solid $c-grey;
+        border-radius: 6px;
+        box-shadow: 1px 0px 1px $c-grey-light;
+        padding: 16px;
+        flex: 33%;
+
+        h2 {
+          margin: 0;
+          padding: 0;
+          border: unset;
+          font-size: $f-size-lg;
+          font-weight: bold;
+        }
+        p {
+          margin: 0;
+        }
+
+        @media (max-width: 1023px) {
+          flex: 100%;
+        }
+
+        .heading {
+          padding-bottom: 10px;
+        }
+
+        .cs-loader,
+        .body {
+          height: 60px;
+        }
+
+        .body {
+          .usage {
+            .used {
+              margin: 0;
+            }
+            .available::before {
+              content: '/ ';
+            }
+          }
+
+          .uw-progress-bar--container {
+            margin-top: 6px;
+          }
+
+          .uw-progress-bar {
+            height: 20px;
+          }
+
+          .uw-progress-bar--progress {
+            animation: progress 900ms ease-in-out 1;
+          }
+
+          .count,
+          .used {
+            font-weight: bold;
+          }
+
+          .count {
+            font-size: $f-size-sl;
+          }
+
+          .translation,
+          .total {
+            color: $c-gray-600;
+            font-weight: 400;
+          }
+        }
+
+        .footer {
+          display: flex;
+          gap: 10px;
+
+          .user-info {
+            .translation {
+              color: $c-gray-600;
+              font-weight: 400;
+            }
+
+            &:not(:last-child):after {
+              content: '|';
+              margin-left: 10px;
+              color: $c-gray-600;
+            }
+          }
+
+          .card-info {
+            .translation {
+              font-style: italic;
+              color: $c-gray-600;
+              font-weight: 400;
+            }
+          }
+
+          .count {
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes progress {
+  from {
+    width: 0;
+  }
+}

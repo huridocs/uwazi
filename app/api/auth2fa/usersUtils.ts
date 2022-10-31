@@ -37,7 +37,7 @@ export const setSecret = async (user: User) => {
 
 export const verifyToken = async (user: User, token: string) => {
   const dbUser = await getUser({ _id: user._id }, '+secret');
-  if (otplib.authenticator.verify({ token, secret: dbUser.secret })) {
+  if (otplib.authenticator.verify({ token, secret: dbUser.secret || undefined })) {
     return { validToken: true, dbUser };
   }
 
@@ -59,5 +59,5 @@ export const enable2fa = async (user: User, token: string) => {
 
 export const reset2fa = async (user: User) => {
   const dbUser = await getUser({ _id: user._id });
-  return usersModel.save({ _id: dbUser._id, using2fa: false, secret: undefined });
+  return usersModel.save({ _id: dbUser._id, using2fa: false, secret: null });
 };

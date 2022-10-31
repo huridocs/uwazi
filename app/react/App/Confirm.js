@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Translate } from 'app/I18N';
 
 import Modal from 'app/Layout/Modal';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 
 class Confirm extends Component {
   static getDerivedStateFromProps(newProps, state) {

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -53,13 +53,13 @@ const CollectionSettings = ({
     setValue,
     getValues,
     formState: { errors },
-  } = useForm<Settings>({
+  } = useForm<ClientSettings>({
     // @ts-ignore
     defaultValues: collectionSettingsObject,
     mode: 'onSubmit',
   });
 
-  const save: SubmitHandler<Settings> = async newCollectionSettings => {
+  const save: SubmitHandler<ClientSettings> = async newCollectionSettings => {
     const saveParameters = new RequestParams({
       ...collectionSettingsObject,
       ...newCollectionSettings,
@@ -336,7 +336,7 @@ const CollectionSettings = ({
             <div className="settings-map">
               <Geolocation
                 value={watch('mapStartingPoint')}
-                onChange={(values: Settings['mapStartingPoint']) => {
+                onChange={(values: ClientSettings['mapStartingPoint']) => {
                   setValue('mapStartingPoint', values);
                 }}
               />
