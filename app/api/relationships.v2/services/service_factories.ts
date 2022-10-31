@@ -8,6 +8,7 @@ import {
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { User } from 'api/users.v2/model/User';
 
@@ -32,12 +33,14 @@ const CreateRelationshipService = (user: User) => {
   const idGenerator = DefaultIdGenerator;
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const settingsDS = DefaultSettingsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, user);
   const denormalizationService = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
     templatesDS,
+    settingsDS,
     transactionManager,
     indexEntitiesCallback
   );
@@ -76,11 +79,13 @@ const DenormalizationService = () => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const settingsDS = DefaultSettingsDataSource(transactionManager);
 
   const service = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
     templatesDS,
+    settingsDS,
     transactionManager,
     indexEntitiesCallback
   );

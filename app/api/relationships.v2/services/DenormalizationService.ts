@@ -1,5 +1,6 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
@@ -16,6 +17,8 @@ export class DenormalizationService {
 
   private templatesDS: TemplatesDataSource;
 
+  private settingsDS: SettingsDataSource;
+
   private transactionManager: TransactionManager;
 
   private indexEntities: IndexEntitiesCallback;
@@ -24,12 +27,14 @@ export class DenormalizationService {
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
     templatesDS: TemplatesDataSource,
+    settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,
     indexEntitiesCallback: IndexEntitiesCallback
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
+    this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
     this.indexEntities = indexEntitiesCallback;
   }
@@ -83,13 +88,11 @@ export class DenormalizationService {
   }
 
   async denormalizeForNewRelationships(relationshipIds: string[]) {
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     const candidates = (
       await Promise.all(
         relationshipIds.map(async id =>
-          this.getCandidateEntitiesForRelationship(
-            id,
-            'en' // TODO: any language should be good in this case, could be default language as a standard
-          )
+          this.getCandidateEntitiesForRelationship(id, defaultLanguage)
         )
       )
     ).flat();

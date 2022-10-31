@@ -29,19 +29,19 @@ const fixtures = {
     { _id: factory.id('rel10'), from: 'entity9', to: 'entity4', type: factory.id('relType5') },
   ],
   entities: [
-    ...entityInLanguages(['en', 'es'], 'entity1', 'template1'),
-    ...entityInLanguages(['en', 'es'], 'entity2'),
-    ...entityInLanguages(['en', 'es'], 'hub1', 'formerHubsTemplate'),
-    ...entityInLanguages(['en', 'es'], 'entity3', 'template2'),
-    ...entityInLanguages(['en', 'es'], 'entity4', 'template4'),
-    ...entityInLanguages(['en', 'es'], 'hub2', 'formerHubsTemplate'),
-    ...entityInLanguages(['en', 'es'], 'entity5', 'template2'),
-    ...entityInLanguages(['en', 'es'], 'entity6', 'template3'),
-    ...entityInLanguages(['en', 'es'], 'hub3'),
-    ...entityInLanguages(['en', 'es'], 'entity7', 'template7'),
-    ...entityInLanguages(['en', 'es'], 'entity8'),
-    ...entityInLanguages(['en', 'es'], 'entity9', 'template7'),
-    ...entityInLanguages(['en', 'es'], 'entity10', 'template1'),
+    ...entityInLanguages(['hu', 'es'], 'entity1', 'template1'),
+    ...entityInLanguages(['hu', 'es'], 'entity2'),
+    ...entityInLanguages(['hu', 'es'], 'hub1', 'formerHubsTemplate'),
+    ...entityInLanguages(['hu', 'es'], 'entity3', 'template2'),
+    ...entityInLanguages(['hu', 'es'], 'entity4', 'template4'),
+    ...entityInLanguages(['hu', 'es'], 'hub2', 'formerHubsTemplate'),
+    ...entityInLanguages(['hu', 'es'], 'entity5', 'template2'),
+    ...entityInLanguages(['hu', 'es'], 'entity6', 'template3'),
+    ...entityInLanguages(['hu', 'es'], 'hub3'),
+    ...entityInLanguages(['hu', 'es'], 'entity7', 'template7'),
+    ...entityInLanguages(['hu', 'es'], 'entity8'),
+    ...entityInLanguages(['hu', 'es'], 'entity9', 'template7'),
+    ...entityInLanguages(['hu', 'es'], 'entity10', 'template1'),
   ],
   templates: [
     factory.template('template1', [
@@ -148,8 +148,12 @@ const fixtures = {
       languages: [
         {
           default: true,
-          label: 'English',
-          key: 'en',
+          label: 'Hungarian',
+          key: 'hu',
+        },
+        {
+          label: 'Spanish',
+          key: 'es',
         },
       ],
     },
@@ -174,6 +178,7 @@ beforeEach(async () => {
       transactionManager
     ),
     new MongoTemplatesDataSource(db, transactionManager),
+    new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {}
   );
@@ -185,7 +190,7 @@ afterAll(async () => {
 
 describe('denormalizeForNewRelationships()', () => {
   describe('when executing on a newly created relationship', () => {
-    it.each(['en', 'es'])(
+    it.each(['hu', 'es'])(
       'should mark the relationship fields as invalid in the entities in "%s"',
       async language => {
         await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
