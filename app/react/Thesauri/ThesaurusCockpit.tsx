@@ -2,7 +2,7 @@
 import Footer from 'app/App/Footer';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { IStore, ThesaurusSuggestions, TasksState } from 'app/istore';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
