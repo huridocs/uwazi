@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 
 import { NeedAuthorization } from 'app/Auth';
-import { SortButtons } from 'app/Library/components/SortButtons';
+import { SortDropdown } from 'app/Library/components/SortDropdown';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import {
   zoomIn as zoomInAction,
@@ -83,7 +83,7 @@ const LibraryHeaderComponent = ({
               <span className="documents-counter-sort">
                 <Translate>sorted by</Translate>
               </span>
-              <SortButtons
+              <SortDropdown
                 sortCallback={searchDocuments}
                 selectedTemplates={filters.get('documentTypes')}
                 stateProperty={sortButtonsStateProperty}
