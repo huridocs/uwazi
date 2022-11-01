@@ -35,6 +35,9 @@ import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
 
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import swaggerUi from 'swagger-ui-express';
+import { entitySchema } from 'shared/types/entitySchema';
+import { swaggerDocument } from './swagget';
 
 mongoose.Promise = Promise;
 
@@ -114,7 +117,11 @@ console.info('==> Connecting to', config.DBHOST);
 DB.connect(config.DBHOST, dbAuth).then(async () => {
   await tenants.setupTenants();
   authRoutes(app);
+
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
   app.use(privateInstanceMiddleware);
+
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 
   apiRoutes(app, http);
