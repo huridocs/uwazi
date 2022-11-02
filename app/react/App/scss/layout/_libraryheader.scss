@@ -126,6 +126,35 @@
 
       .sort-dropdown {
         min-width: 150px;
+        position: relative;
+
+        .dropdown-button {
+          width: 100%;
+          text-align: left;
+          background-color: white;
+          border: 1px solid $c-grey-light;
+          border-radius: 4px;
+
+          svg {
+            float: right;
+          }
+        }
+      }
+
+      .dropdown-menu {
+        &.expanded {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          li {
+            display: flex;
+            flex-direction: column;
+            a {
+              padding: 8px 10px;
+              text-align: left;
+            }
+          }
+        }
       }
     }
     .select-all-documents {

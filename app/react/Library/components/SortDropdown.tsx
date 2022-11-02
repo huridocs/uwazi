@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withRouter, WithRouterProps } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
@@ -114,7 +114,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 
-const getSortingButton = (search: SearchOptions, currentQuery: any) =>
+const getSortingButtonContents = (search: SearchOptions, currentQuery: any) =>
   search.order === 'asc' && search.sort !== '_score' ? (
     <>
       <a href={encodeSearch({ ...currentQuery, order: 'asc' }, true)} style={{ display: 'none' }}>
@@ -161,6 +161,7 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
     : { searchTerm: search.searchTerm, sort: search.sort };
 
 const SortDropdownComponent = ({ search, templates, location }: mappedProps) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
 
   const changeOrder = () => {
@@ -182,10 +183,16 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
   return (
     <div className="sort-buttons">
       <div className="sort-dropdown">
-        <button type="button" onClick={() => {}}>
+        <button
+          type="button"
+          className="dropdown-button"
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+        >
           {getCurrentSortOption(sortOptions, currentQuery.sort)}
+          &nbsp;
+          <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
         </button>
-        <ul>
+        <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
             const url = getOptionUrl(location, option.value);
             return (
@@ -202,7 +209,7 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
         className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
         onClick={changeOrder}
       >
-        {getSortingButton(search, currentQuery)}
+        {getSortingButtonContents(search, currentQuery)}
       </button>
     </div>
   );
