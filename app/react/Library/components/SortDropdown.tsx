@@ -185,11 +185,10 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
       <div className="sort-dropdown">
         <button
           type="button"
-          className="dropdown-button"
+          className={`dropdown-button ${dropdownOpen ? 'expanded' : ''}`}
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          {getCurrentSortOption(sortOptions, currentQuery.sort)}
-          &nbsp;
+          <span>{getCurrentSortOption(sortOptions, currentQuery.sort)}</span>
           <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
         </button>
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>

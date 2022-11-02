@@ -135,22 +135,38 @@
           border: 1px solid $c-grey-light;
           border-radius: 4px;
 
+          span {
+            padding-left: 6px;
+          }
+
           svg {
             float: right;
+            margin: 2px 6px 2px 2px;
+          }
+
+          &.expanded {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
           }
         }
       }
 
       .dropdown-menu {
+        font-size: inherit;
         &.expanded {
           display: flex;
           flex-direction: column;
           position: absolute;
+          top: 20px;
+          border-radius: 0;
+          width: 100%;
+
           li {
             display: flex;
             flex-direction: column;
+            max-width: unset;
             a {
-              padding: 8px 10px;
+              padding-left: 10px;
               text-align: left;
             }
           }
