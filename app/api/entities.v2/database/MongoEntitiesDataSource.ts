@@ -7,6 +7,7 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db, ObjectId } from 'mongodb';
+import { inspect } from 'util';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity } from '../model/Entity';
 
@@ -31,18 +32,21 @@ interface EntityJoinTemplate extends EntityDBOType {
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
   const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.getSession());
+
   await Promise.all(
     // eslint-disable-next-line max-statements
     entity.joinedTemplate[0]?.properties.map(async property => {
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
+        const start = performance.now();
         const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
             entity.language
           )
           .all();
+        console.trace('Took', performance.now() - start);
         mappedMetadata[property.name] = results.map(result => {
           const targetEntity = result.leaf() as { sharedId: string; title: string };
           return {
@@ -52,7 +56,8 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
         });
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
-          { $set: { metadata: { [property.name]: mappedMetadata[property.name] } } }
+          // @ts-ignore
+          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } } // TODO: test that this does not remove the rest of the metadata
         );
         return;
       }
