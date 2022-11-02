@@ -269,6 +269,7 @@ DocumentsList.defaultProps = {
   selectedDocuments: {},
   tableViewMode: false,
   scrollCount: 0,
+  SortButtons: undefined,
 };
 
 DocumentsList.propTypes = {

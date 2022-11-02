@@ -4,9 +4,6 @@ import { connect } from 'react-redux';
 import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
 
 export class LibraryModeToggleButtons extends Component {
@@ -86,7 +83,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
-  showFilters: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -94,7 +90,6 @@ LibraryModeToggleButtons.defaultProps = {
   mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
-  showFilters: () => {},
 };
 
 export const encodedSearch = createSelector(
@@ -121,14 +116,4 @@ export function mapStateToProps(state, props) {
         : state.library.ui.get('zoomLevel'),
   };
 }
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      showFilters: showFiltersAction,
-    },
-    wrapDispatch(dispatch, 'library')
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryModeToggleButtons);
+export default connect(mapStateToProps)(LibraryModeToggleButtons);
