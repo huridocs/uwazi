@@ -13,6 +13,15 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
 import { encodeSearch } from '../actions/libraryActions';
 
+const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
+  if (!sortOption || sortOption === 'creationDate') {
+    const currentOption = sortOptions.find(option => option.value === 'creationDate');
+    return currentOption?.label;
+  }
+  const currentOption = sortOptions.find(option => option.value === sortOption);
+  return currentOption?.label;
+};
+
 const getOptionUrl = (location: WithRouterProps['location'], optionValue: string) => {
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
   return encodeSearch({ ...currentQuery, sort: optionValue }, true);
@@ -165,7 +174,7 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
   const validatedSearch = validateSearch(search);
   const commonSorts = getCommonSorts(validatedSearch);
 
-  const sortOptions = [...commonSorts, ...metadataSorts].map(option => ({
+  const sortOptions: SortType[] = [...commonSorts, ...metadataSorts].map(option => ({
     ...option,
     label: t(option.context, option.label, undefined, false),
   }));
@@ -174,7 +183,7 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
     <div className="sort-buttons">
       <div className="sort-dropdown">
         <button type="button" onClick={() => {}}>
-          {/* {getCurrentSort()} */}
+          {getCurrentSortOption(sortOptions, currentQuery.sort)}
         </button>
         <ul>
           {sortOptions.map(option => {
