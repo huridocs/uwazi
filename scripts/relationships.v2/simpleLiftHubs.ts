@@ -4,7 +4,7 @@
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/simpleLiftHubs.ts
 import process from 'process';
 
-import mongodb, { Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
+import { MongoClient, Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
 
 import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
 import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
@@ -41,7 +41,7 @@ const temporaryRelationshipsCollectionName = '__temporary_relationships_collecti
 
 const getClient = async () => {
   const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
-  const client = new mongodb.MongoClient(url);
+  const client = new MongoClient(url);
   await client.connect();
 
   return client;
@@ -69,7 +69,7 @@ const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collect
   process.stdout.write('Writing temporary hub collection...\n');
   const connectionsCursor = connections.find({}, { projection: { hub: 1 } });
 
-  let toBeInserted: mongodb.ObjectId[] = [];
+  let toBeInserted: ObjectId[] = [];
   while (await connectionsCursor.hasNext()) {
     const next = (await connectionsCursor.next()) as ConnectionType;
     const { hub } = next;
@@ -163,13 +163,14 @@ const writeDefaultRelType = async (db: Db) => {
 
 const hubToEntity = (
   hub: HubType,
+  sharedId: string,
   language: string,
   template: TemplateSchema,
   user: UserSchema
 ) => ({
   title: hub._id.toHexString(),
   template: template._id,
-  sharedId: ID(),
+  sharedId,
   published: false,
   metadata: {},
   type: 'document',
@@ -233,7 +234,10 @@ const liftHubs = async (
   const hubs = hubsCollection.find({});
   while (!hubs.closed) {
     const hubBatch = await getNextBatch(hubs);
-    const entitybatch = hubBatch.map(hub => languages.map(language => hubToEntity(hub, language, template, user))).flat();
+    const entitybatch = hubBatch.map(hub => {
+      const sId = ID();
+      return languages.map(language => hubToEntity(hub, sId, language, template, user)); 
+    }).flat();
     await entityWriter.insertMany(entitybatch);
     const insertedHubs = await newEntitiesCollection.find({ title: { $in: hubBatch.map(h => h._id.toHexString()) } }).toArray();
 
