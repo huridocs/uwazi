@@ -192,23 +192,47 @@ class DocumentsList extends Component {
         </NeedAuthorization>
       </div>
     );
+    const SortButtonsRelationships = this.props.SortButtons;
+    const SearchBarRelationships = this.props.SearchBar;
+
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <LibraryHeader
-            storeKey={this.props.storeKey}
-            counter={counter}
-            selectAllDocuments={() => {
-              selectAllEntities(this);
-            }}
-            sortButtonsStateProperty={this.props.sortButtonsStateProperty}
-            SearchBar={this.props.SearchBar}
-            searchCentered={this.props.searchCentered}
-            searchDocuments={this.props.searchDocuments}
-            filters={this.props.filters}
-            tableViewMode={this.props.tableViewMode}
-            scrollCount={this.state.scrollCount}
-          />
+          {this.props.SortButtons === undefined && (
+            <LibraryHeader
+              storeKey={this.props.storeKey}
+              counter={counter}
+              selectAllDocuments={() => {
+                selectAllEntities(this);
+              }}
+              sortButtonsStateProperty={this.props.sortButtonsStateProperty}
+              SearchBar={this.props.SearchBar}
+              searchCentered={this.props.searchCentered}
+              searchDocuments={this.props.searchDocuments}
+              filters={this.props.filters}
+              tableViewMode={this.props.tableViewMode}
+              scrollCount={this.state.scrollCount}
+            />
+          )}
+          {SortButtonsRelationships !== undefined && (
+            <>
+              <div className={`search-list ${this.props.searchCentered ? 'centered' : ''}`}>
+                <SearchBarRelationships />
+              </div>
+              <div className="sort-by">
+                <span className="documents-counter-sort">
+                  <Translate>sorted by</Translate>
+                </span>
+                <SortButtonsRelationships
+                  sortCallback={this.props.searchDocuments}
+                  selectedTemplates={this.props.filters.get('documentTypes')}
+                  stateProperty={this.props.sortButtonsStateProperty}
+                />
+              </div>
+              {counter}
+            </>
+          )}
+
           {blankState() && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
@@ -254,6 +278,7 @@ DocumentsList.propTypes = {
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
+  SortButtons: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
