@@ -10,6 +10,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
+import { omit } from 'lodash';
 
 const isSortableType = (type: PropertySchema['type']) => {
   switch (type) {
@@ -151,9 +152,7 @@ const SortButtonsComponent = ({
     const order = selectedSort || sortDirection(treatAs);
     const newSort = { sort: property, order, treatAs };
     merge(stateProperty, newSort);
-    const filters = { ...search, ...newSort, userSelectedSorting: true };
-    //@ts-ignore
-    delete filters.treatAs;
+    const filters = { ...search, ...omit(newSort, 'treatAs'), userSelectedSorting: true };
     return sortCallback && sortCallback({ search: filters }, 'library');
   };
 

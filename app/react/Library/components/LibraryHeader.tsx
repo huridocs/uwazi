@@ -1,9 +1,11 @@
+/* eslint-disable react/no-multi-comp */
 import { Translate } from 'app/I18N';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { wrapDispatch } from 'app/Multireducer';
 
+import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { SortDropdown } from 'app/Library/components/SortDropdown';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
@@ -11,6 +13,7 @@ import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
 } from 'app/Library/actions/libraryActions';
+import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
 import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
 import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
@@ -37,13 +40,33 @@ const mapStateToProps = (state: IStore) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<IStore>) =>
   bindActionCreators(
-    { zoomIn: zoomInAction, zoomOut: zoomOutAction },
+    { zoomIn: zoomInAction, zoomOut: zoomOutAction, showFilters: showFiltersAction },
     wrapDispatch(dispatch, 'library')
   );
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & LibraryHeaderOwnProps;
+
+const FiltersButton = ({
+  tableViewMode,
+  showFilters,
+}: {
+  tableViewMode: boolean;
+  showFilters: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) => (
+  <div className={`toggle-button ${!tableViewMode ? 'only-mobile' : 'unpinned'}`}>
+    <button type="button" className="btn btn-default" onClick={showFilters}>
+      <Icon icon="funnel-filter" />
+      <span className="filters-label">
+        <Translate>Show filters</Translate>
+      </span>
+      <span className="tab-link-tooltip">
+        <Translate>Show filters</Translate>
+      </span>
+    </button>
+  </div>
+);
 
 const LibraryHeaderComponent = ({
   filters,
@@ -57,6 +80,7 @@ const LibraryHeaderComponent = ({
   zoomOut,
   tableViewMode,
   scrollCount = 0,
+  showFilters,
 }: mappedProps) => {
   const [toolbarVisible, setToolbarVisible] = useState(false);
   const toggleToolbarVisible = () => {
@@ -108,10 +132,11 @@ const LibraryHeaderComponent = ({
               searchUrl=""
               showGeolocation={false}
             />
-            {tableViewMode && <HiddenColumnsDropdown />}
             <div className="documents-counter">
               <span className="documents-counter-label">{counter}</span>
             </div>
+            {tableViewMode && <HiddenColumnsDropdown />}
+            <FiltersButton tableViewMode={tableViewMode} showFilters={showFilters} />
           </div>
         </div>
         <div className="close-toolbar-button">

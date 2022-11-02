@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
-import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
-import { bindActionCreators } from 'redux';
-import { wrapDispatch } from 'app/Multireducer';
 import { createSelector } from 'reselect';
 
 export class LibraryModeToggleButtons extends Component {
@@ -73,17 +70,6 @@ export class LibraryModeToggleButtons extends Component {
             </I18NLink>
           )}
         </div>
-        <div
-          className={`buttons-group toggle-button ${!tableViewMode ? 'only-mobile' : 'unpinned'}`}
-        >
-          <button type="button" className="btn btn-default" onClick={this.props.showFilters}>
-            <Icon icon="funnel-filter" />
-            <span className="filters-label">
-              <Translate>Show filters</Translate>
-            </span>
-            <span className="tab-link-tooltip">{t('System', 'Show filters')}</span>
-          </button>
-        </div>
       </div>
     );
   }
@@ -97,7 +83,6 @@ LibraryModeToggleButtons.propTypes = {
   zoomLevel: PropTypes.number.isRequired,
   tableViewMode: PropTypes.bool,
   mapViewMode: PropTypes.bool,
-  showFilters: PropTypes.func,
 };
 
 LibraryModeToggleButtons.defaultProps = {
@@ -105,7 +90,6 @@ LibraryModeToggleButtons.defaultProps = {
   mapViewMode: false,
   zoomIn: null,
   zoomOut: null,
-  showFilters: () => {},
 };
 
 export const encodedSearch = createSelector(
@@ -132,14 +116,4 @@ export function mapStateToProps(state, props) {
         : state.library.ui.get('zoomLevel'),
   };
 }
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      showFilters: showFiltersAction,
-    },
-    wrapDispatch(dispatch, 'library')
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryModeToggleButtons);
+export default connect(mapStateToProps)(LibraryModeToggleButtons);
