@@ -3,7 +3,6 @@ import { withRouter, WithRouterProps } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { omit } from 'lodash';
 import rison from 'rison-node';
 import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
@@ -11,16 +10,12 @@ import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
-import { toUrlParams } from 'shared/JSONRequest';
 import { ClientTemplateSchema, IStore } from 'app/istore';
 import { encodeSearch } from '../actions/libraryActions';
 
-const getOptionQuery = (location: WithRouterProps['location'], optionValue: string) => {
+const getOptionUrl = (location: WithRouterProps['location'], optionValue: string) => {
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
-
-  const optionQuery = encodeSearch({ ...currentQuery, sort: optionValue }, false);
-
-  return `${location.pathname}q${toUrlParams(optionQuery)}`;
+  return encodeSearch({ ...currentQuery, sort: optionValue }, true);
 };
 
 const isSortableType = (type: PropertySchema['type']) => {
@@ -110,11 +105,22 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 
-const getPropertySortType = (selected: SortType): string =>
-  selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';
-
-const getToggleSearchIcon = (search: SearchOptions) =>
-  search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down';
+const getSortingButton = (search: SearchOptions, currentQuery: any) =>
+  search.order === 'asc' && search.sort !== '_score' ? (
+    <>
+      <a href={encodeSearch({ ...currentQuery, order: 'asc' }, true)} style={{ display: 'none' }}>
+        {t('System', 'Sort ascending', undefined, false)}
+      </a>
+      <Icon icon="arrow-up" />
+    </>
+  ) : (
+    <>
+      <a href={encodeSearch({ ...currentQuery, order: 'desc' }, true)} style={{ display: 'none' }}>
+        {t('System', 'Sort descending', undefined, false)}
+      </a>
+      <Icon icon="arrow-down" />
+    </>
+  );
 
 const defaultSorts = [
   { label: 'Title', value: 'title', type: 'text', context: 'System' },
@@ -145,36 +151,13 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
       }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
-const sortDirection = (condition: string) => {
-  switch (condition) {
-    case 'desc':
-    case 'string':
-      return 'asc';
-    case 'asc':
-    default:
-      return 'desc';
-  }
-};
-
-const SortDropdownComponent = ({
-  search,
-  merge,
-  stateProperty,
-  templates,
-  sortCallback,
-  location,
-}: mappedProps) => {
-  const doSort = (property: string, defaultTreatAs: string, selectedSort?: string) => {
-    const treatAs = defaultTreatAs;
-    const order = selectedSort || sortDirection(treatAs);
-    const newSort = { sort: property, order, treatAs };
-    merge(stateProperty, newSort);
-    const filters = { ...search, ...omit(newSort, 'treatAs'), userSelectedSorting: true };
-    return sortCallback && sortCallback({ search: filters }, 'library');
-  };
+const SortDropdownComponent = ({ search, templates, location }: mappedProps) => {
+  const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
 
   const changeOrder = () => {
-    doSort(search.sort, search.treatAs, sortDirection(search.order));
+    const order = search.order === 'asc' ? 'desc' : 'asc';
+    const urlParams = encodeSearch({ ...currentQuery, order }, true);
+    window.location.assign(location.pathname + urlParams);
   };
 
   const metadataSorts = getMetadataSorts(templates);
@@ -190,10 +173,12 @@ const SortDropdownComponent = ({
   return (
     <div className="sort-buttons">
       <div className="sort-dropdown">
-        <button type="button"></button>
+        <button type="button" onClick={() => {}}>
+          {/* {getCurrentSort()} */}
+        </button>
         <ul>
           {sortOptions.map(option => {
-            const url = location.pathname + getOptionQuery(location, option.value);
+            const url = getOptionUrl(location, option.value);
             return (
               <li>
                 <a href={url}>{option.label}</a>
@@ -208,31 +193,10 @@ const SortDropdownComponent = ({
         className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
         onClick={changeOrder}
       >
-        <Icon icon={getToggleSearchIcon(search)} />
+        {getSortingButton(search, currentQuery)}
       </button>
     </div>
   );
-
-  //   return (
-  //     <div className="sort-buttons">
-  //       <DropdownList
-  //         className="sort-dropdown"
-  //         value={validatedSearch.sort}
-  //         data={sortOptions}
-  //         valueField="value"
-  //         textField="label"
-  //         onChange={(selected: SortType) => doSort(selected.value, getPropertySortType(selected))}
-  //       />
-  //       <button
-  //         type="button"
-  //         disabled={search.sort === '_score'}
-  //         className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
-  //         onClick={changeOrder}
-  //       >
-  //         <Icon icon={getToggleSearchIcon(search)} />
-  //       </button>
-  //     </div>
-  //   );
 };
 
 const container = withRouter(connector(SortDropdownComponent));
