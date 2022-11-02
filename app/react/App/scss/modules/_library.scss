@@ -117,49 +117,6 @@
     }
   }
 
-  @mixin mobileFilterBtn() {
-    .btn {
-      width: 40px;
-      .filters-label {
-        display: none;
-      }
-      &:hover .tab-link-tooltip {
-        display: block;
-      }
-    }
-  }
-
-  .toggle-button {
-    display: inline-block;
-    .btn {
-      border-radius: 4px;
-      height: 37px;
-      margin: 4px;
-      line-height: 1.75em;
-    }
-    &.only-mobile {
-      @include mobileFilterBtn;
-      @media (min-width: 1024px) {
-        display: none;
-      }
-    }
-    &.unpinned {
-      .btn {
-        width: 105px;
-        .filters-label {
-          display: inline-block;
-          margin-left: 4px;
-        }
-        .tab-link-tooltip {
-          display: none;
-        }
-      }
-      @media (max-width: 768px) {
-        @include mobileFilterBtn;
-      }
-    }
-  }
-
   @media (min-width: 768px) {
     top: 16px;
   }

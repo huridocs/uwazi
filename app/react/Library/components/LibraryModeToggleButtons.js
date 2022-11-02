@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { showFilters as showFiltersAction } from 'app/Entities/actions/uiActions';
@@ -72,17 +72,6 @@ export class LibraryModeToggleButtons extends Component {
               <span className="tab-link-tooltip">{t('System', 'Map view')}</span>
             </I18NLink>
           )}
-        </div>
-        <div
-          className={`buttons-group toggle-button ${!tableViewMode ? 'only-mobile' : 'unpinned'}`}
-        >
-          <button type="button" className="btn btn-default" onClick={this.props.showFilters}>
-            <Icon icon="funnel-filter" />
-            <span className="filters-label">
-              <Translate>Show filters</Translate>
-            </span>
-            <span className="tab-link-tooltip">{t('System', 'Show filters')}</span>
-          </button>
         </div>
       </div>
     );
