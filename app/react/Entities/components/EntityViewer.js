@@ -16,7 +16,7 @@ import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { RelationshipsFormButtons } from 'app/Relationships';
 import { TemplateLabel, Icon as PropertyIcon } from 'app/Layout';
 import { connectionsChanged, deleteConnection } from 'app/ConnectionsList/actions/actions';
-import { t } from 'app/I18N';
+import { t, I18NLink } from 'app/I18N';
 import AddEntitiesPanel from 'app/Relationships/components/AddEntities';
 import RelationshipMetadata from 'app/Relationships/components/RelationshipMetadata';
 import ShowIf from 'app/App/ShowIf';
@@ -90,6 +90,11 @@ class EntityViewer extends Component {
     this.setState({ panelOpen: true });
   }
 
+  linkClassNames(tabsToSelect) {
+    const { tab: selectedTab } = this.props;
+    return `${tabsToSelect.includes(selectedTab) ? 'selected' : ''} entity-sidepanel-tab-link`;
+  }
+
   render() {
     const {
       entity,
@@ -113,8 +118,8 @@ class EntityViewer extends Component {
       { totalConnections: 0 }
     );
 
-    const includeFooter = user.get('_id') && ['info', 'connections'].includes(selectedTab);
-    const hasHeader = ['info', 'connections'].includes(selectedTab);
+    const includeFooter = user.get('_id') && ['info', 'relationships'].includes(selectedTab);
+    const hasHeader = ['info', 'relationships'].includes(selectedTab);
     const mainClass = `entity-viewer ${hasHeader ? 'with-header' : ''} ${
       user.get('_id') && includeFooter ? 'with-footer' : ''
     } ${panelOpen ? 'with-panel' : ''}`;
@@ -176,7 +181,7 @@ class EntityViewer extends Component {
                 })()}
               </div>
             </TabContent>
-            <TabContent for="connections">
+            <TabContent for="relationships">
               <ConnectionsList deleteConnection={this.deleteConnection} searchCentered />
             </TabContent>
           </Tabs>
@@ -197,7 +202,7 @@ class EntityViewer extends Component {
               </div>
             </ShowIf>
 
-            <ShowIf if={selectedTab === 'connections'}>
+            <ShowIf if={selectedTab === 'relationships'}>
               <div className={`entity-footer ${panelOpen ? 'with-sidepanel' : ''}`}>
                 <RelationshipsFormButtons />
               </div>
@@ -205,7 +210,7 @@ class EntityViewer extends Component {
           </>
         )}
 
-        <SidePanel className={`entity-connections entity-${selectedTab}`} open={panelOpen}>
+        <SidePanel className={`entity-relationships entity-${selectedTab}`} open={panelOpen}>
           <div className="sidepanel-header">
             <button
               type="button"
@@ -232,8 +237,13 @@ class EntityViewer extends Component {
                       aria-label={t('System', 'Page', null, false)}
                       component="div"
                     >
-                      <Icon icon="file-image" />
-                      <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                      <I18NLink
+                        className={this.linkClassNames(['page'])}
+                        to={`/entity/${rawEntity.sharedId}/page`}
+                      >
+                        <Icon icon="file-image" />
+                        <span className="tab-link-tooltip">{t('System', 'Page')}</span>
+                      </I18NLink>
                     </TabLink>
                   </li>
                 )}
@@ -245,27 +255,37 @@ class EntityViewer extends Component {
                     aria-label={t('System', 'Info', null, false)}
                     component="div"
                   >
-                    <Icon icon="info-circle" />
-                    <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    <I18NLink
+                      className={this.linkClassNames(['info', ''])}
+                      to={`/entity/${rawEntity.sharedId}/info`}
+                    >
+                      <Icon icon="info-circle" />
+                      <span className="tab-link-tooltip">{t('System', 'Info')}</span>
+                    </I18NLink>
                   </TabLink>
                 </li>
                 <li>
                   <TabLink
-                    to="connections"
+                    to="relationships"
                     role="button"
                     tabIndex="0"
                     aria-label={t('System', 'Relationships', null, false)}
                     component="div"
                   >
-                    <Icon icon="exchange-alt" />
-                    <span className="connectionsNumber">{summary.totalConnections}</span>
-                    <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                    <I18NLink
+                      className={this.linkClassNames(['relationships'])}
+                      to={`/entity/${rawEntity.sharedId}/relationships`}
+                    >
+                      <Icon icon="exchange-alt" />
+                      <span className="connectionsNumber">{summary.totalConnections}</span>
+                      <span className="tab-link-tooltip">{t('System', 'Relationships')}</span>
+                    </I18NLink>
                   </TabLink>
                 </li>
               </ul>
             </Tabs>
           </div>
-          <ShowIf if={selectedTab === 'info' || selectedTab === 'connections'}>
+          <ShowIf if={selectedTab === 'info' || selectedTab === 'relationships'}>
             <div className="sidepanel-footer">
               <ResetSearch />
             </div>
@@ -274,7 +294,7 @@ class EntityViewer extends Component {
           <div className="sidepanel-body">
             <Tabs selectedTab={selectedTab}>
               <TabContent
-                for={['info', 'connections', 'page'].includes(selectedTab) ? selectedTab : 'none'}
+                for={['info', 'relationships', 'page'].includes(selectedTab) ? selectedTab : 'none'}
               >
                 <ConnectionsGroups />
               </TabContent>
@@ -324,6 +344,7 @@ EntityViewer.defaultProps = {
   tab: 'info',
   hasPageView: false,
   user: Immutable.fromJS({}),
+  locale: 'en',
 };
 
 EntityViewer.propTypes = {
@@ -339,6 +360,7 @@ EntityViewer.propTypes = {
   startNewConnection: PropTypes.func,
   tab: PropTypes.string,
   library: PropTypes.object,
+  locale: PropTypes.string,
   showTab: PropTypes.func.isRequired,
   hasPageView: PropTypes.bool,
   user: PropTypes.instanceOf(Immutable.Map),
@@ -369,6 +391,7 @@ const mapStateToProps = state => {
     tab: uiState.get('userSelectedTab') ? uiState.get('tab') : defaultTab,
     hasPageView: Boolean(templateWithPageView),
     user: state.user,
+    locale: state.locale,
     // Is this used at all?
     library: state.library,
   };

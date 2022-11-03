@@ -367,6 +367,24 @@ $c-sidebar: $c-white;
   .fa {
     font-size: $f-size-lg;
   }
+
+  .entity-sidepanel-tab-link {
+    width: 100%;
+    height: 100%;
+    display: block;
+    color: grey;
+    text-decoration: none;
+
+    &:visited {
+      text-decoration: none;
+    }
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  .selected {
+    color: $c-primary;
+  }
 }
 
 .sidepanel-title {
