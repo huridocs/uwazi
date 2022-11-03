@@ -51,8 +51,8 @@ const readJsonFile = (path: string | undefined): Object => {
     return JSON.parse(fs.readFileSync(path, 'utf8'));
 };
 
-let TEMPLATE_IDS_BY_NAME: Record<string, TemplateSchema> = {};
-let RELATIONTYPE_IDS_BY_NAME: Record<string, RelationshipDBOType> = {};
+let TEMPLATE_IDS_BY_NAME: Record<string, string> = {};
+let RELATIONTYPE_IDS_BY_NAME: Record<string, string> = {};
 
 const readTypes = async (db: Db) => {
     TEMPLATE_IDS_BY_NAME = objectIndex(
@@ -67,44 +67,12 @@ const readTypes = async (db: Db) => {
     );
 };
 
-const fillIdsForNode = (node: any) => {
-    const newNode = {
-        ...node,
-        templates: node.templates === "*" ? node.templates : node.templates.map(name => TEMPLATE_IDS_BY_NAME[name]),
-    }
-    if(node.traverse) newNode.traverse = node.traverse.map(edge => fillIdsForEdge(edge));
-    return newNode;
-};
-
-const fillIdsForEdge = (edge: any) => {
-    return {
-        ...edge,
-        types: edge.types === "*"? edge.types : edge.types.map(name => RELATIONTYPE_IDS_BY_NAME[name]),
-        match: edge.match.map(node => fillIdsForNode(node))
-    }
-}
-
-const fillIds = (rawDefinitions: any[]) => {
-    return rawDefinitions.map(def => fillIdsForNode(def));
-};
-
-const nullCheckElement = (element: any) => {
-    const checkable = element.templates ? element.templates : element.types;
-    if (checkable !== '*' && checkable.filter(c => !c).length) throw new Error('There is a null/undefined type or template.')
-    const traversable = element.match ? element.match : element.traverse;
-    if (traversable) traversable.forEach(t => nullCheckElement(t));
-};
-
-const nullCheck = (filledDefinitions: any[]) => {
-    filledDefinitions.map(node => nullCheckElement(node));
-};
-
 class ConnectionInfo {
-    from: string | any[];
-    through: any[];
+    from: '*' | string[];
+    through: '*' | string[];
     direction: string;
-    to: string | any[];
-    constructor(from: any[] | string, through: any[], direction: string, to: any[] | string) {
+    to: '*' | string[];
+    constructor(from: string[] | '*', through: '*' | string[], direction: string, to: string[] | '*') {
         this.from = from;
         this.through = through;
         this.direction = direction;
@@ -114,17 +82,43 @@ class ConnectionInfo {
     get stringToHash(){
         return `from: ${JSON.stringify(this.from)} - through: ${JSON.stringify(this.through)} - direction: ${this.direction} - to: ${JSON.stringify(this.to)}`;
     }
+
+    getCopyWithIds(){
+        return new ConnectionInfo(
+            this.from === "*" ? this.from : this.from.map(name => TEMPLATE_IDS_BY_NAME[name]),
+            this.through === "*" ? this.through : this.through.map(name => RELATIONTYPE_IDS_BY_NAME[name]),
+            this.direction,
+            this.to === "*" ? this.to : this.to.map(name => TEMPLATE_IDS_BY_NAME[name])
+        )
+    }
+
+    nullCheck() {
+        const checkArray = (checkable: '*' | string[]) => {
+            if (checkable !== '*' && checkable.filter(c => !c).length) throw new Error('There is a null/undefined type or template.')
+        };
+        checkArray(this.from);
+        checkArray(this.through);
+        checkArray(this.to);
+    }
 }
 
-const collateNodeConnections = (node: any, resultArray: any[]) => {
+const fillIds = (rawConnections: any[]) => {
+    const filledConnections = rawConnections.map(c => c.getCopyWithIds());
+    filledConnections.forEach(c => c.nullCheck());
+    return filledConnections;
+};
+
+
+const collateNodeConnections = (node: any, resultArray: ConnectionInfo[]) => {
     if(!node.traverse) return;
     node.traverse.forEach(edge => {
         if(!edge.match) throw new Error('Edge needs a match clause.');
+        const targetTemplates = edge.match.map(node => node.templates);
         const connection = new ConnectionInfo(
             node.templates,
             edge.types,
             edge.direction,
-            edge.match.map(node => node.templates).flat()
+            targetTemplates.some(t => t === "*") ? '*' : targetTemplates.flat(),
         )
         resultArray.push(connection);
         edge.match.forEach(node => collateNodeConnections(node, resultArray));
@@ -143,10 +137,11 @@ const run = async () => {
     const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);
     
     await readTypes(db);
-    const filledDefinitions = fillIds(rawDefinitions);
-    nullCheck(filledDefinitions);
-    const connections = collateConnections(rawDefinitions);
-    console.log(connections);
+    const rawConnections = collateConnections(rawDefinitions);
+    const filledConnections = fillIds(rawConnections);
+
+    console.log(rawConnections);
+    console.log(filledConnections);
 
     await client.close();
 };
