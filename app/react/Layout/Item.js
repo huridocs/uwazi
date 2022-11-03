@@ -65,7 +65,6 @@ export class Item extends Component {
             entity={this.props.noMetadata ? {} : doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
-            renderLabel={(prop, label) => !prop.noLabel && label}
           />
         </div>
         <ItemFooter>
