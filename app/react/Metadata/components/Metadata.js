@@ -188,7 +188,7 @@ const Metadata = ({
     : flattenedMetadata;
 
   return (
-    <>
+    <dl>
       {groupedMetadata.map((prop, index) => {
         let type = prop.type ? prop.type : 'default';
         type = type === 'image' || type === 'media' ? 'multimedia' : type;
@@ -196,7 +196,7 @@ const Metadata = ({
         const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
         return (
-          <dl
+          <div
             className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
             key={`${prop.name}_${index}`}
           >
@@ -204,10 +204,10 @@ const Metadata = ({
             <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
               {showByType(prop, compact, templateId)}
             </dd>
-          </dl>
+          </div>
         );
       })}
-    </>
+    </dl>
   );
 };
 
