@@ -4,7 +4,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import rison from 'rison-node';
-import { t } from 'app/I18N';
+import { I18NLink, t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -22,9 +22,9 @@ const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
   return currentOption?.label;
 };
 
-const getOptionUrl = (location: WithRouterProps['location'], optionValue: string) => {
+const getOptionUrl = (location: WithRouterProps['location'], optionValue: string, path: string) => {
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
-  return encodeSearch({ ...currentQuery, sort: optionValue }, true);
+  return `${path}${encodeSearch({ ...currentQuery, sort: optionValue }, true)}`;
 };
 
 const isSortableType = (type: PropertySchema['type']) => {
@@ -77,14 +77,11 @@ const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
   }, []);
 
 interface SortDropdownOwnProps {
-  stateProperty: string;
   selectedTemplates: IImmutable<string[]>;
-  sortCallback: Function;
 }
 
 const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   let templates;
-  const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
     templates = state.templates.filter(
@@ -92,18 +89,18 @@ const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
     )! as IImmutable<ClientTemplateSchema[]>;
   }
 
-  const search = stateProperty
+  const search = 'library.search'
     .split(/[.,/]/)
     .reduce(
       (memo: { [k: string]: any }, property: string) =>
         Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null,
       state
     );
+
   return {
-    stateProperty,
     search,
     templates: templates || state.templates,
-    sortCallback: ownProps.sortCallback,
+    locale: state.locale,
   };
 };
 
@@ -113,23 +110,6 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
-
-const getSortingButtonContents = (search: SearchOptions, currentQuery: any) =>
-  search.order === 'asc' && search.sort !== '_score' ? (
-    <>
-      <a href={encodeSearch({ ...currentQuery, order: 'asc' }, true)} style={{ display: 'none' }}>
-        {t('System', 'Sort ascending', undefined, false)}
-      </a>
-      <Icon icon="arrow-up" />
-    </>
-  ) : (
-    <>
-      <a href={encodeSearch({ ...currentQuery, order: 'desc' }, true)} style={{ display: 'none' }}>
-        {t('System', 'Sort descending', undefined, false)}
-      </a>
-      <Icon icon="arrow-down" />
-    </>
-  );
 
 const defaultSorts = [
   { label: 'Title', value: 'title', type: 'text', context: 'System' },
@@ -160,15 +140,11 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
       }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
-const SortDropdownComponent = ({ search, templates, location }: mappedProps) => {
+const SortDropdownComponent = ({ search, templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
-
-  const changeOrder = () => {
-    const order = search.order === 'asc' ? 'desc' : 'asc';
-    const urlParams = encodeSearch({ ...currentQuery, order }, true);
-    window.location.assign(location.pathname + urlParams);
-  };
+  const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
+  const order = search.order === 'asc' ? 'desc' : 'asc';
 
   const metadataSorts = getMetadataSorts(templates);
 
@@ -193,23 +169,35 @@ const SortDropdownComponent = ({ search, templates, location }: mappedProps) => 
         </button>
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
-            const url = getOptionUrl(location, option.value);
+            const url = getOptionUrl(location, option.value, path);
             return (
               <li>
-                <a href={url}>{option.label}</a>
+                <I18NLink to={url}>{option.label}</I18NLink>
               </li>
             );
           })}
         </ul>
       </div>
-      <button
-        type="button"
-        disabled={search.sort === '_score'}
-        className={`sorting-toggle ${search.sort === '_score' && 'disabled'}`}
-        onClick={changeOrder}
+
+      <I18NLink
+        to={`${path}${encodeSearch({ ...currentQuery, order }, true)}`}
+        disable={search.sort === '_score'}
       >
-        {getSortingButtonContents(search, currentQuery)}
-      </button>
+        <button type="button" disabled={search.sort === '_score'} onClick={() => {}}>
+          {order === 'asc' ? (
+            <span style={{ display: 'none' }}>
+              {t('System', 'Sort descending', undefined, false)}
+            </span>
+          ) : (
+            <span style={{ display: 'none' }}>
+              {t('System', 'Sort ascending', undefined, false)}
+            </span>
+          )}
+          <Icon
+            icon={search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down'}
+          />
+        </button>
+      </I18NLink>
     </div>
   );
 };

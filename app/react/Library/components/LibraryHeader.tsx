@@ -107,11 +107,7 @@ const LibraryHeaderComponent = ({
               <span className="documents-counter-sort">
                 <Translate>sorted by</Translate>
               </span>
-              <SortDropdown
-                sortCallback={searchDocuments}
-                selectedTemplates={filters.get('documentTypes')}
-                stateProperty={sortButtonsStateProperty}
-              />
+              <SortDropdown selectedTemplates={filters.get('documentTypes')} />
               <NeedAuthorization>
                 <div className="select-all-documents">
                   <button
