@@ -63,7 +63,6 @@ const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
 
 interface SortButtonsOwnProps {
   stateProperty: string;
-  // eslint-disable-next-line react/no-unused-prop-types
   selectedTemplates: IImmutable<string[]>;
   sortCallback: Function;
 }

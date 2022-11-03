@@ -93,6 +93,32 @@ class DocumentsList extends Component {
     );
   }
 
+  relationshipsToolbar(counter) {
+    const SortButtonsRelationships = this.props.SortButtons;
+    const SearchBarRelationships = this.props.SearchBar;
+
+    return (
+      <div className="relationship-toolbar">
+        <div className="search-list">
+          <SearchBarRelationships />
+        </div>
+        <div className="sort-by">
+          <span className="documents-counter-sort">
+            <Translate>sorted by</Translate>
+          </span>
+          <SortButtonsRelationships
+            sortCallback={this.props.searchDocuments}
+            selectedTemplates={this.props.filters.get('documentTypes')}
+            stateProperty={this.props.sortButtonsStateProperty}
+          />
+        </div>
+        <div className="documents-counter">
+          <span className="documents-counter-label">{counter}</span>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const {
       documents,
@@ -192,8 +218,6 @@ class DocumentsList extends Component {
         </NeedAuthorization>
       </div>
     );
-    const SortButtonsRelationships = this.props.SortButtons;
-    const SearchBarRelationships = this.props.SearchBar;
 
     return (
       <div className="documents-list">
@@ -214,26 +238,7 @@ class DocumentsList extends Component {
               scrollCount={this.state.scrollCount}
             />
           )}
-          {SortButtonsRelationships !== undefined && (
-            <div className="relationship-toolbar">
-              <div className="search-list">
-                <SearchBarRelationships />
-              </div>
-              <div className="sort-by">
-                <span className="documents-counter-sort">
-                  <Translate>sorted by</Translate>
-                </span>
-                <SortButtonsRelationships
-                  sortCallback={this.props.searchDocuments}
-                  selectedTemplates={this.props.filters.get('documentTypes')}
-                  stateProperty={this.props.sortButtonsStateProperty}
-                />
-              </div>
-              <div className="documents-counter">
-                <span className="documents-counter-label">{counter}</span>
-              </div>
-            </div>
-          )}
+          {this.props.SortButtons !== undefined && this.relationshipsToolbar(counter)}
 
           {blankState() && <Welcome />}
 

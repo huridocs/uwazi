@@ -46,7 +46,7 @@ describe('connections', () => {
   });
 
   it('should revert the sort order for the property Fecha', async () => {
-    await expect(page).toClick('.library-header .library-toolbar .sort-buttons .sorting-toggle');
+    await expect(page).toClick('.relationship-toolbar .sort-buttons .sorting-toggle');
     await expect(page).toMatchElement(
       '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
       {
