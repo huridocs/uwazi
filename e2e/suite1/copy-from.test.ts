@@ -59,10 +59,7 @@ describe('Copy from', () => {
   });
 
   it('should check the data', async () => {
-    await expect(page).toClick(
-      'div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div:nth-child(2) > div > div > div.item-info',
-      { text: 'Test title' }
-    );
+    await expect(page).toClick('div.item-info', { text: 'Test title' });
     await expect(page).toMatchElement(
       '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(2) > dd',
       {
