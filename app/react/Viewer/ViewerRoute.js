@@ -4,6 +4,7 @@ import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 import { actions } from 'app/BasicReducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
+import { showTab } from 'app/Entities/actions/uiActions';
 import PDFView from './PDFView';
 import EntityView from './EntityView';
 import ViewerComponent from './components/ViewerComponent';
@@ -39,13 +40,26 @@ class ViewerRoute extends RouteHandler {
   }
 
   urlHasChanged(nextProps) {
+    const { sharedId: oldSharedId, lang: oldLang } = nextProps.params;
+    const { sharedId: newSharedId, lang: newLang } = this.props.params;
+    if (newSharedId === oldSharedId && newLang === oldLang) {
+      return false;
+    }
     const { query } = this.props.location;
     const { query: nextQuery } = nextProps.location;
     const sameQueryFile = query.file === nextQuery.file;
     return super.urlHasChanged(nextProps) || !sameQueryFile;
   }
 
+  selectTab({ tabView }) {
+    let tab = tabView;
+    if (!tab) tab = 'metadata';
+    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tab));
+    this.context.store.dispatch(showTab(tab === 'metadata' ? 'info' : tab));
+  }
+
   render() {
+    this.selectTab(this.props.routeParams);
     return <ViewerComponent {...this.props} />;
   }
 }
