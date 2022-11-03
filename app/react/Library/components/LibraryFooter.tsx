@@ -47,7 +47,7 @@ const LibraryFooterComponent = ({
       >
         <div className="close-actions-button">
           <button type="button" className="toggle-footer-button" onClick={toggleFooterVisible}>
-            <Translate>Close actions</Translate>
+            <Translate>Hide actions</Translate>
           </button>
         </div>
         <div className="btn-cluster">
@@ -79,7 +79,7 @@ const LibraryFooterComponent = ({
       </div>
       <div className={`open-actions-button ${footerVisible ? 'closed' : ''}`}>
         <button type="button" className="toggle-footer-button" onClick={toggleFooterVisible}>
-          <Translate>Open actions</Translate>
+          <Translate>Show actions</Translate>
         </button>
       </div>
     </>
