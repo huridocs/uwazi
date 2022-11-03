@@ -79,7 +79,7 @@ class ConnectionInfo {
         this.to = to;
     }
 
-    get stringToHash(){
+    get hashableString(){
         return `from: ${JSON.stringify(this.from)} - through: ${JSON.stringify(this.through)} - direction: ${this.direction} - to: ${JSON.stringify(this.to)}`;
     }
 
@@ -126,9 +126,20 @@ const collateNodeConnections = (node: any, resultArray: ConnectionInfo[]) => {
 };
 
 const collateConnections = (filledDefinitions: any[]) => {
-    const connections = [];
+    const connections: ConnectionInfo[] = [];
     filledDefinitions.forEach(node => collateNodeConnections(node, connections))
-    return connections;
+
+    const uniqueConnections: ConnectionInfo[] = [];
+    const hashSet = new Set();
+
+    connections.forEach(c => {
+        if(!hashSet.has(c.hashableString)) {
+            hashSet.add(c.hashableString);
+            uniqueConnections.push(c);
+        }
+    });
+
+    return uniqueConnections;
 };
 
 const run = async () => {
