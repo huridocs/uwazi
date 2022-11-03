@@ -86,7 +86,7 @@ describe('LibraryFooter', () => {
         () => state
       );
 
-      const openButton = screen.getByText('Open actions').parentElement!;
+      const openButton = screen.getByText('Show actions').parentElement!;
       await act(async () => {
         fireEvent.click(openButton);
       });

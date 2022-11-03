@@ -215,8 +215,8 @@ class DocumentsList extends Component {
             />
           )}
           {SortButtonsRelationships !== undefined && (
-            <>
-              <div className={`search-list ${this.props.searchCentered ? 'centered' : ''}`}>
+            <div className="relationship-toolbar">
+              <div className="search-list">
                 <SearchBarRelationships />
               </div>
               <div className="sort-by">
@@ -229,8 +229,10 @@ class DocumentsList extends Component {
                   stateProperty={this.props.sortButtonsStateProperty}
                 />
               </div>
-              {counter}
-            </>
+              <div className="documents-counter">
+                <span className="documents-counter-label">{counter}</span>
+              </div>
+            </div>
           )}
 
           {blankState() && <Welcome />}

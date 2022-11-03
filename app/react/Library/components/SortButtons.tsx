@@ -85,7 +85,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
         Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null,
       state
     );
-  return { stateProperty, search, templates: templates || state.templates };
+  return { ...ownProps, stateProperty, search, templates: templates || state.templates };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
@@ -93,7 +93,7 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type mappedProps = ConnectedProps<typeof connector> & SortButtonsOwnProps;
+type mappedProps = ConnectedProps<typeof connector>;
 
 const getPropertySortType = (selected: SortType): string =>
   selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';

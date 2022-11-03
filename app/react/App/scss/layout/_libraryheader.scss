@@ -137,7 +137,8 @@
     right: 0px;
     position: inherit;
     display: inline-flex;
-    min-width: 200px;
+    min-width: 140px;
+    margin-left: -11px;
   }
 
   .documents-counter {
@@ -145,17 +146,27 @@
     font-size: 0.9em;
     order: 1;
 
+    &:nth-last-child(3),
     &:nth-last-child(2) {
       margin-left: auto;
     }
   }
 
-  @media (min-width: 374px) {
+  .toggle-button:not(.unpinned) {
+    margin-left: auto;
+  }
+  @media (min-width: 414px) {
     .sort-by {
       .sort-buttons {
         .sort-dropdown {
           min-width: 240px;
         }
+      }
+    }
+    .documents-counter {
+      &:nth-last-child(3),
+      &:nth-last-child(2) {
+        margin-left: unset;
       }
     }
   }
@@ -182,6 +193,7 @@
     }
 
     .list-view-mode {
+      min-width: 200px;
       position: absolute;
       width: auto;
     }
@@ -298,8 +310,6 @@
       @include mobileFilterBtn;
 
       @media (min-width: 768px) {
-        width: 120px;
-        min-width: 120px;
         max-width: 150px;
         white-space: nowrap;
         overflow: hidden;

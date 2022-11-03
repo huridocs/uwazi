@@ -141,14 +141,14 @@ const LibraryHeaderComponent = ({
         </div>
         <div className="close-toolbar-button">
           <button type="button" className="toggle-toolbar-button" onClick={toggleToolbarVisible}>
-            <Translate>Close toolbar</Translate>
+            <Translate>Hide toolbar</Translate>
           </button>
         </div>
       </div>
 
       <div className={`open-toolbar-button ${toolbarVisible ? 'closed' : ''}`}>
         <button type="button" className="toggle-toolbar-button" onClick={toggleToolbarVisible}>
-          <Translate>Open toolbar</Translate>
+          <Translate>Show toolbar</Translate>
         </button>
       </div>
     </>
