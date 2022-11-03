@@ -171,7 +171,6 @@ const SortButtonsComponent = ({
 
   return (
     <div className="sort-buttons">
-      {/*  @ts-ignore */}
       <DropdownList
         className="sort-dropdown"
         value={validatedSearch.sort}
