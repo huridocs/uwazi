@@ -21,7 +21,7 @@ const insertHubs = async (_ids: ObjectId[], hubCollection: Collection<HubType>) 
     const existing = new Set(hubs.map(({ _id }) => _id.toString()));
     ids = ids.filter(id => !existing.has(id));
     return hubCollection.insertMany(ids.map(id => ({ _id: new ObjectId(id) })));
-  };
+};
 
 const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collection<HubType>) => {
     process.stdout.write('Writing temporary hub collection...\n');
@@ -38,8 +38,8 @@ const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collect
       }
     }
     if (toBeInserted.length) await insertHubs(toBeInserted, hubs);
-    process.stdout.write('Temporary hub collection done\n.');
-  };
+    process.stdout.write('Temporary hub collection done.\n');
+};
 
 export type { ConnectionType, HubType };
-export { gatherHubs  };
+export { gatherHubs };

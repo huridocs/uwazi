@@ -1,32 +1,37 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-statements */
 // Run with ts-node, explicitly passing tsconfig, and ignore the compile errors. From the project root:
-// yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/dryRun.ts <path-to-definition-file>
+// yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/dryRun.ts <required-path-to-definition-file> <optional-path-to-result-file>
 import fs from 'fs'
 import process from 'process';
 
 import { Db } from 'mongodb';
 
-import { getClientAndDB } from './utilities/db'
 import { objectIndex } from '../../app/shared/data_utils/objectIndex';
-
-const print = (text: string) => process.stdout.write(text);
+import { CsvWriter } from './utilities/csv';
+import { createTempCollections, getClientAndDB } from './utilities/db'
+import { ConnectionType, gatherHubs, HubType } from './utilities/hubs';
+import { println } from './utilities/log';
 
 const batchsize = 1000;
 
 const DEFINITION_FILE_PATH = process.argv.length > 2 ? process.argv[2] : undefined;
+const RESULT_FILE_PATH = process.argv.length > 3 ? process.argv[3] : undefined;
+
+const temporaryHubCollectionName = '__temporary_hub_collection';
+
 
 const readJsonFile = (path: string | undefined): Object => {
     if(!path) {
-        print('Provide path for definition file.\n');
+        println('Provide path for definition file.');
         process.exit(1)
     }
     if(!fs.existsSync(path)) {
-        print('Provide path does not exist.\n');
+        println('Provide path does not exist.');
         process.exit(1)
     }
     if(!fs.lstatSync(path).isFile()) {
-        print('Provide path is not a file.\n');
+        println('Provide path is not a file.');
         process.exit(1)
     }
     return JSON.parse(fs.readFileSync(path, 'utf8'));
@@ -34,6 +39,7 @@ const readJsonFile = (path: string | undefined): Object => {
 
 let TEMPLATE_IDS_BY_NAME: Record<string, string> = {};
 let RELATIONTYPE_IDS_BY_NAME: Record<string, string> = {};
+let RELATIONTYPE_NAMES_BY_ID: Record<string, string> = {};
 
 const readTypes = async (db: Db) => {
     TEMPLATE_IDS_BY_NAME = objectIndex(
@@ -46,6 +52,7 @@ const readTypes = async (db: Db) => {
         r => r.name,
         r => r._id.toHexString()
     );
+    RELATIONTYPE_NAMES_BY_ID = Object.fromEntries(Object.entries(RELATIONTYPE_IDS_BY_NAME).map(([name, id]) => [id, name]));
 };
 
 class ConnectionInfo {
@@ -133,13 +140,65 @@ const collateConnections = (filledDefinitions: any[]) => {
     return uniqueConnections;
 };
 
+const NO_CLASS_MARKER = 'NO_CLASS'
+
+enum HubClasses {
+    NO_UNTYPED_EDGE = 'NO_UNTYPED_EDGE'
+}
+
+type HubClassifier = (hub: HubType, connections: ConnectionType[]) => boolean;
+
+const hubClassifiers: { [key in HubClasses]: HubClassifier } = {
+    [HubClasses.NO_UNTYPED_EDGE]: (hub: HubType, connections: ConnectionType[]) => connections.every(c => c.template)
+};
+
+const classifyHub = (hub: HubType, connections: ConnectionType[]) => {
+    const classes: HubClasses[] = [];
+    Object.values(HubClasses).forEach(cls => {
+        const classifier = hubClassifiers[cls];
+        if(classifier(hub, connections)) {
+            classes.push(cls);
+        }
+    })
+    return classes.length ? classes.join(' ') : NO_CLASS_MARKER;
+}
+
 const run = async () => {
     const {client, db} = await getClientAndDB();
     
-    const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);
-    
     await readTypes(db);
+    const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);    
     const connections = collateConnections(rawDefinitions);
+
+    await createTempCollections(db, [temporaryHubCollectionName])
+
+    const tempHubsCollection = db.collection<HubType>(temporaryHubCollectionName);
+    const connectionsCollection = db.collection<ConnectionType>('connections');
+
+
+    await gatherHubs(connectionsCollection, tempHubsCollection);
+
+    const csv = RESULT_FILE_PATH ? new CsvWriter(RESULT_FILE_PATH, ['_id', 'hub', 'entity', 'type', 'hubclass']) : undefined;
+
+    println('Processing hubs...')
+    const hubCursor = tempHubsCollection.find({});
+    while(await hubCursor.hasNext()){
+        const hub = await hubCursor.next();
+        if(!hub) break;
+
+        const connections = await connectionsCollection.find({ hub: hub._id }).toArray();
+
+        if(csv) {
+            csv.writeLines(
+                connections.map(c => ({
+                    ...c,
+                    type: c.template ? RELATIONTYPE_NAMES_BY_ID[c.template.toHexString()] : c.template,
+                    hubclass: classifyHub(hub, connections) 
+                }))
+            );
+        }
+    }
+    println('Hub processing done.')
 
     await client.close();
 };

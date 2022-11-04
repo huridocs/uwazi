@@ -2,11 +2,9 @@
 /* eslint-disable max-statements */
 // Run with ts-node, explicitly passing tsconfig, and ignore the compile errors. From the project root:
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/simpleLiftHubs.ts
-import process from 'process';
+import { Collection, FindCursor, Db, ObjectId, OptionalId } from 'mongodb';
 
-import { Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
-
-import { getClientAndDB } from './utilities/db'
+import { createTempCollections, finalize, getClientAndDB } from './utilities/db'
 import { ConnectionType, HubType , gatherHubs} from './utilities/hubs';
 import { print } from './utilities/log';
 import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
@@ -36,23 +34,6 @@ const getNextBatch = async <T>(cursor: FindCursor<T>, size: number = batchsize) 
     returned.push((await cursor.next()) as T);
   }
   return returned;
-};
-
-const createTempCollection = async (db: Db, name: string) => {
-  try {
-    await db.createCollection(name);
-  } catch (error) {
-    if (!(error instanceof MongoError)) throw error;
-    if (!error.message.endsWith('already exists')) throw error;
-    await db.dropCollection(name);
-    await db.createCollection(name);
-  }
-};
-
-const createTempCollections = async (db: Db, names: string[]) => {
-  print('Creating temporary collections...\n');
-  await Promise.all(names.map(name => createTempCollection(db, name)))
-  print('Temporary collections created.\n');
 };
 
 const HUBTEMPLATE: TemplateSchema = {
@@ -200,32 +181,6 @@ const liftHubs = async (
   }
   await entityWriter.flush();
   print('Writing hub entities and relationships to temporary collections done.\n');
-};
-
-const copyCollection = async <T extends { [key: string]: any; }>(db: Db, source: Collection<T>, target: Collection<T>) => {
-  const sourceCursor = source.find({});
-  const targetWriter = new BulkWriteStream(target, undefined, batchsize);
-  while (await sourceCursor.hasNext()) {
-    const next = await sourceCursor.next() as OptionalId<T>;
-    if (next) await targetWriter.insert(next);
-  }
-  await targetWriter.flush();
-};
-
-const finalize = async(db: Db, sourceTargetPairs: [Collection<any>, Collection<any>][], toDrop: Collection<any>[]) => {
-  print('Copy from temp to final...\n');
-  for(let i = 0; i < sourceTargetPairs.length; i+=1) {
-    const [source, target] = sourceTargetPairs[i];
-    await copyCollection(db, source, target);
-  }
-  print('Copy from temp to final done.\n');
-  
-  print('Dropping temp collections...\n');
-  for( let i =0; i < toDrop.length; i+=1 ) {
-    const coll = toDrop[i];
-    await coll.drop();
-  }
-  print('Temp collections dropped.\n');
 };
 
 const migrate = async () => {
