@@ -2,7 +2,6 @@ import React from 'react';
 import { TableViewer } from 'app/Layout/TableViewer';
 import Library from 'app/Library/Library';
 import LibraryLayout from 'app/Library/LibraryLayout';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
 
@@ -13,14 +12,14 @@ export class LibraryTable extends Library {
 
   render() {
     return (
-      <LibraryLayout sidePanelMode={this.props.sidePanelMode}>
-        <LibraryModeToggleButtons
+      <LibraryLayout sidePanelMode="unpinned-mode">
+        <DocumentsList
           storeKey="library"
+          CollectionViewer={TableViewer}
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
-          tableViewMode={true}
+          scrollCount={this.state.scrollCount}
         />
-        <DocumentsList storeKey="library" CollectionViewer={TableViewer} />
       </LibraryLayout>
     );
   }
