@@ -5,8 +5,7 @@ import disableTransitions from '../helpers/disableTransitions';
 import { getContentBySelector } from '../helpers/selectorUtils';
 
 const selectors = {
-  searchInLibrary:
-    '#app > div.content > div > div > div > main > div.list-view-mode > div.buttons-group.toggle-button.only-mobile > button',
+  searchInLibrary: '.library-header .library-toolbar .header-bottom .toggle-button.only-mobile',
   sidePanelFiltersTitle:
     '#app > div.content > div > div > div > aside.is-active > div.sidepanel-body > div.sidepanel-title > div:nth-child(1) > span',
   firstEntityView:
@@ -30,9 +29,11 @@ describe('Custom home page and styles', () => {
 
   describe('library view', () => {
     it('when clicking on the search button a side panel should appear', async () => {
+      await expect(page).toClick('.open-toolbar-button .toggle-toolbar-button');
       await expect(page).toClick(selectors.searchInLibrary);
       await expect(page).toMatchElement(selectors.sidePanelFiltersTitle, { text: 'Filters' });
       await expect(page).toClick('button[aria-label="Close side panel"]');
+      await expect(page).toClick('.close-toolbar-button .toggle-toolbar-button');
     });
   });
 
