@@ -5,33 +5,14 @@
 import fs from 'fs'
 import process from 'process';
 
-import { Collection, FindCursor, Db, MongoError, MongoClient, ObjectId, OptionalId } from 'mongodb';
+import { Db } from 'mongodb';
 
-import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
-import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
-import date from '../../app/api/utils/date';
+import { getClientAndDB } from './utilities/db'
 import { objectIndex } from '../../app/shared/data_utils/objectIndex';
-import { EntitySchema } from '../../app/shared/types/entityType';
-import { Settings } from '../../app/shared/types/settingsType';
-import { TemplateSchema } from '../../app/shared/types/templateType';
-import { UserSchema } from '../../app/shared/types/userType';
-import ID from '../../app/shared/uniqueID';
-import { json } from 'body-parser';
-import { Connection } from 'puppeteer';
 
 const print = (text: string) => process.stdout.write(text);
 
 const batchsize = 1000;
-
-const getClientAndDB = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
-  const client = new MongoClient(url);
-  await client.connect();
-
-  const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
-
-  return {client, db};
-};
 
 const DEFINITION_FILE_PATH = process.argv.length > 2 ? process.argv[2] : undefined;
 
@@ -91,30 +72,40 @@ class ConnectionInfo {
             this.to === "*" ? this.to : this.to.map(name => TEMPLATE_IDS_BY_NAME[name])
         )
     }
+}
+
+class Connection {
+    named: ConnectionInfo;
+    withIds: ConnectionInfo;
+
+    constructor(from: string[] | '*', through: '*' | string[], direction: string, to: string[] | '*') {
+        this.named = new ConnectionInfo(from, through, direction, to);
+        this.withIds = this.named.getCopyWithIds();
+        this.nullCheck();
+    }
 
     nullCheck() {
         const checkArray = (checkable: '*' | string[]) => {
-            if (checkable !== '*' && checkable.filter(c => !c).length) throw new Error('There is a null/undefined type or template.')
+            if (checkable !== '*' && checkable.filter(c => !c).length) {
+                throw new Error(`There is a null/undefined type or template in a connection:\n${JSON.stringify(this.named)}`)
+            }
         };
-        checkArray(this.from);
-        checkArray(this.through);
-        checkArray(this.to);
+        checkArray(this.withIds.from);
+        checkArray(this.withIds.through);
+        checkArray(this.withIds.to);
+    }
+
+    get hashableString(){
+        return this.withIds.hashableString;
     }
 }
 
-const fillIds = (rawConnections: any[]) => {
-    const filledConnections = rawConnections.map(c => c.getCopyWithIds());
-    filledConnections.forEach(c => c.nullCheck());
-    return filledConnections;
-};
-
-
-const collateNodeConnections = (node: any, resultArray: ConnectionInfo[]) => {
+const collateNodeConnections = (node: any, resultArray: Connection[]) => {
     if(!node.traverse) return;
     node.traverse.forEach(edge => {
         if(!edge.match) throw new Error('Edge needs a match clause.');
         const targetTemplates = edge.match.map(node => node.templates);
-        const connection = new ConnectionInfo(
+        const connection = new Connection(
             node.templates,
             edge.types,
             edge.direction,
@@ -126,10 +117,10 @@ const collateNodeConnections = (node: any, resultArray: ConnectionInfo[]) => {
 };
 
 const collateConnections = (filledDefinitions: any[]) => {
-    const connections: ConnectionInfo[] = [];
+    const connections: Connection[] = [];
     filledDefinitions.forEach(node => collateNodeConnections(node, connections))
 
-    const uniqueConnections: ConnectionInfo[] = [];
+    const uniqueConnections: Connection[] = [];
     const hashSet = new Set();
 
     connections.forEach(c => {
@@ -148,11 +139,7 @@ const run = async () => {
     const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);
     
     await readTypes(db);
-    const rawConnections = collateConnections(rawDefinitions);
-    const filledConnections = fillIds(rawConnections);
-
-    console.log(rawConnections);
-    console.log(filledConnections);
+    const connections = collateConnections(rawDefinitions);
 
     await client.close();
 };

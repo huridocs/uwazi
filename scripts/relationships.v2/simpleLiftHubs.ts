@@ -4,8 +4,11 @@
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/simpleLiftHubs.ts
 import process from 'process';
 
-import { MongoClient, Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
+import { Collection, FindCursor, Db, MongoError, ObjectId, OptionalId } from 'mongodb';
 
+import { getClientAndDB } from './utilities/db'
+import { ConnectionType, HubType , gatherHubs} from './utilities/hubs';
+import { print } from './utilities/log';
 import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
 import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
 import date from '../../app/api/utils/date';
@@ -16,36 +19,16 @@ import { TemplateSchema } from '../../app/shared/types/templateType';
 import { UserSchema } from '../../app/shared/types/userType';
 import ID from '../../app/shared/uniqueID';
 
-const print = (text: string) => process.stdout.write(text);
-
-type HubType = {
-  _id: ObjectId;
-};
-
-type ConnectionType = {
-  _id: ObjectId;
-  hub: ObjectId;
-  entity: string;
-  template: ObjectId;
-};
+const batchsize = 1000;
 
 type RelTypeType = {
   _id?: ObjectId;
   name: string;
 }
 
-const batchsize = 1000;
 const temporaryHubCollectionName = '__temporary_hub_collection';
 const temporaryEntityCollectionName = '__temporary_entity_collection';
 const temporaryRelationshipsCollectionName = '__temporary_relationships_collection';
-
-const getClient = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
-  const client = new MongoClient(url);
-  await client.connect();
-
-  return client;
-};
 
 const getNextBatch = async <T>(cursor: FindCursor<T>, size: number = batchsize) => {
   const returned: T[] = [];
@@ -53,34 +36,6 @@ const getNextBatch = async <T>(cursor: FindCursor<T>, size: number = batchsize) 
     returned.push((await cursor.next()) as T);
   }
   return returned;
-};
-
-const insertHubs = async (_ids: ObjectId[], hubCollection: Collection<HubType>) => {
-  let ids = Array.from(new Set(_ids.map(id => id.toString())));
-  const hubs = await hubCollection
-    .find({ _id: { $in: ids.map(id => new ObjectId(id)) } })
-    .toArray();
-  const existing = new Set(hubs.map(({ _id }) => _id.toString()));
-  ids = ids.filter(id => !existing.has(id));
-  return hubCollection.insertMany(ids.map(id => ({ _id: new ObjectId(id) })));
-};
-
-const gatherHubs = async (connections: Collection<ConnectionType>, hubs: Collection<HubType>) => {
-  process.stdout.write('Writing temporary hub collection...\n');
-  const connectionsCursor = connections.find({}, { projection: { hub: 1 } });
-
-  let toBeInserted: ObjectId[] = [];
-  while (await connectionsCursor.hasNext()) {
-    const next = (await connectionsCursor.next()) as ConnectionType;
-    const { hub } = next;
-    toBeInserted.push(hub);
-    if (toBeInserted.length > batchsize) {
-      await insertHubs(toBeInserted, hubs);
-      toBeInserted = [];
-    }
-  }
-  if (toBeInserted.length) await insertHubs(toBeInserted, hubs);
-  process.stdout.write('Temporary hub collection done\n.');
 };
 
 const createTempCollection = async (db: Db, name: string) => {
@@ -274,8 +229,7 @@ const finalize = async(db: Db, sourceTargetPairs: [Collection<any>, Collection<a
 };
 
 const migrate = async () => {
-  const client = await getClient();
-  const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
+  const {client, db } = await getClientAndDB();
   const { languages, defaultLanguage } = await getLanguages(db);
   const adminUser = await getAnAdmin(db);
   
