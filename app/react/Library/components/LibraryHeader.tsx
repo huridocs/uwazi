@@ -21,10 +21,8 @@ import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;
   selectAllDocuments: () => {};
-  sortButtonsStateProperty: string;
   SearchBar?: Function;
   searchCentered?: boolean;
-  searchDocuments: Function;
   filters: IImmutable<{ documentTypes: string[] }>;
   tableViewMode: boolean;
   scrollCount: number;
@@ -70,10 +68,8 @@ const FiltersButton = ({
 
 const LibraryHeaderComponent = ({
   filters,
-  sortButtonsStateProperty,
   selectAllDocuments,
   counter,
-  searchDocuments,
   SearchBar,
   searchCentered,
   zoomIn,
