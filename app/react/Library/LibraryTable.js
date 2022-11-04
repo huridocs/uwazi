@@ -1,25 +1,27 @@
-import RouteHandler from 'app/App/RouteHandler';
 import React from 'react';
 import { TableViewer } from 'app/Layout/TableViewer';
 import Library from 'app/Library/Library';
+import LibraryLayout from 'app/Library/LibraryLayout';
+import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
 
-/* TODO: This class is a temporal approach to be removed when we can
-   make Library and LibraryTable subclasses of the same base class. */
-class LibraryOverrideRequestState extends Library {
+export class LibraryTable extends Library {
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources, { calculateTableColumns: true });
   }
-}
 
-export class LibraryTable extends RouteHandler {
   render() {
     return (
-      <LibraryOverrideRequestState
-        viewer={TableViewer}
-        location={this.props.location}
-        sidePanelMode="unpinned-mode"
-      />
+      <LibraryLayout sidePanelMode={this.props.sidePanelMode}>
+        <LibraryModeToggleButtons
+          storeKey="library"
+          zoomIn={this.zoomIn}
+          zoomOut={this.zoomOut}
+          tableViewMode={true}
+        />
+        <DocumentsList storeKey="library" CollectionViewer={TableViewer} />
+      </LibraryLayout>
     );
   }
 }
