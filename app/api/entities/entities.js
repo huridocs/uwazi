@@ -22,6 +22,7 @@ import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
 import {
   deleteRelatedNewRelationships,
+  denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   markNewRelationshipsOfAffected,
   performNewRelationshipQueries,
@@ -384,7 +385,11 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
-    await markNewRelationshipsOfAffected(entity, index);
+    if (doc.sharedId) {
+      await denormalizeAfterEntityUpdate(entity);
+    } else {
+      await markNewRelationshipsOfAffected(entity, index);
+    }
 
     return entity;
   },

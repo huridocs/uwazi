@@ -76,7 +76,7 @@ const markNewRelationshipsOfAffected = async (
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
-    const service = DenormalizationService();
+    const service = DenormalizationService(transactionManager);
     const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
 
     await entitiesDataSource.markMetadataAsChanged(candidates);
@@ -87,6 +87,21 @@ const markNewRelationshipsOfAffected = async (
         '+fullText'
       );
     }
+  }
+};
+
+const denormalizeAfterEntityUpdate = async ({
+  sharedId,
+  language,
+}: {
+  sharedId: string;
+  language: string;
+}) => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
+    const denormalizationService = DenormalizationService(transactionManager);
+    await denormalizationService.denormalizeForExistingEntities([sharedId], language);
+    await transactionManager.executeOnCommitHandlers(undefined);
   }
 };
 
@@ -110,4 +125,5 @@ export {
   ignoreNewRelationshipsMetadata,
   markNewRelationshipsOfAffected,
   performNewRelationshipQueries,
+  denormalizeAfterEntityUpdate,
 };

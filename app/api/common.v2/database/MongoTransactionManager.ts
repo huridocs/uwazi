@@ -15,7 +15,7 @@ export class MongoTransactionManager implements TransactionManager {
     this.mongoClient = mongoClient;
   }
 
-  private async executeOnCommitHandlers(returnValue: unknown) {
+  async executeOnCommitHandlers(returnValue: unknown) {
     return Promise.all(this.onCommitHandlers.map(async handler => handler(returnValue)));
   }
 

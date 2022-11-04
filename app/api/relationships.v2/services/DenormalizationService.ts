@@ -103,4 +103,32 @@ export class DenormalizationService {
       await this.indexEntities(candidates.map(c => c.sharedId));
     });
   }
+
+  async denormalizeForExistingEntities(entityIds: string[], language: string) {
+    const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
+    const relationshipPropertyNames = relationshipProperties.map(property => property.name);
+
+    await Promise.all(
+      entityIds.map(async sharedId => {
+        const entities = await this.entitiesDS.getByIds([sharedId]).all();
+        const entity = entities.find(e => e.language === language);
+        if (!entity) throw new Error('missing entity');
+
+        await this.entitiesDS.updateDenormalizedTitle(
+          relationshipPropertyNames,
+          sharedId,
+          language,
+          entity.title
+        );
+      })
+    );
+
+    const affectedEntities = await this.entitiesDS
+      .getByDenormalizedId(relationshipPropertyNames, entityIds)
+      .all();
+
+    this.transactionManager.onCommitted(async () => {
+      await this.indexEntities(affectedEntities);
+    });
+  }
 }

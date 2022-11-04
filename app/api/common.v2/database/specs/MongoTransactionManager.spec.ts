@@ -221,6 +221,24 @@ describe('when registering onCommitted event handlers within the run() callback'
       expect(checkpoints).toEqual([1, 2, 3, 4]);
     }
   });
+
+  it('should manually trigger the onCommit handlers', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
+
+    const checkpoints = [1];
+
+    transactionManager.onCommitted(async () => {
+      checkpoints.push(2);
+    });
+
+    transactionManager.onCommitted(async () => {
+      checkpoints.push(3);
+    });
+
+    await transactionManager.executeOnCommitHandlers(undefined);
+
+    expect(checkpoints).toEqual([1, 2, 3]);
+  });
 });
 
 describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {

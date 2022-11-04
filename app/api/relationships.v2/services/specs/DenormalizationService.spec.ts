@@ -29,7 +29,25 @@ const fixtures = {
     { _id: factory.id('rel10'), from: 'entity9', to: 'entity4', type: factory.id('relType5') },
   ],
   entities: [
-    ...entityInLanguages(['hu', 'es'], 'entity1', 'template1'),
+    ...factory.entityInMultipleLanguages(
+      ['hu', 'es'],
+      'entity1',
+      'template1',
+      {},
+      { obsoleteMetadata: [] },
+      {
+        hu: {
+          metadata: {
+            relationshipProp1: [{ value: 'entity4', label: 'entity4-hu' }],
+          },
+        },
+        es: {
+          metadata: {
+            relationshipProp1: [{ value: 'entity4', label: 'entity4-es' }],
+          },
+        },
+      }
+    ),
     ...entityInLanguages(['hu', 'es'], 'entity2'),
     ...entityInLanguages(['hu', 'es'], 'hub1', 'formerHubsTemplate'),
     ...entityInLanguages(['hu', 'es'], 'entity3', 'template2'),
@@ -221,5 +239,43 @@ describe('denormalizeForNewRelationships()', () => {
         );
       }
     );
+  });
+});
+
+describe('denormalizeForExistingEntities()', () => {
+  describe('when executing on an existing entity', () => {
+    it('should update the relationship fields denormalizations in the entity with the new data in the provided language', async () => {
+      await testingDB.mongodb
+        ?.collection('entities')
+        .updateOne(
+          { sharedId: 'entity4', language: 'es' },
+          { $set: { title: 'entity4-es-edited' } }
+        );
+
+      await service.denormalizeForExistingEntities(['entity4'], 'es');
+
+      const entities = await testingDB.mongodb
+        ?.collection('entities')
+        .find({ sharedId: 'entity1' })
+        .toArray();
+      expect(entities).toMatchObject([
+        {
+          sharedId: 'entity1',
+          language: 'hu',
+          metadata: {
+            relationshipProp1: [{ value: 'entity4', label: 'entity4-hu' }],
+          },
+          obsoleteMetadata: [],
+        },
+        {
+          sharedId: 'entity1',
+          language: 'es',
+          metadata: {
+            relationshipProp1: [{ value: 'entity4', label: 'entity4-es-edited' }],
+          },
+          obsoleteMetadata: [],
+        },
+      ]);
+    });
   });
 });

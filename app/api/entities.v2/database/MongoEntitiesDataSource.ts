@@ -1,3 +1,4 @@
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { BulkWriteStream } from 'api/common.v2/database/BulkWriteStream';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
@@ -7,7 +8,6 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db, ObjectId } from 'mongodb';
-import { inspect } from 'util';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity } from '../model/Entity';
 
@@ -15,6 +15,7 @@ interface EntityDBOType {
   sharedId: string;
   language: string;
   template: ObjectId;
+  title: string;
   metadata: Record<string, { value: string; label: string }[]>;
   obsoleteMetadata: string[];
 }
@@ -39,14 +40,12 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
-        const start = performance.now();
         const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
             entity.language
           )
           .all();
-        console.trace('Took', performance.now() - start);
         mappedMetadata[property.name] = results.map(result => {
           const targetEntity = result.leaf() as { sharedId: string; title: string };
           return {
@@ -73,6 +72,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
   return new Entity(
     entity.sharedId,
     entity.language,
+    entity.title,
     entity.template.toHexString(),
     mappedMetadata
   );
@@ -145,5 +145,37 @@ export class MongoEntitiesDataSource
     );
 
     return new MongoResultSet(cursor, entityMapper.bind(this));
+  }
+
+  async updateDenormalizedTitle(
+    properties: string[],
+    sharedId: string,
+    language: string,
+    newTitle: string
+  ) {
+    const stream = new BulkWriteStream(this.getCollection(), this.getSession());
+
+    await Promise.all(
+      properties.map(async property => {
+        await stream.updateMany(
+          { [`metadata.${property}.value`]: sharedId, language },
+          // @ts-ignore
+          { $set: { [`metadata.${property}.$[valueIndex].label`]: newTitle } },
+          {
+            arrayFilters: [{ 'valueIndex.value': sharedId }],
+          }
+        );
+      })
+    );
+
+    return stream.flush();
+  }
+
+  getByDenormalizedId(properties: string[], sharedIds: string[]): ResultSet<string> {
+    const result = this.getCollection().find({
+      $or: properties.map(property => ({ [`metadata.${property}.value`]: { $in: sharedIds } })),
+    });
+
+    return new MongoResultSet(result, entity => entity.sharedId);
   }
 }

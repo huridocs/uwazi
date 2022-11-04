@@ -1,3 +1,4 @@
+import { search } from 'api/search';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -34,7 +35,26 @@ const fixtures = {
       'template1',
       {},
       { obsoleteMetadata: ['relProp'] },
-      { en: { title: 'entity1-en' }, es: { title: 'entity1-es' } }
+      {
+        en: {
+          title: 'entity1-en',
+          metadata: {
+            relProp: [
+              { value: 'entity2', label: 'entity2-en' },
+              { value: 'entity3', label: 'entity3-en' },
+            ],
+          },
+        },
+        es: {
+          title: 'entity1-es',
+          metadata: {
+            relProp: [
+              { value: 'entity2', label: 'entity2-es' },
+              { value: 'entity3', label: 'entity3-es' },
+            ],
+          },
+        },
+      }
     ),
     ...factory.entityInMultipleLanguages(
       languages,
@@ -236,33 +256,46 @@ describe('entities.save()', () => {
     markSpy.mockRestore();
   });
 
-  it('should mark newRelationship metadata of related entities as obsolete', async () => {
-    await db
-      ?.collection('entities')
-      .updateOne({ sharedId: 'entity1' }, { $set: { obsoleteMetadata: [] } });
+  describe('when updating an entity', () => {
+    it('should update the denormalized title in the related entities', async () => {
+      spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+      await entities.save(
+        {
+          _id: factory.id('entity2-en'),
+          sharedId: 'entity2',
+          template: factory.id('template1'),
+          title: 'entity2-en-renamed',
+        },
+        { user: adminUser, language: 'en' }
+      );
+      const inDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
 
-    const spy = jest
-      .spyOn(v2Support, 'performNewRelationshipQueries')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any) => Promise.resolve());
-
-    await entities.save(
-      {
-        _id: factory.id('entity2'),
-        sharedId: 'entity2',
-        template: factory.id('template1'),
-        title: 'entity2-renamed',
-      },
-      { user: adminUser, language: 'en' }
-    );
-    const inDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
-    const expected = {
-      sharedId: 'entity1',
-      obsoleteMetadata: ['relProp'],
-    };
-    expect(inDb).toMatchObject([expected, expected]);
-
-    spy.mockRestore();
+      expect(inDb).toMatchObject([
+        {
+          sharedId: 'entity1',
+          language: 'en',
+          metadata: {
+            relProp: [
+              { value: 'entity2', label: 'entity2-en-renamed' },
+              { value: 'entity3', label: 'entity3-en' },
+            ],
+          },
+        },
+        {
+          sharedId: 'entity1',
+          language: 'es',
+          metadata: {
+            relProp: [
+              { value: 'entity2', label: 'entity2-es' },
+              { value: 'entity3', label: 'entity3-es' },
+            ],
+          },
+        },
+      ]);
+      expect(search.indexEntities).toHaveBeenCalledWith({
+        sharedId: { $in: ['entity1', 'entity1'] },
+      });
+    });
   });
 
   it('should not overwrite newRelationship metadata', async () => {

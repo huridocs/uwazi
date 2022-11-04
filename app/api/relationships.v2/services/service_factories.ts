@@ -5,6 +5,7 @@ import {
   DefaultIdGenerator,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
@@ -74,8 +75,7 @@ const DeleteRelationshipService = (user?: User) => {
   return service;
 };
 
-const DenormalizationService = () => {
-  const transactionManager = DefaultTransactionManager();
+const DenormalizationService = (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);

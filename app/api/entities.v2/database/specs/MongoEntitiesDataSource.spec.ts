@@ -215,3 +215,78 @@ describe('When checking for the existence of entities', () => {
     }
   );
 });
+
+it('should return the sharedIds of the entities that have a particular id within their denormalized values in a metatata prop', async () => {
+  const ds = new MongoEntitiesDataSource(
+    getConnection(),
+    partialImplementation<MongoRelationshipsDataSource>({}),
+    partialImplementation<MongoSettingsDataSource>({
+      async getLanguageKeys() {
+        return Promise.resolve(['en', 'pt']);
+      },
+    }),
+    new MongoTransactionManager(getClient())
+  );
+
+  expect(
+    await ds
+      .getByDenormalizedId(['relProp1', 'relProp2', 'relProp3', 'relProp4'], ['valid value'])
+      .all()
+  ).toEqual(['entity3', 'entity3', 'entity4', 'entity4']);
+});
+
+it('should update the label of the denormalized value in all related entities', async () => {
+  const ds = new MongoEntitiesDataSource(
+    getConnection(),
+    partialImplementation<MongoRelationshipsDataSource>({}),
+    partialImplementation<MongoSettingsDataSource>({
+      async getLanguageKeys() {
+        return Promise.resolve(['en', 'pt']);
+      },
+    }),
+    new MongoTransactionManager(getClient())
+  );
+
+  await ds.updateDenormalizedTitle(
+    ['relProp1', 'relProp2', 'relProp3', 'relProp4'],
+    'valid value',
+    'en',
+    'new label'
+  );
+
+  const entities = await testingDB.mongodb
+    ?.collection('entities')
+    .find({ sharedId: { $in: ['entity3', 'entity4'] } })
+    .toArray();
+
+  expect(entities).toMatchObject([
+    {
+      sharedId: 'entity3',
+      language: 'en',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'new label' }],
+      },
+    },
+    {
+      sharedId: 'entity3',
+      language: 'pt',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'valid label' }],
+      },
+    },
+    {
+      sharedId: 'entity4',
+      language: 'en',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'new label' }],
+      },
+    },
+    {
+      sharedId: 'entity4',
+      language: 'pt',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'valid label' }],
+      },
+    },
+  ]);
+});

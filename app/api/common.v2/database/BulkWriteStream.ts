@@ -82,9 +82,10 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
 
   async updateMany(
     filter: UpdateManyModel<CollSchema>['filter'],
-    update: UpdateManyModel<CollSchema>['update']
+    update: UpdateManyModel<CollSchema>['update'],
+    options: Omit<UpdateManyModel<CollSchema>, 'filter' | 'update'> = {}
   ) {
-    this.actions.push({ updateMany: { filter, update } });
+    this.actions.push({ updateMany: { filter, update, ...options } });
     await this.check();
   }
 
