@@ -14,32 +14,6 @@ import { ClientTemplateSchema, IStore } from 'app/istore';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
 
-const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
-  if (!sortOption || sortOption === 'creationDate') {
-    const currentOption = sortOptions.find(option => option.value === 'creationDate');
-    return currentOption?.label;
-  }
-  const currentOption = sortOptions.find(option => option.value === sortOption);
-  return currentOption?.label;
-};
-
-const getOptionUrl = (location: WithRouterProps['location'], optionValue: string, path: string) => {
-  const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
-  return `${path}${encodeSearch({ ...currentQuery, sort: optionValue }, true)}`;
-};
-
-const isSortableType = (type: PropertySchema['type']) => {
-  switch (type) {
-    case propertyTypes.text:
-    case propertyTypes.date:
-    case propertyTypes.numeric:
-    case propertyTypes.select:
-      return true;
-    default:
-      return false;
-  }
-};
-
 type SortType = {
   label: string;
   name: string;
@@ -52,6 +26,39 @@ type SearchOptions = {
   order?: 'asc' | 'desc';
   sort?: string;
   searchTerm?: string;
+};
+
+const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
+  if (!sortOption || sortOption === 'creationDate') {
+    const currentOption = sortOptions.find(option => option.value === 'creationDate');
+    return currentOption?.label;
+  }
+  const currentOption = sortOptions.find(option => option.value === sortOption);
+  return currentOption?.label;
+};
+
+const getPropertySortType = (selected: SortType): string =>
+  selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';
+
+const getOptionUrl = (location: WithRouterProps['location'], option: SortType, path: string) => {
+  const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
+  const type = getPropertySortType(option);
+  return `${path}${encodeSearch(
+    { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value },
+    true
+  )}`;
+};
+
+const isSortableType = (type: PropertySchema['type']) => {
+  switch (type) {
+    case propertyTypes.text:
+    case propertyTypes.date:
+    case propertyTypes.numeric:
+    case propertyTypes.select:
+      return true;
+    default:
+      return false;
+  }
 };
 
 const isSortable = (property: PropertySchema) =>
@@ -90,16 +97,7 @@ const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
     )! as IImmutable<ClientTemplateSchema[]>;
   }
 
-  const search = 'library.search'
-    .split(/[.,/]/)
-    .reduce(
-      (memo: { [k: string]: any }, property: string) =>
-        Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null,
-      state
-    );
-
   return {
-    search,
     templates: templates || state.templates,
     locale: state.locale,
   };
@@ -132,24 +130,15 @@ const getCommonSorts = (search: SearchOptions) => [
     : []),
 ];
 
-const validateSearch = (search: SearchOptions): SearchOptions =>
-  search.sort === '_score' && !search.searchTerm
-    ? {
-        sort: 'creationDate',
-        order: 'desc',
-        searchTerm: search.searchTerm,
-      }
-    : { searchTerm: search.searchTerm, sort: search.sort };
-
-// eslint-disable-next-line max-statements
-const SortDropdownComponent = ({ search, templates, location, locale }: mappedProps) => {
+const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
-  const currentQuery: { order: 'asc' | 'desc'; sort: string } = rison.decode(
-    decodeURIComponent(location.query.q || '()')
-  );
+  const currentQuery: SearchOptions = rison.decode(decodeURIComponent(location.query.q || '()'));
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
-  const order = search.order === 'asc' ? 'desc' : 'asc';
+  const sortButtonLink = `${path}${encodeSearch(
+    { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc' },
+    true
+  )}`;
 
   useEffect(() => {
     setDropdownOpen(false);
@@ -162,12 +151,10 @@ const SortDropdownComponent = ({ search, templates, location, locale }: mappedPr
     }, [])
   );
 
-  const metadataSorts = getMetadataSorts(templates);
-
-  const validatedSearch = validateSearch(search);
-  const commonSorts = getCommonSorts(validatedSearch);
-
-  const sortOptions: SortType[] = [...commonSorts, ...metadataSorts].map(option => ({
+  const sortOptions: SortType[] = [
+    ...getCommonSorts(currentQuery),
+    ...getMetadataSorts(templates),
+  ].map(option => ({
     ...option,
     label: t(option.context, option.label, undefined, false),
   }));
@@ -185,10 +172,12 @@ const SortDropdownComponent = ({ search, templates, location, locale }: mappedPr
         </button>
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
-            const url = getOptionUrl(location, option.value, path);
+            const url = getOptionUrl(location, option, path);
             return (
-              <li>
-                <I18NLink to={url}>{option.label}</I18NLink>
+              <li key={option.value}>
+                <I18NLink to={url} href={url}>
+                  {option.label}
+                </I18NLink>
               </li>
             );
           })}
@@ -196,11 +185,17 @@ const SortDropdownComponent = ({ search, templates, location, locale }: mappedPr
       </div>
 
       <I18NLink
-        to={`${path}${encodeSearch({ ...currentQuery, order }, true)}`}
-        disable={search.sort === '_score'}
+        to={sortButtonLink}
+        href={sortButtonLink}
+        disable={currentQuery.sort === '_score' ? 'true' : undefined}
       >
-        <button type="button" disabled={search.sort === '_score'} onClick={() => {}}>
-          {order === 'asc' ? (
+        <button
+          type="button"
+          disabled={currentQuery.sort === '_score' ? true : undefined}
+          onClick={() => {}}
+          className="sorting-toggle"
+        >
+          {currentQuery.order === 'asc' ? (
             <span style={{ display: 'none' }}>
               {t('System', 'Sort descending', undefined, false)}
             </span>
@@ -210,7 +205,11 @@ const SortDropdownComponent = ({ search, templates, location, locale }: mappedPr
             </span>
           )}
           <Icon
-            icon={search.order === 'asc' && search.sort !== '_score' ? 'arrow-up' : 'arrow-down'}
+            icon={
+              currentQuery.order === 'asc' && currentQuery.sort !== '_score'
+                ? 'arrow-up'
+                : 'arrow-down'
+            }
           />
         </button>
       </I18NLink>
