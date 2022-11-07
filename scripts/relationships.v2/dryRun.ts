@@ -57,7 +57,7 @@ const readTypes = async (db: Db) => {
     TEMPLATE_NAMES_BY_ID = Object.fromEntries(Object.entries(TEMPLATE_IDS_BY_NAME).map(([name, id]) => [id, name]));
 };
 
-type ConnectionType = RawConnectionType & { entityTemplateId: ObjectId };
+type ConnectionType = RawConnectionType & { entityTemplateId: ObjectId, entityTitle: string };
 
 class ConnectionInfo {
     from: '*' | string[];
@@ -178,7 +178,7 @@ const run = async () => {
     const csv = RESULT_FILE_PATH
         ? new CsvWriter(
             RESULT_FILE_PATH,
-            ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable']
+            ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable'],
         ) : undefined;
 
     println('Processing hubs...')
@@ -229,6 +229,7 @@ const run = async () => {
                     classCount[hubclass]++;
                     return {
                         ...c,
+                        entityTitle: `"${c.entityTitle}"`,
                         entityTemplate: TEMPLATE_NAMES_BY_ID[c.entityTemplateId.toHexString()],
                         relationType: c.template ? RELATIONTYPE_NAMES_BY_ID[c.template.toHexString()] : c.template,
                         hubclass,
