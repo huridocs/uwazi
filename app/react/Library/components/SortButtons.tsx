@@ -7,7 +7,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 import { DropdownList } from 'app/Forms';
 import { IImmutable } from 'shared/types/Immutable';
-import { ClientTemplateSchema, IStore } from 'app/istore';
+import { IStore } from 'app/istore';
 import { omit } from 'lodash';
 import {
   filterTemplates,
