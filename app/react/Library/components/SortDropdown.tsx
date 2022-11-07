@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { withRouter, WithRouterProps } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
@@ -145,9 +145,15 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
 const SortDropdownComponent = ({ search, templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
-  const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
+  const currentQuery: { order: 'asc' | 'desc'; sort: string } = rison.decode(
+    decodeURIComponent(location.query.q || '()')
+  );
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const order = search.order === 'asc' ? 'desc' : 'asc';
+
+  useEffect(() => {
+    setDropdownOpen(false);
+  }, [currentQuery.sort]);
 
   useOnClickOutsideElement<HTMLDivElement>(
     menuRef,
