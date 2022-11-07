@@ -8,8 +8,10 @@ import { I18NLink, I18NMenu, t } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
-import { Icon } from 'UI';
 import { libraryViewInfo } from 'app/App/libraryViewInfo';
+import { Icon } from 'UI';
+import { actions } from 'app/BasicReducer';
+import { store } from '../store';
 import { DropdownMenu } from './DropdownMenu';
 
 class Menu extends Component {
@@ -76,6 +78,7 @@ class Menu extends Component {
             <li className="menuNav-item">
               <I18NLink
                 to={this.libraryUrl()}
+                onClick={() => store.dispatch(actions.set('library.sidepanel.view', 'library'))}
                 className="menuNav-btn btn btn-default public-documents"
                 activeClassName="active-link"
                 aria-label={t('System', 'Library', null, false)}

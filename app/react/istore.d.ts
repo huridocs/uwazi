@@ -24,6 +24,7 @@ interface EntityDisplayState {
     selectedDocuments: EntitySchema[];
     tableViewColumns: TableViewColumn[];
     zoomLevel: number;
+    filtersPanel: boolean;
   }>;
   sidepanel: {
     metadata: ClientEntitySchema;

@@ -7,7 +7,6 @@ import { enterLibrary, unsetDocuments } from 'app/Library/actions/libraryActions
 import { processQuery } from 'app/Library/helpers/requestState';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import LibraryFilters from 'app/Library/components/LibraryFilters';
-import SearchBar from 'app/Library/components/SearchBar';
 import SearchButton from 'app/Library/components/SearchButton';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
@@ -101,7 +100,7 @@ export default class Uploads extends RouteHandler {
     const query = rison.decode(this.props.location.query.q || '()');
     const chartView = this.props.location.query.view === 'chart';
     const mainView = !chartView ? (
-      <DocumentsList storeKey="uploads" SearchBar={SearchBar} />
+      <DocumentsList storeKey="uploads" />
     ) : (
       <LibraryCharts storeKey="uploads" />
     );
