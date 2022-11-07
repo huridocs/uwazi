@@ -7,38 +7,22 @@ import rison from 'rison-node';
 import { I18NLink, t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
-import { propertyTypes } from 'shared/propertyTypes';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
+import {
+  getCommonSorts,
+  getCurrentSortOption,
+  getMetadataSorts,
+  getPropertySortType,
+  SearchOptions,
+  SortType,
+} from '../helpers/sortComponets';
 
-type SortType = {
-  label: string;
-  name: string;
-  value: string;
-  type: string;
-  context?: ObjectIdSchema;
-};
-
-type SearchOptions = {
-  order?: 'asc' | 'desc';
-  sort?: string;
-  searchTerm?: string;
-};
-
-const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
-  if (!sortOption || sortOption === 'creationDate') {
-    const currentOption = sortOptions.find(option => option.value === 'creationDate');
-    return currentOption?.label;
-  }
-  const currentOption = sortOptions.find(option => option.value === sortOption);
-  return currentOption?.label;
-};
-
-const getPropertySortType = (selected: SortType): string =>
-  selected.type === 'text' || selected.type === 'select' ? 'string' : 'number';
+interface SortDropdownOwnProps {
+  selectedTemplates: IImmutable<string[]>;
+}
 
 const getOptionUrl = (location: WithRouterProps['location'], option: SortType, path: string) => {
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
@@ -48,45 +32,6 @@ const getOptionUrl = (location: WithRouterProps['location'], option: SortType, p
     true
   )}`;
 };
-
-const isSortableType = (type: PropertySchema['type']) => {
-  switch (type) {
-    case propertyTypes.text:
-    case propertyTypes.date:
-    case propertyTypes.numeric:
-    case propertyTypes.select:
-      return true;
-    default:
-      return false;
-  }
-};
-
-const isSortable = (property: PropertySchema) =>
-  property.filter &&
-  (isSortableType(property.type) || (property.inherit && isSortableType(property.inherit.type!)));
-
-const getSortString = (property: PropertySchema) =>
-  `metadata.${property.name}${property.inherit ? '.inheritedValue' : ''}`;
-
-const getMetadataSorts = (templates: IImmutable<ClientTemplateSchema[]>) =>
-  templates.toJS().reduce((sorts: SortType[], template: ClientTemplateSchema) => {
-    (template.properties || []).forEach((property: PropertySchema) => {
-      if (isSortable(property) && !sorts.find(s => s.name === property.name)) {
-        sorts.push({
-          label: property.label,
-          name: property.name,
-          value: getSortString(property),
-          type: property.type,
-          context: template._id,
-        });
-      }
-    });
-    return sorts;
-  }, []);
-
-interface SortDropdownOwnProps {
-  selectedTemplates: IImmutable<string[]>;
-}
 
 const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
   let templates;
@@ -109,26 +54,6 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
-
-const defaultSorts = [
-  { label: 'Title', value: 'title', type: 'text', context: 'System' },
-  { label: 'Date added', value: 'creationDate', type: 'number', context: 'System' },
-  { label: 'Date modified', value: 'editDate', type: 'number', context: 'System' },
-];
-
-const getCommonSorts = (search: SearchOptions) => [
-  ...defaultSorts,
-  ...(search.searchTerm
-    ? [
-        {
-          label: 'Search relevance',
-          value: '_score',
-          type: 'number',
-          context: 'System',
-        },
-      ]
-    : []),
-];
 
 const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
