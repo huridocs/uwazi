@@ -16,6 +16,11 @@ const SettingsNavigation = () => (
           <Translate>Account</Translate>
         </I18NLink>
         <NeedAuthorization roles={['admin']}>
+          <I18NLink to="settings/dashboard" activeClassName="active" className="list-group-item">
+            <Translate>Dashboard</Translate>
+          </I18NLink>
+        </NeedAuthorization>
+        <NeedAuthorization roles={['admin']}>
           <I18NLink to="settings/users" activeClassName="active" className="list-group-item">
             <Translate>Users</Translate>
           </I18NLink>

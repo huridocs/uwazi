@@ -22,7 +22,7 @@ describe('entities GET permissions + published filter', () => {
     describe('when user is not logged in', () => {
       it('should only see published entities', async () => {
         userFactory.mock(undefined);
-        const { body } = await request(app).get('/api/v2/entities').expect(200);
+        const { body } = await request(app).get('/api/v2/search').expect(200);
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),
@@ -35,7 +35,7 @@ describe('entities GET permissions + published filter', () => {
       it('should see public and authorized entities', async () => {
         userFactory.mock(users.user2);
 
-        const { body } = await request(app).get('/api/v2/entities');
+        const { body } = await request(app).get('/api/v2/search');
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'ent3' }),
@@ -54,7 +54,7 @@ describe('entities GET permissions + published filter', () => {
       `('should see all entities ($user.role)', async ({ user }) => {
         userFactory.mock(user);
 
-        const { body } = await request(app).get('/api/v2/entities');
+        const { body } = await request(app).get('/api/v2/search');
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'ent1' }),
@@ -77,7 +77,7 @@ describe('entities GET permissions + published filter', () => {
         userFactory.mock(user);
         const query = { filter: { published: true } };
 
-        const { body } = await request(app).get('/api/v2/entities').query(query);
+        const { body } = await request(app).get('/api/v2/search').query(query);
 
         expect(body.data).toEqual([
           expect.objectContaining({ title: 'entPublic1' }),
@@ -91,7 +91,7 @@ describe('entities GET permissions + published filter', () => {
         it('should not return any results', async () => {
           userFactory.mock(undefined);
           const { body } = await request(app)
-            .get('/api/v2/entities')
+            .get('/api/v2/search')
             .query({ filter: { published: false } })
             .expect(200);
 
@@ -104,7 +104,7 @@ describe('entities GET permissions + published filter', () => {
           userFactory.mock(users.user2);
 
           const { body } = await request(app)
-            .get('/api/v2/entities')
+            .get('/api/v2/search')
             .query({ filter: { published: false } });
 
           expect(body.data).toEqual([
@@ -123,7 +123,7 @@ describe('entities GET permissions + published filter', () => {
           userFactory.mock(user);
 
           const { body } = await request(app)
-            .get('/api/v2/entities')
+            .get('/api/v2/search')
             .query({ filter: { published: false } });
 
           expect(body.data).toEqual([

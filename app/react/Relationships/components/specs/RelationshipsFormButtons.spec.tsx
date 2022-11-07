@@ -9,7 +9,7 @@ import { mount, ReactWrapper } from 'enzyme';
 import { Provider } from 'react-redux';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { UserRole } from 'shared/types/userSchema';
-import { UserSchema } from 'shared/types/userType';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { RelationshipsFormButtons } from '../RelationshipsFormButtons';
 
 describe('RelationshipsFormButtons', () => {
@@ -56,7 +56,7 @@ describe('RelationshipsFormButtons', () => {
     searchResults: {},
   };
 
-  const render = (user: UserSchema, args: any = {}) => {
+  const render = (user: ClientUserSchema, args: any = {}) => {
     const props = { ...defaultProps, ...args };
     component = mount(
       <Provider store={mockStoreCreator({ user: Immutable.fromJS(user) })}>
@@ -74,7 +74,7 @@ describe('RelationshipsFormButtons', () => {
 
     it.each([editorUser, adminUser, collaboratorUser])(
       'should show edit button if user has permissions on entity',
-      (user: UserSchema) => {
+      (user: ClientUserSchema) => {
         render(user, { editing: false });
         const buttons = component.find('button');
         expect(buttons.length).toBe(1);
@@ -83,7 +83,7 @@ describe('RelationshipsFormButtons', () => {
     );
     it.each([editorUser, adminUser, collaboratorUser])(
       'should show cancel and save actions if user has permissions on entity',
-      (user: UserSchema) => {
+      (user: ClientUserSchema) => {
         render(user, { editing: true });
         const buttons = component.find('button');
         expect(buttons.length).toBe(2);

@@ -6,14 +6,18 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { EntitySchema } from 'shared/types/entityType';
-import { UserGroupSchema } from 'shared/types/userGroupType';
 import { ConnectionSchema } from 'shared/types/connectionType';
-import { UserSchema } from 'shared/types/userType';
-import { Settings } from 'shared/types/settingsType';
+import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/apiResponseTypes';
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
 
+interface InstanceStats {
+  users: { total: number; admin: number; editor: number; collaborator: number };
+  entities: { total: number };
+  files: { total: number };
+  storage: { total: number };
+}
 interface EntityDisplayState {
   documents: IImmutable<{ rows: EntitySchema[] }>;
   ui: IImmutable<{
@@ -38,6 +42,13 @@ interface RelationshipTypesType {
 
 interface ClientTranslationContextSchema extends Omit<TranslationContext, 'values'> {
   values?: { [key: string]: string };
+}
+
+interface InlineEdit {
+  inlineEdit: boolean;
+  context: string;
+  key: string;
+  showInlineEditForm: string;
 }
 
 export interface ClientTranslationSchema extends Omit<TranslationType, 'contexts'> {
@@ -166,11 +177,12 @@ export interface IStore {
     state?: IImmutable<OneUpState>;
   };
   settings: {
-    collection: IImmutable<Settings>;
+    collection: IImmutable<ClientSettings>;
+    stats?: IImmutable<InstanceStats>;
   };
-  user: IImmutable<UserSchema>;
-  users: IImmutable<UserSchema[]>;
-  userGroups: IImmutable<UserGroupSchema[]>;
+  user: IImmutable<ClientUserSchema>;
+  users: IImmutable<ClientUserSchema[]>;
+  userGroups: IImmutable<ClientUserGroupSchema[]>;
   page: {
     data: PageType;
     uiState: IImmutable<{ savingPage: boolean }>;
@@ -179,4 +191,6 @@ export interface IStore {
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
   translations: IImmutable<ClientTranslationSchema[]>;
+  inlineEdit: IImmutable<InlineEdit>;
+  locale: string;
 }

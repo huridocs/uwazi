@@ -5,7 +5,6 @@ import { IXModelType } from 'shared/types/IXModelType';
 const props = {};
 
 const mongoSchema = new mongoose.Schema(props, {
-  emitIndexErrors: true,
   strict: false,
 });
 

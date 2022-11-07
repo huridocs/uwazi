@@ -109,7 +109,7 @@ describe('UserGroupSidePanel', () => {
       it('should list all the available users sorted alphabetically', () => {
         render();
         const availableUsers = screen.getAllByRole('checkbox') as HTMLInputElement[];
-        expect(availableUsers.map(user => user.labels![0].textContent)).toEqual([
+        expect(availableUsers.map(user => user.labels![0].textContent?.trim())).toEqual([
           'ana johnson',
           'martha perez',
           'john smith',
