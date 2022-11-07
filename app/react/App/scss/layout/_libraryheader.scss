@@ -124,6 +124,10 @@
       min-width: 195px;
       padding-right: 10px;
 
+      a {
+        color: inherit;
+      }
+
       .sort-dropdown {
         min-width: 150px;
         position: relative;
