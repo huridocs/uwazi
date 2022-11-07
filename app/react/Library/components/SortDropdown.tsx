@@ -12,13 +12,12 @@ import { IImmutable } from 'shared/types/Immutable';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
 import {
-  getCommonSorts,
   getCurrentSortOption,
-  getMetadataSorts,
   getPropertySortType,
   SearchOptions,
   SortType,
   filterTemplates,
+  getSortOptions,
 } from '../helpers/sortComponets';
 
 interface SortDropdownOwnProps {
@@ -76,13 +75,7 @@ const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => 
     }, [])
   );
 
-  const sortOptions: SortType[] = [
-    ...getCommonSorts(currentQuery),
-    ...getMetadataSorts(templates),
-  ].map(option => ({
-    ...option,
-    label: t(option.context, option.label, undefined, false),
-  }));
+  const sortOptions = getSortOptions(currentQuery, templates);
 
   return (
     <div className="sort-buttons">
@@ -95,6 +88,7 @@ const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => 
           <span>{getCurrentSortOption(sortOptions, currentQuery.sort)}</span>
           <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
         </button>
+
         <ul className={`dropdown-menu ${dropdownOpen ? 'expanded' : ''}`}>
           {sortOptions.map(option => {
             const url = getOptionUrl(location, option, path);
@@ -120,15 +114,11 @@ const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => 
           onClick={() => {}}
           className="sorting-toggle"
         >
-          {currentQuery.order === 'asc' ? (
-            <span style={{ display: 'none' }}>
-              {t('System', 'Sort descending', undefined, false)}
-            </span>
-          ) : (
-            <span style={{ display: 'none' }}>
-              {t('System', 'Sort ascending', undefined, false)}
-            </span>
-          )}
+          <span style={{ display: 'none' }}>
+            {currentQuery.order === 'asc'
+              ? t('System', 'Sort descending', undefined, false)
+              : t('System', 'Sort ascending', undefined, false)}
+          </span>
           <Icon
             icon={
               currentQuery.order === 'asc' && currentQuery.sort !== '_score'

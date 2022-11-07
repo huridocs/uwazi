@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { Icon } from 'UI';
 import { DropdownList } from 'app/Forms';
@@ -11,9 +10,8 @@ import { IStore } from 'app/istore';
 import { omit } from 'lodash';
 import {
   filterTemplates,
-  getCommonSorts,
-  getMetadataSorts,
   getPropertySortType,
+  getSortOptions,
   SearchOptions,
   SortType,
 } from '../helpers/sortComponets';
@@ -91,15 +89,9 @@ const SortButtonsComponent = ({
     doSort(search.sort, search.treatAs, sortDirection(search.order));
   };
 
-  const metadataSorts = getMetadataSorts(templates);
-
   const validatedSearch = validateSearch(search);
-  const commonSorts = getCommonSorts(validatedSearch);
 
-  const sortOptions = [...commonSorts, ...metadataSorts].map(option => ({
-    ...option,
-    label: t(option.context, option.label, undefined, false),
-  }));
+  const sortOptions = getSortOptions(search, templates);
 
   return (
     <div className="sort-buttons">

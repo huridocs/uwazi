@@ -1,3 +1,4 @@
+import { t } from 'app/I18N';
 import { ClientTemplateSchema } from 'app/istore';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
@@ -90,12 +91,15 @@ const filterTemplates = (
     ClientTemplateSchema[]
   >;
 
+const getSortOptions = (
+  search: SearchOptions,
+  templates: IImmutable<ClientTemplateSchema[]>
+): SortType[] =>
+  [...getCommonSorts(search), ...getMetadataSorts(templates)].map(option => ({
+    ...option,
+    label: t(option.context, option.label, undefined, false),
+  }));
+
 export type { SearchOptions, SortType };
 
-export {
-  getMetadataSorts,
-  getPropertySortType,
-  getCurrentSortOption,
-  getCommonSorts,
-  filterTemplates,
-};
+export { getPropertySortType, getCurrentSortOption, filterTemplates, getSortOptions };
