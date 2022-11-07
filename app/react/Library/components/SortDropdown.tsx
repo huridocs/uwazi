@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { withRouter, WithRouterProps } from 'react-router';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
@@ -11,6 +11,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
 
 const getCurrentSortOption = (sortOptions: SortType[], sortOption?: string) => {
@@ -140,11 +141,20 @@ const validateSearch = (search: SearchOptions): SearchOptions =>
       }
     : { searchTerm: search.searchTerm, sort: search.sort };
 
+// eslint-disable-next-line max-statements
 const SortDropdownComponent = ({ search, templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const menuRef = useRef(null);
   const currentQuery = rison.decode(decodeURIComponent(location.query.q || '()'));
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const order = search.order === 'asc' ? 'desc' : 'asc';
+
+  useOnClickOutsideElement<HTMLDivElement>(
+    menuRef,
+    useCallback(() => {
+      setDropdownOpen(false);
+    }, [])
+  );
 
   const metadataSorts = getMetadataSorts(templates);
 
@@ -158,7 +168,7 @@ const SortDropdownComponent = ({ search, templates, location, locale }: mappedPr
 
   return (
     <div className="sort-buttons">
-      <div className="sort-dropdown">
+      <div className="sort-dropdown" ref={menuRef}>
         <button
           type="button"
           className={`dropdown-button ${dropdownOpen ? 'expanded' : ''}`}
