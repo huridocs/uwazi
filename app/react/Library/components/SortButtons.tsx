@@ -10,6 +10,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import { ClientTemplateSchema, IStore } from 'app/istore';
 import { omit } from 'lodash';
 import {
+  filterTemplates,
   getCommonSorts,
   getMetadataSorts,
   getPropertySortType,
@@ -24,15 +25,12 @@ interface SortButtonsOwnProps {
 }
 
 const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
-  let templates;
+  let { templates } = state;
   const stateProperty = ownProps.stateProperty ? ownProps.stateProperty : 'library.search';
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
-    templates = state.templates.filter(
-      i => i !== undefined && ownProps.selectedTemplates.includes(i.get('_id'))
-    )! as IImmutable<ClientTemplateSchema[]>;
+    templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
-
   const search = stateProperty
     .split(/[.,/]/)
     .reduce(
@@ -40,7 +38,7 @@ const mapStateToProps = (state: IStore, ownProps: SortButtonsOwnProps) => {
         Object.keys(memo).indexOf(property) !== -1 ? memo[property] : null,
       state
     );
-  return { ...ownProps, stateProperty, search, templates: templates || state.templates };
+  return { ...ownProps, stateProperty, search, templates };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>

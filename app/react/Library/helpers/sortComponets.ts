@@ -82,6 +82,20 @@ const getCommonSorts = (search: SearchOptions) => [
     : []),
 ];
 
+const filterTemplates = (
+  templates: IImmutable<ClientTemplateSchema[]>,
+  selectedTemplates: IImmutable<string[]>
+) =>
+  templates.filter(i => i !== undefined && selectedTemplates.includes(i.get('_id')))! as IImmutable<
+    ClientTemplateSchema[]
+  >;
+
 export type { SearchOptions, SortType };
 
-export { getMetadataSorts, getPropertySortType, getCurrentSortOption, getCommonSorts };
+export {
+  getMetadataSorts,
+  getPropertySortType,
+  getCurrentSortOption,
+  getCommonSorts,
+  filterTemplates,
+};

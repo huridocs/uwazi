@@ -4,11 +4,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import rison from 'rison-node';
+import { Icon } from 'UI';
 import { I18NLink, t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'UI';
+import { IStore } from 'app/istore';
 import { IImmutable } from 'shared/types/Immutable';
-import { ClientTemplateSchema, IStore } from 'app/istore';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { encodeSearch } from '../actions/libraryActions';
 import {
@@ -18,6 +18,7 @@ import {
   getPropertySortType,
   SearchOptions,
   SortType,
+  filterTemplates,
 } from '../helpers/sortComponets';
 
 interface SortDropdownOwnProps {
@@ -34,16 +35,14 @@ const getOptionUrl = (location: WithRouterProps['location'], option: SortType, p
 };
 
 const mapStateToProps = (state: IStore, ownProps: SortDropdownOwnProps) => {
-  let templates;
+  let { templates } = state;
 
   if (ownProps.selectedTemplates && ownProps.selectedTemplates.count()) {
-    templates = state.templates.filter(
-      i => i !== undefined && ownProps.selectedTemplates.includes(i.get('_id'))
-    )! as IImmutable<ClientTemplateSchema[]>;
+    templates = filterTemplates(state.templates, ownProps.selectedTemplates);
   }
 
   return {
-    templates: templates || state.templates,
+    templates,
     locale: state.locale,
   };
 };
@@ -58,6 +57,7 @@ type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
 const SortDropdownComponent = ({ templates, location, locale }: mappedProps) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const menuRef = useRef(null);
+
   const currentQuery: SearchOptions = rison.decode(decodeURIComponent(location.query.q || '()'));
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const sortButtonLink = `${path}${encodeSearch(
