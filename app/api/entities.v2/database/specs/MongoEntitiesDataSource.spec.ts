@@ -28,6 +28,7 @@ const fixtures = {
       'template1',
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        numeric: [{ value: 1 }],
       },
       { obsoleteMetadata: ['relProp3'] }
     ),
@@ -36,6 +37,7 @@ const fixtures = {
       'template1',
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        numeric: [{ value: 1 }],
       },
       { obsoleteMetadata: ['relProp4'] }
     ),
@@ -90,9 +92,9 @@ describe('Relationship fields caching strategy', () => {
   });
 
   describe('When loading some entities', () => {
-    let counter = 0;
     let entities: any[];
-    beforeAll(async () => {
+    beforeEach(async () => {
+      let counter = 0;
       const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({
         getByQuery(_query, lang) {
           counter += 1;
@@ -181,6 +183,43 @@ describe('Relationship fields caching strategy', () => {
           language: 'pt',
           metadata: {
             relProp4: [{ value: 'calculated4-pt', label: 'calculated4-pt' }],
+          },
+        },
+      ]);
+    });
+
+    it('should leave other metadata properties untouched', async () => {
+      const dbEntities = await testingDB.mongodb
+        ?.collection('entities')
+        .find({ sharedId: { $in: ['entity3', 'entity4'] } })
+        .toArray();
+      expect(dbEntities).toMatchObject([
+        {
+          sharedId: 'entity3',
+          language: 'en',
+          metadata: {
+            numeric: [{ value: 1 }],
+          },
+        },
+        {
+          sharedId: 'entity3',
+          language: 'pt',
+          metadata: {
+            numeric: [{ value: 1 }],
+          },
+        },
+        {
+          sharedId: 'entity4',
+          language: 'en',
+          metadata: {
+            numeric: [{ value: 1 }],
+          },
+        },
+        {
+          sharedId: 'entity4',
+          language: 'pt',
+          metadata: {
+            numeric: [{ value: 1 }],
           },
         },
       ]);

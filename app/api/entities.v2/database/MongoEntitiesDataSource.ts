@@ -56,7 +56,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
           // @ts-ignore
-          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } } // TODO: test that this does not remove the rest of the metadata
+          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
         );
         return;
       }
