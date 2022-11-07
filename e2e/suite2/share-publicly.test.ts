@@ -122,7 +122,7 @@ describe('Share publicly', () => {
       await expect(page).not.toMatchElement(
         '.member-list-wrapper  tr:nth-child(2) > td:nth-child(2) > select'
       );
-      await expect(page).toClick('button', { text: 'Close' });
+      await expect(page).toClick('.modal-footer .btn-default', { text: 'Close' });
       await expect(page).toClick(
         'aside.metadata-sidepanel.is-active > div.sidepanel-header > button.close-modal'
       );

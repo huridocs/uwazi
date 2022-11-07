@@ -99,7 +99,7 @@ describe('Share entities', () => {
     await expect(page).toClick('.userGroupsLookupField');
     await page.waitForSelector('.members-list tr:nth-child(1) .member-list-item');
     expect(await getEntitiesCollaborators()).toEqual(['Administrators and Editors']);
-    await expect(page).toClick('button', { text: 'Close' });
+    await expect(page).toClick('.modal-footer .btn-default', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
 
@@ -115,7 +115,7 @@ describe('Share entities', () => {
       'editor',
     ]);
     await checkAccessOfPersons(['Can edit', 'Can see', 'Can edit']);
-    await expect(page).toClick('button', { text: 'Close' });
+    await expect(page).toClick('.modal-footer .btn-default', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
 
@@ -133,7 +133,7 @@ describe('Share entities', () => {
     ]);
 
     await checkAccessOfPersons(['Can edit', 'Mixed access', 'Mixed access']);
-    await expect(page).toClick('button', { text: 'Close' });
+    await expect(page).toClick('.modal-footer .btn-default', { text: 'Close' });
     await page.waitForSelector('.share-modal', { hidden: true });
   });
 
