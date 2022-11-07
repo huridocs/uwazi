@@ -3,7 +3,7 @@ services:
   elasticsearch:
     build:
       context: .
-      dockerfile: elastic-icu-7.11.2.Dockerfile
+      dockerfile: elastic-icu-7.17.6.Dockerfile
     container_name: uwazi-elasticsearch
     volumes:
       - esdata01:/usr/share/elasticsearch/data
