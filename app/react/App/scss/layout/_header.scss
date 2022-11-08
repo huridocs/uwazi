@@ -374,6 +374,10 @@ header {
   width: 100%;
   padding-bottom: 5px;
 
+  &.desktop {
+    display: none;
+  }
+
   @media (min-width: 1024px) {
     display: inline-block;
     width: auto;
@@ -387,6 +391,10 @@ header {
       .tab-link-label {
         display: block;
       }
+    }
+
+    &.desktop {
+      display: block;
     }
   }
 

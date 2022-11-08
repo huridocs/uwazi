@@ -88,9 +88,22 @@ class Menu extends Component {
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-              <li className="menuNav-item">
+              <li className="menuNav-item desktop">
                 <I18NLink
                   to="/settings/account"
+                  className="menuNav-btn btn btn-default settings-section"
+                  activeClassName="active-link"
+                  aria-label={t('System', 'Settings', null, false)}
+                >
+                  <Icon icon="cog" />
+                  <span className="tab-link-label">{t('System', 'Settings')}</span>
+                </I18NLink>
+              </li>
+            </NeedAuthorization>
+            <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+              <li className="menuNav-item only-mobile">
+                <I18NLink
+                  to="/settings/"
                   className="menuNav-btn btn btn-default settings-section"
                   activeClassName="active-link"
                   aria-label={t('System', 'Settings', null, false)}
