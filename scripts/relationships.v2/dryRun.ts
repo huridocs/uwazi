@@ -5,12 +5,12 @@
 import fs from 'fs'
 import process from 'process';
 
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
 import { objectIndex } from '../../app/shared/data_utils/objectIndex';
 import { CsvWriter } from './utilities/csv';
 import { createTempCollections, getClientAndDB } from './utilities/db'
-import { ConnectionType, gatherHubs, HubType } from './utilities/hubs';
+import { ConnectionType as RawConnectionType, gatherHubs, HubType } from './utilities/hubs';
 import { println } from './utilities/log';
 
 const batchsize = 1000;
@@ -38,6 +38,7 @@ const readJsonFile = (path: string | undefined): Object => {
 };
 
 let TEMPLATE_IDS_BY_NAME: Record<string, string> = {};
+let TEMPLATE_NAMES_BY_ID: Record<string, string> = {};
 let RELATIONTYPE_IDS_BY_NAME: Record<string, string> = {};
 let RELATIONTYPE_NAMES_BY_ID: Record<string, string> = {};
 
@@ -53,7 +54,10 @@ const readTypes = async (db: Db) => {
         r => r._id.toHexString()
     );
     RELATIONTYPE_NAMES_BY_ID = Object.fromEntries(Object.entries(RELATIONTYPE_IDS_BY_NAME).map(([name, id]) => [id, name]));
+    TEMPLATE_NAMES_BY_ID = Object.fromEntries(Object.entries(TEMPLATE_IDS_BY_NAME).map(([name, id]) => [id, name]));
 };
+
+type ConnectionType = RawConnectionType & { entityTemplateId: ObjectId, entityTitle: string };
 
 class ConnectionInfo {
     from: '*' | string[];
@@ -143,24 +147,17 @@ const collateConnections = (filledDefinitions: any[]) => {
 const NO_CLASS_MARKER = 'NO_CLASS'
 
 enum HubClasses {
-    NO_UNTYPED_EDGE = 'NO_UNTYPED_EDGE'
+    NO_UNTYPED_EDGE = 'NO_UNTYPED_EDGE',
+    ONE_UNTYPED_EDGE = 'ONE_UNTYPED_EDGE',
+    '2+UNTYPED_EDGES' = '2+UNTYPED_EDGES'
 }
 
-type HubClassifier = (hub: HubType, connections: ConnectionType[]) => boolean;
-
-const hubClassifiers: { [key in HubClasses]: HubClassifier } = {
-    [HubClasses.NO_UNTYPED_EDGE]: (hub: HubType, connections: ConnectionType[]) => connections.every(c => c.template)
-};
-
 const classifyHub = (hub: HubType, connections: ConnectionType[]) => {
-    const classes: HubClasses[] = [];
-    Object.values(HubClasses).forEach(cls => {
-        const classifier = hubClassifiers[cls];
-        if(classifier(hub, connections)) {
-            classes.push(cls);
-        }
-    })
-    return classes.length ? classes.join(' ') : NO_CLASS_MARKER;
+    const untyped_count = connections.filter(c => !c.template).length;
+    if(untyped_count === 0) return HubClasses.NO_UNTYPED_EDGE;
+    if(untyped_count === 1) return HubClasses.ONE_UNTYPED_EDGE;
+    if(untyped_count >= 2) return HubClasses['2+UNTYPED_EDGES'];
+    return NO_CLASS_MARKER;
 }
 
 const run = async () => {
@@ -173,34 +170,88 @@ const run = async () => {
     await createTempCollections(db, [temporaryHubCollectionName])
 
     const tempHubsCollection = db.collection<HubType>(temporaryHubCollectionName);
-    const connectionsCollection = db.collection<ConnectionType>('connections');
+    const connectionsCollection = db.collection<RawConnectionType>('connections');
 
 
     await gatherHubs(connectionsCollection, tempHubsCollection);
 
-    const csv = RESULT_FILE_PATH ? new CsvWriter(RESULT_FILE_PATH, ['_id', 'hub', 'entity', 'type', 'hubclass']) : undefined;
+    const csv = RESULT_FILE_PATH
+        ? new CsvWriter(
+            RESULT_FILE_PATH,
+            ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable'],
+        ) : undefined;
 
     println('Processing hubs...')
     const hubCursor = tempHubsCollection.find({});
+    const classCount = {
+        [HubClasses.NO_UNTYPED_EDGE]: 0,
+        [HubClasses.ONE_UNTYPED_EDGE]: 0,
+        [HubClasses['2+UNTYPED_EDGES']]: 0,
+        [NO_CLASS_MARKER]: 0
+    }
     while(await hubCursor.hasNext()){
         const hub = await hubCursor.next();
         if(!hub) break;
 
-        const connections = await connectionsCollection.find({ hub: hub._id }).toArray();
+        const connections = await connectionsCollection.aggregate<ConnectionType>([
+        {
+            $match: { hub: hub._id }
+        },
+        {
+            $lookup: {
+                from: 'entities',
+                localField: 'entity',
+                foreignField: 'sharedId',
+                as: 'entityInfo'
+            }
+        },
+        {
+            $set: {
+                pickedEntity: { $arrayElemAt: ['$entityInfo', 0] }
+            }
+        },
+        {
+            $set: {
+                entityTemplateId: '$pickedEntity.template',
+                entityTitle: '$pickedEntity.title'
+            }
+        },
+        {
+            $unset: ['entityInfo', 'pickedEntity']
+        }
+        ]).toArray();
 
         if(csv) {
             csv.writeLines(
-                connections.map(c => ({
-                    ...c,
-                    type: c.template ? RELATIONTYPE_NAMES_BY_ID[c.template.toHexString()] : c.template,
-                    hubclass: classifyHub(hub, connections) 
-                }))
+                connections.map(c => {
+                    const hubclass = classifyHub(hub, connections);
+                    const transformable = hubclass === HubClasses.ONE_UNTYPED_EDGE;
+                    classCount[hubclass]++;
+                    return {
+                        ...c,
+                        entityTitle: `"${c.entityTitle}"`,
+                        entityTemplate: TEMPLATE_NAMES_BY_ID[c.entityTemplateId.toHexString()],
+                        relationType: c.template ? RELATIONTYPE_NAMES_BY_ID[c.template.toHexString()] : c.template,
+                        hubclass,
+                        transformable
+                    }
+                })
             );
         }
     }
     println('Hub processing done.')
 
+    const total = Object.values(classCount).reduce((sum, n) => sum + n);
+    println('Summary:----------------------------');
+    println(`Total: ${total}`);
+    println(`Transformable (${HubClasses.ONE_UNTYPED_EDGE}): ${classCount[HubClasses.ONE_UNTYPED_EDGE]}`);
+    println(`Not Transformable: ${ total - classCount[HubClasses.ONE_UNTYPED_EDGE]}`);
+    println(`     ${HubClasses.NO_UNTYPED_EDGE}: ${classCount[HubClasses.NO_UNTYPED_EDGE]}`);
+    println(`     ${HubClasses['2+UNTYPED_EDGES']}: ${classCount[HubClasses['2+UNTYPED_EDGES']]}`);
+    println(`     ${NO_CLASS_MARKER}: ${classCount[NO_CLASS_MARKER]}`);
+
     await client.close();
+    csv?.close();
 };
 
 run();
