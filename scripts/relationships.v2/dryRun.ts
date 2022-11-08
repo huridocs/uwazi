@@ -5,6 +5,7 @@
 import fs from 'fs'
 import process from 'process';
 
+import _ from 'lodash';
 import { Db, ObjectId } from 'mongodb';
 
 import { objectIndex } from '../../app/shared/data_utils/objectIndex';
@@ -147,18 +148,50 @@ const collateConnections = (filledDefinitions: any[]) => {
 const NO_CLASS_MARKER = 'NO_CLASS'
 
 enum HubClasses {
+    ONE_TO_ONE = 'ONE_TO_ONE',
     NO_UNTYPED_EDGE = 'NO_UNTYPED_EDGE',
+    ALL_SAME_TYPE = 'ALL_SAME_TYPE',
+    ONE_OUTLIER = 'ONE_OUTLIER',
     ONE_UNTYPED_EDGE = 'ONE_UNTYPED_EDGE',
-    '2+UNTYPED_EDGES' = '2+UNTYPED_EDGES'
+    '2+UNTYPED_EDGES' = '2+UNTYPED_EDGES',
+    EXACT_UNTYPED_COPIES = 'EXACT_UNTYPED_COPIES'
 }
 
+const transformableClasses: Set<string> = new Set([HubClasses.ONE_UNTYPED_EDGE])
+
+const connectionsAreEqual = (a: ConnectionType, b: ConnectionType) =>
+    a.entity === b.entity && a.hub.toHexString() === b.hub.toHexString() && a.template?.toHexString() === b.template?.toHexString()
+
 const classifyHub = (hub: HubType, connections: ConnectionType[]) => {
+    const classes: string[] = [];
     const untyped_count = connections.filter(c => !c.template).length;
-    if(untyped_count === 0) return HubClasses.NO_UNTYPED_EDGE;
-    if(untyped_count === 1) return HubClasses.ONE_UNTYPED_EDGE;
-    if(untyped_count >= 2) return HubClasses['2+UNTYPED_EDGES'];
-    return NO_CLASS_MARKER;
+    const groups = _.groupBy(connections, c => c.template?.toHexString());
+    const groupCounts = Object.fromEntries(Object.entries(groups).map(([template, group]) => [template, group.length]));
+    const typeCount = Object.values(groups).length;
+    if(untyped_count === 0) {
+        classes.push(HubClasses.NO_UNTYPED_EDGE);
+        if(typeCount === 1) classes.push(HubClasses.ALL_SAME_TYPE)
+        if(connections.length === 2) { 
+            classes.push(HubClasses.ONE_TO_ONE)
+        } else if (typeCount === 2 && Object.values(groupCounts).some(v => v === 1)){
+            classes.push(HubClasses.ONE_OUTLIER)
+        }
+    } else if(untyped_count === 1) {
+        classes.push(HubClasses.ONE_UNTYPED_EDGE);
+    } else if(untyped_count >= 2) {
+        classes.push(HubClasses['2+UNTYPED_EDGES']);
+        if(connections.length === 2) classes.push(HubClasses.ONE_TO_ONE)
+        const untypedConnections = connections.filter(c => !c.template)
+        if(untypedConnections.every(c => connectionsAreEqual(c, untypedConnections[0]))) classes.push(HubClasses.EXACT_UNTYPED_COPIES);
+    };
+    return classes.join(' ');
 }
+
+const printCounts = (counts: Record<string, [number, number]>) => {
+    Object.entries(counts).sort((a,b) => a[0].localeCompare(b[0])).forEach(([name, counts]) =>{
+        println(`     ${name}: ${counts[0]}(${counts[1]})`);
+    });
+};
 
 const run = async () => {
     const {client, db} = await getClientAndDB();
@@ -183,12 +216,7 @@ const run = async () => {
 
     println('Processing hubs...')
     const hubCursor = tempHubsCollection.find({});
-    const classCount = {
-        [HubClasses.NO_UNTYPED_EDGE]: 0,
-        [HubClasses.ONE_UNTYPED_EDGE]: 0,
-        [HubClasses['2+UNTYPED_EDGES']]: 0,
-        [NO_CLASS_MARKER]: 0
-    }
+    const classCounts: Record<string, [number, number]> = {}
     while(await hubCursor.hasNext()){
         const hub = await hubCursor.next();
         if(!hub) break;
@@ -221,12 +249,15 @@ const run = async () => {
         }
         ]).toArray();
 
+        const hubclass = classifyHub(hub, connections);
+        const transformable = hubclass === HubClasses.ONE_UNTYPED_EDGE;
+        if(!(hubclass in classCounts)) classCounts[hubclass] = [0, 0];
+        classCounts[hubclass][0]++;
+
         if(csv) {
             csv.writeLines(
                 connections.map(c => {
-                    const hubclass = classifyHub(hub, connections);
-                    const transformable = hubclass === HubClasses.ONE_UNTYPED_EDGE;
-                    classCount[hubclass]++;
+                    classCounts[hubclass][1]++;
                     return {
                         ...c,
                         entityTitle: `"${c.entityTitle}"`,
@@ -241,14 +272,17 @@ const run = async () => {
     }
     println('Hub processing done.')
 
-    const total = Object.values(classCount).reduce((sum, n) => sum + n);
+    const transformableCounts = Object.fromEntries(Object.entries(classCounts).filter(count => transformableClasses.has(count[0])));
+    const nonTransformableCounts = Object.fromEntries(Object.entries(classCounts).filter(count => !transformableClasses.has(count[0])));
+    const transformableTotals = Object.values(transformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
+    const nonTransformableTotals = Object.values(nonTransformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
+    const totals = [transformableTotals[0] + nonTransformableTotals[0], transformableTotals[1] + nonTransformableTotals[1]];
     println('Summary:----------------------------');
-    println(`Total: ${total}`);
-    println(`Transformable (${HubClasses.ONE_UNTYPED_EDGE}): ${classCount[HubClasses.ONE_UNTYPED_EDGE]}`);
-    println(`Not Transformable: ${ total - classCount[HubClasses.ONE_UNTYPED_EDGE]}`);
-    println(`     ${HubClasses.NO_UNTYPED_EDGE}: ${classCount[HubClasses.NO_UNTYPED_EDGE]}`);
-    println(`     ${HubClasses['2+UNTYPED_EDGES']}: ${classCount[HubClasses['2+UNTYPED_EDGES']]}`);
-    println(`     ${NO_CLASS_MARKER}: ${classCount[NO_CLASS_MARKER]}`);
+    println(`Total: ${totals[0]}(${totals[1]})`);
+    println(`Transformable: ${transformableTotals[0]}(${transformableTotals[1]})`);
+    printCounts(transformableCounts);
+    println(`Not Transformable: ${nonTransformableTotals[0]}(${nonTransformableTotals[1]})`);
+    printCounts(nonTransformableCounts);
 
     await client.close();
     csv?.close();
