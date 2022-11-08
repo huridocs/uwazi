@@ -168,7 +168,7 @@
     "react-color": "^2.19.3",
     "react-datepicker": "4.8.0",
     "react-device-detect": "^2.2.2",
-    "react-dnd": "2.6.0",
+    "react-dnd": "16.0.1",
     "react-dnd-html5-backend": "^15.1.2",
     "react-dom": "16.13.1",
     "react-dropzone": "14.2.2",
