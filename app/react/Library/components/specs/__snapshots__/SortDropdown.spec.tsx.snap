@@ -1,0 +1,135 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sort dropdown when there is an active search term should display sort by search relevance option in the button and in the list, and disable the sort button 1`] = `
+<div>
+  <div
+    class="sort-buttons"
+  >
+    <div
+      class="sort-dropdown"
+    >
+      <button
+        class="dropdown-button "
+        type="button"
+      >
+        <span>
+          Search relevance
+        </span>
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-caret-down fa-w-10 "
+          data-icon="caret-down"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 320 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <ul
+        class="dropdown-menu "
+      >
+        <li>
+          <a
+            href="library/?q=(order:asc,searchTerm:'my search',sort:title)"
+          >
+            Title
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:creationDate)"
+          >
+            Date added
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:editDate)"
+          >
+            Date modified
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:_score)"
+          >
+            Search relevance
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.date)"
+          >
+            Date
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.number)"
+          >
+            Number
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:asc,searchTerm:'my search',sort:metadata.my_select)"
+          >
+            My select
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:asc,searchTerm:'my search',sort:metadata.sortable_name)"
+          >
+            Sortable name
+          </a>
+        </li>
+        <li>
+          <a
+            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue)"
+          >
+            Inherited 1
+          </a>
+        </li>
+      </ul>
+    </div>
+    <a
+      disable="true"
+      href="library/?q=(order:asc,searchTerm:'my search',sort:_score)"
+    >
+      <button
+        class="sorting-toggle"
+        disabled=""
+        type="button"
+      >
+        <span
+          style="display: none;"
+        >
+          Sort ascending
+        </span>
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-arrow-down fa-w-14 "
+          data-icon="arrow-down"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </a>
+  </div>
+</div>
+`;

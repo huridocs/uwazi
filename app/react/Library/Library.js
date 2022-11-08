@@ -45,10 +45,12 @@ export default class Library extends RouteHandler {
     actions.set('library.sidepanel.quickLabelState', {});
   }
 
-  scrollCallback() {
-    this.setState((prevState, _props) => ({
-      scrollCount: prevState.scrollCount + 1,
-    }));
+  scrollCallback(event) {
+    if (event.target.className.includes('document-viewer')) {
+      this.setState((prevState, _props) => ({
+        scrollCount: prevState.scrollCount + 1,
+      }));
+    }
   }
 
   render() {
