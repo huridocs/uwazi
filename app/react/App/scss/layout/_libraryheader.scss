@@ -106,8 +106,9 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
+  padding-top: 10px;
   padding-bottom: 15px;
   width: 100%;
 
@@ -115,14 +116,15 @@
     height: 2em;
     gap: 10px;
     width: 100%;
+    align-items: center;
 
     .documents-counter-sort {
       display: none;
     }
 
     .sort-buttons {
-      min-width: 195px;
       padding-right: 10px;
+      flex: 1 1 auto;
 
       a {
         color: inherit;
