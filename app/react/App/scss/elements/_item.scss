@@ -627,9 +627,7 @@ $item-padding: 15px;
   position: relative;
   display: flex;
   gap: 15px;
-  padding: 10px 0 0 0;
   font-size: $f-size-sm;
-  align-items: center;
 
   @media (min-width: 768px) {
     margin-top: 0;

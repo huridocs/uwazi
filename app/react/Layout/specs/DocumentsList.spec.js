@@ -88,8 +88,6 @@ describe('DocumentsList', () => {
         counter: <DocumentCounter entityListCount={2} entityTotal={10} />,
         selectAllDocuments: expect.any(Function),
         searchCentered: false,
-        searchDocuments: props.searchDocuments,
-        sortButtonsStateProperty: '',
         storeKey: 'library',
         filters: fromJS({ documentTypes: [] }),
         tableViewMode: false,
