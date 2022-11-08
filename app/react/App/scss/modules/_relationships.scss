@@ -1,7 +1,8 @@
 $breakpoint: 768px;
 $c-background: #fcfcfc;
 
-.entity-viewer {
+.entity-viewer,
+.document-viewer {
   .relationship-toolbar {
     display: flex;
     flex-wrap: wrap;
