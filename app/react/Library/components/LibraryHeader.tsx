@@ -7,7 +7,7 @@ import { wrapDispatch } from 'app/Multireducer';
 
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
-import { SortButtons } from 'app/Library/components/SortButtons';
+import { SortDropdown } from 'app/Library/components/SortDropdown';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import {
   zoomIn as zoomInAction,
@@ -21,10 +21,8 @@ import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;
   selectAllDocuments: () => {};
-  sortButtonsStateProperty: string;
   SearchBar?: Function;
   searchCentered?: boolean;
-  searchDocuments: Function;
   filters: IImmutable<{ documentTypes: string[] }>;
   tableViewMode: boolean;
   scrollCount: number;
@@ -70,10 +68,8 @@ const FiltersButton = ({
 
 const LibraryHeaderComponent = ({
   filters,
-  sortButtonsStateProperty,
   selectAllDocuments,
   counter,
-  searchDocuments,
   SearchBar,
   searchCentered,
   zoomIn,
@@ -107,11 +103,7 @@ const LibraryHeaderComponent = ({
               <span className="documents-counter-sort">
                 <Translate>sorted by</Translate>
               </span>
-              <SortButtons
-                sortCallback={searchDocuments}
-                selectedTemplates={filters.get('documentTypes')}
-                stateProperty={sortButtonsStateProperty}
-              />
+              <SortDropdown selectedTemplates={filters.get('documentTypes')} />
               <NeedAuthorization>
                 <div className="select-all-documents">
                   <button

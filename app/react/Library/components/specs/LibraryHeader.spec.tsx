@@ -1,6 +1,7 @@
 /**
  * @jest-environment jsdom
  */
+
 import React from 'react';
 import { formReducer, FormState } from 'react-redux-form';
 import { combineReducers, createStore } from 'redux';
@@ -16,6 +17,12 @@ import { MockStoreEnhanced } from 'redux-mock-store';
 import { LibraryHeader, LibraryHeaderOwnProps } from '../LibraryHeader';
 import { SearchBar } from '../SearchBar';
 
+jest.mock('../SortDropdown', () => ({
+  __esModule: true,
+  SortDropdown: () => <>Sort Dropdown</>,
+}));
+
+// eslint-disable-next-line max-statements
 describe('LibraryHeader', () => {
   let renderResult: RenderResult;
   let store: MockStoreEnhanced;
@@ -23,10 +30,8 @@ describe('LibraryHeader', () => {
   const props: LibraryHeaderOwnProps = {
     counter: <span>counter</span>,
     selectAllDocuments: jest.fn(),
-    sortButtonsStateProperty: 'library.search',
     SearchBar,
     searchCentered: false,
-    searchDocuments: jest.fn(),
     filters: fromJS([]),
     tableViewMode: false,
     scrollCount: 0,
@@ -99,29 +104,9 @@ describe('LibraryHeader', () => {
     ({ renderResult, store } = renderConnectedContainer(<LibraryHeader {...props} />, () => state));
   };
 
-  it('should hold sortButtons with search callback and selectedTemplates', () => {
+  it('should display the sort dropdown component', () => {
     render();
-    fireEvent.click(screen.getByTitle('open dropdown'));
-
-    const options = screen.getAllByRole('option');
-    fireEvent.click(options[1]);
-
-    expect(options.map(option => option.textContent)).toEqual([
-      'Title',
-      'Date added',
-      'Date modified',
-      'text',
-    ]);
-    expect(props.searchDocuments).toHaveBeenCalledWith(
-      {
-        search: {
-          order: 'desc',
-          sort: 'creationDate',
-          userSelectedSorting: true,
-        },
-      },
-      'library'
-    );
+    expect(screen.getByText('Sort Dropdown')).toBeInTheDocument();
   });
 
   it('should render a Select All button only if authorized', () => {
