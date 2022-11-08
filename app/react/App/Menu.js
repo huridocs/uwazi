@@ -88,7 +88,7 @@ class Menu extends Component {
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-              <li className="menuNav-item desktop">
+              <li className="menuNav-item only-desktop">
                 <I18NLink
                   to="/settings/account"
                   className="menuNav-btn btn btn-default settings-section"
