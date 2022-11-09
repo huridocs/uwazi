@@ -5,7 +5,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { difference } from 'lodash';
 import { Icon } from 'UI';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { ClientTranslationSchema, IStore } from 'app/istore';
 import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';

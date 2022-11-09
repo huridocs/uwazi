@@ -24,7 +24,7 @@ class Customisation extends Component {
                 <Translate>Back</Translate>
               </span>
             </I18NLink>
-            <Translate>Custom style</Translate>
+            <Translate>Custom styles</Translate>
           </div>
           <div className="panel-body">
             <Form model="settings.settings" onSubmit={this.props.saveSettings}>
