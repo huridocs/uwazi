@@ -6,25 +6,29 @@
     border: none;
     background-color: $c-grey-lighten;
     padding: 7px 10px;
-  
+
     .btn {
-      margin-left: 25px;
+      margin-right: 10px;
+
+      .translation {
+        margin-left: 5px;
+      }
     }
   }
 }
 
 .panel > .list-group .list-group-item {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-align-items: center;
-    align-items: center;
-    -webkit-justify-content: space-between;
-    justify-content: space-between;
-    line-height: 24px;
-    border-color: $c-grey-light;
-    border-left-color: transparent;
-    outline: none;
-    box-shadow: none;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  line-height: 24px;
+  border-color: $c-grey-light;
+  border-left-color: transparent;
+  outline: none;
+  box-shadow: none;
 }
 
 .list-group-item-actions {
@@ -32,7 +36,6 @@
 }
 
 .list-group {
-
   .property-name:hover {
     cursor: move;
   }
@@ -89,7 +92,8 @@
         border: 1px solid $c-danger !important;
         box-shadow: $box-shadow-danger !important;
 
-        .property-name, .property-name .fa {
+        .property-name,
+        .property-name .fa {
           color: $c-danger;
         }
 
@@ -97,7 +101,6 @@
           margin-right: 5px;
         }
       }
-
 
       &.dragging {
         opacity: 0;
