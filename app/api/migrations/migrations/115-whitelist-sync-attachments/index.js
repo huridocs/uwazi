@@ -1,5 +1,3 @@
-import testingDB from 'api/utils/testing_db';
-
 export default {
   delta: 115,
 
