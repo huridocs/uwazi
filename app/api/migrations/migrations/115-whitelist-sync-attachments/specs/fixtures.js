@@ -10,7 +10,7 @@ export const fixtures = {
           password: 'password',
           config: {
             templates: {
-              ['template1']: {
+              template1: {
                 properties: ['holi'],
               },
             },
@@ -24,8 +24,8 @@ export const fixtures = {
           password: 'password2',
           config: {
             templates: {
-              ['template1']: { properties: [] },
-              ['template2']: { properties: [] },
+              template1: { properties: [] },
+              template2: { properties: [] },
             },
           },
         },

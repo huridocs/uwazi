@@ -30,7 +30,7 @@ describe('migration whitelist-sync-attachments', () => {
         password: 'password',
         config: {
           templates: {
-            ['template1']: {
+            template1: {
               properties: ['holi'],
               attachments: true,
             },
@@ -45,8 +45,8 @@ describe('migration whitelist-sync-attachments', () => {
         password: 'password2',
         config: {
           templates: {
-            ['template1']: { properties: [], attachments: true },
-            ['template2']: { properties: [], attachments: true },
+            template1: { properties: [], attachments: true },
+            template2: { properties: [], attachments: true },
           },
         },
       },
