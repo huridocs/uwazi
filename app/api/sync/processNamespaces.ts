@@ -299,7 +299,8 @@ class ProcessNamespaces {
 
     if (data.entity) {
       const [entity] = await entitiesModel.get({ sharedId: data.entity });
-
+      const { template } = entity;
+      if (template && !this.templatesConfig[template.toString()]?.attachments) return { skip: true };
       if (!(await this.entityIsAllowed(entity))) {
         return { skip: true };
       }

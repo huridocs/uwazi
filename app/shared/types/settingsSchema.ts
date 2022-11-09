@@ -72,6 +72,7 @@ const settingsSyncTemplateSchema = {
   properties: {
     properties: { type: 'array', items: { type: 'string' } },
     filter: { type: 'string' },
+    attachments: { type: 'boolean' },
   },
   additionalProperties: false,
 };

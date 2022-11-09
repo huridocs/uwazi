@@ -352,6 +352,8 @@ const fixtures: DBFixture = {
       deleted: false,
     },
     {
+      timestamp: 9000,
+      namespace: 'files',
       mongoId: file5,
       deleted: false,
     },
@@ -391,6 +393,7 @@ const fixtures: DBFixture = {
     {
       _id: file5,
       entity: 'newDoc3SharedId',
+      type: 'attachment',
       filename: `${newDoc1.toString()}.jpg`,
     },
     {
@@ -825,6 +828,7 @@ const host1Fixtures: DBFixture = {
                   template1PropertyThesauri1Select.toString(),
                   template1PropertyRelationship1.toString(),
                 ],
+                attachments: true,
               },
             },
           },
@@ -879,7 +883,7 @@ const host2Fixtures: DBFixture = {
           password: 'password2',
           config: {
             templates: {
-              [template3.toString()]: { properties: [] },
+              [template3.toString()]: { properties: [], attachments: true, },
             },
           },
         },
