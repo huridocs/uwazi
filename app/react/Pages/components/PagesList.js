@@ -35,7 +35,7 @@ class PagesList extends Component {
               <Translate>Back</Translate>
             </span>
           </I18NLink>
-          {t('System', 'Pages')}
+          <Translate>Pages</Translate>
         </div>
         <ul className="list-group pages">
           {pages.map((page, index) => (
@@ -54,7 +54,7 @@ class PagesList extends Component {
                   onClick={this.deletePage.bind(this, page)}
                   className="btn btn-danger btn-xs template-remove"
                 >
-                  <Icon icon="trash-alt" /> <span>{t('System', 'Delete')}</span>
+                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
                 </a>
               </div>
             </li>
@@ -62,7 +62,10 @@ class PagesList extends Component {
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/pages/new" className="btn btn-default">
-            <Icon icon="plus" /> <span className="btn-label">{t('System', 'Add page')}</span>
+            <Icon icon="plus" />{' '}
+            <span className="btn-label">
+              <Translate>Add page</Translate>
+            </span>
           </I18NLink>
         </div>
       </div>

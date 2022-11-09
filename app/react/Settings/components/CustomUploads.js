@@ -7,7 +7,7 @@ import React from 'react';
 
 import { Thumbnail, ConfirmButton } from 'app/Layout';
 import { actions } from 'app/BasicReducer';
-import { Translate } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
@@ -36,6 +36,12 @@ class CustomUploads extends RouteHandler {
       <div className="settings-content without-footer">
         <div className="panel panel-default">
           <div className="panel-heading">
+            <I18NLink to="settings/" className="only-mobile">
+              <Icon icon="arrow-left" directionAware />
+              <span className="btn-label">
+                <Translate>Back</Translate>
+              </span>
+            </I18NLink>
             <Translate>Custom Uploads</Translate>
           </div>
           <div className="panel-body custom-uploads">

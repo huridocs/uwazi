@@ -109,7 +109,15 @@ class ThesauriList extends Component {
     return (
       <div className="settings-content">
         <div className="flex panel panel-default">
-          <div className="panel-heading">{t('System', 'Thesauri')}</div>
+          <div className="panel-heading">
+            <I18NLink to="settings/" className="only-mobile">
+              <Icon icon="arrow-left" directionAware />
+              <span className="btn-label">
+                <Translate>Back</Translate>
+              </span>
+            </I18NLink>
+            <Translate>Thesauri</Translate>
+          </div>
           <div className="thesauri-list">
             <table>
               <thead>

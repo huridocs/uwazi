@@ -53,7 +53,15 @@ class RelationTypesList extends RouteHandler {
     return (
       <div className="settings-content">
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Relationship types')}</div>
+          <div className="panel-heading">
+            <I18NLink to="settings/" className="only-mobile">
+              <Icon icon="arrow-left" directionAware />
+              <span className="btn-label">
+                <Translate>Back</Translate>
+              </span>
+            </I18NLink>
+            <Translate>Relationship types</Translate>
+          </div>
           <ul className="list-group relation-types">
             {this.props.relationTypes.toJS().map((relationType, index) => (
               <li key={index} className="list-group-item">

@@ -10,7 +10,7 @@ import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
-import { t, Translate } from 'app/I18N';
+import { t, Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 
 const removeItem = itemId => {
@@ -199,6 +199,12 @@ class FiltersForm extends Component {
           <div className="FiltersForm-list">
             <div className="panel panel-default">
               <div className="panel-heading">
+                <I18NLink to="settings/" className="only-mobile">
+                  <Icon icon="arrow-left" directionAware />
+                  <span className="btn-label">
+                    <Translate>Back</Translate>
+                  </span>
+                </I18NLink>
                 <Translate>Filters configuration</Translate>
               </div>
               <div className="panel-body">

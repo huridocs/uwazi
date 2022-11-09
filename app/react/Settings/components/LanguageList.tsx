@@ -4,7 +4,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { differenceBy, intersectionBy, isEmpty } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
-import { Translate, actions, I18NApi } from 'app/I18N';
+import { Translate, actions, I18NApi, I18NLink } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
@@ -113,9 +113,18 @@ const LanguageList = ({
   return (
     <div className="panel panel-default settings-content">
       <div className="panel-heading">
-        <Translate>Active Languages</Translate>
+        <I18NLink to="settings/" className="only-mobile">
+          <Icon icon="arrow-left" directionAware />
+          <span className="btn-label">
+            <Translate>Back</Translate>
+          </span>
+        </I18NLink>
+        <Translate>Languages</Translate>
       </div>
       <div className="installed-languages">
+        <h2>
+          <Translate>Active Languages</Translate>
+        </h2>
         {installedLanguages.map((language: LanguageSchema) => (
           <div key={language.key} className="row">
             <div className="col">{`${language.label} (${language.key})`}</div>
@@ -142,9 +151,9 @@ const LanguageList = ({
           </div>
         ))}
       </div>
-      <div className="panel-heading">
+      <h2>
         <Translate>Available Languages</Translate>
-      </div>
+      </h2>
       <div className="available-languages">
         {availableLanguages.map(language => (
           <div key={language.key} className="row">

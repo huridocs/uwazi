@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
-import { I18NLink, I18NMenu, t } from 'app/I18N';
+import { I18NLink, I18NMenu, t, Translate } from 'app/I18N';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { showSemanticSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
@@ -71,7 +71,9 @@ class Menu extends Component {
                   aria-label={t('System', 'Semantic search', null, false)}
                 >
                   <Icon icon="flask" />
-                  <span className="tab-link-tooltip">{t('System', 'Semantic search')}</span>
+                  <span className="tab-link-tooltip">
+                    <Translate>Semantic search</Translate>
+                  </span>
                 </button>
               </li>
             </FeatureToggleSemanticSearch>
@@ -84,7 +86,9 @@ class Menu extends Component {
                 aria-label={t('System', 'Library', null, false)}
               >
                 <Icon icon={libraryViewInfo[defaultLibraryView].icon} />
-                <span className="tab-link-label">{t('System', 'Library')}</span>
+                <span className="tab-link-label">
+                  <Translate>Library</Translate>
+                </span>
               </I18NLink>
             </li>
             <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -96,7 +100,9 @@ class Menu extends Component {
                   aria-label={t('System', 'Settings', null, false)}
                 >
                   <Icon icon="cog" />
-                  <span className="tab-link-label">{t('System', 'Settings')}</span>
+                  <span className="tab-link-label">
+                    <Translate>Settings</Translate>
+                  </span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -109,7 +115,9 @@ class Menu extends Component {
                   aria-label={t('System', 'Settings', null, false)}
                 >
                   <Icon icon="cog" />
-                  <span className="tab-link-label">{t('System', 'Settings')}</span>
+                  <span className="tab-link-label">
+                    <Translate>Settings</Translate>
+                  </span>
                 </I18NLink>
               </li>
             </NeedAuthorization>
@@ -117,7 +125,9 @@ class Menu extends Component {
               <li className="menuNav-item only-mobile">
                 <a href="/logout" className="menuNav-btn btn btn-default">
                   <Icon icon="power-off" />
-                  <span className="tab-link-label">{t('System', 'Logout')}</span>
+                  <span className="tab-link-label">
+                    <Translate>Logout</Translate>
+                  </span>
                 </a>
               </li>
             </NeedAuthorization>
@@ -131,7 +141,9 @@ class Menu extends Component {
                       aria-label={t('System', 'Sign in', null, false)}
                     >
                       <Icon icon="power-off" />
-                      <span className="tab-link-label">{t('System', 'Sign in')}</span>
+                      <span className="tab-link-label">
+                        <Translate>Sign in</Translate>
+                      </span>
                     </I18NLink>
                   </li>
                 );
