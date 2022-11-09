@@ -27,7 +27,16 @@ class PagesList extends Component {
     const { pages } = this.props;
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Pages')}</div>
+        <div className="panel-heading">
+          {' '}
+          <I18NLink to="settings/" className="only-mobile">
+            <Icon icon="arrow-left" directionAware />
+            <span className="btn-label">
+              <Translate>Back</Translate>
+            </span>
+          </I18NLink>
+          {t('System', 'Pages')}
+        </div>
         <ul className="list-group pages">
           {pages.map((page, index) => (
             <li key={index} className="list-group-item">

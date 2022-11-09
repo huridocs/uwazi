@@ -7,11 +7,12 @@
     background-color: $c-grey-lighten;
     padding: 7px 10px;
 
-    .btn {
+    a {
       margin-right: 10px;
+      color: inherit;
 
       .translation {
-        margin-left: 5px;
+        display: none;
       }
     }
   }

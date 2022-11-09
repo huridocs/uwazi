@@ -84,6 +84,12 @@ class Configure2fa extends Component<Configure2faProps, State> {
         <div className="configure2fa-settings">
           <div className="panel panel-default">
             <div className="panel-heading">
+              <I18NLink to="settings/account/" className="only-mobile">
+                <Icon icon="arrow-left" directionAware />
+                <span className="btn-label">
+                  <Translate>Back</Translate>
+                </span>
+              </I18NLink>
               <Translate>Two-step verification</Translate>
             </div>
             <div className="panel-body">

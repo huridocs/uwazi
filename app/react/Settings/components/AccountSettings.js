@@ -100,6 +100,12 @@ class AccountSettings extends Component {
         <div className="account-settings">
           <div className="panel panel-default">
             <div className="panel-heading">
+              <I18NLink to="settings/" className="only-mobile">
+                <Icon icon="arrow-left" directionAware />
+                <span className="btn-label">
+                  <Translate>Back</Translate>
+                </span>
+              </I18NLink>
               <Translate>Account</Translate>
             </div>
             <div className="panel-body">

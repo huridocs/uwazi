@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import { loadLinks, addLink, sortLink, saveLinks } from 'app/Settings/actions/navlinksActions';
-import { Translate } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 
 import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
@@ -61,6 +61,12 @@ class NavlinksSettings extends Component {
             <div className="panel panel-default">
               <div className="panel-heading">
                 <div className={nameGroupClass}>
+                  <I18NLink to="settings/" className="only-mobile">
+                    <Icon icon="arrow-left" directionAware />
+                    <span className="btn-label">
+                      <Translate>Back</Translate>
+                    </span>
+                  </I18NLink>
                   <Translate>Menu</Translate>
                 </div>
               </div>

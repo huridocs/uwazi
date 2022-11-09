@@ -1,5 +1,16 @@
 .panel.panel-preserve {
   padding-left: 32px;
+  .panel-heading {
+    a {
+      display: block;
+      @media (min-width: 1024px) {
+        display: none;
+      }
+    }
+    .fa-arrow-left {
+      margin-top: 3px;
+    }
+  }
   .panel-preserve-heading {
     font-weight: 700;
     font-size: 18px;

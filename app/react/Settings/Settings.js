@@ -76,7 +76,7 @@ export class Settings extends RouteHandler {
         <Helmet>
           <title>{t('System', 'Settings', null, false)}</title>
         </Helmet>
-        <div className={`settings-navigation ${!isSettingsParentRoute ? 'only-desktop' : ''}`}>
+        <div className={`settings-navigation ${isSettingsParentRoute ? '' : 'only-desktop'}`}>
           <SettingsNavigation />
         </div>
         {this.props.children}

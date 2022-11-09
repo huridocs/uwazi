@@ -8,7 +8,7 @@ import {
   checkTemplateCanBeDeleted,
   setAsDefault,
 } from 'app/Templates/actions/templatesActions';
-import { Translate } from 'app/I18N';
+import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
 import Tip from '../../Layout/Tip';
@@ -113,6 +113,12 @@ class EntityTypesList extends Component {
       <div className="settings-content">
         <div className="panel panel-default">
           <div className="panel-heading">
+            <I18NLink to="settings/" className="only-mobile">
+              <Icon icon="arrow-left" directionAware />
+              <span className="btn-label">
+                <Translate>Back</Translate>
+              </span>
+            </I18NLink>
             <Translate>Templates</Translate>
           </div>
           <ul className="list-group document-types">
