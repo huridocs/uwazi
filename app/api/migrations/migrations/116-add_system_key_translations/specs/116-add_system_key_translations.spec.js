@@ -5,15 +5,22 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Sort ascending',
-    value: 'Sort ascending',
+    key: 'Show toolbar',
+    value: 'Show toolbar',
   },
   {
-    key: 'Sort descending',
-    value: 'Sort descending',
+    key: 'Hide toolbar',
+    value: 'Hide toolbar',
+  },
+  {
+    key: 'Show actions',
+    value: 'Show actions',
+  },
+  {
+    key: 'Hide actions',
+    value: 'Hide actions',
   },
 ];
-
 const alreadyInAllContexts = {
   key: 'Duplicated label',
   en: 'Duplicated label',

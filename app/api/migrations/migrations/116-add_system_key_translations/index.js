@@ -1,9 +1,9 @@
 /*
 This migration is meant to be repeatable.
 After copy pasting:
-  - add new key-value pairs in systemKeys
-  - up delta number
-  - update test
+  - change the contents of system_keys.csv to the new keyset
+  - change the file location in the readCsvToSystemKeys call
+  - change the tests, if necessary
 */
 
 async function insertSystemKeys(db, newKeys) {
@@ -49,12 +49,20 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'Sort ascending',
-        value: 'Sort ascending',
+        key: 'Show toolbar',
+        value: 'Show toolbar',
       },
       {
-        key: 'Sort descending',
-        value: 'Sort descending',
+        key: 'Hide toolbar',
+        value: 'Hide toolbar',
+      },
+      {
+        key: 'Show actions',
+        value: 'Show actions',
+      },
+      {
+        key: 'Hide actions',
+        value: 'Hide actions',
       },
     ];
     await insertSystemKeys(db, systemKeys);
