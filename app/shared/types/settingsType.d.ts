@@ -123,6 +123,7 @@ export interface SettingsSyncSchema {
         | {
             properties: string[];
             filter?: string;
+            attachments?: boolean;
           }
         | undefined;
     };
@@ -133,4 +134,5 @@ export interface SettingsSyncSchema {
 export interface SettingsSyncTemplateSchema {
   properties: string[];
   filter?: string;
+  attachments?: boolean;
 }
