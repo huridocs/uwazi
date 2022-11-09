@@ -74,7 +74,6 @@ const TranslationsList = ({ languages, translations }: MappedProps) => {
     <div className="settings-content without-footer">
       <div className="TranslationsList panel panel-default">
         <div className="panel-heading">
-          {' '}
           <I18NLink to="settings/" className="only-mobile">
             <Icon icon="arrow-left" directionAware />
             <span className="btn-label">
