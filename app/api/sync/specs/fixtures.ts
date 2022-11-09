@@ -883,7 +883,7 @@ const host2Fixtures: DBFixture = {
           password: 'password2',
           config: {
             templates: {
-              [template3.toString()]: { properties: [], attachments: true, },
+              [template3.toString()]: { properties: [], attachments: true },
             },
           },
         },
