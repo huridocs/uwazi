@@ -13,6 +13,22 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
       <div
         className="panel-heading"
       >
+        <Connect(I18NLink)
+          className="only-mobile"
+          to="settings/account/"
+        >
+          <Connect(Icon)
+            directionAware={true}
+            icon="arrow-left"
+          />
+          <span
+            className="btn-label"
+          >
+            <Connect(Translate)>
+              Back
+            </Connect(Translate)>
+          </span>
+        </Connect(I18NLink)>
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>
@@ -141,6 +157,22 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
       <div
         className="panel-heading"
       >
+        <Connect(I18NLink)
+          className="only-mobile"
+          to="settings/account/"
+        >
+          <Connect(Icon)
+            directionAware={true}
+            icon="arrow-left"
+          />
+          <span
+            className="btn-label"
+          >
+            <Connect(Translate)>
+              Back
+            </Connect(Translate)>
+          </span>
+        </Connect(I18NLink)>
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>
@@ -191,6 +223,22 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
       <div
         className="panel-heading"
       >
+        <Connect(I18NLink)
+          className="only-mobile"
+          to="settings/account/"
+        >
+          <Connect(Icon)
+            directionAware={true}
+            icon="arrow-left"
+          />
+          <span
+            className="btn-label"
+          >
+            <Connect(Translate)>
+              Back
+            </Connect(Translate)>
+          </span>
+        </Connect(I18NLink)>
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>

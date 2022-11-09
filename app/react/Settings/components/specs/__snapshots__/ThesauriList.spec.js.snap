@@ -10,7 +10,25 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
     <div
       className="panel-heading"
     >
-      Thesauri
+      <Connect(I18NLink)
+        className="only-mobile"
+        to="settings/"
+      >
+        <Connect(Icon)
+          directionAware={true}
+          icon="arrow-left"
+        />
+        <span
+          className="btn-label"
+        >
+          <Connect(Translate)>
+            Back
+          </Connect(Translate)>
+        </span>
+      </Connect(I18NLink)>
+      <Connect(Translate)>
+        Thesauri
+      </Connect(Translate)>
     </div>
     <div
       className="thesauri-list"
