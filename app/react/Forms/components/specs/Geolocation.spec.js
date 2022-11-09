@@ -9,6 +9,7 @@ describe('Geolocation', () => {
   let props;
 
   const render = () => {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<Geolocation {...props} />);
     instance = component.instance();
   };
@@ -35,12 +36,6 @@ describe('Geolocation', () => {
   });
 
   describe('when lat changes', () => {
-    it('with invalid coordinated should call onChange with empty value', () => {
-      const latInput = component.find('input').at(0);
-      latInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).toHaveBeenCalledWith([]);
-    });
-
     function expectOnChangeCallWhenInputSimulation(simulatedInput, expectedValue) {
       const latInput = component.find('input').at(0);
       latInput.simulate('change', { target: { value: simulatedInput } });
@@ -83,11 +78,6 @@ describe('Geolocation', () => {
         props.value[1],
       ]);
     });
-
-    it('should call onChange with empty value when invalid longitude', () => {
-      lonInput.simulate('change', { target: { value: '' } });
-      expect(props.onChange).toHaveBeenCalledWith([]);
-    });
   });
 
   describe('mapClick', () => {
@@ -118,20 +108,11 @@ describe('Geolocation', () => {
       expect(props.onChange).toHaveBeenCalledWith([]);
     }
 
-    describe('if lon is empty and lat is set to empty', () => {
-      it('should call onChange without a value', () => {
-        props.value[0].lon = '';
-        render();
-        testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(0));
-      });
-    });
-
-    describe('if lat is empty and lon is set to empty', () => {
-      it('should call onChange without a value', () => {
-        props.value[0].lat = '';
-        render();
-        testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(1));
-      });
+    it('should return an empty value', () => {
+      props.value[0].lon = '';
+      props.value[0].lat = '';
+      render();
+      testInputWillTriggerOnChangeWithoutValue(inputs => inputs.at(0));
     });
 
     describe('when they are no empty anymore', () => {

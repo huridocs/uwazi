@@ -148,7 +148,6 @@ describe('EntityView', () => {
 
       component.unmount();
 
-      expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'RESET_USER_SELECTED_TAB' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'page/pageView/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'page/itemLists/UNSET' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'page/datasets/UNSET' });

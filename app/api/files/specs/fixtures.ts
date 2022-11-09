@@ -11,6 +11,7 @@ const restrictedUploadId2 = db.id();
 const templateId = db.id();
 const importTemplate = db.id();
 const writerUserId = db.id();
+const externalUrlFileId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
 const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
 const customPdfFileName = 'customPDF.pdf';
@@ -90,6 +91,12 @@ const fixtures: DBFixture = {
     { _id: db.id(), originalname: 'fileNotONDisk', filename: 'fileNotOnDisk', type: 'custom' },
     { _id: db.id(), originalname: 'upload2', type: 'document' },
     { _id: db.id(), originalname: 'upload3', type: 'custom' },
+    {
+      _id: externalUrlFileId,
+      originalname: 'external url',
+      type: 'attachment',
+      url: 'http://example.com/image.jpg',
+    },
   ],
   connections: [
     { entity: 'entity1', file: uploadId2.toString(), hub: '1' },
@@ -206,4 +213,5 @@ export {
   collabUser,
   adminUser,
   writerUser,
+  externalUrlFileId,
 };

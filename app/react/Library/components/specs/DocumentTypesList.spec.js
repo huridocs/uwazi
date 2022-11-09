@@ -58,6 +58,7 @@ describe('DocumentTypesList', () => {
       storeKey: 'library',
       templates: Immutable.fromJS(allTemplates),
       selectedTemplates: [2, 5],
+      location: { query: {} },
     };
   });
 

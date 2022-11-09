@@ -11,8 +11,8 @@ describe('RetrieveStats', () => {
 
   beforeAll(async () => {
     db = (await testingDB.connect()).db;
+    // @ts-ignore
     jest.spyOn(db, 'stats').mockResolvedValue({
-      // @ts-ignore
       storageSize: 15000,
     });
   });

@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SortButtons Sort options should use templates sortable properties as options (with asc and desc for each) 1`] = `
+<DocumentFragment>
+  <div
+    class="sort-buttons"
+  >
+    <div
+      aria-busy="false"
+      aria-disabled="false"
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-live="polite"
+      aria-owns="rw_1_listbox"
+      aria-readonly="false"
+      class="sort-dropdown rw-dropdown-list rw-widget"
+      id="rw_1_input"
+      role="combobox"
+      tabindex="0"
+    >
+      <div
+        class="rw-widget-input rw-widget-picker rw-widget-container"
+      >
+        <div
+          class="rw-input rw-dropdown-list-input"
+        >
+          <input
+            class="rw-dropdown-list-autofill rw-detect-autofill rw-sr"
+            tabindex="-1"
+            value="asc"
+          />
+          asc
+        </div>
+        <span
+          class="rw-select"
+        >
+          <button
+            aria-disabled="false"
+            aria-hidden="true"
+            aria-label="open dropdown"
+            class="rw-btn rw-btn-select"
+            role="presentational"
+            tabindex="-1"
+            title="open dropdown"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+              class="rw-i rw-i-caret-down"
+            />
+          </button>
+        </span>
+      </div>
+    </div>
+    <button
+      class="sorting-toggle false"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-arrow-down fa-w-14 "
+        data-icon="arrow-down"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 448 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SortButtons Sort options when relevance sorting is active and there is no search term should fall back to sorting by most recent creation date 1`] = `
+<DocumentFragment>
+  <div
+    class="sort-buttons"
+  >
+    <div
+      aria-busy="false"
+      aria-disabled="false"
+      aria-expanded="false"
+      aria-haspopup="true"
+      aria-live="polite"
+      aria-owns="rw_7_listbox"
+      aria-readonly="false"
+      class="sort-dropdown rw-dropdown-list rw-widget"
+      id="rw_7_input"
+      role="combobox"
+      tabindex="0"
+    >
+      <div
+        class="rw-widget-input rw-widget-picker rw-widget-container"
+      >
+        <div
+          class="rw-input rw-dropdown-list-input"
+        >
+          <input
+            class="rw-dropdown-list-autofill rw-detect-autofill rw-sr"
+            tabindex="-1"
+            value="Date added"
+          />
+          Date added
+        </div>
+        <span
+          class="rw-select"
+        >
+          <button
+            aria-disabled="false"
+            aria-hidden="true"
+            aria-label="open dropdown"
+            class="rw-btn rw-btn-select"
+            role="presentational"
+            tabindex="-1"
+            title="open dropdown"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+              class="rw-i rw-i-caret-down"
+            />
+          </button>
+        </span>
+      </div>
+    </div>
+    <button
+      class="sorting-toggle disabled"
+      disabled=""
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-arrow-down fa-w-14 "
+        data-icon="arrow-down"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 448 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </div>
+</DocumentFragment>
+`;

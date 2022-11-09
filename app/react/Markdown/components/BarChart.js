@@ -14,7 +14,7 @@ import {
   Cell,
 } from 'recharts';
 
-import Loader from 'app/components/Elements/Loader';
+import { Loader } from 'app/components/Elements/Loader';
 import { arrayUtils } from 'app/Charts';
 import markdownDatasets from '../markdownDatasets';
 

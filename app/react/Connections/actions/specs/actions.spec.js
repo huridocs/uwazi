@@ -45,7 +45,7 @@ describe('Connections actions', () => {
             fields: ['title', 'template', 'sharedId', 'documents._id'],
           })
         );
-        expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
+        expect(api.get).toHaveBeenCalledWith('v2/search', expectedParams);
         expect(store.getActions()).toContainEqual({ type: 'SEARCHING_CONNECTIONS' });
       });
 
@@ -89,7 +89,7 @@ describe('Connections actions', () => {
         expect(api.get).not.toHaveBeenCalled();
         jasmine.clock().tick(400);
         expect(api.get).toHaveBeenCalledWith(
-          'v2/entities',
+          'v2/search',
           new RequestParams(
             qs.stringify({
               filter: { searchString: 'title:(term)' },
@@ -110,7 +110,7 @@ describe('Connections actions', () => {
           fields: ['title', 'template', 'sharedId', 'documents._id'],
         })
       );
-      expect(api.get).toHaveBeenCalledWith('v2/entities', expectedParams);
+      expect(api.get).toHaveBeenCalledWith('v2/search', expectedParams);
     });
 
     it('should restore default search term and open the panel', done => {

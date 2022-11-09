@@ -1,21 +1,22 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 
 import Doc from 'app/Library/components/Doc';
-import SortButtons from 'app/Library/components/SortButtons';
 import Footer from 'app/App/Footer';
-import { NeedAuthorization } from 'app/Auth';
 
+import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { TilesViewer } from 'app/Layout/TilesViewer';
 import { TableViewer } from 'app/Layout/TableViewer';
+import { LibraryHeader } from 'app/Library/components/LibraryHeader';
+import { SearchBar } from 'app/Library/components/SearchBar';
 import { DocumentsList } from '../DocumentsList';
 
 describe('DocumentsList', () => {
   let component;
   let instance;
   let props;
-  const documents = Immutable.fromJS({
+  const documents = fromJS({
     rows: [
       { title: 'Document one', _id: '1' },
       { title: 'Document two', _id: '2' },
@@ -27,15 +28,19 @@ describe('DocumentsList', () => {
     props = {
       documents,
       search: { sort: 'sort' },
-      filters: Immutable.fromJS({ documentTypes: [] }),
+      filters: fromJS({ documentTypes: [] }),
       clickOnDocument: { apply: jasmine.createSpy('clickOnDocumentApply') },
       onSnippetClick: jasmine.createSpy('onSnippetClick'),
       loadMoreDocuments: jasmine.createSpy('loadMoreDocuments'),
       storeKey: 'library',
-      searchDocuments: () => {},
+      searchDocuments: jest.fn(),
       deleteConnection: () => {},
       location: { query: { q: '', pathname: 'library/' } },
       selectedDocuments: {},
+      selectAllDocuments: jest.fn(),
+      searchCentered: false,
+      sortButtonsStateProperty: '',
+      scrollCount: 4,
     };
   });
 
@@ -48,7 +53,7 @@ describe('DocumentsList', () => {
     beforeEach(() => {
       props.view = 'graph';
       props.connections = { totalRows: 2 };
-      props.connectionsGroups = Immutable.fromJS([
+      props.connectionsGroups = fromJS([
         {
           templates: [
             {
@@ -73,31 +78,39 @@ describe('DocumentsList', () => {
     });
   });
 
-  it('should render action buttons if passed as props', () => {
-    render();
-    expect(component.find('.search-list-actions').length).toBe(0);
+  describe('LibraryHeader', () => {
+    it('should render a LibraryHeader with the expected props', () => {
+      render();
+      const libraryHeader = component.find(LibraryHeader);
 
-    const ActionButtons = () => <div>action buttons</div>;
-    props.ActionButtons = ActionButtons;
+      expect(libraryHeader.props()).toEqual({
+        SearchBar,
+        counter: <DocumentCounter entityListCount={2} entityTotal={10} />,
+        selectAllDocuments: expect.any(Function),
+        searchCentered: false,
+        storeKey: 'library',
+        filters: fromJS({ documentTypes: [] }),
+        tableViewMode: false,
+        scrollCount: 1,
+      });
 
-    render();
-    expect(component.find('.search-list-actions').length).toBe(1);
-    expect(
-      component.find('.search-list-actions').childAt(0).getElements()[0].type().props.children
-    ).toBe('action buttons');
-  });
+      libraryHeader.props().selectAllDocuments();
+      expect(props.selectAllDocuments).toHaveBeenCalled();
+    });
 
-  it('should hold sortButtons with search callback and selectedTemplates', () => {
-    render();
-    expect(component.find(SortButtons).props().sortCallback).toBe(props.searchDocuments);
-    expect(component.find(SortButtons).props().selectedTemplates).toBe(
-      props.filters.get('documentTypes')
-    );
-  });
+    it('should increase the scrollCount on each scroll event', () => {
+      props.CollectionViewer = TableViewer;
+      render();
+      const libraryContainer = component.find('.library-load-container');
+      libraryContainer.props().onScroll();
+      libraryContainer.props().onScroll();
 
-  it('should render a Select All button only if authorized', () => {
-    render();
-    expect(component.find('.select-all-documents').parent().is(NeedAuthorization)).toBe(true);
+      component.update();
+      expect(component.find(LibraryHeader).props().scrollCount).toBe(3);
+      component.setProps({ scrollCount: 5 });
+      component.update();
+      expect(component.find(LibraryHeader).props().scrollCount).toBe(4);
+    });
   });
 
   it('should bind to the clickOnDocument', () => {

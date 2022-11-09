@@ -19,7 +19,7 @@ export function immediateSearch(dispatch, searchString, connectionType) {
     })
   );
 
-  return api.get('v2/entities', requestParams).then(({ json: { data } }) => {
+  return api.get('v2/search', requestParams).then(({ json: { data } }) => {
     let results = data;
     if (connectionType === 'targetRanged') {
       results = results.filter(r => r.documents && r.documents.length);

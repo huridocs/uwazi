@@ -46,15 +46,18 @@ export const files = {
   get: filesModel.get.bind(filesModel),
 
   async delete(query: any = {}) {
+    const hasFileName = (file: FileType): file is FileType & { filename: string } =>
+      !!file.filename;
+
     const toDeleteFiles: FileType[] = await filesModel.get(query);
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
       await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
 
       await Promise.all(
-        toDeleteFiles.map(async ({ filename, type }) =>
-          storage.removeFile(filename || '', type || 'document')
-        )
+        toDeleteFiles
+          .filter(hasFileName)
+          .map(async ({ filename, type }) => storage.removeFile(filename, type || 'document'))
       );
       await search.indexEntities(
         { sharedId: { $in: toDeleteFiles.map(f => f.entity?.toString()) } },
