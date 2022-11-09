@@ -6,11 +6,11 @@ import fs from 'fs'
 import process from 'process';
 
 import _ from 'lodash';
-import { Db, ObjectId } from 'mongodb';
+import { Collection, Db, ObjectId } from 'mongodb';
 
 import { objectIndex } from '../../app/shared/data_utils/objectIndex';
 import { CsvWriter } from './utilities/csv';
-import { createTempCollections, getClientAndDB } from './utilities/db'
+import { createTempCollections, finalize, getClientAndDB } from './utilities/db'
 import { ConnectionType as RawConnectionType, gatherHubs, HubType } from './utilities/hubs';
 import { println } from './utilities/log';
 
@@ -184,39 +184,15 @@ const classifyHub = (hub: HubType, connections: ConnectionType[]) => {
         const untypedConnections = connections.filter(c => !c.template)
         if(untypedConnections.every(c => connectionsAreEqual(c, untypedConnections[0]))) classes.push(HubClasses.EXACT_UNTYPED_COPIES);
     };
-    return classes.join(' ');
+    const finalClass = classes.join(' ');
+    const transformable = finalClass === HubClasses.ONE_UNTYPED_EDGE;
+    return {hubclass: finalClass, transformable};
 }
 
-const printCounts = (counts: Record<string, [number, number]>) => {
-    Object.entries(counts).sort((a,b) => a[0].localeCompare(b[0])).forEach(([name, counts]) =>{
-        println(`     ${name}: ${counts[0]}(${counts[1]})`);
-    });
-};
-
-const run = async () => {
-    const {client, db} = await getClientAndDB();
-    
-    await readTypes(db);
-    const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);    
-    const connections = collateConnections(rawDefinitions);
-
-    await createTempCollections(db, [temporaryHubCollectionName])
-
-    const tempHubsCollection = db.collection<HubType>(temporaryHubCollectionName);
-    const connectionsCollection = db.collection<RawConnectionType>('connections');
-
-
-    await gatherHubs(connectionsCollection, tempHubsCollection);
-
-    const csv = RESULT_FILE_PATH
-        ? new CsvWriter(
-            RESULT_FILE_PATH,
-            ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable'],
-        ) : undefined;
-
-    println('Processing hubs...')
+const classifyHubs = async (tempHubsCollection: Collection<HubType>, connectionsCollection: Collection<RawConnectionType>, csv?: CsvWriter) => {
     const hubCursor = tempHubsCollection.find({});
-    const classCounts: Record<string, [number, number]> = {}
+    const transformableCounts: Record<string, [number, number]> = {}
+    const nonTransformableCounts: Record<string, [number, number]> = {}
     while(await hubCursor.hasNext()){
         const hub = await hubCursor.next();
         if(!hub) break;
@@ -249,15 +225,23 @@ const run = async () => {
         }
         ]).toArray();
 
-        const hubclass = classifyHub(hub, connections);
-        const transformable = hubclass === HubClasses.ONE_UNTYPED_EDGE;
-        if(!(hubclass in classCounts)) classCounts[hubclass] = [0, 0];
-        classCounts[hubclass][0]++;
+        const {hubclass, transformable } = classifyHub(hub, connections);
+        if(transformable) {
+            if(!(hubclass in transformableCounts)) transformableCounts[hubclass] = [0, 0];
+            transformableCounts[hubclass][0]++;
+        } else {
+            if(!(hubclass in nonTransformableCounts)) nonTransformableCounts[hubclass] = [0, 0];
+            nonTransformableCounts[hubclass][0]++;
+        }        
 
         if(csv) {
             csv.writeLines(
                 connections.map(c => {
-                    classCounts[hubclass][1]++;
+                    if(transformable) {
+                        transformableCounts[hubclass][1]++;
+                    } else {
+                        nonTransformableCounts[hubclass][1]++;
+                    }
                     return {
                         ...c,
                         entityTitle: `"${c.entityTitle}"`,
@@ -270,19 +254,58 @@ const run = async () => {
             );
         }
     }
+    return { transformableCounts, nonTransformableCounts };
+};
+
+const printCountSet = (counts: Record<string, [number, number]>) => {
+    Object.entries(counts).sort((a,b) => a[0].localeCompare(b[0])).forEach(([name, counts]) =>{
+        println(`     ${name}: ${counts[0]}(${counts[1]})`);
+    });
+};
+
+const printSummary = (
+    transformableCounts: Record<string, [number, number]>,
+    nonTransformableCounts: Record<string, [number, number]>
+    ) => {
+        const transformableTotals = Object.values(transformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
+        const nonTransformableTotals = Object.values(nonTransformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
+        const totals = [transformableTotals[0] + nonTransformableTotals[0], transformableTotals[1] + nonTransformableTotals[1]];
+        println('Summary:----------------------------');
+        println(`Total: ${totals[0]}(${totals[1]})`);
+        println(`Transformable: ${transformableTotals[0]}(${transformableTotals[1]})`);
+        printCountSet(transformableCounts);
+        println(`Not Transformable: ${nonTransformableTotals[0]}(${nonTransformableTotals[1]})`);
+        printCountSet(nonTransformableCounts);
+};
+
+
+const run = async () => {
+    const {client, db} = await getClientAndDB();
+    
+    await readTypes(db);
+    const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);    
+    const connections = collateConnections(rawDefinitions);
+
+    await createTempCollections(db, [temporaryHubCollectionName])
+
+    const tempHubsCollection = db.collection<HubType>(temporaryHubCollectionName);
+    const connectionsCollection = db.collection<RawConnectionType>('connections');
+
+    await gatherHubs(connectionsCollection, tempHubsCollection);
+
+    const csv = RESULT_FILE_PATH
+        ? new CsvWriter(
+            RESULT_FILE_PATH,
+            ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable'],
+        ) : undefined;
+
+    println('Processing hubs...')
+    const { transformableCounts, nonTransformableCounts } = await classifyHubs(tempHubsCollection, connectionsCollection, csv);
     println('Hub processing done.')
 
-    const transformableCounts = Object.fromEntries(Object.entries(classCounts).filter(count => transformableClasses.has(count[0])));
-    const nonTransformableCounts = Object.fromEntries(Object.entries(classCounts).filter(count => !transformableClasses.has(count[0])));
-    const transformableTotals = Object.values(transformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
-    const nonTransformableTotals = Object.values(nonTransformableCounts).reduce((sum, pair) => [sum[0] + pair[0], sum[1] + pair[1]], [0, 0]);
-    const totals = [transformableTotals[0] + nonTransformableTotals[0], transformableTotals[1] + nonTransformableTotals[1]];
-    println('Summary:----------------------------');
-    println(`Total: ${totals[0]}(${totals[1]})`);
-    println(`Transformable: ${transformableTotals[0]}(${transformableTotals[1]})`);
-    printCounts(transformableCounts);
-    println(`Not Transformable: ${nonTransformableTotals[0]}(${nonTransformableTotals[1]})`);
-    printCounts(nonTransformableCounts);
+    printSummary(transformableCounts, nonTransformableCounts);
+
+    await finalize(db, [], [tempHubsCollection])
 
     await client.close();
     csv?.close();
