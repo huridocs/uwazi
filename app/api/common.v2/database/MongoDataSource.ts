@@ -1,4 +1,5 @@
 import { Db, Document } from 'mongodb';
+import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
@@ -19,5 +20,9 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
 
   protected getSession() {
     return this.transactionManager.getSession();
+  }
+
+  protected createBulkStream() {
+    return new BulkWriteStream(this.getCollection(), this.getSession());
   }
 }

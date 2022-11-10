@@ -1,5 +1,4 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { BulkWriteStream } from 'api/common.v2/database/BulkWriteStream';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -32,7 +31,7 @@ interface EntityJoinTemplate extends EntityDBOType {
 
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
-  const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.getSession());
+  const stream = this.createBulkStream();
 
   await Promise.all(
     // eslint-disable-next-line max-statements
@@ -109,7 +108,7 @@ export class MongoEntitiesDataSource
   }
 
   async markMetadataAsChanged(propData: { sharedId: string; property: string }[]) {
-    const stream = new BulkWriteStream(this.getCollection(), this.getSession());
+    const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
       // eslint-disable-next-line no-await-in-loop
@@ -150,7 +149,7 @@ export class MongoEntitiesDataSource
     language: string,
     newTitle: string
   ) {
-    const stream = new BulkWriteStream(this.getCollection(), this.getSession());
+    const stream = this.createBulkStream();
 
     await Promise.all(
       properties.map(async property => {
