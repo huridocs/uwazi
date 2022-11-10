@@ -11,7 +11,7 @@ const getNewRelationshipCount = async (id: ObjectId) => {
   ).readNewRelationshipsAllowed();
   const relationshipsDataSource = DefaultRelationshipDataSource(transactionManager);
 
-  return newRelationshipsAllowed ? relationshipsDataSource.countBy({ type: id.toString() }) : 0;
+  return newRelationshipsAllowed ? relationshipsDataSource.countByType(id.toString()) : 0;
 };
 
 export { getNewRelationshipCount };

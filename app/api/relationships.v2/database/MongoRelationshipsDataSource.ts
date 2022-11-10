@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
-import { ApplicationRelationshipType, Relationship } from '../model/Relationship';
+import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
@@ -41,9 +41,12 @@ export class MongoRelationshipsDataSource
     return existingCount === ids.length;
   }
 
-  async countBy(propValues: Partial<ApplicationRelationshipType>): Promise<number> {
-    const query = RelationshipMappers.partialToDBO(propValues);
-    return this.getCollection().find(query).count();
+  async countByType(type: string) {
+    const total = await this.getCollection().countDocuments(
+      { type: MongoIdGenerator.mapToDb(type) },
+      { session: this.getSession() }
+    );
+    return total;
   }
 
   getById(_ids: string[]) {
@@ -96,8 +99,10 @@ export class MongoRelationshipsDataSource
     return new MongoResultSet(cursor, RelationshipMappers.toGraphQueryResult);
   }
 
-  async deleteBy(values: Partial<ApplicationRelationshipType>) {
-    const query = RelationshipMappers.partialToDBO(values);
-    await this.getCollection().deleteMany(query, { session: this.getSession() });
+  async deleteByEntities(sharedIds: string[]) {
+    await this.getCollection().deleteMany(
+      { $or: [{ from: { $in: sharedIds } }, { to: { $in: sharedIds } }] },
+      { session: this.getSession() }
+    );
   }
 }

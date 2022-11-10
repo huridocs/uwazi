@@ -33,9 +33,4 @@ export class DeleteRelationshipService {
       return this.relationshipsDS.delete(ids);
     });
   }
-
-  async deleteByEntity(sharedId: string) {
-    await this.relationshipsDS.deleteBy({ from: sharedId });
-    await this.relationshipsDS.deleteBy({ to: sharedId });
-  }
 }

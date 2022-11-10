@@ -1,15 +1,6 @@
 import { SelfReferenceError } from '../errors/relationshipErrors';
 
-export type ApplicationRelationshipType = {
-  _id: string;
-  from: string;
-  to: string;
-  type: string;
-};
-
-export type RelationshipValueQuery = Partial<ApplicationRelationshipType>;
-
-export class Relationship implements ApplicationRelationshipType {
+export class Relationship {
   readonly _id: string;
 
   readonly from: string;

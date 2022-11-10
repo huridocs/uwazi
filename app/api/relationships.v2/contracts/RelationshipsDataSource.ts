@@ -1,7 +1,7 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { GraphQueryResult } from '../model/GraphQueryResult';
 import { MatchQueryNode } from '../model/MatchQueryNode';
-import { Relationship, RelationshipValueQuery } from '../model/Relationship';
+import { Relationship } from '../model/Relationship';
 
 export type RelationshipAggregatedResultType = {
   _id: string;
@@ -19,10 +19,10 @@ export type RelationshipAggregatedResultType = {
 export interface RelationshipsDataSource {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
   delete(_ids: string[]): Promise<void>;
-  exists(ids: string[]): Promise<boolean>;
+  exists(_ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByEntity(sharedId: string): ResultSet<RelationshipAggregatedResultType>;
-  deleteBy(propValues: RelationshipValueQuery): Promise<void>;
-  countBy(propValues: RelationshipValueQuery): Promise<number>;
+  deleteByEntities(sharedIds: string[]): Promise<void>;
+  countByType(type: string): Promise<number>;
   getByQuery(query: MatchQueryNode, language: string): ResultSet<GraphQueryResult>;
 }

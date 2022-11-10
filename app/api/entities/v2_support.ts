@@ -2,10 +2,7 @@ import { ObjectId } from 'mongodb';
 
 import templates from 'api/templates';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import {
-  DeleteRelationshipService,
-  DenormalizationService,
-} from 'api/relationships.v2/services/service_factories';
+import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -15,6 +12,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { MetadataSchema } from 'shared/types/commonTypes';
 import { propertyTypes } from 'shared/propertyTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
 
 const entityTypeCheck = (
   entity: EntitySchema
@@ -59,13 +57,10 @@ const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
-  if (
-    await DefaultSettingsDataSource(
-      new MongoTransactionManager(getClient())
-    ).readNewRelationshipsAllowed()
-  ) {
-    const service = DeleteRelationshipService({} as any);
-    await service.deleteByEntity(sharedId);
+  const transactionManager = new MongoTransactionManager(getClient());
+  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
+    const datasource = DefaultRelationshipDataSource(transactionManager);
+    await datasource.deleteByEntities([sharedId]);
   }
 };
 

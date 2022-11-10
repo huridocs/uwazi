@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { GraphQueryResult } from '../model/GraphQueryResult';
-import { Relationship, ApplicationRelationshipType } from '../model/Relationship';
+import { Relationship } from '../model/Relationship';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 
 type TraversalResult = {
@@ -12,15 +12,6 @@ function unrollTraversal({ traversal, ...rest }: TraversalResult): unknown[] {
 }
 
 export const RelationshipMappers = {
-  partialToDBO(relationshipInfo: Partial<ApplicationRelationshipType>) {
-    const transformed: Partial<RelationshipDBOType> = {};
-    if (relationshipInfo._id) transformed._id = new ObjectId(relationshipInfo._id);
-    if (relationshipInfo.from) transformed.from = relationshipInfo.from;
-    if (relationshipInfo.to) transformed.to = relationshipInfo.to;
-    if (relationshipInfo.type) transformed.type = new ObjectId(relationshipInfo.type);
-    return transformed;
-  },
-
   toDBO(relationship: Relationship) {
     return {
       _id: new ObjectId(relationship._id),
