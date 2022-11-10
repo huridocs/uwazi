@@ -24,7 +24,7 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 };
 
 export default (app: Application) => {
-  app.post('/api/relationships.v2', featureRequired, async (req, res) => {
+  app.post('/api/v2/relationships', featureRequired, async (req, res) => {
     const relationshipInputArray = req.body;
     if (validateRelationshipInputArray(relationshipInputArray)) {
       const service = CreateRelationshipService(req);
@@ -33,7 +33,7 @@ export default (app: Application) => {
     }
   });
 
-  app.delete('/api/relationships.v2', featureRequired, async (req, res) => {
+  app.delete('/api/v2/relationships', featureRequired, async (req, res) => {
     const idArray = Array.isArray(req.query.ids) ? req.query.ids : [req.query.ids];
     if (validateStringArray(idArray)) {
       const service = DeleteRelationshipService(req);

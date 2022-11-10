@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-focused-tests */
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -6,6 +5,8 @@ import testingDB from 'api/utils/testing_db';
 import { Request, Response, NextFunction } from 'express';
 import request from 'supertest';
 import routes from '../routes';
+
+const URL = '/api/v2/relationships';
 
 const factory = getFixturesFactory();
 
@@ -63,7 +64,7 @@ describe('POST relationships', () => {
       next();
     });
 
-    await request(app).post('/api/relationships.v2').send([]).expect(404);
+    await request(app).post(URL).send([]).expect(404);
   });
 
   const cases = [
@@ -82,7 +83,7 @@ describe('POST relationships', () => {
         next();
       });
 
-      await request(app).post('/api/relationships.v2').send(input).expect(422);
+      await request(app).post(URL).send(input).expect(422);
     }
   );
 
@@ -107,7 +108,7 @@ describe('POST relationships', () => {
       });
 
       await request(app)
-        .post('/api/relationships.v2')
+        .post(URL)
         .send([{ from: 'entity1', to: 'entity2', type: factory.id('type1').toHexString() }])
         .expect(pass ? 200 : 401);
     }
@@ -120,7 +121,7 @@ describe('POST relationships', () => {
     });
 
     const response = await request(app)
-      .post('/api/relationships.v2')
+      .post(URL)
       .send([
         { from: 'entity1', to: 'entity2', type: factory.id('type1').toHexString() },
         { from: 'entity2', to: 'entity1', type: factory.id('type1').toHexString() },
@@ -163,7 +164,7 @@ describe('DELETE relationships', () => {
     });
 
     await request(app)
-      .delete('/api/relationships.v2')
+      .delete(URL)
       .query({ ids: [factory.id('relationship1')] })
       .expect(404);
   });
@@ -183,7 +184,7 @@ describe('DELETE relationships', () => {
         next();
       });
 
-      await request(app).delete('/api/relationships.v2').query({ ids: input }).expect(422);
+      await request(app).delete(URL).query({ ids: input }).expect(422);
     }
   );
 
@@ -208,7 +209,7 @@ describe('DELETE relationships', () => {
       });
 
       await request(app)
-        .delete('/api/relationships.v2')
+        .delete(URL)
         .query({
           ids: [factory.id('relationship1').toHexString()],
         })
@@ -223,7 +224,7 @@ describe('DELETE relationships', () => {
     });
 
     await request(app)
-      .delete('/api/relationships.v2')
+      .delete(URL)
       .query({ ids: [factory.id('relationship1').toHexString()] })
       .expect(200);
 
