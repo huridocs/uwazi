@@ -64,7 +64,7 @@ const deleteRelatedNewRelationships = async (sharedId: string) => {
       new MongoTransactionManager(getClient())
     ).readNewRelationshipsAllowed()
   ) {
-    const service = DeleteRelationshipService(undefined);
+    const service = DeleteRelationshipService({} as any);
     await service.deleteByEntity(sharedId);
   }
 };

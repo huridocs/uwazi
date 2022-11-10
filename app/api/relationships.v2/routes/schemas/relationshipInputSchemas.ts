@@ -15,6 +15,7 @@ const RelationshipInputSchema = {
 const RelationshipInputArraySchema = {
   title: 'RelationshipInputArrayType',
   type: 'array',
+  minItems: 1,
   items: RelationshipInputSchema,
 };
 

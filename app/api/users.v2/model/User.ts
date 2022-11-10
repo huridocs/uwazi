@@ -1,7 +1,3 @@
-import { Request } from 'express';
-
-import { validateUserInputSchema } from 'api/users.v2/database/schemas/userValidators';
-
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
 export class User {
@@ -20,16 +16,4 @@ export class User {
   isPrivileged() {
     return ['admin', 'editor'].includes(this.role);
   }
-
-  static fromRequest = (request: Request): User => {
-    const _user = request.user;
-    if (validateUserInputSchema(_user)) {
-      const id = _user._id.toHexString();
-      const { role } = _user;
-      const groups = _user.groups.map(g => g.name);
-      const user = new User(id, role, groups);
-      return user;
-    }
-    throw new Error('Invalid user in request.');
-  };
 }
