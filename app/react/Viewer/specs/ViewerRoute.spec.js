@@ -45,7 +45,7 @@ describe('ViewerRoute', () => {
           dispatch: () => {},
         },
       };
-      const component = shallow(<ViewerRoute />, { context });
+      const component = shallow(<ViewerRoute routeParams={{ tabView: 'metadata' }} />, { context });
       expect(component.find(ViewerComponent).length).toBe(1);
     });
   });

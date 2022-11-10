@@ -104,7 +104,6 @@
 .sort-buttons {
   display: flex;
   gap: 15px;
-  border-right: 1px solid #d7d7dc;
   padding-right: 15px;
   align-items: center;
 
@@ -121,8 +120,7 @@
   }
 
   .sort-dropdown {
-    width: 20vw;
-    max-width: 250px;
+    width: 100%;
 
     div {
       height: unset;

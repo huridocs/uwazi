@@ -101,10 +101,14 @@
 
   .library-load-container {
     overflow: auto;
-    height: calc(100vh - 328px);
+    height: calc(100vh - 32px);
+    .footer-nav {
+      display: none;
+    }
 
     @media (min-width: 768px) {
       height: calc(100vh - 260px);
+      display: block;
     }
 
     @media (min-width: 1024px) {
