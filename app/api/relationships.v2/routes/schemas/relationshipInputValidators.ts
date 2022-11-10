@@ -6,11 +6,10 @@ const validateRelationshipInputArray = createDefaultValidator<RelationshipInputA
   RelationshipInputArraySchema
 );
 
-const validateString = createDefaultValidator<string>({ type: 'string' });
-
 const validateStringArray = createDefaultValidator<string[]>({
   type: 'array',
+  minItems: 1,
   items: { type: 'string' },
 });
 
-export { validateRelationshipInputArray, validateString, validateStringArray };
+export { validateRelationshipInputArray, validateStringArray };

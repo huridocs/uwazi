@@ -7,7 +7,6 @@ import {
   validateRelationshipInputArray,
   validateStringArray,
 } from './schemas/relationshipInputValidators';
-import needsAuthorization from '../../auth/authMiddleware';
 import {
   CreateRelationshipService,
   DeleteRelationshipService,
@@ -34,17 +33,12 @@ export default (app: Application) => {
     }
   });
 
-  app.delete(
-    '/api/relationships.v2',
-    featureRequired,
-    needsAuthorization(['admin', 'editor']),
-    async (req, res) => {
-      const idArray = req.body;
-      if (validateStringArray(idArray)) {
-        const service = DeleteRelationshipService(req);
-        await service.delete(idArray);
-        res.status(200);
-      }
+  app.delete('/api/relationships.v2', featureRequired, async (req, res) => {
+    const idArray = Array.isArray(req.query.ids) ? req.query.ids : [req.query.ids];
+    if (validateStringArray(idArray)) {
+      const service = DeleteRelationshipService(req);
+      await service.delete(idArray);
+      res.status(200).send();
     }
-  );
+  });
 };

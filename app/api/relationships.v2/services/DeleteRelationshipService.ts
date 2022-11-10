@@ -26,12 +26,10 @@ export class DeleteRelationshipService {
     const toBeDeleted = await this.relationshipsDS.getById(ids).all();
     const sharedIds = toBeDeleted.map(r => [r.from, r.to]).flat();
     await this.authService.validateAccess('write', sharedIds);
-
     await this.transactionManager.run(async () => {
       if (!(await this.relationshipsDS.exists(ids))) {
         throw new MissingRelationshipError('Some relationships to be deleted are missing.');
       }
-
       return this.relationshipsDS.delete(ids);
     });
   }
