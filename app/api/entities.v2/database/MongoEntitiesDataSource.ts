@@ -108,18 +108,15 @@ export class MongoEntitiesDataSource
     return countInExistence === sharedIds.length * languages.length;
   }
 
-  async markMetadataAsChanged(propData: { sharedId: string; propertiesToBeMarked: string[] }[]) {
-    const stream = new BulkWriteStream<EntityDBOType>(this.getCollection(), this.getSession());
+  async markMetadataAsChanged(propData: { sharedId: string; property: string }[]) {
+    const stream = new BulkWriteStream(this.getCollection(), this.getSession());
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
-      for (let j = 0; j < data.propertiesToBeMarked.length; j += 1) {
-        const prop = data.propertiesToBeMarked[j];
-        // eslint-disable-next-line no-await-in-loop
-        await stream.updateMany(
-          { sharedId: data.sharedId },
-          { $addToSet: { obsoleteMetadata: prop } }
-        );
-      }
+      // eslint-disable-next-line no-await-in-loop
+      await stream.updateMany(
+        { sharedId: data.sharedId },
+        { $addToSet: { obsoleteMetadata: data.property } }
+      );
     }
     await stream.flush();
   }

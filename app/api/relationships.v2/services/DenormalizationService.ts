@@ -44,7 +44,7 @@ export class DenormalizationService {
     language: string
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
-    const entities: { sharedId: string; propertiesToBeMarked: string[] }[] = [];
+    const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property =>
         Promise.all(
@@ -52,8 +52,8 @@ export class DenormalizationService {
             await this.relationshipsDS.getByQuery(query, language).forEach(async result => {
               const entity = result.leaf() as { sharedId: string };
               entities.push({
-                ...entity,
-                propertiesToBeMarked: [property.name],
+                sharedId: entity.sharedId,
+                property: property.name,
               });
             });
           })

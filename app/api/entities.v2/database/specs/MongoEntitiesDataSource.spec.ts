@@ -73,8 +73,8 @@ describe('Relationship fields caching strategy', () => {
       );
 
       await ds.markMetadataAsChanged([
-        { sharedId: 'entity1', propertiesToBeMarked: ['relProp1'] },
-        { sharedId: 'entity2', propertiesToBeMarked: ['relProp2'] },
+        { sharedId: 'entity1', property: 'relProp1' },
+        { sharedId: 'entity2', property: 'relProp2' },
       ]);
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
