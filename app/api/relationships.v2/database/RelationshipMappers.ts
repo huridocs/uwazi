@@ -31,7 +31,7 @@ export const RelationshipMappers = {
   },
 
   toModel(relationship: RelationshipDBOType) {
-    return new Relationship(
+    return Relationship.create(
       relationship._id.toHexString(),
       relationship.from,
       relationship.to,

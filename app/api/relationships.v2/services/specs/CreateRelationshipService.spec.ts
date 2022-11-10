@@ -112,10 +112,10 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('createMultiple()', () => {
+describe('create()', () => {
   it('should check for user write access in the involved entities', async () => {
     const service = createService();
-    await service.createMultiple([
+    await service.create([
       { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
       { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
     ]);
@@ -129,7 +129,7 @@ describe('createMultiple()', () => {
     it('should return new connections', async () => {
       const service = createService();
 
-      const relationship = await service.createMultiple([
+      const relationship = await service.create([
         { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
         { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
         { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
@@ -159,7 +159,7 @@ describe('createMultiple()', () => {
 
     it('should persist new connections', async () => {
       const service = createService();
-      await service.createMultiple([
+      await service.create([
         { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
         { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
         { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
@@ -192,7 +192,7 @@ describe('createMultiple()', () => {
     it('should denormalize based on the newly created relationships', async () => {
       const service = createService();
 
-      const created = await service.createMultiple([
+      const created = await service.create([
         { from: 'entity4', to: 'entity1', type: factory.id('rel4').toHexString() },
         { from: 'entity4', to: 'entity3', type: factory.id('rel4').toHexString() },
       ]);
@@ -205,7 +205,7 @@ describe('createMultiple()', () => {
     it('should throw a validation error', async () => {
       const service = createService();
       try {
-        await service.createMultiple([
+        await service.create([
           { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
           { from: 'entity2', to: 'non-existing', type: factory.id('rel2').toHexString() },
           { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
@@ -223,7 +223,7 @@ describe('createMultiple()', () => {
     it('should throw a validation error', async () => {
       const service = createService();
       try {
-        await service.createMultiple([
+        await service.create([
           { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
           { from: 'entity2', to: 'entity1', type: factory.id('invalid').toHexString() },
         ]);
@@ -240,7 +240,7 @@ describe('createMultiple()', () => {
     it('should throw a validation error', async () => {
       const service = createService();
       try {
-        await service.createMultiple([
+        await service.create([
           { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
           { from: 'entity1', to: 'entity1', type: factory.id('rel2').toHexString() },
           { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },

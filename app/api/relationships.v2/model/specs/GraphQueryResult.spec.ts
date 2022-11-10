@@ -4,9 +4,9 @@ import { Relationship } from '../Relationship';
 
 const path = [
   new Entity('1', 'en', '1', '1', {}),
-  new Relationship('2', '1', '3', '2'),
+  Relationship.create('2', '1', '3', '2'),
   new Entity('3', 'en', '3', '3', {}),
-  new Relationship('4', '3', '5', '4'),
+  Relationship.create('4', '3', '5', '4'),
   new Entity('5', 'en,', '5', '5', {}),
 ];
 

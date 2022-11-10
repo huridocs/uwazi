@@ -28,7 +28,7 @@ export default (app: Application) => {
     const relationshipInputArray = req.body;
     if (validateRelationshipInputArray(relationshipInputArray)) {
       const service = CreateRelationshipService(req);
-      const created = await service.createMultiple(relationshipInputArray);
+      const created = await service.create(relationshipInputArray);
       res.json(created);
     }
   });

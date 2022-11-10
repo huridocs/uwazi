@@ -1,3 +1,5 @@
+import { SelfReferenceError } from '../errors/relationshipErrors';
+
 export type ApplicationRelationshipType = {
   _id: string;
   from: string;
@@ -16,10 +18,17 @@ export class Relationship implements ApplicationRelationshipType {
 
   readonly type: string;
 
-  constructor(_id: string, from: string, to: string, type: string) {
+  protected constructor(_id: string, from: string, to: string, type: string) {
     this._id = _id;
     this.from = from;
     this.to = to;
     this.type = type;
+  }
+
+  static create(_id: string, from: string, to: string, type: string) {
+    if (from === to) {
+      throw new SelfReferenceError('Cannot create relationship to itself');
+    }
+    return new Relationship(_id, from, to, type);
   }
 }

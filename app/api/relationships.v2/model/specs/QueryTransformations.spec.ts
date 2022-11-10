@@ -110,28 +110,28 @@ describe('when calling reachesRelationship()', () => {
     ]);
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity1', 'entity2', 'type1'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
         entity1: { template: 'temp1', sharedId: 'entity1' },
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity2', 'root', 'type1'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'root', 'type1'), {
         root: { template: 'temp1', sharedId: 'root' },
         entity2: { template: 'temp1', sharedId: 'entity2' },
       })
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity1', 'entity2', 'type1'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
         entity1: { template: 'temp2', sharedId: 'entity1' },
         entity2: { template: 'temp3', sharedId: 'entity2' },
       })
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity2', 'root', 'type1'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'root', 'type1'), {
         root: { template: 'temp1', sharedId: 'root' },
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
@@ -154,7 +154,7 @@ describe('when calling reachesRelationship()', () => {
     ]);
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity1', 'entity2', 'type1'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
         entity1: { template: 'temp1', sharedId: 'entity1' },
         entity2: { template: 'temp2', sharedId: 'entity2' },
       })
@@ -167,7 +167,7 @@ describe('when calling reachesRelationship()', () => {
     );
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity2', 'entity1', 'type2'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'entity1', 'type2'), {
         entity1: { template: 'temp2', sharedId: 'entity1' },
         entity2: { template: 'temp3', sharedId: 'entity2' },
       })
@@ -184,7 +184,7 @@ describe('when calling reachesRelationship()', () => {
     );
 
     expect(
-      query.reachesRelationship(new Relationship('rel1', 'entity1', 'entity2', 'type3'), {
+      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type3'), {
         entity1: { template: 'temp3', sharedId: 'entity1' },
         entity2: { template: 'temp4', sharedId: 'entity2' },
       })
@@ -311,10 +311,13 @@ describe('when calling a method that only supports chain queries', () => {
         query.inverse();
       }).toThrow(NonChainQueryError);
       expect(() => {
-        query.reachesRelationship(new Relationship('fakeRel', 'entity1', 'entity2', 'fakeType'), {
-          entity1: { sharedId: 'entity1', template: 'fakeTemplate' },
-          entity2: { sharedId: 'entity2', template: 'fakeTemplate' },
-        });
+        query.reachesRelationship(
+          Relationship.create('fakeRel', 'entity1', 'entity2', 'fakeType'),
+          {
+            entity1: { sharedId: 'entity1', template: 'fakeTemplate' },
+            entity2: { sharedId: 'entity2', template: 'fakeTemplate' },
+          }
+        );
       }).toThrow(NonChainQueryError);
 
       if (query !== query2) {
