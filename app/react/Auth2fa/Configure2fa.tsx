@@ -7,6 +7,7 @@ import loadable from '@loadable/component';
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink, Translate } from 'app/I18N';
+import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 
@@ -83,9 +84,10 @@ class Configure2fa extends Component<Configure2faProps, State> {
       <div className="settings-content">
         <div className="configure2fa-settings">
           <div className="panel panel-default">
-            <div className="panel-heading">
+            <SettingsHeader backUrl="settings/account/">
               <Translate>Two-step verification</Translate>
-            </div>
+            </SettingsHeader>
+
             <div className="panel-body">
               {userUsing2fa && (
                 <>

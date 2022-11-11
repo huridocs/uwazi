@@ -461,11 +461,6 @@ header {
       }
     }
   }
-  &.only-mobile {
-    @media (min-width: 1024px) {
-      display: none;
-    }
-  }
 }
 
 .menuNav-btn {
