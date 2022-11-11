@@ -22,7 +22,7 @@ export class ActivityLog extends RouteHandler {
       <div className="settings-content without-footer">
         <div className="activity-log panel panel-default">
           <SettingsHeader>
-            <Translate>Activity Log</Translate>
+            <Translate>Activity log</Translate>
           </SettingsHeader>
           <ActivitylogForm>
             <ActivitylogList />

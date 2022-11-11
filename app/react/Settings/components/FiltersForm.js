@@ -200,7 +200,7 @@ class FiltersForm extends Component {
           <div className="FiltersForm-list">
             <div className="panel panel-default">
               <SettingsHeader>
-                <Translate>Filters Configuration</Translate>
+                <Translate>Filters configuration</Translate>
               </SettingsHeader>
               <div className="panel-body">
                 <div className="row">
