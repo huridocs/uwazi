@@ -3,15 +3,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
 import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import { loadLinks, addLink, sortLink, saveLinks } from 'app/Settings/actions/navlinksActions';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
-
 import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 import NavlinkForm from './NavlinkForm';
+import { SettingsHeader } from './SettingsHeader';
 import './styles/menu.scss';
 
 class NavlinksSettings extends Component {
@@ -42,7 +41,6 @@ class NavlinksSettings extends Component {
 
   render() {
     const { collection, links } = this.props;
-    const nameGroupClass = 'template-name';
     const hostname = isClient ? window.location.origin : '';
 
     const payload = { _id: collection.get('_id'), _rev: collection.get('_rev'), links };
@@ -59,17 +57,9 @@ class NavlinksSettings extends Component {
             validators={validator(links)}
           >
             <div className="panel panel-default">
-              <div className="panel-heading">
-                <div className={nameGroupClass}>
-                  <I18NLink to="settings/" className="only-mobile">
-                    <Icon icon="arrow-left" directionAware />
-                    <span className="btn-label">
-                      <Translate>Back</Translate>
-                    </span>
-                  </I18NLink>
-                  <Translate>Menu</Translate>
-                </div>
-              </div>
+              <SettingsHeader>
+                <Translate>Menu</Translate>
+              </SettingsHeader>
               <ul className="list-group">
                 <li className="list-group-item">
                   <div className="alert alert-info">
