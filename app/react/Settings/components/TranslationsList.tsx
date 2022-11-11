@@ -5,12 +5,13 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { difference } from 'lodash';
 import { Icon } from 'UI';
-import { I18NLink, t, Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { ClientTranslationSchema, IStore } from 'app/istore';
 import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { IImmutable } from 'shared/types/Immutable';
 import { TranslationContext } from 'shared/translationType';
+import { SettingsHeader } from './SettingsHeader';
 
 const TranslationCtx = ({ context }: { context: TranslationContext }) => (
   <>
@@ -73,7 +74,9 @@ const TranslationsList = ({ languages, translations }: MappedProps) => {
   return (
     <div className="settings-content without-footer">
       <div className="TranslationsList panel panel-default">
-        <div className="panel-heading">{t('System', 'Translations')}</div>
+        <SettingsHeader>
+          <Translate>Translations</Translate>
+        </SettingsHeader>
         <h5>
           <Translate>System translations</Translate>
         </h5>
