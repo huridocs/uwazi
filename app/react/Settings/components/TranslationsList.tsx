@@ -11,6 +11,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { IImmutable } from 'shared/types/Immutable';
 import { TranslationContext } from 'shared/translationType';
+import { SettingsHeader } from './SettingsHeader';
 
 const TranslationCtx = ({ context }: { context: TranslationContext }) => (
   <>
@@ -73,15 +74,9 @@ const TranslationsList = ({ languages, translations }: MappedProps) => {
   return (
     <div className="settings-content without-footer">
       <div className="TranslationsList panel panel-default">
-        <div className="panel-heading">
-          <I18NLink to="settings/" className="only-mobile">
-            <Icon icon="arrow-left" directionAware />
-            <span className="btn-label">
-              <Translate>Back</Translate>
-            </span>
-          </I18NLink>
+        <SettingsHeader>
           <Translate>Translations</Translate>
-        </div>
+        </SettingsHeader>
         <h5>
           <Translate>System translations</Translate>
         </h5>

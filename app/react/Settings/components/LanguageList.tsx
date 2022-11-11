@@ -4,9 +4,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import { differenceBy, intersectionBy, isEmpty } from 'lodash';
 import { Icon } from 'UI';
 import Confirm from 'app/App/Confirm';
-import { Translate, actions, I18NApi, I18NLink } from 'app/I18N';
+import { Translate, actions, I18NApi } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { SettingsHeader } from './SettingsHeader';
 
 const SetAsDefaultButton = ({
   className,
@@ -28,7 +29,6 @@ const TranslationAvailable = () => (
     <Translate>Available default translation</Translate>
   </div>
 );
-
 const DeleteButton = ({
   onClick,
   className,
@@ -43,7 +43,6 @@ const DeleteButton = ({
     </span>
   </button>
 );
-
 const ResetDefaultTranslationButton = ({
   onClick,
   className,
@@ -62,7 +61,6 @@ const ResetDefaultTranslationButton = ({
 const mapStateToProps = (state: IStore) => ({
   languages: state.settings.collection.get('languages'),
 });
-
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     {
@@ -73,7 +71,6 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
     },
     dispatch
   );
-
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type MappedProps = ConnectedProps<typeof connector>;
 
@@ -112,15 +109,9 @@ const LanguageList = ({
 
   return (
     <div className="panel panel-default settings-content">
-      <div className="panel-heading">
-        <I18NLink to="settings/" className="only-mobile">
-          <Icon icon="arrow-left" directionAware />
-          <span className="btn-label">
-            <Translate>Back</Translate>
-          </span>
-        </I18NLink>
+      <SettingsHeader>
         <Translate>Languages</Translate>
-      </div>
+      </SettingsHeader>
       <div className="installed-languages">
         <h2>
           <Translate>Active Languages</Translate>
@@ -178,7 +169,6 @@ const LanguageList = ({
           </div>
         ))}
       </div>
-
       {addingLanguage && (
         <Confirm
           accept={() => {

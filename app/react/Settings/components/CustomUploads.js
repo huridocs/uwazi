@@ -7,11 +7,11 @@ import React from 'react';
 
 import { Thumbnail, ConfirmButton } from 'app/Layout';
 import { actions } from 'app/BasicReducer';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
-
+import { SettingsHeader } from './SettingsHeader';
 import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
 class CustomUploads extends RouteHandler {
@@ -35,15 +35,9 @@ class CustomUploads extends RouteHandler {
     return (
       <div className="settings-content without-footer">
         <div className="panel panel-default">
-          <div className="panel-heading">
-            <I18NLink to="settings/" className="only-mobile">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
+          <SettingsHeader>
             <Translate>Custom Uploads</Translate>
-          </div>
+          </SettingsHeader>
           <div className="panel-body custom-uploads">
             <Dropzone className="upload-box" onDrop={this.onDrop}>
               {({ getRootProps }) => (

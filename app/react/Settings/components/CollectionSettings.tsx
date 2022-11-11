@@ -4,12 +4,12 @@ import React from 'react';
 import { Dispatch, bindActionCreators } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { Translate, t, I18NLink } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { IStore, ClientTemplateSchema } from 'app/istore';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
-import { Icon, ToggleButton } from 'UI';
+import { ToggleButton } from 'UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -18,6 +18,7 @@ import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
+import { SettingsHeader } from './SettingsHeader';
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
   collectionSettings: settings.collection,
@@ -77,15 +78,9 @@ const CollectionSettings = ({
     <div className="settings-content">
       <div className="panel panel-default collection-settings">
         <form id="collectionSettings" className="" onSubmit={handleSubmit(save)}>
-          <div className="panel-heading">
-            <I18NLink to="settings/" className="only-mobile">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
+          <SettingsHeader>
             <Translate>Collection</Translate>
-          </div>
+          </SettingsHeader>
           <h2>
             <Translate>General</Translate>
           </h2>

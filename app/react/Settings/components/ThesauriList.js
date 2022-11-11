@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import { SettingsHeader } from './SettingsHeader';
 import sortThesauri from '../utils/sortThesauri';
 
 class ThesauriList extends Component {
@@ -109,15 +110,9 @@ class ThesauriList extends Component {
     return (
       <div className="settings-content">
         <div className="flex panel panel-default">
-          <div className="panel-heading">
-            <I18NLink to="settings/" className="only-mobile">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
+          <SettingsHeader>
             <Translate>Thesauri</Translate>
-          </div>
+          </SettingsHeader>
           <div className="thesauri-list">
             <table>
               <thead>

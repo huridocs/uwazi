@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Icon } from 'UI';
 import api from 'app/utils/api';
-import { I18NLink, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { PreserveIcon } from 'app/Layout/PreserveIcon';
+import { SettingsHeader } from './SettingsHeader';
 import './styles/preserve.scss';
 
 function mapStateToProps({ settings, user }: IStore) {
@@ -41,17 +41,11 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
   return (
     <div className="settings-content">
       <div className="panel panel-preserve panel-default">
-        <div className="panel-heading">
-          <I18NLink to="settings/" className="only-mobile">
-            <Icon icon="arrow-left" directionAware />
-            <span className="btn-label">
-              <Translate>Back</Translate>
-            </span>
-          </I18NLink>
+        <SettingsHeader>
           <div className="panel-preserve-heading">
             <PreserveIcon color="#D20D6C" /> <Translate>Preserve Extension</Translate>
           </div>
-        </div>
+        </SettingsHeader>
         <div className="panel-preserve-content">
           <div className="status">
             <Translate>You have not connected an Uwazi instance, yet</Translate>

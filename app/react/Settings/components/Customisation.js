@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Icon } from 'UI';
-import { Translate, t, I18NLink } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
+import { SettingsHeader } from './SettingsHeader';
 import saveSettings from '../actions/settingsActions';
 
 class Customisation extends Component {
@@ -17,15 +17,9 @@ class Customisation extends Component {
     return (
       <div className="settings-content">
         <div className="panel panel-default settings-custom-css">
-          <div className="panel-heading">
-            <I18NLink to="settings/" className="only-mobile">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
+          <SettingsHeader>
             <Translate>Custom styles</Translate>
-          </div>
+          </SettingsHeader>
           <div className="panel-body">
             <Form model="settings.settings" onSubmit={this.props.saveSettings}>
               <Field model=".customCSS" className="test">

@@ -12,6 +12,7 @@ import { Icon } from 'UI';
 import { createSelector } from 'reselect';
 import { Pill } from 'app/Metadata/components/Pill';
 import { roleTranslationKey } from 'app/Users/UserManagement';
+import { SettingsHeader } from './SettingsHeader';
 
 class AccountSettings extends Component {
   constructor(props, context) {
@@ -99,15 +100,9 @@ class AccountSettings extends Component {
       <div className="settings-content">
         <div className="account-settings">
           <div className="panel panel-default">
-            <div className="panel-heading">
-              <I18NLink to="settings/" className="only-mobile">
-                <Icon icon="arrow-left" directionAware />
-                <span className="btn-label">
-                  <Translate>Back</Translate>
-                </span>
-              </I18NLink>
+            <SettingsHeader>
               <Translate>Account</Translate>
-            </div>
+            </SettingsHeader>
             <div className="panel-body">
               <div className="user-details">
                 <div>

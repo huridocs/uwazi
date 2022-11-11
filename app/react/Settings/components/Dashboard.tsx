@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { I18NLink, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { Icon } from 'UI';
+import { SettingsHeader } from './SettingsHeader';
 
 const formatBytes = (bytes: number) => {
   //Sourced from https://stackoverflow.com/questions/15900485
@@ -36,16 +36,9 @@ const DashboardComponent = ({ stats }: mappedProps) => {
     <main className="settings-content">
       <div className="settings-dashboard">
         <div className="panel-default">
-          <div className="panel-heading">
-            <I18NLink to="settings/" className="only-mobile">
-              <Icon icon="arrow-left" directionAware />
-              <span className="btn-label">
-                <Translate>Back</Translate>
-              </span>
-            </I18NLink>
+          <SettingsHeader>
             <Translate>Dashboard</Translate>
-          </div>
-
+          </SettingsHeader>
           <div className="panel-body">
             <div className="cards">
               <article className="card">
