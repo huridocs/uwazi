@@ -9,7 +9,7 @@ exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = 
   >
     <SettingsHeader>
       <Connect(Translate)>
-        Activity Log
+        Activity log
       </Connect(Translate)>
     </SettingsHeader>
     <Connect(ActivitylogForm)>
