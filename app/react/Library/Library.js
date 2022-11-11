@@ -6,7 +6,6 @@ import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import React from 'react';
-import { TableViewer } from 'app/Layout/TableViewer';
 
 export default class Library extends RouteHandler {
   constructor(props, context) {
@@ -46,14 +45,15 @@ export default class Library extends RouteHandler {
     actions.set('library.sidepanel.quickLabelState', {});
   }
 
-  scrollCallback() {
-    this.setState((prevState, _props) => ({
-      scrollCount: prevState.scrollCount + 1,
-    }));
+  scrollCallback(event) {
+    if (event.target.className.includes('document-viewer')) {
+      this.setState((prevState, _props) => ({
+        scrollCount: prevState.scrollCount + 1,
+      }));
+    }
   }
 
   render() {
-    const tableViewMode = this.props.viewer === TableViewer;
     return (
       <LibraryLayout
         sidePanelMode={this.props.sidePanelMode}
@@ -65,7 +65,6 @@ export default class Library extends RouteHandler {
           CollectionViewer={this.props.viewer}
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
-          tableViewMode={tableViewMode}
           scrollCount={this.state.scrollCount}
         />
       </LibraryLayout>

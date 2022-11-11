@@ -270,7 +270,10 @@ header {
         width: 100%;
         padding-right: 1em;
         justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
+        @media (min-width: 1024px) {
+          height: $header-height;
+        }
       }
 
       .menuNav-item {
@@ -290,7 +293,6 @@ header {
       .singleItem {
         @media (min-width: 1024px) {
           color: $c-white;
-          background-color: $c-theme;
           align-self: center;
         }
       }
