@@ -83,6 +83,7 @@ describe('Translations', () => {
       await scrollTo('.attachments-list-header');
       await activateTranslation();
       await translateESInline('.translation', 'Add file', 'Agregar fichero');
+      await expect(page).toClick('.singleItem');
     });
 
     it('should deactive live translate', async () => {
