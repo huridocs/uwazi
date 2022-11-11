@@ -1,0 +1,46 @@
+.global-css-js {
+  .tab-link {
+    background-color: transparent;
+    border: 0;
+    position: relative;
+    margin-top: 1px;
+    font-weight: normal;
+    z-index: 1;
+    padding: 5px 10px;
+    border-radius: 5px 5px 0 0;
+
+    &.tab-link-active {
+      background-color: #f8f8f8;
+      border: 1px solid #e9e9e9;
+      border-bottom: 0;
+      color: #2b56c1;
+      font-weight: normal;
+    }
+  }
+
+  .panel-body {
+    padding: 0;
+    position: relative;
+    height: 100%;
+
+    textarea {
+      position: relative;
+      top: -1px;
+      font-family: monospace;
+      min-height: 450px;
+      background-color: #f8f8f8;
+      color: #4e5a67;
+      border-color: #e9e9e9;
+      font-weight: bold;
+      font-size: $f-size;
+      letter-spacing: 0.05em;
+      border-radius: 0 5px 5px 5px;
+    }
+  }
+
+  .settings-custom-js {
+    textarea {
+      border-radius: 5px;
+    }
+  }
+}

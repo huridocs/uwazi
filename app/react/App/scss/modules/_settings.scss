@@ -372,40 +372,6 @@
   }
 }
 
-.settings-custom-css {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .panel-body {
-    flex: 1;
-
-    form,
-    div:not(.settings-footer):not(.btn-cluster),
-    label,
-    textarea {
-      height: 100%;
-      width: 100%;
-    }
-    .settings-footer {
-      height: auto;
-    }
-  }
-
-  textarea {
-    font-family: monospace;
-    min-height: 250px;
-    background-color: #f8f8f8;
-    color: #4e5a67;
-    border-color: #e9e9e9;
-    //background-color: #2b303b;
-    //color: #c0c5ce;
-    font-weight: bold;
-    font-size: $f-size;
-    letter-spacing: 0.05em;
-  }
-}
-
 .collection-settings {
   .form-element.row {
     margin: 0;

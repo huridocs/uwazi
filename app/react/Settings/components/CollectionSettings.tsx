@@ -192,6 +192,15 @@ const CollectionSettings = ({
             </SettingsFormElement>
           )}
 
+          <SettingsFormElement label="Global JS" tip={tips.globalJS}>
+            <ToggleButton
+              checked={Boolean(watch('allowcustomJS'))}
+              onClick={() => {
+                setValue('allowcustomJS', !getValues('allowcustomJS'));
+              }}
+            />
+          </SettingsFormElement>
+
           <h2>
             <Translate>Website analytics</Translate>
           </h2>
