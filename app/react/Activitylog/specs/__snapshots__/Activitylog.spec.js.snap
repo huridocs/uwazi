@@ -5,8 +5,13 @@ exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = 
   className="settings-content without-footer"
 >
   <div
-    className="activity-log"
+    className="activity-log panel panel-default"
   >
+    <SettingsHeader>
+      <Connect(Translate)>
+        Activity log
+      </Connect(Translate)>
+    </SettingsHeader>
     <Connect(ActivitylogForm)>
       <Connect(ActivityLogListComponent) />
     </Connect(ActivitylogForm)>

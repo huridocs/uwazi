@@ -70,12 +70,13 @@ export class Settings extends RouteHandler {
   }
 
   render() {
+    const isSettingsParentRoute = !this.props.children;
     return (
       <div className="row settings">
         <Helmet>
           <title>{t('System', 'Settings', null, false)}</title>
         </Helmet>
-        <div className="settings-navigation">
+        <div className={`settings-navigation ${isSettingsParentRoute ? '' : 'only-desktop'}`}>
           <SettingsNavigation />
         </div>
         {this.props.children}
