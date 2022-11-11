@@ -83,8 +83,8 @@ describe('Translations', () => {
       await expect(page).toClick('.item-document:nth-child(1)');
       await page.waitForSelector('.attachments-list-parent');
       await scrollTo('.attachments-list-parent');
-      await expect(page).toClick('.attachments-modal-trigger');
-      await expect(page).toClick('button', { text: 'Cancel' });
+      // await expect(page).toClick('.attachments-modal-trigger');
+      // await expect(page).toClick('button', { text: 'Cancel' });
     });
 
     it('should deactive live translate', async () => {
