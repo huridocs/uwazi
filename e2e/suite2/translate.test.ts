@@ -78,12 +78,12 @@ describe('Translations', () => {
         'Share',
         'Abrir menu secundario para compartir'
       );
+
       await expect(page).toClick('.singleItem');
       await expect(page).toClick('.item-document:nth-child(1)');
       await scrollTo('.attachments-list-header');
-      await activateTranslation();
-      await translateESInline('.translation', 'Add file', 'Agregar fichero');
-      await expect(page).toClick('.singleItem');
+      await expect(page).toClick('.attachments-modal-trigger');
+      await expect(page).toClick('button', { text: 'Cancel' });
     });
 
     it('should deactive live translate', async () => {
