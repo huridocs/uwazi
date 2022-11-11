@@ -17,6 +17,7 @@ import Tip from 'app/Layout/Tip';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
 import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
+import { NeedAuthorization } from 'app/Auth';
 import {
   DatePicker,
   DateRange,
@@ -125,12 +126,14 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
-              }}
-            />
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <AddThesauriValueButton
+                values={translateOptions(thesauri)}
+                onModalAccept={async newValue => {
+                  await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+                }}
+              />
+            </NeedAuthorization>
             <Select
               model={_model}
               optionsValue="id"
@@ -143,12 +146,14 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
-              }}
-            />
+            <NeedAuthorization roles={['admin', 'editor']}>
+              <AddThesauriValueButton
+                values={translateOptions(thesauri)}
+                onModalAccept={async newValue => {
+                  await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
+                }}
+              />
+            </NeedAuthorization>
             <MultiSelect
               model={_model}
               optionsValue="id"
