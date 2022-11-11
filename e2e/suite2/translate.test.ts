@@ -69,6 +69,7 @@ describe('Translations', () => {
       await expect(page).toMatchElement('.translation', { text: 'Filtros' });
     });
 
+    // eslint-disable-next-line max-statements
     it('should keep all side panel content visible after translation, including last button', async () => {
       await expect(page).toClick('.item-document:nth-child(1)');
       await activateTranslation();
@@ -83,11 +84,12 @@ describe('Translations', () => {
       await expect(page).toClick('.item-document:nth-child(1)');
       await page.waitForSelector('.attachments-modal-trigger');
       await scrollTo('.attachments-modal-trigger');
-      await expect(page).toClick('.attachments-modal-trigger');
-      // await expect(page).toClick('button', { text: 'Cancel' });
+      await expect(page).toClick('button', { text: 'Add file' });
+      await page.waitForSelector('.attachments-modal__close');
+      await expect(page).toClick('button', { text: 'Cancel' });
     });
 
-    xit('should deactive live translate', async () => {
+    it('should deactive live translate', async () => {
       await activateTranslation();
       await expect(page).toClick('.singleItem');
       await expect(page).not.toMatchElement('Live translate');
