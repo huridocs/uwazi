@@ -72,17 +72,17 @@ describe('Translations', () => {
     it('should keep all side panel content visible after translation, including last button', async () => {
       await expect(page).toClick('.item-document:nth-child(1)');
       await activateTranslation();
-      await translateESInline('.btn-label .translation', 'View', 'Visualizar entidad en pantalla');
+      await translateESInline('.btn-label>.translation', 'View', 'Visualizar entidad en pantalla');
       await translateESInline(
-        '.btn-label .translation',
+        '.btn-label>.translation',
         'Share',
         'Abrir menu secundario para compartir'
       );
 
       await expect(page).toClick('.singleItem');
       await expect(page).toClick('.item-document:nth-child(1)');
-      await page.waitForSelector('.attachments-list-header');
-      await scrollTo('.attachments-list-header');
+      await page.waitForSelector('.attachments-list-parent');
+      await scrollTo('.attachments-list-parent');
       await expect(page).toClick('.attachments-modal-trigger');
       await expect(page).toClick('button', { text: 'Cancel' });
     });
