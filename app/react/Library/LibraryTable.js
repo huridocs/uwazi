@@ -19,7 +19,7 @@ export class LibraryTable extends Library {
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
           scrollCount={this.state.scrollCount}
-          tableViewMode={true}
+          tableViewMode
         />
       </LibraryLayout>
     );
