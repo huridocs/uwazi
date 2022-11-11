@@ -4,6 +4,7 @@ import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { scrollTo } from '../helpers/formActions';
 import { changeLanguage } from '../helpers/changeLanguage';
+import disableTransitions from '../helpers/disableTransitions';
 
 describe('Translations', () => {
   beforeAll(async () => {
@@ -81,11 +82,11 @@ describe('Translations', () => {
       );
 
       await expect(page).toClick('.singleItem');
+      await disableTransitions();
       await expect(page).toClick('.item-document:nth-child(1)');
-      await page.waitForSelector('.attachments-modal-trigger');
+      await scrollTo('.attachments-modal-header');
       await scrollTo('.attachments-modal-trigger');
       await expect(page).toClick('button', { text: 'Add file' });
-      await page.waitForSelector('.attachments-modal__close');
       await expect(page).toClick('button', { text: 'Cancel' });
     });
 
