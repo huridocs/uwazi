@@ -81,6 +81,7 @@ describe('Translations', () => {
 
       await expect(page).toClick('.singleItem');
       await expect(page).toClick('.item-document:nth-child(1)');
+      await page.waitForSelector('.attachments-list-header');
       await scrollTo('.attachments-list-header');
       await expect(page).toClick('.attachments-modal-trigger');
       await expect(page).toClick('button', { text: 'Cancel' });
