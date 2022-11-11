@@ -113,7 +113,7 @@ const SettingsNavigation = () => (
             activeClassName="active"
             className="list-group-item"
           >
-            <Translate>Global CSS</Translate>
+            <Translate>Global CSS & JS</Translate>
           </I18NLink>
           <I18NLink
             to="/settings/custom-uploads"

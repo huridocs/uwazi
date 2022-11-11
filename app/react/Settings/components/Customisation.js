@@ -1,4 +1,5 @@
 import { Field, Form, actions as formActions } from 'react-redux-form';
+import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
@@ -11,32 +12,91 @@ import saveSettings from '../actions/settingsActions';
 
 class Customisation extends Component {
   componentDidMount() {
-    this.props.loadForm('settings.settings', { customCSS: this.props.settings.get('customCSS') });
+    this.props.loadForm('settings.settings', {
+      customCSS: this.props.settings.get('customCSS'),
+      customJS: this.props.settings.get('customJS'),
+    });
+  }
+
+  renderJSTabLink() {
+    const allowcustomJS = this.props.settings.get('allowcustomJS');
+    if (allowcustomJS) {
+      return (
+        <TabLink
+          to="js"
+          default
+          role="button"
+          tabIndex="0"
+          aria-label={t('System', 'JS', null, false)}
+        >
+          <Translate>Custom JS</Translate>
+        </TabLink>
+      );
+    }
+
+    return (
+      <button type="button" className="tab-link">
+        <Translate>Custom JS</Translate>
+      </button>
+    );
   }
 
   render() {
     return (
-      <div className="settings-content">
-        <div className="panel panel-default settings-custom-css">
-          <div className="panel-heading">{t('System', 'Custom styles')}</div>
-          <div className="panel-body">
-            <Form model="settings.settings" onSubmit={this.props.saveSettings}>
-              <Field model=".customCSS" className="test">
-                <label className="form-group-label" htmlFor="custom_css">
-                  {t('System', 'Custom CSS')}
-                  <textarea className="form-control" id="custom_css" />
-                </label>
-              </Field>
-              <div className="settings-footer remove-extra-nesting">
-                <div className="btn-cluster content-right">
-                  <button type="submit" className="btn btn-success btn-extra-padding">
-                    <Translate>Save</Translate>
-                  </button>
-                </div>
-              </div>
-            </Form>
-          </div>
+      <div className="settings-content global-css-js">
+        <div className="panel-heading">
+          <Translate>Global CSS & JS</Translate>
         </div>
+        <Tabs>
+          <div style={{ position: 'relative' }}>
+            <TabLink
+              to="css"
+              default
+              role="button"
+              tabIndex="0"
+              aria-label={t('System', 'CSS', null, false)}
+            >
+              <Translate>Custom CSS</Translate>
+            </TabLink>
+            {this.renderJSTabLink()}
+          </div>
+          <TabContent for="css" className="css">
+            <div className="panel panel-default settings-custom">
+              <div className="panel-body">
+                <Form model="settings.settings" onSubmit={this.props.saveSettings}>
+                  <Field model=".customCSS" className="field">
+                    <textarea className="form-control" id="custom_css" />
+                  </Field>
+                  <div className="settings-footer">
+                    <div className="btn-cluster content-right">
+                      <button type="submit" className="btn btn-success btn-extra-padding">
+                        <Translate>Save</Translate>
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              </div>
+            </div>
+          </TabContent>
+          <TabContent for="js" className="js">
+            <div className="panel panel-default settings-custom-js">
+              <div className="panel-body">
+                <Form model="settings.settings" onSubmit={this.props.saveSettings}>
+                  <Field model=".customJS">
+                    <textarea className="form-control" id="custom_js" />
+                  </Field>
+                  <div className="settings-footer">
+                    <div className="btn-cluster content-right">
+                      <button type="submit" className="btn btn-success btn-extra-padding">
+                        <Translate>Save</Translate>
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              </div>
+            </div>
+          </TabContent>
+        </Tabs>
       </div>
     );
   }
