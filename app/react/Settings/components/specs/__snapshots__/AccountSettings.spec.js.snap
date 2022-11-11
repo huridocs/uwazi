@@ -10,29 +10,11 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
-      >
-        <Connect(I18NLink)
-          className="only-mobile"
-          to="settings/"
-        >
-          <Connect(Icon)
-            directionAware={true}
-            icon="arrow-left"
-          />
-          <span
-            className="btn-label"
-          >
-            <Connect(Translate)>
-              Back
-            </Connect(Translate)>
-          </span>
-        </Connect(I18NLink)>
+      <SettingsHeader>
         <Connect(Translate)>
           Account
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >
@@ -206,29 +188,11 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
-      >
-        <Connect(I18NLink)
-          className="only-mobile"
-          to="settings/"
-        >
-          <Connect(Icon)
-            directionAware={true}
-            icon="arrow-left"
-          />
-          <span
-            className="btn-label"
-          >
-            <Connect(Translate)>
-              Back
-            </Connect(Translate)>
-          </span>
-        </Connect(I18NLink)>
+      <SettingsHeader>
         <Connect(Translate)>
           Account
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >

@@ -7,29 +7,11 @@ exports[`Customisation should render Customisation component 1`] = `
   <div
     className="panel panel-default settings-custom-css"
   >
-    <div
-      className="panel-heading"
-    >
-      <Connect(I18NLink)
-        className="only-mobile"
-        to="settings/"
-      >
-        <Connect(Icon)
-          directionAware={true}
-          icon="arrow-left"
-        />
-        <span
-          className="btn-label"
-        >
-          <Connect(Translate)>
-            Back
-          </Connect(Translate)>
-        </span>
-      </Connect(I18NLink)>
+    <SettingsHeader>
       <Connect(Translate)>
         Custom styles
       </Connect(Translate)>
-    </div>
+    </SettingsHeader>
     <div
       className="panel-body"
     >

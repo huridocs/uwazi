@@ -7,29 +7,11 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
   <div
     className="flex panel panel-default"
   >
-    <div
-      className="panel-heading"
-    >
-      <Connect(I18NLink)
-        className="only-mobile"
-        to="settings/"
-      >
-        <Connect(Icon)
-          directionAware={true}
-          icon="arrow-left"
-        />
-        <span
-          className="btn-label"
-        >
-          <Connect(Translate)>
-            Back
-          </Connect(Translate)>
-        </span>
-      </Connect(I18NLink)>
+    <SettingsHeader>
       <Connect(Translate)>
         Thesauri
       </Connect(Translate)>
-    </div>
+    </SettingsHeader>
     <div
       className="thesauri-list"
     >

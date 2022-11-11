@@ -7,29 +7,11 @@ exports[`Activitylog should render an ActivitylogForm and ActivitylogList 1`] = 
   <div
     className="activity-log panel panel-default"
   >
-    <div
-      className="panel-heading"
-    >
-      <Connect(I18NLink)
-        className="only-mobile"
-        to="settings/"
-      >
-        <Connect(Icon)
-          directionAware={true}
-          icon="arrow-left"
-        />
-        <span
-          className="btn-label"
-        >
-          <Connect(Translate)>
-            Back
-          </Connect(Translate)>
-        </span>
-      </Connect(I18NLink)>
+    <SettingsHeader>
       <Connect(Translate)>
-        Activity log
+        Activity Log
       </Connect(Translate)>
-    </div>
+    </SettingsHeader>
     <Connect(ActivitylogForm)>
       <Connect(ActivityLogListComponent) />
     </Connect(ActivitylogForm)>
