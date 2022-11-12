@@ -1,7 +1,10 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-export type RelationshipInputArrayType = RelationshipInputType[];
+/**
+ * @minItems 1
+ */
+export type RelationshipInputArrayType = [RelationshipInputType, ...RelationshipInputType[]];
 
 export interface RelationshipInputType {
   from: string;
