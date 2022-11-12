@@ -52,7 +52,9 @@ export const headTag = (head, CSS, reduxData) => (
       type="text/css"
       dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customCSS') }}
     />
-    <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
+    {reduxData.settings.collection.get('allowcustomJS') && (
+      <script dangerouslySetInnerHTML={{ __html: reduxData.settings.collection.get('customJS') }} />
+    )}
     {googelFonts}
     <link rel="shortcut icon" href={getFaviconURL(reduxData)} />
   </head>

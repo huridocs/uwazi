@@ -18,34 +18,16 @@ class Customisation extends Component {
     });
   }
 
-  renderJSTabLink() {
-    const allowcustomJS = this.props.settings.get('allowcustomJS');
-    if (allowcustomJS) {
-      return (
-        <TabLink
-          to="js"
-          default
-          role="button"
-          tabIndex="0"
-          aria-label={t('System', 'JS', null, false)}
-        >
-          <Translate>Custom JS</Translate>
-        </TabLink>
-      );
-    }
-
-    return (
-      <button type="button" className="tab-link">
-        <Translate>Custom JS</Translate>
-      </button>
-    );
-  }
-
   render() {
+    const allowcustomJS = this.props.settings.get('allowcustomJS');
     return (
       <div className="settings-content global-css-js">
         <div className="panel-heading">
-          <Translate>Global CSS & JS</Translate>
+          {allowcustomJS ? (
+            <Translate>Global CSS & JS</Translate>
+          ) : (
+            <Translate>Global CSS</Translate>
+          )}
         </div>
         <Tabs>
           <div style={{ position: 'relative' }}>
@@ -58,7 +40,17 @@ class Customisation extends Component {
             >
               <Translate>Custom CSS</Translate>
             </TabLink>
-            {this.renderJSTabLink()}
+            {allowcustomJS && (
+              <TabLink
+                to="js"
+                default
+                role="button"
+                tabIndex="0"
+                aria-label={t('System', 'JS', null, false)}
+              >
+                <Translate>Custom JS</Translate>
+              </TabLink>
+            )}
           </div>
           <TabContent for="css" className="css">
             <div className="panel panel-default settings-custom">
