@@ -31,23 +31,11 @@ class Customisation extends Component {
         </div>
         <Tabs>
           <div style={{ position: 'relative' }}>
-            <TabLink
-              to="css"
-              default
-              role="button"
-              tabIndex="0"
-              aria-label={t('System', 'CSS', null, false)}
-            >
+            <TabLink to="css" default role="button" tabIndex="0" aria-label="CSS">
               <Translate>Custom CSS</Translate>
             </TabLink>
             {allowcustomJS && (
-              <TabLink
-                to="js"
-                default
-                role="button"
-                tabIndex="0"
-                aria-label={t('System', 'JS', null, false)}
-              >
+              <TabLink to="js" default role="button" tabIndex="0" aria-label="JS">
                 <Translate>Custom JS</Translate>
               </TabLink>
             )}
