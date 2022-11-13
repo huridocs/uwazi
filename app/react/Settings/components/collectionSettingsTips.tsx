@@ -160,8 +160,8 @@ export const ocrTrigger = (
 
 export const globalJS = (
   <Translate translationKey="Global JS tooltip">
-    "With great power comes great responsibility! This area allows you to append custom Javascript
-    to the entire application. This opens up a new universe of possibilities. It could also very
-    easily break the app. Only write code here if you know exactly what you are doing."
+    With great power comes great responsibility! This area allows you to append custom Javascript to
+    the entire application. This opens up a new universe of possibilities. It could also very easily
+    break the app. Only write code here if you know exactly what you are doing.
   </Translate>
 );

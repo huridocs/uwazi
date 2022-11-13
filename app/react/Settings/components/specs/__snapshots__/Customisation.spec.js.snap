@@ -2,56 +2,122 @@
 
 exports[`Customisation should render Customisation component 1`] = `
 <div
-  className="settings-content"
+  className="settings-content global-css-js"
 >
   <div
-    className="panel panel-default settings-custom-css"
+    className="panel-heading"
+  >
+    <Connect(Translate)>
+      Global CSS
+    </Connect(Translate)>
+  </div>
+  <Tabs
+    onChange={[Function]}
   >
     <div
-      className="panel-heading"
+      style={
+        Object {
+          "position": "relative",
+        }
+      }
     >
-      Custom styles
-    </div>
-    <div
-      className="panel-body"
-    >
-      <Connect(Form)
-        model="settings.settings"
-        onSubmit={[Function]}
+      <TabLink
+        aria-label="CSS"
+        default={true}
+        role="button"
+        tabIndex="0"
+        to="css"
       >
-        <Modeled(Connect(Field))
-          className="test"
-          model=".customCSS"
-        >
-          <label
-            className="form-group-label"
-            htmlFor="custom_css"
-          >
-            Custom CSS
-            <textarea
-              className="form-control"
-              id="custom_css"
-            />
-          </label>
-        </Modeled(Connect(Field))>
-        <div
-          className="settings-footer remove-extra-nesting"
-        >
-          <div
-            className="btn-cluster content-right"
-          >
-            <button
-              className="btn btn-success btn-extra-padding"
-              type="submit"
-            >
-              <Connect(Translate)>
-                Save
-              </Connect(Translate)>
-            </button>
-          </div>
-        </div>
-      </Connect(Form)>
+        <Connect(Translate)>
+          Custom CSS
+        </Connect(Translate)>
+      </TabLink>
     </div>
-  </div>
+    <TabContent
+      className="css"
+      for="css"
+    >
+      <div
+        className="panel panel-default settings-custom"
+      >
+        <div
+          className="panel-body"
+        >
+          <Connect(Form)
+            model="settings.settings"
+            onSubmit={[Function]}
+          >
+            <Modeled(Connect(Field))
+              className="field"
+              model=".customCSS"
+            >
+              <textarea
+                className="form-control"
+                id="custom_css"
+              />
+            </Modeled(Connect(Field))>
+            <div
+              className="settings-footer"
+            >
+              <div
+                className="btn-cluster content-right"
+              >
+                <button
+                  className="btn btn-success btn-extra-padding"
+                  type="submit"
+                >
+                  <Connect(Translate)>
+                    Save
+                  </Connect(Translate)>
+                </button>
+              </div>
+            </div>
+          </Connect(Form)>
+        </div>
+      </div>
+    </TabContent>
+    <TabContent
+      className="js"
+      for="js"
+    >
+      <div
+        className="panel panel-default settings-custom-js"
+      >
+        <div
+          className="panel-body"
+        >
+          <Connect(Form)
+            model="settings.settings"
+            onSubmit={[Function]}
+          >
+            <Modeled(Connect(Field))
+              model=".customJS"
+            >
+              <textarea
+                className="form-control"
+                id="custom_js"
+              />
+            </Modeled(Connect(Field))>
+            <div
+              className="settings-footer"
+            >
+              <div
+                className="btn-cluster content-right"
+              >
+                <button
+                  className="btn btn-success btn-extra-padding"
+                  type="submit"
+                >
+                  <Connect(Translate)>
+                    Save
+                  </Connect(Translate)>
+                </button>
+              </div>
+            </div>
+          </Connect(Form)>
+        </div>
+      </div>
+    </TabContent>
+  </Tabs>
 </div>
 `;
