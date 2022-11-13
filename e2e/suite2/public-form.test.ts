@@ -49,7 +49,7 @@ describe('Public forms', () => {
     await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toClick(
-      '#collectionSettings > div:nth-child(16) > div > div.toggle-children-button'
+      '#collectionSettings > div:nth-child(17) > div > div.toggle-children-button'
     );
     await expect(page).toClick('span', { text: ' more' });
     await expect(page).toClick('span', { text: 'Mecanismo' });

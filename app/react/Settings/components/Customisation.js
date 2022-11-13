@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 
 import saveSettings from '../actions/settingsActions';
 
