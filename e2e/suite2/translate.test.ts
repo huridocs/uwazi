@@ -84,9 +84,9 @@ describe('Translations', () => {
 
       await expect(page).toClick('.singleItem');
       await expect(page).toClick('.item-document:nth-child(1)');
-      await page.waitForSelector('.attachments-list-header');
-      await scrollTo('.attachments-modal-header');
-      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.09 });
+      await page.waitForSelector('.attachments-modal-trigger');
+      await scrollTo('.attachments-modal-trigger');
+      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.08 });
     });
 
     it('should deactive live translate', async () => {
