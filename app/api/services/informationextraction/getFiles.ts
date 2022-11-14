@@ -81,7 +81,11 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  const indexedEntities = objectIndex(entities, e => e.sharedId + e.language);
+  const indexedEntities = objectIndex(
+    entities,
+    e => e.sharedId + e.language,
+    objectIndex.NoTransform
+  );
   const template = await templatesModel.getById(templates[0]);
 
   let type: string | undefined = 'text';
