@@ -2,6 +2,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
+import { SettingsHeader } from './SettingsHeader';
 
 const formatBytes = (bytes: number) => {
   //Sourced from https://stackoverflow.com/questions/15900485
@@ -34,11 +35,10 @@ const DashboardComponent = ({ stats }: mappedProps) => {
   return (
     <main className="settings-content">
       <div className="settings-dashboard">
-        <div className="panel">
-          <div className="panel-heading">
+        <div className="panel-default">
+          <SettingsHeader>
             <Translate>Dashboard</Translate>
-          </div>
-
+          </SettingsHeader>
           <div className="panel-body">
             <div className="cards">
               <article className="card">

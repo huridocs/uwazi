@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
+import { SettingsHeader } from './SettingsHeader';
 import sortThesauri from '../utils/sortThesauri';
 
 class ThesauriList extends Component {
@@ -109,7 +110,9 @@ class ThesauriList extends Component {
     return (
       <div className="settings-content">
         <div className="flex panel panel-default">
-          <div className="panel-heading">{t('System', 'Thesauri')}</div>
+          <SettingsHeader>
+            <Translate>Thesauri</Translate>
+          </SettingsHeader>
           <div className="thesauri-list">
             <table>
               <thead>
