@@ -5,7 +5,7 @@ import { getPropertyOfSelector } from './selectorUtils';
 const reloadPage = async () => {
   await page.reload();
   await disableTransitions();
-  await expect(page).toClick('#tab-connections');
+  await expect(page).toClick('#tab-relationships');
 };
 
 const clickEdit = async () => {

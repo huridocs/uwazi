@@ -2,7 +2,6 @@ import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
@@ -18,6 +17,8 @@ export default class Library extends RouteHandler {
     wrapDispatch(dispatch, 'library')(enterLibrary());
     this.zoomIn = () => wrapDispatch(dispatch, 'library')(zoomIn());
     this.zoomOut = () => wrapDispatch(dispatch, 'library')(zoomOut());
+    this.scrollCallback = this.scrollCallback.bind(this);
+    this.state = { scrollCount: 0 };
   }
 
   static renderTools() {}
@@ -45,17 +46,28 @@ export default class Library extends RouteHandler {
     actions.set('library.sidepanel.quickLabelState', {});
   }
 
+  scrollCallback() {
+    this.setState((prevState, _props) => ({
+      scrollCount: prevState.scrollCount + 1,
+    }));
+  }
+
   render() {
     const tableViewMode = this.props.viewer === TableViewer;
     return (
-      <LibraryLayout sidePanelMode={this.props.sidePanelMode}>
-        <LibraryModeToggleButtons
+      <LibraryLayout
+        sidePanelMode={this.props.sidePanelMode}
+        scrollCallback={this.scrollCallback}
+        scrollCount={this.state.scrollCount}
+      >
+        <DocumentsList
           storeKey="library"
+          CollectionViewer={this.props.viewer}
           zoomIn={this.zoomIn}
           zoomOut={this.zoomOut}
           tableViewMode={tableViewMode}
+          scrollCount={this.state.scrollCount}
         />
-        <DocumentsList storeKey="library" CollectionViewer={this.props.viewer} />
       </LibraryLayout>
     );
   }

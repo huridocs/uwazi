@@ -21,7 +21,7 @@ describe('FullTextSearch zone', () => {
 
   it('should show text snippets when performing a text search', async () => {
     await clearAndType(searchBoxSelector, 'Artavia Murillo');
-    await expect(page).toClick('.search-box .input-group > svg:nth-child(2)');
+    await expect(page).toClick('.fa-search');
     await page.waitForSelector('.item-snippet');
     const snippets = await getPropertiesOfSubelements(
       page,

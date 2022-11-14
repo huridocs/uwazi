@@ -4,7 +4,7 @@ import Library from 'app/Library/Library';
 import RouteHandler from 'app/App/RouteHandler';
 import createStore from 'app/store';
 import DocumentsList from 'app/Library/components/DocumentsList';
-import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import LibraryLayout from 'app/Library/LibraryLayout';
 
 describe('Library', () => {
   const templates = [
@@ -44,15 +44,6 @@ describe('Library', () => {
     expect(component.find(DocumentsList).props().storeKey).toBe('library');
   });
 
-  it('should include the Toggle Buttons with zoom in and out functionality', () => {
-    const libraryButtons = component.find(LibraryModeToggleButtons);
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY']);
-    libraryButtons.props().zoomIn();
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN']);
-    libraryButtons.props().zoomOut();
-    expect(dispatchCallsOrder).toEqual(['ENTER_LIBRARY', 'ZOOM_IN', 'ZOOM_OUT']);
-  });
-
   describe('urlHasChanged', () => {
     it('return true when q has changed', () => {
       const nextProps = { location: { query: { q: '(a:2)' } } };
@@ -78,6 +69,18 @@ describe('Library', () => {
       const nextProps = { location: { query: { q: '(a:1)' } } };
       component.setProps(nextProps);
       expect(instance.getClientState).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('scroll counting for mobile responsiveness', () => {
+    it('should increase the scroll count on scrolling event', () => {
+      const layout = component.find(LibraryLayout);
+      expect(component.state().scrollCount).toBe(0);
+      expect(component.find(DocumentsList).props().scrollCount).toBe(0);
+      layout.props().scrollCallback();
+      layout.props().scrollCallback();
+      expect(component.state().scrollCount).toBe(2);
+      expect(component.find(DocumentsList).props().scrollCount).toBe(2);
     });
   });
 });

@@ -203,6 +203,76 @@ footer {
   }
 }
 
+.toggle-footer-button {
+  border: transparent;
+  border-radius: 12px 12px 0px 0px;
+  webkit-box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  -moz-box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
+  padding: 4px 12px;
+  width: 107px;
+  min-width: 90px;
+  height: 24px;
+  left: 100px;
+  background-color: $c-white;
+  z-index: 1;
+}
+
+.library-footer {
+  padding: 0;
+  border-top: none;
+  background-color: transparent;
+
+  @media (max-width: 1023px) {
+    &.closed {
+      display: none;
+    }
+  }
+
+  .btn-cluster {
+    -webkit-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow: outset 0px -4px 3px rgba(50, 50, 50, 0.75);
+    box-shadow: 10px 0px 1px white, 2px -2px 4px lightgray;
+    padding: 10px 10px 0px 10px;
+    width: 100%;
+    background-color: white;
+  }
+
+  .close-actions-button {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    left: 50%;
+    width: 100%;
+    text-overflow: ellipsis;
+    background-color: transparent;
+
+    @media (min-width: 1024px) {
+      display: none;
+    }
+  }
+}
+
+.open-actions-button {
+  display: flex;
+  position: fixed;
+  bottom: 0px;
+  justify-content: center;
+  left: 50%;
+  width: 150px;
+  text-overflow: ellipsis;
+  margin-left: -75px;
+  height: 18px;
+
+  &.closed {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}
+
 .entity-footer,
 .library-footer,
 .settings-footer {
