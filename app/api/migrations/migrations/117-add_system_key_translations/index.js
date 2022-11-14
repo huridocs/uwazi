@@ -47,7 +47,7 @@ async function updateKeys(db, newKeys, removeKeys) {
 }
 
 export default {
-  delta: 116,
+  delta: 117,
 
   reindex: false,
 
