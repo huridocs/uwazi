@@ -7,26 +7,15 @@ exports[`Customisation should render Customisation component 1`] = `
   <div
     className="panel-heading"
   >
-    <Connect(Translate)>
-      Global CSS
-    </Connect(Translate)>
+    <SettingsHeader>
+      <Connect(Translate)>
+        Global CSS
+      </Connect(Translate)>
+    </SettingsHeader>
   </div>
   <Tabs
     onChange={[Function]}
   >
-<<<<<<< HEAD
-    <SettingsHeader>
-      <Connect(Translate)>
-        Custom styles
-      </Connect(Translate)>
-    </SettingsHeader>
-    <div
-      className="panel-body"
-    >
-      <Connect(Form)
-        model="settings.settings"
-        onSubmit={[Function]}
-=======
     <div
       style={
         Object {
@@ -40,7 +29,6 @@ exports[`Customisation should render Customisation component 1`] = `
         role="button"
         tabIndex="0"
         to="css"
->>>>>>> production
       >
         <Connect(Translate)>
           Custom CSS
