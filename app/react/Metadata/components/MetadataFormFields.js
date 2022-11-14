@@ -126,7 +126,7 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin']}>
               <AddThesauriValueButton
                 values={translateOptions(thesauri)}
                 onModalAccept={async newValue => {
@@ -146,7 +146,7 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <NeedAuthorization roles={['admin', 'editor']}>
+            <NeedAuthorization roles={['admin']}>
               <AddThesauriValueButton
                 values={translateOptions(thesauri)}
                 onModalAccept={async newValue => {
