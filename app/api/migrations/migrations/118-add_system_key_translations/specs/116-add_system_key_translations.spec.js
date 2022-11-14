@@ -5,14 +5,15 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Global CSS & JS',
-    value: 'Global CSS & JS',
+    key: 'Sort ascending',
+    value: 'Sort ascending',
   },
   {
-    key: 'Custom JS',
-    value: 'Custom JS',
+    key: 'Sort descending',
+    value: 'Sort descending',
   },
 ];
+
 const alreadyInAllContexts = {
   key: 'Duplicated label',
   en: 'Duplicated label',
@@ -31,7 +32,7 @@ describe('migration add_system_key_translations', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(117);
+    expect(migration.delta).toBe(118);
   });
 
   it('should append new keys, leave existing keys intact.', async () => {
