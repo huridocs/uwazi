@@ -9,7 +9,7 @@ import { IStore, ClientTemplateSchema } from 'app/istore';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { actions } from 'app/BasicReducer';
 import { notificationActions } from 'app/Notifications';
-import { ToggleButton } from 'app/UI';
+import { ToggleButton } from 'UI';
 import { MultiSelect, Geolocation } from 'app/Forms';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
@@ -18,6 +18,7 @@ import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { ToggleChildren } from './ToggleChildren';
 import * as tips from './collectionSettingsTips';
 import { SettingsFormElement } from './SettingsFormElement';
+import { SettingsHeader } from './SettingsHeader';
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
   collectionSettings: settings.collection,
@@ -77,9 +78,9 @@ const CollectionSettings = ({
     <div className="settings-content">
       <div className="panel panel-default collection-settings">
         <form id="collectionSettings" className="" onSubmit={handleSubmit(save)}>
-          <div className="panel-heading">
+          <SettingsHeader>
             <Translate>Collection</Translate>
-          </div>
+          </SettingsHeader>
           <h2>
             <Translate>General</Translate>
           </h2>
@@ -191,6 +192,15 @@ const CollectionSettings = ({
               />
             </SettingsFormElement>
           )}
+
+          <SettingsFormElement label="Global JS" tip={tips.globalJS}>
+            <ToggleButton
+              checked={Boolean(watch('allowcustomJS'))}
+              onClick={() => {
+                setValue('allowcustomJS', !getValues('allowcustomJS'));
+              }}
+            />
+          </SettingsFormElement>
 
           <h2>
             <Translate>Website analytics</Translate>

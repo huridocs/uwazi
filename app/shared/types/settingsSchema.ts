@@ -72,6 +72,7 @@ const settingsSyncTemplateSchema = {
   properties: {
     properties: { type: 'array', items: { type: 'string' } },
     filter: { type: 'string' },
+    attachments: { type: 'boolean' },
   },
   additionalProperties: false,
 };
@@ -168,6 +169,7 @@ const settingsSchema = {
     home_page: { type: 'string' },
     defaultLibraryView: { type: 'string' },
     private: { type: 'boolean' },
+    allowcustomJS: { type: 'boolean' },
     openPublicEndpoint: { type: 'boolean' },
     cookiepolicy: { type: 'boolean' },
     mailerConfig: { type: 'string' },
@@ -181,6 +183,7 @@ const settingsSchema = {
     dateFormat: { type: 'string' },
     custom: { oneOf: [{ type: 'string' }, { type: 'object' }] },
     customCSS: { type: 'string' },
+    customJS: { type: 'string' },
     mapApiKey: { type: 'string', pattern: '^[a-zA-Z0-9._]*$' },
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },

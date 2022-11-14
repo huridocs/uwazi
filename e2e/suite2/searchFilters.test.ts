@@ -12,7 +12,7 @@ const getAllEntitiesTitles = async (number: number) => {
   );
   return page.$$eval('div.main-wrapper > div.item-group > div.item-document', entities =>
     entities.map(entity => {
-      const elem = entity.querySelector('div.item-info > div.item-name > span');
+      const elem = entity.querySelector('div.item-info > h2.item-name > span');
       return elem?.textContent;
     })
   );

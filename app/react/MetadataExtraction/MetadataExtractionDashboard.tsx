@@ -11,6 +11,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
+import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import { saveConfigurations } from './actions/actions';
 import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
 
@@ -100,9 +101,9 @@ class MetadataExtractionComponent extends React.Component<
     return (
       <div className="settings-content without-footer">
         <div className="panel panel-default">
-          <div className="panel-heading">
+          <SettingsHeader>
             <Translate>Metadata extraction dashboard</Translate>
-          </div>
+          </SettingsHeader>
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>

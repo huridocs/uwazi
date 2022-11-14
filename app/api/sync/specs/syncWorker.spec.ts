@@ -87,7 +87,7 @@ describe('syncWorker', () => {
   beforeAll(async () => {
     const app = express();
     await db.connect({ defaultTenant: false });
-    spyOn(mailer, 'send').and.callFake(async () => Promise.resolve());
+    jest.spyOn(mailer, 'send').mockResolvedValue(undefined);
 
     tenants.add({
       name: 'host1',
@@ -271,22 +271,36 @@ describe('syncWorker', () => {
     }, 'target2');
   });
 
-  it('should sync files belonging to the entities synced', async () => {
-    await runAllTenants();
-    await tenants.run(async () => {
-      const syncedFiles = await files.get({}, '+fullText');
-      expect(syncedFiles).toMatchObject([
-        { entity: 'newDoc1SharedId', type: 'attachment', fullText: { 1: 'first page' } },
-        { entity: 'entitytest.txt', type: 'attachment' },
-        { entity: 'newDoc1SharedId', type: 'attachment' },
-        { type: 'custom' },
-      ]);
+  describe('sync files', () => {
+    beforeAll(async () => {
+      await runAllTenants();
+    });
 
-      expect(await storage.fileExists(syncedFiles[0].filename!, 'attachment')).toBe(true);
-      expect(await storage.fileExists(syncedFiles[1].filename!, 'attachment')).toBe(true);
-      expect(await storage.fileExists(syncedFiles[2].filename!, 'attachment')).toBe(true);
-      expect(await storage.fileExists(syncedFiles[3].filename!, 'custom')).toBe(true);
-    }, 'target1');
+    it('should sync files belonging to the entities synced', async () => {
+      await tenants.run(async () => {
+        const syncedFiles = await files.get({}, '+fullText');
+        expect(syncedFiles).toMatchObject([
+          { entity: 'newDoc1SharedId', type: 'attachment', fullText: { 1: 'first page' } },
+          { entity: 'entitytest.txt', type: 'attachment' },
+          { entity: 'newDoc1SharedId', type: 'attachment' },
+          { type: 'custom' },
+        ]);
+
+        expect(await storage.fileExists(syncedFiles[0].filename!, 'attachment')).toBe(true);
+        expect(await storage.fileExists(syncedFiles[1].filename!, 'attachment')).toBe(true);
+        expect(await storage.fileExists(syncedFiles[2].filename!, 'attachment')).toBe(true);
+        expect(await storage.fileExists(syncedFiles[3].filename!, 'custom')).toBe(true);
+      }, 'target1');
+    });
+
+    it('should not sync attachments if they are not whitelisted', async () => {
+      await tenants.run(async () => {
+        const syncedFiles = await files.get({}, '+fullText');
+        expect(syncedFiles).toMatchObject([{ type: 'custom' }]);
+
+        expect(await storage.fileExists(syncedFiles[0].filename!, 'custom')).toBe(true);
+      }, 'target2');
+    });
   });
 
   it('should sync dictionaries that match template properties whitelist', async () => {
