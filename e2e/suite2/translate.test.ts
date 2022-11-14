@@ -85,7 +85,7 @@ describe('Translations', () => {
       await expect(page).toClick('.singleItem');
       await expect(page).toClick('.item-document:nth-child(1)');
       await scrollTo('.attachments-modal-trigger');
-      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.08 });
+      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.09 });
     });
 
     it('should deactive live translate', async () => {
