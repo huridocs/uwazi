@@ -229,10 +229,8 @@ class DocumentsList extends Component {
               selectAllDocuments={() => {
                 selectAllEntities(this);
               }}
-              sortButtonsStateProperty={this.props.sortButtonsStateProperty}
               SearchBar={this.props.SearchBar}
               searchCentered={this.props.searchCentered}
-              searchDocuments={this.props.searchDocuments}
               filters={this.props.filters}
               tableViewMode={this.props.tableViewMode}
               scrollCount={this.state.scrollCount}

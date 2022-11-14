@@ -77,8 +77,12 @@ describe('Library', () => {
       const layout = component.find(LibraryLayout);
       expect(component.state().scrollCount).toBe(0);
       expect(component.find(DocumentsList).props().scrollCount).toBe(0);
-      layout.props().scrollCallback();
-      layout.props().scrollCallback();
+      layout
+        .props()
+        .scrollCallback({ target: { className: 'main-container document-viewer with-footer' } });
+      layout.props().scrollCallback({ target: { className: 'other element' } });
+      layout.props().scrollCallback({ target: { className: 'document-viewer' } });
+
       expect(component.state().scrollCount).toBe(2);
       expect(component.find(DocumentsList).props().scrollCount).toBe(2);
     });

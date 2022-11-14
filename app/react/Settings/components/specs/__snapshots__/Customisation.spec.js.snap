@@ -7,11 +7,11 @@ exports[`Customisation should render Customisation component 1`] = `
   <div
     className="panel panel-default settings-custom-css"
   >
-    <div
-      className="panel-heading"
-    >
-      Custom styles
-    </div>
+    <SettingsHeader>
+      <Connect(Translate)>
+        Custom styles
+      </Connect(Translate)>
+    </SettingsHeader>
     <div
       className="panel-body"
     >

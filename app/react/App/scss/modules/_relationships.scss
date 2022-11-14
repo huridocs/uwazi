@@ -1,7 +1,8 @@
 $breakpoint: 768px;
 $c-background: #fcfcfc;
 
-.entity-viewer {
+.entity-viewer,
+.document-viewer {
   .relationship-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -17,6 +18,11 @@ $c-background: #fcfcfc;
     }
     .sort-by {
       padding: 0 0 0 25px;
+
+      .sort-dropdown {
+        max-width: 250px;
+        width: 20vw;
+      }
     }
     .search-list {
       padding: 0 25px;
