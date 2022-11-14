@@ -1,14 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Metadata should not render an empty list 1`] = `<Fragment />`;
+exports[`Metadata should not render an empty list 1`] = `<dl />`;
 
 exports[`Metadata should not render metadata without value 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-label  "
     key="label_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Label
     </dt>
     <dd
@@ -16,17 +18,19 @@ exports[`Metadata should not render metadata without value 1`] = `
     >
       string value
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render a Geolocation viewer when the metadata is type geolocation 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-geolocation metadata-name-geolocation_label  "
     key="geolocation_label_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Geolocation Label
     </dt>
     <dd
@@ -44,17 +48,19 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-markdown metadata-name-label_array  "
     key="label_array_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label array
     </dt>
     <dd
@@ -67,17 +73,19 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
         markdown="some markdown text"
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render a link 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-link metadata-name-link  "
     key="link_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Link
     </dt>
     <dd
@@ -91,17 +99,19 @@ exports[`Metadata should render a link 1`] = `
         label
       </a>
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render a media field 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-multimedia metadata-name-media_label  "
     key="media_label_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Media Label
     </dt>
     <dd
@@ -114,17 +124,19 @@ exports[`Metadata should render a media field 1`] = `
         markdown="{media}(http://youtube.com/videoid)"
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render an image field 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-multimedia metadata-name-image_label  "
     key="image_label_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Image Label
     </dt>
     <dd
@@ -137,17 +149,19 @@ exports[`Metadata should render an image field 1`] = `
         src="http://some.url.com/image.jpg"
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render array values separated by ", " 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-label_array  "
     key="label_array_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label array
     </dt>
     <dd
@@ -172,17 +186,19 @@ exports[`Metadata should render array values separated by ", " 1`] = `
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render links when multiple properties have url 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-relationship metadata-name-label_array  "
     key="label_array_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label array
     </dt>
     <dd
@@ -222,17 +238,19 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render links when the property has url 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-relationship metadata-name-withurl  "
     key="withurl_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       withUrl
     </dt>
     <dd
@@ -258,17 +276,19 @@ exports[`Metadata should render links when the property has url 1`] = `
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render links with icons if propery has url and icon 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-relationship metadata-name-withurl  "
     key="withurl_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       withUrl
     </dt>
     <dd
@@ -298,17 +318,19 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render property not have this item when type is null 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-metadata_without_property  "
     key="metadata_without_property_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       metadata without property
     </dt>
     <dd
@@ -316,17 +338,19 @@ exports[`Metadata should render property not have this item when type is null 1`
     >
       No property
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render sorted property with sorted styles 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-sortedby  "
     key="sortedby_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       sortedBy
     </dt>
     <dd
@@ -334,17 +358,19 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
     >
       string value
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata should render string values 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-label  "
     key="label_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       Label
     </dt>
     <dd
@@ -352,17 +378,19 @@ exports[`Metadata should render string values 1`] = `
     >
       string value
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata when passing a prop with multivalue and parents should render the list with the parents too 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-default metadata-name-name  "
     key="name_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label
     </dt>
     <dd
@@ -393,17 +421,19 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata when passing a prop with parent should render the parent too 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-select metadata-name-name  "
     key="name_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label
     </dt>
     <dd
@@ -411,17 +441,19 @@ exports[`Metadata when passing a prop with parent should render the parent too 1
     >
       Parent: Child Value
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-relationship metadata-name-label_array  "
     key="label_array_0"
   >
-    <dt>
+    <dt
+      className=""
+    >
       label array
     </dt>
     <dd
@@ -461,17 +493,19 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
 
 exports[`Metadata when passing inheritted relationships should flatten the results for display purposes 1`] = `
-<Fragment>
-  <dl
+<dl>
+  <div
     className="metadata-type-inherit metadata-name-inherited from relationship  "
     key="inherited from relationship_0"
   >
-    <dt />
+    <dt
+      className=""
+    />
     <dd
       className=""
     >
@@ -500,6 +534,6 @@ exports[`Metadata when passing inheritted relationships should flatten the resul
         }
       />
     </dd>
-  </dl>
-</Fragment>
+  </div>
+</dl>
 `;
