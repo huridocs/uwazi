@@ -83,6 +83,7 @@ describe('Translations', () => {
       );
 
       await expect(page).toClick('.singleItem');
+      await page.waitForSelector('.item-document:nth-child(1)');
       await expect(page).toClick('.item-document:nth-child(1)');
       await page.waitForSelector('.attachments-modal-trigger');
       await scrollTo('.attachments-modal-trigger');
