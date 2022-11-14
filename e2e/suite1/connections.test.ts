@@ -27,42 +27,40 @@ describe('connections', () => {
     await expect(page).toMatchElement('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });
-    await expect(page).toClick('#tab-connections');
+    await expect(page).toClick('#tab-relationships');
   });
 
   it('should sort the connected entitites by Fecha property', async () => {
     await expect(page).toClick('div.sort-dropdown');
     await expect(page).toClick('.rw-list-option', { text: 'Fecha' });
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
       {
         text: 'Acevedo Buendía y otros. Resolución de la CorteIDH de 28 de enero de 2015',
       }
     );
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(5) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(5) > div.rightRelationships > div > div.rightRelationship',
       { text: 'Peru' }
     );
   });
 
   it('should revert the sort order for the property Fecha', async () => {
-    await expect(page).toClick(
-      '#tabpanel-connections > div > div > div.sort-by.centered > div.sort-buttons > button'
-    );
+    await expect(page).toClick('.relationship-toolbar .sort-buttons .sorting-toggle');
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
       {
         text: 'Acevedo Buendía et al. Admissibility Report N° 47/02',
       }
     );
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(3) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(3) > div.rightRelationships > div > div.rightRelationship',
       {
         text: 'Acevedo Buendia et al. Order of the IACourt. July 1, 2011',
       }
     );
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(5) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(5) > div.rightRelationships > div > div.rightRelationship',
       { text: 'Peru' }
     );
   });
@@ -70,13 +68,13 @@ describe('connections', () => {
   it('should filter by search term', async () => {
     await expect(page).toFill('input[name="relationships/list/search.searchTerm"]', '2009');
     await expect(page).toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(1) > div.rightRelationships > div > div.rightRelationship',
       {
         text: 'Acevedo Buendia et al. Judgment. July 1, 2009',
       }
     );
     await expect(page).not.toMatchElement(
-      '#tabpanel-connections > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div > div.rightRelationship'
+      '#tabpanel-relationships > div > div > div.relationships-graph > div > div:nth-child(2) > div.rightRelationships > div > div.rightRelationship'
     );
   });
 });

@@ -25,7 +25,7 @@ describe('relationships', () => {
     await expect(page).toMatchElement('.item-name', {
       text: 'Acevedo Buendia et al (Discharged and Retired Employees of the Office of the Comptroller)',
     });
-    await expect(page).toClick('#tab-connections');
+    await expect(page).toClick('#tab-relationships');
   });
 
   it('should remove every hub except the first one', async () => {
@@ -176,7 +176,7 @@ describe('relationships', () => {
   it('should render properly from the side of "Anzualdo Castro"', async () => {
     await relationships.clickEdit();
     await relationships.goToRelation(2, 1, 2);
-    await expect(page).toClick('#tab-connections');
+    await expect(page).toClick('#tab-relationships');
     const relations = await relationships.readRelations();
     expect(relations[2]).toEqual([
       'Votos separados',
@@ -208,7 +208,7 @@ describe('relationships', () => {
   it('should go back to the original entity and check the updated "Votos separados"', async () => {
     await relationships.clickEdit();
     await relationships.goToRelation(3, 1, 1);
-    await expect(page).toClick('#tab-connections');
+    await expect(page).toClick('#tab-relationships');
     const relations = await relationships.readRelations();
     expect(relations[1]).toEqual([
       'Court',

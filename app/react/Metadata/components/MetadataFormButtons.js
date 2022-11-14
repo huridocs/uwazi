@@ -37,7 +37,7 @@ class MetadataFormButtons extends Component {
     return (
       <>
         <div className="btn-cluster">
-          {this.props.includeViewButton && ViewButton}
+          {this.props.includeViewButton && data.sharedId && ViewButton}
           <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[data]}>
             {!entityBeingEdited && (
               <button

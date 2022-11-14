@@ -15,7 +15,8 @@ import { LibraryFooter } from './components/LibraryFooter';
 
 class LibraryLayoutBase extends Component {
   render() {
-    const { className, children, quickLabelThesaurus, sidePanelMode } = this.props;
+    const { className, children, quickLabelThesaurus, sidePanelMode, scrollCallback, scrollCount } =
+      this.props;
     const contentDivClass = `${
       quickLabelThesaurus ? 'with-header ' : ''
     } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ]`;
@@ -26,9 +27,9 @@ class LibraryLayoutBase extends Component {
           <title>{t('System', 'Library', null, false)}</title>
         </Helmet>
         {quickLabelThesaurus && <QuickLabelHeader />}
-        <div className={contentDivClass}>
+        <div className={contentDivClass} onScroll={scrollCallback}>
           <main className={`${className}`}>{children}</main>
-          <LibraryFooter storeKey="library" />
+          <LibraryFooter storeKey="library" scrollCount={scrollCount} />
           <LibraryFilters storeKey="library" sidePanelMode={sidePanelMode} />
           {!quickLabelThesaurus && <ViewMetadataPanel storeKey="library" />}
           {!quickLabelThesaurus && <SelectMultiplePanelContainer storeKey="library" />}
@@ -47,6 +48,8 @@ LibraryLayoutBase.defaultProps = {
   className: '',
   quickLabelThesaurus: '',
   sidePanelMode: '',
+  scrollCallback: () => {},
+  scrollCount: 0,
 };
 
 LibraryLayoutBase.propTypes = {
@@ -54,6 +57,8 @@ LibraryLayoutBase.propTypes = {
   className: PropTypes.string,
   quickLabelThesaurus: PropTypes.string,
   sidePanelMode: PropTypes.string,
+  scrollCallback: PropTypes.instanceOf(Function),
+  scrollCount: PropTypes.number,
 };
 
 export { LibraryLayoutBase };

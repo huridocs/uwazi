@@ -13,7 +13,7 @@ export default class LibraryMap extends Library {
   render() {
     return (
       <LibraryLayout className="library-map-layout">
-        <LibraryModeToggleButtons storeKey="library" mapViewMode />
+        <LibraryModeToggleButtons mapViewMode />
         <MapView
           storeKey="library"
           ref={ref => {

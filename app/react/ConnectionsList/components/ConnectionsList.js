@@ -6,6 +6,7 @@ import SearchBar from 'app/ConnectionsList/components/SearchBar';
 import RelationshipsGraph from 'app/Relationships/components/RelationshipsGraphEdit';
 import LoadMoreRelationshipsButton from 'app/Relationships/components/LoadMoreRelationshipsButton';
 import DocumentsList from 'app/Layout/DocumentsList';
+import { SortButtons } from 'app/Library/components/SortButtons';
 import { searchReferences } from '../actions/actions';
 
 export function mapStateToProps({ relationships }) {
@@ -22,6 +23,7 @@ export function mapStateToProps({ relationships }) {
     search: relationships.list.sort,
     sortButtonsStateProperty: 'relationships/list.sort',
     SearchBar,
+    SortButtons,
     GraphView: RelationshipsGraph,
     view: 'graph',
     LoadMoreButton: LoadMoreRelationshipsButton,

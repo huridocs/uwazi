@@ -54,10 +54,6 @@ class Viewer extends Component {
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
   }
 
-  componentWillUnmount() {
-    this.props.showTab('metadata');
-  }
-
   handlePlainTextClick() {
     const { showTab } = this.props;
     showTab('metadata');

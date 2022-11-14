@@ -4,29 +4,46 @@ import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
-import SearchBar from 'app/Library/components/SearchBar';
-import SortButtons from 'app/Library/components/SortButtons';
+import { SearchBar } from 'app/Library/components/SearchBar';
 import { Loader } from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
+
 import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
+import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';
 
+const selectAllEntities = command => {
+  command.selectAllDocuments();
+};
 class DocumentsList extends Component {
+  static getDerivedStateFromProps(newProps, prevState) {
+    const { scrollCount = 0, parentScrollCount = 0 } = prevState;
+    if (newProps.scrollCount !== parentScrollCount) {
+      return {
+        loading: false,
+        scrollCount: scrollCount + 1,
+        parentScrollCount: newProps.scrollCount,
+      };
+    }
+
+    return { loading: false };
+  }
+
   constructor(props, context) {
     super(props, context);
-    this.state = { loading: false };
+    this.state = {
+      loading: false,
+      scrollCount: 0,
+      parentScrollCount: 0,
+    };
     this.clickOnDocument = this.clickOnDocument.bind(this);
     this.selectAllDocuments = this.selectAllDocuments.bind(this);
     this.loadNextGroupOfEntities = this.loadNextGroupOfEntities.bind(this);
-  }
-
-  componentWillReceiveProps() {
-    this.setState({ loading: false });
   }
 
   loadMoreDocuments(amount, from) {
@@ -76,13 +93,38 @@ class DocumentsList extends Component {
     );
   }
 
+  relationshipsToolbar(counter) {
+    const SortButtonsRelationships = this.props.SortButtons;
+    const SearchBarRelationships = this.props.SearchBar;
+
+    return (
+      <div className="relationship-toolbar">
+        <div className="search-list">
+          <SearchBarRelationships />
+        </div>
+        <div className="sort-by">
+          <span className="documents-counter-sort">
+            <Translate>sorted by</Translate>
+          </span>
+          <SortButtonsRelationships
+            sortCallback={this.props.searchDocuments}
+            selectedTemplates={this.props.filters.get('documentTypes')}
+            stateProperty={this.props.sortButtonsStateProperty}
+          />
+        </div>
+        <div className="documents-counter">
+          <span className="documents-counter-label">{counter}</span>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const {
       documents,
       connections,
       GraphView,
       view,
-      searchCentered,
       hideFooter,
       connectionsGroups,
       LoadMoreButton,
@@ -109,12 +151,6 @@ class DocumentsList extends Component {
       />
     );
 
-    const Search = this.props.SearchBar;
-    const ActionButtons = this.props.ActionButtons ? (
-      <div className="search-list-actions">
-        <this.props.ActionButtons />
-      </div>
-    ) : null;
     const FooterComponent = !hideFooter ? <Footer /> : null;
 
     const libraryContent = () => {
@@ -182,41 +218,39 @@ class DocumentsList extends Component {
         </NeedAuthorization>
       </div>
     );
+
     return (
       <div className="documents-list">
         <div className="main-wrapper">
-          <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
-            {ActionButtons} {Search && <Search storeKey={this.props.storeKey} />}
-          </div>
-          <div className={`sort-by ${searchCentered ? 'centered' : ''}`}>
-            <span className="documents-counter-sort">
-              <Translate>sorted by</Translate>
-            </span>
-            <SortButtons
-              sortCallback={this.props.searchDocuments}
-              selectedTemplates={this.props.filters.get('documentTypes')}
-              stateProperty={this.props.sortButtonsStateProperty}
+          {this.props.SortButtons === undefined && (
+            <LibraryHeader
               storeKey={this.props.storeKey}
+              counter={counter}
+              selectAllDocuments={() => {
+                selectAllEntities(this);
+              }}
+              sortButtonsStateProperty={this.props.sortButtonsStateProperty}
+              SearchBar={this.props.SearchBar}
+              searchCentered={this.props.searchCentered}
+              searchDocuments={this.props.searchDocuments}
+              filters={this.props.filters}
+              tableViewMode={this.props.tableViewMode}
+              scrollCount={this.state.scrollCount}
             />
-            <NeedAuthorization>
-              <div className="select-all-documents">
-                <button
-                  type="button"
-                  className="btn btn-default btn-xs"
-                  onClick={this.selectAllDocuments}
-                >
-                  <Translate>Select all</Translate>
-                </button>
-              </div>
-            </NeedAuthorization>
-            <div className="documents-counter">
-              <span className="documents-counter-label">{counter}</span>
-            </div>
-          </div>
+          )}
+          {this.props.SortButtons !== undefined && this.relationshipsToolbar(counter)}
+
           {blankState() && <Welcome />}
 
           {CollectionViewer.wrapLoader && (
-            <div className="library-load-container">
+            <div
+              className="library-load-container"
+              onScroll={() => {
+                this.setState((prevState, _props) => ({
+                  scrollCount: prevState.scrollCount + 1,
+                }));
+              }}
+            >
               {libraryContent()}
               {loadMoreSection}
             </div>
@@ -240,6 +274,9 @@ DocumentsList.defaultProps = {
   rowListZoomLevel: 0,
   CollectionViewer: TilesViewer,
   selectedDocuments: {},
+  tableViewMode: false,
+  scrollCount: 0,
+  SortButtons: undefined,
 };
 
 DocumentsList.propTypes = {
@@ -249,7 +286,7 @@ DocumentsList.propTypes = {
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
   SearchBar: PropTypes.func,
-  ActionButtons: PropTypes.func,
+  SortButtons: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
   loadMoreDocuments: PropTypes.func,
@@ -271,6 +308,8 @@ DocumentsList.propTypes = {
     query: PropTypes.object,
   }),
   CollectionViewer: PropTypes.func,
+  tableViewMode: PropTypes.bool,
+  scrollCount: PropTypes.number,
 };
 
 export { DocumentsList };
