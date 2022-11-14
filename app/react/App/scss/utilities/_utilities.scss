@@ -17,3 +17,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.only-desktop {
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: initial;
+  }
+}
+
+.only-mobile {
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}

@@ -12,6 +12,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import { SettingsHeader } from './SettingsHeader';
 
 class RelationTypesList extends RouteHandler {
   static async requestState(requestParams) {
@@ -53,7 +54,9 @@ class RelationTypesList extends RouteHandler {
     return (
       <div className="settings-content">
         <div className="panel panel-default">
-          <div className="panel-heading">{t('System', 'Relationship types')}</div>
+          <SettingsHeader>
+            <Translate>Relationship types</Translate>
+          </SettingsHeader>
           <ul className="list-group relation-types">
             {this.props.relationTypes.toJS().map((relationType, index) => (
               <li key={index} className="list-group-item">
