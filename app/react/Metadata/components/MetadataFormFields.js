@@ -155,7 +155,7 @@ class MetadataFormFields extends Component {
                 <AddThesauriValueButton
                   values={translateOptions(thesauri)}
                   onModalAccept={async newValue => {
-                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
                   }}
                 />
               </NeedAuthorization>
