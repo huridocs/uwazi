@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
+import { fireEvent, RenderResult, screen } from '@testing-library/react';
 
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
