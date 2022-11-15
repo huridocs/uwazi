@@ -2,9 +2,8 @@
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import { scrollTo } from '../helpers/formActions';
 import { changeLanguage } from '../helpers/changeLanguage';
-import { prepareToMatchImageSnapshot, testSelectorShot } from '../helpers/regression';
+import { prepareToMatchImageSnapshot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
 describe('Translations', () => {
