@@ -87,7 +87,7 @@ $ yarn install
 
 ### Docker
 
-Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin, MongoDB, Redis and Minio (S3 storage) can be installed and run via Docker Compose.  ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
+Infrastructure dependencies (ElasticSearch, ICU Analysis Plugin, MongoDB, Redis and Minio (S3 storage) can be installed and run via Docker Compose. ElasticSearch container will claim 2Gb of memory so be sure your Docker Engine is alloted at least 3Gb of memory (for Mac and Windows users).
 
 ```shell
 $ ./run start
@@ -163,3 +163,20 @@ Note that if you already have an instance running, this will likely throw an err
 The application's default log in is admin / change this password now
 
 Note the subtle nudge ;)
+
+## System Requirements
+
+- For big files with a small database footprint (such as video, audio and images) you'll need more HD space than CPU or RAM
+- For text documents you should consider some decent RAM as ElasticSearch is pretty greedy on memory for full text search
+
+The bare minimum you need to be able to run Uwazi without bottlenecks is:
+
+- 4 GB of RAM (reserve 2 for Elastic and 2 for everything else)
+- 2 CPU cores
+- 20 GB of disk space
+
+For development:
+
+- 8GB of RAM (depending on whether the services are running)
+- 4 CPU cores
+- 40 GB of disk space
