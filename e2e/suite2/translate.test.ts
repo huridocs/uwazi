@@ -2,9 +2,8 @@
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
-import { scrollTo } from '../helpers/formActions';
 import { changeLanguage } from '../helpers/changeLanguage';
-import { prepareToMatchImageSnapshot, testSelectorShot } from '../helpers/regression';
+import { prepareToMatchImageSnapshot } from '../helpers/regression';
 
 prepareToMatchImageSnapshot();
 describe('Translations', () => {
@@ -69,23 +68,6 @@ describe('Translations', () => {
       await expect(page).toClick('.singleItem');
       await changeLanguage('Español');
       await expect(page).toMatchElement('.translation', { text: 'Filtros' });
-    });
-
-    // eslint-disable-next-line max-statements
-    it('should keep all side panel content visible after translation, including last button', async () => {
-      await expect(page).toClick('.item-document:nth-child(1)');
-      await activateTranslation();
-      await translateESInline('.btn-label>.translation', 'View', 'Visualizar entidad en pantalla');
-      await translateESInline(
-        '.btn-label>.translation',
-        'Share',
-        'Abrir menu secundario para compartir'
-      );
-
-      await expect(page).toClick('.singleItem');
-      await expect(page).toClick('.item-document:nth-child(1)');
-      await scrollTo('.attachments-modal-trigger');
-      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.08 });
     });
 
     it('should deactive live translate', async () => {
