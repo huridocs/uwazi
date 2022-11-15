@@ -62,7 +62,7 @@ describe('Metadata', () => {
       );
       await page.waitForSelector('div.modal-content');
       await expect(page).toMatchElement('div.modal-body > h4', {
-        text: 'Confirm delete thesaurus: New thesaurus',
+        text: 'Confirm deletion of thesaurus: New thesaurus',
       });
       await expect(page).toClick('button', { text: 'Accept' });
     });
@@ -143,7 +143,7 @@ describe('Metadata', () => {
       );
       await page.waitForSelector('div.modal-content');
       await expect(page).toMatchElement('div.modal-body > h4', {
-        text: 'Confirm delete of template: My edited template',
+        text: 'Confirm deletion of template: My edited template',
       });
       await expect(page).toClick('button', { text: 'Accept' });
       await expect(page).not.toMatch('My edited template');

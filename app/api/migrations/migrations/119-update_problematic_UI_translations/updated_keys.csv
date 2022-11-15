@@ -1,0 +1,11 @@
+key,newKey,oldValue,newValue
+Impact of property change warning,Impact of property change warning,"All entities and documents that have already this property assigned will loose its current value ", "By making this change, any values from the previous thesaurus already assigned to entities will be lost."
+Can not delete template:,Cannot delete template:,Can not delete template:,Cannot delete template:
+Confirm delete relationship type:,Confirm deletion of relationship type:,Confirm delete relationship type:,Confirm deletion of relationship type:
+Confirm delete of template:,Confirm deletion of template:,Confirm delete of template:,Confirm deletion of template:
+Confirm delete page:,Confirm deletion of page:,Confirm delete page:,Confirm deletion of page:
+Confirm delete,Confirm deletion of,Confirm delete,Confirm deletion of
+Confirm delete entity,Confirm deletion of entity,Confirm delete entity,Confirm deletion of entity
+Confirm delete file,Confirm deletion of file,Confirm delete file,Confirm deletion of file
+Confirm delete thesaurus:,Confirm deletion of thesaurus:,Confirm delete thesaurus:,Confirm deletion of thesaurus
+"Instructions to reset your password have been sent, please check your email","Instructions to reset password","Instructions to reset your password have been sent, please check your email","Instructions to reset user password have been sent. Please check your email."

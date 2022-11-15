@@ -45,7 +45,7 @@ class RelationshipMetadata extends Component {
         await entitiesAPI.delete(new RequestParams({ sharedId: this.props.entity.sharedId }));
         await this.props.reloadRelationships(this.props.parentSharedId);
       },
-      title: 'Confirm delete entity',
+      title: 'Confirm deletion of entity',
       message: 'Are you sure you want to delete this entity?',
     });
   }

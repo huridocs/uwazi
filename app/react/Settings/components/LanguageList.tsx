@@ -199,7 +199,7 @@ const LanguageList = ({
           }}
           title={
             <>
-              <Translate>Confirm delete</Translate>&nbsp;{deletingLanguage.label}
+              <Translate>Confirm deletion of</Translate>&nbsp;{deletingLanguage.label}
             </>
           }
           message={
