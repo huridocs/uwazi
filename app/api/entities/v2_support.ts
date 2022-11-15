@@ -31,26 +31,27 @@ const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
   const templateIdToProperties = objectIndex(
     await templates.get({ _id: entities.map(e => e.template) }),
     t => t._id.toString(),
-    t => (t.properties || []).filter((prop: any) => prop.type === 'newRelationship')
+    t => (t.properties || []).filter(prop => prop.type === 'newRelationship')
   );
   const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
 
-  await Promise.all(
-    entities.filter(entityTypeCheck).map(async entity => {
-      const relProperties = templateIdToProperties[entity.template.toHexString()];
-      if (!relProperties) return;
+  await entities.filter(entityTypeCheck).reduce(async (previous, entity) => {
+    await previous;
 
-      const queryedEntity = await entitiesDataSource
-        .getByIds([entity.sharedId], entity.language)
-        .first();
+    const relProperties = templateIdToProperties[entity.template.toHexString()];
+    if (!relProperties) return;
 
-      if (queryedEntity) {
-        relProperties.forEach((relProperty: any) => {
-          entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];
-        });
-      }
-    })
-  );
+    const queryedEntity = await entitiesDataSource
+      .getByIds([entity.sharedId], entity.language)
+      .first();
+
+    if (queryedEntity) {
+      relProperties.forEach(relProperty => {
+        entity.metadata[relProperty.name] = queryedEntity.metadata[relProperty.name];
+      });
+    }
+  }, Promise.resolve());
+
   entities.forEach(entity => {
     entity.obsoleteMetadata = [];
   });
