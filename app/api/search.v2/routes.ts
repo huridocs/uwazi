@@ -8,6 +8,7 @@ import { SearchQuery, Page } from 'shared/types/SearchQueryType';
 import { mapResults } from 'api/search.v2/searchResponse';
 import qs from 'qs';
 import { buildQuery } from './buildQuery';
+import { paths } from 'api/swagger';
 
 interface UwaziResponse {
   data: any;
@@ -20,7 +21,7 @@ interface UwaziResponse {
   };
 }
 
-type UwaziReq = Request & { query: SearchQuery };
+type UwaziReq = Request & { query: paths['/api/v2/search']['get']['parameters']['query'] };
 
 type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
@@ -53,23 +54,15 @@ const pagination = (currentUrl: string, totalResults: number, page?: Page) => {
 };
 
 const searchRoutes = (app: Application) => {
-  app.get(
-    '/api/v2/search',
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        query: SearchQuerySchema,
-      },
-    }),
-    async (req: UwaziReq, res: UwaziRes) => {
-      const { query, language, url } = req;
-      const response = await elastic.search({ body: await buildQuery(query, language) });
-      res.json({
-        data: mapResults(response.body, query),
-        links: pagination(url, response.body.hits.total.value, query.page),
-      });
-    }
-  );
+  app.get('/api/v2/search', async (req: UwaziReq, res: UwaziRes) => {
+    const { query, language, url } = req;
+
+    const response = await elastic.search({ body: await buildQuery(query, language) });
+    res.json({
+      data: mapResults(response.body, query),
+      links: pagination(url, response.body.hits.total.value, query.page),
+    });
+  });
 };
 
 export { searchRoutes };

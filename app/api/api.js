@@ -2,10 +2,13 @@
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import CSRFMiddleware from './auth/CSRFMiddleware';
 import languageMiddleware from './utils/languageMiddleware';
+import * as OpenApiValidator from 'express-openapi-validator';
 
 export default (app, server) => {
   //common middlewares
+
   app.use(CSRFMiddleware);
+
   app.use(languageMiddleware);
   app.use(activitylogMiddleware);
 
@@ -18,7 +21,6 @@ export default (app, server) => {
   require('./templates/routes').default(app);
   require('./search/deprecatedRoutes').default(app);
   require('./search/routes').default(app);
-  require('./search.v2/routes').searchRoutes(app);
   require('./topicclassification/routes').default(app);
   require('./thesauri/routes').default(app);
   require('./relationtypes/routes').default(app);
@@ -40,4 +42,20 @@ export default (app, server) => {
   require('./suggestions/routes').suggestionsRoutes(app);
   require('./preserve/routes').PreserveRoutes(app);
   require('./stats/routes').default(app);
+
+  app.use(
+    OpenApiValidator.middleware({
+      apiSpec: `${__dirname}/../../swagger.json`,
+      // validateRequests: true, // (default)
+      // coerceTypes: 'array',
+      validateApiSpec: false,
+      // validateRequests: {
+      //   allowUnknownQueryParameters: false,
+      //   removeAdditional: true
+      // },
+      // validateResponses: true, // false by default
+    })
+  );
+
+  require('./search.v2/routes').searchRoutes(app);
 };

@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Uwazi API",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v2/search": {
+      "get": {
+        "summary": "Search entities",
+        "description": "Search entities",
+        "x-allow-unknown-query-parameters": false,
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "title": "Page",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "limit": {
+                  "type": "number"
+                },
+                "offset": {
+                  "type": "number"
+                }
+              }
+            },
+            "style": "deepObject"
+          },
+          {
+            "in": "query",
+            "name": "filter",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "title": "RangeFilter",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "from": {
+                        "type": "number"
+                      },
+                      "to": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  {
+                    "title": "CompoundFilter",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "AND",
+                          "OR"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "properties": {
+                "searchString": {
+                  "type": "string"
+                },
+                "sharedId": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "style": "deepObject"
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "schema": {
+              "type": "string"
+            },
+            "style": "deepObject"
+          },
+          {
+            "in": "query",
+            "name": "fields",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "style": "deepObject"
+          }
+        ],
+        "responses": {
+          "200": {
+          }
+        }
+      }
+    }
+  }
+}

@@ -36,3 +36,5 @@ export const swaggerDocument = {
     },
   },
 };
+
+// console.log(JSON.stringify(swaggerDocument));

@@ -33,6 +33,11 @@ const RangeFilterSchema = {
 
 const searchGetParameters = [
   {
+    in: 'path',
+    name: 'id',
+    schema: { type: 'string' },
+  },
+  {
     in: 'query',
     name: 'page',
     schema: PageSchema,
