@@ -31,7 +31,7 @@ const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
   const templateIdToProperties = objectIndex(
     await templates.get({ _id: entities.map(e => e.template) }),
     t => t._id.toString(),
-    t => t.properties.filter((prop: any) => prop.type === 'newRelationship')
+    t => (t.properties || []).filter((prop: any) => prop.type === 'newRelationship')
   );
   const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
 
