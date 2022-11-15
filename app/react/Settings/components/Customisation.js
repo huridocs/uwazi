@@ -25,9 +25,13 @@ class Customisation extends Component {
       <div className="settings-content global-css-js">
         <div className="panel-heading">
           {allowcustomJS ? (
-            <SettingsHeader><Translate>Global CSS & JS</Translate></SettingsHeader>
+            <SettingsHeader>
+              <Translate>Global CSS & JS</Translate>
+            </SettingsHeader>
           ) : (
-            <SettingsHeader><Translate>Global CSS</Translate></SettingsHeader>
+            <SettingsHeader>
+              <Translate>Global CSS</Translate>
+            </SettingsHeader>
           )}
         </div>
         <Tabs>
