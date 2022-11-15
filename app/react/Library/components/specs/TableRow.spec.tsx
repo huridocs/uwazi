@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, RenderResult, screen, within } from '@testing-library/react';
 
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { TableRow } from 'app/Library/components/TableRow';
@@ -64,6 +64,11 @@ describe('TableRow', () => {
     title: 'entity1',
     creationDate: timestampCreation,
     template: 'idTemplate1',
+    icon: {
+      label: 'Colombia',
+      type: 'Flags',
+      _id: 'COL',
+    },
     metadata: {
       date: [
         {
@@ -116,16 +121,18 @@ describe('TableRow', () => {
     setMultipleSelection: setMultipleSelectionSpy,
   };
 
+  let renderResult: RenderResult;
+
   function render(multipleSelection: boolean = false) {
     const actualProps = { ...props, multipleSelection };
-    renderConnectedContainer(
+    ({ renderResult } = renderConnectedContainer(
       <table>
         <tbody>
           <TableRow {...actualProps} />
         </tbody>
       </table>,
       () => storeState
-    );
+    ));
   }
 
   describe('row format', () => {
@@ -141,6 +148,10 @@ describe('TableRow', () => {
       render();
       const renderedColumns = screen.getAllByRole('cell');
       const content = renderedColumns.map(col => col.textContent);
+      const icons = renderResult.container.getElementsByClassName('flag-icon-co');
+      const entityIcon = icons[0];
+      expect(icons.length).toBe(1);
+      expect(entityIcon.parentNode!.parentNode!.parentNode!).toEqual(renderedColumns[0]);
       expect(content).toEqual([
         'entity1',
         expect.stringMatching(/^Jul 2[2|3], 2020$/),
