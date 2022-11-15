@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { IStore, TableViewColumn } from 'app/istore';
+import { Icon as PropertyIcon } from 'app/Layout';
 import formatter from 'app/Metadata/helpers/formater';
 import { FormattedMetadataValue, TableCell } from 'app/Library/components/TableCell';
 import { EntitySchema } from 'shared/types/entityType';
@@ -113,6 +114,13 @@ const TableRowComponent = ({
                 onClick={checkEntity}
               />
             </div>
+            {formattedEntity.icon && (
+              <PropertyIcon
+                className="item-icon item-icon-center"
+                data={formattedEntity.icon}
+                size="sm"
+              />
+            )}
             <TableCell content={firstCell.value} zoomLevel={zoomLevel} />
           </div>
         </td>
