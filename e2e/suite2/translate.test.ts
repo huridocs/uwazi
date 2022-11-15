@@ -71,25 +71,6 @@ describe('Translations', () => {
       await expect(page).toMatchElement('.translation', { text: 'Filtros' });
     });
 
-    // eslint-disable-next-line max-statements
-    it('should keep all side panel content visible after translation, including last button', async () => {
-      await expect(page).toClick('.item-document:nth-child(1)');
-      await activateTranslation();
-      await translateESInline('.btn-label>.translation', 'View', 'Visualizar entidad en pantalla');
-      await translateESInline(
-        '.btn-label>.translation',
-        'Share',
-        'Abrir menu secundario para compartir'
-      );
-
-      await expect(page).toClick('.singleItem');
-      await page.waitForSelector('.item-document:nth-child(1)');
-      await expect(page).toClick('.item-document:nth-child(1)');
-      await page.waitForSelector('.attachments-modal-trigger');
-      await scrollTo('.attachments-modal-trigger');
-      await testSelectorShot('.side-panel.metadata-sidepanel', { threshold: 0.08 });
-    });
-
     it('should deactive live translate', async () => {
       await activateTranslation();
       await expect(page).toClick('.singleItem');
