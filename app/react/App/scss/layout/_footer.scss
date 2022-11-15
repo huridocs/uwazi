@@ -210,12 +210,15 @@ footer {
   -moz-box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
   box-shadow: 0px 6px 0px 0px white, 0px -1px 7px -1px grey;
   padding: 4px 12px;
-  width: 107px;
-  min-width: 90px;
   height: 24px;
   left: 100px;
   background-color: $c-white;
   z-index: 1;
+  width: max-content;
+  height: max-content;
+  max-width: 150px;
+  min-width: 90px;
+  min-height: 24px;
 }
 
 .library-footer {
@@ -242,8 +245,8 @@ footer {
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
-    left: 50%;
-    width: 100%;
+    left: 49%;
+    width: 98%;
     text-overflow: ellipsis;
     background-color: transparent;
 
@@ -258,11 +261,12 @@ footer {
   position: fixed;
   bottom: 0px;
   justify-content: center;
-  left: 50%;
+  left: 49%;
   width: 150px;
   text-overflow: ellipsis;
   margin-left: -75px;
-  height: 18px;
+  height: max-content;
+  min-height: 18px;
 
   &.closed {
     display: none;
