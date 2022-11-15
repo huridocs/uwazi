@@ -35,12 +35,12 @@ describe('migration update translations of settings tooltips', () => {
         value: 'Default view',
       }),
       expect.objectContaining({
-        key: 'Relationships:',
-        value: 'Relationships:',
+        key: 'Item',
+        value: 'Item',
       }),
       expect.objectContaining({
-        key: 'Entities:',
-        value: 'Entities:',
+        key: 'Page name',
+        value: 'Page name',
       }),
     ];
     const defaultContextContent = expect.objectContaining({
