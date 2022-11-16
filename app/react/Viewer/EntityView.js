@@ -79,7 +79,7 @@ class Entity extends Component {
   }
 
   render() {
-    return <EntityViewer />;
+    return <EntityViewer {...this.props} />;
   }
 }
 
