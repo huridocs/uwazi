@@ -153,7 +153,12 @@ class PageCreator extends Component<mappedProps> {
                 </div>
                 <Field model=".metadata.script">
                   <textarea
-                    placeholder="// Javascript - With great power comes great responsibility!"
+                    placeholder={t(
+                      'System',
+                      '// Javascript - With great power comes great responsibility!',
+                      null,
+                      false
+                    )}
                     className="form-control"
                     rows={12}
                   />

@@ -177,7 +177,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
             <FormGroup model=".name">
               <Field model=".name">
                 <input
-                  placeholder="Template name"
+                  placeholder={t('System', 'Template name', null, false)}
                   className="form-control"
                   disabled={syncedTemplate}
                 />

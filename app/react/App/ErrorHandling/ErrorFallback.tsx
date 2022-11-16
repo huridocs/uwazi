@@ -13,10 +13,12 @@ export const ErrorFallback = (props: ErrorFallbackProps) => {
     <div className="error-fallback-ui">
       <div className="message">
         <p className="error-message-xxl">
-          {props.error.summary || <Translate>Well, this is awkward...</Translate>}
+          {props.error.summary !== undefined && <Translate>{props.error.summary}</Translate>}
+          {props.error.summary === undefined && <Translate>Well, this is awkward...</Translate>}
         </p>
         <p className="error-message-lg">
-          {props.error.name || <Translate>Something went wrong</Translate>}
+          {props.error.name !== undefined && <Translate>{props.error.name}</Translate>}
+          {props.error.name === undefined && <Translate>Something went wrong</Translate>}
         </p>
         <p>
           <Translate>Please contact an admin for details.</Translate>
@@ -27,7 +29,11 @@ export const ErrorFallback = (props: ErrorFallbackProps) => {
             {props.error.requestId}
           </p>
         )}
-        {errorDetails && <details className="error-details">{errorDetails}</details>}
+        {errorDetails && (
+          <details className="error-details">
+            <Translate>{errorDetails}</Translate>
+          </details>
+        )}
       </div>
       {props.error.code && <span className="error-code">{props.error.code}</span>}
     </div>
