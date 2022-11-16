@@ -113,10 +113,7 @@ class EntityViewer extends Component {
       relationships,
       hasPageView,
       user,
-      routeParams,
     } = this.props;
-
-    console.log('Location: ', routeParams);
 
     const { panelOpen, copyFrom, copyFromProps } = this.state;
     const rawEntity = entity.toJS();
