@@ -179,4 +179,4 @@ For development:
 
 - 8GB of RAM (depending on whether the services are running)
 - 4 CPU cores
-- 40 GB of disk space
+- 20 GB of disk space
