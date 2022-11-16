@@ -169,7 +169,7 @@ Note the subtle nudge ;)
 - For big files with a small database footprint (such as video, audio and images) you'll need more HD space than CPU or RAM
 - For text documents you should consider some decent RAM as ElasticSearch is pretty greedy on memory for full text search
 
-The bare minimum you need to be able to run Uwazi without bottlenecks is:
+The bare minimum you need to be able to run Uwazi on-prem without bottlenecks is:
 
 - 4 GB of RAM (reserve 2 for Elastic and 2 for everything else)
 - 2 CPU cores
