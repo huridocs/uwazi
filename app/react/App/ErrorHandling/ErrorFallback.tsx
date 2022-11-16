@@ -13,12 +13,12 @@ export const ErrorFallback = (props: ErrorFallbackProps) => {
     <div className="error-fallback-ui">
       <div className="message">
         <p className="error-message-xxl">
-          {props.error.summary !== undefined && <Translate>{props.error.summary}</Translate>}
-          {props.error.summary === undefined && <Translate>Well, this is awkward...</Translate>}
+          {props.error.summary && <Translate>{props.error.summary}</Translate>}
+          {!props.error.summary && <Translate>Well, this is awkward...</Translate>}
         </p>
         <p className="error-message-lg">
-          {props.error.name !== undefined && <Translate>{props.error.name}</Translate>}
-          {props.error.name === undefined && <Translate>Something went wrong</Translate>}
+          {props.error.name && <Translate>{props.error.name}</Translate>}
+          {!props.error.name && <Translate>Something went wrong</Translate>}
         </p>
         <p>
           <Translate>Please contact an admin for details.</Translate>
