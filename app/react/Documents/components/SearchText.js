@@ -6,7 +6,7 @@ import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { Icon } from 'UI';
 import ModalTips from 'app/App/ModalTips';
 import { toUrlParams } from 'shared/JSONRequest';

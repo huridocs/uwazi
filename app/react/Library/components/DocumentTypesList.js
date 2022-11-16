@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
-import { withRouter, Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
+import { withRouter } from 'app/withRouter';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';

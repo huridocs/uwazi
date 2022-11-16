@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';

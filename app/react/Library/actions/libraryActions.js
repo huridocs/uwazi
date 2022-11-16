@@ -2,7 +2,7 @@
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { t } from 'app/I18N';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';

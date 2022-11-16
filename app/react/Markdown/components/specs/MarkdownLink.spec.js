@@ -6,7 +6,7 @@ describe('Link', () => {
   beforeEach(() => {
     spyOn(console, 'warn');
   });
-  it('should render a react-router Link', () => {
+  it('should render a react-router-dom Link', () => {
     const component = shallow(<MarkdownLink url="url">label</MarkdownLink>);
     expect(component).toMatchSnapshot();
   });

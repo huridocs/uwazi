@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';

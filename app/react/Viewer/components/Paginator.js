@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import { useLocation } from 'react-router-dom';
 import { Translate } from 'app/I18N';
-import { withRouter } from 'react-router';
 import { CurrentLocationLink } from 'app/Layout';
 
 const disableButton = (page, pageToDisable) => ({
@@ -52,11 +51,11 @@ Paginator.propTypes = {
   onPageChange: PropTypes.func,
 };
 
-export default Paginator;
-
-const PaginatorWithPage = withRouter(props => {
-  const { location, ...restProps } = props;
+const PaginatorWithPage = props => {
+  const location = useLocation();
+  const { ...restProps } = props;
   return <Paginator {...restProps} page={Number(location.query.page || 1)} />;
-});
+};
 
 export { PaginatorWithPage };
+export default Paginator;

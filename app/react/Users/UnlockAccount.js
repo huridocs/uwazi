@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import RouteHandler from 'app/App/RouteHandler';
 import { Translate } from 'app/I18N';
 

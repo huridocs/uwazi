@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 
 import ResetPassword from '../ResetPassword';
 

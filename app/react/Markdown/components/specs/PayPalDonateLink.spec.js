@@ -6,7 +6,7 @@ describe('Link', () => {
   beforeEach(() => {
     spyOn(console, 'warn');
   });
-  it('should render a react-router Link with target _blank', () => {
+  it('should render a react-router-dom Link with target _blank', () => {
     const component = shallow(
       <PayPalDonateLink currency="EUR" paypalid="1234">
         label

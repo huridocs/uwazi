@@ -2,7 +2,7 @@
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { Form } from 'react-redux-form';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import React from 'react';
 
 import { shallow } from 'enzyme';

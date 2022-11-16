@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { DocumentContentSnippets } from '../SnippetList';
 
 describe('SnippetList', () => {

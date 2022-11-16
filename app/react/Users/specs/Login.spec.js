@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { actions as formActions } from 'react-redux-form';
 
 import { Login } from '../Login.js';

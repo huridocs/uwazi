@@ -1,4 +1,4 @@
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 

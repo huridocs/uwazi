@@ -1,4 +1,4 @@
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 
 import { isClient } from 'app/utils';
 import { notify } from 'app/Notifications/actions/notificationsActions';

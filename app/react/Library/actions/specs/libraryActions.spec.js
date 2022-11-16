@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import rison from 'rison-node';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as types from 'app/Library/actions/actionTypes';

@@ -1,38 +1,33 @@
-import React, { Component } from 'react';
-import { Link, withRouter, WithRouterProps } from 'react-router';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { CurrentLocationLink } from 'app/Layout';
 import { EntitySchema } from 'shared/types/entityType';
 
-type Props = {
+type ViewDocumentLinkProps = {
   filename: string;
   entity: EntitySchema;
+  children: React.ReactNode;
 };
 
-type State = {};
-
-export class ViewDocumentLinkBase extends Component<Props & WithRouterProps, State> {
-  render() {
-    const { filename, location, children, entity } = this.props;
-    const onViewer = location.pathname.match(/entity/);
-    return onViewer ? (
-      <CurrentLocationLink
-        className="btn btn-default"
-        location={location}
-        queryParams={{ file: filename, page: 1 }}
-        type="button"
-      >
-        {children}
-      </CurrentLocationLink>
-    ) : (
-      <Link
-        className="btn btn-default"
-        to={`/entity/${entity.sharedId}?file=${filename}`}
-        type="button"
-      >
-        {children}
-      </Link>
-    );
-  }
-}
-
-export const ViewDocumentLink = withRouter(ViewDocumentLinkBase);
+export const ViewDocumentLink = ({ filename, entity, children }: ViewDocumentLinkProps) => {
+  const location = useLocation();
+  const onViewer = location.pathname.match(/entity/);
+  return onViewer ? (
+    <CurrentLocationLink
+      className="btn btn-default"
+      location={location}
+      queryParams={{ file: filename, page: 1 }}
+      type="button"
+    >
+      {children}
+    </CurrentLocationLink>
+  ) : (
+    <Link
+      className="btn btn-default"
+      to={`/entity/${entity.sharedId}?file=${filename}`}
+      type="button"
+    >
+      {children}
+    </Link>
+  );
+};

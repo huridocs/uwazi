@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import { Router, browserHistory } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 
 import CustomProvider from './App/Provider';
@@ -9,7 +9,7 @@ import { store } from './store';
 const App = () => (
   <Provider store={store}>
     <CustomProvider>
-      <Router history={browserHistory}>{Routes}</Router>
+      <BrowserRouter>{Routes}</BrowserRouter>
     </CustomProvider>
   </Provider>
 );

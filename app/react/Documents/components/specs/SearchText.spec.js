@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import { SearchText } from '../SearchText.js';
 import SnippetList from '../SnippetList';
 

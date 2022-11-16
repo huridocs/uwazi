@@ -1,4 +1,4 @@
-import { Link, RouteComponentProps } from 'react-router';
+import { Link, RouteComponentProps } from 'react-router-dom';
 import React from 'react';
 import { shallow } from 'enzyme';
 

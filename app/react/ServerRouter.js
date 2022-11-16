@@ -2,7 +2,7 @@
 import fs from 'fs';
 import { fromJS as Immutable } from 'immutable';
 import { Provider } from 'react-redux';
-import { match, RouterContext } from 'react-router';
+import { match, RouterContext } from 'react-router-dom';
 import { renderToString } from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import React from 'react';

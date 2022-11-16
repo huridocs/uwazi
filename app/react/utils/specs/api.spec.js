@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { browserHistory } from 'react-router';
+import { browserHistory } from 'react-router-dom';
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config';
 import { store } from 'app/store';

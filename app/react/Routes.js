@@ -144,8 +144,9 @@ const getIndexRoute = (_nextState, callBack) => {
 };
 
 const routes = (
-  <Route getIndexRoute={getIndexRoute}>
-    <Route path="settings" component={Settings} onEnter={needsAuth}>
+  // <Route getIndexRoute={getIndexRoute}>
+  <Route>
+    {/* <Route path="settings" component={Settings} onEnter={needsAuth}>
       <Route path="account" component={AccountSettings} />
       <Route path="dashboard" component={Dashboard} />
       <Route path="2fa" component={Configure2fa} />
@@ -203,20 +204,20 @@ const routes = (
       component={SemanticSearchResultsView}
       onEnter={onEnter}
     />
-    <Route path="error/:errorCode" component={GeneralError} />
-    <Route path="404" component={GeneralError} />
+    <Route path="error/:errorCode" component={GeneralError} /> */}
+    <Route path="404" element={GeneralError} />
   </Route>
 );
 
 export { getIndexRoute };
 
 export default (
-  <Route path="/" component={App}>
+  <Route path="/" element={App}>
     {routes}
     <Route path=":lang">
       {routes}
-      <Route path="*" component={GeneralError} />
+      <Route path="*" element={GeneralError} />
     </Route>
-    <Route path="*" component={GeneralError} />
+    <Route path="*" element={GeneralError} />
   </Route>
 );

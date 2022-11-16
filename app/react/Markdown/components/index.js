@@ -1,6 +1,6 @@
 import loadable from '@loadable/component';
 
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Icon } from 'UI';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
