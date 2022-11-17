@@ -229,7 +229,7 @@ describe('entities.get()', () => {
 describe('entities.save()', () => {
   it('should mark newRelationship metadata as obsolete when creating new entity', async () => {
     const performSpy = jest
-      .spyOn(v2Support, 'performNewRelationshipQueries')
+      .spyOn(v2Support, 'assignNewRelationshipFieldsValues')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation(async (e: any) => Promise.resolve());
     const markSpy = jest

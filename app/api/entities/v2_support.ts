@@ -22,7 +22,7 @@ const entityTypeCheck = (
   metadata: MetadataSchema;
 } => !!entity.template && !!entity.sharedId && !!entity.metadata;
 
-const performNewRelationshipQueries = async (entities: EntitySchema[]) => {
+const assignNewRelationshipFieldsValues = async (entities: EntitySchema[]) => {
   const transactionManager = new MongoTransactionManager(getClient());
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return;
@@ -120,6 +120,6 @@ export {
   deleteRelatedNewRelationships,
   ignoreNewRelationshipsMetadata,
   markNewRelationshipsOfAffected,
-  performNewRelationshipQueries,
+  assignNewRelationshipFieldsValues,
   denormalizeAfterEntityUpdate,
 };
