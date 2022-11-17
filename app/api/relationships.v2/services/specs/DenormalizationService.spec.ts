@@ -17,16 +17,66 @@ const entityInLanguages = (langs: string[], id: string, template?: string) =>
 
 const fixtures = {
   relationships: [
-    { _id: factory.id('rel1'), from: 'entity1', to: 'hub1', type: factory.id('nullType') },
-    { _id: factory.id('rel2'), to: 'hub1', from: 'entity3', type: factory.id('relType1') },
-    { _id: factory.id('rel3'), to: 'hub1', from: 'entity4', type: factory.id('relType1') },
-    { _id: factory.id('rel4'), from: 'entity1', to: 'hub2', type: factory.id('nullType') },
-    { _id: factory.id('rel5'), to: 'hub2', from: 'entity5', type: factory.id('relType2') },
-    { _id: factory.id('rel6'), to: 'hub2', from: 'entity6', type: factory.id('relType3') },
-    { _id: factory.id('rel7'), from: 'entity2', to: 'hub3', type: factory.id('relType4') },
-    { _id: factory.id('rel8'), to: 'hub3', from: 'entity7', type: factory.id('relType5') },
-    { _id: factory.id('rel9'), from: 'entity7', to: 'entity4', type: factory.id('relType5') },
-    { _id: factory.id('rel10'), from: 'entity9', to: 'entity4', type: factory.id('relType5') },
+    {
+      _id: factory.id('rel1'),
+      from: { entity: 'entity1' },
+      to: { entity: 'hub1' },
+      type: factory.id('nullType'),
+    },
+    {
+      _id: factory.id('rel2'),
+      to: { entity: 'hub1' },
+      from: { entity: 'entity3' },
+      type: factory.id('relType1'),
+    },
+    {
+      _id: factory.id('rel3'),
+      to: { entity: 'hub1' },
+      from: { entity: 'entity4' },
+      type: factory.id('relType1'),
+    },
+    {
+      _id: factory.id('rel4'),
+      from: { entity: 'entity1' },
+      to: { entity: 'hub2' },
+      type: factory.id('nullType'),
+    },
+    {
+      _id: factory.id('rel5'),
+      to: { entity: 'hub2' },
+      from: { entity: 'entity5' },
+      type: factory.id('relType2'),
+    },
+    {
+      _id: factory.id('rel6'),
+      to: { entity: 'hub2' },
+      from: { entity: 'entity6' },
+      type: factory.id('relType3'),
+    },
+    {
+      _id: factory.id('rel7'),
+      from: { entity: 'entity2' },
+      to: { entity: 'hub3' },
+      type: factory.id('relType4'),
+    },
+    {
+      _id: factory.id('rel8'),
+      to: { entity: 'hub3' },
+      from: { entity: 'entity7' },
+      type: factory.id('relType5'),
+    },
+    {
+      _id: factory.id('rel9'),
+      from: { entity: 'entity7' },
+      to: { entity: 'entity4' },
+      type: factory.id('relType5'),
+    },
+    {
+      _id: factory.id('rel10'),
+      from: { entity: 'entity9' },
+      to: { entity: 'entity4' },
+      type: factory.id('relType5'),
+    },
   ],
   entities: [
     ...factory.entityInMultipleLanguages(

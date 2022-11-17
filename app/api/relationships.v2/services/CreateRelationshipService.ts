@@ -3,21 +3,83 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
+import { FilesDataSource } from 'api/files.v2/contracts/FilesDataSource';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { MissingRelationshipTypeError } from 'api/relationshiptypes.v2/errors/relationshipTypeErrors';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
-import { Relationship } from '../model/Relationship';
+import {
+  EntityPointer,
+  Relationship,
+  TextReferencePointer,
+  Selection,
+} from '../model/Relationship';
 import { DenormalizationService } from './DenormalizationService';
 
+interface ReferencePointerData {
+  entity: string;
+  file: string;
+  reference: {
+    selections: {
+      page: number;
+      top: number;
+      left: number;
+      width: number;
+      height: number;
+    }[];
+    text: string;
+  };
+}
+
 interface CreateRelationshipData {
-  from: string;
-  to: string;
+  from: string | ReferencePointerData;
+  to: string | ReferencePointerData;
   type: string;
+}
+
+function isReferencePointerData(
+  data: CreateRelationshipData['from' | 'to']
+): data is ReferencePointerData {
+  return typeof data === 'object';
+}
+
+function mapDataToSelection(data: ReferencePointerData['reference']['selections']) {
+  return data.map(
+    selectionData =>
+      new Selection(
+        selectionData.page,
+        selectionData.top,
+        selectionData.left,
+        selectionData.height,
+        selectionData.width
+      )
+  );
+}
+
+function mapDataToPointer(data: CreateRelationshipData['from' | 'to']) {
+  return isReferencePointerData(data)
+    ? new TextReferencePointer(
+        data.entity,
+        data.file,
+        mapDataToSelection(data.reference.selections),
+        data.reference.text
+      )
+    : new EntityPointer(data);
+}
+
+function mapDataToRelationship(data: CreateRelationshipData, generateId: () => string) {
+  return new Relationship(
+    generateId(),
+    mapDataToPointer(data.from),
+    mapDataToPointer(data.to),
+    data.type
+  );
 }
 export class CreateRelationshipService {
   private relationshipsDS: RelationshipsDataSource;
 
   private entitiesDS: EntitiesDataSource;
+
+  private filesDS: FilesDataSource;
 
   private transactionManager: TransactionManager;
 
@@ -34,6 +96,7 @@ export class CreateRelationshipService {
     relationshipsDS: RelationshipsDataSource,
     relationshipTypesDS: RelationshipTypesDataSource,
     entitiesDS: EntitiesDataSource,
+    filesDS: FilesDataSource,
     transactionManager: TransactionManager,
     idGenerator: IdGenerator,
     authService: AuthorizationService,
@@ -42,6 +105,7 @@ export class CreateRelationshipService {
     this.relationshipsDS = relationshipsDS;
     this.relationshipTypesDS = relationshipTypesDS;
     this.entitiesDS = entitiesDS;
+    this.filesDS = filesDS;
     this.transactionManager = transactionManager;
     this.idGenerator = idGenerator;
     this.authService = authService;
@@ -52,29 +116,35 @@ export class CreateRelationshipService {
     const models: Relationship[] = [];
     const types = new Set<string>();
     const sharedIds = new Set<string>();
+    const files: { _id: string; entity: string }[] = [];
 
-    relationships.forEach(relationship => {
-      models.push(
-        Relationship.create(
-          this.idGenerator.generate(),
-          relationship.from,
-          relationship.to,
-          relationship.type
-        )
-      );
+    relationships.forEach(data => {
+      const relationship = mapDataToRelationship(data, this.idGenerator.generate);
+
+      models.push(relationship);
       types.add(relationship.type);
-      sharedIds.add(relationship.from).add(relationship.to);
+
+      (['from', 'to'] as const).forEach(side => {
+        const pointer = relationship[side];
+
+        sharedIds.add(pointer.entity);
+        if (pointer instanceof TextReferencePointer) {
+          files.push({ entity: pointer.entity, _id: pointer.file });
+        }
+      });
     });
 
     return {
       models,
       usedTypes: Array.from(types),
       relatedEntities: Array.from(sharedIds),
+      relatedFilesForEntities: files,
     };
   }
 
   async create(relationships: CreateRelationshipData[]) {
-    const { models, usedTypes, relatedEntities } = this.processInput(relationships);
+    const { models, usedTypes, relatedEntities, relatedFilesForEntities } =
+      this.processInput(relationships);
 
     await this.authService.validateAccess('write', relatedEntities);
 
@@ -83,6 +153,12 @@ export class CreateRelationshipService {
     }
     if (!(await this.entitiesDS.entitiesExist(relatedEntities))) {
       throw new MissingEntityError('Must provide sharedIds from existing entities');
+    }
+    if (
+      relatedFilesForEntities.length &&
+      !(await this.filesDS.filesExistForEntities(relatedFilesForEntities))
+    ) {
+      throw new Error('Must provide id for files that belong to the provided entities');
     }
 
     const created = await this.transactionManager.run(async () => {

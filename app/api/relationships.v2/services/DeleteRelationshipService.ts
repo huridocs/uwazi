@@ -24,7 +24,7 @@ export class DeleteRelationshipService {
   async delete(_ids: string | string[]) {
     const ids = Array.isArray(_ids) ? _ids : [_ids];
     const toBeDeleted = await this.relationshipsDS.getById(ids).all();
-    const sharedIds = toBeDeleted.map(r => [r.from, r.to]).flat();
+    const sharedIds = toBeDeleted.map(r => [r.from.entity, r.to.entity]).flat();
     await this.authService.validateAccess('write', sharedIds);
     await this.transactionManager.run(async () => {
       if (!(await this.relationshipsDS.exists(ids))) {

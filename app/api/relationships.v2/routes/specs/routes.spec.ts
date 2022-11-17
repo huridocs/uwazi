@@ -29,8 +29,8 @@ const fixtures = {
   relationships: [
     {
       _id: factory.id('relationship1'),
-      from: 'entity1',
-      to: 'entity2',
+      from: { entity: 'entity1' },
+      to: { entity: 'entity2' },
       type: factory.id('type2'),
     },
   ],
@@ -136,14 +136,14 @@ describe('POST relationships', () => {
     expect(response.body).toMatchObject([
       {
         _id: onDb![0]._id.toHexString(),
-        from: 'entity1',
-        to: 'entity2',
+        from: { entity: 'entity1' },
+        to: { entity: 'entity2' },
         type: factory.id('type1').toHexString(),
       },
       {
         _id: onDb![1]._id.toHexString(),
-        from: 'entity2',
-        to: 'entity1',
+        from: { entity: 'entity2' },
+        to: { entity: 'entity1' },
         type: factory.id('type1').toHexString(),
       },
     ]);

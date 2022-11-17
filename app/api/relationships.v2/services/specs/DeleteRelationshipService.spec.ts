@@ -27,20 +27,20 @@ const fixtures = {
   relationships: [
     {
       _id: factory.id('rel1'),
-      from: 'entity1',
-      to: 'entity2',
+      from: { entity: 'entity1' },
+      to: { entity: 'entity2' },
       type: factory.id('rtype1'),
     },
     {
       _id: factory.id('rel2'),
-      from: 'entity2',
-      to: 'entity1',
+      from: { entity: 'entity2' },
+      to: { entity: 'entity1' },
       type: factory.id('rtype2'),
     },
     {
       _id: factory.id('rel3'),
-      from: 'entity3',
-      to: 'entity1',
+      from: { entity: 'entity3' },
+      to: { entity: 'entity1' },
       type: factory.id('rtype3'),
     },
   ],
@@ -108,8 +108,8 @@ describe('delete()', () => {
       expect(relatinshipsInDb).toEqual([
         {
           _id: expect.any(ObjectId),
-          from: 'entity2',
-          to: 'entity1',
+          from: { entity: 'entity2' },
+          to: { entity: 'entity1' },
           type: factory.id('rtype2'),
         },
       ]);

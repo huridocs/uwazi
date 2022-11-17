@@ -69,7 +69,7 @@ export class DenormalizationService {
     if (!relationship) throw new Error('missing relationship');
 
     const relatedEntities = await this.entitiesDS
-      .getByIds([relationship.from, relationship.to])
+      .getByIds([relationship.from.entity, relationship.to.entity])
       .all();
 
     return this.getCandidateEntities(

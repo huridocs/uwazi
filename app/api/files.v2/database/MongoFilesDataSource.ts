@@ -1,0 +1,18 @@
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { ObjectId } from 'mongodb';
+import { FilesDataSource } from '../contracts/FilesDataSource';
+import { FileDBOType } from './schemas/relationshipTypes';
+
+export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
+  protected collectionName = 'files';
+
+  async filesExistForEntities(files: { entity: string; _id: string }[]) {
+    const query = {
+      $or: files.map(file => ({ _id: new ObjectId(file._id), entity: file.entity })),
+    };
+    const foundFiles = await this.getCollection().countDocuments(query, {
+      session: this.getSession(),
+    });
+    return foundFiles === files.length;
+  }
+}
