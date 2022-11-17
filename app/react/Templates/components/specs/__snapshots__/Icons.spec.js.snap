@@ -15,6 +15,7 @@ Object {
   "multidaterange": "calendar",
   "multiselect": "list",
   "nested": "cubes",
+  "newRelationship": "exchange-alt",
   "numeric": "calculator",
   "preview": "passport",
   "relationship": "exchange-alt",

@@ -101,6 +101,7 @@ export interface Settings {
         properties: string[];
       }[];
     };
+    newRelationships?: boolean;
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {

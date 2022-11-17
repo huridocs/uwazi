@@ -81,7 +81,11 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
 
-  const indexedEntities = objectIndex(entities, e => e.sharedId + e.language);
+  const indexedEntities = objectIndex(
+    entities,
+    e => e.sharedId! + e.language!,
+    objectIndex.NoTransform
+  );
   const template = await templatesModel.getById(templates[0]);
 
   let type: string | undefined = 'text';
@@ -102,12 +106,15 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
       return file;
     }
 
-    let [{ value }] = entity.metadata[property] || [{}];
+    const [{ value }] = entity.metadata[property] || [{}];
+    let stringValue: string;
     if (type === propertyTypes.date) {
-      value = new Date(value * 1000).toLocaleDateString(entity.language);
+      stringValue = new Date(<number>value * 1000).toLocaleDateString(entity.language);
+    } else {
+      stringValue = <string>value;
     }
 
-    return { ...file, propertyValue: value };
+    return { ...file, propertyValue: stringValue };
   });
 
   return getFilesWithAggregations(filesWithEntityValue);

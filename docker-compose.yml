@@ -17,8 +17,9 @@ services:
       - cluster.routing.allocation.disk.threshold_enabled=false
 
   mongo:
-    image: 'mongo:4.2'
+    image: "mongo:4.2"
     container_name: uwazi-mongo
+    command: mongod --replSet "uwazi_replica_set"
     volumes:
       - mongodata:/data/db
     ports:
