@@ -1,14 +1,14 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
+import { fireEvent, screen, within } from '@testing-library/react';
 import { ClientUserSchema } from 'app/apiResponseTypes';
 import { UserRole } from 'shared/types/userSchema';
-import { Translate } from 'app/I18N';
-import { Pill } from 'app/Metadata/components/Pill';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { UserList, UserListProps } from '../UserList';
 
 describe('UserList', () => {
-  let component: ShallowWrapper;
-
   const users: ClientUserSchema[] = [
     {
       _id: 'user1',
@@ -40,27 +40,25 @@ describe('UserList', () => {
 
   describe('List of users', () => {
     beforeEach(() => {
-      component = shallow(<UserList {...defaultProps} />);
+      renderConnectedContainer(<UserList {...defaultProps} />, () => defaultState);
     });
     it('Should list all existing users into a table ordered by username', () => {
-      const rows = component.find('tbody > tr');
-      expect(rows.length).toBe(3);
-      const columns = rows.at(0).find('td');
-      expect(columns.at(0).props().children).toEqual('Ana Brown');
-      expect(columns.at(1).find(Pill).at(0).props().children).toContain(' + 2FA');
-      expect(columns.at(2).find(Translate).props().children).toBe('editor');
-      expect(columns.at(3).find(Pill).children().at(1).text()).toBe(' Group1');
-      expect(columns.at(3).find(Pill).children().at(3).text()).toBe(' Group2');
+      const rows = screen.getAllByRole('row');
+      expect(rows.length).toBe(4);
+      const columns = within(rows[1]).getAllByRole('cell');
+      expect(columns[0].textContent).toEqual('Ana Brown');
+      expect(columns[1].textContent).toEqual('Password + 2FA');
+      expect(columns[2].textContent).toEqual('editor');
+      expect(columns[3].textContent).toEqual(' Group1 Group2');
     });
 
     it('should call handleSelect when a row is clicked', () => {
-      const row = component.find('tbody > tr').at(1);
-      expect(row.props().className).toBe('');
-      row.simulate('click');
-      component.update();
+      const rows = screen.getAllByRole('row');
+      //expect(rows[0].className).toBe('');
+      fireEvent.click(rows[2]);
       expect(defaultProps.handleSelect).toHaveBeenCalledWith(users[1]);
-      const updatedRow = component.find('tbody > tr').at(1);
-      expect(updatedRow.props().className).toBe('selected');
+      const updatedRow = screen.getAllByRole('row')[2];
+      expect(updatedRow.className).toBe('selected');
     });
   });
 });
