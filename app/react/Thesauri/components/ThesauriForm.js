@@ -100,7 +100,8 @@ class ThesauriForm extends Component {
     const previousLastValueWasGroup =
       previousValues.length && previousValues[previousValues.length - 1].values;
     if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
+      //Resolved #5172- Call .focus() on null when deleting last non-group item
+      this.groups[this.groups.length - 1]?.focus();
     }
   }
 
