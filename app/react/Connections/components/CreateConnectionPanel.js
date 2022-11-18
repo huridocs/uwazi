@@ -35,7 +35,7 @@ class CreateConnectionPanel extends Component {
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>
-            <Translate>Create</Translate> {typeLabel}
+            <Translate>Create</Translate> <Translate>{typeLabel}</Translate>
           </h1>
           <button
             className="closeSidepanel close-modal"
