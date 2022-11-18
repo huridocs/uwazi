@@ -9,3 +9,5 @@ Confirm delete entity,Confirm deletion of entity,Confirm delete entity,Confirm d
 Confirm delete file,Confirm deletion of file,Confirm delete file,Confirm deletion of file
 Confirm delete thesaurus:,Confirm deletion of thesaurus:,Confirm delete thesaurus:,Confirm deletion of thesaurus
 "Instructions to reset your password have been sent, please check your email","Instructions to reset password","Instructions to reset your password have been sent, please check your email","Instructions to reset user password have been sent. Please check your email."
+Multimedia fill description,Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.","will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+OCR button tip,OCR button tip,"This will process the document to recognize it's text. The original file will be added as a supporting file.","This will process the document to recognize its text. The original file will be added as a supporting file."

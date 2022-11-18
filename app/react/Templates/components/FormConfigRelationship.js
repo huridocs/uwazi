@@ -169,7 +169,7 @@ const getTemplateProperties = createSelector(
       ? state.template.formState.properties[props.index].content.value
       : null,
   (templates, content) => {
-    const targetTemplate = templates.find(t => t.get('_id') === content);
+    const targetTemplate = templates.find(template => template.get('_id') === content);
     return targetTemplate ? targetTemplate.get('properties').toJS() : [];
   }
 );
