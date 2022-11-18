@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import { Outlet } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
@@ -105,6 +105,7 @@ class App extends Component {
             <Matomo />
           </div>
         </div>
+        <Outlet />
       </div>
     );
   }
