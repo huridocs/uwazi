@@ -1,6 +1,6 @@
 import React from 'react';
 import { IndexRoute, Route, Routes } from 'react-router-dom';
-import App from 'app/App/App';
+import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import { trackPage } from 'app/App/GoogleAnalytics';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
