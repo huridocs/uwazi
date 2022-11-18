@@ -146,11 +146,15 @@ export interface PropertySchema {
     | 'relationship'
     | 'select'
     | 'text'
-    | 'generatedid';
+    | 'generatedid'
+    | 'newRelationship';
   prioritySorting?: boolean;
   generatedId?: boolean;
   content?: string;
   relationType?: string;
+  query?: {
+    [k: string]: unknown | undefined;
+  }[];
   inherit?: {
     property?: string;
     type?:
@@ -170,7 +174,8 @@ export interface PropertySchema {
       | 'relationship'
       | 'select'
       | 'text'
-      | 'generatedid';
+      | 'generatedid'
+      | 'newRelationship';
   };
   filter?: boolean;
   noLabel?: boolean;

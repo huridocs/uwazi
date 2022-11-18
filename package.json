@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.94.0-rc3",
+  "version": "1.94.0-rc4",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -28,6 +28,7 @@
     "webpack-server": "node ./webpack/webpack.server.js",
     "dev-worker": "node run.js ./app/worker.ts",
     "check-translations": "node ./scripts/checkTranslations.mjs",
+    "describe-database": "node ./scripts/describeDatabase.mjs",
     "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
     "hot-puppeteer": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot",
     "run-puppeteer": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn run-production",
@@ -174,7 +175,7 @@
     "react-dropzone": "14.2.3",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.38.0",
-    "react-hot-loader": "^4.13.0",
+    "react-hot-loader": "^4.13.1",
     "react-image-gallery": "^1.2.11",
     "react-modal": "3.14.4",
     "react-player": "^2.11.0",
@@ -328,6 +329,7 @@
     "supertest": "6.2.3",
     "terser-webpack-plugin": "^5.3.3",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.0",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.5.0",

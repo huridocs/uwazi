@@ -48,6 +48,15 @@ class EntityViewer extends Component {
     this.deleteConnection = this.deleteConnection.bind(this);
   }
 
+  componentDidMount() {
+    const { params, hasPageView } = this.props;
+    if (hasPageView && !params.tabView) {
+      this.props.showTab('page');
+    } else {
+      this.props.showTab(params.tabView);
+    }
+  }
+
   onCopyFromSelect(copyFromProps) {
     this.setState({ copyFromProps });
   }
@@ -364,6 +373,7 @@ EntityViewer.propTypes = {
   showTab: PropTypes.func.isRequired,
   hasPageView: PropTypes.bool,
   user: PropTypes.instanceOf(Immutable.Map),
+  params: PropTypes.object,
 };
 
 EntityViewer.contextTypes = {

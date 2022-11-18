@@ -91,6 +91,7 @@ export interface ConnectionSchema {
           }[]
         | undefined;
     };
+    obsoleteMetadata?: string[];
     suggestedMetadata?: {
       [k: string]:
         | {
