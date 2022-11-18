@@ -1,4 +1,4 @@
-import { IndexTargetTypes, objectIndex } from '../objectIndex';
+import { objectIndex } from '../objectIndex';
 
 class Source {
   text: string;
@@ -23,19 +23,19 @@ const sourceArray = [
 
 describe('objectIndex()', () => {
   it('should index one to one by default, keep the first option on overlap', () => {
-    expect(objectIndex(sourceArray, d => d.text)).toEqual({
+    expect(objectIndex(sourceArray, d => d.text, objectIndex.NoTransform)).toEqual({
       A: sourceArray[0],
       B: sourceArray[1],
       C: sourceArray[2],
       D: sourceArray[3],
     });
-    expect(objectIndex(sourceArray, d => d.nested.value)).toEqual({
+    expect(objectIndex(sourceArray, d => d.nested.value, objectIndex.NoTransform)).toEqual({
       NA: sourceArray[0],
       NB: sourceArray[1],
       NC: sourceArray[2],
       ND: sourceArray[3],
     });
-    expect(objectIndex(sourceArray, d => d.number)).toEqual({
+    expect(objectIndex(sourceArray, d => d.number, objectIndex.NoTransform)).toEqual({
       0: sourceArray[0],
       1: sourceArray[2],
     });
@@ -53,34 +53,6 @@ describe('objectIndex()', () => {
       B: 'NB',
       C: 'NC',
       D: 'ND',
-    });
-  });
-
-  it('should allow indexing one-to-array', () => {
-    expect(
-      objectIndex(
-        sourceArray,
-        d => d.number,
-        d => d.text,
-        IndexTargetTypes.array
-      )
-    ).toEqual({
-      0: ['A', 'B'],
-      1: ['C', 'D'],
-    });
-  });
-
-  it('should allow indexing one-to-set', () => {
-    expect(
-      objectIndex(
-        sourceArray,
-        d => d.number,
-        d => d.text,
-        IndexTargetTypes.set
-      )
-    ).toEqual({
-      0: new Set(['A', 'B']),
-      1: new Set(['C', 'D']),
     });
   });
 });
