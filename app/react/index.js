@@ -1,14 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import * as Sentry from '@sentry/react';
-
 import { BrowserTracing } from '@sentry/tracing';
-
 import { AppContainer } from 'react-hot-loader';
-
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-
 import './App/sockets';
 
 if (window.SENTRY_APP_DSN) {
@@ -23,9 +19,11 @@ if (window.SENTRY_APP_DSN) {
 
 const render = Component => {
   ReactDOM.hydrate(
-    <AppContainer>
-      <Component />
-    </AppContainer>,
+    <BrowserRouter>
+      <AppContainer>
+        <Component />
+      </AppContainer>
+    </BrowserRouter>,
     document.getElementById('root')
   );
 };

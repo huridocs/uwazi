@@ -1,5 +1,5 @@
 import React from 'react';
-import { IndexRoute, Route } from 'react-router-dom';
+import { IndexRoute, Route, Routes } from 'react-router-dom';
 import App from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -205,19 +205,21 @@ const routes = (
       onEnter={onEnter}
     />
     <Route path="error/:errorCode" component={GeneralError} /> */}
-    <Route path="404" element={GeneralError} />
+    <Route path="404" element={<GeneralError />} />
   </Route>
 );
 
 export { getIndexRoute };
 
 export default (
-  <Route path="/" element={App}>
-    {routes}
-    <Route path=":lang">
+  <Routes>
+    <Route path="/" element={<App />}>
       {routes}
-      <Route path="*" element={GeneralError} />
+      <Route path=":lang">
+        {routes}
+        <Route path="*" element={<GeneralError />} />
+      </Route>
+      <Route path="*" element={<GeneralError />} />
     </Route>
-    <Route path="*" element={GeneralError} />
-  </Route>
+  </Routes>
 );
