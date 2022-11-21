@@ -1,242 +1,250 @@
+/* eslint-disable max-statements */
+/* eslint-disable max-params */
 /* eslint-disable max-lines */
-//eslint-disable-next-line node/no-restricted-import
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
-import App from './App';
-
-// import fs from 'fs';
-// import { fromJS as Immutable } from 'immutable';
-// import { Provider } from 'react-redux';
-// import { matchRoutes, RouterContext } from 'react-router-dom';
-// import { renderToString } from 'react-dom/server';
-// import { Helmet } from 'react-helmet';
-// import React from 'react';
-
-// import { I18NUtils, t, Translate } from 'app/I18N';
-// import JSONUtils from 'shared/JSONUtils';
-// import RouteHandler from 'app/App/RouteHandler';
+//eslint-disable-next-line node/no-restricted-impor
+import fs from 'fs';
+import { fromJS as Immutable } from 'immutable';
+import { Provider } from 'react-redux';
+import { Helmet } from 'react-helmet';
+import { I18NUtils, t, Translate } from 'app/I18N';
+import JSONUtils from 'shared/JSONUtils';
+import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
-// import settingsModel from 'api/settings';
-// import { FetchResponseError } from 'shared/JSONRequest';
+import settingsModel from 'api/settings';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { RequestParams } from 'app/utils/RequestParams';
+import { getPropsFromRoute } from './utils';
+import CustomProvider from './App/Provider';
+import Root from './App/Root';
+import Routes from './Routes';
+import settingsApi from '../api/settings/settings';
+import createStore from './store';
+import translationsApi from '../api/i18n/translations';
+import { handleError } from '../api/utils';
 
-// import { RequestParams } from 'app/utils/RequestParams';
-// import { getPropsFromRoute } from './utils';
-// import CustomProvider from './App/Provider';
-// import Root from './App/Root';
-// import Routes from './Routes';
-// import settingsApi from '../api/settings/settings';
-// import createStore from './store';
-// import translationsApi from '../api/i18n/translations';
-// import { handleError } from '../api/utils';
+let assets = {};
 
-// let assets = {};
+function renderComponentWithRoot(
+  componentProps,
+  data,
+  user,
+  language,
+  actions = [],
+  isRedux = false
+) {
+  let initialStore = createStore({});
 
-// function renderComponentWithRoot(
-//   componentProps,
-//   data,
-//   user,
-//   language,
-//   actions = [],
-//   isRedux = false
-// ) {
-//   let initialStore = createStore({});
+  let initialData = data;
 
-//   let initialData = data;
-//   const Component = RouterContext;
-//   if (isRedux) {
-//     initialStore = createStore(initialData);
-//     if (actions.forEach) {
-//       actions.forEach(action => {
-//         initialStore.dispatch(action);
-//       });
-//     }
-//     initialData = initialStore.getState();
-//   }
-//   // to prevent warnings on some client libs that use window global var
-//   global.window = {};
-//   //
-//   t.resetCachedTranslation();
-//   Translate.resetCachedTranslation();
-//   const componentHtml = renderToString(
-//     <Provider store={initialStore}>
-//       <CustomProvider initialData={initialData} user={user} language={language}>
-//         <Component {...componentProps} />
-//       </CustomProvider>
-//     </Provider>
-//   );
+  //We need to figure out what will this become now
+  // const Component = RouterContext;
 
-//   const head = Helmet.rewind();
+  if (isRedux) {
+    initialStore = createStore(initialData);
+    if (actions.forEach) {
+      actions.forEach(action => {
+        initialStore.dispatch(action);
+      });
+    }
+    initialData = initialStore.getState();
+  }
+  // to prevent warnings on some client libs that use window global var
+  global.window = {};
+  //
+  t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
 
-//   let reduxData = {};
+  const head = Helmet.rewind();
 
-//   if (isRedux) {
-//     reduxData = initialData;
-//   }
+  let reduxData = {};
 
-//   return `<!doctype html>\n${renderToString(
-//     <Root
-//       language={language}
-//       content={componentHtml}
-//       head={head}
-//       user={user}
-//       reduxData={reduxData}
-//       assets={assets}
-//     />
-//   )}`;
-// }
+  if (isRedux) {
+    reduxData = initialData;
+  }
+
+  const componentHtml = ReactDOMServer.renderToString(
+    <Provider store={initialStore}>
+      <CustomProvider initialData={initialData} user={user} language={language}>
+        {/* <Component {...componentProps} /> */}
+        {Routes}
+      </CustomProvider>
+    </Provider>
+  );
+
+  return `<!doctype html>\n${ReactDOMServer.renderToString(
+    <StaticRouter>
+      <Root
+        language={language}
+        content={componentHtml}
+        head={head}
+        user={user}
+        reduxData={reduxData}
+        assets={assets}
+      />
+    </StaticRouter>
+  )}`;
+}
 
 // function handle404(res) {
 //   res.redirect(301, '/404');
 // }
 
-// function respondError(res, error, req) {
-//   if (!(error instanceof FetchResponseError)) {
-//     handleError(error, { req });
-//   }
-//   const code = error.status || 500;
-//   res.status(code);
-//   const requestId = error.json?.requestId || '';
-//   if (!req.url.startsWith('/error/500')) {
-//     res.redirect(`/error/${code}?requestId=${requestId}`);
-//   } else {
-//     res.send(`<pre>An unexpected error has occurred. Request id: ${requestId}</pre>`);
-//   }
-// }
+function respondError(res, error, req) {
+  if (!(error instanceof FetchResponseError)) {
+    handleError(error, { req });
+  }
+  const code = error.status || 500;
+  res.status(code);
+  const requestId = error.json?.requestId || '';
+  if (!req.url.startsWith('/error/500')) {
+    res.redirect(`/error/${code}?requestId=${requestId}`);
+  } else {
+    res.send(`<pre>An unexpected error has occurred. Request id: ${requestId}</pre>`);
+  }
+}
 
 // function handleRedirect(res, redirectLocation) {
 //   res.redirect(302, redirectLocation.pathname + redirectLocation.search);
 // }
 
-// function onlySystemTranslations(AllTranslations) {
-//   const rows = AllTranslations.map(translation => {
-//     const systemTranslation = translation.contexts.find(c => c.id === 'System');
-//     return { ...translation, contexts: [systemTranslation] };
-//   });
+function onlySystemTranslations(AllTranslations) {
+  const rows = AllTranslations.map(translation => {
+    const systemTranslation = translation.contexts.find(c => c.id === 'System');
+    return { ...translation, contexts: [systemTranslation] };
+  });
 
-//   return { json: { rows } };
-// }
+  return { json: { rows } };
+}
 
-// function handleRoute(res, renderProps, req) {
-//   const routeProps = getPropsFromRoute(renderProps, ['requestState']);
+function handleRoute(res, renderProps, req) {
+  //Testing whith this override since we cant get renderProps right now
+  // const routeProps = getPropsFromRoute(renderProps, ['requestState']);
+  const routeProps = { requestState: () => {} };
 
-//   function renderPage(actions, initialData, isRedux) {
-//     const wholeHtml = renderComponentWithRoot(
-//       renderProps,
-//       initialData,
-//       req.user,
-//       initialData.locale,
-//       actions,
-//       isRedux
-//     );
-//     res.status(200).send(wholeHtml);
-//   }
+  function renderPage(actions, initialData, isRedux) {
+    const wholeHtml = renderComponentWithRoot(
+      // renderProps,
+      {},
+      initialData,
+      req.user,
+      initialData.locale,
+      actions,
+      isRedux
+    );
+    res.status(200).send(wholeHtml);
+  }
 
-//   RouteHandler.renderedFromServer = true;
-//   let query;
-//   if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
-//     query = JSONUtils.parseNested(renderProps.location.query);
-//   }
+  RouteHandler.renderedFromServer = true;
+  let query;
 
-//   let locale;
-//   return settingsApi
-//     .get()
-//     .then(settings => {
-//       const { languages } = settings;
-//       const urlLanguage =
-//         renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
-//       locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
-//       // api.locale(locale);
+  // if (renderProps.location && Object.keys(renderProps.location.query).length > 0) {
+  //   query = JSONUtils.parseNested(renderProps.location.query);
+  // }
 
-//       return settings;
-//     })
-//     .then(settingsData => {
-//       if (settingsData.private && !req.user) {
-//         return Promise.all([
-//           Promise.resolve({ json: {} }),
-//           Promise.resolve({ json: { languages: [], private: settingsData.private } }),
-//           translationsApi.get().then(onlySystemTranslations),
-//           Promise.resolve({ json: { rows: [] } }),
-//           Promise.resolve({ json: { rows: [] } }),
-//           Promise.resolve({ json: { rows: [] } }),
-//         ]);
-//       }
+  let locale;
+  return settingsApi
+    .get()
+    .then(settings => {
+      const { languages } = settings;
+      // const urlLanguage =
+      // renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
+      const urlLanguage = 'en';
+      locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
+      // api.locale(locale);
 
-//       const headers = {
-//         'Content-Language': locale,
-//         Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-//         tenant: req.get('tenant'),
-//       };
+      return settings;
+    })
+    .then(settingsData => {
+      if (settingsData.private && !req.user) {
+        return Promise.all([
+          Promise.resolve({ json: {} }),
+          Promise.resolve({ json: { languages: [], private: settingsData.private } }),
+          translationsApi.get().then(onlySystemTranslations),
+          Promise.resolve({ json: { rows: [] } }),
+          Promise.resolve({ json: { rows: [] } }),
+          Promise.resolve({ json: { rows: [] } }),
+        ]);
+      }
 
-//       const requestParams = new RequestParams({}, headers);
-//       return Promise.all([
-//         api.get('user', requestParams),
-//         api.get('settings', requestParams),
-//         api.get('translations', requestParams),
-//         api.get('templates', requestParams),
-//         api.get('thesauris', requestParams),
-//         api.get('relationTypes', requestParams),
-//       ]);
-//     })
-//     .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
-//       const globalResources = {
-//         user: user.json,
-//         settings: { collection: settings.json },
-//         translations: translations.json.rows,
-//         templates: templates.json.rows,
-//         thesauris: thesauris.json.rows,
-//         relationTypes: relationTypes.json.rows,
-//       };
+      const headers = {
+        'Content-Language': locale,
+        Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+        tenant: req.get('tenant'),
+      };
 
-//       globalResources.settings.collection.links = globalResources.settings.collection.links || [];
+      const requestParams = new RequestParams({}, headers);
+      return Promise.all([
+        api.get('user', requestParams),
+        api.get('settings', requestParams),
+        api.get('translations', requestParams),
+        api.get('templates', requestParams),
+        api.get('thesauris', requestParams),
+        api.get('relationTypes', requestParams),
+      ]);
+    })
+    .then(([user, settings, translations, templates, thesauris, relationTypes]) => {
+      const globalResources = {
+        user: user.json,
+        settings: { collection: settings.json },
+        translations: translations.json.rows,
+        templates: templates.json.rows,
+        thesauris: thesauris.json.rows,
+        relationTypes: relationTypes.json.rows,
+      };
 
-//       const { lang, ...params } = renderProps.params;
-//       const headers = {
-//         'Content-Language': locale,
-//         Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-//         tenant: req.get('tenant'),
-//       };
+      globalResources.settings.collection.links = globalResources.settings.collection.links || [];
 
-//       const requestParams = new RequestParams({ ...query, ...params }, headers);
+      // const { lang, ...params } = renderProps.params;
+      const { lang, ...params } = { lang: 'en' };
+      const headers = {
+        'Content-Language': locale,
+        Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+        tenant: req.get('tenant'),
+      };
 
-//       return Promise.all([
-//         routeProps.requestState(requestParams, {
-//           user: Immutable(user.json),
-//           templates: Immutable(globalResources.templates),
-//           thesauris: Immutable(globalResources.thesauris),
-//           relationTypes: Immutable(globalResources.relationTypes),
-//           settings: { collection: Immutable(globalResources.settings.collection) },
-//         }),
-//         globalResources,
-//       ]);
-//     })
-//     .then(([initialData, globalResources]) => {
-//       renderPage(
-//         initialData,
-//         {
-//           locale,
-//           user: globalResources.user,
-//           settings: globalResources.settings,
-//           translations: globalResources.translations,
-//           templates: globalResources.templates,
-//           thesauris: globalResources.thesauris,
-//           relationTypes: globalResources.relationTypes,
-//         },
-//         true
-//       );
-//     })
-//     .catch(error => {
-//       if (error.status === 401) {
-//         return res.redirect(302, '/login');
-//       }
+      const requestParams = new RequestParams({ ...query, ...params }, headers);
 
-//       if (error.status === 404) {
-//         return res.redirect(404, '/404');
-//       }
+      return Promise.all([
+        routeProps.requestState(requestParams, {
+          user: Immutable(user.json),
+          templates: Immutable(globalResources.templates),
+          thesauris: Immutable(globalResources.thesauris),
+          relationTypes: Immutable(globalResources.relationTypes),
+          settings: { collection: Immutable(globalResources.settings.collection) },
+        }),
+        globalResources,
+      ]);
+    })
+    .then(([initialData, globalResources]) => {
+      renderPage(
+        initialData,
+        {
+          locale,
+          user: globalResources.user,
+          settings: globalResources.settings,
+          translations: globalResources.translations,
+          templates: globalResources.templates,
+          thesauris: globalResources.thesauris,
+          relationTypes: globalResources.relationTypes,
+        },
+        true
+      );
+    })
+    .catch(error => {
+      if (error.status === 401) {
+        return res.redirect(302, '/login');
+      }
 
-//       return respondError(res, error, req);
-//     });
-// }
+      if (error.status === 404) {
+        return res.redirect(404, '/404');
+      }
+
+      return respondError(res, error, req);
+    });
+}
 
 const allowedRoute = (user = {}, url = '') => {
   const isAdmin = user.role === 'admin';
@@ -272,62 +280,62 @@ const allowedRoute = (user = {}, url = '') => {
   );
 };
 
-// function routeMatch(req, res, location, languages) {
-//   settingsModel.get().then(settings => {
-//     createStore({
-//       user: req.user,
-//       settings: { collection: settings },
-//     });
-//     handleRoute(res, renderProps, req);
-//     // try {
-//     //   matchPath({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
-//     //     if (redirectLocation) {
-//     //       return handleRedirect(res, redirectLocation);
-//     //     }
-//     //     if (
-//     //       renderProps &&
-//     //       renderProps.params.lang &&
-//     //       !languages.includes(renderProps.params.lang)
-//     //     ) {
-//     //       return handle404(res);
-//     //     }
-//     //     if (error) {
-//     //       return respondError(res, error);
-//     //     }
-//     //     if (renderProps) {
-//     //       return handleRoute(res, renderProps, req);
-//     //     }
+function routeMatch(req, res, location, languages) {
+  settingsModel.get().then(settings => {
+    createStore({
+      user: req.user,
+      settings: { collection: settings },
+    });
+    return handleRoute(res, [], req);
+    // try {
+    //   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
+    //     if (redirectLocation) {
+    //       return handleRedirect(res, redirectLocation);
+    //     }
+    //     if (
+    //       renderProps &&
+    //       renderProps.params.lang &&
+    //       !languages.includes(renderProps.params.lang)
+    //     ) {
+    //       return handle404(res);
+    //     }
+    //     if (error) {
+    //       return respondError(res, error);
+    //     }
+    //     if (renderProps) {
+    //       return handleRoute(res, renderProps, req);
+    //     }
 
-//     //     return handle404(res);
-//     //   });
-//     // } catch (err) {
-//     //   return handle404(res);
-//     // }
-//   });
-// }
+    //     return handle404(res);
+    //   });
+    // } catch (err) {
+    //   return handle404(res);
+    // }
+  });
+}
 
-// function getAssets() {
-//   if (process.env.HOT) {
-//     return Promise.resolve();
-//   }
+function getAssets() {
+  if (process.env.HOT) {
+    return Promise.resolve();
+  }
 
-//   return new Promise((resolve, reject) => {
-//     fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
-//       if (err) {
-//         reject(
-//           new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
-//                           you probably need to build webpack with the production configuration`)
-//         );
-//       }
-//       try {
-//         assets = JSON.parse(data);
-//         resolve();
-//       } catch (e) {
-//         reject(e);
-//       }
-//     });
-//   });
-// }
+  return new Promise((resolve, reject) => {
+    fs.readFile(`${__dirname}/../../dist/webpack-assets.json`, (err, data) => {
+      if (err) {
+        reject(
+          new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
+                          you probably need to build webpack with the production configuration`)
+        );
+      }
+      try {
+        assets = JSON.parse(data);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
+}
 
 function ServerRouter(req, res) {
   //REMOVE IN FAVOR OF PROTECTED ROUTES
@@ -341,18 +349,18 @@ function ServerRouter(req, res) {
   const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
 
-  const html = ReactDOMServer.renderToString(
-    <StaticRouter location={req.url}>
-      <App />
-    </StaticRouter>
-  );
+  // const html = ReactDOMServer.renderToString(
+  //   <StaticRouter location={req.url}>
+  //     <App />
+  //   </StaticRouter>
+  // );
 
-  res.send(`<!DOCTYPE html>${html}`);
+  // res.send(`<!DOCTYPE html>${html}`);
 
-  // Promise.all([settingsApi.get(), getAssets()]).then(([settings]) => {
-  //   const languages = settings.languages.map(l => l.key);
-  //   routeMatch(req, res, location, languages);
-  // });
+  Promise.all([settingsApi.get(), getAssets()]).then(([settings]) => {
+    const languages = settings.languages.map(l => l.key);
+    routeMatch(req, res, location, languages);
+  });
 }
 
 export default ServerRouter;
