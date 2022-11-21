@@ -12,7 +12,6 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
       },
     ]
   }
-  renderLabel={[Function]}
 />
 `;
 
@@ -41,7 +40,6 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
       },
     ]
   }
-  renderLabel={[Function]}
   templateId="template"
 />
 `;

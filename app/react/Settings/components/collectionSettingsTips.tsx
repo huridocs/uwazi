@@ -157,3 +157,20 @@ export const ocrTrigger = (
     </Translate>
   </>
 );
+
+export const globalJS = (
+  <>
+    <Translate>With great power comes great responsibility!</Translate>
+    <br />
+    <br />
+    <Translate>
+      This area allows you to append custom Javascript to the page. This opens up a new universe of
+      possibilities.
+    </Translate>
+    <br />
+    <Translate>
+      It could also very easily break the app. Only write code here if you know exactly what you are
+      doing.
+    </Translate>
+  </>
+);

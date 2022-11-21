@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 
 import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import { deletePage } from 'app/Pages/actions/pageActions';
 
 class PagesList extends Component {
@@ -27,7 +28,9 @@ class PagesList extends Component {
     const { pages } = this.props;
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">{t('System', 'Pages')}</div>
+        <SettingsHeader>
+          <Translate>Pages</Translate>
+        </SettingsHeader>
         <ul className="list-group pages">
           {pages.map((page, index) => (
             <li key={index} className="list-group-item">
@@ -45,7 +48,7 @@ class PagesList extends Component {
                   onClick={this.deletePage.bind(this, page)}
                   className="btn btn-danger btn-xs template-remove"
                 >
-                  <Icon icon="trash-alt" /> <span>{t('System', 'Delete')}</span>
+                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
                 </a>
               </div>
             </li>
@@ -53,7 +56,10 @@ class PagesList extends Component {
         </ul>
         <div className="settings-footer">
           <I18NLink to="/settings/pages/new" className="btn btn-default">
-            <Icon icon="plus" /> <span className="btn-label">{t('System', 'Add page')}</span>
+            <Icon icon="plus" />{' '}
+            <span className="btn-label">
+              <Translate>Add page</Translate>
+            </span>
           </I18NLink>
         </div>
       </div>

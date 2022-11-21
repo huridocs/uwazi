@@ -224,7 +224,7 @@ describe('Metadata Properties', () => {
   });
 
   it('should not have metadata.', async () => {
-    const metadataDivs = await page.$$('div.metadata.tab-content-visible div.view > dl');
+    const metadataDivs = await page.$$('div.metadata.tab-content-visible div.view > dl > div');
     expect(metadataDivs.length).toBe(0);
   });
 

@@ -359,6 +359,10 @@ export default {
     return result.flat();
   },
 
+  newRelationship(property, thesaurusValues, _thesauri, { doc }) {
+    return this.relationship(property, thesaurusValues, _thesauri, { doc });
+  },
+
   relationship(property, thesaurusValues, _thesauri, { doc }) {
     const thesaurus = Immutable.fromJS({
       type: 'template',

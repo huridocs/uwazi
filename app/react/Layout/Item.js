@@ -51,12 +51,12 @@ export class Item extends Component {
       <RowList.Item {...itemProps}>
         {this.props.itemHeader}
         <div className="item-info">
-          <div className="item-name">
+          <h2 className="item-name">
             {additionalIcon || ''}
             <Icon className="item-icon item-icon-center" data={doc.icon} />
             <span>{doc[this.props.titleProperty]}</span>
             <DocumentLanguage doc={this.props.doc} />
-          </div>
+          </h2>
           {Snippet}
           {this.getSearchSnipett(doc)}
         </div>
@@ -65,7 +65,6 @@ export class Item extends Component {
             entity={this.props.noMetadata ? {} : doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
-            renderLabel={(prop, label) => !prop.noLabel && label}
           />
         </div>
         <ItemFooter>

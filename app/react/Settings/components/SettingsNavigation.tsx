@@ -4,8 +4,9 @@ import { NeedAuthorization } from 'app/Auth';
 import { Icon } from 'app/UI';
 import { PreserveIcon } from 'app/Layout/PreserveIcon';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import { connect } from 'react-redux';
 
-const SettingsNavigation = () => (
+const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean }) => (
   <div>
     <div className="panel panel-default">
       <div className="panel-heading">
@@ -113,7 +114,11 @@ const SettingsNavigation = () => (
             activeClassName="active"
             className="list-group-item"
           >
-            <Translate>Global CSS</Translate>
+            {allowcustomJS ? (
+              <Translate>Global CSS & JS</Translate>
+            ) : (
+              <Translate>Global CSS</Translate>
+            )}
           </I18NLink>
           <I18NLink
             to="/settings/custom-uploads"
@@ -138,4 +143,8 @@ const SettingsNavigation = () => (
   </div>
 );
 
-export { SettingsNavigation };
+export const mapStateToProps = (state: any) => ({
+  allowcustomJS: Boolean(state.settings.collection.get('allowcustomJS')),
+});
+
+export const SettingsNavigation = connect(mapStateToProps)(SettingsNavigationComponent);

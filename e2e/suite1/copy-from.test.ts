@@ -19,7 +19,7 @@ describe('Copy from', () => {
 
   it('should create a new entity', async () => {
     await expect(page).toClick(
-      'div.item-document:nth-child(3) > div:nth-child(1) > div:nth-child(1)',
+      'div.item-document:nth-child(3) > div:nth-child(1) > h2:nth-child(1)',
       { text: 'Artavia Murillo y otros' }
     );
     await expect(page).toClick('.sidepanel-footer > .btn-cluster > a', { text: 'View' });
@@ -59,27 +59,27 @@ describe('Copy from', () => {
   });
 
   it('should check the data', async () => {
-    await expect(page).toClick('.item-info', { text: 'Test title' });
+    await expect(page).toClick('div.item-info', { text: 'Test title' });
     await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(3) dd',
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(2) > dd',
       {
         text: 'Costa Rica',
       }
     );
     await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(4) dd',
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(3) > dd',
       {
         text: 'Activo',
       }
     );
     await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(5) dd',
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(4) > dd',
       {
         text: 'Derechos reproductivos',
       }
     );
     await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl:nth-child(8) dd',
+      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(7) > dd',
       {
         text: 'Dec 19, 2011',
       }

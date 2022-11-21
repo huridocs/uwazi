@@ -16,6 +16,7 @@ const propertyTypes = {
   select: 'select' as 'select',
   text: 'text' as 'text',
   generatedid: 'generatedid' as 'generatedid',
+  newRelationship: 'newRelationship' as 'newRelationship',
 };
 
 function getCompatibleTypes(type: keyof typeof propertyTypes): Array<keyof typeof propertyTypes> {
