@@ -10,7 +10,7 @@ import { createError } from 'api/utils';
 import * as usersUtils from '../usersUtils';
 import fixtures, { userId, secretedUserId } from './fixtures';
 
-function hasKey<O>(obj: O, key: keyof any): key is keyof O {
+function hasKey<O extends object>(obj: O, key: keyof any): key is keyof O {
   return key in obj;
 }
 
