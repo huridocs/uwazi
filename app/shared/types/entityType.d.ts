@@ -24,6 +24,7 @@ export interface EntitySchema {
   creationDate?: number;
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
+  obsoleteMetadata?: string[];
   suggestedMetadata?: MetadataSchema;
   permissions?: PermissionSchema[];
   [k: string]: unknown | undefined;
@@ -46,6 +47,7 @@ export type EntityWithFilesSchema = {
   creationDate?: number;
   user?: ObjectIdSchema;
   metadata?: MetadataSchema;
+  obsoleteMetadata?: string[];
   suggestedMetadata?: MetadataSchema;
   permissions?: {
     refId: ObjectIdSchema;

@@ -34,6 +34,7 @@ export const entitySchema = {
     creationDate: { type: 'number' },
     user: objectIdSchema,
     metadata: metadataSchema,
+    obsoleteMetadata: { type: 'array', items: { type: 'string' } },
     suggestedMetadata: metadataSchema,
     permissions: {
       type: 'array',

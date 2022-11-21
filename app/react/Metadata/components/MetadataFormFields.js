@@ -17,6 +17,7 @@ import Tip from 'app/Layout/Tip';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
 import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
+import { NeedAuthorization } from 'app/Auth';
 import {
   DatePicker,
   DateRange,
@@ -115,22 +116,28 @@ class MetadataFormFields extends Component {
       localAttachments,
       multipleEdition,
       locale,
+      model,
     } = this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
     const plainLocalAttachments = localAttachments;
+    const isPublicForm = model === 'publicform';
 
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
-              }}
-            />
+            {!isPublicForm && (
+              <NeedAuthorization roles={['admin']}>
+                <AddThesauriValueButton
+                  values={translateOptions(thesauri)}
+                  onModalAccept={async newValue => {
+                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+                  }}
+                />
+              </NeedAuthorization>
+            )}
             <Select
               model={_model}
               optionsValue="id"
@@ -143,12 +150,16 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
-              }}
-            />
+            {!isPublicForm && (
+              <NeedAuthorization roles={['admin']}>
+                <AddThesauriValueButton
+                  values={translateOptions(thesauri)}
+                  onModalAccept={async newValue => {
+                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
+                  }}
+                />
+              </NeedAuthorization>
+            )}
             <MultiSelect
               model={_model}
               optionsValue="id"

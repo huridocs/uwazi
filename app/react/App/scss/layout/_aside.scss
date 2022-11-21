@@ -1,10 +1,9 @@
 aside,
 .entity-viewer {
   h2 {
-    font-size: $f-size-sm;
+    font-size: $f-size;
     padding-left: 15px;
     position: relative;
-    text-transform: uppercase;
     letter-spacing: 0.1em;
     .property-help {
       text-transform: none;
