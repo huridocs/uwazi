@@ -144,67 +144,66 @@ const getIndexRoute = (_nextState, callBack) => {
 };
 
 const routes = (
-  // <Route getIndexRoute={getIndexRoute}>
-  <Route>
-    {/* <Route path="settings" component={Settings} onEnter={needsAuth}>
-      <Route path="account" component={AccountSettings} />
-      <Route path="dashboard" component={Dashboard} />
-      <Route path="2fa" component={Configure2fa} />
-      <Route path="collection" component={CollectionSettings} />
-      <Route path="navlinks" component={NavlinksSettings} />
-      <Route path="users" component={UserManagement} />
-      <Route path="preserve" component={PreserveSettings} />
+  <Route getIndexRoute={getIndexRoute}>
+    <Route path="settings" element={<Settings />} onEnter={needsAuth}>
+      <Route path="account" element={<AccountSettings />} />
+      <Route path="dashboard" element={<Dashboard />} />
+      <Route path="2fa" element={<Configure2fa />} />
+      <Route path="collection" element={<CollectionSettings />} />
+      <Route path="navlinks" element={<NavlinksSettings />} />
+      <Route path="users" element={<UserManagement />} />
+      <Route path="preserve" element={<PreserveSettings />} />
       <Route path="pages">
-        <IndexRoute component={Pages} />
-        <Route path="new" component={NewPage} />
-        <Route path="edit/:sharedId" component={EditPage} />
+        <IndexRoute element={<Pages />} />
+        <Route path="new" element={<NewPage />} />
+        <Route path="edit/:sharedId" element={<EditPage />} />
       </Route>
       <Route path="templates">
-        <IndexRoute component={EntityTypesList} />
-        <Route path="new" component={NewTemplate} />
-        <Route path="edit/:templateId" component={EditTemplate} />
+        <IndexRoute element={<EntityTypesList />} />
+        <Route path="new" element={<NewTemplate />} />
+        <Route path="edit/:templateId" element={<EditTemplate />} />
       </Route>
-      <Route path="metadata_extraction" component={MetadataExtractionDashboard} />
-      <Route path="metadata_extraction/suggestions/:propertyName" component={IXSuggestions} />
+      <Route path="metadata_extraction" element={<MetadataExtractionDashboard />} />
+      <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} />
       <Route path="connections">
-        <IndexRoute component={RelationTypesList} />
-        <Route path="new" component={NewRelationType} />
-        <Route path="edit/:_id" component={EditRelationType} />
+        <IndexRoute element={<RelationTypesList />} />
+        <Route path="new" element={<NewRelationType />} />
+        <Route path="edit/:_id" element={<EditRelationType />} />
       </Route>
       <Route path="dictionaries">
-        <IndexRoute component={ThesauriList} />
-        <Route path="new" component={NewThesauri} />
-        <Route path="edit/:_id" component={EditThesauri} />
-        <Route path="cockpit/:_id" component={ThesaurusCockpit} />
+        <IndexRoute element={<ThesauriList />} />
+        <Route path="new" element={<NewThesauri />} />
+        <Route path="edit/:_id" element={<EditThesauri />} />
+        <Route path="cockpit/:_id" element={<ThesaurusCockpit />} />
       </Route>
-      <Route path="languages" component={LanguageList} />
+      <Route path="languages" element={<LanguageList />} />
       <Route path="translations">
-        <IndexRoute component={TranslationsList} />
-        <Route path="edit/:context" component={EditTranslations} />
+        <IndexRoute element={<TranslationsList />} />
+        <Route path="edit/:context" element={<EditTranslations />} />
       </Route>
-      <Route path="filters" component={FiltersForm} />
-      <Route path="customisation" component={Customisation} />
-      <Route path="custom-uploads" component={CustomUploads} />
-      <Route path="activitylog" component={Activitylog} onEnter={needsAuth} />
+      <Route path="filters" element={<FiltersForm />} />
+      <Route path="customisation" element={<Customisation />} />
+      <Route path="custom-uploads" element={<CustomUploads />} />
+      <Route path="activitylog" element={<Activitylog />} onEnter={needsAuth} />
     </Route>
-    <Route path="library" component={Library} onEnter={enterOnLibrary} />
-    <Route path="library/map" component={LibraryMap} onEnter={onEnter} />
-    <Route path="library/table" component={LibraryTable} onEnter={enterOnLibrary} />
-    <Route path="review" component={OneUpReview} onEnter={needsAuth} />
-    <Route path="uploads" component={Uploads} />
-    <Route path="login" component={Login} onEnter={enterLogin} />
-    <Route path="setpassword/:key" component={ResetPassword} />
-    <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
-    <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
-    <Route path="entity/:sharedId(/:tabView)" component={ViewerRoute} onEnter={onEnter} />
-    <Route path="page/:sharedId" component={PageView} onEnter={onEnter} />
-    <Route path="page/:sharedId/:slug" component={PageView} onEnter={onEnter} />
+    <Route path="library" element={<Library />} onEnter={enterOnLibrary} />
+    <Route path="library/map" element={<LibraryMap />} onEnter={onEnter} />
+    <Route path="library/table" element={<LibraryTable />} onEnter={enterOnLibrary} />
+    <Route path="review" element={<OneUpReview />} onEnter={needsAuth} />
+    <Route path="uploads" element={<Uploads />} />
+    <Route path="login" element={<Login />} onEnter={enterLogin} />
+    <Route path="setpassword/:key" element={<ResetPassword />} />
+    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
+    <Route path="document/:sharedId*" element={<ViewerRoute />} onEnter={onEnter} />
+    <Route path="entity/:sharedId(/:tabView)" element={<ViewerRoute />} onEnter={onEnter} />
+    <Route path="page/:sharedId" element={<PageView />} onEnter={onEnter} />
+    <Route path="page/:sharedId/:slug" element={<PageView />} onEnter={onEnter} />
     <Route
       path="semanticsearch/:searchId"
-      component={SemanticSearchResultsView}
+      element={<SemanticSearchResultsView />}
       onEnter={onEnter}
     />
-    <Route path="error/:errorCode" component={GeneralError} /> */}
+    <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
   </Route>
 );
