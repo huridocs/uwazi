@@ -12,7 +12,7 @@ const selectors = {
     '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div > a > span',
 };
 
-describe('Custom home page and styles', () => {
+describe('Side panels', () => {
   beforeAll(async () => {
     await insertFixtures();
     await proxyMock();

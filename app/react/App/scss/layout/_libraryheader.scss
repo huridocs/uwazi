@@ -5,13 +5,15 @@
   -moz-box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
   box-shadow: 0px -6px 0px 0px white, 0px -1px 7px -1px grey;
   padding: 1px 1px;
-  width: 107px;
-  min-width: 90px;
-  height: 24px;
   left: 100px;
   background-color: white;
   justify-content: center;
   z-index: 3;
+  width: max-content;
+  height: max-content;
+  min-width: 90px;
+  max-width: 150px;
+  min-height: 25px;
 }
 
 .library-header {
@@ -35,8 +37,7 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
-    left: 50%;
-    width: 100%;
+    left: 49%;
     text-overflow: ellipsis;
     background-color: transparent;
 
@@ -51,7 +52,7 @@
   position: fixed;
   top: 50px;
   justify-content: center;
-  left: 50%;
+  left: 49%;
   width: 150px;
   text-overflow: ellipsis;
   margin-left: -75px;
@@ -106,8 +107,9 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
+  padding-top: 10px;
   padding-bottom: 15px;
   width: 100%;
 
@@ -115,17 +117,73 @@
     height: 2em;
     gap: 10px;
     width: 100%;
+    align-items: center;
 
     .documents-counter-sort {
       display: none;
     }
 
     .sort-buttons {
-      min-width: 195px;
       padding-right: 10px;
+      flex: 1 1 auto;
+
+      a {
+        color: inherit;
+      }
 
       .sort-dropdown {
         min-width: 150px;
+        position: relative;
+
+        .dropdown-button {
+          width: 100%;
+          text-align: left;
+          background-color: white;
+          border: 1px solid $c-grey-light;
+          border-radius: 4px;
+
+          span {
+            padding-left: 6px;
+          }
+
+          svg {
+            float: right;
+            margin: 2px 6px 2px 2px;
+          }
+
+          &.expanded {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+          }
+        }
+      }
+
+      .dropdown-menu {
+        font-size: inherit;
+        &.expanded {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 20px;
+          border-radius: 0;
+          width: 100%;
+          max-height: 200px;
+          overflow: auto;
+
+          li {
+            display: flex;
+            flex-direction: column;
+            max-width: unset;
+            overflow: unset;
+            a {
+              padding-left: 10px;
+              text-align: left;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+        }
       }
     }
     .select-all-documents {

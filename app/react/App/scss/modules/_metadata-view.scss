@@ -4,6 +4,7 @@
   .print-view-alt {
     display: none;
   }
+  padding-bottom: 120px;
 }
 
 .sidepanel-body,
@@ -241,5 +242,9 @@ dl.metadata-type-geolocation_group {
       background-color: rgba(255, 255, 255, 1);
       padding: 2px;
     }
+  }
+
+  .geolocation {
+    max-width: 351px;
   }
 }

@@ -1,5 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Settings render should add the only-desktop class when recieving children only 1`] = `
+<div
+  className="row settings"
+>
+  <HelmetWrapper
+    defer={true}
+    encodeSpecialCharacters={true}
+  >
+    <title>
+      Settings
+    </title>
+  </HelmetWrapper>
+  <div
+    className="settings-navigation only-desktop"
+  >
+    <Connect(SettingsNavigationComponent) />
+  </div>
+  Account settings
+</div>
+`;
+
+exports[`Settings render should add the only-desktop class when recieving children only 2`] = `
+<div
+  className="row settings"
+>
+  <HelmetWrapper
+    defer={true}
+    encodeSpecialCharacters={true}
+  >
+    <title>
+      Settings
+    </title>
+  </HelmetWrapper>
+  <div
+    className="settings-navigation "
+  >
+    <Connect(SettingsNavigationComponent) />
+  </div>
+</div>
+`;
+
 exports[`Settings requestState should get the current user, and metadata 1`] = `
 Array [
   Object {

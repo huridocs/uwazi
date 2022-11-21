@@ -4,6 +4,7 @@ import api from 'app/utils/api';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { PreserveIcon } from 'app/Layout/PreserveIcon';
+import { SettingsHeader } from './SettingsHeader';
 import './styles/preserve.scss';
 
 function mapStateToProps({ settings, user }: IStore) {
@@ -39,10 +40,12 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
 
   return (
     <div className="settings-content">
-      <div className="panel panel-preserve">
-        <div className="panel-preserve-heading">
-          <PreserveIcon color="#D20D6C" /> <Translate>Preserve Extension</Translate>
-        </div>
+      <div className="panel panel-preserve panel-default">
+        <SettingsHeader>
+          <div className="panel-preserve-heading">
+            <PreserveIcon color="#D20D6C" /> <Translate>Preserve Extension</Translate>
+          </div>
+        </SettingsHeader>
         <div className="panel-preserve-content">
           <div className="status">
             <Translate>You have not connected an Uwazi instance, yet</Translate>

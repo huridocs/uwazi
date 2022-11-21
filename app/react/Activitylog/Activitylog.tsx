@@ -1,10 +1,10 @@
 import React from 'react';
-
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import api from 'app/utils/api';
-
 import { RequestParams } from 'app/utils/RequestParams';
+import { Translate } from 'app/I18N';
+import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import ActivitylogForm from './components/ActivitylogForm';
 import { ActivitylogList } from './components/ActivitylogList';
 
@@ -20,7 +20,10 @@ export class ActivityLog extends RouteHandler {
   render() {
     return (
       <div className="settings-content without-footer">
-        <div className="activity-log">
+        <div className="activity-log panel panel-default">
+          <SettingsHeader>
+            <Translate>Activity log</Translate>
+          </SettingsHeader>
           <ActivitylogForm>
             <ActivitylogList />
           </ActivitylogForm>

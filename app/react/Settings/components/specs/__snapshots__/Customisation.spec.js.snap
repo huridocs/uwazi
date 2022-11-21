@@ -7,9 +7,11 @@ exports[`Customisation should render Customisation component 1`] = `
   <div
     className="panel-heading"
   >
-    <Connect(Translate)>
-      Global CSS
-    </Connect(Translate)>
+    <SettingsHeader>
+      <Connect(Translate)>
+        Global CSS
+      </Connect(Translate)>
+    </SettingsHeader>
   </div>
   <Tabs
     onChange={[Function]}

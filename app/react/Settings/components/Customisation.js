@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { Translate } from 'app/I18N';
+import { SettingsHeader } from './SettingsHeader';
 
 import saveSettings from '../actions/settingsActions';
 
@@ -24,9 +25,13 @@ class Customisation extends Component {
       <div className="settings-content global-css-js">
         <div className="panel-heading">
           {allowcustomJS ? (
-            <Translate>Global CSS & JS</Translate>
+            <SettingsHeader>
+              <Translate>Global CSS & JS</Translate>
+            </SettingsHeader>
           ) : (
-            <Translate>Global CSS</Translate>
+            <SettingsHeader>
+              <Translate>Global CSS</Translate>
+            </SettingsHeader>
           )}
         </div>
         <Tabs>
