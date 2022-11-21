@@ -126,6 +126,8 @@ If the API tests timeout, the issue might be with mongodb-memory-server. See htt
 To fix this, update node_modules/mongodb-memory-server-core/lib/util/MongoBinary.js#70.
 Set `exports.LATEST_VERSION = '4.3.3'` or a similar new version.
 
+Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode but user action may be needed to initialize the cluster. Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
+
 #### End to End (e2e)
 
 For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any exisisting data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
