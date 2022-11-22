@@ -111,7 +111,6 @@ if (process.env.DBUSER) {
 }
 
 console.info('==> Connecting to', config.DBHOST);
-// eslint-disable-next-line max-statements
 DB.connect(config.DBHOST, dbAuth).then(async () => {
   await tenants.setupTenants();
   authRoutes(app);
