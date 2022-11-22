@@ -121,11 +121,6 @@ $ yarn test
 
 This will run the entire test suite, both on server and client apps.
 
-If the API tests timeout, the issue might be with mongodb-memory-server. See https://github.com/nodkz/mongodb-memory-server/issues/204. Memory server explicitly depends on a version of MongoDB that depends on libcurl3, but Debian 10 and other OS's come with libcurl4 installed instead.
-
-To fix this, update node_modules/mongodb-memory-server-core/lib/util/MongoBinary.js#70.
-Set `exports.LATEST_VERSION = '4.3.3'` or a similar new version.
-
 Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode but user action may be needed to initialize the cluster. Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
 
 #### End to End (e2e)
