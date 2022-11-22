@@ -101,7 +101,7 @@ class ThesauriForm extends Component {
       previousValues.length && previousValues[previousValues.length - 1].values;
     if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
       //Resolved #5172- Call .focus() on null when deleting last non-group item
-      this.groups[this.groups.length - 1]?.focus();
+      this.groups[this.groups.length - 1]?.focus(); 
     }
   }
 
