@@ -49,6 +49,7 @@ describe('EntityViewer', () => {
       startNewConnection: jasmine.createSpy('startNewConnection'),
       deleteEntity: jasmine.createSpy('deleteEntity'),
       showTab: jasmine.createSpy('showTab'),
+      params: { tabView: 'info' },
     };
   });
 
