@@ -4,7 +4,8 @@
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
-//eslint-disable-next-line node/no-restricted-impor
+import { UNSAFE_DataRouterContext } from 'react-router-dom';
+// eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import { fromJS as Immutable } from 'immutable';
 import { Provider } from 'react-redux';
@@ -27,20 +28,20 @@ import { handleError } from '../api/utils';
 
 let assets = {};
 
-function renderComponentWithRoot(
+const renderComponentWithRoot = (
   componentProps,
   data,
-  user,
+  req,
   language,
   actions = [],
   isRedux = false
-) {
+) => {
   let initialStore = createStore({});
 
   let initialData = data;
 
   //We need to figure out what will this become now
-  // const Component = RouterContext;
+  const Component = UNSAFE_DataRouterContext;
 
   if (isRedux) {
     initialStore = createStore(initialData);
@@ -67,26 +68,27 @@ function renderComponentWithRoot(
 
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={initialStore}>
-      <CustomProvider initialData={initialData} user={user} language={language}>
-        {/* <Component {...componentProps} /> */}
-        {Routes}
+      <CustomProvider initialData={initialData} user={req.user} language={language}>
+        <span>What goes here?</span>
       </CustomProvider>
     </Provider>
   );
 
+  // const componentHtml = ReactDOMServer.renderToString(<>Something</>);
+
   return `<!doctype html>\n${ReactDOMServer.renderToString(
-    <StaticRouter>
+    <StaticRouter location={req.url}>
       <Root
         language={language}
         content={componentHtml}
         head={head}
-        user={user}
+        user={req.user}
         reduxData={reduxData}
         assets={assets}
       />
     </StaticRouter>
   )}`;
-}
+};
 
 // function handle404(res) {
 //   res.redirect(301, '/404');
@@ -124,18 +126,18 @@ function handleRoute(res, renderProps, req) {
   // const routeProps = getPropsFromRoute(renderProps, ['requestState']);
   const routeProps = { requestState: () => {} };
 
-  function renderPage(actions, initialData, isRedux) {
+  const renderPage = (actions, initialData, isRedux) => {
     const wholeHtml = renderComponentWithRoot(
       // renderProps,
       {},
       initialData,
-      req.user,
+      req,
       initialData.locale,
       actions,
       isRedux
     );
     res.status(200).send(wholeHtml);
-  }
+  };
 
   RouteHandler.renderedFromServer = true;
   let query;
@@ -153,7 +155,6 @@ function handleRoute(res, renderProps, req) {
       // renderProps.params && renderProps.params.lang ? renderProps.params.lang : req.language;
       const urlLanguage = 'en';
       locale = I18NUtils.getLocale(urlLanguage, languages, req.cookies);
-      // api.locale(locale);
 
       return settings;
     })
@@ -286,7 +287,7 @@ function routeMatch(req, res, location, languages) {
       user: req.user,
       settings: { collection: settings },
     });
-    return handleRoute(res, [], req);
+    return handleRoute(res, {}, req);
     // try {
     //   match({ routes: Routes, location }, (error, redirectLocation, renderProps) => {
     //     if (redirectLocation) {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
@@ -7,19 +7,18 @@ import 'flag-icon-css/sass/flag-icons.scss';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
-
 import { Icon } from 'UI';
-
+import Confirm from './Confirm';
 import './scss/styles.scss';
-
-// import Menu from './Menu';
+import Menu from './Menu';
 import SiteName from './SiteName';
-// import Confirm from './Confirm';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
 
 const App = () => {
   const [showmenu, setShowMenu] = useState(false);
+  const [confirmOptions, setConfirmOptions] = useState({});
+  const location = useLocation();
   // constructor(props, context) {
   //   super(props, context);
   //   this.state = { showmenu: false, confirmOptions: {} };
@@ -35,9 +34,9 @@ const App = () => {
     setShowMenu(!showmenu);
   };
 
-  // const confirm = options => {
-  //   this.setState({ confirmOptions: options });
-  // };
+  const confirm = options => {
+    setConfirmOptions(options);
+  };
 
   // const renderTools = () =>
   //   React.Children.map(this.props.children, child => {
@@ -83,6 +82,7 @@ const App = () => {
           <button
             className="menu-button"
             onClick={toggleMenu}
+            type="button"
             aria-label={t('System', 'Menu', null, false)}
           >
             <Icon icon={MenuButtonIcon} />
@@ -91,10 +91,10 @@ const App = () => {
             <SiteName />
           </h1>
           {/* {this.renderTools()} */}
-          {/* <Menu onClick={toggleMenu} className={navClass} /> */}
+          <Menu location={location} onClick={toggleMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
-          {/* <Confirm {...this.state.confirmOptions} /> */}
+          <Confirm {...confirmOptions} />
           <TranslateForm />
           <Outlet />
           <GoogleAnalytics />
