@@ -203,15 +203,10 @@ const LanguageList = ({
             </>
           }
           message={
-            <>
-              <Translate>Are you sure you want to delete</Translate>&nbsp;{deletingLanguage.label}
-              &nbsp;
-              <Translate>language?</Translate>&nbsp;
-              <Translate translationKey="delete language warning">
-                This action may take some time, can not be undone and will delete all the
-                information in that language.
-              </Translate>
-            </>
+            <Translate translationKey="delete language warning">
+              Are you sure you want to delete this language? This action may take some time, cannot
+              be undone and will delete all the information available in this language.
+            </Translate>
           }
           extraConfirm
         />
@@ -231,11 +226,9 @@ const LanguageList = ({
             </>
           }
           message={
-            <>
-              <Translate>Are you sure you want to reset translation for</Translate>&nbsp;
-              {resettingLanguage.label}&nbsp;
-              <Translate>language?</Translate>
-            </>
+            <Translate translationKey="reset language warning">
+              Are you sure you want to reset translation for this language?
+            </Translate>
           }
           extraConfirm
           type="success"

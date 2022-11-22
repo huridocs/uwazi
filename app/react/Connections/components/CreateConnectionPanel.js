@@ -25,7 +25,6 @@ class CreateConnectionPanel extends Component {
   render() {
     const { uiState, searchResults } = this.props;
     const connection = this.props.connection.toJS();
-    const typeLabel = connection.type === 'basic' ? 'Connection' : 'Reference';
     const open = Boolean(
       this.props.uiState.get('open') && this.props.containerId === connection.sourceDocument
     );
@@ -35,7 +34,8 @@ class CreateConnectionPanel extends Component {
       <SidePanel open={open} className={className}>
         <div className="sidepanel-header">
           <h1>
-            <Translate>Create</Translate> <Translate>{typeLabel}</Translate>
+            {connection.type === 'basic' && <Translate>Create Connection</Translate>}
+            {connection.type !== 'basic' && <Translate>Create Reference</Translate>}
           </h1>
           <button
             className="closeSidepanel close-modal"
