@@ -2,9 +2,8 @@
 /* eslint-disable max-params */
 /* eslint-disable max-lines */
 import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom/server';
-import { UNSAFE_DataRouterContext } from 'react-router-dom';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import { fromJS as Immutable } from 'immutable';
@@ -25,6 +24,7 @@ import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
 import { handleError } from '../api/utils';
+import App from './App';
 
 let assets = {};
 
@@ -39,9 +39,6 @@ const renderComponentWithRoot = (
   let initialStore = createStore({});
 
   let initialData = data;
-
-  //We need to figure out what will this become now
-  const Component = UNSAFE_DataRouterContext;
 
   if (isRedux) {
     initialStore = createStore(initialData);
@@ -66,17 +63,17 @@ const renderComponentWithRoot = (
     reduxData = initialData;
   }
 
-  const componentHtml = ReactDOMServer.renderToString(
+  const componentHtml = renderToString(
     <Provider store={initialStore}>
       <CustomProvider initialData={initialData} user={req.user} language={language}>
-        <span>What goes here?</span>
+        {Routes}
       </CustomProvider>
     </Provider>
   );
 
-  // const componentHtml = ReactDOMServer.renderToString(<>Something</>);
+  console.log(componentHtml);
 
-  return `<!doctype html>\n${ReactDOMServer.renderToString(
+  return `<!doctype html>\n${renderToString(
     <StaticRouter location={req.url}>
       <Root
         language={language}
