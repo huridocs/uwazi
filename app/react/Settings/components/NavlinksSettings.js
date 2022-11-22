@@ -75,7 +75,7 @@ class NavlinksSettings extends Component {
                       </Translate>{' '}
                       ({hostname}),{' '}
                       <Translate translationKey="Navigation menu tool tip part 2">
-                        leaving only a relative URL starting with a slash character. Ie. some_url.
+                        leaving only a relative URL starting with a slash character. Ie. /some_url.
                       </Translate>
                     </div>
                   </div>
