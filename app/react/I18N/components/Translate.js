@@ -55,7 +55,10 @@ class Translate extends Component {
           const italicMatches = parseMarkdownItalicMarker(line);
           return (
             <Fragment key={line}>
-              {boldMatches || italicMatches || <>{line}</>}
+              {boldMatches ||
+                italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
+                  <>{line}</>
+                )}
               {index < lines.length - 1 && <br />}
             </Fragment>
           );
