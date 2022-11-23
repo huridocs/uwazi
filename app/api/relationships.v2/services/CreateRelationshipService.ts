@@ -18,16 +18,14 @@ import { DenormalizationService } from './DenormalizationService';
 interface ReferencePointerData {
   entity: string;
   file: string;
-  reference: {
-    selections: {
-      page: number;
-      top: number;
-      left: number;
-      width: number;
-      height: number;
-    }[];
-    text: string;
-  };
+  selections: {
+    page: number;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  }[];
+  text: string;
 }
 
 interface CreateRelationshipData {
@@ -42,7 +40,7 @@ function isReferencePointerData(
   return typeof data === 'object';
 }
 
-function mapDataToSelection(data: ReferencePointerData['reference']['selections']) {
+function mapDataToSelection(data: ReferencePointerData['selections']) {
   return data.map(
     selectionData =>
       new Selection(
@@ -60,8 +58,8 @@ function mapDataToPointer(data: CreateRelationshipData['from' | 'to']) {
     ? new TextReferencePointer(
         data.entity,
         data.file,
-        mapDataToSelection(data.reference.selections),
-        data.reference.text
+        mapDataToSelection(data.selections),
+        data.text
       )
     : new EntityPointer(data);
 }

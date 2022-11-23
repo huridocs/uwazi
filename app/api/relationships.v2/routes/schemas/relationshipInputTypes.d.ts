@@ -7,7 +7,31 @@
 export type RelationshipInputArrayType = [RelationshipInputType, ...RelationshipInputType[]];
 
 export interface RelationshipInputType {
-  from: string;
-  to: string;
+  from:
+    | string
+    | {
+        entity: string;
+        file: string;
+        selections: {
+          page: number;
+          top: number;
+          left: number;
+          width: number;
+          height: number;
+        }[];
+      };
+  to:
+    | string
+    | {
+        entity: string;
+        file: string;
+        selections: {
+          page: number;
+          top: number;
+          left: number;
+          width: number;
+          height: number;
+        }[];
+      };
   type: string;
 }

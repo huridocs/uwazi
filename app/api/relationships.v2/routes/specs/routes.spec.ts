@@ -43,6 +43,7 @@ const fixtures = {
       },
     },
   ],
+  files: [factory.file('file1', 'entity1', 'document', 'file1.pdf')],
 };
 
 beforeEach(async () => {
@@ -76,7 +77,7 @@ describe('POST relationships', () => {
   ];
 
   it.each(cases)(
-    'shuold throw a validation error if the input is not an array. Case %#',
+    'should throw a validation error if the input is not an array. Case %#',
     async input => {
       const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
         (req as any).user = { _id: factory.id('admin_user'), role: 'admin' };
@@ -123,27 +124,72 @@ describe('POST relationships', () => {
     const response = await request(app)
       .post(URL)
       .send([
-        { from: 'entity1', to: 'entity2', type: factory.id('type1').toHexString() },
         { from: 'entity2', to: 'entity1', type: factory.id('type1').toHexString() },
+        {
+          from: {
+            entity: 'entity1',
+            file: factory.id('file1').toHexString(),
+            text: 'some text',
+            selections: [
+              {
+                page: 1,
+                top: 1,
+                left: 1,
+                height: 1,
+                width: 1,
+              },
+              {
+                page: 1,
+                top: 2,
+                left: 2,
+                height: 2,
+                width: 2,
+              },
+            ],
+          },
+          to: 'entity2',
+          type: factory.id('type1').toHexString(),
+        },
       ]);
 
     const onDb = await testingDB.mongodb
       ?.collection('relationships')
-      .find({ type: factory.id('type1') }, { sort: 'from' })
+      .find({ type: factory.id('type1') }, { sort: { 'from.entity': -1 } })
       .toArray();
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject([
       {
         _id: onDb![0]._id.toHexString(),
-        from: { entity: 'entity1' },
-        to: { entity: 'entity2' },
+        from: { entity: 'entity2' },
+        to: { entity: 'entity1' },
         type: factory.id('type1').toHexString(),
       },
       {
         _id: onDb![1]._id.toHexString(),
-        from: { entity: 'entity2' },
-        to: { entity: 'entity1' },
+        from: {
+          entity: 'entity1',
+          file: factory.id('file1'),
+
+          text: 'some text',
+          selections: [
+            {
+              page: 1,
+              top: 1,
+              left: 1,
+              height: 1,
+              width: 1,
+            },
+            {
+              page: 1,
+              top: 2,
+              left: 2,
+              height: 2,
+              width: 2,
+            },
+          ],
+        },
+        to: { entity: 'entity2' },
         type: factory.id('type1').toHexString(),
       },
     ]);
