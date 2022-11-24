@@ -8,7 +8,12 @@ export class SearchInput extends Component {
   render() {
     return (
       <div className="input-group">
-        <input type="text" className="form-control" placeholder="Search" {...this.props} />
+        <input
+          type="text"
+          className="form-control"
+          placeholder={t('System', 'Search', null, false)}
+          {...this.props}
+        />
         <Icon icon="search" />
         <ModalTips
           label={t('System', 'Search Tips', null, false)}

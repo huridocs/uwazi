@@ -15,7 +15,8 @@ export function loadLinks(links) {
 }
 
 export function addLink(links, type = 'link') {
-  const link = { title: `Item ${links.length + 1}`, localID: ID(), type, sublinks: [] };
+  const itemPrefix = t('System', 'Item', null, false);
+  const link = { title: `${itemPrefix} ${links.length + 1}`, localID: ID(), type, sublinks: [] };
   return dispatch => {
     dispatch(formActions.push('settings.navlinksData.links', link));
     dispatch(editLink(link.localID));
@@ -23,7 +24,11 @@ export function addLink(links, type = 'link') {
 }
 
 export function addGroupLink(links, index) {
-  const link = { title: `Item ${index + 1} - ${links[index].sublinks.length + 1}`, localID: ID() };
+  const itemPrefix = t('System', 'Item', null, false);
+  const link = {
+    title: `${itemPrefix} ${index + 1} - ${links[index].sublinks.length + 1}`,
+    localID: ID(),
+  };
   return dispatch => {
     dispatch(formActions.push(`settings.navlinksData.links[${index}].sublinks`, link));
     dispatch(editLink(link.localID));

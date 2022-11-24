@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import Doc from 'app/Library/components/Doc';
 import DropdownList from 'react-widgets/lib/DropdownList';
 import * as actions from '../actions/actions';
@@ -97,7 +97,7 @@ class RightRelationship extends Component {
                   textField="name"
                   data={relationTypes}
                   value={rightRelationshipGroup.get('template')}
-                  placeholder="New connection type"
+                  placeholder={t('System', 'New relationship type', null, false)}
                   filter="contains"
                   onChange={this.updateRightRelationshipType(index, rightRelationshipIndex)}
                 />

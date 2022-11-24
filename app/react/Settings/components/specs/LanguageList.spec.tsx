@@ -153,8 +153,10 @@ describe('Languages', () => {
       );
     });
 
-    it('should call delete languae', () => {
-      expect(screen.queryByText('Are you sure you want to delete')).toBeInTheDocument();
+    it('should call delete language', () => {
+      expect(
+        screen.queryByText('Are you sure you want to delete this language?', { exact: false })
+      ).toBeInTheDocument();
       confirmAction();
       expect(actions.deleteLanguage).toHaveBeenCalledWith('en');
     });

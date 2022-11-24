@@ -28,6 +28,7 @@
     "webpack-server": "node ./webpack/webpack.server.js",
     "dev-worker": "node run.js ./app/worker.ts",
     "check-translations": "node ./scripts/checkTranslations.mjs",
+    "compare-translations": "node ./scripts/compareTranslations.js",
     "describe-database": "node ./scripts/describeDatabase.mjs",
     "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
     "hot-puppeteer": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot",

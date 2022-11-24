@@ -38,21 +38,14 @@ const findPublicPermission = (permissions: MemberWithPermission[]) =>
 
 const getWarningMessage = (publishingLevel: MixedAccessLevels | false) =>
   !publishingLevel ? (
-    <>
-      <Translate>Caution: the selected entities will be </Translate>
-      <b>
-        <Translate>private</Translate>
-      </b>
-      . <Translate>Only allowed users will be able to see them</Translate>
-    </>
+    <Translate translationKey="Private entities description">
+      Caution: the selected entities will be **private**. Only allowed users will be able to see
+      them.
+    </Translate>
   ) : (
-    <>
-      <Translate>Caution: the selected entities will be </Translate>
-      <b>
-        <Translate>public</Translate>
-      </b>
-      . <Translate>Anyone will be able to see them</Translate>
-    </>
+    <Translate translationKey="Public entities description">
+      Caution: the selected entities will be **public**. Anyone will be able to see them.
+    </Translate>
   );
 
 export const ShareEntityModalComponent = ({
@@ -155,7 +148,7 @@ export const ShareEntityModalComponent = ({
           />
         </div>
         {originalPublicLevel !== currentPublicLevel ? (
-          <span className="validation-message">{getWarningMessage(currentPublicLevel)}.</span>
+          <span className="validation-message">{getWarningMessage(currentPublicLevel)}</span>
         ) : null}
       </Modal.Body>
 

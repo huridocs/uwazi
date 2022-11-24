@@ -7,7 +7,7 @@ import React, { Component } from 'react';
 import { createSelector } from 'reselect';
 
 import { Select } from 'app/ReactReduxForms';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { Icon } from 'app/UI';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import Tip from '../../Layout/Tip';
@@ -90,7 +90,7 @@ export class FormConfigRelationship extends Component {
             model={`template.data.properties[${index}].content`}
             options={options}
             optionsLabel="name"
-            placeholder="Any entity or document"
+            placeholder={t('System', 'Any entity or document', null, false)}
             optionsValue="_id"
           />
         </div>
@@ -169,7 +169,7 @@ const getTemplateProperties = createSelector(
       ? state.template.formState.properties[props.index].content.value
       : null,
   (templates, content) => {
-    const targetTemplate = templates.find(t => t.get('_id') === content);
+    const targetTemplate = templates.find(template => template.get('_id') === content);
     return targetTemplate ? targetTemplate.get('properties').toJS() : [];
   }
 );

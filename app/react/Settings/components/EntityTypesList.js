@@ -41,7 +41,7 @@ class EntityTypesList extends Component {
           },
           title: (
             <>
-              <Translate>Confirm delete of template:</Translate>&nbsp;{template.name}
+              <Translate>Confirm deletion of template:</Translate>&nbsp;{template.name}
             </>
           ),
           messageKey: 'confirm delete template',
@@ -55,7 +55,7 @@ class EntityTypesList extends Component {
           noCancel: true,
           title: (
             <>
-              <Translate>Can not delete template:</Translate>&nbsp;{template.name}
+              <Translate>Cannot delete template:</Translate>&nbsp;{template.name}
             </>
           ),
           message: 'This template has associated entities',

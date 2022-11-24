@@ -94,9 +94,10 @@ class Configure2fa extends Component<Configure2faProps, State> {
                   <div className="alert alert-success">
                     <Icon icon="check" />
                     <div className="force-ltr">
-                      <Translate>Congratulations!</Translate>
-                      <br />
-                      <Translate>You have successfully configured two-step verification.</Translate>
+                      <Translate translationKey="Two-step verification successfully">
+                        {`Congratulations!
+You have successfully configured two-step verification.`}
+                      </Translate>
                     </div>
                   </div>
                   {goToAccount('success', 'OK')}
