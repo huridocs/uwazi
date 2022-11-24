@@ -19,6 +19,7 @@ export interface RelationshipInputType {
           width: number;
           height: number;
         }[];
+        text: string;
       };
   to:
     | string
@@ -32,6 +33,7 @@ export interface RelationshipInputType {
           width: number;
           height: number;
         }[];
+        text: string;
       };
   type: string;
 }

@@ -142,10 +142,8 @@ describe('create()', () => {
           from: {
             entity: 'entity2',
             file: factory.id('file2').toHexString(),
-            reference: {
-              text: 'text selection 2',
-              selections: [{ page: 2, top: 2, left: 2, width: 2, height: 2 }],
-            },
+            text: 'text selection 2',
+            selections: [{ page: 2, top: 2, left: 2, width: 2, height: 2 }],
           },
           to: 'entity1',
           type: factory.id('rel2').toHexString(),
@@ -155,10 +153,8 @@ describe('create()', () => {
           to: {
             entity: 'entity1',
             file: factory.id('file1').toHexString(),
-            reference: {
-              text: 'text selection 1',
-              selections: [{ page: 1, top: 1, left: 1, width: 1, height: 1 }],
-            },
+            text: 'text selection 1',
+            selections: [{ page: 1, top: 1, left: 1, width: 1, height: 1 }],
           },
           type: factory.id('rel3').toHexString(),
         },
@@ -292,10 +288,8 @@ describe('create()', () => {
             from: {
               entity: 'entity1',
               file: factory.id('some file').toHexString(),
-              reference: {
-                text: 'some text',
-                selections: [{ page: 1, top: 1, left: 1, width: 1, height: 1 }],
-              },
+              text: 'some text',
+              selections: [{ page: 1, top: 1, left: 1, width: 1, height: 1 }],
             },
             to: 'entity2',
             type: factory.id('rel1').toHexString(),

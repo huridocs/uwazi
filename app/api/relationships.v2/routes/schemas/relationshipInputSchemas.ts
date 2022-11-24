@@ -25,7 +25,7 @@ const Pointer = {
         selections: { type: 'array', items: Selection },
         text: { type: 'string' },
       },
-      required: ['entity', 'file', 'selections'],
+      required: ['entity', 'file', 'selections', 'text'],
     },
   ],
 };

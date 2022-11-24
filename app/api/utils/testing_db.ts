@@ -31,7 +31,7 @@ export type DBFixture = {
   ixsuggestions?: IXSuggestionType[];
   users?: UserSchema[];
   settings?: Settings[];
-  relationships?: RelationshipDBOType[]
+  relationships?: RelationshipDBOType[];
   [k: string]: any;
 };
 
