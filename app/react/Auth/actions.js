@@ -19,18 +19,7 @@ export function recoverPassword(email) {
   const request = new RequestParams({ email });
   return dispatch =>
     api.post('recoverpassword', request).then(() => {
-      dispatch(
-        notify(
-          t(
-            'System',
-            'Instructions to reset your password have been sent, please check your email',
-            null,
-            false
-          ),
-
-          'success'
-        )
-      );
+      dispatch(notify(t('System', 'Instructions to reset password', null, false), 'success'));
     });
 }
 

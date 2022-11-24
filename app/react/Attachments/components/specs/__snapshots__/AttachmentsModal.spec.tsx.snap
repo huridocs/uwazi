@@ -302,7 +302,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
               <span
                 class="translation active"
               >
-                Drag and drop file in this window to upload 
+                Drag and drop file in this window to upload
               </span>
             </h4>
           </div>

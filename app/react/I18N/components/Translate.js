@@ -4,21 +4,26 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions } from 'app/I18N';
 
-const parseMarkdownItalicMarker = line => {
-  const matches = line.match(/\*(?<italic>.*)\*/);
-  if (matches === null) {
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    return <>{line}</>;
+const parseMarkdownMarker = (line, regexp, groupName, wrapper) => {
+  const matches = line.match(regexp);
+  if (matches == null) {
+    return matches;
   }
   const parts = matches.input.split(matches[0]);
   return (
     <>
       {parts[0]}
-      <i>{matches.groups.italic}</i>
+      {wrapper(matches.groups[groupName])}
       {parts[1]}
     </>
   );
 };
+
+const parseMarkdownBoldMarker = line =>
+  parseMarkdownMarker(line, /\*\*(?<bold>.*)\*\*/, 'bold', text => <strong>{text}</strong>);
+
+const parseMarkdownItalicMarker = line =>
+  parseMarkdownMarker(line, /\*(?<italic>.*)\*/, 'italic', text => <i>{text}</i>);
 
 class Translate extends Component {
   static resetCachedTranslation() {
@@ -46,10 +51,14 @@ class Translate extends Component {
         className={this.props.i18nmode ? 'translation active' : 'translation'}
       >
         {lines.map((line, index) => {
-          const parsedLine = parseMarkdownItalicMarker(line);
+          const boldMatches = parseMarkdownBoldMarker(line);
+          const italicMatches = parseMarkdownItalicMarker(line);
           return (
             <Fragment key={line}>
-              {parsedLine}
+              {boldMatches ||
+                italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
+                  <>{line}</>
+                )}
               {index < lines.length - 1 && <br />}
             </Fragment>
           );

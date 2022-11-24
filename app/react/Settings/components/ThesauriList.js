@@ -76,7 +76,7 @@ class ThesauriList extends Component {
           },
           title: (
             <>
-              <Translate>Confirm delete thesaurus:</Translate>&nbsp;{thesaurus.name}
+              <Translate>Confirm deletion of thesaurus:</Translate>&nbsp;{thesaurus.name}
             </>
           ),
           message: 'Are you sure you want to delete this thesaurus?',

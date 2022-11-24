@@ -24,8 +24,11 @@ export class ImportProgress extends Component {
         <div className="alert alert-info">
           <Icon icon="check" size="2x" />
           <div className="force-ltr">
-            <Translate>Import completed:</Translate>&nbsp;{importProgress}{' '}
-            <Translate>created</Translate>
+            <Translate translationKey="Import completed">
+              Import completed. Number of entities created:
+            </Translate>
+            &nbsp;
+            {importProgress}
             <br />
             <Translate>Indexing entities may take a few minutes</Translate>
           </div>
