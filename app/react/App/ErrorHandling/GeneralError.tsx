@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
 import Footer from 'app/App/Footer';
+import { t } from 'app/I18N';
 
 const handledErrors: { [k: string]: RequestError } = {
   400: {
@@ -16,7 +17,7 @@ const handledErrors: { [k: string]: RequestError } = {
   404: {
     title: 'Not Found',
     summary: '',
-    name: 'We can’t find the page you’re looking for. ',
+    name: "We can't find the page you're looking for.",
     message: '',
     code: '404',
   },
@@ -36,10 +37,11 @@ class GeneralError extends RouteHandler {
     const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
     const error = handledErrors[code];
     error.requestId = safeRequestId ? safeRequestId[0] : undefined;
+    const errorTitle = t('System', error.title, null, false);
     return (
       <div>
         <Helmet>
-          <title>{error.title}</title>
+          <title>{errorTitle}</title>
         </Helmet>
         <ErrorFallback error={error} />
         <Footer />

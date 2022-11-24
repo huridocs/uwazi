@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 
 import Modal from 'app/Layout/Modal';
 import { Loader } from 'app/components/Elements/Loader';
@@ -121,7 +121,7 @@ Confirm.defaultProps = {
   title: 'Confirm action',
   messageKey: '',
   message: 'Are you sure you want to continue?',
-  extraConfirmWord: 'CONFIRM',
+  extraConfirmWord: t('System', 'CONFIRM', null, false),
   acceptLabel: 'Accept',
   zIndex: 99,
 };

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import Icons from './Icons';
 
 const titles = {
@@ -71,6 +71,7 @@ class SimilarProperty extends Component<SimilarPropertiesProps> {
     const { templateProperty } = this.props;
     const typeIcon = templateProperty.type as keyof typeof Icons;
     const invalidThesauri = templateProperty.contentConflict && templateProperty.thesaurusName;
+    const inheritLabel = t('System', 'Inherit', null, false);
     return (
       <tr className="property-atributes is-active">
         <td>
@@ -87,7 +88,7 @@ class SimilarProperty extends Component<SimilarPropertiesProps> {
           <Translate>{typeToShow(templateProperty)}</Translate>
           {templateProperty.relationTypeName && ` (${templateProperty.relationTypeName})`}
           {inheritTypeToShow(templateProperty) &&
-            ` (Inherit: ${inheritTypeToShow(templateProperty)})`}
+            ` (${inheritLabel}: ${inheritTypeToShow(templateProperty)})`}
         </td>
         <td
           className={templateProperty.contentConflict ? 'conflict' : ''}

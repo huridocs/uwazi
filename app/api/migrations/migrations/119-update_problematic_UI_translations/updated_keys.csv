@@ -1,0 +1,23 @@
+key,newKey,oldValue,newValue
+Impact of property change warning,Impact of property change warning,All entities and documents that have already this property assigned will loose its current value,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
+Can not delete template:,Cannot delete template:,Can not delete template:,Cannot delete template:
+Confirm delete relationship type:,Confirm deletion of relationship type:,Confirm delete relationship type:,Confirm deletion of relationship type:
+Confirm delete of template:,Confirm deletion of template:,Confirm delete of template:,Confirm deletion of template:
+Confirm delete page:,Confirm deletion of page:,Confirm delete page:,Confirm deletion of page:
+Confirm delete,Confirm deletion of,Confirm delete,Confirm deletion of
+Confirm delete entity,Confirm deletion of entity,Confirm delete entity,Confirm deletion of entity
+Confirm delete file,Confirm deletion of file,Confirm delete file,Confirm deletion of file
+Confirm delete thesaurus:,Confirm deletion of thesaurus:,Confirm delete thesaurus:,Confirm deletion of thesaurus:
+"Instructions to reset your password have been sent, please check your email",Instructions to reset password,"Instructions to reset your password have been sent, please check your email",Instructions to reset user password have been sent. Please check your email.
+Multimedia fill description,Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.","will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+OCR button tip,OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.,This will process the document to recognize its text. The original file will be added as a supporting file.
+affects,Multiple inherited properties warning ([property 1] affects [property 2]),affects,affects
+delete language warning,delete language warning,"This action may take some time, can not be undone and will delete all the information in that language.","Are you sure you want to delete this language? This action may take some time, cannot be undone and will delete all the information available in this language."
+Only allowed users will be able to see them,Private entities description,Only allowed users will be able to see them,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
+Anyone will be able to see them,Public entities description,Anyone will be able to see them,Caution: the selected entities will be **public**. Anyone will be able to see them.
+You have successfully configured two-step verification.,Two-step verification successfully,You have successfully configured two-step verification.,"Congratulations!
+You have successfully configured two-step verification."
+Import completed:,Import completed,Import completed:,"Import completed. Number of entities created:"
+internal URL tip,Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part","If it is an internal URL within this website, be sure to delete the first part"
+leaving only a relative URL starting with a slash character. Ie. /some_url.,Navigation menu tool tip part 2,"leaving only a relative URL starting with a slash character. Ie. /some_url.","leaving only a relative URL starting with a slash character. Ie. /some_url."
+Are you sure you want to reset translation for,reset language warning,Are you sure you want to reset translation for,Are you sure you want to reset translation for this language?

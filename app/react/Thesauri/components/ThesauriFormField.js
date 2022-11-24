@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 
 export class ThesauriFormField extends Component {
   constructor(props) {
@@ -22,7 +22,11 @@ export class ThesauriFormField extends Component {
     return (
       <div key={`item-${groupIndex || ''}${index}`}>
         <Field model={model}>
-          <input className="form-control" type="text" placeholder="Item name" />
+          <input
+            className="form-control"
+            type="text"
+            placeholder={t('System', 'Item name', null, false)}
+          />
           <button
             tabIndex={index + 500}
             type="button"
