@@ -1,9 +1,8 @@
 /* eslint-disable max-params */
-/* eslint-disable import/exports-last */
 /* eslint-disable max-classes-per-file */
 import { SelfReferenceError } from '../errors/relationshipErrors';
 
-export class Selection {
+class Selection {
   readonly page: number;
 
   readonly top: number;
@@ -16,7 +15,7 @@ export class Selection {
 
   constructor(page: number, top: number, left: number, height: number, width: number) {
     if (top < 0 || left < 0 || height <= 0 || width <= 0) {
-      throw new Error("Reglangle's top, left, height and width must be positive numbers");
+      throw new Error("Rectangle's top, left, height and width must be positive numbers");
     }
 
     if (page < 1) {
@@ -40,13 +39,13 @@ abstract class Pointer {
   abstract equals(pointer: Pointer): boolean;
 }
 
-export class EntityPointer extends Pointer {
+class EntityPointer extends Pointer {
   equals(pointer: EntityPointer): boolean {
     return pointer instanceof EntityPointer && this.entity === pointer.entity;
   }
 }
 
-export class TextReferencePointer extends Pointer {
+class TextReferencePointer extends Pointer {
   readonly file: string;
 
   readonly selections: Selection[];
@@ -63,12 +62,13 @@ export class TextReferencePointer extends Pointer {
     this.text = text;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   equals(_pointer: TextReferencePointer): boolean {
     return false;
   }
 }
 
-export class Relationship {
+class Relationship {
   readonly _id: string;
 
   readonly from: Pointer;
@@ -88,3 +88,5 @@ export class Relationship {
     this.type = type;
   }
 }
+
+export { Relationship, EntityPointer, TextReferencePointer, Selection };
