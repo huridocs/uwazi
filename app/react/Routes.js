@@ -213,12 +213,10 @@ export { getIndexRoute };
 export default (
   <Routes>
     <Route path="/" element={<App />}>
-      {routes}
-      <Route path=":lang">
-        {routes}
-        <Route path="*" element={<GeneralError />} />
+      <Route path="settings" element={<Settings />}>
+        <Route path="activitylog" element={<Activitylog />} />
       </Route>
-      <Route path="*" element={<GeneralError />} />
+      <Route path="/error" element={<GeneralError />} />
     </Route>
   </Routes>
 );

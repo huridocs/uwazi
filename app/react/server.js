@@ -1,5 +1,5 @@
-import Router from './ServerRouter.js';
+import { EntryServer } from './entry-server';
 
 export default app => {
-  app.get(/^\/(?!api(\/|$)).*$/, Router);
+  app.get(/^\/(?!api(\/|$)).*$/, EntryServer);
 };
