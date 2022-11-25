@@ -416,6 +416,17 @@
   align-items: center;
   margin-top: 5px;
   margin-bottom: 12px;
+
+  button {
+    height: 23px;
+    background: #e8e7ec;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+    padding: 2px 8px 3px 8px;
+    border: 1px solid #cfd8dc;
+  }
 }
 
 .switcher-wrapper {
