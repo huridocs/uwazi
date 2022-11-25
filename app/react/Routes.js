@@ -220,6 +220,8 @@ const tmpRoutes = (
         <Route path="edit/:templateId" element={<EditTemplate />} />
       </Route>
     </Route>
+    <Route path="error/:errorCode" element={<GeneralError />} />
+    <Route path="404" element={<GeneralError />} />
   </Route>
 );
 
@@ -228,7 +230,6 @@ export default (
     <Route path="/" element={<App />}>
       {tmpRoutes}
       <Route path=":lang">{tmpRoutes}</Route>
-      <Route path="/error" element={<GeneralError />} />
     </Route>
   </Routes>
 );
