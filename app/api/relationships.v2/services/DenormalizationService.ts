@@ -136,4 +136,8 @@ export class DenormalizationService {
     const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
     return this.denormalizeForNewRelationships(relationships.map(r => r._id));
   }
+
+  async denormalizeForDeletingRelationships(_ids: string[]) {
+    return this.denormalizeForNewRelationships(_ids);
+  }
 }

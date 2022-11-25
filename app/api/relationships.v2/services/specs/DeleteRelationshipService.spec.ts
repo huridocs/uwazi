@@ -3,6 +3,7 @@ import { AuthorizationService } from 'api/authorization.v2/services/Authorizatio
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -11,6 +12,7 @@ import { ObjectId } from 'mongodb';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
 import { MissingRelationshipError } from '../../errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';
+import { DenormalizationService } from '../DenormalizationService';
 
 const factory = getFixturesFactory();
 
@@ -72,6 +74,12 @@ afterAll(async () => {
 describe('delete()', () => {
   describe('When the entities exist', () => {
     it('should delete a single relationship', async () => {
+      const denormalizeForDeletingRelationshipsMock = jest.fn().mockResolvedValue(undefined);
+
+      const denormalizationServiceMock = partialImplementation<DenormalizationService>({
+        denormalizeForDeletingRelationships: denormalizeForDeletingRelationshipsMock,
+      });
+
       const connection = getConnection();
       const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
@@ -80,7 +88,8 @@ describe('delete()', () => {
         new AuthorizationService(
           new MongoPermissionsDataSource(connection, transactionManager),
           mockUser
-        )
+        ),
+        denormalizationServiceMock
       );
       await service.delete(factory.id('rel1').toHexString());
 
@@ -88,9 +97,19 @@ describe('delete()', () => {
         .find({ _id: factory.id('rel1') })
         .toArray();
       expect(relatinshipsInDb).toEqual([]);
+
+      expect(denormalizeForDeletingRelationshipsMock).toHaveBeenCalledWith([
+        factory.id('rel1').toHexString(),
+      ]);
     });
 
     it('should delete multiple relationships', async () => {
+      const denormalizeForDeletingRelationshipsMock = jest.fn().mockResolvedValue(undefined);
+
+      const denormalizationServiceMock = partialImplementation<DenormalizationService>({
+        denormalizeForDeletingRelationships: denormalizeForDeletingRelationshipsMock,
+      });
+
       const connection = getConnection();
       const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
@@ -99,7 +118,8 @@ describe('delete()', () => {
         new AuthorizationService(
           new MongoPermissionsDataSource(connection, transactionManager),
           mockUser
-        )
+        ),
+        denormalizationServiceMock
       );
       await service.delete([factory.id('rel1').toHexString(), factory.id('rel3').toHexString()]);
 
@@ -113,6 +133,11 @@ describe('delete()', () => {
           type: factory.id('rtype2'),
         },
       ]);
+
+      expect(denormalizeForDeletingRelationshipsMock).toHaveBeenCalledWith([
+        factory.id('rel1').toHexString(),
+        factory.id('rel3').toHexString(),
+      ]);
     });
   });
 
@@ -125,6 +150,12 @@ describe('delete()', () => {
         toDelete: [factory.id('non-existing').toHexString(), factory.id('rel1').toHexString()],
       },
     ])('should throw a validation error', async ({ toDelete }) => {
+      const denormalizeForDeletingRelationshipsMock = jest.fn().mockResolvedValue(undefined);
+
+      const denormalizationServiceMock = partialImplementation<DenormalizationService>({
+        denormalizeForDeletingRelationships: denormalizeForDeletingRelationshipsMock,
+      });
+
       const connection = getConnection();
       const transactionManager = new MongoTransactionManager(getClient());
       const service = new DeleteRelationshipService(
@@ -133,13 +164,15 @@ describe('delete()', () => {
         new AuthorizationService(
           new MongoPermissionsDataSource(connection, transactionManager),
           mockUser
-        )
+        ),
+        denormalizationServiceMock
       );
       try {
         await service.delete(toDelete);
         fail('should throw error');
       } catch (e) {
         expect(e).toBeInstanceOf(MissingRelationshipError);
+        expect(denormalizeForDeletingRelationshipsMock).not.toHaveBeenCalled();
       }
     });
   });
