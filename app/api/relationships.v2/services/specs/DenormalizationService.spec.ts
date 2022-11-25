@@ -32,7 +32,12 @@ const fixtures = {
     {
       _id: factory.id('rel3'),
       to: { entity: 'hub1' },
-      from: { entity: 'entity4' },
+      from: {
+        entity: 'entity4',
+        file: factory.id('file4'),
+        selections: [{ page: 1, top: 1, left: 1, height: 1, width: 1 }],
+        text: '',
+      },
       type: factory.id('relType1'),
     },
     {
@@ -111,6 +116,7 @@ const fixtures = {
     ...entityInLanguages(['hu', 'es'], 'entity9', 'template7'),
     ...entityInLanguages(['hu', 'es'], 'entity10', 'template1'),
   ],
+  files: [factory.file('file4', 'entity4', 'document', 'file4.pdf', 'hu')],
   templates: [
     factory.template('template1', [
       {
@@ -262,6 +268,42 @@ describe('denormalizeForNewRelationships()', () => {
       'should mark the relationship fields as invalid in the entities in "%s"',
       async language => {
         await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
+        const entities = await testingDB.mongodb
+          ?.collection('entities')
+          .find({ language, 'obsoleteMetadata.0': { $exists: true } })
+          .toArray();
+        expect(entities?.length).toBe(4);
+        expect(entities).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              sharedId: 'entity1',
+              obsoleteMetadata: ['relationshipProp1'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity4',
+              obsoleteMetadata: ['relationshipProp3'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity7',
+              obsoleteMetadata: ['relationshipProp2'],
+            }),
+            expect.objectContaining({
+              sharedId: 'entity9',
+              obsoleteMetadata: ['relationshipProp2'],
+            }),
+          ])
+        );
+      }
+    );
+  });
+});
+
+describe('denormalizeForDeletingFiles()', () => {
+  describe('when executing before deleting a file', () => {
+    it.each(['hu', 'es'])(
+      'should mark the relationship fields as invalid in the entities in "%s"',
+      async language => {
+        await service.denormalizeForDeletingFiles([factory.id('file4').toHexString()]);
         const entities = await testingDB.mongodb
           ?.collection('entities')
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })

@@ -131,4 +131,9 @@ export class DenormalizationService {
       await this.indexEntities(affectedEntities);
     });
   }
+
+  async denormalizeForDeletingFiles(fileIds: string[]) {
+    const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
+    return this.denormalizeForNewRelationships(relationships.map(r => r._id));
+  }
 }
