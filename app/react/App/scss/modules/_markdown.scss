@@ -204,6 +204,112 @@
   &:hover .fa {
     color: $c-primary;
   }
+
+  span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 280px;
+  }
+}
+
+.video-container > .timelinks-form {
+  margin-top: 10px;
+
+  .add-timelink {
+    background: #eceff1;
+    border-radius: 6px;
+    border: none;
+    padding: 2px 8px;
+    gap: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 19px;
+  }
+}
+
+.video-container .new-timelink {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+
+  .timestamp {
+    display: flex;
+    width: 18%;
+    background: #eceff1;
+    border-radius: 2px;
+    border: none;
+
+    &:focus-visible,
+    &:active {
+      border: none;
+    }
+    &:invalid {
+      border-color: red;
+    }
+
+    .timestamp-minutes {
+      width: 48%;
+      background: #eceff1;
+      border: none;
+      border-radius: 2px;
+      border-right: none;
+      font-weight: bold;
+      text-align: center;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+    .seperator {
+      width: auto;
+      font-size: large;
+      font-weight: bolder;
+      padding-top: 4px;
+      border: none;
+    }
+    .timestamp-seconds {
+      width: 48%;
+      background: #eceff1;
+      border: none;
+      border-radius: 2px;
+      border-left: none;
+      font-weight: bold;
+      text-align: center;
+
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+
+  .timestamp-label {
+    width: 70%;
+    background: #eceff1;
+    border-radius: 2px;
+    padding: 5px;
+    border: none;
+
+    &:focus-visible,
+    &:active {
+      outline: none;
+    }
+  }
+
+  .new-timestamp-btn,
+  .delete-timestamp-btn {
+    width: 8%;
+    background: #eceff1;
+    border: 1px solid #ceccd6;
+    border-radius: 2px;
+  }
+
+  .delete-timestamp-btn {
+    background: #c95c54;
+    border: 1px solid #b24138;
+    color: #eceff1;
+  }
 }
 
 .page-viewer .markdown-viewer > *:not(.hero) {

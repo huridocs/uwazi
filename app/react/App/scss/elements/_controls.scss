@@ -226,8 +226,10 @@ input[type='number'].form-control {
   &.media {
     img,
     .video-container {
-      max-width: 50%;
-      margin: auto;
+      margin-top: auto;
+      margin-bottom: auto;
+      margin-left: 0px;
+      margin-right: 0px;
       display: block;
     }
   }
