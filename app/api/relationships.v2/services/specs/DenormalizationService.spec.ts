@@ -262,12 +262,12 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('denormalizeForNewRelationships()', () => {
+describe('denormalizeAfterCreatingRelationships()', () => {
   describe('when executing on a newly created relationship', () => {
     it.each(['hu', 'es'])(
       'should mark the relationship fields as invalid in the entities in "%s"',
       async language => {
-        await service.denormalizeForNewRelationships([factory.id('rel3').toHexString()]);
+        await service.denormalizeAfterCreatingRelationships([factory.id('rel3').toHexString()]);
         const entities = await testingDB.mongodb
           ?.collection('entities')
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })
@@ -298,12 +298,12 @@ describe('denormalizeForNewRelationships()', () => {
   });
 });
 
-describe('denormalizeForDeletingFiles()', () => {
+describe('denormalizeBeforeDeletingFiles()', () => {
   describe('when executing before deleting a file', () => {
     it.each(['hu', 'es'])(
       'should mark the relationship fields as invalid in the entities in "%s"',
       async language => {
-        await service.denormalizeForDeletingFiles([factory.id('file4').toHexString()]);
+        await service.denormalizeBeforeDeletingFiles([factory.id('file4').toHexString()]);
         const entities = await testingDB.mongodb
           ?.collection('entities')
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })
@@ -334,7 +334,7 @@ describe('denormalizeForDeletingFiles()', () => {
   });
 });
 
-describe('denormalizeForExistingEntities()', () => {
+describe('denormalizeAfterUpdatingEntities()', () => {
   describe('when executing on an existing entity', () => {
     it('should update the relationship fields denormalizations in the entity with the new data in the provided language', async () => {
       await testingDB.mongodb
@@ -344,7 +344,7 @@ describe('denormalizeForExistingEntities()', () => {
           { $set: { title: 'entity4-es-edited' } }
         );
 
-      await service.denormalizeForExistingEntities(['entity4'], 'es');
+      await service.denormalizeAfterUpdatingEntities(['entity4'], 'es');
 
       const entities = await testingDB.mongodb
         ?.collection('entities')

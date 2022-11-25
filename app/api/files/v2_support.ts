@@ -9,7 +9,7 @@ export const V2 = {
     const relationshipsDataSource = DefaultRelationshipDataSource(transactionManager);
     const denormalizationService = DenormalizationService(transactionManager);
 
-    await denormalizationService.denormalizeForDeletingFiles(_ids);
+    await denormalizationService.denormalizeBeforeDeletingFiles(_ids);
     await relationshipsDataSource.deleteByReferencedFiles(_ids);
     await transactionManager.executeOnCommitHandlers(undefined);
   },

@@ -38,7 +38,7 @@ export class DeleteRelationshipService {
     }
 
     await this.transactionManager.run(async () => {
-      await this.denormalizationService.denormalizeForDeletingRelationships(ids);
+      await this.denormalizationService.denormalizeBeforeDeletingRelationships(ids);
       await this.relationshipsDS.delete(ids);
     });
   }

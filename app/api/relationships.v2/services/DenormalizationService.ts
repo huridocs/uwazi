@@ -132,20 +132,20 @@ export class DenormalizationService {
     });
   }
 
-  async denormalizeForNewRelationships(relationshipIds: string[]) {
+  async denormalizeAfterCreatingRelationships(relationshipIds: string[]) {
     return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
   }
 
-  async denormalizeForExistingEntities(entityIds: string[], language: string) {
+  async denormalizeAfterUpdatingEntities(entityIds: string[], language: string) {
     return this.updateDenormalizedMetadataDirectly(entityIds, language);
   }
 
-  async denormalizeForDeletingFiles(fileIds: string[]) {
+  async denormalizeBeforeDeletingFiles(fileIds: string[]) {
     const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
     return this.runQueriesAndInvalidateMetadataCaches(relationships.map(r => r._id));
   }
 
-  async denormalizeForDeletingRelationships(relationshipIds: string[]) {
+  async denormalizeBeforeDeletingRelationships(relationshipIds: string[]) {
     return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
   }
 }

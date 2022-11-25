@@ -31,10 +31,10 @@ const authServiceMock = partialImplementation<AuthorizationService>({
   validateAccess: validateAccessMock,
 });
 
-const denormalizeForNewRelationshipsMock = jest.fn().mockResolvedValue(undefined);
+const denormalizeAfterCreatingRelationshipsMock = jest.fn().mockResolvedValue(undefined);
 
 const denormalizationServiceMock = partialImplementation<DenormalizationService>({
-  denormalizeForNewRelationships: denormalizeForNewRelationshipsMock,
+  denormalizeAfterCreatingRelationships: denormalizeAfterCreatingRelationshipsMock,
 });
 
 const createService = () => {
@@ -43,7 +43,7 @@ const createService = () => {
   const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
 
   validateAccessMock.mockReset();
-  denormalizeForNewRelationshipsMock.mockReset();
+  denormalizeAfterCreatingRelationshipsMock.mockReset();
 
   return new CreateRelationshipService(
     new MongoRelationshipsDataSource(connection, transactionManager),
@@ -195,7 +195,7 @@ describe('create()', () => {
         },
       ]);
 
-      expect(denormalizeForNewRelationshipsMock).toHaveBeenCalledWith(
+      expect(denormalizeAfterCreatingRelationshipsMock).toHaveBeenCalledWith(
         relationships.map(r => r._id)
       );
     });
@@ -240,7 +240,9 @@ describe('create()', () => {
     it('should denormalize based on the newly created relationships', async () => {
       const created = await execute();
 
-      expect(denormalizeForNewRelationshipsMock).toHaveBeenCalledWith(created.map(c => c._id));
+      expect(denormalizeAfterCreatingRelationshipsMock).toHaveBeenCalledWith(
+        created.map(c => c._id)
+      );
     });
   });
 
@@ -258,7 +260,7 @@ describe('create()', () => {
         await expect(e.message).toMatch(/existing/);
         expect(e).toBeInstanceOf(MissingEntityError);
       }
-      expect(denormalizeForNewRelationshipsMock).not.toHaveBeenCalled();
+      expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });
   });
 
@@ -275,7 +277,7 @@ describe('create()', () => {
         await expect(e.message).toMatch(/existing/);
         expect(e).toBeInstanceOf(MissingRelationshipTypeError);
       }
-      expect(denormalizeForNewRelationshipsMock).not.toHaveBeenCalled();
+      expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });
   });
 
@@ -299,7 +301,7 @@ describe('create()', () => {
       } catch (e) {
         await expect(e.message).toMatch(/file/i);
       }
-      expect(denormalizeForNewRelationshipsMock).not.toHaveBeenCalled();
+      expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });
   });
 
@@ -317,7 +319,7 @@ describe('create()', () => {
         await expect(e.message).toMatch(/self/);
         expect(e).toBeInstanceOf(SelfReferenceError);
       }
-      expect(denormalizeForNewRelationshipsMock).not.toHaveBeenCalled();
+      expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });
   });
 });

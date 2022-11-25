@@ -162,7 +162,7 @@ export class CreateRelationshipService {
     const created = await this.transactionManager.run(async () => {
       const insertedRelationships = await this.relationshipsDS.insert(models);
 
-      await this.denormalizationService.denormalizeForNewRelationships(
+      await this.denormalizationService.denormalizeAfterCreatingRelationships(
         insertedRelationships.map(relationship => relationship._id)
       );
 

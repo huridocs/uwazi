@@ -96,7 +96,7 @@ const denormalizeAfterEntityUpdate = async ({
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const denormalizationService = DenormalizationService(transactionManager);
-    await denormalizationService.denormalizeForExistingEntities([sharedId], language);
+    await denormalizationService.denormalizeAfterUpdatingEntities([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
   }
 };
