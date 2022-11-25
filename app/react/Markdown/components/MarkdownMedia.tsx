@@ -1,4 +1,5 @@
 /* eslint-disable max-statements */
+import { Translate } from 'app/I18N';
 import React, { MutableRefObject, useRef, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
@@ -85,7 +86,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           <b>
             <Icon icon="pause" /> {timeKey}
           </b>
-          <span style={{ overflowX: 'hidden' }}>{timelinks[timeKey]}</span>
+          <span>{timelinks[timeKey]}</span>
         </div>
       );
     });
@@ -240,9 +241,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
               });
             }}
           >
-            Add timelink
+            <Translate>Add timelink</Translate>
           </button>
-          <h5>Timelinks</h5>
+          <h5>
+            <Translate>Timelinks</Translate>
+          </h5>
           {renderTimeLinksForm(config.url)}
         </div>
       )}
