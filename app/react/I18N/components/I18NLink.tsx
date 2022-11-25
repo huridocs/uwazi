@@ -1,10 +1,7 @@
-/** @format */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Link, browserHistory } from 'react-router-dom';
-import objectWithoutKeys from 'app/utils/objectWithoutKeys';
+import { useNavigate, Link } from 'react-router-dom';
+import { omit } from 'lodash';
 
 const defaultProps = {
   disabled: false,
@@ -21,56 +18,39 @@ export type I18NLinkProps = typeof defaultProps & {
   confirmMessage: string;
 };
 
-export class I18NLink extends Component<I18NLinkProps> {
-  static defaultProps = defaultProps;
+const I18NLink = (props: I18NLinkProps) => {
+  const { to, disabled } = props;
+  const navigate = useNavigate();
+  // static contextTypes = {
+  //   confirm: PropTypes.func,
+  // };
 
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
-
-  static navigate(to: string) {
-    browserHistory.push(to);
-  }
-
-  constructor(props: I18NLinkProps) {
-    super(props);
-    this.onClick = this.onClick.bind(this);
-  }
-
-  onClick(e: { preventDefault: () => void }) {
-    const { to, disabled, onClick, confirmTitle, confirmMessage } = this.props;
+  const onClickHandler = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (disabled) {
       return;
     }
 
-    if (onClick) {
-      if (confirmTitle) {
-        this.context.confirm({
-          accept: () => {
-            onClick(e);
-            I18NLink.navigate(to);
-          },
-          title: confirmTitle,
-          message: confirmMessage,
-        });
-      } else {
-        onClick(e);
-        I18NLink.navigate(to);
-      }
-    }
-  }
+    // if (onClick) {
+    //   if (confirmTitle) {
+    //     this.context.confirm({
+    //       accept: () => {
+    //         onClick(e);
+    //         I18NLink.navigate(to);
+    //       },
+    //       title: confirmTitle,
+    //       message: confirmMessage,
+    //     });
+    //   } else {
+    // onClick(e);
+    navigate(to);
+    //   }
+    // }
+  };
 
-  render() {
-    const props = objectWithoutKeys(this.props, [
-      'dispatch',
-      'onClick',
-      'confirmTitle',
-      'confirmMessage',
-    ]);
-    return <Link onClick={this.onClick} {...props} />;
-  }
-}
+  const newProps = omit(props, ['dispatch', 'onClick', 'confirmTitle', 'confirmMessage']);
+  return <Link onClick={onClickHandler} {...newProps} />;
+};
 
 export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) {
   return { to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/') };

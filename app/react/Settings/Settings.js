@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { Outlet } from 'react-router-dom';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi, t } from 'app/I18N';
@@ -79,7 +80,7 @@ export class Settings extends RouteHandler {
         <div className={`settings-navigation ${isSettingsParentRoute ? '' : 'only-desktop'}`}>
           <SettingsNavigation />
         </div>
-        {this.props.children}
+        <Outlet />
       </div>
     );
   }

@@ -154,31 +154,31 @@ const routes = (
       <Route path="users" element={<UserManagement />} />
       <Route path="preserve" element={<PreserveSettings />} />
       <Route path="pages">
-        <IndexRoute element={<Pages />} />
+        <Route index element={<Pages />} />
         <Route path="new" element={<NewPage />} />
         <Route path="edit/:sharedId" element={<EditPage />} />
       </Route>
       <Route path="templates">
-        <IndexRoute element={<EntityTypesList />} />
+        <Route index element={<EntityTypesList />} />
         <Route path="new" element={<NewTemplate />} />
         <Route path="edit/:templateId" element={<EditTemplate />} />
       </Route>
       <Route path="metadata_extraction" element={<MetadataExtractionDashboard />} />
       <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} />
       <Route path="connections">
-        <IndexRoute element={<RelationTypesList />} />
+        <Route index element={<RelationTypesList />} />
         <Route path="new" element={<NewRelationType />} />
         <Route path="edit/:_id" element={<EditRelationType />} />
       </Route>
       <Route path="dictionaries">
-        <IndexRoute element={<ThesauriList />} />
+        <Route index element={<ThesauriList />} />
         <Route path="new" element={<NewThesauri />} />
         <Route path="edit/:_id" element={<EditThesauri />} />
         <Route path="cockpit/:_id" element={<ThesaurusCockpit />} />
       </Route>
       <Route path="languages" element={<LanguageList />} />
       <Route path="translations">
-        <IndexRoute element={<TranslationsList />} />
+        <Route index element={<TranslationsList />} />
         <Route path="edit/:context" element={<EditTranslations />} />
       </Route>
       <Route path="filters" element={<FiltersForm />} />
@@ -210,12 +210,24 @@ const routes = (
 
 export { getIndexRoute };
 
+const tmpRoutes = (
+  <Route>
+    <Route path="settings" element={<Settings />}>
+      <Route path="activitylog" element={<Activitylog />} />
+      <Route path="templates">
+        <Route index element={<EntityTypesList />} />
+        <Route path="new" element={<NewTemplate />} />
+        <Route path="edit/:templateId" element={<EditTemplate />} />
+      </Route>
+    </Route>
+  </Route>
+);
+
 export default (
   <Routes>
     <Route path="/" element={<App />}>
-      <Route path="settings" element={<Settings />}>
-        <Route path="activitylog" element={<Activitylog />} />
-      </Route>
+      {tmpRoutes}
+      <Route path=":lang">{tmpRoutes}</Route>
       <Route path="/error" element={<GeneralError />} />
     </Route>
   </Routes>
