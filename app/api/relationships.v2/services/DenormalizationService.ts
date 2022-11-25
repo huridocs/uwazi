@@ -63,7 +63,7 @@ export class DenormalizationService {
     return entities;
   }
 
-  async getCandidateEntitiesForRelationship(_id: string, language: string) {
+  private async getCandidateEntitiesForRelationship(_id: string, language: string) {
     const relationship = await this.relationshipsDS.getById([_id]).first();
 
     if (!relationship) throw new Error('missing relationship');
@@ -78,7 +78,7 @@ export class DenormalizationService {
     );
   }
 
-  async getCandidateEntitiesForEntity(sharedId: string, language: string) {
+  private async getCandidateEntitiesForEntity(sharedId: string, language: string) {
     const entity = await this.entitiesDS.getByIds([sharedId]).first();
     if (!entity) throw new Error('missing entity');
     return this.getCandidateEntities(
@@ -87,14 +87,17 @@ export class DenormalizationService {
     );
   }
 
-  private async runQueriesAndInvalidateMetadataCaches(relationshipIds: string[]) {
-    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+  private async runQueriesAndInvalidateMetadataCaches<Id>(
+    relationshipIds: Id[],
+    getCandidatesCallback: (id: Id) => Promise<
+      {
+        sharedId: string;
+        property: string;
+      }[]
+    >
+  ) {
     const candidates = (
-      await Promise.all(
-        relationshipIds.map(async id =>
-          this.getCandidateEntitiesForRelationship(id, defaultLanguage)
-        )
-      )
+      await Promise.all(relationshipIds.map(async id => getCandidatesCallback(id)))
     ).flat();
 
     await this.entitiesDS.markMetadataAsChanged(candidates);
@@ -133,7 +136,10 @@ export class DenormalizationService {
   }
 
   async denormalizeAfterCreatingRelationships(relationshipIds: string[]) {
-    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds, async id =>
+      this.getCandidateEntitiesForRelationship(id, defaultLanguage)
+    );
   }
 
   async denormalizeAfterUpdatingEntities(entityIds: string[], language: string) {
@@ -141,11 +147,24 @@ export class DenormalizationService {
   }
 
   async denormalizeBeforeDeletingFiles(fileIds: string[]) {
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
-    return this.runQueriesAndInvalidateMetadataCaches(relationships.map(r => r._id));
+    return this.runQueriesAndInvalidateMetadataCaches(
+      relationships.map(r => r._id),
+      async id => this.getCandidateEntitiesForRelationship(id, defaultLanguage)
+    );
   }
 
   async denormalizeBeforeDeletingRelationships(relationshipIds: string[]) {
-    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
+    const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
+    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds, async id =>
+      this.getCandidateEntitiesForRelationship(id, defaultLanguage)
+    );
+  }
+
+  async denormalizeAfterCreatingEntities(entityIds: string[], language: string) {
+    return this.runQueriesAndInvalidateMetadataCaches(entityIds, async id =>
+      this.getCandidateEntitiesForEntity(id, language)
+    );
   }
 }

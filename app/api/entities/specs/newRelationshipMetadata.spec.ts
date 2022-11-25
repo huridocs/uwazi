@@ -233,7 +233,7 @@ describe('entities.save()', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation(async (e: any) => Promise.resolve());
     const markSpy = jest
-      .spyOn(v2Support, 'markNewRelationshipsOfAffected')
+      .spyOn(v2Support, 'denormalizeAfterEntityCreation')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation(async (e: any, i: any) => Promise.resolve());
 

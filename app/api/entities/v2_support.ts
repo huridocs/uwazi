@@ -3,7 +3,6 @@ import { ObjectId } from 'mongodb';
 import templates from 'api/templates';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
-import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
@@ -65,23 +64,16 @@ const deleteRelatedNewRelationships = async (sharedId: string) => {
   }
 };
 
-const markNewRelationshipsOfAffected = async (
+const denormalizeAfterEntityCreation = async (
   { sharedId, language }: { sharedId: string; language: string },
   index: boolean = true
 ) => {
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
-    const entitiesDataSource = DefaultEntitiesDataSource(transactionManager);
-    const service = DenormalizationService(transactionManager);
-    const candidates = await service.getCandidateEntitiesForEntity(sharedId, language);
-
-    await entitiesDataSource.markMetadataAsChanged(candidates);
-
-    if (index && candidates.length > 0) {
-      await search.indexEntities(
-        { sharedId: { $in: candidates.map(c => c.sharedId) } },
-        '+fullText'
-      );
+    const denormalizationService = DenormalizationService(transactionManager);
+    await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
+    if (index) {
+      await transactionManager.executeOnCommitHandlers(undefined);
     }
   }
 };
@@ -119,7 +111,7 @@ const ignoreNewRelationshipsMetadata = async (
 export {
   deleteRelatedNewRelationships,
   ignoreNewRelationshipsMetadata,
-  markNewRelationshipsOfAffected,
+  denormalizeAfterEntityCreation,
   assignNewRelationshipFieldsValues,
   denormalizeAfterEntityUpdate,
 };
