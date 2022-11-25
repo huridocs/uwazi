@@ -1,5 +1,6 @@
+import { Application } from 'express';
 import { EntryServer } from './entry-server';
 
-export default app => {
+export const serverSideRender = (app: Application) => {
   app.get(/^\/(?!api(\/|$)).*$/, EntryServer);
 };

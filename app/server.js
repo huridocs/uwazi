@@ -26,7 +26,7 @@ import { config } from './api/config';
 import { migrator } from './api/migrations/migrator';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
 import { handleError } from './api/utils/handleError.js';
-import serverRenderingRoutes from './react/server.js';
+import { serverSideRender } from './react/server';
 import { DB } from './api/odm';
 import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
@@ -118,7 +118,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 
   apiRoutes(app, http);
-  serverRenderingRoutes(app);
+  serverSideRender(app);
   if (config.sentry.dsn) {
     app.use(Sentry.Handlers.errorHandler());
   }

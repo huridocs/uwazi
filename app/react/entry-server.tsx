@@ -10,7 +10,7 @@ import App from './App';
 import Root from './App/Root';
 import settingsApi from '../api/settings/settings';
 
-async function getAssets() {
+const getAssets = async () => {
   if (process.env.HOT) {
     return Promise.resolve();
   }
@@ -30,7 +30,7 @@ async function getAssets() {
       }
     });
   });
-}
+};
 
 const EntryServer = async (req: Request, res: Response) => {
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
@@ -50,6 +50,7 @@ const EntryServer = async (req: Request, res: Response) => {
       <App />
     </StaticRouter>
   );
+
   const html = ReactDOMServer.renderToString(
     <Root
       language="en"

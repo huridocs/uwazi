@@ -1,14 +1,12 @@
-import { Provider } from 'react-redux';
-
 import React from 'react';
-
+import { Provider } from 'react-redux';
 import CustomProvider from './App/Provider';
-import Routes from './Routes';
+import { routes } from './Routes';
 import { store } from './store';
 
 const App = () => (
   <Provider store={store}>
-    <CustomProvider>{Routes}</CustomProvider>
+    <CustomProvider>{routes}</CustomProvider>
   </Provider>
 );
 
