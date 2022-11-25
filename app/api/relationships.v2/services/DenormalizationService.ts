@@ -87,7 +87,7 @@ export class DenormalizationService {
     );
   }
 
-  async denormalizeForNewRelationships(relationshipIds: string[]) {
+  private async runQueriesAndInvalidateMetadataCaches(relationshipIds: string[]) {
     const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     const candidates = (
       await Promise.all(
@@ -104,7 +104,7 @@ export class DenormalizationService {
     });
   }
 
-  async denormalizeForExistingEntities(entityIds: string[], language: string) {
+  private async updateDenormalizedMetadataDirectly(entityIds: string[], language: string) {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
@@ -132,12 +132,20 @@ export class DenormalizationService {
     });
   }
 
-  async denormalizeForDeletingFiles(fileIds: string[]) {
-    const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
-    return this.denormalizeForNewRelationships(relationships.map(r => r._id));
+  async denormalizeForNewRelationships(relationshipIds: string[]) {
+    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
   }
 
-  async denormalizeForDeletingRelationships(_ids: string[]) {
-    return this.denormalizeForNewRelationships(_ids);
+  async denormalizeForExistingEntities(entityIds: string[], language: string) {
+    return this.updateDenormalizedMetadataDirectly(entityIds, language);
+  }
+
+  async denormalizeForDeletingFiles(fileIds: string[]) {
+    const relationships = await this.relationshipsDS.getByFiles(fileIds).all();
+    return this.runQueriesAndInvalidateMetadataCaches(relationships.map(r => r._id));
+  }
+
+  async denormalizeForDeletingRelationships(relationshipIds: string[]) {
+    return this.runQueriesAndInvalidateMetadataCaches(relationshipIds);
   }
 }
