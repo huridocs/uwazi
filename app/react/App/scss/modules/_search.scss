@@ -378,6 +378,8 @@
 }
 
 .search__filter--selected__media {
+  display: flex;
+  flex-direction: column;
   margin-top: 8px;
 
   img {
@@ -389,6 +391,7 @@
   }
 
   .video-container {
+    margin: 0px;
     height: 100%;
 
     > div:first-child {
@@ -407,10 +410,12 @@
 }
 
 .search__filter--selected__media-toolbar {
+  order: -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 5px;
+  margin-bottom: 12px;
 }
 
 .switcher-wrapper {
