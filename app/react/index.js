@@ -16,18 +16,14 @@ if (window.SENTRY_APP_DSN) {
     tracesSampleRate: 0.1,
   });
 }
+
 const container = document.getElementById('root');
+
 const root = hydrateRoot(
   container,
   <BrowserRouter>
     <App />
   </BrowserRouter>
 );
-export { root };
 
-// if (module.hot) {
-//   module.hot.accept('./App', () => {
-//     const nextApp = require('./App');
-//     render(nextApp);
-//   });
-// }
+export { root };
