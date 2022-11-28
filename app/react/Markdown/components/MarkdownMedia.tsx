@@ -218,7 +218,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <div>
         <ReactPlayer
           className="react-player"
-          // @ts-ignore
           ref={playerRef}
           url={config.url}
           {...dimensions}
