@@ -114,6 +114,7 @@ module.exports = production => {
         ],
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
+      new webpack.HotModuleReplacementPlugin(),
     ],
   };
 };

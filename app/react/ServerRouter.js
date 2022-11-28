@@ -71,8 +71,6 @@ const renderComponentWithRoot = (
     </Provider>
   );
 
-  console.log(componentHtml);
-
   return `<!doctype html>\n${renderToString(
     <StaticRouter location={req.url}>
       <Root
@@ -346,14 +344,6 @@ function ServerRouter(req, res) {
 
   const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
-
-  // const html = ReactDOMServer.renderToString(
-  //   <StaticRouter location={req.url}>
-  //     <App />
-  //   </StaticRouter>
-  // );
-
-  // res.send(`<!DOCTYPE html>${html}`);
 
   Promise.all([settingsApi.get(), getAssets()]).then(([settings]) => {
     const languages = settings.languages.map(l => l.key);

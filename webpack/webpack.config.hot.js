@@ -28,11 +28,10 @@ config.output = {
 
 config.entry['pdf.worker'] = 'pdfjs-dist/build/pdf.worker.entry';
 
-// config.entry.main = [
-//   'react-hot-loader/patch',
-//   'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
-//   path.join(rootPath, 'app/react/index.js'),
-// ];
+config.entry.main = [
+  'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
+  path.join(rootPath, 'app/react/index.js'),
+];
 
 config.watchOptions = {
   ignored: '**/node_modules/*',
