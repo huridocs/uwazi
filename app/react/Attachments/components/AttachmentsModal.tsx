@@ -117,7 +117,7 @@ const AttachmentsModalCmp = ({
                           ref={inputFileRef}
                         />
                         <h4 className="attachments-modal__dropzone-title">
-                          <Translate>Drag and drop file in this window to upload </Translate>
+                          <Translate>Drag and drop file in this window to upload</Translate>
                         </h4>
                       </>
                     ) : (

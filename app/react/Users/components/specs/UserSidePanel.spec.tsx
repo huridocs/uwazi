@@ -57,7 +57,7 @@ describe('UserSidePanel', () => {
       expect(sidePanel.props().open).toBe(true);
     });
 
-    it('should call the closePanel method on Discard Changes button click', () => {
+    it('should call the closePanel method on Discard changes button click', () => {
       component.find({ id: 'discardChangesBtn' }).simulate('click');
       expect(defaultProps.closePanel).toHaveBeenCalled();
     });
