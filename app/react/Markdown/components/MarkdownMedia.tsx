@@ -7,8 +7,8 @@ import { Icon } from 'UI';
 
 interface MarkdownMediaProps {
   compact?: boolean;
-  editing: boolean;
-  onTimeLinkAdded: Function;
+  editing?: boolean;
+  onTimeLinkAdded?: Function;
   config: string;
 }
 
@@ -107,7 +107,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       default:
     }
     const fullTimelinksString = constructTimelinksString(getValues().timelines, url);
-    props.onTimeLinkAdded(fullTimelinksString);
+    if (props.onTimeLinkAdded) props.onTimeLinkAdded(fullTimelinksString);
   };
 
   const renderNewTimeLinkForm = (url: string) => (
@@ -218,6 +218,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <div>
         <ReactPlayer
           className="react-player"
+          // @ts-ignore
           ref={playerRef}
           url={config.url}
           {...dimensions}
