@@ -94,6 +94,9 @@ const fixtures = {
           localized_label: 'English',
         },
       ],
+      features: {
+        newRelationships: true,
+      },
     },
   ],
 };
@@ -104,6 +107,18 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
+});
+
+describe('when the feature flag is not enabled', () => {
+  it('should not execute', async () => {
+    await testingDB.mongodb
+      ?.collection('settings')
+      .updateOne({}, { $set: { features: { newRelationships: false } } });
+    await files.delete({ _id: factory.id('file1') });
+
+    const relationships = await testingDB.mongodb?.collection('relationships').find({}).toArray();
+    expect(relationships).toEqual(fixtures.relationships);
+  });
 });
 
 describe('when deleting a file', () => {
