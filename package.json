@@ -72,7 +72,6 @@
     "normalize-url": "6.0.1",
     "node-fetch": "2.6.7",
     "@types/istanbul-lib-report": "^3.0.0",
-    "@types/react": "^16.8.6",
     "underscore": "^1.13.6",
     "socket.io-parser": "4.2.1",
     "json-schema": "^0.4.0"

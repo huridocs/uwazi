@@ -10,7 +10,7 @@ import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import Confirm from './Confirm';
 import './scss/styles.scss';
-import Menu from './Menu';
+import { Menu } from './Menu';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
