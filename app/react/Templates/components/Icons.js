@@ -2,6 +2,7 @@ export default {
   checkbox: 'check',
   numeric: 'calculator',
   relationship: 'exchange-alt',
+  newRelationship: 'exchange-alt',
   relationshipfilter: 'filter',
   select: 'sort',
   multiselect: 'list',

@@ -4,6 +4,7 @@ import { FileType } from 'shared/types/fileType';
 import { EntitySchema } from 'shared/types/entityType';
 import { PageType } from 'shared/types/pageType';
 import { DB } from 'api/odm';
+import { models } from 'api/odm/model';
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
@@ -45,10 +46,18 @@ const fixturer = {
   },
 
   async clearAllAndLoad(db: Db, fixtures: DBFixture) {
+    const existingCollections = new Set((await db.listCollections().toArray()).map(c => c.name));
+    const expectedCollectons = Object.keys(models).concat(Object.keys(fixtures));
+    const missingCollections = Array.from(
+      new Set(expectedCollectons.filter(name => !existingCollections.has(name)))
+    );
     await this.clear(db);
+    await Promise.all(missingCollections.map(async collname => db.createCollection(collname)));
     await Promise.all(
       Object.keys(fixtures).map(async collectionName => {
-        await db.collection(collectionName).insertMany(fixtures[collectionName]);
+        if (fixtures[collectionName].length) {
+          await db.collection(collectionName).insertMany(fixtures[collectionName]);
+        }
       })
     );
   },

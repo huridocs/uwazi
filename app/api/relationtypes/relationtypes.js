@@ -1,8 +1,9 @@
-import relationships from 'api/relationships/relationships';
 import translations from 'api/i18n/translations';
+import relationships from 'api/relationships/relationships';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
+import { getNewRelationshipCount } from './v2_support';
 
 const checkDuplicated = relationtype =>
   model.get().then(response => {
@@ -99,16 +100,16 @@ export default {
     });
   },
 
-  delete(id) {
-    return relationships.countByRelationType(id).then(relationshipsUsingIt => {
-      if (relationshipsUsingIt === 0) {
-        return translations
-          .deleteContext(id)
-          .then(() => model.delete(id))
-          .then(() => true);
-      }
+  async delete(id) {
+    const connectionCount = await relationships.countByRelationType(id);
+    const newRelationshipCount = await getNewRelationshipCount(id);
 
-      return false;
-    });
+    if (connectionCount === 0 && newRelationshipCount === 0) {
+      await translations.deleteContext(id);
+      await model.delete(id);
+      return true;
+    }
+
+    return false;
   },
 };

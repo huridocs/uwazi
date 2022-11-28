@@ -21,6 +21,7 @@ const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to 
 
 const customImports = {
   '../app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+  '../app/api/common.v2/database/schemas/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
   '../app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
 
@@ -28,10 +29,7 @@ const dryCheck = !!process.argv[2] && process.argv[2] === '--check';
 
 const firstUp = name => name.charAt(0).toUpperCase() + name.slice(1);
 const typesFileName = file =>
-  file
-    .replace('Schema', 'Type')
-    .replace('.js', '.ts')
-    .replace('.ts', '.d.ts');
+  file.replace('Schema', 'Type').replace('.js', '.ts').replace('.ts', '.d.ts');
 const typeImportRegex = /import[^;]*from '(.*Schemas?)';/;
 const typeImportFindRegex = /import[^;]*from '(.*Schemas?)';/g;
 

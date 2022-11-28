@@ -2,6 +2,7 @@ import { errorLog, debugLog } from 'api/log';
 import Ajv from 'ajv';
 import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
+import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -65,6 +66,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error.name === 'ValidationError') {
     result = { code: 422, message: error.message, validations: error.properties };
+  }
+
+  if (error instanceof UnauthorizedError) {
+    result = { code: 401, message: error.message };
   }
 
   if (error.name === 'MongoError') {

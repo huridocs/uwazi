@@ -79,7 +79,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
-    (await templates.get({})).map(t => t.properties).flat(),
+    (await templates.get({})).map(t => t.properties || []).flat(),
     p => p.name,
     p => p.type
   );

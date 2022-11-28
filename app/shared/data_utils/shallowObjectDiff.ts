@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-type PropNameType = string | number;
+type PropNameType = string;
 
 type PropObject = { [k in PropNameType]: any };
 

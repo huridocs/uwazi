@@ -58,6 +58,7 @@ export default {
   select,
   multiselect,
   relationship,
+  newRelationship: defaultParser,
 
   async numeric(
     entityToImport: RawEntity,

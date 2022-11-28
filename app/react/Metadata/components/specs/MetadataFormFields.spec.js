@@ -8,11 +8,13 @@ import { FormGroup } from 'app/Forms';
 import MultipleEditionFieldWarning from '../MultipleEditionFieldWarning';
 import { LookupMultiSelect, DatePicker } from '../../../ReactReduxForms';
 import { MetadataFormFields, mapDispatchToProps } from '../MetadataFormFields';
+import { AddThesauriValueButton } from '../AddThesauriValueButton';
 
 describe('MetadataFormFields with one entity to edit ', () => {
   let component;
   let fieldsTemplate;
   let props;
+  let metadata;
 
   beforeEach(() => {
     fieldsTemplate = [
@@ -23,19 +25,23 @@ describe('MetadataFormFields with one entity to edit ', () => {
       { _id: 5, name: 'field5', label: 'label5', type: 'relationship', content: '2' },
     ];
 
+    metadata = [
+      {
+        value: {
+          field1: 'field1value',
+          field2: 'field2value',
+        },
+      },
+    ];
+  });
+
+  const render = args => {
     props = {
       metadata: {
         _id: [{ value: 'docId' }],
         template: [{ value: 'templateId' }],
         title: [{ value: 'testTitle' }],
-        metadata: [
-          {
-            value: {
-              field1: 'field1value',
-              field2: 'field2value',
-            },
-          },
-        ],
+        metadata,
       },
       template: fromJS({
         name: 'template1',
@@ -59,20 +65,18 @@ describe('MetadataFormFields with one entity to edit ', () => {
       model: 'metadata',
       storeKey: 'library',
       change: jest.fn(),
+      push: () => {},
+      saveThesaurus: () => {},
     };
-  });
 
-  const render = args => {
     const componentProps = { ...props, ...args };
     // eslint-disable-next-line react/jsx-props-no-spreading
     component = shallow(<MetadataFormFields {...componentProps} />);
   };
 
   describe('default props', () => {
-    beforeEach(() => {
-      render();
-    });
     it('should pass the field state to every fields and MultipleEditionFieldWarning', () => {
+      render();
       const formGroups = component.find(FormGroup);
       expect(formGroups.at(0).props().model).toBe('.metadata.field1');
       expect(formGroups.at(1).props().model).toBe('.metadata.field2');
@@ -86,6 +90,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
     });
 
     it('should render dynamic fields based on the template selected', () => {
+      render();
       const inputField = component.find('[model=".metadata.field1"]').find('input');
       expect(inputField.length).toBe(1);
 
@@ -98,6 +103,7 @@ describe('MetadataFormFields with one entity to edit ', () => {
     });
 
     it('should render a generatedid property without a default value', () => {
+      render();
       const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
       expect(generatedIdInput.length).toBe(1);
       expect(generatedIdInput.props().defaultValue).toBe(undefined);
@@ -118,6 +124,27 @@ describe('MetadataFormFields with one entity to edit ', () => {
 
     secondRelationshipField.simulate('change', ['123', '456']);
     expect(props.change).toHaveBeenCalledWith('publicform.metadata.field2', ['123', '456']);
+  });
+
+  it('should render the add thesauri value when not on public form', () => {
+    fieldsTemplate = [
+      { _id: 1, name: 'text', label: 'Text', type: 'text' },
+      { _id: 2, name: 'select', label: 'Select', type: 'select', content: '2' },
+    ];
+    metadata = [
+      {
+        value: {
+          text: 'text 1',
+          select: 'value 1',
+        },
+      },
+    ];
+
+    render();
+    expect(component.find(AddThesauriValueButton).length).toBe(1);
+
+    render({ model: 'publicform' });
+    expect(component.find(AddThesauriValueButton).length).toBe(0);
   });
 
   describe('MapDispatchToProps', () => {
