@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { routes } from './AppV2/Routes/Routes';
+import { routes } from './Routes';
 import CustomProvider from './App/Provider';
 import { store } from './store';
 

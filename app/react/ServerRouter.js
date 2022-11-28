@@ -19,7 +19,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
-import Routes from './AppV2/Routes/Routes';
+import Routes from './Routes';
 import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
