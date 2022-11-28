@@ -40,7 +40,7 @@ describe('General Error', () => {
       expect(component.find(ErrorFallback).at(0).props()).toEqual({
         error: {
           title: 'Not Found',
-          name: 'We can’t find the page you’re looking for. ',
+          name: "We can't find the page you're looking for.",
           message: '',
           summary: '',
           code: '404',

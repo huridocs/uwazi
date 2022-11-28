@@ -30,7 +30,7 @@ class RelationTypesList extends RouteHandler {
           },
           title: (
             <>
-              <Translate>Confirm delete relationship type:</Translate>&nbsp;{relationType.name}
+              <Translate>Confirm deletion of relationship type:</Translate>&nbsp;{relationType.name}
             </>
           ),
           message: 'Are you sure you want to delete this relationship type?',

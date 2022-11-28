@@ -60,7 +60,7 @@ class File extends Component<FileProps, FileState> {
         this.props.deleteFile(this.props.file, this.props.entity);
         this.setState({ editing: false });
       },
-      title: 'Confirm delete file',
+      title: 'Confirm deletion of file',
       message: 'Are you sure you want to delete this file?',
     });
   }

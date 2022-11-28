@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from 'react';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import { Translate } from 'app/I18N';
 import { ClientFile } from 'app/istore';
 import { RenderAttachment } from 'app/Attachments';

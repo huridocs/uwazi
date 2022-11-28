@@ -307,14 +307,18 @@ class MetadataFormFields extends Component {
       label = (
         <>
           <Translate context={templateID}>{property.label}</Translate>
-          &nbsp;(<Translate>affects</Translate>&nbsp;
+          &nbsp;(
+          <Translate>
+            Multiple inherited properties warning ([property 1] affects [property 2])
+          </Translate>
+          &nbsp;
           {property.multiEditingRelationshipFields.map(p => (
             <span key={p._id}>
               &quot;<Translate context={templateID}>{p.label}</Translate>&quot;&nbsp;
             </span>
           ))}
           )
-          <Tip icon="info-circle" position="right">
+          <Tip icon="info-circle" position="left">
             <p>
               <Translate translationKey="Multiple relationships edit description">
                 Making changes to this property will affect other properties on this template
