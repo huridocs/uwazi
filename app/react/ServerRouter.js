@@ -19,7 +19,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
-import Routes from './Routes';
+import Routes from './AppV2/Routes/Routes';
 import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
@@ -70,8 +70,6 @@ const renderComponentWithRoot = (
       </CustomProvider>
     </Provider>
   );
-
-  console.log(componentHtml);
 
   return `<!doctype html>\n${renderToString(
     <StaticRouter location={req.url}>
@@ -346,14 +344,6 @@ function ServerRouter(req, res) {
 
   const { PORT } = process.env;
   api.APIURL(`http://localhost:${PORT || 3000}/api/`);
-
-  // const html = ReactDOMServer.renderToString(
-  //   <StaticRouter location={req.url}>
-  //     <App />
-  //   </StaticRouter>
-  // );
-
-  // res.send(`<!DOCTYPE html>${html}`);
 
   Promise.all([settingsApi.get(), getAssets()]).then(([settings]) => {
     const languages = settings.languages.map(l => l.key);

@@ -46,9 +46,10 @@ import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
-import { store } from './store';
-import { LibraryTable } from './Library/LibraryTable';
-import { validateHomePageRoute } from './utils/routeHelpers';
+import { store } from 'app/store';
+import { LibraryTable } from 'app/Library/LibraryTable';
+import { validateHomePageRoute } from 'app/utils/routeHelpers';
+import { ProtectedRoute } from './ProtectedRoute';
 
 const onEnter = () => {
   trackPage();
@@ -211,6 +212,7 @@ const getIndexRoute = (_nextState, callBack) => {
 
 const routesLayout = (
   <Route>
+    <Route path="login" element={<Login />} />
     <Route path="settings" element={<Settings />}>
       <Route path="activitylog" element={<Activitylog />} />
       <Route path="templates">
@@ -221,6 +223,17 @@ const routesLayout = (
     </Route>
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
+
+    {/* ROUTE PROTECTION EXAMPLE PLACEHOLDER */}
+
+    <Route path="protected" element={<ProtectedRoute />}>
+      <Route index element={<>Should not be able to see this if not logged in</>} />
+      <Route
+        path="protected-child"
+        element={<>Should not be able to see this CHILD if not logged in</>}
+      />
+    </Route>
+    {/* ROUTE PROTECTION EXAMPLE PLACEHOLDER */}
   </Route>
 );
 

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import { fromJS } from 'immutable';
-import { getIndexRoute } from 'app/Routes';
+import { getIndexRoute } from 'app/App.V2/Routes/Routes';
 import * as googleAnalytics from 'app/App/GoogleAnalytics';
 import { IImmutable } from 'shared/types/Immutable';
 import store from 'app/store';
