@@ -5,6 +5,8 @@ import { Helmet } from 'react-helmet';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import { StaticRouter } from 'react-router-dom/server';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 import createStore from './store';
 import App from './App';
 import Root from './App/Root';
@@ -35,13 +37,38 @@ const getAssets = async () => {
 const EntryServer = async (req: Request, res: Response) => {
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
 
+  const headers = {
+    'Content-Language': 'en',
+    Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+    tenant: req.get('tenant'),
+  };
+
+  const requestParams = new RequestParams({}, headers);
+  api.APIURL('http://localhost:3000/api/');
+  const [user, translations, templates, thesauris, relationTypes] = await Promise.all([
+    api.get('user', requestParams),
+    api.get('translations', requestParams),
+    api.get('templates', requestParams),
+    api.get('thesauris', requestParams),
+    api.get('relationTypes', requestParams),
+  ]);
+
+  const globalResources = {
+    user: user.json,
+    translations: translations.json.rows,
+    templates: templates.json.rows,
+    thesauris: thesauris.json.rows,
+    relationTypes: relationTypes.json.rows,
+  };
+
+  settings.links = settings.links || [];
   const store = createStore({
     user: req.user,
     settings: { collection: settings },
-    translations: [],
-    templates: [],
-    thesauris: [],
-    relationTypes: [],
+    translations: globalResources.translations,
+    templates: globalResources.templates,
+    thesauris: globalResources.thesauris,
+    relationTypes: globalResources.relationTypes,
     locale: 'en',
   });
 
