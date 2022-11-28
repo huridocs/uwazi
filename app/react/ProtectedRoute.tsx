@@ -1,11 +1,22 @@
 import React, { ReactElement } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { store } from 'app/store';
+import { UserRole } from 'shared/types/userSchema';
 
-const ProtectedRoute = ({ children }: { children: ReactElement }) => {
+const ProtectedRoute = ({
+  children,
+  onlyAdmin,
+}: {
+  children: ReactElement;
+  onlyAdmin?: boolean;
+}) => {
   const userId = store?.getState().user.get('_id');
 
-  if (userId) {
+  if (onlyAdmin && store?.getState().user.get('role') === UserRole.ADMIN) {
+    return children || <Outlet />;
+  }
+
+  if (!onlyAdmin && userId) {
     return children || <Outlet />;
   }
 

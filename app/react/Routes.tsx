@@ -1,5 +1,6 @@
-import React from 'react';
-import { IndexRoute, Route, Routes } from 'react-router-dom';
+/* eslint-disable max-lines */
+import React, { ReactElement } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -211,6 +212,8 @@ const getIndexRoute = (_nextState, callBack) => {
 //   </Route>
 // );
 
+const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
+
 const routesLayout = (
   <Route>
     <Route path="login" element={<Login />} />
@@ -222,16 +225,50 @@ const routesLayout = (
         </ProtectedRoute>
       }
     >
-      <Route path="dashboard" element={<Dashboard />} />
-      <Route path="activitylog" element={<Activitylog />} />
-      <Route path="templates">
-        <Route index element={<EntityTypesList />} />
-        <Route path="new" element={<NewTemplate />} />
-        <Route path="edit/:templateId" element={<EditTemplate />} />
+      <Route path="account" element={<AccountSettings />} />
+      <Route path="dashboard" element={adminRoute(<Dashboard />)} />
+      <Route path="2fa" element={adminRoute(<Configure2fa />)} />
+      <Route path="collection" element={adminRoute(<CollectionSettings />)} />
+      <Route path="navlinks" element={adminRoute(<NavlinksSettings />)} />
+      <Route path="users" element={adminRoute(<UserManagement />)} />
+      <Route path="preserve" element={adminRoute(<PreserveSettings />)} />
+      <Route path="pages">
+        <Route index element={adminRoute(<Pages />)} />
+        <Route path="new" element={adminRoute(<NewPage />)} />
+        <Route path="edit/:sharedId" element={adminRoute(<EditPage />)} />
       </Route>
+      <Route path="templates">
+        <Route index element={adminRoute(<EntityTypesList />)} />
+        <Route path="new" element={adminRoute(<NewTemplate />)} />
+        <Route path="edit/:templateId" element={adminRoute(<EditTemplate />)} />
+      </Route>
+      <Route path="metadata_extraction" element={adminRoute(<MetadataExtractionDashboard />)} />
+      {/* <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} /> */}
+      <Route path="connections">
+        <Route index element={adminRoute(<RelationTypesList />)} />
+        <Route path="new" element={adminRoute(<NewRelationType />)} />
+        <Route path="edit/:_id" element={adminRoute(<EditRelationType />)} />
+      </Route>
+      <Route path="dictionaries">
+        <Route index element={adminRoute(<ThesauriList />)} />
+        <Route path="new" element={adminRoute(<NewThesauri />)} />
+        <Route path="edit/:_id" element={adminRoute(<EditThesauri />)} />
+        <Route path="cockpit/:_id" element={adminRoute(<ThesaurusCockpit />)} />
+      </Route>
+      <Route path="languages" element={adminRoute(<LanguageList />)} />
+      <Route path="translations">
+        <Route index element={adminRoute(<TranslationsList />)} />
+        <Route path="edit/:context" element={adminRoute(<EditTranslations />)} />
+      </Route>
+      <Route path="filters" element={adminRoute(<FiltersForm />)} />
+      <Route path="customisation" element={adminRoute(<Customisation />)} />
+      <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
+      <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
+
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
+    <Route path="*" element={<GeneralError />} />
   </Route>
 );
 
