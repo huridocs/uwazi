@@ -127,6 +127,7 @@ const libraryDefaults = (callBack, state, defaultView) => {
 
   return callBack(null, getDefaultLibraryComponent(defaultView));
 };
+
 const getIndexRoute = (_nextState, callBack) => {
   const state = store.getState();
   const homePageSetting = state.settings.collection.get('home_page') || '';
@@ -213,7 +214,15 @@ const getIndexRoute = (_nextState, callBack) => {
 const routesLayout = (
   <Route>
     <Route path="login" element={<Login />} />
-    <Route path="settings" element={<Settings />}>
+    <Route
+      path="settings"
+      element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      }
+    >
+      <Route path="dashboard" element={<Dashboard />} />
       <Route path="activitylog" element={<Activitylog />} />
       <Route path="templates">
         <Route index element={<EntityTypesList />} />
@@ -223,17 +232,6 @@ const routesLayout = (
     </Route>
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
-
-    {/* ROUTE PROTECTION EXAMPLE PLACEHOLDER */}
-
-    <Route path="protected" element={<ProtectedRoute />}>
-      <Route index element={<>Should not be able to see this if not logged in</>} />
-      <Route
-        path="protected-child"
-        element={<>Should not be able to see this CHILD if not logged in</>}
-      />
-    </Route>
-    {/* ROUTE PROTECTION EXAMPLE PLACEHOLDER */}
   </Route>
 );
 

@@ -91,7 +91,7 @@ const App = () => {
             <SiteName />
           </h1>
           {/* {this.renderTools()} */}
-          {/* <Menu location={location} onClick={toggleMenu} className={navClass} /> */}
+          <Menu location={location} onClick={toggleMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
           <Confirm {...confirmOptions} />
