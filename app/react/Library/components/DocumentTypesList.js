@@ -64,7 +64,7 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.router.location);
   }
 
   change(item) {
@@ -77,7 +77,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.router.location);
   }
 
   toggleOptions(item, e) {
@@ -149,8 +149,12 @@ export class DocumentTypesList extends Component {
 
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
-    const { q = '(filters:())' } = this.props.location.query;
+
+    const searchParams = new URLSearchParams(this.props.router.search);
+
+    const { q = '(filters:())' } = searchParams.get('query') || {};
     const query = rison.decode(q);
+
     return (
       <li className="multiselectItem" key={index} title={item.name}>
         <input
@@ -251,7 +255,7 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
-  location: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state) {

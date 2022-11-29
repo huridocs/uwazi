@@ -265,7 +265,7 @@ const routesLayout = (
       <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
-
+    <Route path="library" element={<Library />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="*" element={<GeneralError />} />

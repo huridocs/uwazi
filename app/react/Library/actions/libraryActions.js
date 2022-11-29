@@ -2,7 +2,7 @@
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
-import { browserHistory } from 'react-router-dom';
+import { redirect } from 'react-router-dom';
 import { t } from 'app/I18N';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';
@@ -223,18 +223,18 @@ function encodeSearch(_search, appendQ = true) {
   return appendQ ? `?q=${encodedSearch}` : encodedSearch;
 }
 
-function setSearchInUrl(searchParams) {
-  const { pathname } = browserHistory.getCurrentLocation();
+function setSearchInUrl(searchParams, location) {
+  const { pathname } = location;
   const path = `${pathname}/`.replace(/\/\//g, '/');
-  const query = browserHistory.getCurrentLocation().query || {};
+  const query = new URLSearchParams(location.search);
 
   query.q = encodeSearch(searchParams, false);
 
-  browserHistory.push(path + toUrlParams(query));
+  redirect(path + toUrlParams(query));
 }
 
 function searchDocuments(
-  { search = undefined, filters = undefined },
+  { search = undefined, location, filters = undefined },
   storeKey,
   limit = 30,
   from = 0
@@ -248,7 +248,7 @@ function searchDocuments(
     const searchParams = processFilters(currentSearch, currentFilters, limit, from);
     searchParams.searchTerm = state.search.searchTerm;
 
-    const { query } = browserHistory.getCurrentLocation();
+    const query = new URLSearchParams(location.search);
     const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
@@ -261,7 +261,7 @@ function searchDocuments(
 
     searchParams.customFilters = currentSearch.customFilters;
 
-    setSearchInUrl(searchParams);
+    setSearchInUrl(searchParams, location);
   };
 }
 

@@ -5,10 +5,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
+import { NeedAuthorization } from 'app/Auth';
+import { withRouter } from 'app/withRouter';
+import { SettingsFilterSchema } from 'shared/types/settingsType';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
-import { NeedAuthorization } from 'app/Auth';
-import { SettingsFilterSchema } from 'shared/types/settingsType';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -16,6 +17,9 @@ interface TemplatesFilterState {
   configuredFilters: string[];
 }
 
+interface TemplatesFiltersProps {
+  router: { location: {} };
+}
 const mapStateToProps = (state: IStore) => ({
   collection: state.settings.collection,
   libraryFilters: state.library.filters,
@@ -27,7 +31,7 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type ComponentProps = ConnectedProps<typeof connector>;
+type ComponentProps = ConnectedProps<typeof connector> & TemplatesFiltersProps;
 
 const filterValidSelectedTemplates = (configuredFilters: string[], selectedTemplates: string[]) =>
   configuredFilters.length
@@ -80,7 +84,7 @@ export class TemplatesFilterComponent extends React.Component<
     if (checked) {
       const newSelectedItems = filterValidSelectedTemplates(configuredFilters, selectedTemplates);
       this.setState({ selectedTemplates: newSelectedItems });
-      this.props.filterDocumentTypes(newSelectedItems);
+      this.props.filterDocumentTypes(newSelectedItems, this.props.router.location);
     }
     this.setState({ documentTypeFromFilters: checked });
   }
@@ -124,4 +128,4 @@ export class TemplatesFilterComponent extends React.Component<
   }
 }
 
-export const TemplatesFilter = connector(TemplatesFilterComponent);
+export const TemplatesFilter = connector(withRouter(TemplatesFilterComponent));
