@@ -155,7 +155,6 @@ ul.comma-separated li {
     justify-content: space-between;
     overflow: auto;
     dl {
-      width: auto;
       min-width: 120px;
       padding: 30px 15px;
     }
@@ -242,9 +241,5 @@ dl.metadata-type-geolocation_group {
       background-color: rgba(255, 255, 255, 1);
       padding: 2px;
     }
-  }
-
-  .geolocation {
-    max-width: 351px;
   }
 }
