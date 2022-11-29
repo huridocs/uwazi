@@ -11,6 +11,10 @@
 .entity-viewer {
   .view {
     padding: 0;
+    [class*='metadata-type'] {
+      padding-bottom: 0.8em;
+    }
+
     dl {
       display: table;
       width: 100%;
