@@ -187,8 +187,8 @@ dl.metadata-type-multimedia {
   }
 }
 
-dl.metadata-type-geolocation,
-dl.metadata-type-geolocation_group {
+.metadata-type-geolocation,
+.metadata-type-geolocation_group {
   @include pillItem(#d9534e, white);
 
   .pills-container {
