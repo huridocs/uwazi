@@ -19,7 +19,7 @@ describe('Homepage entities', () => {
   });
 
   it('should display entities in homepage', async () => {
-    await testSelectorShot('.row.panels-layout');
+    await testSelectorShot('.row.panels-layout', { threshold: 0.08 });
   });
 
   it('should display entity details', async () => {
@@ -30,18 +30,19 @@ describe('Homepage entities', () => {
 
   it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`);
-    await testSelectorShot('div.entity-metadata', { threshold: 0.08 });
+    await testSelectorShot('div.app-content', { threshold: 0.08 });
   });
 
   it('should display entity edit page', async () => {
     await expect(page).toClick('span', { text: 'Edit' });
-    await testSelectorShot('div.entity-metadata');
+    await testSelectorShot('div.app-content', { threshold: 0.08 });
   });
 
   it('should display entity relationship page', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
     await expect(page).toClick('div[aria-label="Relationships"]');
-    await testSelectorShot('div.relationships-graph');
+    await page.waitForSelector('.relationships-graph');
+    await testSelectorShot('div.app-content', { threshold: 0.08 });
   });
 
   afterAll(async () => {
