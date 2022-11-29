@@ -25,12 +25,12 @@ describe('Homepage entities', () => {
   it('should display entity details', async () => {
     await expect(page).toClick('div.item-document:first-child');
     await page.waitForSelector('.metadata.tab-content-visible');
-    await testSelectorShot('.metadata-sidepanel');
+    await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
   });
 
   it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`);
-    await testSelectorShot('div.entity-metadata');
+    await testSelectorShot('div.entity-metadata', { threshold: 0.08 });
   });
 
   it('should display entity edit page', async () => {
