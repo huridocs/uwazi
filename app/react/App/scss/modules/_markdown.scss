@@ -1,3 +1,17 @@
+@mixin timeline-time() {
+  background: $c-grey-lighten;
+  border: none;
+  border-radius: 2px;
+  border-right: none;
+  font-weight: bold;
+  text-align: center;
+  font-size: 12px;
+  line-height: 16px;
+  &:focus-visible {
+    outline: none;
+  }
+}
+
 .markdownEditor {
   position: relative;
   margin-top: 15px;
@@ -177,14 +191,12 @@
 .video-container .timelink {
   display: flex;
   cursor: pointer;
-  border-radius: 3px;
-  padding: 8px 16px;
+  padding: 4px 8px;
+  margin-bottom: 5px;
+  background: $c-grey-lighten;
 
   &:first-child {
     margin-top: 16px;
-  }
-  &:nth-child(odd) {
-    background: $c-grey-lighten;
   }
 
   &:hover {
@@ -209,7 +221,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    width: 280px;
+    width: 240px;
   }
 }
 
@@ -236,8 +248,8 @@
 
   .timestamp {
     display: flex;
-    width: 18%;
-    background: #eceff1;
+    width: 21%;
+    background: $c-grey-lighten;
     border-radius: 2px;
     border: none;
 
@@ -245,51 +257,39 @@
     &:active {
       border: none;
     }
-    &:invalid {
-      border-color: red;
+
+    .timestamp-hours {
+      width: 33%;
+      padding-left: 4px;
+      @include timeline-time();
     }
-
     .timestamp-minutes {
-      width: 48%;
-      background: #eceff1;
-      border: none;
-      border-radius: 2px;
-      border-right: none;
-      font-weight: bold;
-      text-align: center;
-
-      &:focus-visible {
-        outline: none;
-      }
+      width: 33%;
+      @include timeline-time();
     }
     .seperator {
       width: auto;
-      font-size: large;
+      line-height: 16px;
+      font-size: 12;
       font-weight: bolder;
       padding-top: 4px;
       border: none;
     }
     .timestamp-seconds {
-      width: 48%;
-      background: #eceff1;
-      border: none;
-      border-radius: 2px;
-      border-left: none;
-      font-weight: bold;
-      text-align: center;
-
-      &:focus-visible {
-        outline: none;
-      }
+      width: 33%;
+      padding-right: 4px;
+      @include timeline-time();
     }
   }
 
   .timestamp-label {
-    width: 70%;
+    width: 68%;
     background: #eceff1;
     border-radius: 2px;
     padding: 5px;
     border: none;
+    font-size: 12px;
+    line-height: 16px;
 
     &:focus-visible,
     &:active {
@@ -300,7 +300,7 @@
   .new-timestamp-btn,
   .delete-timestamp-btn {
     width: 8%;
-    background: #eceff1;
+    background: $c-grey-lighten;
     border: 1px solid #ceccd6;
     border-radius: 2px;
   }
@@ -308,7 +308,7 @@
   .delete-timestamp-btn {
     background: #c95c54;
     border: 1px solid #b24138;
-    color: #eceff1;
+    color: $c-grey-lighten;
   }
 }
 

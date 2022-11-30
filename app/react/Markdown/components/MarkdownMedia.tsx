@@ -13,6 +13,7 @@ interface MarkdownMediaProps {
 }
 
 interface TimeLink {
+  timeHours: string;
   timeMinutes: string;
   timeSeconds: string;
   label: string;
@@ -39,19 +40,27 @@ const propsToConfig = (props: MarkdownMediaProps) => {
 
 const formatTimeLinks = (timelinks: any): TimeLink[] =>
   Object.keys(timelinks).map(key => {
-    const [timeMinutes, timeSeconds] = key.split(':');
-    const label = timelinks[key] as string;
-    return { timeMinutes, timeSeconds, label };
+    const timeLink = { timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' };
+    const splitTimes = key.split(':');
+    if (splitTimes.length === 2) {
+      [timeLink.timeMinutes, timeLink.timeSeconds] = splitTimes;
+    } else {
+      [timeLink.timeHours, timeLink.timeMinutes, timeLink.timeSeconds] = splitTimes;
+    }
+    timeLink.label = timelinks[key] as string;
+    return timeLink;
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
-  const [newTimeline, setNewTimeline] = useState({
+  const [newTimeline, setNewTimeline] = useState<TimeLink>({
+    timeHours: '00',
     timeMinutes: '00',
     timeSeconds: '00',
     label: '',
   });
   const { options } = propsToConfig(props);
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
+  const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -68,7 +77,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const constructTimelinksString = (timelinks: TimeLink[], url: string) => {
     const timelinksObj = timelinks.reduce((current: any, timelink) => {
-      current[`${timelink.timeMinutes}:${timelink.timeSeconds}`] = timelink.label;
+      current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
+        timelink.label;
       return current;
     }, {});
     return `(${url}, ${JSON.stringify({ timelinks: timelinksObj })})`;
@@ -81,11 +91,26 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         .split(':')
         .reverse()
         .reduce((_seconds, n, _index) => _seconds + parseInt(n, 10) * 60 ** _index, 0);
+
+      let displayTime = timeKey;
+      if (displayTime.split(':').length === 2) {
+        displayTime = `00:${displayTime}`;
+      }
+
       return (
-        <div className="timelink" key={index} onClick={seekTo.bind(this, seconds)}>
+        <div
+          className="timelink"
+          key={timeKey + index.toString()}
+          onClick={() => {
+            seekTo(seconds);
+            setPlayingTimelinkIndex(index);
+          }}
+          title={timelinks[timeKey]}
+        >
           <b>
-            <Icon icon="pause" /> {timeKey}
+            <Icon icon={index === playingTimelinkIndex ? 'pause' : 'play'} />
           </b>
+          <b>{displayTime}</b>
           <span>{timelinks[timeKey]}</span>
         </div>
       );
@@ -99,7 +124,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     switch (payload.action) {
       case 'append':
         append(newTimeline);
-        setNewTimeline({ timeMinutes: '00', timeSeconds: '00', label: '' });
+        setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
         break;
       case 'remove':
         remove(payload.index);
@@ -113,6 +138,17 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const renderNewTimeLinkForm = (url: string) => (
     <div className="new-timelink">
       <div className="timestamp">
+        <input
+          type="text"
+          onChange={event => {
+            setNewTimeline({ ...newTimeline, timeHours: event.target.value });
+          }}
+          className="timestamp-hours"
+          placeholder="00"
+          required
+          value={newTimeline.timeHours}
+        />
+        <span className="seperator">:</span>
         <input
           type="text"
           onChange={event => {
@@ -165,6 +201,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <div className="timestamp">
         <input
           type="text"
+          className="timestamp-hours"
+          placeholder="00"
+          key={field.id}
+          {...register(`timelines.${index}.timeHours`)}
+        />
+        <span className="seperator">:</span>
+        <input
+          type="text"
           className="timestamp-minutes"
           placeholder="00"
           key={field.id}
@@ -213,6 +257,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   if (compact) {
     dimensions.height = '100%';
   }
+
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
       <div>
@@ -232,9 +277,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             className="add-timelink"
             onClick={() => {
               const currentTime = playerRef.current?.getCurrentTime() as number;
-              const minutes = Math.floor(currentTime / 60);
-              const seconds = Math.floor(currentTime % 60);
+              const hours = Math.floor(currentTime / 3600);
+              const remainingSeconds = currentTime - hours * 3600;
+              const minutes = Math.floor(remainingSeconds / 60);
+              const seconds = Math.floor(remainingSeconds % 60);
               setNewTimeline({
+                timeHours: hours < 10 ? `0${hours.toString()}` : hours.toString(),
                 timeMinutes: minutes < 10 ? `0${minutes.toString()}` : minutes.toString(),
                 timeSeconds: seconds < 10 ? `0${seconds.toString()}` : seconds.toString(),
                 label: '',
