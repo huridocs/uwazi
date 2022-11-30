@@ -52,8 +52,8 @@ export default {
       locToSystemContext[tr.locale] = tr.contexts.find(c => c.id === 'System');
     });
 
+    const alreadyInDB = [];
     Object.entries(locToSystemContext).forEach(([loc, context]) => {
-      const keysToAdd = [...keysToInsert];
       const contextValues = context.values.reduce((newValues, currentTranslation) => {
         const deleted = keysToDelete.find(
           deletedTranslation => deletedTranslation.key === currentTranslation.key
@@ -64,14 +64,16 @@ export default {
         }
         keysToInsert.forEach(newEntry => {
           if (newEntry.key === currentTranslation.key) {
-            keysToAdd.remove(newEntry);
+            alreadyInDB.push(currentTranslation.key);
           }
         });
         return newValues;
       }, []);
-      keysToAdd.forEach(newEntry => {
-        contextValues.push({ key: newEntry.key, value: newEntry.key });
-      });
+      keysToInsert
+        .filter(k => !alreadyInDB.includes(k.key))
+        .forEach(newEntry => {
+          contextValues.push({ key: newEntry.key, value: newEntry.key });
+        });
       context.values = contextValues;
     });
 
