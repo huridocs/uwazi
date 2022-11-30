@@ -1,5 +1,5 @@
 import { Field, LocalForm } from 'react-redux-form';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { Icon } from 'UI';
 import React from 'react';
 import { FormGroup } from 'app/Forms';
@@ -36,14 +36,18 @@ const WebMediaResourceForm = ({
           <input
             type="text"
             className="form-control web-attachment-url"
-            placeholder="Paste URL here"
+            placeholder={t('System', 'Paste URL here', null, false)}
           />
         </Field>
       </FormGroup>
       {hasName && (
         <FormGroup className="form-group" model=".name">
           <Field model=".name" className="field">
-            <input type="text" className="form-control web-attachment-name" placeholder="Title" />
+            <input
+              type="text"
+              className="form-control web-attachment-name"
+              placeholder={t('System', 'Title', null, false)}
+            />
           </Field>
         </FormGroup>
       )}

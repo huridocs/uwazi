@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
@@ -78,8 +78,9 @@ class SharedProperties extends Component<FilterSuggestionsProps> {
       } as TemplateProperty;
     });
 
+    const thisTemplateLabel = t('System', 'this template', null, false);
     const thisProperty: TemplateProperty = {
-      template: `${this.props.templateName} (this template)`,
+      template: `${this.props.templateName} (${thisTemplateLabel})`,
       type,
       relationTypeName: this.getRelationTypeName(relationType),
       thesaurusName: this.getThesauriName(content),

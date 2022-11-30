@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.94.0-rc4",
+  "version": "1.96.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -28,6 +28,7 @@
     "webpack-server": "node ./webpack/webpack.server.js",
     "dev-worker": "node run.js ./app/worker.ts",
     "check-translations": "node ./scripts/checkTranslations.mjs",
+    "compare-translations": "node ./scripts/compareTranslations.js",
     "describe-database": "node ./scripts/describeDatabase.mjs",
     "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn run dev-server & yarn run webpack-server",
     "hot-puppeteer": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e yarn hot",
@@ -311,7 +312,7 @@
     "jest": "29.0.1",
     "jest-environment-jsdom": "29.2.2",
     "jest-extended": "3.1.0",
-    "jest-image-snapshot": "^5.1.0",
+    "jest-image-snapshot": "^6.0.0",
     "jest-jasmine2": "^29.3.1",
     "jest-puppeteer": "6.1.0",
     "mini-css-extract-plugin": "^2.6.1",

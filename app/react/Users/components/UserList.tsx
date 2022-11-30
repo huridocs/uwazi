@@ -53,7 +53,12 @@ export const UserList = ({ users, handleSelect, handleAddUser, className }: User
               <td>
                 <Pill color={user.using2fa ? 'palegreen' : 'lightgray'}>
                   <Translate translationKey="Password">Password</Translate>
-                  {user.using2fa && ' + 2FA'}
+                  {user.using2fa && (
+                    <>
+                      <span> + </span>
+                      <Translate>2FA</Translate>
+                    </>
+                  )}
                 </Pill>
               </td>
               <td>
