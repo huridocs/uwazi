@@ -67,15 +67,6 @@ describe('I18NActions', () => {
     });
   });
 
-  describe('resetForm', () => {
-    it('should load the translation in to the translations form', done => {
-      spyOn(formActions, 'reset').and.returnValue(() => {});
-      actions.resetForm()(dispatch);
-      expect(formActions.reset).toHaveBeenCalledWith('translationsForm');
-      done();
-    });
-  });
-
   describe('addLanguage', () => {
     it('should request the I18NApi to add a language', done => {
       spyOn(I18NApi, 'addLanguage').and.callFake(async () => Promise.resolve());

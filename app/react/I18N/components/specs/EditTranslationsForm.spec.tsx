@@ -171,6 +171,11 @@ describe('EditTranslationForm', () => {
     });
   });
 
+  describe('upload translations', () => {
+    it.todo('should call the upload function');
+    it.todo('should reset the form with the updated values');
+  });
+
   describe('filtering', () => {
     const renderAndFilter = (context: string) => {
       render(context);
