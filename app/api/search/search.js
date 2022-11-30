@@ -556,14 +556,16 @@ async function searchTypeFromSearchTermValidity(searchTerm) {
 
 const buildQuery = async (query, language, user, resources, includeReviewAggregations) => {
   const [templates, dictionaries] = resources;
-  const textFieldsToSearch = _getTextFields(query, templates);
-  const searchTextType = query.searchTerm
-    ? await searchTypeFromSearchTermValidity(query.searchTerm)
+  const textFieldsToSearch = _getTextFields(query, templates); 
+  // GitHub: Ability to use curly and straight quotes interchangeably #4963 
+  const transformedSearchTerm = query.searchTerm.replace(/[“”]/g,'"');
+  const searchTextType = transformedSearchTerm
+    ? await searchTypeFromSearchTermValidity(transformedSearchTerm)
     : 'query_string';
   const onlyPublished = query.published || !(query.includeUnpublished || query.unpublished);
   const queryBuilder = documentQueryBuilder()
     .include(query.include)
-    .fullTextSearch(query.searchTerm, textFieldsToSearch, 2, searchTextType)
+    .fullTextSearch(transformedSearchTerm, textFieldsToSearch, 2, searchTextType)
     .filterByTemplate(query.types)
     .filterById(query.ids)
     .language(language)

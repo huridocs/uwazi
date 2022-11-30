@@ -99,7 +99,7 @@ $ ./run start
 $ yarn hot
 ```
 
-This will launch a webpack server and nodemon app server for hot reloading any changes you make.
+This will launch a webpack server and nodemon app server for hot reloading any changes you make. NOTE: You may need to migrate and reindex. PITFALL: Make sure to run the blank-slate script prior to migrate and reindex.
 
 ### Webpack server
 

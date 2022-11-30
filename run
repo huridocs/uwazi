@@ -3,7 +3,7 @@
 set -eo pipefail
 
 function start {
-  docker-compose up --build -d "${@}"
+  docker compose up --build -d "${@}"
 }
 
 function mongo {
@@ -11,7 +11,7 @@ function mongo {
 }
 
 function stop {
-  docker-compose stop
+  docker compose stop
 }
 
 
