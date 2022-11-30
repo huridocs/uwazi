@@ -1,12 +1,17 @@
 import React from 'react';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { routes } from './Routes';
 import CustomProvider from './App/Provider';
 import { store } from './store';
 
-const App = () => (
+const router = createBrowserRouter(routes);
+
+const App = (
   <Provider store={store}>
-    <CustomProvider>{routes}</CustomProvider>
+    <CustomProvider>
+      <RouterProvider router={router} fallbackElement={null} />
+    </CustomProvider>
   </Provider>
 );
 

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import React, { ReactElement } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { createRoutesFromElements, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import { trackPage } from 'app/App/GoogleAnalytics';
@@ -50,7 +50,9 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { store } from 'app/store';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { validateHomePageRoute } from 'app/utils/routeHelpers';
+import { fromJS } from 'immutable';
 import { ProtectedRoute } from './ProtectedRoute';
+import { RequestParams } from './utils/RequestParams';
 
 const onEnter = () => {
   trackPage();
@@ -108,7 +110,7 @@ const getPageIndexRoute = customHomePage => {
   onEnter();
   const pageId = customHomePage[customHomePage.indexOf('page') + 1];
   const component = props => <PageView {...props} params={{ sharedId: pageId }} />;
-  component.requestState = requestParams =>
+  component.requestState = async requestParams =>
     PageView.requestState(requestParams.set({ sharedId: pageId }));
 
   return {
@@ -214,6 +216,22 @@ const getIndexRoute = (_nextState, callBack) => {
 
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
 
+const ssrRoute = async params => {
+  console.log('here');
+  // if (element.type.requestState) {
+  //   const globalResources1 = Object.keys(globalResources).reduce(
+  //     (accum, k) => ({ ...accum, [k]: fromJS(globalResources[k]) }),
+  //     {}
+  //   );
+  //   globalResources1.settings = { collection: fromJS(globalResources.settings.collection) };
+  //   const headers = {
+  //     'Content-Language': 'en',
+  //   };
+  //   const requestParams = new RequestParams({}, headers);
+  //   await element.type.requestState(requestParams, globalResources1);
+  // }
+};
+
 const routesLayout = (
   <Route>
     <Route path="login" element={<Login />} />
@@ -268,17 +286,23 @@ const routesLayout = (
     <Route path="library" element={<Library />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
-    <Route path="*" element={<GeneralError />} />
+    {/* <Route path="*" element={<GeneralError />} /> */}
   </Route>
 );
 
-const routes = (
-  <Routes>
-    <Route path="/" element={<App />}>
-      {routesLayout}
-      <Route path=":lang">{routesLayout}</Route>
-    </Route>
-  </Routes>
+const routes = createRoutesFromElements(
+  <Route path="/" element={<App />}>
+    <Route path="library" element={<Library />} />
+    {/* {routesLayout}
+    <Route path=":lang">{routesLayout}</Route> */}
+  </Route>
 );
-
+// const routes = globalResourses => (
+//   <Routes>
+//     <Route path="/" element={<App />}>
+//       {routesLayout(globalResourses)}
+//       <Route path=":lang">{routesLayout(globalResourses)}</Route>
+//     </Route>
+//   </Routes>
+// );
 export { getIndexRoute, routes };

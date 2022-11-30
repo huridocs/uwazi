@@ -4,13 +4,17 @@ import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import { StaticRouter } from 'react-router-dom/server';
+import {
+  unstable_createStaticRouter as createStaticRouter,
+  unstable_StaticRouterProvider as StaticRouterProvider,
+} from 'react-router-dom/server';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import createStore from './store';
 import App from './App';
 import Root from './App/Root';
 import settingsApi from '../api/settings/settings';
+import { routes } from './Routes';
 
 const getAssets = async () => {
   if (process.env.HOT) {
@@ -59,12 +63,13 @@ const EntryServer = async (req: Request, res: Response) => {
     templates: templates.json.rows,
     thesauris: thesauris.json.rows,
     relationTypes: relationTypes.json.rows,
+    settings: { collection: settings },
   };
 
   settings.links = settings.links || [];
   const store = createStore({
     user: req.user,
-    settings: { collection: settings },
+    settings: globalResources.settings,
     translations: globalResources.translations,
     templates: globalResources.templates,
     thesauris: globalResources.thesauris,
@@ -72,10 +77,16 @@ const EntryServer = async (req: Request, res: Response) => {
     locale: 'en',
   });
 
+  // const componentHtml = ReactDOMServer.renderToString(
+  //   <StaticRouter location={req.url}>
+  //     <App />
+  //   </StaticRouter>
+  // );
+
+  const router = createStaticRouter(routes, req);
+
   const componentHtml = ReactDOMServer.renderToString(
-    <StaticRouter location={req.url}>
-      <App />
-    </StaticRouter>
+    <StaticRouterProvider router={router} context={req} nonce="the-nonce" />
   );
 
   const html = ReactDOMServer.renderToString(

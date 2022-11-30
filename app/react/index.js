@@ -6,6 +6,8 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import App from './App';
 import './App/sockets';
+import { store } from 'app/store';
+import { fromJS } from 'immutable';
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
@@ -19,11 +21,15 @@ if (window.SENTRY_APP_DSN) {
 
 const container = document.getElementById('root');
 
-const root = hydrateRoot(
-  container,
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
+const globalResources = store?.getState() || {};
+const globalResources1 = Object.keys(globalResources).reduce(
+  (accum, k) => ({ ...accum, [k]: fromJS(globalResources[k]) }),
+  {}
 );
+
+if (globalResources.settings) {
+  globalResources1.settings = { collection: fromJS(globalResources.settings.collection) };
+}
+const root = hydrateRoot(container, <App />);
 
 export { root };
