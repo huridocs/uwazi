@@ -69,12 +69,12 @@ class NavlinksSettings extends Component {
                         If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.
                       </Translate>
                       <br />
-                      <Translate translationKey="internal URL tip">
+                      <Translate translationKey="Navigation menu tool tip part 1">
                         If it is an internal URL within this website, be sure to delete the first
                         part
                       </Translate>{' '}
                       ({hostname}),{' '}
-                      <Translate>
+                      <Translate translationKey="Navigation menu tool tip part 2">
                         leaving only a relative URL starting with a slash character. Ie. /some_url.
                       </Translate>
                     </div>
