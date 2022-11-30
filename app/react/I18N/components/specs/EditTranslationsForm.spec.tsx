@@ -4,6 +4,7 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { IImmutable } from 'shared/types/Immutable';
 import { ClientTranslationSchema } from 'app/istore';
@@ -172,8 +173,47 @@ describe('EditTranslationForm', () => {
   });
 
   describe('upload translations', () => {
-    it.todo('should call the upload function');
-    it.todo('should reset the form with the updated values');
+    const file = new File(['valid csv'], 'translations.csv', { type: 'text/csv' });
+
+    it('should call the upload function with the file', async () => {
+      jest.spyOn(actions, 'importTranslations');
+
+      render('System');
+
+      const input = screen.getByLabelText('import-translations');
+      await userEvent.upload(input, file);
+
+      expect(actions.importTranslations).toHaveBeenCalledWith(file);
+    });
+
+    it('should reset the form with the updated values', async () => {
+      jest.spyOn(actions, 'importTranslations').mockReturnValueOnce(async () => [
+        {
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'User Interface',
+              type: 'Uwazi UI',
+              values: {
+                Library: 'Librería',
+                Search: 'Buscar',
+                Home: 'Inicio',
+              },
+            },
+          ],
+        },
+      ]);
+
+      render('System');
+
+      const input = screen.getByLabelText('import-translations');
+      await userEvent.upload(input, file);
+
+      expect(screen.getByDisplayValue('Librería')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Buscar')).toBeInTheDocument();
+      expect(screen.getByDisplayValue('Inicio')).toBeInTheDocument();
+    });
   });
 
   describe('filtering', () => {

@@ -24,7 +24,7 @@ const importButton = (action: any, reset: UseFormReset<any>) => {
   };
 
   return (
-    <SelectFileButton onFileImported={handleFileSubmit}>
+    <SelectFileButton onFileImported={handleFileSubmit} id="import-translations">
       <button type="button" className="btn btn-default import-template">
         <Icon icon="upload" />
         <span className="btn-label">

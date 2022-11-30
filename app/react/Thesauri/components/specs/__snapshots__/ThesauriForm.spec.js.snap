@@ -142,6 +142,7 @@ exports[`ThesauriForm render should render DragAndDropContainer with thesauri it
             </span>
           </button>
           <SelectFileButton
+            id="import-thesauri"
             onFileImported={[Function]}
           >
             <button
