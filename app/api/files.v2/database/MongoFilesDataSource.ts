@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
 import { FilesDataSource } from '../contracts/FilesDataSource';
-import { FileDBOType } from './schemas/relationshipTypes';
+import { FileDBOType } from './schemas/filesTypes';
 
 export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
   protected collectionName = 'files';
