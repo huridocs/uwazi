@@ -14,8 +14,8 @@ import {
   formDataType,
 } from '../actions/translationsFormActions';
 
-const importButton = (action: () => any, reset: UseFormReset<any>) => {
-  const handleFileSubmit = async file => {
+const importButton = (action: any, reset: UseFormReset<any>) => {
+  const handleFileSubmit = async (file: File) => {
     const updatedTranslations = await action(file);
     if (updatedTranslations) {
       const formValues = prepareFormValues(updatedTranslations, 'System');
