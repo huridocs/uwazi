@@ -1,11 +1,12 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
-import React, { MutableRefObject, useRef, useState } from 'react';
+import React, { createRef, LegacyRef, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 
-interface MarkdownMediaProps {
+export interface MarkdownMediaProps {
   compact?: boolean;
   editing?: boolean;
   onTimeLinkAdded?: Function;
@@ -69,7 +70,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     name: 'timelines',
   });
 
-  const playerRef: MutableRefObject<ReactPlayer | null | undefined> = useRef();
+  const playerRef: LegacyRef<ReactPlayer> | undefined = createRef();
 
   const seekTo = (seconds: number) => {
     playerRef.current?.seekTo(seconds);
