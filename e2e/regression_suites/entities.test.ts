@@ -28,6 +28,11 @@ describe('Homepage entities', () => {
     await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
   });
 
+  it('should display relationships on the sidepanel', async () => {
+    await expect(page).toClick('#tab-relationships');
+    await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
+  });
+
   it('should display entity view page', async () => {
     await page.goto(`${host}/entity/oiejku12qn0zfr`);
     await testSelectorShot('div.app-content', { threshold: 0.08 });
