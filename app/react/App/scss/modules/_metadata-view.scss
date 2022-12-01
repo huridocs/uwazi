@@ -11,9 +11,10 @@
 .entity-viewer {
   .view {
     padding: 0;
+    display: table;
+    width: 100%;
+
     dl {
-      display: table;
-      width: 100%;
       padding: 15px;
       margin: 0;
 
@@ -155,7 +156,6 @@ ul.comma-separated li {
     justify-content: space-between;
     overflow: auto;
     dl {
-      width: auto;
       min-width: 120px;
       padding: 30px 15px;
     }
@@ -188,8 +188,8 @@ dl.metadata-type-multimedia {
   }
 }
 
-dl.metadata-type-geolocation,
-dl.metadata-type-geolocation_group {
+.metadata-type-geolocation,
+.metadata-type-geolocation_group {
   @include pillItem(#d9534e, white);
 
   .pills-container {
@@ -242,9 +242,5 @@ dl.metadata-type-geolocation_group {
       background-color: rgba(255, 255, 255, 1);
       padding: 2px;
     }
-  }
-
-  .geolocation {
-    max-width: 351px;
   }
 }
