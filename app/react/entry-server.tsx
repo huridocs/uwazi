@@ -7,8 +7,10 @@ import {
   unstable_createStaticRouter as createStaticRouter,
   unstable_StaticRouterProvider as StaticRouterProvider,
 } from 'react-router-dom/server';
-// eslint-disable-next-line camelcase
-import { AgnosticDataRouteObject, unstable_createStaticHandler } from '@remix-run/router';
+import {
+  AgnosticDataRouteObject,
+  unstable_createStaticHandler as createStaticHandler,
+} from '@remix-run/router';
 import api from 'app/utils/api';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
@@ -16,30 +18,28 @@ import { RequestParams } from 'app/utils/RequestParams';
 import settingsApi from '../api/settings/settings';
 import Root from './App/Root';
 import createStore from './store';
-import { routes } from './Routes';
+import { createRoutes } from './Routes';
+import CustomProvider from './App/Provider';
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
 
-  for (const [key, values] of Object.entries(requestHeaders)) {
+  Object.entries(requestHeaders).forEach(([key, values]) => {
     if (values) {
       if (Array.isArray(values)) {
-        for (const value of values) {
-          headers.append(key, value);
-        }
+        values.forEach(value => headers.append(key, value));
       } else {
         headers.set(key, values);
       }
     }
-  }
+  });
 
   return headers;
 };
 
 const createFetchRequest = (req: ExpressRequest): Request => {
   const origin = `${req.protocol}://${req.get('host')}`;
-  // Note: This had to take originalUrl into account for presumably vite's proxying
-  const url = new URL(req.originalUrl || req.url, origin);
+  const url = new URL(req.url, origin);
 
   const controller = new AbortController();
 
@@ -70,11 +70,11 @@ const getAssets = async () => {
       if (err) {
         reject(
           new Error(`${err}\nwebpack-assets.json do not exists or is malformed !,
-                            you probably need to build webpack with the production configuration`)
+          \nyou probably need to build webpack with the production configuration`)
         );
       }
       try {
-        resolve(JSON.parse(data));
+        resolve(JSON.parse(data.toString()));
       } catch (e) {
         reject(e);
       }
@@ -124,20 +124,23 @@ const prepareData = async (req: ExpressRequest) => {
 
   return { globalResources, globalStore, assets };
 };
+
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalResources, globalStore, assets } = await prepareData(req);
-  const routes1 = routes(globalResources);
-  const { dataRoutes, query } = unstable_createStaticHandler(routes1 as AgnosticDataRouteObject[]);
+  const routes = createRoutes(globalResources);
+  const { dataRoutes, query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
 
   const state = await query(createFetchRequest(req));
-  const router = createStaticRouter(routes1, state);
+  const router = createStaticRouter(routes, state);
 
   const componentHtml = ReactDOMServer.renderToString(
-    <React.StrictMode>
-      <Provider store={globalStore}>
-        <StaticRouterProvider router={router} context={state} nonce="the-nonce" />
-      </Provider>
-    </React.StrictMode>
+    <Provider store={store}>
+      <CustomProvider>
+        <React.StrictMode>
+          <StaticRouterProvider router={router} context={state} nonce="the-nonce" />
+        </React.StrictMode>
+      </CustomProvider>
+    </Provider>
   );
 
   const html = ReactDOMServer.renderToString(
@@ -152,4 +155,5 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
   res.send(`<!DOCTYPE html>${html}`);
 };
+
 export { EntryServer };

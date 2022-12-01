@@ -53,6 +53,7 @@ import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { fromJS } from 'immutable';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequestParams } from './utils/RequestParams';
+import { IStore } from './istore';
 
 const onEnter = () => {
   trackPage();
@@ -292,11 +293,12 @@ const routesLayout = globalResources => (
   </Route>
 );
 
-const routes = globalResources => {
+const createRoutes = (globalResources: IStore) => {
   const globalResources1 = Object.keys(globalResources).reduce(
-    (accum, k) => ({ ...accum, [k]: fromJS(globalResources[k]) }),
+    (accum, key) => ({ ...accum, [key]: fromJS(globalResources[key]) }),
     {}
   );
+
   globalResources1.settings = { collection: fromJS(globalResources.settings.collection) };
 
   return createRoutesFromElements(
@@ -307,4 +309,4 @@ const routes = globalResources => {
   );
 };
 
-export { getIndexRoute, routes };
+export { getIndexRoute, createRoutes };
