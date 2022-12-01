@@ -1,6 +1,5 @@
 /* eslint-disable max-params */
 /* eslint-disable max-classes-per-file */
-import { SelfReferenceError } from '../errors/relationshipErrors';
 
 class Selection {
   readonly page: number;
@@ -35,15 +34,9 @@ abstract class Pointer {
   constructor(entity: string) {
     this.entity = entity;
   }
-
-  abstract equals(pointer: Pointer): boolean;
 }
 
-class EntityPointer extends Pointer {
-  equals(pointer: EntityPointer): boolean {
-    return pointer instanceof EntityPointer && this.entity === pointer.entity;
-  }
-}
+class EntityPointer extends Pointer {}
 
 class TextReferencePointer extends Pointer {
   readonly file: string;
@@ -61,11 +54,6 @@ class TextReferencePointer extends Pointer {
     this.selections = selections;
     this.text = text;
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  equals(_pointer: TextReferencePointer): boolean {
-    return false;
-  }
 }
 
 class Relationship {
@@ -78,10 +66,6 @@ class Relationship {
   readonly type: string;
 
   constructor(_id: string, from: Pointer, to: Pointer, type: string) {
-    if (from.equals(to)) {
-      throw new SelfReferenceError('Cannot create relationship to itself');
-    }
-
     this._id = _id;
     this.from = from;
     this.to = to;

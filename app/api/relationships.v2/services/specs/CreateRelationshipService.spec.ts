@@ -14,7 +14,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { SelfReferenceError } from '../../errors/relationshipErrors';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
 
@@ -300,24 +299,6 @@ describe('create()', () => {
         fail('should throw error');
       } catch (e) {
         await expect(e.message).toMatch(/file/i);
-      }
-      expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('When trying to create a self-referencing relationship', () => {
-    it('should throw a validation error', async () => {
-      const service = createService();
-      try {
-        await service.create([
-          { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
-          { from: 'entity1', to: 'entity1', type: factory.id('rel2').toHexString() },
-          { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
-        ]);
-        fail('should throw error');
-      } catch (e) {
-        await expect(e.message).toMatch(/self/);
-        expect(e).toBeInstanceOf(SelfReferenceError);
       }
       expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });

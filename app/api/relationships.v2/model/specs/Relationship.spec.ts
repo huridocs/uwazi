@@ -1,5 +1,4 @@
-import { SelfReferenceError } from 'api/relationships.v2/errors/relationshipErrors';
-import { EntityPointer, Relationship, TextReferencePointer, Selection } from '../Relationship';
+import { TextReferencePointer, Selection } from '../Relationship';
 
 describe('SelectionRectangle', () => {
   it.each([
@@ -28,37 +27,6 @@ describe('SelectionRectangle', () => {
 });
 
 describe('Pointer', () => {
-  describe('when comparing for equality', () => {
-    it.each([
-      {
-        comment: 'point to the same entity',
-        left: new EntityPointer('entity1'),
-        right: new EntityPointer('entity1'),
-        result: true,
-      },
-      {
-        comment: 'point to different entities',
-        left: new EntityPointer('entity1'),
-        right: new EntityPointer('entity2'),
-        result: false,
-      },
-      {
-        comment: 'are of different subtypes',
-        left: new EntityPointer('entity1'),
-        right: new TextReferencePointer('entity1', 'file1', [new Selection(1, 2, 3, 4, 5)], 'text'),
-        result: false,
-      },
-      {
-        comment: 'are both TextReferences',
-        left: new TextReferencePointer('entity1', 'file1', [new Selection(1, 2, 3, 4, 5)], 'text'),
-        right: new TextReferencePointer('entity1', 'file1', [new Selection(1, 2, 3, 4, 5)], 'text'),
-        result: false,
-      },
-    ])('should return $result when the pointers $comment', ({ left, right, result }) => {
-      expect(left.equals(right)).toBe(result);
-    });
-  });
-
   describe('TextReferencePointer', () => {
     it('should fail if no selection rectangles are provided', async () => {
       try {
@@ -66,24 +34,6 @@ describe('Pointer', () => {
         fail(`${textReference} should fail if instantiated without rectangles`);
       } catch (e) {
         await expect(e.message).toMatch(/selection/);
-      }
-    });
-  });
-});
-
-describe('Relationship', () => {
-  describe('When trying to create a self-referencing relationship', () => {
-    it('should throw a validation error', () => {
-      try {
-        const relationship = new Relationship(
-          '_id',
-          new EntityPointer('entity1'),
-          new EntityPointer('entity1'),
-          'type1'
-        );
-        fail(`${relationship} instantiation should have throw error`);
-      } catch (e) {
-        expect(e).toBeInstanceOf(SelfReferenceError);
       }
     });
   });
