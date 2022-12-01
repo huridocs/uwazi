@@ -1,13 +1,11 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { hydrateRoot } from 'react-dom/client';
-
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
-import App from './App';
 import './App/sockets';
 import { store } from 'app/store';
 import { fromJS } from 'immutable';
+import { App } from './App';
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({

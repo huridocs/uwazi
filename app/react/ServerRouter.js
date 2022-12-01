@@ -24,7 +24,6 @@ import settingsApi from '../api/settings/settings';
 import createStore from './store';
 import translationsApi from '../api/i18n/translations';
 import { handleError } from '../api/utils';
-import App from './App';
 
 let assets = {};
 

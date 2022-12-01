@@ -7,7 +7,7 @@ import { store } from './store';
 
 const router = createBrowserRouter(createRoutes(store.getState()));
 
-const App = (
+const App = () => (
   <Provider store={store}>
     <CustomProvider>
       <RouterProvider router={router} fallbackElement={null} />
@@ -15,4 +15,4 @@ const App = (
   </Provider>
 );
 
-export default App;
+export { App };
