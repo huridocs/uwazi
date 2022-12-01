@@ -3,9 +3,10 @@ import React, { MutableRefObject, useRef } from 'react';
 export type SelectFileButtonProps = {
   onFileImported: (file: File) => any;
   children: any;
+  id: string;
 };
 
-export const SelectFileButton = ({ onFileImported, children }: SelectFileButtonProps) => {
+export const SelectFileButton = ({ onFileImported, children, id }: SelectFileButtonProps) => {
   // @ts-ignore
   const fileInputRef: MutableRefObject<HTMLInputElement> = useRef();
 
@@ -25,12 +26,16 @@ export const SelectFileButton = ({ onFileImported, children }: SelectFileButtonP
   return (
     <div onClick={show} style={{ display: 'inline' }}>
       {children}
+      <label htmlFor={id} style={{ display: 'none' }}>
+        {id}
+      </label>
       <input
         ref={fileInputRef}
         type="file"
         accept="text/csv"
         style={{ display: 'none' }}
         onChange={select}
+        id={id}
       />
     </div>
   );
