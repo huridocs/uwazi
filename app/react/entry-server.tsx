@@ -134,7 +134,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const router = createStaticRouter(routes, state);
 
   const componentHtml = ReactDOMServer.renderToString(
-    <Provider store={store}>
+    <Provider store={globalStore}>
       <CustomProvider>
         <React.StrictMode>
           <StaticRouterProvider router={router} context={state} nonce="the-nonce" />

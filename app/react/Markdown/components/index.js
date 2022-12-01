@@ -10,7 +10,6 @@ import EntityLink from './EntityLink';
 import ItemList from './ItemList';
 import Repeat from './Repeat';
 import Context from './Context';
-import Connect from './Connect';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
 import MarkdownMedia from './MarkdownMedia';
@@ -46,7 +45,6 @@ export {
   MarkdownMedia,
   ContactForm,
   Context,
-  Connect,
   EntityData,
   EntityLink,
   ItemList,
