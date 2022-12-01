@@ -5,10 +5,9 @@ import {
   DefaultIdGenerator,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { MongoFilesDataSource } from 'api/files.v2/database/MongoFilesDataSource';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -64,7 +63,7 @@ const CreateRelationshipService = (request: Request) => {
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const idGenerator = DefaultIdGenerator;
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
-  const filesDS = new MongoFilesDataSource(getConnection(), transactionManager);
+  const filesDS = DefaultFilesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
   const denormalizationService = DenormalizationService(transactionManager);
