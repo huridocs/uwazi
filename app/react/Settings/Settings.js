@@ -16,7 +16,7 @@ import { SettingsNavigation } from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
 export class Settings extends RouteHandler {
-  static async requestState(requestParams) {
+  static async requestState({ request: requestParams }) {
     const request = requestParams.onlyHeaders();
     const [user, thesauri, translations, collection, templates] = await Promise.all([
       UsersAPI.currentUser(request),

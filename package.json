@@ -87,6 +87,7 @@
     "@googlemaps/js-api-loader": "^1.14.3",
     "@hookform/error-message": "^2.0.0",
     "@loadable/component": "^5.13.1",
+    "@remix-run/router": "^1.0.4",
     "@sentry/node": "^7.20.1",
     "@sentry/react": "7.20.1",
     "@sentry/tracing": "^7.20.1",

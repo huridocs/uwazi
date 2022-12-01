@@ -5,7 +5,7 @@ import { routes } from './Routes';
 import CustomProvider from './App/Provider';
 import { store } from './store';
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes(store.getState()));
 
 const App = (
   <Provider store={store}>

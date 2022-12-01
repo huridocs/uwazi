@@ -51,11 +51,12 @@ const processQuery = (params, globalResources, key) => {
 };
 
 const requestState = (
-  request,
+  routeParams,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }
 ) => {
-  const docsQuery = processQuery(request.data, globalResources, 'library');
+  const { request, params } = routeParams;
+  const docsQuery = processQuery(params, globalResources, 'library');
 
   const documentsRequest = request.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
