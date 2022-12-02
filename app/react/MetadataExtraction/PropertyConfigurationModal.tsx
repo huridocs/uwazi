@@ -6,7 +6,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import Icons from 'app/Templates/components/Icons';
 
-const SUPPORTED_PROPERTIES = ['text', 'number', 'date'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
 export interface IXTemplateConfiguration {
   template: ObjectIdSchema;
