@@ -51,6 +51,7 @@ import { store } from 'app/store';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { validateHomePageRoute } from 'app/utils/routeHelpers';
 import { fromJS } from 'immutable';
+import createStore from './store';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RequestParams } from './utils/RequestParams';
 import { IStore } from './istore';
@@ -216,31 +217,16 @@ const getIndexRoute = (_nextState, callBack) => {
 // );
 
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
-
-const loadState =
-  (requestState: Function, globalResources?: any) =>
-  async ({ params, request }) => {
-    const headers = {
-      'Content-Language': 'en',
-      // Cookie: `connect.sid=${request.cookies['connect.sid']}`,
-      // tenant: request('tenant'),
-    };
-    const query = {};
-    const requestParams = new RequestParams({ ...query, ...params }, headers);
-    return requestState({ params, request: requestParams }, globalResources);
-  };
-
-const routesLayout = globalResources => (
+const routesLayout = (
   <Route>
     <Route path="login" element={<Login />} />
     <Route
       path="settings"
       element={
         <ProtectedRoute>
-          <Settings loader={async params => Library.requestState(params, globalResourses)} />
+          <Settings />
         </ProtectedRoute>
       }
-      loader={loadState(Settings.requestState)}
     >
       <Route path="account" element={<AccountSettings />} />
       <Route path="dashboard" element={adminRoute(<Dashboard />)} />
@@ -282,31 +268,18 @@ const routesLayout = globalResources => (
       <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
-    <Route
-      path="library"
-      element={<Library />}
-      loader={loadState(Library.requestState, globalResources)}
-    />
+    <Route path="library" element={<Library />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="*" element={<GeneralError />} />
   </Route>
 );
 
-const createRoutes = (globalResources: IStore) => {
-  const globalResources1 = Object.keys(globalResources).reduce(
-    (accum, key) => ({ ...accum, [key]: fromJS(globalResources[key]) }),
-    {}
-  );
+const routes = createRoutesFromElements(
+  <Route path="/" element={<App />}>
+    {routesLayout}
+    <Route path=":lang">{routesLayout}</Route>
+  </Route>
+);
 
-  globalResources1.settings = { collection: fromJS(globalResources.settings.collection) };
-
-  return createRoutesFromElements(
-    <Route path="/" element={<App />}>
-      {routesLayout(globalResources1)}
-      <Route path=":lang">{routesLayout(globalResources1)}</Route>
-    </Route>
-  );
-};
-
-export { getIndexRoute, createRoutes };
+export { getIndexRoute, routes };

@@ -1,11 +1,11 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { createRoutes } from './Routes';
+import { routes } from './Routes';
 import CustomProvider from './App/Provider';
 import { store } from './store';
 
-const router = createBrowserRouter(createRoutes(store.getState()));
+const router = createBrowserRouter(routes);
 
 const App = () => (
   <Provider store={store}>

@@ -3,6 +3,8 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
+import { matchRoutes } from 'react-router-dom';
+import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
   unstable_StaticRouterProvider as StaticRouterProvider,
@@ -18,8 +20,9 @@ import { RequestParams } from 'app/utils/RequestParams';
 import settingsApi from '../api/settings/settings';
 import Root from './App/Root';
 import createStore from './store';
-import { createRoutes } from './Routes';
+import { routes } from './Routes';
 import CustomProvider from './App/Provider';
+import { IStore } from './istore';
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -122,20 +125,63 @@ const prepareData = async (req: ExpressRequest) => {
     locale: 'en',
   });
 
-  return { globalResources, globalStore, assets };
+  return { globalStore, assets };
+};
+
+const setReduxState = async (req: ExpressRequest, globalStore: Store<IStore>) => {
+  const matched = matchRoutes(routes, req.path);
+
+  const dataLoaders = matched
+    ?.map(({ route }) => {
+      if (route.element) {
+        const component = route.element as React.ReactElement;
+        if (component.props.children?.type.requestState) {
+          return component.props.children?.type.requestState;
+        }
+        if (component.type.requestState) {
+          return component.type.requestState;
+        }
+      }
+      return null;
+    })
+    .filter(v => v);
+
+  if (dataLoaders && dataLoaders.length > 0) {
+    const headers = {
+      'Content-Language': 'en',
+      Cookie: `connect.sid=${req.cookies['connect.sid']}`,
+      //tenant: req('tenant'),
+    };
+    const requestParams = new RequestParams({ ...req.query, ...req.params }, headers);
+
+    await Promise.all(
+      dataLoaders.map(async loader => {
+        const actions = await loader(
+          { params: req.params, request: requestParams },
+          globalStore.getState()
+        );
+        if (Array.isArray(actions)) {
+          actions.forEach(action => {
+            globalStore.dispatch(action);
+          });
+        }
+      })
+    );
+  }
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
-  const { globalResources, globalStore, assets } = await prepareData(req);
-  const routes = createRoutes(globalResources);
-  const { dataRoutes, query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
+  const { globalStore, assets } = await prepareData(req);
+  const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
 
+  await setReduxState(req, globalStore);
   const state = await query(createFetchRequest(req));
   const router = createStaticRouter(routes, state);
 
+  const initialData = globalStore.getState();
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={globalStore}>
-      <CustomProvider>
+      <CustomProvider initialData={initialData} user={req.user} language="en">
         <React.StrictMode>
           <StaticRouterProvider router={router} context={state} nonce="the-nonce" />
         </React.StrictMode>

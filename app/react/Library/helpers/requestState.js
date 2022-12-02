@@ -31,7 +31,7 @@ const processQuery = (params, globalResources, key) => {
     view: params.view,
   });
 
-  const noDocuments = !globalResources[key] || !globalResources[key].documents.get('rows').size;
+  const noDocuments = !globalResources[key] || !globalResources[key].documents?.get('rows').size;
 
   if (noDocuments && query.limit) {
     query = Object.assign(query, { limit: query.limit + (query.from || 0), from: 0 });
