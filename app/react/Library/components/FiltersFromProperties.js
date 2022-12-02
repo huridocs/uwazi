@@ -31,7 +31,8 @@ const optionUrl = (value, name, query) => {
 };
 
 const prepareOptions = (property, location) => {
-  const { q = '(filters:())' } = location.query;
+  const searchParams = new URLSearchParams(location.search);
+  const { q = '(filters:())' } = Object.fromEntries(searchParams.entries());
 
   const query = rison.decode(q);
   const filteredProperty = {

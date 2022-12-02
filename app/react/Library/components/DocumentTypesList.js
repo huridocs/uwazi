@@ -6,7 +6,7 @@ import Immutable, { is } from 'immutable';
 import { Link } from 'react-router-dom';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
-import { withRouter } from 'app/withRouter';
+import { withRouter } from 'app/componentWrappers';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -64,7 +64,11 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(selectedItems, this.props.router.location);
+    this.props.filterDocumentTypes(
+      selectedItems,
+      this.props.router.location,
+      this.props.router.navigate
+    );
   }
 
   change(item) {
@@ -77,7 +81,11 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(selectedItems, this.props.router.location);
+    this.props.filterDocumentTypes(
+      selectedItems,
+      this.props.router.location,
+      this.props.router.navigate
+    );
   }
 
   toggleOptions(item, e) {

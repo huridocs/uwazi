@@ -2,7 +2,7 @@ import { Field, Form, actions as formActions } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Icon } from 'UI';
 import {
@@ -49,12 +49,13 @@ const SearchBarComponent = ({
   semanticSearch,
 }: mappedProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const search = processFilters(initSearch, initFilters.toJS());
   const resetSearch = () => {
     change('library.search.searchTerm', '');
     const newSearch = { ...search };
     newSearch.searchTerm = '';
-    searchDocuments({ search: newSearch, location }, 'library');
+    searchDocuments({ search: newSearch, location, navigate });
   };
 
   const submitSemanticSearch = () => {
@@ -62,7 +63,7 @@ const SearchBarComponent = ({
   };
 
   const doSearch = (newSearch: any) => {
-    searchDocuments({ search: newSearch, location }, 'library');
+    searchDocuments({ search: newSearch, location, navigate });
   };
 
   return (

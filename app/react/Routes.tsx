@@ -7,7 +7,7 @@ import { trackPage } from 'app/App/GoogleAnalytics';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
-import Library from 'app/Library/Library';
+import Library, { LibraryCards } from 'app/Library/Library';
 import LibraryMap from 'app/Library/LibraryMap';
 import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
@@ -153,47 +153,6 @@ const getIndexRoute = (_nextState, callBack) => {
 
 // const routes = (
 //   <Route getIndexRoute={getIndexRoute}>
-//     <Route path="settings" element={<Settings />} onEnter={needsAuth}>
-//       <Route path="account" element={<AccountSettings />} />
-//       <Route path="dashboard" element={<Dashboard />} />
-//       <Route path="2fa" element={<Configure2fa />} />
-//       <Route path="collection" element={<CollectionSettings />} />
-//       <Route path="navlinks" element={<NavlinksSettings />} />
-//       <Route path="users" element={<UserManagement />} />
-//       <Route path="preserve" element={<PreserveSettings />} />
-//       <Route path="pages">
-//         <Route index element={<Pages />} />
-//         <Route path="new" element={<NewPage />} />
-//         <Route path="edit/:sharedId" element={<EditPage />} />
-//       </Route>
-//       <Route path="templates">
-//         <Route index element={<EntityTypesList />} />
-//         <Route path="new" element={<NewTemplate />} />
-//         <Route path="edit/:templateId" element={<EditTemplate />} />
-//       </Route>
-//       <Route path="metadata_extraction" element={<MetadataExtractionDashboard />} />
-//       <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} />
-//       <Route path="connections">
-//         <Route index element={<RelationTypesList />} />
-//         <Route path="new" element={<NewRelationType />} />
-//         <Route path="edit/:_id" element={<EditRelationType />} />
-//       </Route>
-//       <Route path="dictionaries">
-//         <Route index element={<ThesauriList />} />
-//         <Route path="new" element={<NewThesauri />} />
-//         <Route path="edit/:_id" element={<EditThesauri />} />
-//         <Route path="cockpit/:_id" element={<ThesaurusCockpit />} />
-//       </Route>
-//       <Route path="languages" element={<LanguageList />} />
-//       <Route path="translations">
-//         <Route index element={<TranslationsList />} />
-//         <Route path="edit/:context" element={<EditTranslations />} />
-//       </Route>
-//       <Route path="filters" element={<FiltersForm />} />
-//       <Route path="customisation" element={<Customisation />} />
-//       <Route path="custom-uploads" element={<CustomUploads />} />
-//       <Route path="activitylog" element={<Activitylog />} onEnter={needsAuth} />
-//     </Route>
 //     <Route path="library" element={<Library />} onEnter={enterOnLibrary} />
 //     <Route path="library/map" element={<LibraryMap />} onEnter={onEnter} />
 //     <Route path="library/table" element={<LibraryTable />} onEnter={enterOnLibrary} />
@@ -269,7 +228,7 @@ const routesLayout = (
       <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
-    <Route path="library" element={<Library />} />
+    <Route path="library" element={<LibraryCards />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="*" element={<GeneralError />} />

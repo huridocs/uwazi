@@ -6,7 +6,7 @@ import { Switcher } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { NeedAuthorization } from 'app/Auth';
-import { withRouter } from 'app/withRouter';
+import { withRouter } from 'app/componentWrappers';
 import { SettingsFilterSchema } from 'shared/types/settingsType';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
@@ -18,7 +18,7 @@ interface TemplatesFilterState {
 }
 
 interface TemplatesFiltersProps {
-  router: { location: {} };
+  router: { location: {}; navigate: Function };
 }
 const mapStateToProps = (state: IStore) => ({
   collection: state.settings.collection,
@@ -84,7 +84,11 @@ export class TemplatesFilterComponent extends React.Component<
     if (checked) {
       const newSelectedItems = filterValidSelectedTemplates(configuredFilters, selectedTemplates);
       this.setState({ selectedTemplates: newSelectedItems });
-      this.props.filterDocumentTypes(newSelectedItems, this.props.router.location);
+      this.props.filterDocumentTypes(
+        newSelectedItems,
+        this.props.router.location,
+        this.props.router.navigate
+      );
     }
     this.setState({ documentTypeFromFilters: checked });
   }

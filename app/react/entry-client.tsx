@@ -16,6 +16,6 @@ if (window.SENTRY_APP_DSN) {
 }
 
 const container = document.getElementById('root');
-const root = hydrateRoot(container, <App />);
+const root = hydrateRoot(container!, <App />);
 
 export { root };

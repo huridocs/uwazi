@@ -12,7 +12,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
-import { withRouter } from 'app/withRouter';
+import { withRouter } from 'app/componentWrappers';
 import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';

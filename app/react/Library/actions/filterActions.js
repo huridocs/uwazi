@@ -5,7 +5,7 @@ import * as libraryActions from 'app/Library/actions/libraryActions';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { actions as formActions } from 'react-redux-form';
 
-export function filterDocumentTypes(documentTypes, location, storeKey = 'library') {
+export function filterDocumentTypes(documentTypes, location, navigate) {
   return (dispatch, getState) => {
     const state = getState();
 
@@ -22,21 +22,21 @@ export function filterDocumentTypes(documentTypes, location, storeKey = 'library
       : templates;
 
     const { sort, order } = prioritySortingCriteria.get({
-      currentCriteria: { sort: state[storeKey].search.sort, order: state[storeKey].search.order },
+      currentCriteria: { sort: state.library.search.sort, order: state.library.search.order },
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates,
-      selectedSorting: state[storeKey].selectedSorting,
+      selectedSorting: state.library.selectedSorting,
     });
 
     const search = {
       types: documentTypes,
-      ...state[storeKey].search,
+      ...state.library.search,
       sort,
       order,
     };
 
     const filters = { documentTypes, properties: libraryFilters };
-    dispatch(libraryActions.searchDocuments({ filters, search, location }, storeKey));
+    dispatch(libraryActions.searchDocuments({ filters, search, location, navigate }));
   };
 }
 

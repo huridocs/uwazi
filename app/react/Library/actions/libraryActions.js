@@ -2,7 +2,6 @@
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
-import { redirect } from 'react-router-dom';
 import { t } from 'app/I18N';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';
@@ -223,24 +222,23 @@ function encodeSearch(_search, appendQ = true) {
   return appendQ ? `?q=${encodedSearch}` : encodedSearch;
 }
 
-function setSearchInUrl(searchParams, location) {
+function setSearchInUrl(searchParams, location, navigate) {
   const { pathname } = location;
   const path = `${pathname}/`.replace(/\/\//g, '/');
   const query = new URLSearchParams(location.search);
 
   query.q = encodeSearch(searchParams, false);
 
-  redirect(path + toUrlParams(query));
+  return navigate(path + toUrlParams(query));
 }
 
 function searchDocuments(
-  { search = undefined, location, filters = undefined },
-  storeKey,
+  { search = undefined, location, navigate, filters = undefined },
   limit = 30,
   from = 0
 ) {
   return (dispatch, getState) => {
-    const state = getState()[storeKey];
+    const state = getState().library;
     const currentSearch = search || state.search;
     let currentFilters = filters || state.filters;
     currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
@@ -256,12 +254,12 @@ function searchDocuments(
     }
 
     if (currentSearch.userSelectedSorting) {
-      dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
+      dispatch(actions.set('library.selectedSorting', currentSearch));
     }
 
     searchParams.customFilters = currentSearch.customFilters;
 
-    setSearchInUrl(searchParams, location);
+    return setSearchInUrl(searchParams, location, navigate);
   };
 }
 

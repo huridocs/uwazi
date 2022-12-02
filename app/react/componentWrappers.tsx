@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -12,4 +13,12 @@ const withRouter = Component => {
   return ComponentWithRouterProp;
 };
 
-export { withRouter };
+const withRequestState = Component => (props: any) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+
+  return <Component {...props} navigate={navigate} location={location} params={params} />;
+};
+
+export { withRouter, withRequestState };

@@ -7,7 +7,6 @@ import { RequestParams } from 'app/utils/RequestParams';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import JSONUtils from 'shared/JSONUtils';
 
 const getLocale = ({ store }) => store.getState().locale;
 
@@ -53,7 +52,8 @@ class RouteHandler extends Component {
   async getClientState(props) {
     let query;
     if (props.location) {
-      query = JSONUtils.parseNested(props.location.query);
+      const params = new URLSearchParams(props.location.search);
+      query = Object.fromEntries(params.entries());
     }
 
     const { store = { getState: () => {} } } = this.context;
@@ -61,7 +61,10 @@ class RouteHandler extends Component {
     const headers = {};
     const { lang, ...params } = props.params;
     const requestParams = new RequestParams({ ...query, ...params }, headers);
-    const actions = await this.constructor.requestState(requestParams, store.getState());
+    const actions = await this.constructor.requestState(
+      { params: query, request: requestParams },
+      store.getState()
+    );
 
     actions.forEach(action => {
       store.dispatch(action);
