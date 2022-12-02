@@ -100,7 +100,7 @@ class ThesauriForm extends Component {
     const previousLastValueWasGroup =
       previousValues.length && previousValues[previousValues.length - 1].values;
     if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
+      this.groups[this.groups.length - 1]?.focus();
     }
   }
 
