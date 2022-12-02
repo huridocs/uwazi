@@ -217,6 +217,7 @@ const getIndexRoute = (_nextState, callBack) => {
 // );
 
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
+
 const routesLayout = (
   <Route>
     <Route path="login" element={<Login />} />
