@@ -1,24 +1,14 @@
-import { Entity } from 'api/entities.v2/model/Entity';
 import { GraphQueryResult } from '../GraphQueryResult';
-import { Relationship } from '../Relationship';
 
 const path = [
-  new Entity('1', 'en', '1', '1', {}),
-  Relationship.create('2', '1', '3', '2'),
-  new Entity('3', 'en', '3', '3', {}),
-  Relationship.create('4', '3', '5', '4'),
-  new Entity('5', 'en,', '5', '5', {}),
-];
+  { _id: 'id1', sharedId: 'shared1', title: 'title1' },
+  { _id: 'id2', type: 'type2' },
+  { _id: 'id3', sharedId: 'shared3', title: 'title3' },
+  { _id: 'id4', type: 'type4' },
+  { _id: 'id5', sharedId: 'shared5', title: 'title4' },
+] as const;
 
-const result = new GraphQueryResult(path);
-
-describe('when construting from a query matched path', () => {
-  it('should segregate the contents by type', () => {
-    expect(result.path).toBe(path);
-    expect(result.entities).toEqual([path[0], path[2], path[4]]);
-    expect(result.relationships).toEqual([path[1], path[3]]);
-  });
-});
+const result = new GraphQueryResult([path[1], path[3]], [path[0], path[2], path[4]]);
 
 describe('when calling leaf()', () => {
   it('should return the entity at the end of the path', () => {

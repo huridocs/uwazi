@@ -101,12 +101,16 @@ describe('Relationship fields caching strategy', () => {
           return partialImplementation<MongoResultSet<any, GraphQueryResult>>({
             all: async () =>
               Promise.resolve([
-                new GraphQueryResult([
-                  {
-                    sharedId: `calculated${counter}-${lang}`,
-                    title: `calculated${counter}-${lang}`,
-                  },
-                ]),
+                new GraphQueryResult(
+                  [],
+                  [
+                    {
+                      _id: `calculated${counter}-${lang}`,
+                      sharedId: `calculated${counter}-${lang}`,
+                      title: `calculated${counter}-${lang}`,
+                    },
+                  ]
+                ),
               ]),
           });
         },

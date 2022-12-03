@@ -58,17 +58,19 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result.map(r => r.path)).toMatchObject([
+    expect(result.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel1'), type: factory.id('nullType') },
         { _id: factory.id('hub1-en'), sharedId: 'hub1' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
       ],
+    ]);
+    expect(result.map(r => r.relationships)).toMatchObject([
+      [{ _id: factory.id('rel1'), type: factory.id('nullType') }],
+      [{ _id: factory.id('rel4'), type: factory.id('nullType') }],
     ]);
   });
 
@@ -84,34 +86,44 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result.map(r => r.path)).toMatchObject([
+    expect(result.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel1'), type: factory.id('nullType') },
         { _id: factory.id('hub1-en'), sharedId: 'hub1' },
-        { _id: factory.id('rel2'), type: factory.id('relType1') },
         { _id: factory.id('entity3-en'), sharedId: 'entity3' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel1'), type: factory.id('nullType') },
         { _id: factory.id('hub1-en'), sharedId: 'hub1' },
-        { _id: factory.id('rel3'), type: factory.id('relType1') },
         { _id: factory.id('entity4-en'), sharedId: 'entity4' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel5'), type: factory.id('relType2') },
         { _id: factory.id('entity5-en'), sharedId: 'entity5' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+    expect(result.map(r => r.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel1'), type: factory.id('nullType') },
+        { _id: factory.id('rel2'), type: factory.id('relType1') },
+      ],
+      [
+        { _id: factory.id('rel1'), type: factory.id('nullType') },
+        { _id: factory.id('rel3'), type: factory.id('relType1') },
+      ],
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel5'), type: factory.id('relType2') },
+      ],
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
       ],
     ]);
   });
@@ -128,20 +140,26 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').page(2, 2);
-    expect(result.map(d => d.path)).toMatchObject([
+    expect(result.map(d => d.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel5'), type: factory.id('relType2') },
         { _id: factory.id('entity5-en'), sharedId: 'entity5' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+    expect(result.map(d => d.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel5'), type: factory.id('relType2') },
+      ],
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
       ],
     ]);
   });
@@ -167,13 +185,17 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result.map(r => r.path)).toMatchObject([
+    expect(result.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      ],
+    ]);
+    expect(result.map(r => r.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
       ],
     ]);
   });
@@ -201,19 +223,23 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result.map(r => r.path)).toMatchObject([
+    expect(result.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel9'), type: factory.id('relType5') },
         { _id: factory.id('entity7-en'), sharedId: 'entity7' },
       ],
+    ]);
+    expect(result.map(r => r.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+      ],
+      [{ _id: factory.id('rel9'), type: factory.id('relType5') }],
     ]);
   });
 
@@ -241,33 +267,41 @@ describe('When getting by query', () => {
 
     const resultInEnglish = await ds.getByQuery(query, 'en').all();
     const resultInSpanish = await ds.getByQuery(query, 'es').all();
-    expect(resultInEnglish.map(r => r.path)).toMatchObject([
+    expect(resultInEnglish.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-en'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-en'), sharedId: 'entity6' },
       ],
       [
         { _id: factory.id('entity1-en'), sharedId: 'entity1' },
-        { _id: factory.id('rel9'), type: factory.id('relType5') },
         { _id: factory.id('entity7-en'), sharedId: 'entity7' },
       ],
     ]);
-    expect(resultInSpanish.map(r => r.path)).toMatchObject([
+    expect(resultInEnglish.map(r => r.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+      ],
+      [{ _id: factory.id('rel9'), type: factory.id('relType5') }],
+    ]);
+    expect(resultInSpanish.map(r => r.entities)).toMatchObject([
       [
         { _id: factory.id('entity1-es'), sharedId: 'entity1' },
-        { _id: factory.id('rel4'), type: factory.id('nullType') },
         { _id: factory.id('hub2-es'), sharedId: 'hub2' },
-        { _id: factory.id('rel6'), type: factory.id('relType3') },
         { _id: factory.id('entity6-es'), sharedId: 'entity6' },
       ],
       [
         { _id: factory.id('entity1-es'), sharedId: 'entity1' },
-        { _id: factory.id('rel9'), type: factory.id('relType5') },
         { _id: factory.id('entity7-es'), sharedId: 'entity7' },
       ],
+    ]);
+    expect(resultInSpanish.map(r => r.relationships)).toMatchObject([
+      [
+        { _id: factory.id('rel4'), type: factory.id('nullType') },
+        { _id: factory.id('rel6'), type: factory.id('relType3') },
+      ],
+      [{ _id: factory.id('rel9'), type: factory.id('relType5') }],
     ]);
   });
 });

@@ -1,19 +1,22 @@
+export interface EntityData {
+  _id: string;
+  sharedId: string;
+  title: string;
+}
+
+export interface RelationshipData {
+  _id: string;
+  type: string;
+}
+
 export class GraphQueryResult {
-  readonly entities: unknown[] = [];
+  readonly entities: EntityData[] = [];
 
-  readonly relationships: unknown[] = [];
+  readonly relationships: RelationshipData[] = [];
 
-  readonly path: unknown[];
-
-  constructor(path: unknown[]) {
-    this.path = path;
-    path.forEach((elem, index) => {
-      if (index % 2) {
-        this.relationships.push(elem);
-      } else {
-        this.entities.push(elem);
-      }
-    });
+  constructor(relationships: RelationshipData[], entities: EntityData[]) {
+    this.relationships = relationships;
+    this.entities = entities;
   }
 
   leaf() {

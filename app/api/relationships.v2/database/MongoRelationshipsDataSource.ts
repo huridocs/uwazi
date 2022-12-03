@@ -2,17 +2,13 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
-import { RelationshipMappers } from './RelationshipMappers';
+import { TraversalResult, RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 
 const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
-
-type TraversalResult = {
-  traversal?: TraversalResult;
-};
 
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>

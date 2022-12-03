@@ -1,15 +1,20 @@
 import { ObjectId } from 'mongodb';
-import { GraphQueryResult } from '../model/GraphQueryResult';
+import { EntityData, GraphQueryResult, RelationshipData } from '../model/GraphQueryResult';
 import { Relationship } from '../model/Relationship';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
 
-type TraversalResult = {
-  traversal?: TraversalResult;
+type EntityTraversal = {
+  _id: ObjectId;
+  sharedId: string;
+  title: string;
+  traversal?: RelationshpTraversal;
 };
 
-function unrollTraversal({ traversal, ...rest }: TraversalResult): unknown[] {
-  return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
-}
+type RelationshpTraversal = {
+  _id: ObjectId;
+  type: string;
+  traversal?: EntityTraversal;
+};
 
 export const RelationshipMappers = {
   toDBO(relationship: Relationship) {
@@ -45,7 +50,24 @@ export const RelationshipMappers = {
     };
   },
 
-  toGraphQueryResult(traversal: TraversalResult) {
-    return new GraphQueryResult(unrollTraversal(traversal));
+  toGraphQueryResult(traversalResult: EntityTraversal) {
+    const entities: EntityData[] = [];
+    const relationships: RelationshipData[] = [];
+
+    const visitors = {
+      entity: ({ _id, traversal, ...entityData }: EntityTraversal) => {
+        entities.push({ _id: _id.toHexString(), ...entityData });
+        if (traversal) visitors.relationship(traversal);
+      },
+      relationship: ({ _id, traversal, ...relationshipData }: RelationshpTraversal) => {
+        relationships.push({ _id: _id.toHexString(), ...relationshipData });
+        if (traversal) visitors.entity(traversal);
+      },
+    };
+
+    visitors.entity(traversalResult);
+    return new GraphQueryResult(relationships, entities);
   },
 };
+
+export type TraversalResult = EntityTraversal;
