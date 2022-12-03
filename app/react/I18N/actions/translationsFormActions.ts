@@ -14,10 +14,12 @@ type formDataType = {
 };
 
 const prepareFormValues = (
-  translations: IImmutable<ClientTranslationSchema[]>,
+  translations: IImmutable<ClientTranslationSchema[]> | ClientTranslationSchema[],
   context: string
 ) => {
-  const contextTranslations = translations.toJS().map((translation: ClientTranslationSchema) => {
+  const contextTranslations = (
+    Array.isArray(translations) ? translations : translations.toJS()
+  ).map((translation: ClientTranslationSchema) => {
     const currentContext = translation.contexts?.filter(
       translationContext => translationContext?.id === context
     );

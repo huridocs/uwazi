@@ -202,7 +202,7 @@
     "serialize-javascript": "^6.0.0",
     "sift": "^16.0.1",
     "socket.io": "4.5.3",
-    "socket.io-client": "4.5.3",
+    "socket.io-client": "4.5.4",
     "socket.io-parser": "4.2.1",
     "superagent": "^8.0.3",
     "svg-captcha": "^1.4.0",

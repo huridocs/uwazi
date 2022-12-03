@@ -1,8 +1,12 @@
 aside,
 .entity-viewer {
+  .filelist,
+  .attachments-list-header {
+    padding-left: 15px;
+  }
+
   h2 {
     font-size: $f-size;
-    padding-left: 15px;
     position: relative;
     letter-spacing: 0.1em;
     .property-help {
