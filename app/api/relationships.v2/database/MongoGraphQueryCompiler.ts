@@ -109,7 +109,7 @@ const compilers = {
                   reduced.concat(compilers.traversal(nested, nestedIndex, language)),
                 []
               ),
-            ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),
+            ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
             ...unwind(query.getTraversals().length),
           ],
         },
@@ -145,7 +145,7 @@ const compilers = {
             reduced.concat(compilers.traversal(nested, nestedIndex, language)),
           []
         ),
-      ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),
+      ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
       ...unwind(query.getTraversals().length),
     ];
   },
