@@ -8,7 +8,7 @@ import Configure2fa from 'app/Auth2fa/Configure2fa';
 import EditTranslations from 'app/I18N/EditTranslations';
 import blankState from 'app/Library/helpers/blankState';
 import Library, { LibraryCards } from 'app/Library/Library';
-import LibraryMap from 'app/Library/LibraryMap';
+import { LibraryMap } from 'app/Library/LibraryMap';
 import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import { IXSuggestions } from 'app/MetadataExtraction/SuggestionsContainer';
 import EditPage from 'app/Pages/EditPage';
@@ -41,7 +41,7 @@ import EditThesauri from 'app/Thesauri/EditThesauri';
 import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import Uploads from 'app/Uploads/UploadsRoute';
-import Login from 'app/Users/Login';
+import { Login } from 'app/Users/Login';
 import ResetPassword from 'app/Users/ResetPassword';
 import UnlockAccount from 'app/Users/UnlockAccount';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
@@ -229,6 +229,8 @@ const routesLayout = (
       <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
     <Route path="library" element={<LibraryCards />} />
+    <Route path="library/map" element={<LibraryMap />} />
+    <Route path="library/table" element={<LibraryTable />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="*" element={<GeneralError />} />

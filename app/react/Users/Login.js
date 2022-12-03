@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
@@ -12,6 +11,7 @@ import { isClient } from 'app/utils';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
 import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
+import { withRequestState } from 'app/componentWrappers';
 
 import auth from 'app/Auth';
 
@@ -19,7 +19,7 @@ const reloadHome = () => {
   window.location.assign('/');
 };
 
-class Login extends RouteHandler {
+class LoginComponent extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = { error: false, error2fa: false, recoverPassword: false, tokenRequired: false };
@@ -54,7 +54,7 @@ class Login extends RouteHandler {
     reconnectSocket();
     this.props.reloadThesauris();
     this.props.change('library.search.publishedStatus.values', ['published', 'restricted']);
-    browserHistory.push('/');
+    this.props.navigate('/');
   }
 
   async login(credentials) {
@@ -228,11 +228,12 @@ class Login extends RouteHandler {
   }
 }
 
-Login.propTypes = {
+LoginComponent.propTypes = {
   login: PropTypes.func,
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
   change: PropTypes.func,
+  navigate: PropTypes.func,
 };
 
 export function mapStateToProps({ settings }) {
@@ -253,6 +254,6 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+const Login = withRequestState(connect(mapStateToProps, mapDispatchToProps)(LoginComponent));
 
 export { Login };

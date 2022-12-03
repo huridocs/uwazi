@@ -4,8 +4,9 @@ import { MapView } from 'app/Library/components/MapView';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import Library from 'app/Library/Library';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import { withRequestState } from 'app/componentWrappers';
 
-export default class LibraryMap extends Library {
+class LibraryMapComponent extends Library {
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources, { geolocation: true });
   }
@@ -24,3 +25,10 @@ export default class LibraryMap extends Library {
     );
   }
 }
+const SSRLibraryComponent = withRequestState(LibraryMapComponent);
+
+const LibraryMap = Object.assign(SSRLibraryComponent, {
+  requestState: LibraryMapComponent.requestState,
+});
+
+export { LibraryMap };
