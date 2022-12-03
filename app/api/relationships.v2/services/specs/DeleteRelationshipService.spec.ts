@@ -1,7 +1,7 @@
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -16,7 +16,7 @@ const factory = getFixturesFactory();
 
 const collectionInDb = () => testingDB.mongodb?.collection('relationships')!;
 
-const mockUser = new User(MongoIdGenerator.generate(), 'admin', []);
+const mockUser = new User(MongoIdHandler.generate(), 'admin', []);
 
 const fixtures = {
   entities: [

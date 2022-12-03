@@ -1,6 +1,6 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
 import { TraversalResult, RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
@@ -8,7 +8,7 @@ import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 
-const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
+const idsToDb = (ids: string[]) => ids.map(id => MongoIdHandler.mapToDb(id));
 
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
@@ -39,7 +39,7 @@ export class MongoRelationshipsDataSource
 
   async countByType(type: string) {
     const total = await this.getCollection().countDocuments(
-      { type: MongoIdGenerator.mapToDb(type) },
+      { type: MongoIdHandler.mapToDb(type) },
       { session: this.getSession() }
     );
     return total;

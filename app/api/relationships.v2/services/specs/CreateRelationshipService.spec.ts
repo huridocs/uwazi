@@ -1,6 +1,6 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
@@ -54,7 +54,7 @@ const createService = () => {
       transactionManager
     ),
     transactionManager,
-    MongoIdGenerator,
+    MongoIdHandler,
     authServiceMock,
     denormalizationServiceMock
   );
