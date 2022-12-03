@@ -1,3 +1,4 @@
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { ObjectId } from 'mongodb';
 import { EntityData, GraphQueryResult, RelationshipData } from '../model/GraphQueryResult';
 import { Relationship } from '../model/Relationship';
@@ -19,25 +20,25 @@ type RelationshpTraversal = {
 export const RelationshipMappers = {
   toDBO(relationship: Relationship) {
     return {
-      _id: new ObjectId(relationship._id),
+      _id: MongoIdHandler.mapToDb(relationship._id),
       from: relationship.from,
       to: relationship.to,
-      type: new ObjectId(relationship.type),
+      type: MongoIdHandler.mapToDb(relationship.type),
     };
   },
 
   toModel(relationship: RelationshipDBOType) {
     return Relationship.create(
-      relationship._id.toHexString(),
+      MongoIdHandler.mapToApp(relationship._id),
       relationship.from,
       relationship.to,
-      relationship.type.toHexString()
+      MongoIdHandler.mapToApp(relationship.type)
     );
   },
 
   toAggregatedResult(joined: JoinedRelationshipDBOType) {
     return {
-      _id: joined._id.toHexString(),
+      _id: MongoIdHandler.mapToApp(joined._id),
       from: {
         sharedId: joined.from[0]?.sharedId,
         title: joined.from[0]?.title,
@@ -46,7 +47,7 @@ export const RelationshipMappers = {
         sharedId: joined.to[0]?.sharedId,
         title: joined.to[0]?.title,
       },
-      type: joined.type.toHexString(),
+      type: MongoIdHandler.mapToApp(joined.type),
     };
   },
 
@@ -56,11 +57,11 @@ export const RelationshipMappers = {
 
     const visitors = {
       entity: ({ _id, traversal, ...entityData }: EntityTraversal) => {
-        entities.push({ _id: _id.toHexString(), ...entityData });
+        entities.push({ _id: MongoIdHandler.mapToApp(_id), ...entityData });
         if (traversal) visitors.relationship(traversal);
       },
       relationship: ({ _id, traversal, ...relationshipData }: RelationshpTraversal) => {
-        relationships.push({ _id: _id.toHexString(), ...relationshipData });
+        relationships.push({ _id: MongoIdHandler.mapToApp(_id), ...relationshipData });
         if (traversal) visitors.entity(traversal);
       },
     };

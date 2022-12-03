@@ -1,4 +1,5 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { RelationshipProperty } from '../model/RelationshipProperty';
@@ -38,7 +39,7 @@ export class MongoTemplatesDataSource extends MongoDataSource implements Templat
           elem.properties.name,
           elem.properties.label,
           mapPropertyQuery(elem.properties.query),
-          elem._id.toHexString()
+          MongoIdHandler.mapToApp(elem._id)
         )
     );
   }

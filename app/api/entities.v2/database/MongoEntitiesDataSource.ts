@@ -1,5 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
@@ -72,7 +73,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
     entity.sharedId,
     entity.language,
     entity.title,
-    entity.template.toHexString(),
+    MongoIdHandler.mapToApp(entity.template),
     mappedMetadata
   );
 }
