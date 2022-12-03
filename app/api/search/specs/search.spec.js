@@ -1160,4 +1160,25 @@ describe('search', () => {
     );
     expect(resultsFound.rows.length).toBe(1);
   });
+  describe('intentful searchTerm replacement', () => {
+    it('should be able to intermix regular and straight quotes', done => {
+      userFactory.mock(undefined);
+      // https://stackoverflow.com/questions/57676477/how-to-find-the-key-of-a-value-in-a-nested-object-recursively
+      const valueInObjectDeep = (obj, value) =>
+        Object.entries(obj).some(([, v]) => {
+          if (v === value) return true;
+          if (typeof v === 'object') {
+            const f = valueInObjectDeep(v, value);
+            if (f) return true;
+          }
+        });
+      userFactory.mock(undefined);
+      spyOn(elastic, 'search').and.callFake(async () => Promise.resolve(result));
+      search.search({ searchTerm: 'attachments.mimetype:“image/png"' }, 'en').then(() => {
+        const elasticQuery = elastic.search.calls.argsFor(0)[0].body;
+        expect(valueInObjectDeep(elasticQuery, 'attachments.mimetype:"image/png"')).toBe(true);
+        done();
+      });
+    });
+  });
 });
