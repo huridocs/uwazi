@@ -21,7 +21,6 @@ export interface RelationshipsDataSource {
   delete(_ids: string[]): Promise<void>;
   exists(_ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
-  getByEntity(sharedId: string): ResultSet<RelationshipAggregatedResultType>;
   deleteByEntities(sharedIds: string[]): Promise<void>;
   countByType(type: string): Promise<number>;
   getByQuery(query: MatchQueryNode, language: string): ResultSet<GraphQueryResult>;
