@@ -59,8 +59,7 @@ export const PropertyConfigurationModal = ({
 
   const handleSubmit = (submitedValues: string[]) => {
     const processedValues = submitedValues.reduce((result: IXTemplateConfiguration[], value) => {
-      const templateName = value.split('-')[0];
-      const propertyName = value.split('-')[1];
+      const [templateName, propertyName] = value.split('-');
       const template = templates.find(t => t._id === templateName);
 
       if (!template) {
