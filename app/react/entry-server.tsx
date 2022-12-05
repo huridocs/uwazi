@@ -1,9 +1,11 @@
 import { Request as ExpressRequest, Response } from 'express';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-import { matchRoutes } from 'react-router-dom';
+import { matchRoutes, RouteObject } from 'react-router-dom';
 import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
@@ -14,8 +16,6 @@ import {
   unstable_createStaticHandler as createStaticHandler,
 } from '@remix-run/router';
 import api from 'app/utils/api';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs';
 import { RequestParams } from 'app/utils/RequestParams';
 import settingsApi from '../api/settings/settings';
 import Root from './App/Root';
@@ -23,6 +23,7 @@ import createStore from './store';
 import { routes } from './Routes';
 import CustomProvider from './App/Provider';
 import { IStore } from './istore';
+import { I18NUtils } from './I18N';
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -85,17 +86,21 @@ const getAssets = async () => {
   });
 };
 
-const prepareData = async (req: ExpressRequest) => {
+const prepareData = async (req: ExpressRequest, language: string) => {
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
 
+  const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
+
   const headers = {
-    'Content-Language': 'en',
+    'Content-Language': locale,
     Cookie: `connect.sid=${req.cookies['connect.sid']}`,
     tenant: req.get('tenant'),
   };
 
   const requestParams = new RequestParams({}, headers);
+
   api.APIURL('http://localhost:3000/api/');
+
   const [user, translations, templates, thesauris, relationTypes] = await Promise.all([
     api.get('user', requestParams),
     api.get('translations', requestParams),
@@ -115,22 +120,25 @@ const prepareData = async (req: ExpressRequest) => {
 
   settings.links = settings.links || [];
 
-  const globalStore = createStore({
+  const reduxStore = createStore({
     user: req.user,
     settings: globalResources.settings,
     translations: globalResources.translations,
     templates: globalResources.templates,
     thesauris: globalResources.thesauris,
     relationTypes: globalResources.relationTypes,
-    locale: 'en',
+    locale,
   });
 
-  return { globalStore, assets };
+  return { reduxStore, assets };
 };
 
-const setReduxState = async (req: ExpressRequest, globalStore: Store<IStore>) => {
-  const matched = matchRoutes(routes, req.path);
-
+const setReduxState = async (
+  req: ExpressRequest,
+  reduxStore: Store<IStore>,
+  reduxState: IStore,
+  matched: { route: RouteObject }[] | null
+) => {
   const dataLoaders = matched
     ?.map(({ route }) => {
       if (route.element) {
@@ -148,21 +156,18 @@ const setReduxState = async (req: ExpressRequest, globalStore: Store<IStore>) =>
 
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
-      'Content-Language': 'en',
+      'Content-Language': reduxState.locale,
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
-      //tenant: req('tenant'),
+      tenant: req.get('tenant'),
     };
     const requestParams = new RequestParams({ ...req.query, ...req.params }, headers);
 
     await Promise.all(
       dataLoaders.map(async loader => {
-        const actions = await loader(
-          { params: req.params, request: requestParams },
-          globalStore.getState()
-        );
+        const actions = await loader({ params: req.params, request: requestParams }, reduxState);
         if (Array.isArray(actions)) {
           actions.forEach(action => {
-            globalStore.dispatch(action);
+            reduxStore.dispatch(action);
           });
         }
       })
@@ -170,20 +175,40 @@ const setReduxState = async (req: ExpressRequest, globalStore: Store<IStore>) =>
   }
 };
 
-const EntryServer = async (req: ExpressRequest, res: Response) => {
-  const { globalStore, assets } = await prepareData(req);
+const getSSRProperties = async (req: ExpressRequest, language: string) => {
+  const { reduxStore, assets } = await prepareData(req, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
+  const staticHandleContext = await query(createFetchRequest(req));
+  const router = createStaticRouter(routes, staticHandleContext);
 
-  await setReduxState(req, globalStore);
-  const state = await query(createFetchRequest(req));
-  const router = createStaticRouter(routes, state);
+  return {
+    reduxStore,
+    assets,
+    staticHandleContext,
+    router,
+  };
+};
 
-  const initialData = globalStore.getState();
+const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const matched = matchRoutes(routes, req.path);
+  const language = matched ? matched[0].params.lang : req.language;
+
+  const { reduxStore, assets, staticHandleContext, router } = await getSSRProperties(
+    req,
+    language || 'en'
+  );
+
+  const reduxState = reduxStore.getState();
+
+  await setReduxState(req, reduxStore, reduxState, matched);
+
   const componentHtml = ReactDOMServer.renderToString(
-    <Provider store={globalStore}>
-      <CustomProvider initialData={initialData} user={req.user} language="en">
+    //@ts-ignore
+    //This error is the result of unsolvable type conflicts due to outdated version of react-redux
+    <Provider store={reduxStore}>
+      <CustomProvider initialData={reduxState} user={req.user} language={reduxState.locale}>
         <React.StrictMode>
-          <StaticRouterProvider router={router} context={state} nonce="the-nonce" />
+          <StaticRouterProvider router={router} context={staticHandleContext} nonce="the-nonce" />
         </React.StrictMode>
       </CustomProvider>
     </Provider>
@@ -191,11 +216,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const html = ReactDOMServer.renderToString(
     <Root
-      language="en"
+      language={reduxState.locale}
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
-      reduxData={globalStore.getState()}
+      reduxData={reduxState}
       assets={assets}
     />
   );
