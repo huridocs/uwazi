@@ -45,21 +45,24 @@ export function saveTranslations(translations) {
   };
 }
 
-export function importTranslations(context, file) {
+export function importTranslations(file) {
   return async dispatch => {
     try {
       const headers = {
         Accept: 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
       };
-      const fields = {
-        context,
-      };
-      const translations = await httpRequest('translations/import', fields, headers, file);
-      await dispatch(formActions.load('translationsForm', translations));
-      notifications.notify(t(context, 'Translations imported.', null, false), 'success')(dispatch);
+      const translations = await httpRequest(
+        'translations/import',
+        { context: 'System' },
+        headers,
+        file
+      );
+      notifications.notify(t('System', 'Translations imported.', null, false), 'success')(dispatch);
+      return translations;
     } catch (e) {
-      notifications.notify(t(context, e.error, null, false), 'danger')(dispatch);
+      notifications.notify(t('System', e.error, null, false), 'danger')(dispatch);
+      return undefined;
     }
   };
 }
@@ -67,12 +70,6 @@ export function importTranslations(context, file) {
 export function editTranslations(translations) {
   return dispatch => {
     dispatch(formActions.load('translationsForm', translations));
-  };
-}
-
-export function resetForm() {
-  return dispatch => {
-    dispatch(formActions.reset('translationsForm'));
   };
 }
 
