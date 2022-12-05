@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import React, { ReactElement } from 'react';
-import { createRoutesFromElements, Route } from 'react-router-dom';
+import { createRoutesFromElements, Navigate, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
@@ -39,6 +39,10 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { ProtectedRoute } from './ProtectedRoute';
+import { store } from './store';
+import { validateHomePageRoute } from './utils/routeHelpers';
+import PageView from './Pages/PageView';
+import { IStore } from './istore';
 
 // const onEnter = () => {
 //   trackPage();
@@ -71,75 +75,68 @@ import { ProtectedRoute } from './ProtectedRoute';
 //   return () => {};
 // };
 
-// const getDefaultLibraryComponent = defaultLibraryView => {
-//   switch (defaultLibraryView) {
-//     case 'table':
-//       return {
-//         component: LibraryTable,
-//         onEnter: enterOnLibrary,
-//       };
-//     case 'map':
-//       return {
-//         component: LibraryMap,
-//         onEnter,
-//       };
-//     case 'cards':
-//     default:
-//       return {
-//         component: Library,
-//         onEnter: enterOnLibrary,
-//       };
-//   }
-// };
+const getPageIndexRoute = (customHomePage: string | string[]) => {
+  const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+  const component = props => <PageView {...props} params={{ sharedId: pageId }} />;
+  component.requestState = async requestParams =>
+    PageView.requestState(requestParams.set({ sharedId: pageId }));
 
-// const getPageIndexRoute = customHomePage => {
-//   onEnter();
-//   const pageId = customHomePage[customHomePage.indexOf('page') + 1];
-//   const component = props => <PageView {...props} params={{ sharedId: pageId }} />;
-//   component.requestState = async requestParams =>
-//     PageView.requestState(requestParams.set({ sharedId: pageId }));
+  return {
+    component,
+    customHomePageId: pageId,
+  };
+};
 
-//   return {
-//     component,
-//     customHomePageId: pageId,
-//   };
-// };
+const getDefaultLibraryComponent = (defaultLibraryView: string | undefined) => {
+  switch (defaultLibraryView) {
+    case 'table':
+      return <LibraryTable />;
 
-// const libraryDefaults = (callBack, state, defaultView) => {
-//   if (state.user.get('_id')) {
-//     return callBack(null, {
-//       onEnter: (_nextState, replace) => {
-//         replace('/library/?q=(includeUnpublished:!t)');
-//       },
-//     });
-//   }
+    case 'map':
+      return <LibraryMap />;
 
-//   return callBack(null, getDefaultLibraryComponent(defaultView));
-// };
+    case 'cards':
+    default:
+      return <LibraryCards />;
+  }
+};
 
-// const getIndexRoute = (_nextState, callBack) => {
-//   const state = store.getState();
-//   const homePageSetting = state.settings.collection.get('home_page') || '';
-//   const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
-//   const defaultView = state.settings.collection.get('defaultLibraryView');
+const libraryDefaults = (state: IStore | undefined, defaultView: string | undefined) => {
+  if (state?.user.get('_id')) {
+    return <Navigate to="/library/?q=(includeUnpublished:!t)" />;
+  }
 
-//   if (!validateHomePageRoute(homePageSetting) || customHomePage.length === 0) {
-//     return libraryDefaults(callBack, state, defaultView);
-//   }
-//   return customHomePage.includes('page')
-//     ? callBack(null, getPageIndexRoute(customHomePage))
-//     : callBack(null, {
-//         onEnter: (_nxtState, replace) => {
-//           replace(customHomePage.join('/'));
-//         },
-//       });
-// };
+  return getDefaultLibraryComponent(defaultView);
+};
+
+const getIndexRoute = () => {
+  const state = store?.getState();
+  const homePageSetting = state?.settings.collection.get('home_page') || '';
+  const customHomePage = homePageSetting ? homePageSetting.split('/').filter(v => v) : [];
+  const defaultView = state?.settings.collection.get('defaultLibraryView');
+
+  if (!validateHomePageRoute(homePageSetting) || customHomePage.length === 0) {
+    return libraryDefaults(state, defaultView);
+  }
+
+  return customHomePage.includes('page') ? (
+    getPageIndexRoute(customHomePage)
+  ) : (
+    <Navigate to={customHomePage.join('/')} />
+  );
+};
 
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
 
 const routesLayout = (
   <Route>
+    <Route index element={getIndexRoute()} />
     <Route path="login" element={<Login />} />
+    <Route path="library" element={<LibraryCards />} />
+    <Route path="library/map" element={<LibraryMap />} />
+    <Route path="library/table" element={<LibraryTable />} />
+    <Route path="error/:errorCode" element={<GeneralError />} />
+    <Route path="404" element={<GeneralError />} />
     <Route
       path="settings"
       element={
@@ -188,11 +185,6 @@ const routesLayout = (
       <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminRoute(<Activitylog />)} />
     </Route>
-    <Route path="library" element={<LibraryCards />} />
-    <Route path="library/map" element={<LibraryMap />} />
-    <Route path="library/table" element={<LibraryTable />} />
-    <Route path="error/:errorCode" element={<GeneralError />} />
-    <Route path="404" element={<GeneralError />} />
   </Route>
 );
 
