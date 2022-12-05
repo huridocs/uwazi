@@ -13,7 +13,7 @@ import {
 } from 'app/Pages/actions/pageActions';
 import ShowIf from 'app/App/ShowIf';
 import { BackButton } from 'app/Layout';
-import { Translate, I18NLink } from 'app/I18N';
+import { Translate, I18NLink, t } from 'app/I18N';
 
 import { IStore } from 'app/istore';
 import validator from './ValidatePage';
@@ -61,7 +61,10 @@ class PageCreator extends Component<mappedProps> {
             <div className="metadataTemplate-heading panel-heading">
               <div className={nameGroupClass}>
                 <Field model=".title">
-                  <input placeholder="Page name" className="form-control" />
+                  <input
+                    placeholder={t('System', 'Page name', null, false)}
+                    className="form-control"
+                  />
                 </Field>
               </div>
             </div>
@@ -150,7 +153,12 @@ class PageCreator extends Component<mappedProps> {
                 </div>
                 <Field model=".metadata.script">
                   <textarea
-                    placeholder="// Javascript - With great power comes great responsibility!"
+                    placeholder={t(
+                      'System',
+                      '// Javascript - With great power comes great responsibility!',
+                      null,
+                      false
+                    )}
                     className="form-control"
                     rows={12}
                   />

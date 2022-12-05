@@ -19,7 +19,7 @@ import { connect } from 'react-redux';
 import { actions as formActions, Field, Form } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
-import { I18NLink, Translate } from 'app/I18N';
+import { I18NLink, Translate, t } from 'app/I18N';
 
 import { SelectFileButton } from 'app/App/SelectFileButton';
 import { ThesauriFormItem } from './ThesauriFormItem';
@@ -163,7 +163,7 @@ class ThesauriForm extends Component {
                     id="thesauriName"
                     className="form-control"
                     type="text"
-                    placeholder="Thesauri name"
+                    placeholder={t('System', 'Thesauri name', null, false)}
                   />
                   <ShowIf
                     if={
