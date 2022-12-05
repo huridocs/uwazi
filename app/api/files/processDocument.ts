@@ -1,32 +1,15 @@
+import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
 import settings from 'api/settings';
 import { FileType } from 'shared/types/fileType';
 
 import { files } from './files';
 import { PDF } from './PDF';
-import { convertToPdfService } from './specs/processDocument.spec';
 
-export const processDocument = async (
+export const processPDF = async (
   entitySharedId: string,
   file: FileType & { destination?: string },
   detectLanguage = true
 ) => {
-  const { features } = await settings.get({}, 'features.convertToPdf');
-
-  if (features?.convertToPdf?.active && file.mimetype !== 'application/pdf') {
-    const upload = await files.save({
-      ...file,
-      entity: entitySharedId,
-      type: 'attachment',
-      status: 'processing',
-    });
-    try {
-      await convertToPdfService.upload(upload)
-    } catch (e) {
-      await files.delete(upload);
-    }
-    return upload;
-  }
-
   const pdf = new PDF(file);
   const upload = await files.save({
     ...file,
@@ -65,4 +48,29 @@ export const processDocument = async (
     });
     throw e;
   }
+};
+
+export const processDocument = async (
+  entitySharedId: string,
+  file: FileType & { destination?: string },
+  detectLanguage = true
+) => {
+  const { features } = await settings.get({}, 'features.convertToPdf');
+
+  if (features?.convertToPdf?.active && file.mimetype !== 'application/pdf') {
+    const upload = await files.save({
+      ...file,
+      entity: entitySharedId,
+      type: 'attachment',
+      status: 'processing',
+    });
+    try {
+      await convertToPDFService.upload(upload);
+    } catch (e) {
+      await files.delete(upload);
+    }
+    return upload;
+  }
+
+  return processPDF(entitySharedId, file, detectLanguage);
 };

@@ -1,6 +1,6 @@
+import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createReadStream } from 'fs';
-import { FileType } from 'shared/types/fileType';
 import { files } from '../files';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
 import { processDocument } from '../processDocument';
@@ -12,10 +12,6 @@ export class MimeTypeNotSupportedForConversion extends Error {
     this.name = 'MimeTypeNotSupportedForConversion';
   }
 }
-
-export const convertToPdfService = {
-  async upload(file: FileType) {},
-};
 
 describe('processDocument', () => {
   beforeEach(async () => {
@@ -36,7 +32,7 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
-      jest.spyOn(convertToPdfService, 'upload');
+      jest.spyOn(convertToPDFService, 'upload');
       await testingEnvironment.setUp({
         settings: [{ features: { convertToPdf: { active: true, url: '' } } }],
       });
@@ -49,12 +45,12 @@ describe('processDocument', () => {
       const [dbFile] = await files.get({ entity: 'entity_shared_id' });
       expect(dbFile.type).toBe('attachment');
       expect(dbFile._id).toEqual(file._id);
-      expect(convertToPdfService.upload).toHaveBeenCalledWith(expect.objectContaining(file));
+      expect(convertToPDFService.upload).toHaveBeenCalledWith(expect.objectContaining(file));
     });
 
     it('should remove the file when convertToPdfService.upload returns error', async () => {
       jest
-        .spyOn(convertToPdfService, 'upload')
+        .spyOn(convertToPDFService, 'upload')
         .mockRejectedValue(
           new MimeTypeNotSupportedForConversion(
             'jpg: mymetype not allowed'
