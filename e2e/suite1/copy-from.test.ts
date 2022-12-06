@@ -60,29 +60,17 @@ describe('Copy from', () => {
 
   it('should check the data', async () => {
     await expect(page).toClick('div.item-info', { text: 'Test title' });
-    await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(2) > dd',
-      {
-        text: 'Costa Rica',
-      }
-    );
-    await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(3) > dd',
-      {
-        text: 'Activo',
-      }
-    );
-    await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(4) > dd',
-      {
-        text: 'Derechos reproductivos',
-      }
-    );
-    await expect(page).toMatchElement(
-      '.side-panel.connections-metadata > div.sidepanel-body > div > dl > div:nth-child(7) > dd',
-      {
-        text: 'Dec 19, 2011',
-      }
-    );
+    await expect(page).toMatchElement('.metadata-type-relationship > dd:nth-child(2) ', {
+      text: 'Costa Rica',
+    });
+    await expect(page).toMatchElement('.metadata-type-select > dd:nth-child(2)', {
+      text: 'Activo',
+    });
+    await expect(page).toMatchElement('.metadata-type-multiselect > dd:nth-child(2)', {
+      text: 'Derechos reproductivos',
+    });
+    await expect(page).toMatchElement('dl.metadata-type-multidate:nth-child(8) > dd:nth-child(2)', {
+      text: 'Dec 19, 2011',
+    });
   });
 });

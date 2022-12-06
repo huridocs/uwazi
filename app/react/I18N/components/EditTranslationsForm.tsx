@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReset } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { IStore } from 'app/istore';
 import { BackButton } from 'app/Layout';
@@ -14,16 +14,26 @@ import {
   formDataType,
 } from '../actions/translationsFormActions';
 
-const importButton = (action: () => any) => (
-  <SelectFileButton onFileImported={action}>
-    <button type="button" className="btn btn-default import-template">
-      <Icon icon="upload" />
-      <span className="btn-label">
-        <Translate>Import</Translate>
-      </span>
-    </button>
-  </SelectFileButton>
-);
+const importButton = (action: any, reset: UseFormReset<any>) => {
+  const handleFileSubmit = async (file: File) => {
+    const updatedTranslations = await action(file);
+    if (updatedTranslations) {
+      const formValues = prepareFormValues(updatedTranslations, 'System');
+      reset(formValues);
+    }
+  };
+
+  return (
+    <SelectFileButton onFileImported={handleFileSubmit} id="import-translations">
+      <button type="button" className="btn btn-default import-template">
+        <Icon icon="upload" />
+        <span className="btn-label">
+          <Translate>Import</Translate>
+        </span>
+      </button>
+    </SelectFileButton>
+  );
+};
 
 const mapStateToProps = (state: IStore) => ({
   translations: state.translations,
@@ -56,6 +66,7 @@ const EditTranslationsFormComponent = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
@@ -141,7 +152,7 @@ const EditTranslationsFormComponent = ({
         <div className="settings-footer">
           <div className="btn-cluster">
             <BackButton to="/settings/translations" className="btn-plain" />
-            {context === 'System' && importButton(importTranslations)}
+            {context === 'System' && importButton(importTranslations, reset)}
           </div>
           <div className="btn-cluster content-right">
             <I18NLink to="/settings/translations" className="btn btn-extra-padding btn-default">
