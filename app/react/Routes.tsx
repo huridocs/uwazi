@@ -29,7 +29,7 @@ import {
   TranslationsList,
   Dashboard,
 } from 'app/Settings';
-import EditTemplate from 'app/Templates/EditTemplate';
+import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import EditThesauri from 'app/Thesauri/EditThesauri';
 import NewThesauri from 'app/Thesauri/NewThesauri';

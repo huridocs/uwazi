@@ -51,6 +51,7 @@ class RouteHandler extends Component {
 
   async getClientState(props) {
     let query;
+    const routeParams = props.params;
     if (props.location) {
       const params = new URLSearchParams(props.location.search);
       query = Object.fromEntries(params.entries());
@@ -59,8 +60,7 @@ class RouteHandler extends Component {
     const { store = { getState: () => {} } } = this.context;
 
     const headers = {};
-    const { lang, ...params } = props.params;
-    const requestParams = new RequestParams({ ...query, ...params }, headers);
+    const requestParams = new RequestParams({ ...query, ...routeParams }, headers);
     const actions = await this.constructor.requestState(requestParams, store.getState());
 
     actions.forEach(action => {

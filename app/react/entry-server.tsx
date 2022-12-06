@@ -137,10 +137,11 @@ const setReduxState = async (
   req: ExpressRequest,
   reduxStore: Store<IStore>,
   reduxState: IStore,
-  matched: { route: RouteObject }[] | null
+  matched: { route: RouteObject; params: {} }[] | null
 ) => {
+  let routeParams = {};
   const dataLoaders = matched
-    ?.map(({ route }) => {
+    ?.map(({ route, params }) => {
       if (route.element) {
         const component = route.element as React.ReactElement;
         if (component.props.children?.type.requestState) {
@@ -150,6 +151,7 @@ const setReduxState = async (
           return component.type.requestState;
         }
       }
+      routeParams = { ...routeParams, ...params };
       return null;
     })
     .filter(v => v);
@@ -160,7 +162,7 @@ const setReduxState = async (
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams({ ...req.query, ...req.params }, headers);
+    const requestParams = new RequestParams({ ...req.query, ...routeParams }, headers);
 
     await Promise.all(
       dataLoaders.map(async loader => {
