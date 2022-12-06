@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { wrapDispatch } from 'app/Multireducer';
@@ -55,12 +55,11 @@ const MenuComponent = ({
   className,
   onClick,
   setSidePanelView,
+  showSemanticSearch,
   links = fromJS([]),
   defaultLibraryView = 'cards',
-  showSemanticSearch = () => {},
 }: mappedProps) => {
   const libraryUrl = () => {
-    const params = useParams();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 

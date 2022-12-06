@@ -2,7 +2,7 @@
 import React from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-const withRouter = Component => (props: any) => {
+const withRouter = (Component: React.ComponentClass<any, any>) => (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();

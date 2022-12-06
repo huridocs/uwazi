@@ -21,7 +21,7 @@ const defaultState = {
 };
 
 const renderConnected = (
-  Component: React.ReactType,
+  Component: React.ComponentClass<any> | React.FC<any>,
   props: object,
   storeData: object = {
     template: {

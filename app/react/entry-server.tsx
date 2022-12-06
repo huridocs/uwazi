@@ -143,7 +143,9 @@ const setReduxState = async (
   const dataLoaders = matched
     ?.map(({ route, params }) => {
       if (route.element) {
-        const component = route.element as React.ReactElement;
+        const component = route.element as React.ReactElement & {
+          type: { requestState: Function };
+        };
         if (component.props.children?.type.requestState) {
           return component.props.children?.type.requestState;
         }

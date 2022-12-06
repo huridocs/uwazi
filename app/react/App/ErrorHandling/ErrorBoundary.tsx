@@ -12,7 +12,7 @@ const defaultProps = {
   errorInfo: '',
   children: '',
 };
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
+class ErrorBoundary extends React.Component<any, ErrorBoundaryProps> {
   static defaultProps = defaultProps;
 
   constructor(props: ErrorBoundaryProps) {
