@@ -258,7 +258,7 @@ DocumentTypesList.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
     query: PropTypes.object,
-    search: PropTypes.object,
+    search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
   params: PropTypes.object.isRequired,
