@@ -11,6 +11,7 @@ import { FilesDeletedEvent } from './events/FilesDeletedEvent';
 import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
 import { storage } from './storage';
+import { V2 } from './v2_support';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -52,7 +53,9 @@ export const files = {
     const toDeleteFiles: FileType[] = await filesModel.get(query);
     await filesModel.delete(query);
     if (toDeleteFiles.length > 0) {
-      await connections.delete({ file: { $in: toDeleteFiles.map(f => f._id?.toString()) } });
+      const idsToDelete = toDeleteFiles.map(f => f._id!.toString());
+      await connections.delete({ file: { $in: idsToDelete } });
+      await V2.deleteTextReferencesToFiles(idsToDelete);
 
       await Promise.all(
         toDeleteFiles
