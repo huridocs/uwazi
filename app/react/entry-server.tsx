@@ -203,8 +203,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   await setReduxState(req, reduxStore, reduxState, matched);
 
   const componentHtml = ReactDOMServer.renderToString(
-    //@ts-ignore
-    //This error is the result of unsolvable type conflicts due to outdated version of react-redux
     <Provider store={reduxStore}>
       <CustomProvider initialData={reduxState} user={req.user} language={reduxState.locale}>
         <React.StrictMode>
