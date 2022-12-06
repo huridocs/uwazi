@@ -6,7 +6,9 @@ const withRouter = Component => (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
-  return <Component {...props} navigate={navigate} location={location} params={params} />;
+  return (
+    <Component {...props} navigate={navigate} location={location} params={props.params || params} />
+  );
 };
 
 export { withRouter };

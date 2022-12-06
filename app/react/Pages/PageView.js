@@ -6,12 +6,12 @@ import { wrapDispatch } from 'app/Multireducer';
 import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
-
+import { withRouter } from 'app/componentWrappers';
 import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { PageViewer } from './components/PageViewer';
 import { getPageAssets } from './utils/getPageAssets';
 
-class PageView extends RouteHandler {
+class PageViewComponent extends RouteHandler {
   static async requestState(requestParams) {
     try {
       const { pageView, itemLists, datasets } = await getPageAssets(requestParams);
@@ -63,4 +63,10 @@ class PageView extends RouteHandler {
   }
 }
 
-export default PageView;
+const SSRPageView = withRouter(PageViewComponent);
+
+export const PageView = Object.assign(SSRPageView, {
+  requestState: PageViewComponent.requestState,
+});
+
+export default PageViewComponent;

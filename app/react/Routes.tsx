@@ -40,8 +40,9 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import api from 'app/utils/api';
 import { ProtectedRoute } from './ProtectedRoute';
-import { IndexElement } from './IndexElement';
+import { IndexRoute } from './IndexRoute';
 import { RequestParams } from './utils/RequestParams';
+import { PageView } from './Pages/PageView';
 
 // const onEnter = () => {
 //   trackPage();
@@ -80,7 +81,7 @@ const routesLayout = (
   <Route>
     <Route
       index
-      element={<IndexElement />}
+      element={<IndexRoute />}
       loader={async ({ request }) => {
         const headers = {
           Cookie: `${request.headers.get('cookie')}`,
@@ -97,6 +98,19 @@ const routesLayout = (
     <Route path="library/table" element={<LibraryTable />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
+    <Route path="page/:sharedId" element={<PageView />} />
+    <Route path="page/:sharedId/:slug" element={<PageView />} />
+    {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} />
+    <Route path="uploads" component={Uploads} />
+    <Route path="setpassword/:key" component={ResetPassword} />
+    <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
+    <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
+    <Route path="entity/:sharedId(/:tabView)" component={ViewerRoute} onEnter={onEnter} />
+    <Route
+      path="semanticsearch/:searchId"
+      component={SemanticSearchResultsView}
+      onEnter={onEnter}
+    /> */}
     <Route
       path="settings"
       element={
