@@ -66,8 +66,8 @@ export class DocumentTypesList extends Component {
 
     this.props.filterDocumentTypes(
       selectedItems,
-      this.props.router.location,
-      this.props.router.navigate
+      this.props.location,
+      this.props.navigate
     );
   }
 
@@ -83,8 +83,8 @@ export class DocumentTypesList extends Component {
 
     this.props.filterDocumentTypes(
       selectedItems,
-      this.props.router.location,
-      this.props.router.navigate
+      this.props.location,
+      this.props.navigate
     );
   }
 
@@ -158,7 +158,7 @@ export class DocumentTypesList extends Component {
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
 
-    const searchParams = new URLSearchParams(this.props.router.search);
+    const searchParams = new URLSearchParams(this.props.location.search);
 
     const { q = '(filters:())' } = searchParams.get('query') || {};
     const query = rison.decode(q);

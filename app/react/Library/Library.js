@@ -6,7 +6,7 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
-import { withRequestState } from 'app/componentWrappers';
+import { withRouter } from 'app/componentWrappers';
 
 class Library extends RouteHandler {
   constructor(props, context) {
@@ -75,7 +75,7 @@ class Library extends RouteHandler {
   }
 }
 
-const SSRLibrary = withRequestState(Library);
+const SSRLibrary = withRouter(Library);
 
 export const LibraryCards = Object.assign(SSRLibrary, { requestState: Library.requestState });
 export default Library;

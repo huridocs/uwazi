@@ -86,8 +86,8 @@ export class TemplatesFilterComponent extends React.Component<
       this.setState({ selectedTemplates: newSelectedItems });
       this.props.filterDocumentTypes(
         newSelectedItems,
-        this.props.router.location,
-        this.props.router.navigate
+        this.props.location,
+        this.props.navigate
       );
     }
     this.setState({ documentTypeFromFilters: checked });
