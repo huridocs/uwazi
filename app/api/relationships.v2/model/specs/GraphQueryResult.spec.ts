@@ -1,12 +1,12 @@
 import { Entity } from 'api/entities.v2/model/Entity';
 import { GraphQueryResult } from '../GraphQueryResult';
-import { Relationship } from '../Relationship';
+import { EntityPointer, Relationship } from '../Relationship';
 
 const path = [
   new Entity('1', 'en', '1', '1', {}),
-  Relationship.create('2', '1', '3', '2'),
+  new Relationship('2', new EntityPointer('1'), new EntityPointer('3'), '2'),
   new Entity('3', 'en', '3', '3', {}),
-  Relationship.create('4', '3', '5', '4'),
+  new Relationship('4', new EntityPointer('3'), new EntityPointer('5'), '4'),
   new Entity('5', 'en,', '5', '5', {}),
 ];
 

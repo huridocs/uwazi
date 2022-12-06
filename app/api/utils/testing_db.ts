@@ -16,6 +16,7 @@ import { testingTenants } from './testingTenants';
 import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import path from 'path';
+import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -30,6 +31,7 @@ export type DBFixture = {
   ixsuggestions?: IXSuggestionType[];
   users?: UserSchema[];
   settings?: Settings[];
+  relationships?: RelationshipDBOType[];
   [k: string]: any;
 };
 
