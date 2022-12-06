@@ -164,7 +164,7 @@ const setReduxState = async (
 
     await Promise.all(
       dataLoaders.map(async loader => {
-        const actions = await loader({ params: req.params, request: requestParams }, reduxState);
+        const actions = await loader(requestParams, reduxState);
         if (Array.isArray(actions)) {
           actions.forEach(action => {
             reduxStore.dispatch(action);

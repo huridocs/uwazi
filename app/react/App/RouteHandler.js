@@ -61,10 +61,7 @@ class RouteHandler extends Component {
     const headers = {};
     const { lang, ...params } = props.params;
     const requestParams = new RequestParams({ ...query, ...params }, headers);
-    const actions = await this.constructor.requestState(
-      { params: query, request: requestParams },
-      store.getState()
-    );
+    const actions = await this.constructor.requestState(requestParams, store.getState());
 
     actions.forEach(action => {
       store.dispatch(action);

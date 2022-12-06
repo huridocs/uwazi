@@ -51,20 +51,19 @@ const processQuery = (params, globalResources, key) => {
 };
 
 const requestState = (
-  routeParams,
+  requestParams,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }
 ) => {
-  const { request, params } = routeParams;
-  const docsQuery = processQuery(params, globalResources, 'library');
+  const docsQuery = processQuery(requestParams.data, globalResources, 'library');
 
-  const documentsRequest = request.set(
+  const documentsRequest = requestParams.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
 
   const markersRequest = options.geolocation
     ? api.search(
-        request.set({
+        requestParams.set({
           ...docsQuery,
           geolocation: true,
         })
@@ -79,8 +78,8 @@ const requestState = (
         templates,
         globalResources.thesauris.toJS(),
         globalResources.relationTypes.toJS(),
-        request.data.quickLabelThesaurus
-          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
+        requestParams.data.quickLabelThesaurus
+          ? getThesaurusPropertyNames(requestParams.data.quickLabelThesaurus, templates)
           : []
       );
 
@@ -102,7 +101,7 @@ const requestState = (
       const dispatchedActions = [
         setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {
-          thesaurus: request.data.quickLabelThesaurus,
+          thesaurus: requestParams.data.quickLabelThesaurus,
           autoSave: false,
         }),
       ];
