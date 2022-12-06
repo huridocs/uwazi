@@ -3,6 +3,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
@@ -21,16 +22,14 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
+        const configuredView = new GraphQueryResultView();
         const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
             entity.language
           )
           .all();
-        mappedMetadata[property.name] = results.map(result => ({
-          value: result.sharedId,
-          label: result.title,
-        }));
+        mappedMetadata[property.name] = configuredView.map(results);
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
           // @ts-ignore

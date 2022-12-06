@@ -1,4 +1,6 @@
-type Metadata = Record<string, any[]>;
+type MetadataValue = any;
+
+type Metadata = Record<string, MetadataValue[]>;
 
 export class Entity {
   readonly _id: string;
@@ -29,3 +31,4 @@ export class Entity {
     this.metadata = metadata;
   }
 }
+export type { Metadata, MetadataValue };
