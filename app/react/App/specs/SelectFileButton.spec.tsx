@@ -20,7 +20,7 @@ describe('SelectFileButton', () => {
 
   it('should render children', () => {
     component = shallow(
-      <SelectFileButton onFileImported={jest.fn()}>
+      <SelectFileButton onFileImported={jest.fn()} id="file-button">
         <div id="test" />
       </SelectFileButton>
     );
@@ -32,7 +32,7 @@ describe('SelectFileButton', () => {
     // @ts-ignore
     useRef.mockReturnValueOnce(mRef);
     const mountComp = shallow(
-      <SelectFileButton onFileImported={jest.fn()}>
+      <SelectFileButton onFileImported={jest.fn()} id="file-button">
         <span />
       </SelectFileButton>
     );
@@ -44,7 +44,7 @@ describe('SelectFileButton', () => {
     const event = { target: { files: [{ name: 'file1.csv' }] } };
     const mockFunc = jest.fn();
     const mountComp = shallow(
-      <SelectFileButton onFileImported={mockFunc}>
+      <SelectFileButton onFileImported={mockFunc} id="file-button">
         <span />
       </SelectFileButton>
     );

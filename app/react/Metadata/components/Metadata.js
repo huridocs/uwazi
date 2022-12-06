@@ -180,30 +180,26 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
     ? groupAdjacentGeolocations(flattenedMetadata)
     : flattenedMetadata;
 
-  return (
-    <dl>
-      {groupedMetadata.map((prop, index) => {
-        let type = prop.type ? prop.type : 'default';
-        type = type === 'image' || type === 'media' ? 'multimedia' : type;
-        const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
-        const fullWidthClass = prop.fullWidth ? 'full-width' : '';
+  return groupedMetadata.map((prop, index) => {
+    let type = prop.type ? prop.type : 'default';
+    type = type === 'image' || type === 'media' ? 'multimedia' : type;
+    const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
+    const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
-        return (
-          <div
-            className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
-            key={`${prop.name}_${index}`}
-          >
-            <dt className={prop.noLabel ? 'hidden' : ''}>
-              {t(prop.translateContext || 'System', prop.label)}
-            </dt>
-            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact, templateId)}
-            </dd>
-          </div>
-        );
-      })}
-    </dl>
-  );
+    return (
+      <dl
+        className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
+        key={`${prop.name}_${index}`}
+      >
+        <dt className={prop.noLabel ? 'hidden' : ''}>
+          {t(prop.translateContext || 'System', prop.label)}
+        </dt>
+        <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+          {showByType(prop, compact, templateId)}
+        </dd>
+      </dl>
+    );
+  });
 };
 
 Metadata.defaultProps = {
