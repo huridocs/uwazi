@@ -1,5 +1,5 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { GraphQueryResult } from '../model/GraphQueryResult';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { Relationship } from '../model/Relationship';
 
@@ -12,5 +12,5 @@ export interface RelationshipsDataSource {
   deleteByEntities(sharedIds: string[]): Promise<void>;
   deleteByReferencedFiles(fileIds: string[]): Promise<void>;
   countByType(type: string): Promise<number>;
-  getByQuery(query: MatchQueryNode, language: string): ResultSet<GraphQueryResult>;
+  getByQuery(query: MatchQueryNode, language: string): ResultSet<Entity>;
 }

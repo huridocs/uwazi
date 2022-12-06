@@ -1,6 +1,8 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { ObjectId } from 'mongodb';
-import { EntityData, GraphQueryResult, RelationshipData } from '../model/GraphQueryResult';
+import { EntityMappers } from 'api/entities.v2/database/EntityMapper';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
 import { RelationshipDBOType } from './schemas/relationshipTypes';
 import {
   EntityPointer,
@@ -10,17 +12,19 @@ import {
 } from '../model/Relationship';
 import { JoinedRelationshipDBOType } from './schemas/relationshipAggregationTypes';
 
-type EntityTraversal = {
-  _id: ObjectId;
-  sharedId: string;
-  title: string;
-  traversal?: RelationshpTraversal;
-};
+type EntityTraversal =
+  | {
+      _id: ObjectId;
+      sharedId: string;
+      title: string;
+      traversal: RelationshipTraversal;
+    }
+  | (EntityDBO & { traversal: undefined });
 
-type RelationshpTraversal = {
+type RelationshipTraversal = {
   _id: ObjectId;
   type: string;
-  traversal?: EntityTraversal;
+  traversal: EntityTraversal;
 };
 
 function mapSelectionsToDBO(selections: TextReferencePointer['selections']) {
@@ -102,23 +106,13 @@ export const RelationshipMappers = {
     };
   },
 
-  toGraphQueryResult(traversalResult: EntityTraversal) {
-    const entities: EntityData[] = [];
-    const relationships: RelationshipData[] = [];
+  toGraphQueryResult(entityTraversal: EntityTraversal): Entity {
+    if (entityTraversal.traversal) {
+      return RelationshipMappers.toGraphQueryResult(entityTraversal.traversal.traversal);
+    }
 
-    const visitors = {
-      entity: ({ _id, traversal, ...entityData }: EntityTraversal) => {
-        entities.push({ _id: MongoIdHandler.mapToApp(_id), ...entityData });
-        if (traversal) visitors.relationship(traversal);
-      },
-      relationship: ({ _id, traversal, ...relationshipData }: RelationshpTraversal) => {
-        relationships.push({ _id: MongoIdHandler.mapToApp(_id), ...relationshipData });
-        if (traversal) visitors.entity(traversal);
-      },
-    };
-
-    visitors.entity(traversalResult);
-    return new GraphQueryResult(relationships, entities);
+    const { traversal, ...entityData } = entityTraversal;
+    return EntityMappers.toModel(entityData);
   },
 };
 

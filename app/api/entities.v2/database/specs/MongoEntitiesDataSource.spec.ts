@@ -2,8 +2,8 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { GraphQueryResult } from 'api/relationships.v2/model/GraphQueryResult';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -98,18 +98,16 @@ describe('Relationship fields caching strategy', () => {
       const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({
         getByQuery(_query, lang) {
           counter += 1;
-          return partialImplementation<MongoResultSet<any, GraphQueryResult>>({
+          return partialImplementation<MongoResultSet<any, Entity>>({
             all: async () =>
               Promise.resolve([
-                new GraphQueryResult(
-                  [],
-                  [
-                    {
-                      _id: `calculated${counter}-${lang}`,
-                      sharedId: `calculated${counter}-${lang}`,
-                      title: `calculated${counter}-${lang}`,
-                    },
-                  ]
+                new Entity(
+                  `calculated${counter}-${lang}`,
+                  `calculated${counter}-${lang}`,
+                  lang,
+                  `calculated${counter}-${lang}`,
+                  factory.id('someTemplate').toHexString(),
+                  {}
                 ),
               ]),
           });

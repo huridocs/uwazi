@@ -49,8 +49,7 @@ export class DenormalizationService {
       properties.map(async property =>
         Promise.all(
           invertQueryCallback(property).map(async query => {
-            await this.relationshipsDS.getByQuery(query, language).forEach(async result => {
-              const entity = result.leaf() as { sharedId: string };
+            await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
                 sharedId: entity.sharedId,
                 property: property.name,

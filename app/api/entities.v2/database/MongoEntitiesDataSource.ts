@@ -1,30 +1,15 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
-import { Entity } from '../model/Entity';
-
-interface EntityDBOType {
-  sharedId: string;
-  language: string;
-  template: ObjectId;
-  title: string;
-  metadata: Record<string, { value: string; label: string }[]>;
-  obsoleteMetadata: string[];
-}
-
-interface EntityJoinTemplate extends EntityDBOType {
-  joinedTemplate: {
-    properties: { name: string; type: string; query: any }[];
-  }[];
-}
+import { EntityMappers } from './EntityMapper';
+import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
@@ -42,13 +27,10 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
             entity.language
           )
           .all();
-        mappedMetadata[property.name] = results.map(result => {
-          const targetEntity = result.leaf();
-          return {
-            value: targetEntity.sharedId,
-            label: targetEntity.title,
-          };
-        });
+        mappedMetadata[property.name] = results.map(result => ({
+          value: result.sharedId,
+          label: result.title,
+        }));
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
           // @ts-ignore
@@ -65,17 +47,11 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
     { $set: { obsoleteMetadata: [] } }
   );
   await stream.flush();
-  return new Entity(
-    entity.sharedId,
-    entity.language,
-    entity.title,
-    MongoIdHandler.mapToApp(entity.template),
-    mappedMetadata
-  );
+  return EntityMappers.toModel({ ...entity, metadata: mappedMetadata });
 }
 
 export class MongoEntitiesDataSource
-  extends MongoDataSource<EntityDBOType>
+  extends MongoDataSource<EntityDBO>
   // eslint-disable-next-line prettier/prettier
   implements EntitiesDataSource {
   protected collectionName = 'entities';
