@@ -39,6 +39,7 @@ export class MongoTemplatesDataSource extends MongoDataSource implements Templat
           elem.properties.name,
           elem.properties.label,
           mapPropertyQuery(elem.properties.query),
+          'title',
           MongoIdHandler.mapToApp(elem._id)
         )
     );

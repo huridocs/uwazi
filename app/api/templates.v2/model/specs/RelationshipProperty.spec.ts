@@ -8,6 +8,7 @@ describe('buildQueryRootedInTemplate()', () => {
       'prop1',
       'prop1',
       [new TraversalQueryNode('out', {}, [new MatchQueryNode()])],
+      'title',
       'template1'
     );
     expect(property.buildQueryRootedInTemplate()).toEqual(

@@ -22,11 +22,7 @@ interface EntityDBOType {
 
 interface EntityJoinTemplate extends EntityDBOType {
   joinedTemplate: {
-    properties: {
-      type: 'newRelationship';
-      name: string;
-      query: any;
-    }[];
+    properties: { name: string; type: string; query: any }[];
   }[];
 }
 
@@ -47,7 +43,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
           )
           .all();
         mappedMetadata[property.name] = results.map(result => {
-          const targetEntity = result.leaf() as { sharedId: string; title: string };
+          const targetEntity = result.leaf();
           return {
             value: targetEntity.sharedId,
             label: targetEntity.title,

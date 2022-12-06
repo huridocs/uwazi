@@ -11,12 +11,21 @@ export class RelationshipProperty {
 
   readonly query: MatchQueryNode['traversals'];
 
+  readonly denormalizedProperty: string;
+
   readonly template: string;
 
-  constructor(name: string, label: string, query: MatchQueryNode['traversals'], template: string) {
+  constructor(
+    name: string,
+    label: string,
+    query: MatchQueryNode['traversals'],
+    denormalizedProperty: string,
+    template: string
+  ) {
     this.name = name;
     this.label = label;
     this.query = query;
+    this.denormalizedProperty = denormalizedProperty;
     this.template = template;
   }
 
