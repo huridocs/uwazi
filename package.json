@@ -74,7 +74,9 @@
     "@types/istanbul-lib-report": "^3.0.0",
     "underscore": "^1.13.6",
     "socket.io-parser": "4.2.1",
-    "json-schema": "^0.4.0"
+    "json-schema": "^0.4.0",
+    "@types/react":"^18.0.25",
+    "@types/react-dom": "^18.0.9"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.186.0",
