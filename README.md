@@ -99,7 +99,7 @@ $ ./run start
 $ yarn hot
 ```
 
-This will launch a webpack server and nodemon app server for hot reloading any changes you make. NOTE: You may need to migrate and reindex. PITFALL: Make sure to run the blank-slate script prior to migrate and reindex.
+This will launch a webpack server and nodemon app server for hot reloading any changes you make.
 
 ### Webpack server
 
@@ -180,3 +180,14 @@ For development:
 - 8GB of RAM (depending on whether the services are running)
 - 4 CPU cores
 - 20 GB of disk space
+
+
+# Troubleshooting
+
+- `yarn migrate` fails:
+
+Make sure to run the `yarn blank-state` script.
+
+- Unit tests fail:
+
+Try to run the `yarn blank-state` script.
