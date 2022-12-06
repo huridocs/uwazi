@@ -64,11 +64,7 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(
-      selectedItems,
-      this.props.location,
-      this.props.navigate
-    );
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   change(item) {
@@ -81,11 +77,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(
-      selectedItems,
-      this.props.location,
-      this.props.navigate
-    );
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   toggleOptions(item, e) {
@@ -263,7 +255,12 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
-  router: PropTypes.object.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
+    search: PropTypes.string,
+  }),
+  navigate: PropTypes.func,
 };
 
 export function mapStateToProps(state) {

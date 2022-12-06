@@ -302,11 +302,9 @@ DocumentsList.propTypes = {
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
   view: PropTypes.string,
-  router: PropTypes.shape({
-    location: PropTypes.shape({
-      pathname: PropTypes.string,
-      query: PropTypes.object,
-    }),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
   }),
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,
