@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
+import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -20,20 +21,19 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
+import { store } from '../../store';
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
-import { withRouter } from 'app/componentWrappers';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
-import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
 
-class DocumentSidePanelComponent extends Component {
+class DocumentSidePanel extends Component {
   constructor(props) {
     super(props);
     this.selectTab = this.selectTab.bind(this);
@@ -79,10 +79,10 @@ class DocumentSidePanelComponent extends Component {
     this.context.confirm({
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
-          const currentPath = this.props.location.pathname;
+          const currentPath = browserHistory.getCurrentLocation().pathname;
           const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
           if (!currentPath.match(isLibraryorUploads)) {
-            this.props.navigate(-1);
+            browserHistory.goBack();
           }
         });
       },
@@ -677,7 +677,7 @@ class DocumentSidePanelComponent extends Component {
   }
 }
 
-DocumentSidePanelComponent.defaultProps = {
+DocumentSidePanel.defaultProps = {
   tab: 'metadata',
   open: false,
   tocBeingEdited: false,
@@ -698,7 +698,7 @@ DocumentSidePanelComponent.defaultProps = {
   leaveEditMode: () => {},
 };
 
-DocumentSidePanelComponent.propTypes = {
+DocumentSidePanel.propTypes = {
   doc: PropTypes.instanceOf(Object).isRequired,
   EntityForm: PropTypes.func,
   tocFormComponent: PropTypes.func,
@@ -736,13 +736,9 @@ DocumentSidePanelComponent.propTypes = {
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   currentSidepanelView: PropTypes.string.isRequired,
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-  }).isRequired,
-  navigate: PropTypes.func.isRequired,
 };
 
-DocumentSidePanelComponent.contextTypes = {
+DocumentSidePanel.contextTypes = {
   confirm: PropTypes.func,
 };
 
@@ -771,6 +767,6 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const DocumentSidePanel = withRouter(connect(mapStateToProps)(DocumentSidePanelComponent));
-
 export { DocumentSidePanel, mapStateToProps };
+
+export default connect(mapStateToProps)(DocumentSidePanel);

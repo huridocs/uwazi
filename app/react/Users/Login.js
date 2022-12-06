@@ -11,7 +11,7 @@ import { isClient } from 'app/utils';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
 import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
-import { withRouter } from 'app/componentWrappers';
+import { withRequestState } from 'app/componentWrappers';
 
 import auth from 'app/Auth';
 
@@ -254,6 +254,6 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-const Login = withRouter(connect(mapStateToProps, mapDispatchToProps)(LoginComponent));
+const Login = withRequestState(connect(mapStateToProps, mapDispatchToProps)(LoginComponent));
 
 export { Login };

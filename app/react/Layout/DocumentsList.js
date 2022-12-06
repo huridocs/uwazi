@@ -73,13 +73,13 @@ class DocumentsList extends Component {
   }
 
   loadMoreButton(amount) {
-    const query = { ...this.props.location.query };
+    const query = { ...this.props.router.location.query };
     const q = query.q ? rison.decode(query.q) : {};
     const from = this.props.documents.get('rows').size;
     q.from = from;
     q.limit = amount;
     query.q = rison.encode(q);
-    const url = `${this.props.location.pathname}${toUrlParams(query)}`;
+    const url = `${this.props.router.location.pathname}${toUrlParams(query)}`;
     return (
       <Link
         to={url}
@@ -302,9 +302,11 @@ DocumentsList.propTypes = {
   searchCentered: PropTypes.bool,
   hideFooter: PropTypes.bool,
   view: PropTypes.string,
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    query: PropTypes.object,
+  router: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string,
+      query: PropTypes.object,
+    }),
   }),
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,

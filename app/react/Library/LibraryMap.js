@@ -4,7 +4,7 @@ import { MapView } from 'app/Library/components/MapView';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import Library from 'app/Library/Library';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
-import { withRouter } from 'app/componentWrappers';
+import { withRequestState } from 'app/componentWrappers';
 
 class LibraryMapComponent extends Library {
   static async requestState(requestParams, globalResources) {
@@ -25,7 +25,7 @@ class LibraryMapComponent extends Library {
     );
   }
 }
-const SSRLibraryComponent = withRouter(LibraryMapComponent);
+const SSRLibraryComponent = withRequestState(LibraryMapComponent);
 
 const LibraryMap = Object.assign(SSRLibraryComponent, {
   requestState: LibraryMapComponent.requestState,
