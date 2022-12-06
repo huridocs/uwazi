@@ -23,17 +23,18 @@ class GraphQueryResultView {
   }
 
   map(queryResult: GraphQueryResult): MappedResultValue[] {
-    if (this.inheritedProperty === undefined) {
+    if (this.inheritedProperty) {
+      const ip = this.inheritedProperty;
       return queryResult.map(entity => ({
         value: entity.sharedId,
         label: entity.title,
+        inheritedValue: entity.metadata[ip],
+        inheritedType: 'dummy', // TODO: figure out typing
       }));
     }
     return queryResult.map(entity => ({
       value: entity.sharedId,
       label: entity.title,
-      inheritedValue: entity[this.inheritedProperty],
-      inheritedType: 'dummy', // TODO: figure out typing
     }));
   }
 }
