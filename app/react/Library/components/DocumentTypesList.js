@@ -64,11 +64,7 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(
-      selectedItems,
-      this.props.router.location,
-      this.props.router.navigate
-    );
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   change(item) {
@@ -81,11 +77,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(
-      selectedItems,
-      this.props.router.location,
-      this.props.router.navigate
-    );
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   toggleOptions(item, e) {
@@ -158,7 +150,7 @@ export class DocumentTypesList extends Component {
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
 
-    const searchParams = new URLSearchParams(this.props.router.search);
+    const searchParams = new URLSearchParams(this.props.location.search);
 
     const { q = '(filters:())' } = searchParams.get('query') || {};
     const query = rison.decode(q);
@@ -263,7 +255,13 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
-  router: PropTypes.object.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
+    search: PropTypes.object,
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
+  params: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state) {

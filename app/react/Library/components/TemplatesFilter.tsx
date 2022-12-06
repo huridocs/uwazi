@@ -18,7 +18,8 @@ interface TemplatesFilterState {
 }
 
 interface TemplatesFiltersProps {
-  router: { location: {}; navigate: Function };
+  location: {};
+  navigate: Function;
 }
 const mapStateToProps = (state: IStore) => ({
   collection: state.settings.collection,
@@ -84,11 +85,7 @@ export class TemplatesFilterComponent extends React.Component<
     if (checked) {
       const newSelectedItems = filterValidSelectedTemplates(configuredFilters, selectedTemplates);
       this.setState({ selectedTemplates: newSelectedItems });
-      this.props.filterDocumentTypes(
-        newSelectedItems,
-        this.props.router.location,
-        this.props.router.navigate
-      );
+      this.props.filterDocumentTypes(newSelectedItems, this.props.location, this.props.navigate);
     }
     this.setState({ documentTypeFromFilters: checked });
   }

@@ -4,7 +4,7 @@ import Library from 'app/Library/Library';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
-import { withRequestState } from 'app/componentWrappers';
+import { withRouter } from 'app/componentWrappers';
 
 class LibraryTableComponent extends Library {
   static async requestState(requestParams, globalResources) {
@@ -27,7 +27,7 @@ class LibraryTableComponent extends Library {
   }
 }
 
-const SSRLibraryComponent = withRequestState(LibraryTableComponent);
+const SSRLibraryComponent = withRouter(LibraryTableComponent);
 
 const LibraryTable = Object.assign(SSRLibraryComponent, {
   requestState: LibraryTableComponent.requestState,
