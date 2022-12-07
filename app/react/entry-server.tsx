@@ -207,7 +207,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   await setReduxState(req, reduxStore, reduxState, matched);
 
   const componentHtml = ReactDOMServer.renderToString(
-    <Provider store={reduxStore}>
+    <Provider store={reduxStore as any}>
       <CustomProvider initialData={reduxState} user={req.user} language={reduxState.locale}>
         <React.StrictMode>
           <StaticRouterProvider router={router} context={staticHandleContext} nonce="the-nonce" />

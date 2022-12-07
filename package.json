@@ -75,7 +75,7 @@
     "underscore": "^1.13.6",
     "socket.io-parser": "4.2.1",
     "json-schema": "^0.4.0",
-    "@types/react":"^18.0.25",
+    "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9"
   },
   "dependencies": {
@@ -271,7 +271,7 @@
     "@types/react-dnd": "^3.0.2",
     "@types/react-dom": "^18.0.9",
     "@types/react-helmet": "^6.1.5",
-    "@types/react-redux": "^7.1.5",
+    "@types/react-redux": "^7.1.24",
     "@types/react-table": "^7.7.6",
     "@types/react-tabs-redux": "^4.0.0",
     "@types/recharts": "1.8.20",

@@ -8,7 +8,7 @@ import { store } from './store';
 const router = createBrowserRouter(routes);
 
 const App = () => (
-  <Provider store={store}>
+  <Provider store={store as any}>
     <CustomProvider>
       <RouterProvider router={router} fallbackElement={null} />
     </CustomProvider>
