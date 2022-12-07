@@ -69,8 +69,8 @@ class RouteHandler extends Component {
   }
 
   urlHasChanged(prevProps) {
-    const { params: nextParams = {}, routes: nextRoutes = [] } = prevProps;
-    const { params, routes } = this.props;
+    const { params: nextParams = {}, matches: nextRoutes = [] } = prevProps;
+    const { params, matches: routes } = this.props;
 
     const sameParams = Object.keys(nextParams).reduce(
       (memo, key) => memo && prevProps.params[key] === params[key],
@@ -105,6 +105,7 @@ RouteHandler.propTypes = {
   params: PropTypes.object,
   routes: PropTypes.array,
   location: PropTypes.object,
+  matches: PropTypes.array,
 };
 
 export default RouteHandler;

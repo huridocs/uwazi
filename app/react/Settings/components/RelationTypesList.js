@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'app/componentWrappers';
 import { I18NLink, t, Translate } from 'app/I18N';
 import {
   deleteRelationType,
@@ -14,7 +15,7 @@ import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { SettingsHeader } from './SettingsHeader';
 
-class RelationTypesList extends RouteHandler {
+class RelationTypesListComponent extends RouteHandler {
   static async requestState(requestParams) {
     const relationTypes = await relationTypesAPI.get(requestParams.onlyHeaders());
     return [actions.set('relationTypes', relationTypes)];
@@ -96,14 +97,14 @@ class RelationTypesList extends RouteHandler {
   }
 }
 
-RelationTypesList.propTypes = {
+RelationTypesListComponent.propTypes = {
   relationTypes: PropTypes.object,
   deleteRelationType: PropTypes.func,
   notify: PropTypes.func,
   checkRelationTypeCanBeDeleted: PropTypes.func,
 };
 
-RelationTypesList.contextTypes = {
+RelationTypesListComponent.contextTypes = {
   confirm: PropTypes.func,
   store: PropTypes.object,
 };
@@ -118,7 +119,9 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+const RelationTypesList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(RelationTypesListComponent));
 
 export { RelationTypesList, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(RelationTypesList);

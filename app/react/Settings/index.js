@@ -6,7 +6,7 @@ import EntityTypesList from './components/EntityTypesList';
 import FiltersForm from './components/FiltersForm';
 import LanguageList from './components/LanguageList';
 import NavlinksSettings from './components/NavlinksSettings';
-import RelationTypesList from './components/RelationTypesList';
+import { RelationTypesList } from './components/RelationTypesList';
 import ThesauriList from './components/ThesauriList';
 import TranslationsList from './components/TranslationsList';
 import Settings from './Settings';
