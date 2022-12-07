@@ -183,7 +183,7 @@ const getSSRProperties = async (req: ExpressRequest, language: string) => {
   const { reduxStore, assets } = await prepareData(req, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const staticHandleContext = await query(createFetchRequest(req));
-  const router = createStaticRouter(routes, staticHandleContext);
+  const router = createStaticRouter(routes, staticHandleContext as any);
 
   return {
     reduxStore,
@@ -210,7 +210,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     <Provider store={reduxStore as any}>
       <CustomProvider initialData={reduxState} user={req.user} language={reduxState.locale}>
         <React.StrictMode>
-          <StaticRouterProvider router={router} context={staticHandleContext} nonce="the-nonce" />
+          <StaticRouterProvider
+            router={router}
+            context={staticHandleContext as any}
+            nonce="the-nonce"
+          />
         </React.StrictMode>
       </CustomProvider>
     </Provider>
