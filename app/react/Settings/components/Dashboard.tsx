@@ -21,7 +21,7 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const DashboardComponent = ({ stats }: mappedProps) => {
-  if (!stats) {
+  if (!stats || !stats.get('storage')) {
     return <div />;
   }
 

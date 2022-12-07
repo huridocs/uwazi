@@ -43,6 +43,7 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { IndexRoute } from './IndexRoute';
 import { RequestParams } from './utils/RequestParams';
 import { PageView } from './Pages/PageView';
+import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 
 // const onEnter = () => {
 //   trackPage();
@@ -78,7 +79,7 @@ import { PageView } from './Pages/PageView';
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
 
 const routesLayout = (
-  <Route>
+  <Route errorElement={<ErrorBoundary />}>
     <Route
       index
       element={<IndexRoute />}
