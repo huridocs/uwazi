@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
@@ -11,6 +11,7 @@ import { Icon } from 'UI';
 import Confirm from './Confirm';
 import './scss/styles.scss';
 import { Menu } from './Menu';
+import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
@@ -38,6 +39,7 @@ const App = () => {
     setConfirmOptions(options);
   };
 
+  const appContext = useMemo(() => ({ confirm }));
   // const renderTools = () =>
   //   React.Children.map(this.props.children, child => {
   //     //condition not tested
@@ -68,6 +70,7 @@ const App = () => {
 
   const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
 */
+
   return (
     <div id="app" className="">
       <Notifications />
@@ -94,11 +97,13 @@ const App = () => {
           <Menu location={location} onClick={toggleMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
-          <Confirm {...confirmOptions} />
-          <TranslateForm />
-          <Outlet />
-          <GoogleAnalytics />
-          <Matomo />
+          <AppMainContext.Provider value={appContext}>
+            <Confirm {...confirmOptions} />
+            <TranslateForm />
+            <Outlet />
+            <GoogleAnalytics />
+            <Matomo />
+          </AppMainContext.Provider>
         </div>
       </div>
     </div>

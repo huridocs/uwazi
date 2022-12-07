@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './scss/toc.scss';
 
+import { withContext } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -21,13 +22,13 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
 import { Icon } from 'UI';
 
-import { store } from '../../store';
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
+import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
@@ -76,7 +77,7 @@ class DocumentSidePanel extends Component {
   }
 
   deleteDocument() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
           const currentPath = browserHistory.getCurrentLocation().pathname;
@@ -103,7 +104,7 @@ class DocumentSidePanel extends Component {
 
   close() {
     if (this.props.formDirty) {
-      this.context.confirm({
+      this.props.mainContext.confirm({
         accept: () => {
           this._close();
         },
@@ -736,6 +737,7 @@ DocumentSidePanel.propTypes = {
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   currentSidepanelView: PropTypes.string.isRequired,
+  mainContext: PropTypes.instanceOf(Object),
 };
 
 DocumentSidePanel.contextTypes = {
@@ -769,4 +771,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export { DocumentSidePanel, mapStateToProps };
 
-export default connect(mapStateToProps)(DocumentSidePanel);
+export default connect(mapStateToProps)(withContext(DocumentSidePanel));

@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLocation, useMatches, useNavigate, useParams } from 'react-router-dom';
+import { AppMainContext } from './App/AppMainContext';
 
 const withRouter = (Component: React.ComponentClass<any, any>) => (props: any) => {
   const location = useLocation();
@@ -18,4 +19,9 @@ const withRouter = (Component: React.ComponentClass<any, any>) => (props: any) =
   );
 };
 
-export { withRouter };
+const withContext = (Component: React.ComponentClass<any, any>) => (props: any) => {
+  const mainContext = useContext(AppMainContext);
+  return <Component {...props} mainContext={mainContext} />;
+};
+
+export { withRouter, withContext };
