@@ -22,8 +22,18 @@ import Root from './App/Root';
 import createStore from './store';
 import { routes } from './Routes';
 import CustomProvider from './App/Provider';
-import { IStore } from './istore';
+import { ClientTranslationSchema, IStore } from './istore';
 import { I18NUtils } from './I18N';
+import translationsApi from '../api/i18n/translations';
+
+const onlySystemTranslations = (translations: ClientTranslationSchema[]) => {
+  const rows = translations.map(translation => {
+    const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
+    return { ...translation, contexts: [systemTranslation] };
+  });
+
+  return { json: { rows } };
+};
 
 const createFetchHeaders = (requestHeaders: ExpressRequest['headers']): Headers => {
   const headers = new Headers();
@@ -101,32 +111,38 @@ const prepareData = async (req: ExpressRequest, language: string) => {
 
   api.APIURL('http://localhost:3000/api/');
 
-  const [user, translations, templates, thesauris, relationTypes] = await Promise.all([
-    api.get('user', requestParams),
-    api.get('translations', requestParams),
-    api.get('templates', requestParams),
-    api.get('thesauris', requestParams),
-    api.get('relationTypes', requestParams),
-  ]);
+  const translations = await translationsApi.get();
+
+  const [
+    userApiResponse = { json: {} },
+    translationsApiResponse = onlySystemTranslations(translations),
+    settingsApiResponse = { json: { languages: [], private: settings.private } },
+    templatesApiResponse = { json: { rows: [] } },
+    thesaurisApiResponse = { json: { rows: [] } },
+    relationTypesApiResponse = { json: { rows: [] } },
+  ] =
+    !settings.private || req.user
+      ? await Promise.all([
+          api.get('user', requestParams),
+          Promise.resolve({ json: { rows: translations } }),
+          api.get('settings', requestParams),
+          api.get('templates', requestParams),
+          api.get('thesauris', requestParams),
+          api.get('relationTypes', requestParams),
+        ])
+      : [];
 
   const globalResources = {
-    user: user.json,
-    translations: translations.json.rows,
-    templates: templates.json.rows,
-    thesauris: thesauris.json.rows,
-    relationTypes: relationTypes.json.rows,
-    settings: { collection: settings },
+    user: userApiResponse.json,
+    translations: translationsApiResponse.json.rows,
+    templates: templatesApiResponse.json.rows,
+    thesauris: thesaurisApiResponse.json.rows,
+    relationTypes: relationTypesApiResponse.json.rows,
+    settings: { collection: settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
   };
 
-  settings.links = settings.links || [];
-
   const reduxStore = createStore({
-    user: req.user,
-    settings: globalResources.settings,
-    translations: globalResources.translations,
-    templates: globalResources.templates,
-    thesauris: globalResources.thesauris,
-    relationTypes: globalResources.relationTypes,
+    ...globalResources,
     locale,
   });
 
