@@ -5,6 +5,7 @@ import { partialImplementation } from 'api/common.v2/testing/partialImplementati
 import { Entity } from 'api/entities.v2/model/Entity';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -47,8 +48,15 @@ const fixtures = {
       { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{ match: [{}] }] },
       { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{ match: [{}] }] },
       { type: 'newRelationship', name: 'relProp3', label: 'relProp3', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp4', label: 'relProp4', query: [{ match: [{}] }] },
+      {
+        type: 'newRelationship',
+        name: 'relProp4',
+        label: 'relProp4',
+        query: [{ match: [{}] }],
+        denormalizedProperty: 'inherited',
+      },
     ]),
+    factory.template('template-to-inherit', [factory.property('inherited', 'numeric')]),
   ],
 };
 
@@ -106,19 +114,24 @@ describe('Relationship fields caching strategy', () => {
                   `calculated${counter}-${lang}`,
                   lang,
                   `calculated${counter}-${lang}`,
-                  factory.id('someTemplate').toHexString(),
-                  {}
+                  factory.id('template-to-inherit').toHexString(),
+                  {
+                    inherited: [{ value: counter }],
+                  }
                 ),
               ]),
           });
         },
       });
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const db = getConnection();
+      const tm = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
+        db,
+        new MongoTemplatesDataSource(db, tm),
         relationshipsDsMock,
         settingsDsMock,
-        new MongoTransactionManager(getClient())
+        tm
       );
 
       entities = await ds.getByIds(['entity3', 'entity4']).all();
@@ -157,6 +170,7 @@ describe('Relationship fields caching strategy', () => {
       ]);
     });
 
+    // eslint-disable-next-line jest/no-focused-tests
     it('should recalculate the invalidated values', async () => {
       expect(entities).toMatchObject([
         {
@@ -177,14 +191,28 @@ describe('Relationship fields caching strategy', () => {
           sharedId: 'entity4',
           language: 'en',
           metadata: {
-            relProp4: [{ value: 'calculated3-en', label: 'calculated3-en' }],
+            relProp4: [
+              {
+                value: 'calculated3-en',
+                label: 'calculated3-en',
+                inheritedValue: [{ value: 3 }],
+                inheritedType: 'numeric',
+              },
+            ],
           },
         },
         {
           sharedId: 'entity4',
           language: 'pt',
           metadata: {
-            relProp4: [{ value: 'calculated4-pt', label: 'calculated4-pt' }],
+            relProp4: [
+              {
+                value: 'calculated4-pt',
+                label: 'calculated4-pt',
+                inheritedValue: [{ value: 4 }],
+                inheritedType: 'numeric',
+              },
+            ],
           },
         },
       ]);

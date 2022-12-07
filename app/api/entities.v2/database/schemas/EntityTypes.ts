@@ -12,6 +12,6 @@ export interface EntityDBO {
 
 export interface EntityJoinTemplate extends EntityDBO {
   joinedTemplate: {
-    properties: { name: string; type: string; query: any }[];
+    properties: { name: string; type: string; query: any; denormalizedProperty?: string }[];
   }[];
 }

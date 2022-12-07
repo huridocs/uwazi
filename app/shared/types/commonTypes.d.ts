@@ -152,9 +152,6 @@ export interface PropertySchema {
   generatedId?: boolean;
   content?: string;
   relationType?: string;
-  query?: {
-    [k: string]: unknown | undefined;
-  }[];
   inherit?: {
     property?: string;
     type?:
@@ -186,6 +183,10 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
+  query?: {
+    [k: string]: unknown | undefined;
+  }[];
+  denormalizedProperty?: string;
 }
 
 export type PropertyValueSchema =

@@ -1,5 +1,5 @@
 class Property {
-  readonly type: String;
+  readonly type: string;
 
   readonly name: string;
 

@@ -13,6 +13,20 @@ import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
+async function defineGraphView(
+  mongoDS: MongoEntitiesDataSource,
+  property: EntityJoinTemplate['joinedTemplate'][0]['properties'][0]
+) {
+  // eslint-disable-next-line dot-notation
+  const templateDataSource = mongoDS['templatesDS'];
+  const denormalizedProperty = property.denormalizedProperty
+    ? await templateDataSource.getPropertyByName(property.denormalizedProperty)
+    : undefined;
+  return denormalizedProperty
+    ? new GraphQueryResultView(denormalizedProperty)
+    : new GraphQueryResultView();
+}
+
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
   const stream = this.createBulkStream();
@@ -23,7 +37,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
       if (property.type !== 'newRelationship') return;
       if ((entity.obsoleteMetadata || []).includes(property.name)) {
         const configuredQuery = mapPropertyQuery(property.query);
-        const configuredView = new GraphQueryResultView();
+        const configuredView = await defineGraphView(this, property);
         const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
@@ -60,13 +74,17 @@ export class MongoEntitiesDataSource
 
   protected relationshipsDS: MongoRelationshipsDataSource;
 
+  private templatesDS: MongoTemplatesDataSource;
+
   constructor(
     db: Db,
+    templatesDS: MongoTemplatesDataSource,
     relationshipsDS: MongoRelationshipsDataSource,
     settingsDS: MongoSettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
     super(db, transactionManager);
+    this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
     this.relationshipsDS = relationshipsDS;
   }
