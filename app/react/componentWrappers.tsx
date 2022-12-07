@@ -13,7 +13,7 @@ const withRouter = (Component: React.ComponentClass<any, any>) => (props: any) =
       {...props}
       navigate={navigate}
       location={location}
-      params={props.params || params}
+      params={{ ...params, ...props.params }}
       matches={matches}
     />
   );

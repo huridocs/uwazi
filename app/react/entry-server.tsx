@@ -5,7 +5,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-import { matchRoutes, RouteObject } from 'react-router-dom';
+import { matchRoutes, Navigate, RouteObject } from 'react-router-dom';
 import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
@@ -138,7 +138,9 @@ const prepareData = async (req: ExpressRequest, language: string) => {
     templates: templatesApiResponse.json.rows,
     thesauris: thesaurisApiResponse.json.rows,
     relationTypes: relationTypesApiResponse.json.rows,
-    settings: { collection: settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
+    settings: {
+      collection: { ...settingsApiResponse.json, links: settingsApiResponse.json.links || [] },
+    },
   };
 
   const reduxStore = createStore({
@@ -162,8 +164,8 @@ const setReduxState = async (
         const component = route.element as React.ReactElement & {
           type: { requestState: Function };
         };
-        if (component.props.children?.type.requestState) {
-          return component.props.children?.type.requestState;
+        if (component.props.children?.type?.requestState) {
+          return component.props.children.type.requestState;
         }
         if (component.type.requestState) {
           return component.type.requestState;
