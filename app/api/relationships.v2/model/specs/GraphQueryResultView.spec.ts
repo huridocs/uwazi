@@ -24,7 +24,10 @@ describe('GraphQueryResultView', () => {
   });
 
   it('should map the title and inherited property', () => {
-    const view = new GraphQueryResultView('numericProp');
+    const view = new GraphQueryResultView({
+      name: 'numericProp',
+      type: 'numeric',
+    });
     const entities = [1, 2, 3].map(
       n =>
         new Entity(`${n}`, `sharedId_${n}`, 'en', `title_${n}`, 'templateID', {

@@ -1,6 +1,7 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
+import { Property } from 'api/templates.v2/model/Property';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -90,5 +91,26 @@ describe('when requesting the relationship properties configured in the system',
         template: factory.id('template3').toHexString(),
       },
     ]);
+  });
+});
+
+describe('when requesting a property by name', () => {
+  let tds: MongoTemplatesDataSource;
+  let prop: Property;
+
+  beforeAll(async () => {
+    tds = new MongoTemplatesDataSource(getConnection(), new MongoTransactionManager(getClient()));
+    prop = await tds.getPropertyByName('relationshipProp2');
+  });
+
+  it('should return one matching property', () => {
+    expect(prop).toBeInstanceOf(Property);
+    expect(prop.name).toEqual('relationshipProp2');
+    expect(prop.type).toEqual('newRelationship');
+  });
+
+  it('should cache the map', () => {
+    // eslint-disable-next-line dot-notation
+    expect(tds['_nameToPropertyMap']).not.toBeUndefined();
   });
 });

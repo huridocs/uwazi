@@ -16,20 +16,20 @@ type MappedResultValue = {
 class GraphQueryResultView {
   type: ResultViewTypes = ResultViewTypes.leaf;
 
-  inheritedProperty?: string;
+  inheritedProperty?: { name: string; type: string };
 
-  constructor(inheritedProperty?: string) {
+  constructor(inheritedProperty?: { name: string; type: string }) {
     this.inheritedProperty = inheritedProperty;
   }
 
   map(queryResult: GraphQueryResult): MappedResultValue[] {
     if (this.inheritedProperty) {
-      const ip = this.inheritedProperty;
+      const { name, type } = this.inheritedProperty;
       return queryResult.map(entity => ({
         value: entity.sharedId,
         label: entity.title,
-        inheritedValue: entity.metadata[ip],
-        inheritedType: 'dummy', // TODO: figure out typing
+        inheritedValue: entity.metadata[name],
+        inheritedType: type,
       }));
     }
     return queryResult.map(entity => ({

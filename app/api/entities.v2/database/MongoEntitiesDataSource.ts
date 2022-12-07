@@ -6,6 +6,7 @@ import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/Mong
 import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
