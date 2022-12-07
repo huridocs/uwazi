@@ -14,7 +14,7 @@ import SettingsAPI from './SettingsAPI';
 import { Dashboard } from './components/Dashboard';
 import { PreserveSettings } from './components/PreserveSettings';
 
-export { default as CustomUploads } from './components/CustomUploads';
+export { CustomUploads } from './components/CustomUploads';
 
 export {
   Settings,
