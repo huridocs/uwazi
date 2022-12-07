@@ -54,7 +54,7 @@ class LoginComponent extends RouteHandler {
     reconnectSocket();
     this.props.reloadThesauris();
     this.props.change('library.search.publishedStatus.values', ['published', 'restricted']);
-    this.props.navigate('/');
+    reloadHome();
   }
 
   async login(credentials) {
