@@ -109,6 +109,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     const [{ value }] = entity.metadata[property] || [{}];
     let stringValue: string;
     if (type === propertyTypes.date) {
+      console.log(value)
       stringValue = new Date(<number>value * 1000).toLocaleDateString(entity.language);
     } else {
       stringValue = <string>value;
