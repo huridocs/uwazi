@@ -18,7 +18,7 @@ export const UserManagement = () => (
         <Translate>Users</Translate>
       </SettingsHeader>
       <div className="userManagementTabs">
-        <Tabs defaultIndex={1} className="tabs">
+        <Tabs defaultIndex={0}>
           <TabList>
             <Tab>
               <Translate>Users</Translate>
