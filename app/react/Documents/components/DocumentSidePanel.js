@@ -1,13 +1,12 @@
 /* eslint-disable max-lines */
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import './scss/toc.scss';
 
-import { withContext } from 'app/componentWrappers';
+import { withContext, withRouter } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -80,10 +79,10 @@ class DocumentSidePanel extends Component {
     this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
-          const currentPath = browserHistory.getCurrentLocation().pathname;
-          const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
-          if (!currentPath.match(isLibraryorUploads)) {
-            browserHistory.goBack();
+          const currentPath = this.props.location.pathname;
+          const isLibrary = /library|^\/$|^\/..\/$/;
+          if (!currentPath.match(isLibrary)) {
+            this.props.navigate(-1);
           }
         });
       },
@@ -738,6 +737,12 @@ DocumentSidePanel.propTypes = {
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   currentSidepanelView: PropTypes.string.isRequired,
   mainContext: PropTypes.instanceOf(Object),
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.object,
+    search: PropTypes.string,
+  }),
+  navigate: PropTypes.func,
 };
 
 DocumentSidePanel.contextTypes = {
@@ -771,4 +776,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export { DocumentSidePanel, mapStateToProps };
 
-export default connect(mapStateToProps)(withContext(DocumentSidePanel));
+export default connect(mapStateToProps)(withContext(withRouter(DocumentSidePanel)));
