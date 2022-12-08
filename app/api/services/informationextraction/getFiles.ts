@@ -1,4 +1,6 @@
 /* eslint-disable camelcase */
+import moment from 'moment';
+
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
@@ -109,8 +111,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     const [{ value }] = entity.metadata[property] || [{}];
     let stringValue: string;
     if (type === propertyTypes.date) {
-      console.log(value)
-      stringValue = new Date(<number>value * 1000).toLocaleDateString(entity.language);
+      stringValue = moment(<number>value * 1000).format('YYYY-MM-DD');
     } else {
       stringValue = <string>value;
     }
