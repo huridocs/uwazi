@@ -160,8 +160,7 @@ describe('InformationExtraction', () => {
       });
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should sanitize dates before sending', async () => {
+    it('should sanitize dates before sending', async () => {
       await informationExtraction.trainModel('property2');
 
       expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentA.xml')).toEqual({
@@ -538,7 +537,7 @@ describe('InformationExtraction', () => {
         {
           property_name: 'property2',
           xml_file_name: 'documentC.xml',
-          text: 'October 12, 2019',
+          text: '2019-10-12',
           segment_text: 'Birthday of John Doe is October 12, 2019',
         },
       ]);
@@ -560,7 +559,7 @@ describe('InformationExtraction', () => {
       });
 
       expect(suggestions).toMatchObject([
-        { suggestedValue: 1570838400, suggestedText: 'October 12, 2019' },
+        { suggestedValue: 1570838400, suggestedText: '2019-10-12' },
       ]);
     });
 
