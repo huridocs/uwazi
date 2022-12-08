@@ -29,7 +29,6 @@ export default {
   dateToSeconds(value, locale) {
     const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     let getDate = parser.fromString(parsedValue, locale);
-    console.log(value, locale, parsedValue, getDate);
     if (getDate.invalid) {
       getDate = Date.parse(`${parsedValue} GMT`);
     }
