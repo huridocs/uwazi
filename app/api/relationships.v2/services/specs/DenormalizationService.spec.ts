@@ -243,15 +243,17 @@ beforeEach(async () => {
   db = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
+  const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
   service = new DenormalizationService(
     relationshipsDataSource,
     new MongoEntitiesDataSource(
       db,
+      templatesDataSource,
       relationshipsDataSource,
       new MongoSettingsDataSource(db, transactionManager),
       transactionManager
     ),
-    new MongoTemplatesDataSource(db, transactionManager),
+    templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {}

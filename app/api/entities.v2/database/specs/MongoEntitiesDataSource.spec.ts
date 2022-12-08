@@ -73,11 +73,14 @@ describe('Relationship fields caching strategy', () => {
     it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
       const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const db = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
+        db,
+        new MongoTemplatesDataSource(db, transactionManager),
         relationshipsDsMock,
         settingsDsMock,
-        new MongoTransactionManager(getClient())
+        transactionManager
       );
 
       await ds.markMetadataAsChanged([
@@ -269,15 +272,18 @@ describe('When checking for the existence of entities', () => {
   it.each(cases)(
     'should return $expected checking for sharedIds in $ids',
     async ({ ids, expected }) => {
+      const db = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
+        db,
+        new MongoTemplatesDataSource(db, transactionManager),
         partialImplementation<MongoRelationshipsDataSource>({}),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
             return Promise.resolve(['en', 'pt']);
           },
         }),
-        new MongoTransactionManager(getClient())
+        transactionManager
       );
 
       expect(await ds.entitiesExist(ids)).toBe(expected);
@@ -286,15 +292,18 @@ describe('When checking for the existence of entities', () => {
 });
 
 it('should return the sharedIds of the entities that have a particular id within their denormalized values in a metatata prop', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
   const ds = new MongoEntitiesDataSource(
-    getConnection(),
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
     partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
       },
     }),
-    new MongoTransactionManager(getClient())
+    transactionManager
   );
 
   expect(
@@ -305,15 +314,18 @@ it('should return the sharedIds of the entities that have a particular id within
 });
 
 it('should update the label of the denormalized value in all related entities', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
   const ds = new MongoEntitiesDataSource(
-    getConnection(),
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
     partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
       },
     }),
-    new MongoTransactionManager(getClient())
+    transactionManager
   );
 
   await ds.updateDenormalizedTitle(
