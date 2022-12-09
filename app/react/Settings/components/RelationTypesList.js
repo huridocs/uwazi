@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { withRouter } from 'app/componentWrappers';
+import { withContext } from 'app/componentWrappers';
 import { I18NLink, t, Translate } from 'app/I18N';
 import {
   deleteRelationType,
@@ -25,7 +25,7 @@ class RelationTypesListComponent extends RouteHandler {
     return this.props
       .checkRelationTypeCanBeDeleted(relationType)
       .then(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {
             this.props.deleteRelationType(relationType);
           },
@@ -38,7 +38,7 @@ class RelationTypesListComponent extends RouteHandler {
         });
       })
       .catch(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {},
           noCancel: true,
           title: (
@@ -102,10 +102,12 @@ RelationTypesListComponent.propTypes = {
   deleteRelationType: PropTypes.func,
   notify: PropTypes.func,
   checkRelationTypeCanBeDeleted: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 RelationTypesListComponent.contextTypes = {
-  confirm: PropTypes.func,
   store: PropTypes.object,
 };
 
@@ -122,6 +124,6 @@ function mapDispatchToProps(dispatch) {
 const RelationTypesList = connect(
   mapStateToProps,
   mapDispatchToProps
-)(withRouter(RelationTypesListComponent));
+)(withContext(RelationTypesListComponent));
 
 export { RelationTypesList, mapStateToProps };

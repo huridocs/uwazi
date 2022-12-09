@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable from 'immutable';
@@ -142,10 +142,6 @@ UploadButton.propTypes = {
   entitySharedId: PropTypes.string,
   progress: PropTypes.instanceOf(Immutable.Map),
   storeKey: PropTypes.string, // eslint-disable-line
-};
-
-UploadButton.contextTypes = {
-  confirm: PropTypes.func,
 };
 
 const mapStateToProps = ({ metadata, progress }) => ({

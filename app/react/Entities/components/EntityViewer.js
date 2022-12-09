@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import React, { Component } from 'react';
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
@@ -7,8 +8,8 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
+import { Icon } from 'UI';
+import { withContext } from 'app/componentWrappers';
 import { AttachmentsList } from 'app/Attachments';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from 'app/ConnectionsList';
 import { CreateConnectionPanel, actions as connectionsActions } from 'app/Connections';
@@ -22,7 +23,6 @@ import RelationshipMetadata from 'app/Relationships/components/RelationshipMetad
 import ShowIf from 'app/App/ShowIf';
 import SidePanel from 'app/Layout/SidePanel';
 import ContextMenu from 'app/ContextMenu';
-import { Icon } from 'UI';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
@@ -62,7 +62,7 @@ class EntityViewer extends Component {
   }
 
   deleteEntity() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteEntity(this.props.entity.toJS()).then(() => {
           browserHistory.goBack();
@@ -81,7 +81,7 @@ class EntityViewer extends Component {
 
   deleteConnection(reference) {
     if (reference.sourceType !== 'metadata') {
-      this.context.confirm({
+      this.props.mainContext.confirm({
         accept: () => {
           this.props.deleteConnection(reference);
         },
@@ -374,10 +374,9 @@ EntityViewer.propTypes = {
   hasPageView: PropTypes.bool,
   user: PropTypes.instanceOf(Immutable.Map),
   params: PropTypes.object,
-};
-
-EntityViewer.contextTypes = {
-  confirm: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 const selectRelationTypes = createSelector(
@@ -421,4 +420,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { EntityViewer, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(EntityViewer);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(EntityViewer));

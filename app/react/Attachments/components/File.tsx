@@ -1,20 +1,21 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Translate, t } from 'app/I18N';
-import { language as transformLanguage, availableLanguages } from 'shared/languagesList';
-import { isBlobFile } from 'shared/tsUtils';
-import { Icon } from 'UI';
-import { FileType } from 'shared/types/fileType';
-import { APIURL } from 'app/config.js';
 import { LocalForm, Control } from 'react-redux-form';
+import { withContext } from 'app/componentWrappers';
+import { Translate, t } from 'app/I18N';
+import { Icon } from 'UI';
+import { APIURL } from 'app/config.js';
 import { ClientBlobFile } from 'app/istore';
 import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
 import { NeedAuthorization } from 'app/Auth';
+import { language as transformLanguage, availableLanguages } from 'shared/languagesList';
+import { isBlobFile } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+
 import { ViewDocumentLink } from './ViewDocumentLink';
 
 type FileProps = {
@@ -23,6 +24,7 @@ type FileProps = {
   entity: EntitySchema;
   updateFile: (file: FileType, entity: Object) => any | void;
   deleteFile: (file: FileType, entity: Object) => any | void;
+  mainContext: { confirm: Function };
 };
 type FileState = {
   editing: boolean;
@@ -30,10 +32,6 @@ type FileState = {
 
 class File extends Component<FileProps, FileState> {
   static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
-
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
 
   constructor(props: FileProps) {
     super(props);
@@ -55,7 +53,7 @@ class File extends Component<FileProps, FileState> {
   }
 
   delete() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteFile(this.props.file, this.props.entity);
         this.setState({ editing: false });
@@ -221,4 +219,4 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
 
 export type { FileProps };
 export { File };
-export const ConnectedFile = connect(null, mapDispatchToProps)(File);
+export const ConnectedFile = connect(null, mapDispatchToProps)(withContext(File));

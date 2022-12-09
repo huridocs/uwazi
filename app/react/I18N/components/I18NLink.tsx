@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { omit } from 'lodash';
+import { withContext } from 'app/componentWrappers';
 
 const defaultProps = {
   disabled: false,
@@ -16,24 +17,20 @@ export type I18NLinkProps = typeof defaultProps & {
   onClick: (_e: any) => void;
   confirmTitle: string;
   confirmMessage: string;
+  mainContext: { confirm: Function };
 };
 
 const I18NLink = (props: I18NLinkProps) => {
   const { to, disabled } = props;
   const navigate = useNavigate();
-  // static contextTypes = {
-  //   confirm: PropTypes.func,
-  // };
-
   const onClickHandler = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (disabled) {
-      return;
     }
 
     // if (onClick) {
     //   if (confirmTitle) {
-    //     this.context.confirm({
+    //     this.props.mainContext.confirm({
     //       accept: () => {
     //         onClick(e);
     //         I18NLink.navigate(to);
@@ -42,8 +39,8 @@ const I18NLink = (props: I18NLinkProps) => {
     //       message: confirmMessage,
     //     });
     //   } else {
-    // onClick(e);
-    navigate(to);
+    //     onClick(e);
+    //     navigate(to);
     //   }
     // }
   };
@@ -56,4 +53,4 @@ export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) 
   return { to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/') };
 }
 
-export default connect(mapStateToProps)(I18NLink);
+export default connect(mapStateToProps)(withContext(I18NLink));

@@ -89,10 +89,6 @@ export class SearchItem extends Component {
   }
 }
 
-SearchItem.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 SearchItem.propTypes = {
   search: PropTypes.shape({
     _id: PropTypes.string,

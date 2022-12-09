@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Translate } from 'app/I18N';
 import { advancedSort } from 'app/utils/advancedSort';
 import { NeedAuthorization } from 'app/Auth';
@@ -83,8 +83,4 @@ AttachmentsList.propTypes = {
   isTargetDoc: PropTypes.bool,
   storeKey: PropTypes.string,
   entity: PropTypes.object,
-};
-
-AttachmentsList.contextTypes = {
-  confirm: PropTypes.func,
 };

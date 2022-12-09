@@ -1,8 +1,9 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
+import { withContext } from 'app/componentWrappers';
 import {
   deleteTemplate,
   checkTemplateCanBeDeleted,
@@ -35,7 +36,7 @@ class EntityTypesList extends Component {
     return this.props
       .checkTemplateCanBeDeleted(template)
       .then(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {
             this.props.deleteTemplate(template);
           },
@@ -50,7 +51,7 @@ class EntityTypesList extends Component {
         });
       })
       .catch(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {},
           noCancel: true,
           title: (
@@ -157,10 +158,9 @@ EntityTypesList.propTypes = {
   setAsDefault: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
   checkTemplateCanBeDeleted: PropTypes.func.isRequired,
-};
-
-EntityTypesList.contextTypes = {
-  confirm: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 export function mapStateToProps(state) {
@@ -175,4 +175,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { EntityTypesList };
-export default connect(mapStateToProps, mapDispatchToProps)(EntityTypesList);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(EntityTypesList));

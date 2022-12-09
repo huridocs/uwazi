@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 import { Icon } from 'UI';
-
+import { withContext } from 'app/componentWrappers';
 import { ShowMetadata, MetadataForm, MetadataFormButtons, actions } from 'app/Metadata';
 import { Translate, I18NLink } from 'app/I18N';
 import SidePanel from 'app/Layout/SidePanel';
@@ -39,7 +39,7 @@ class RelationshipMetadata extends Component {
   }
 
   async deleteDocument() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: async () => {
         this.props.unselectConnection();
         await entitiesAPI.delete(new RequestParams({ sharedId: this.props.entity.sharedId }));
@@ -166,10 +166,6 @@ class RelationshipMetadata extends Component {
   }
 }
 
-RelationshipMetadata.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 RelationshipMetadata.defaultProps = {
   selectedConnection: false,
   entityBeingEdited: false,
@@ -195,6 +191,9 @@ RelationshipMetadata.propTypes = {
   hubsBeingEdited: PropTypes.bool,
   parentSharedId: PropTypes.string.isRequired,
   reloadRelationships: PropTypes.func.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 const connectionSelector = createSelector(
@@ -241,4 +240,4 @@ function mapDispatchToProps(dispatch) {
 
 export { RelationshipMetadata, mapStateToProps };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RelationshipMetadata);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(RelationshipMetadata));

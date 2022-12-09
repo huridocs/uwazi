@@ -1,7 +1,13 @@
 // eslint-disable-line max-lines
-
+import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
+import { TabContent, Tabs } from 'react-tabs-redux';
+import { bindActionCreators, Dispatch } from 'redux';
+import Immutable from 'immutable';
 import Footer from 'app/App/Footer';
 import ShowIf from 'app/App/ShowIf';
+import { withContext } from 'app/componentWrappers';
 import { AttachmentsList } from 'app/Attachments';
 import { FileList } from 'app/Attachments/components/FileList';
 import { CreateConnectionPanel } from 'app/Connections';
@@ -21,13 +27,6 @@ import { toggleOneUpFullEdit } from 'app/Review/actions/actions';
 import { OneUpEntityButtons } from 'app/Review/components/OneUpEntityButtons';
 import { OneUpSidePanel } from 'app/Review/components/OneUpSidePanel';
 import { OneUpTitleBar } from 'app/Review/components/OneUpTitleBar';
-import Immutable from 'immutable';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
-import { connect } from 'react-redux';
-import { TabContent, Tabs } from 'react-tabs-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -44,6 +43,7 @@ const defaultProps = {
   connectionsChanged: () => {},
   deleteConnection: (_reference: any) => {},
   toggleOneUpFullEdit: () => {},
+  mainContext: { confirm: (_props: {}) => {} },
 };
 
 export type OneUpEntityViewerProps = typeof defaultProps;
@@ -58,10 +58,6 @@ export class OneUpEntityViewerBase extends Component<
 > {
   static defaultProps = defaultProps;
 
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
-
   constructor(props: OneUpEntityViewerProps, context: any) {
     super(props, context);
     this.state = {
@@ -74,7 +70,7 @@ export class OneUpEntityViewerBase extends Component<
 
   deleteConnection(reference: any) {
     if (reference.sourceType !== 'metadata') {
-      this.context.confirm({
+      this.props.mainContext.confirm({
         accept: () => {
           this.props.deleteConnection(reference);
         },
@@ -109,7 +105,7 @@ export class OneUpEntityViewerBase extends Component<
     let onClick = () => this.props.toggleOneUpFullEdit();
     if (!oneUpState.fullEdit) {
       onClick = () =>
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => this.props.toggleOneUpFullEdit(),
           title: 'Keep this in mind if you want to edit:',
           message:
@@ -274,4 +270,4 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
 export const OneUpEntityViewer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(OneUpEntityViewerBase);
+)(withContext(OneUpEntityViewerBase));

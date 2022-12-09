@@ -1,3 +1,9 @@
+import React, { Component } from 'react';
+import Immutable from 'immutable';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { createSelector } from 'reselect';
+import { withContext } from 'app/componentWrappers';
 import { t, Translate } from 'app/I18N';
 import { Notice } from 'app/Thesauri/Notice';
 import { IStore, QuickLabelState, QuickLabelMetadata } from 'app/istore';
@@ -8,12 +14,6 @@ import { translateOptions } from 'app/Metadata/components/MetadataFormFields';
 import { wrapDispatch } from 'app/Multireducer';
 import { MultiSelectTristate } from 'app/ReactReduxForms';
 import { StateSelector } from 'app/Review/components/StateSelector';
-import Immutable from 'immutable';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { createSelector } from 'reselect';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -37,10 +37,10 @@ const defaultProps = {
   selectedDocumentsChanged: () => {},
   maybeSaveQuickLabels: (_force: boolean) => {},
   multipleUpdate: (_o: IImmutable<EntitySchema[]>, _diff: EntitySchema) => {},
+  mainContext: { confirm: (_props: {}) => {} },
 };
 
 export type QuickLabelPanelProps = typeof defaultProps;
-
 export const selectIsPristine = createSelector(
   (state: IStore) => state.library.sidepanel.quickLabelMetadataForm.$form.pristine,
   value => value
@@ -49,17 +49,13 @@ export const selectIsPristine = createSelector(
 export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
   static defaultProps = defaultProps;
 
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
-
   constructor(props: QuickLabelPanelProps) {
     super(props);
     this.publish = this.publish.bind(this);
   }
 
   publish() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.multipleUpdate(this.props.selectedDocuments, { published: true });
       },
@@ -285,4 +281,7 @@ function mapDispatchToProps(dispatch: any) {
   );
 }
 
-export const QuickLabelPanel = connect(mapStateToProps, mapDispatchToProps)(QuickLabelPanelBase);
+export const QuickLabelPanel = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withContext(QuickLabelPanelBase));

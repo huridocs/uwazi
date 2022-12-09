@@ -7,10 +7,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field, Form } from 'react-redux-form';
 import { Icon } from 'UI';
-
-import { TemplateSchema } from 'shared/types/templateType';
-import { PropertySchema } from 'shared/types/commonTypes';
-
+import { withContext } from 'app/componentWrappers';
 import { FormGroup } from 'app/Forms';
 import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -28,7 +25,8 @@ import { AddThesaurusButton } from 'app/Thesauri/components/AddThesaurusButton';
 import { AddRelationshipTypeButton } from 'app/RelationTypes/components/AddRelationshipTypeButton';
 import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
-
+import { TemplateSchema } from 'shared/types/templateType';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import { validate } from './ValidateTemplate';
 
@@ -47,6 +45,7 @@ interface MetadataTemplateProps {
   entityViewPage?: string;
   syncedTemplate?: boolean;
   _id?: string;
+  mainContext: { confirm: Function };
 }
 
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
@@ -54,10 +53,6 @@ const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: a
 
 class MetadataTemplate extends Component<MetadataTemplateProps> {
   static propTypes: any;
-
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
 
   static defaultProps: MetadataTemplateProps = {
     notify,
@@ -68,6 +63,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     savingTemplate: false,
     defaultColor: null,
     properties: [],
+    mainContext: { confirm: (_props: {}) => {} },
   };
 
   confirmation = {
@@ -127,7 +123,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     template: TemplateSchema,
     confirmationKey: 'templateConflict' | 'largeNumberOfEntities'
   ) {
-    return this.context.confirm({
+    return this.props.mainContext.confirm({
       accept: () => {
         try {
           this.props.saveTemplate({ ...template, reindex: confirmationKey === 'templateConflict' });
@@ -365,4 +361,6 @@ function mapDispatchToProps(dispatch: any) {
 
 export { dropTarget, MetadataTemplate, mapStateToProps };
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(dropTarget);
+export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(
+  withContext(dropTarget)
+);

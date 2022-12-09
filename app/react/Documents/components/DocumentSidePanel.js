@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
+import React, { Component } from 'react';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import './scss/toc.scss';
 
+import { Icon } from 'UI';
 import { withContext, withRouter } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
@@ -19,8 +19,6 @@ import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
-import { Icon } from 'UI';
-
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
@@ -32,6 +30,7 @@ import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
+import './scss/toc.scss';
 
 class DocumentSidePanel extends Component {
   constructor(props) {
@@ -736,17 +735,15 @@ DocumentSidePanel.propTypes = {
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   currentSidepanelView: PropTypes.string.isRequired,
-  mainContext: PropTypes.instanceOf(Object),
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
     query: PropTypes.object,
     search: PropTypes.string,
-  }),
+  }).isRequired,
   navigate: PropTypes.func,
-};
-
-DocumentSidePanel.contextTypes = {
-  confirm: PropTypes.func,
 };
 
 const mapStateToProps = (state, ownProps) => {

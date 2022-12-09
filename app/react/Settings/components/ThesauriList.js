@@ -1,9 +1,10 @@
-import { I18NLink, t, Translate } from 'app/I18N';
-import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withContext } from 'app/componentWrappers';
+import { I18NLink, t, Translate } from 'app/I18N';
+import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
 import { Icon } from 'UI';
 import { SettingsHeader } from './SettingsHeader';
 import sortThesauri from '../utils/sortThesauri';
@@ -70,7 +71,7 @@ class ThesauriList extends Component {
     return this.props
       .checkThesaurusCanBeDeleted(thesaurus)
       .then(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {
             this.props.deleteThesaurus(thesaurus);
           },
@@ -83,7 +84,7 @@ class ThesauriList extends Component {
         });
       })
       .catch(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {},
           noCancel: true,
           title: (
@@ -146,12 +147,10 @@ ThesauriList.propTypes = {
   topicClassificationEnabled: PropTypes.bool,
   deleteThesaurus: PropTypes.func.isRequired,
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
-
-ThesauriList.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 export function mapStateToProps(state) {
   return {
     dictionaries: state.dictionaries,
@@ -171,4 +170,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { ThesauriList };
-export default connect(mapStateToProps, mapDispatchToProps)(ThesauriList);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(ThesauriList));
