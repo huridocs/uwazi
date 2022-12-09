@@ -1,16 +1,17 @@
-import RouteHandler from 'app/App/RouteHandler';
-import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
+import { withRouter } from 'app/componentWrappers';
+import RouteHandler from 'app/App/RouteHandler';
+import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { showTab } from 'app/Entities/actions/uiActions';
-import PDFView from './PDFView';
+import { PDFViewComponent } from './PDFView';
 import EntityView from './EntityView';
-import ViewerComponent from './components/ViewerComponent';
+import { ViewerComponent } from './components/ViewerComponent';
 import { setReferences } from './actions/referencesActions';
 
-class ViewerRoute extends RouteHandler {
+class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {
     const { sharedId } = requestParams.data;
     const [entity] = await EntitiesAPI.get(
@@ -18,7 +19,7 @@ class ViewerRoute extends RouteHandler {
     );
 
     return entity.documents.length
-      ? PDFView.requestState(requestParams, globalResources)
+      ? PDFViewComponent.requestState(requestParams, globalResources)
       : EntityView.requestState(requestParams, globalResources);
   }
 
@@ -51,21 +52,21 @@ class ViewerRoute extends RouteHandler {
     return super.urlHasChanged(nextProps) || !sameQueryFile;
   }
 
-  selectTab({ tabView }) {
-    let tab = tabView;
-    if (!tab) tab = 'metadata';
-    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tab));
-    this.context.store.dispatch(showTab(tab === 'metadata' ? 'info' : tab));
+  selectTab({ tabView = 'metadata' }) {
+    this.context.store.dispatch(actions.set('viewer.sidepanel.tab', tabView));
+    this.context.store.dispatch(showTab(tabView === 'metadata' ? 'info' : tabView));
   }
 
   render() {
-    this.selectTab(this.props.routeParams);
+    this.selectTab(this.props.params);
     return <ViewerComponent {...this.props} />;
   }
 }
 
-ViewerRoute.defaultProps = {
+ViewerRouteComponent.defaultProps = {
   params: {},
 };
-
+export const ViewerRoute = Object.assign(withRouter(ViewerRouteComponent), {
+  requestState: ViewerRouteComponent.requestState,
+});
 export default ViewerRoute;

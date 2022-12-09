@@ -304,7 +304,7 @@ DocumentsList.propTypes = {
   view: PropTypes.string,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.object,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
   }),
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,

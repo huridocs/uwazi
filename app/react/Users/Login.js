@@ -233,7 +233,7 @@ LoginComponent.propTypes = {
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
   change: PropTypes.func,
-  navigate: PropTypes.func,
+  navigate: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps({ settings }) {

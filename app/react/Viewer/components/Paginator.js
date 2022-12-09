@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
@@ -51,11 +52,12 @@ Paginator.propTypes = {
   onPageChange: PropTypes.func,
 };
 
+// eslint-disable-next-line react/no-multi-comp
 const PaginatorWithPage = props => {
   const location = useLocation();
+  const query = new URLSearchParams(location.search);
   const { ...restProps } = props;
-  return <Paginator {...restProps} page={Number(location.query.page || 1)} />;
+  return <Paginator {...restProps} page={Number(query.page || 1)} />;
 };
 
 export { PaginatorWithPage };
-export default Paginator;

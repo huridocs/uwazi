@@ -39,6 +39,7 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import api from 'app/utils/api';
+import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { IndexRoute } from './IndexRoute';
 import { RequestParams } from './utils/RequestParams';
@@ -97,6 +98,9 @@ const routesLayout = (
     <Route path="library" element={<LibraryCards />} />
     <Route path="library/map" element={<LibraryMap />} />
     <Route path="library/table" element={<LibraryTable />} />
+    <Route path="document/:sharedId*" element={<ViewerRoute />} />
+    <Route path="entity/:sharedId*" element={<ViewerRoute />} />
+    <Route path="entity/:sharedId/:tabView" element={<ViewerRoute />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />

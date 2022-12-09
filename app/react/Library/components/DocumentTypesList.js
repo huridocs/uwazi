@@ -257,10 +257,10 @@ DocumentTypesList.propTypes = {
   fromFilters: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.object,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
     search: PropTypes.string,
-  }),
-  navigate: PropTypes.func,
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
 export function mapStateToProps(state) {

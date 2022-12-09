@@ -740,10 +740,10 @@ DocumentSidePanel.propTypes = {
   }).isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.object,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
     search: PropTypes.string,
   }).isRequired,
-  navigate: PropTypes.func,
+  navigate: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
