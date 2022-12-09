@@ -47,7 +47,7 @@ export class MongoTemplatesDataSource
           elem.properties.name,
           elem.properties.label,
           mapPropertyQuery(elem.properties.query),
-          'title',
+          elem.properties.denormalizedProperty || 'title',
           MongoIdHandler.mapToApp(elem._id)
         )
     );

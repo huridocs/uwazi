@@ -12,4 +12,9 @@ export interface EntitiesDataSource {
     language: string,
     value: string
   ): Promise<void>;
+  updateDenormalizedMetadataValues(
+    propertiesToNewValues: Record<string, any>,
+    sharedId: string,
+    language: string
+  ): Promise<void>;
 }

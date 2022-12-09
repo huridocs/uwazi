@@ -1,8 +1,6 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { Entity } from 'api/entities.v2/model/Entity';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
@@ -78,11 +76,13 @@ const fixtures = {
   ],
   relationships: [
     {
+      _id: factory.id('e3_to_it1'),
       from: { entity: 'entity3' },
       to: { entity: 'inherit_target_1' },
       type: factory.id('reltypeid'),
     },
     {
+      _id: factory.id('e4_to_it2'),
       from: { entity: 'entity4' },
       to: { entity: 'inherit_target_2' },
       type: factory.id('reltypeid'),
@@ -425,6 +425,62 @@ it('should update the label of the denormalized value in all related entities', 
             label: 'new label',
             inheritedType: 'numeric',
             inheritedValue: [{ value: 0 }],
+          },
+        ],
+      },
+    },
+    {
+      sharedId: 'entity4',
+      language: 'pt',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
+      },
+    },
+  ]);
+});
+
+it('should update the inheritedValue of the denormalized value in all related entities', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
+  const ds = new MongoEntitiesDataSource(
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
+    partialImplementation<MongoRelationshipsDataSource>({}),
+    partialImplementation<MongoSettingsDataSource>({
+      async getLanguageKeys() {
+        return Promise.resolve(['en', 'pt']);
+      },
+    }),
+    transactionManager
+  );
+
+  await ds.updateDenormalizedMetadataValues({ relProp4: [{ value: 11 }] }, 'old_value', 'en');
+
+  const entities = await testingDB.mongodb
+    ?.collection('entities')
+    .find({ sharedId: 'entity4' })
+    .toArray();
+
+  expect(entities).toMatchObject([
+    {
+      sharedId: 'entity4',
+      language: 'en',
+      metadata: {
+        relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 11 }],
           },
         ],
       },

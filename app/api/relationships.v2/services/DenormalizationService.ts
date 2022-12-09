@@ -115,6 +115,11 @@ export class DenormalizationService {
         const entities = await this.entitiesDS.getByIds([sharedId]).all();
         const entity = entities.find(e => e.language === language);
         if (!entity) throw new Error('missing entity');
+        // const metadataToUpdate = Object.fromEntries(
+        //   Object.entries(entity.metadata).filter(([propName]) => relPropNameSet.has(propName))
+        // );
+
+        console.log(entity)
 
         await this.entitiesDS.updateDenormalizedTitle(
           relationshipPropertyNames,
@@ -122,6 +127,11 @@ export class DenormalizationService {
           language,
           entity.title
         );
+        // await this.entitiesDS.updateDenormalizedMetadataValues(
+        //   metadataToUpdate,
+        //   sharedId,
+        //   language
+        // );
       })
     );
 

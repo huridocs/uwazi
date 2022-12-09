@@ -158,6 +158,33 @@ export class MongoEntitiesDataSource
     return stream.flush();
   }
 
+  async updateDenormalizedMetadataValues(
+    propertiesToNewValues: Record<string, any>,
+    sharedId: string,
+    language: string
+  ) {
+    const stream = this.createBulkStream();
+
+    await Promise.all(
+      Object.entries(propertiesToNewValues).map(async ([property, newValue]) => {
+        await stream.updateMany(
+          { [`metadata.${property}.value`]: sharedId, language },
+          // @ts-ignore
+          {
+            $set: {
+              [`metadata.${property}.$[valueIndex].inheritedValue`]: newValue,
+            },
+          },
+          {
+            arrayFilters: [{ 'valueIndex.value': sharedId }],
+          }
+        );
+      })
+    );
+
+    return stream.flush();
+  }
+
   getByDenormalizedId(properties: string[], sharedIds: string[]): ResultSet<string> {
     const result = this.getCollection().find({
       $or: properties.map(property => ({ [`metadata.${property}.value`]: { $in: sharedIds } })),
