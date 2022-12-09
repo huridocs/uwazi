@@ -24,8 +24,7 @@ const I18NLink = (props: I18NLinkProps) => {
   const navigate = useNavigate();
   const onClickHandler = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (disabled) {
-    }
+    if (disabled) return;
 
     if (onClick) {
       if (confirmTitle) {

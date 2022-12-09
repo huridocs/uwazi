@@ -21,6 +21,7 @@ describe('EntityViewer', () => {
         maxTotalDocs: 40,
       } as OneUpState,
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
+      mainContext: { confirm: jest.fn },
     };
   });
 

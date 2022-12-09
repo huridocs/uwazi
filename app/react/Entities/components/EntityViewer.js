@@ -3,13 +3,12 @@ import React, { Component } from 'react';
 import Immutable from 'immutable';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
 import PropTypes from 'prop-types';
 import { Icon } from 'UI';
-import { withContext } from 'app/componentWrappers';
+import { withContext, withRouter } from 'app/componentWrappers';
 import { AttachmentsList } from 'app/Attachments';
 import { ConnectionsGroups, ConnectionsList, ResetSearch } from 'app/ConnectionsList';
 import { CreateConnectionPanel, actions as connectionsActions } from 'app/Connections';
@@ -65,7 +64,7 @@ class EntityViewer extends Component {
     this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteEntity(this.props.entity.toJS()).then(() => {
-          browserHistory.goBack();
+          this.props.navigate(-1);
         });
       },
       title: 'Confirm delete',
@@ -377,6 +376,7 @@ EntityViewer.propTypes = {
   mainContext: PropTypes.shape({
     confirm: PropTypes.func,
   }).isRequired,
+  navigate: PropTypes.func,
 };
 
 const selectRelationTypes = createSelector(
@@ -420,4 +420,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { EntityViewer, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(withContext(EntityViewer));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withContext(EntityViewer)));
