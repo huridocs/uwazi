@@ -24,7 +24,7 @@ import {
   deleteRelatedNewRelationships,
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
-  markNewRelationshipsOfAffected,
+  denormalizeAfterEntityCreation,
   assignNewRelationshipFieldsValues,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
@@ -388,7 +388,7 @@ export default {
     if (doc.sharedId) {
       await denormalizeAfterEntityUpdate(entity);
     } else {
-      await markNewRelationshipsOfAffected(entity, index);
+      await denormalizeAfterEntityCreation(entity, index);
     }
 
     return entity;
