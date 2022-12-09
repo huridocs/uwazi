@@ -1,44 +1,24 @@
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import React from 'react';
 import { shallow } from 'enzyme';
 
 import { CurrentLocationLink } from 'app/Layout';
 import { EntitySchema } from 'shared/types/entityType';
 
-import { ViewDocumentLinkBase as ViewDocumentLink } from '../ViewDocumentLink';
+import { ViewDocumentLink } from '../ViewDocumentLink';
 
-const routerMock = {
-  push: () => {},
-  replace: () => {},
-  go: () => {},
-  goBack: () => {},
-  goForward: () => {},
-  setRouteLeaveHook: () => () => {},
-  createPath: (part: any) => part,
-  createHref: (href: any) => href,
-  isActive: () => true,
-};
+const mockedUseLocation = jest.fn();
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => mockedUseLocation,
+}));
 const renderComponent = (entity: EntitySchema, pathname: string = 'entity/') => {
-  const location: RouteComponentProps<any, any>['location'] = {
-    pathname,
-    search: '',
-    hash: '',
-    key: 'abc',
-    state: {},
-    query: {},
-    action: 'POP',
-  };
-
+  mockedUseLocation.mockReturnValue({ pathname });
   return shallow(
-    <ViewDocumentLink
-      entity={entity}
-      filename="file.pdf"
-      location={location}
-      params={{ param: 'value' }}
-      router={routerMock}
-      routes={[]}
-    />
+    <ViewDocumentLink entity={entity} filename="file.pdf">
+      ' '
+    </ViewDocumentLink>
   );
 };
 

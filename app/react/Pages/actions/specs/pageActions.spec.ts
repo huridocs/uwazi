@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { browserHistory } from 'react-router-dom';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -10,6 +9,13 @@ import { notificationActions } from 'app/Notifications';
 import api from 'app/Pages/PagesAPI';
 
 import * as actions from '../pageActions';
+
+const mockedUseNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...(jest.requireActual('react-router-dom') as any),
+  useNavigate: () => mockedUseNavigate,
+}));
 
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;
@@ -31,7 +37,6 @@ describe('Page actions', () => {
     spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
-    spyOn(browserHistory, 'push');
   });
 
   describe('resetPage', () => {
@@ -81,7 +86,7 @@ describe('Page actions', () => {
       });
 
       it('should navigate to pages edit with the sharedId', () => {
-        expect(browserHistory.push).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
+        expect(mockedUseNavigate).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
       });
     });
     describe('on error', () => {

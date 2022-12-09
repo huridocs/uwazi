@@ -41,6 +41,7 @@ describe('EntityViewer', () => {
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
       toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
       mlThesauri: [],
+      mainContext: { confirm: jest.fn },
     };
   });
 

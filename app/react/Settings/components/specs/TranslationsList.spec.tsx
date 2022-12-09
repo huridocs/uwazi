@@ -8,11 +8,11 @@ import { fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import TranslationsList from '../TranslationsList';
 
-const mockedUsedNavigate = jest.fn();
+const mockedUseNavigate = jest.fn();
 
 jest.mock('react-router-dom', () => ({
   ...(jest.requireActual('react-router-dom') as any),
-  useNavigate: () => mockedUsedNavigate,
+  useNavigate: () => mockedUseNavigate,
 }));
 
 describe('TranslationsList', () => {
@@ -70,7 +70,7 @@ describe('TranslationsList', () => {
       render();
       const list = screen.getAllByRole('listitem')[index];
       fireEvent.click(within(list).getByText(text).parentElement!);
-      expect(mockedUsedNavigate).toHaveBeenCalledWith(linkAddress);
+      expect(mockedUseNavigate).toHaveBeenCalledWith(linkAddress);
     });
   });
 });

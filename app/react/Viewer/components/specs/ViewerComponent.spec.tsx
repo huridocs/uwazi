@@ -12,7 +12,7 @@ const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>
   shallow(
     <Provider store={store}>
-      <ViewerComponent location={{}} />
+      <ViewerComponent />
     </Provider>
   )
     .dive({ context: { store } })
