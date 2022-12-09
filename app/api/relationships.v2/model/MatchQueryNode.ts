@@ -134,11 +134,11 @@ export class MatchQueryNode extends QueryNode {
 
   invertFromRelationship(relationship: Relationship, entitiesInRelationship: Entity[]) {
     const entityMap = {
-      [relationship.from]: entitiesInRelationship.find(
-        entity => entity.sharedId === relationship.from
+      [relationship.from.entity]: entitiesInRelationship.find(
+        entity => entity.sharedId === relationship.from.entity
       )!,
-      [relationship.to]: entitiesInRelationship.find(
-        entity => entity.sharedId === relationship.to
+      [relationship.to.entity]: entitiesInRelationship.find(
+        entity => entity.sharedId === relationship.to.entity
       )!,
     };
 

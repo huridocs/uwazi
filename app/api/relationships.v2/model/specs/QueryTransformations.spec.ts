@@ -1,4 +1,4 @@
-import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';
 import { TraversalQueryNode } from '../TraversalQueryNode';
@@ -110,31 +110,53 @@ describe('when calling reachesRelationship()', () => {
     ]);
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
-        entity1: { template: 'temp1', sharedId: 'entity1' },
-        entity2: { template: 'temp2', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity1'),
+          new EntityPointer('entity2'),
+          'type1'
+        ),
+        {
+          entity1: { template: 'temp1', sharedId: 'entity1' },
+          entity2: { template: 'temp2', sharedId: 'entity2' },
+        }
+      )
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'root', 'type1'), {
-        root: { template: 'temp1', sharedId: 'root' },
-        entity2: { template: 'temp1', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship('rel1', new EntityPointer('entity2'), new EntityPointer('root'), 'type1'),
+        {
+          root: { template: 'temp1', sharedId: 'root' },
+          entity2: { template: 'temp1', sharedId: 'entity2' },
+        }
+      )
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
-        entity1: { template: 'temp2', sharedId: 'entity1' },
-        entity2: { template: 'temp3', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity1'),
+          new EntityPointer('entity2'),
+          'type1'
+        ),
+        {
+          entity1: { template: 'temp2', sharedId: 'entity1' },
+          entity2: { template: 'temp3', sharedId: 'entity2' },
+        }
+      )
     ).toBe(undefined);
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'root', 'type1'), {
-        root: { template: 'temp1', sharedId: 'root' },
-        entity2: { template: 'temp2', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship('rel1', new EntityPointer('entity2'), new EntityPointer('root'), 'type1'),
+        {
+          root: { template: 'temp1', sharedId: 'root' },
+          entity2: { template: 'temp2', sharedId: 'entity2' },
+        }
+      )
     ).toBe(undefined);
   });
 
@@ -154,10 +176,18 @@ describe('when calling reachesRelationship()', () => {
     ]);
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type1'), {
-        entity1: { template: 'temp1', sharedId: 'entity1' },
-        entity2: { template: 'temp2', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity1'),
+          new EntityPointer('entity2'),
+          'type1'
+        ),
+        {
+          entity1: { template: 'temp1', sharedId: 'entity1' },
+          entity2: { template: 'temp2', sharedId: 'entity2' },
+        }
+      )
     ).toEqual(
       new MatchQueryNode({ sharedId: 'entity1' }, [
         new TraversalQueryNode('out', { _id: 'rel1' }, [
@@ -167,10 +197,18 @@ describe('when calling reachesRelationship()', () => {
     );
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity2', 'entity1', 'type2'), {
-        entity1: { template: 'temp2', sharedId: 'entity1' },
-        entity2: { template: 'temp3', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity2'),
+          new EntityPointer('entity1'),
+          'type2'
+        ),
+        {
+          entity1: { template: 'temp2', sharedId: 'entity1' },
+          entity2: { template: 'temp3', sharedId: 'entity2' },
+        }
+      )
     ).toEqual(
       new MatchQueryNode({ templates: ['temp1'] }, [
         new TraversalQueryNode('out', { types: ['type1'] }, [
@@ -184,10 +222,18 @@ describe('when calling reachesRelationship()', () => {
     );
 
     expect(
-      query.reachesRelationship(Relationship.create('rel1', 'entity1', 'entity2', 'type3'), {
-        entity1: { template: 'temp3', sharedId: 'entity1' },
-        entity2: { template: 'temp4', sharedId: 'entity2' },
-      })
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity1'),
+          new EntityPointer('entity2'),
+          'type3'
+        ),
+        {
+          entity1: { template: 'temp3', sharedId: 'entity1' },
+          entity2: { template: 'temp4', sharedId: 'entity2' },
+        }
+      )
     ).toEqual(
       new MatchQueryNode({ templates: ['temp1'] }, [
         new TraversalQueryNode('out', { types: ['type1'] }, [
@@ -312,7 +358,12 @@ describe('when calling a method that only supports chain queries', () => {
       }).toThrow(NonChainQueryError);
       expect(() => {
         query.reachesRelationship(
-          Relationship.create('fakeRel', 'entity1', 'entity2', 'fakeType'),
+          new Relationship(
+            'fakeRel',
+            new EntityPointer('entity1'),
+            new EntityPointer('entity2'),
+            'fakeType'
+          ),
           {
             entity1: { sharedId: 'entity1', template: 'fakeTemplate' },
             entity2: { sharedId: 'entity2', template: 'fakeTemplate' },
