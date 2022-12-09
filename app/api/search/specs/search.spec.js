@@ -1171,6 +1171,7 @@ describe('search', () => {
             const f = valueInObjectDeep(v, value);
             if (f) return true;
           }
+          return false;
         });
       userFactory.mock(undefined);
       spyOn(elastic, 'search').and.callFake(async () => Promise.resolve(result));
