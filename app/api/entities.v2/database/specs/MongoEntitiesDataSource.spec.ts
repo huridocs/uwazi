@@ -29,6 +29,7 @@ const fixtures = {
       'template1',
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp3: [{ value: 'old_value', label: 'old_label' }],
         numeric: [{ value: 1 }],
       },
       { obsoleteMetadata: ['relProp3'] }
@@ -39,6 +40,14 @@ const fixtures = {
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
         numeric: [{ value: 1 }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
       },
       { obsoleteMetadata: ['relProp4'] }
     ),
@@ -381,6 +390,7 @@ it('should update the label of the denormalized value in all related entities', 
     'en',
     'new label'
   );
+  await ds.updateDenormalizedTitle(['relProp3', 'relProp4'], 'old_value', 'en', 'new label');
 
   const entities = await testingDB.mongodb
     ?.collection('entities')
@@ -393,6 +403,7 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'en',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'new label' }],
+        relProp3: [{ value: 'old_value', label: 'new label' }],
       },
     },
     {
@@ -400,6 +411,7 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'pt',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp3: [{ value: 'old_value', label: 'old_label' }],
       },
     },
     {
@@ -407,6 +419,14 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'en',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'new label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'new label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
       },
     },
     {
@@ -414,6 +434,14 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'pt',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
       },
     },
   ]);
