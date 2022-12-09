@@ -9,7 +9,7 @@ import {
   PropertyConfigurationModalProps,
 } from '../PropertyConfigurationModal';
 
-describe('Attachments Modal', () => {
+describe('Property Configuration Modal', () => {
   let props: PropertyConfigurationModalProps;
 
   beforeEach(() => {
