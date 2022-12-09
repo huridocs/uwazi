@@ -42,17 +42,76 @@ const fixtures = {
       },
       { obsoleteMetadata: ['relProp4'] }
     ),
+    factory.entity(
+      'inherit_target_1',
+      'template-to-inherit',
+      { inherited: [{ value: 1 }] },
+      { language: 'en', title: 'inherit_target_1_en' }
+    ),
+    factory.entity(
+      'inherit_target_1',
+      'template-to-inherit',
+      { inherited: [{ value: 2 }] },
+      { language: 'pt', title: 'inherit_target_1_pt' }
+    ),
+    factory.entity(
+      'inherit_target_2',
+      'template-to-inherit',
+      { inherited: [{ value: 3 }] },
+      { language: 'en', title: 'inherit_target_2_en' }
+    ),
+    factory.entity(
+      'inherit_target_2',
+      'template-to-inherit',
+      { inherited: [{ value: 4 }] },
+      { language: 'pt', title: 'inherit_target_2_pt' }
+    ),
+  ],
+  relationships: [
+    {
+      from: { entity: 'entity3' },
+      to: { entity: 'inherit_target_1' },
+      type: factory.id('reltypeid'),
+    },
+    {
+      from: { entity: 'entity4' },
+      to: { entity: 'inherit_target_2' },
+      type: factory.id('reltypeid'),
+    },
+  ],
+  relationtypes: [
+    {
+      _id: factory.id('reltypeid'),
+      template: 'reltype',
+    },
   ],
   templates: [
     factory.template('template1', [
-      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp3', label: 'relProp3', query: [{ match: [{}] }] },
+      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{}] },
+      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{}] },
+      {
+        type: 'newRelationship',
+        name: 'relProp3',
+        label: 'relProp3',
+        query: [
+          {
+            types: [factory.id('reltypeid')],
+            direction: 'out',
+            match: [{ templates: [factory.id('template-to-inherit')] }],
+          },
+        ],
+      },
       {
         type: 'newRelationship',
         name: 'relProp4',
         label: 'relProp4',
-        query: [{ match: [{}] }],
+        query: [
+          {
+            types: [factory.id('reltypeid')],
+            direction: 'out',
+            match: [{ templates: [factory.id('template-to-inherit')] }],
+          },
+        ],
         denormalizedProperty: 'inherited',
       },
     ]),
@@ -89,7 +148,13 @@ describe('Relationship fields caching strategy', () => {
       ]);
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
-      expect(entities).toMatchObject([
+      expect(
+        entities?.map(e => ({
+          sharedId: e.sharedId,
+          language: e.language,
+          obsoleteMetadata: e.obsoleteMetadata,
+        }))
+      ).toMatchObject([
         { sharedId: 'entity1', language: 'en', obsoleteMetadata: ['relProp1'] },
         { sharedId: 'entity1', language: 'pt', obsoleteMetadata: ['relProp1'] },
         { sharedId: 'entity2', language: 'en', obsoleteMetadata: ['relProp2'] },
@@ -98,6 +163,10 @@ describe('Relationship fields caching strategy', () => {
         { sharedId: 'entity3', language: 'pt', obsoleteMetadata: ['relProp3'] },
         { sharedId: 'entity4', language: 'en', obsoleteMetadata: ['relProp4'] },
         { sharedId: 'entity4', language: 'pt', obsoleteMetadata: ['relProp4'] },
+        { sharedId: 'inherit_target_1', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_1', language: 'pt', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
       ]);
     });
   });
@@ -105,34 +174,13 @@ describe('Relationship fields caching strategy', () => {
   describe('When loading some entities', () => {
     let entities: any[];
     beforeEach(async () => {
-      let counter = 0;
-      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({
-        getByQuery(_query, lang) {
-          counter += 1;
-          return partialImplementation<MongoResultSet<any, Entity>>({
-            all: async () =>
-              Promise.resolve([
-                new Entity(
-                  `calculated${counter}-${lang}`,
-                  `calculated${counter}-${lang}`,
-                  lang,
-                  `calculated${counter}-${lang}`,
-                  factory.id('template-to-inherit').toHexString(),
-                  {
-                    inherited: [{ value: counter }],
-                  }
-                ),
-              ]),
-          });
-        },
-      });
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const tm = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, tm),
-        relationshipsDsMock,
+        new MongoRelationshipsDataSource(db, tm),
         settingsDsMock,
         tm
       );
@@ -173,21 +221,20 @@ describe('Relationship fields caching strategy', () => {
       ]);
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
     it('should recalculate the invalidated values', async () => {
       expect(entities).toMatchObject([
         {
           sharedId: 'entity3',
           language: 'en',
           metadata: {
-            relProp3: [{ value: 'calculated1-en', label: 'calculated1-en' }],
+            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_en' }],
           },
         },
         {
           sharedId: 'entity3',
           language: 'pt',
           metadata: {
-            relProp3: [{ value: 'calculated2-pt', label: 'calculated2-pt' }],
+            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_pt' }],
           },
         },
         {
@@ -196,8 +243,8 @@ describe('Relationship fields caching strategy', () => {
           metadata: {
             relProp4: [
               {
-                value: 'calculated3-en',
-                label: 'calculated3-en',
+                value: 'inherit_target_2',
+                label: 'inherit_target_2_en',
                 inheritedValue: [{ value: 3 }],
                 inheritedType: 'numeric',
               },
@@ -210,8 +257,8 @@ describe('Relationship fields caching strategy', () => {
           metadata: {
             relProp4: [
               {
-                value: 'calculated4-pt',
-                label: 'calculated4-pt',
+                value: 'inherit_target_2',
+                label: 'inherit_target_2_pt',
                 inheritedValue: [{ value: 4 }],
                 inheritedType: 'numeric',
               },
