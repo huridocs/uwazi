@@ -1,5 +1,4 @@
-import { browserHistory } from 'react-router-dom';
-
+import { redirect } from 'react-router-dom';
 import { isClient } from 'app/utils';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
@@ -66,11 +65,11 @@ const handleErrorStatus = error => {
       break;
 
     case 401:
-      browserHistory.replace('/login');
+      redirect('/login');
       break;
 
     case 404:
-      browserHistory.replace('/404');
+      redirect('/404');
       break;
 
     case 409:

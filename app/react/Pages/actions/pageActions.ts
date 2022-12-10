@@ -1,4 +1,4 @@
-import { browserHistory } from 'react-router-dom';
+import { redirect } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
@@ -48,7 +48,7 @@ export function savePage(data: PageType) {
           })
         );
         dispatch({ type: types.PAGE_SAVED, data: response });
-        browserHistory.push(`/settings/pages/edit/${response.sharedId}`);
+        redirect(`/settings/pages/edit/${response.sharedId}`);
       })
       .catch(() => {
         dispatch({ type: types.PAGE_SAVED, data: {} });

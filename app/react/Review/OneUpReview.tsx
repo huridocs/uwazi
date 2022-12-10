@@ -3,6 +3,7 @@ import { actions } from 'app/BasicReducer';
 import { Loader } from 'app/components/Elements/Loader';
 import * as uiActions from 'app/Entities/actions/uiActions';
 import { OneUpState } from 'app/istore';
+import { store } from 'app/store';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { processQuery } from 'app/Library/helpers/requestState';
 import { wrapDispatch } from 'app/Multireducer';
@@ -135,15 +136,15 @@ export class OneUpReviewBase extends RouteHandler {
   }
 
   componentDidMount() {
-    this.context.store.dispatch(uiActions.showTab('info'));
+    store?.dispatch(uiActions.showTab('info'));
   }
 
   emptyState() {
-    wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
-    this.context.store.dispatch(setReferences([]));
-    this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(formActions.reset('entityView.entityForm'));
-    this.context.store.dispatch(relationships.emptyState());
+    wrapDispatch(store?.dispatch, 'library')(unsetDocuments());
+    store?.dispatch(setReferences([]));
+    store?.dispatch(actions.unset('entityView/entity'));
+    store?.dispatch(formActions.reset('entityView.entityForm'));
+    store?.dispatch(relationships.emptyState());
     actions.set('oneUpReview.state', {});
   }
 
