@@ -3,22 +3,22 @@ import { shallow, ShallowWrapper } from 'enzyme';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => ({
+    search: { requestId: '1234' },
+  }),
+  useParams: () => ({
+    errorCode: 500,
+  }),
+}));
+
 describe('General Error', () => {
   describe('when a page could not be rendered at server', () => {
     let component: ShallowWrapper<typeof GeneralError>;
     const context = { store: { getState: () => ({}) }, router: { location: '' } };
-    const render = (errorCode = 500, requestId = '1234') => {
-      const props = {
-        params: {
-          errorCode,
-        },
-        location: {
-          query: {
-            requestId,
-          },
-        },
-      };
-      component = shallow(<GeneralError {...props} />, { context });
+    const render = (_errorCode = 500, _requestId = '1234') => {
+      component = shallow(<GeneralError />, { context });
     };
 
     it('should show render an ErrorFallback with the error', () => {

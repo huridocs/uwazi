@@ -24,8 +24,8 @@ const suggestionsTable = (
   reviewedProperty: PropertySchema,
   suggestions: EntitySuggestionType[],
   totalPages: number,
-  actionsCell: (data: { row: {} }) => React.ReactElement,
-  segmentCell: (data: { row: {} }) => React.ReactElement
+  actionsCell: (data: { row: Row<EntitySuggestionType> }) => React.ReactElement,
+  segmentCell: (data: { row: Row<EntitySuggestionType> }) => React.ReactElement
 ) => {
   const stateFilter = ({
     column: { filterValue, setFilter },
