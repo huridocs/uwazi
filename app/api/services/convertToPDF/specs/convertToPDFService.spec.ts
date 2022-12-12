@@ -32,7 +32,10 @@ describe('ConvertToPDFService', () => {
       backend.post(
         (url, request) => {
           //@ts-ignore
-          return url === serviceURL + 'upload/' + tenants.current().name && expectedFile == request?.body?.get('file');
+          return (
+            url === serviceURL + 'upload/' + tenants.current().name &&
+            expectedFile == request?.body?.get('file')
+          );
         },
         { body: JSON.stringify({ success: true }) }
       );
@@ -47,7 +50,21 @@ describe('ConvertToPDFService', () => {
 
   describe('when mimetype is not supported', () => {
     it('should throw an error', async () => {
-      fail()
+      const expectedFile = await readFile(attachmentsPath('filename.txt'));
+      backend.post(
+        (url, request) =>
+          //@ts-ignore
+          url === `${serviceURL}upload/${tenants.current().name}` &&
+          expectedFile == request?.body?.get('file'),
+        422
+      );
+
+      await expect(
+        convertToPDFService.upload({
+          filename: 'filename.txt',
+          type: 'attachment',
+        })
+      ).rejects.toThrow();
     });
   });
 });

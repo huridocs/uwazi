@@ -1,6 +1,7 @@
 import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { createReadStream } from 'fs';
+import { writeFile } from 'fs/promises';
 import { files } from '../files';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
 import { processDocument } from '../processDocument';
@@ -17,6 +18,7 @@ describe('processDocument', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp({});
     await setupTestUploadedPaths();
+    await writeFile(attachmentsPath('test.docx'), 'data');
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -32,9 +34,14 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
-      jest.spyOn(convertToPDFService, 'upload');
+      jest.spyOn(convertToPDFService, 'upload').mockResolvedValue({});
       await testingEnvironment.setUp({
-        settings: [{ features: { convertToPdf: { active: true, url: '' } } }],
+        settings: [
+          {
+            languages: [{ key: 'en', label: 'English' }],
+            features: { convertToPdf: { active: true, url: '' } },
+          },
+        ],
       });
 
       const file = await processDocument('entity_shared_id', {
@@ -51,11 +58,7 @@ describe('processDocument', () => {
     it('should remove the file when convertToPdfService.upload returns error', async () => {
       jest
         .spyOn(convertToPDFService, 'upload')
-        .mockRejectedValue(
-          new MimeTypeNotSupportedForConversion(
-            'jpg: mymetype not allowed'
-          )
-        );
+        .mockRejectedValue(new MimeTypeNotSupportedForConversion('jpg: mymetype not allowed'));
 
       await testingEnvironment.setUp({
         settings: [
