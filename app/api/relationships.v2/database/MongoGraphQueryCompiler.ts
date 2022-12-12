@@ -44,7 +44,7 @@ const compilers = {
                 $expr: {
                   $and: [
                     ...(filters._id ? [{ $eq: ['$_id', new ObjectId(filters._id)] }] : []),
-                    { $eq: ['$$sharedId', `$${directionToField[query.getDirection()]}`] },
+                    { $eq: ['$$sharedId', `$${directionToField[query.getDirection()]}.entity`] },
                     { $not: [{ $in: ['$_id', '$$visited'] }] },
                     ...(filters.types?.length
                       ? [{ $in: ['$type', filters.types.map(t => new ObjectId(t))] }]
@@ -88,7 +88,7 @@ const compilers = {
                 $expr: {
                   $and: [
                     ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
-                    { $eq: [`$$${sourceField}`, '$sharedId'] },
+                    { $eq: [`$$${sourceField}.entity`, '$sharedId'] },
                     { $eq: ['$language', language] },
                     ...(filters.templates?.length
                       ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]

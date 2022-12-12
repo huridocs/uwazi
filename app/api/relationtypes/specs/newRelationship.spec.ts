@@ -14,14 +14,14 @@ const fixtures = {
   relationships: [
     {
       _id: factory.id('rel1-2'),
-      from: 'entity1',
-      to: 'entity2',
+      from: { entity: 'entity1' },
+      to: { entity: 'entity2' },
       type: factory.id('rtype1'),
     },
     {
       _id: factory.id('rel1-3'),
-      from: 'entity1',
-      to: 'entity3',
+      from: { entity: 'entity1' },
+      to: { entity: 'entity3' },
       type: factory.id('rtype1'),
     },
   ],

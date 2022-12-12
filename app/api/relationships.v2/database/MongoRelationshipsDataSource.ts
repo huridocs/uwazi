@@ -3,10 +3,11 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
 import { RelationshipMappers } from './RelationshipMappers';
-import { RelationshipDBOType, JoinedRelationshipDBOType } from './schemas/relationshipTypes';
+import { RelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
 import { MatchQueryNode } from '../model/MatchQueryNode';
+import { JoinedRelationshipDBOType } from './schemas/relationshipAggregationTypes';
 
 const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
 
@@ -91,6 +92,14 @@ export class MongoRelationshipsDataSource
     return new MongoResultSet(dataCursor, RelationshipMappers.toAggregatedResult);
   }
 
+  getByFiles(fileIds: string[]) {
+    const files = idsToDb(fileIds);
+    const cursor = this.getCollection().find({
+      $or: [{ 'from.file': { $in: files } }, { 'to.file': { $in: files } }],
+    });
+    return new MongoResultSet(cursor, RelationshipMappers.toModel);
+  }
+
   getByQuery(query: MatchQueryNode, language: string) {
     const pipeline = compileQuery(query, language);
     const cursor = this.db
@@ -101,7 +110,15 @@ export class MongoRelationshipsDataSource
 
   async deleteByEntities(sharedIds: string[]) {
     await this.getCollection().deleteMany(
-      { $or: [{ from: { $in: sharedIds } }, { to: { $in: sharedIds } }] },
+      { $or: [{ 'from.entity': { $in: sharedIds } }, { 'to.entity': { $in: sharedIds } }] },
+      { session: this.getSession() }
+    );
+  }
+
+  async deleteByReferencedFiles(fileIds: string[]): Promise<void> {
+    const files = idsToDb(fileIds);
+    await this.getCollection().deleteMany(
+      { $or: [{ 'from.file': { $in: files } }, { 'to.file': { $in: files } }] },
       { session: this.getSession() }
     );
   }
