@@ -91,9 +91,9 @@ export class TraversalQueryNode extends QueryNode {
 
   wouldTraverse(fromEntity: string, relationship: Relationship, toEntity: string) {
     let traverseDirection: 'in' | 'out';
-    if (relationship.from === fromEntity && relationship.to === toEntity) {
+    if (relationship.from.entity === fromEntity && relationship.to.entity === toEntity) {
       traverseDirection = 'out';
-    } else if (relationship.to === fromEntity && relationship.from === toEntity) {
+    } else if (relationship.to.entity === fromEntity && relationship.from.entity === toEntity) {
       traverseDirection = 'in';
     } else {
       return false;
@@ -129,8 +129,8 @@ export class TraversalQueryNode extends QueryNode {
       } as const,
     } as const;
 
-    const first = entityData[relationship[relSideGivenDirection[this.direction].first]];
-    const second = entityData[relationship[relSideGivenDirection[this.direction].second]];
+    const first = entityData[relationship[relSideGivenDirection[this.direction].first].entity];
+    const second = entityData[relationship[relSideGivenDirection[this.direction].second].entity];
 
     return [first, second];
   }
