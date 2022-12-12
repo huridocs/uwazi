@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.96.0",
+  "version": "1.97.0",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -88,9 +88,9 @@
     "@googlemaps/js-api-loader": "^1.14.3",
     "@hookform/error-message": "^2.0.0",
     "@loadable/component": "^5.13.1",
-    "@sentry/node": "^7.20.1",
-    "@sentry/react": "7.20.1",
-    "@sentry/tracing": "^7.20.1",
+    "@sentry/node": "^7.23.0",
+    "@sentry/react": "7.23.0",
+    "@sentry/tracing": "^7.23.0",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.0.0",
     "@supercharge/promise-pool": "^2.1.0",
@@ -202,7 +202,7 @@
     "serialize-javascript": "^6.0.0",
     "sift": "^16.0.1",
     "socket.io": "4.5.3",
-    "socket.io-client": "4.5.3",
+    "socket.io-client": "4.5.4",
     "socket.io-parser": "4.2.1",
     "superagent": "^8.0.3",
     "svg-captcha": "^1.4.0",

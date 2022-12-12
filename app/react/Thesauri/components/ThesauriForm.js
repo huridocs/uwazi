@@ -100,7 +100,7 @@ class ThesauriForm extends Component {
     const previousLastValueWasGroup =
       previousValues.length && previousValues[previousValues.length - 1].values;
     if (lastValueIsGroup && (!previousLastValueWasGroup || addedValue)) {
-      this.groups[this.groups.length - 1].focus();
+      this.groups[this.groups.length - 1]?.focus();
     }
   }
 
@@ -211,7 +211,7 @@ class ThesauriForm extends Component {
                     <Translate>Sort</Translate>
                   </span>
                 </button>
-                <SelectFileButton onFileImported={this.importThesaurusFile}>
+                <SelectFileButton onFileImported={this.importThesaurusFile} id="import-thesauri">
                   <button type="button" className="btn btn-default import-template">
                     <Icon icon="upload" />
                     <span className="btn-label">
