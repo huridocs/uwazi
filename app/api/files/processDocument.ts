@@ -65,7 +65,7 @@ export const processDocument = async (
       status: 'processing',
     });
     try {
-      await convertToPDFService.upload(upload);
+      await convertToPDFService.upload(upload, features.convertToPdf.url);
     } catch (e) {
       await files.delete(upload);
     }

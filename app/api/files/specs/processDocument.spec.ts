@@ -29,12 +29,12 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
-      jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
+      const uploadSpy = jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
       await testingEnvironment.setUp({
         settings: [
           {
             languages: [{ key: 'en', label: 'English' }],
-            features: { convertToPdf: { active: true, url: '' } },
+            features: { convertToPdf: { active: true, url: 'http://serviceurl.uwazi.io' } },
           },
         ],
       });
@@ -47,7 +47,10 @@ describe('processDocument', () => {
       const [dbFile] = await files.get({ entity: 'entity_shared_id' });
       expect(dbFile.type).toBe('attachment');
       expect(dbFile._id).toEqual(file._id);
-      expect(convertToPDFService.upload).toHaveBeenCalledWith(expect.objectContaining(file));
+      expect(convertToPDFService.upload).toHaveBeenCalledWith(
+        expect.objectContaining(file),
+        'http://serviceurl.uwazi.io'
+      );
     });
 
     it('should remove the file when convertToPdfService.upload returns error', async () => {

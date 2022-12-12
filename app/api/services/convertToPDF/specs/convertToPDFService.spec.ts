@@ -11,12 +11,7 @@ describe('ConvertToPDFService', () => {
   const serviceURL = 'http://service.uwazi.io/';
   beforeEach(async () => {
     await testingEnvironment.setUp({
-      settings: [
-        {
-          languages: [{ label: 'English', key: 'en' }],
-          features: { convertToPdf: { active: true, url: serviceURL } },
-        },
-      ],
+      settings: [{ languages: [{ label: 'English', key: 'en' }] }],
     });
     await setupTestUploadedPaths();
     await writeFile(attachmentsPath('filename.txt'), 'data');
@@ -36,10 +31,13 @@ describe('ConvertToPDFService', () => {
         { body: JSON.stringify({ success: true }) }
       );
 
-      await convertToPDFService.upload({
-        filename: 'filename.txt',
-        type: 'attachment',
-      });
+      await convertToPDFService.upload(
+        {
+          filename: 'filename.txt',
+          type: 'attachment',
+        },
+        serviceURL
+      );
       expect(backend.calls().length).toBe(1);
     });
   });
@@ -56,10 +54,13 @@ describe('ConvertToPDFService', () => {
       );
 
       await expect(
-        convertToPDFService.upload({
-          filename: 'filename.txt',
-          type: 'attachment',
-        })
+        convertToPDFService.upload(
+          {
+            filename: 'filename.txt',
+            type: 'attachment',
+          },
+          serviceURL
+        )
       ).rejects.toThrowError(MimeTypeNotSupportedForConversion);
     });
   });
