@@ -1,8 +1,14 @@
 import { storage } from 'api/files';
-import { MimeTypeNotSupportedForConversion } from 'api/files/specs/processDocument.spec';
 import settings from 'api/settings';
 import { tenants } from 'api/tenants';
 import { FileType } from 'shared/types/fileType';
+
+export class MimeTypeNotSupportedForConversion extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MimeTypeNotSupportedForConversion';
+  }
+}
 
 export const convertToPDFService = {
   async upload(file: FileType) {

@@ -2,11 +2,10 @@ import 'isomorphic-fetch';
 import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import backend from 'fetch-mock';
-import { createReadStream } from 'fs';
-import { URLSearchParams } from 'url';
+// eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
-import { convertToPDFService } from '../convertToPdfService';
 import { tenants } from 'api/tenants';
+import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
 
 describe('ConvertToPDFService', () => {
   const serviceURL = 'http://service.uwazi.io/';
@@ -30,13 +29,10 @@ describe('ConvertToPDFService', () => {
       const expectedFile = await readFile(attachmentsPath('filename.txt'));
 
       backend.post(
-        (url, request) => {
+        (url, request) =>
+          url === `${serviceURL}upload/${tenants.current().name}` &&
           //@ts-ignore
-          return (
-            url === serviceURL + 'upload/' + tenants.current().name &&
-            expectedFile == request?.body?.get('file')
-          );
-        },
+          expectedFile.toString() === request?.body?.get('file'),
         { body: JSON.stringify({ success: true }) }
       );
 
@@ -53,9 +49,9 @@ describe('ConvertToPDFService', () => {
       const expectedFile = await readFile(attachmentsPath('filename.txt'));
       backend.post(
         (url, request) =>
-          //@ts-ignore
           url === `${serviceURL}upload/${tenants.current().name}` &&
-          expectedFile == request?.body?.get('file'),
+          //@ts-ignore
+          expectedFile.toString() === request?.body?.get('file'),
         422
       );
 
@@ -64,7 +60,7 @@ describe('ConvertToPDFService', () => {
           filename: 'filename.txt',
           type: 'attachment',
         })
-      ).rejects.toThrow();
+      ).rejects.toThrowError(MimeTypeNotSupportedForConversion);
     });
   });
 });

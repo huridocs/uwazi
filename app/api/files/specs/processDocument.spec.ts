@@ -1,18 +1,13 @@
-import { convertToPDFService } from 'api/services/convertToPDF/convertToPdfService';
+import {
+  convertToPDFService,
+  MimeTypeNotSupportedForConversion,
+} from 'api/services/convertToPDF/convertToPdfService';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { createReadStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { files } from '../files';
 import { attachmentsPath, setupTestUploadedPaths } from '../filesystem';
 import { processDocument } from '../processDocument';
-import { storage } from '../storage';
-
-export class MimeTypeNotSupportedForConversion extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'MimeTypeNotSupportedForConversion';
-  }
-}
 
 describe('processDocument', () => {
   beforeEach(async () => {
@@ -34,7 +29,7 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
-      jest.spyOn(convertToPDFService, 'upload').mockResolvedValue({});
+      jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
       await testingEnvironment.setUp({
         settings: [
           {
