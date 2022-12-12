@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
@@ -5,7 +6,7 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-import { matchRoutes, Navigate, RouteObject } from 'react-router-dom';
+import { matchRoutes, RouteObject } from 'react-router-dom';
 import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
@@ -17,14 +18,14 @@ import {
 } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import settingsApi from '../api/settings/settings';
-import Root from './App/Root';
 import createStore from './store';
 import { routes } from './Routes';
-import CustomProvider from './App/Provider';
 import { ClientTranslationSchema, IStore } from './istore';
-import { I18NUtils } from './I18N';
+import { I18NUtils, t, Translate } from './I18N';
+import Root from './App/Root';
+import CustomProvider from './App/Provider';
 import translationsApi from '../api/i18n/translations';
+import settingsApi from '../api/settings/settings';
 
 const onlySystemTranslations = (translations: ClientTranslationSchema[]) => {
   const rows = translations.map(translation => {
@@ -223,6 +224,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const reduxState = reduxStore.getState();
 
   await setReduxState(req, reduxStore, reduxState, matched);
+
+  t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
 
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={reduxStore as any}>
