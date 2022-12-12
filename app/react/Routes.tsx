@@ -98,8 +98,8 @@ const routesLayout = (
     <Route path="library" element={<LibraryCards />} />
     <Route path="library/map" element={<LibraryMap />} />
     <Route path="library/table" element={<LibraryTable />} />
-    <Route path="document/:sharedId*" element={<ViewerRoute />} />
-    <Route path="entity/:sharedId*" element={<ViewerRoute />} />
+    <Route path="document/:sharedId/*" element={<ViewerRoute />} />
+    <Route path="entity/:sharedId/*" element={<ViewerRoute />} />
     <Route path="entity/:sharedId/:tabView" element={<ViewerRoute />} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
@@ -109,7 +109,6 @@ const routesLayout = (
     <Route path="uploads" component={Uploads} />
     <Route path="setpassword/:key" component={ResetPassword} />
     <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
-    <Route path="document/:sharedId*" component={ViewerRoute} onEnter={onEnter} />
     <Route path="entity/:sharedId(/:tabView)" component={ViewerRoute} onEnter={onEnter} />
     <Route
       path="semanticsearch/:searchId"
