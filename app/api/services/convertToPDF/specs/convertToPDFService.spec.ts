@@ -5,6 +5,7 @@ import backend from 'fetch-mock';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
 import { tenants } from 'api/tenants';
+import JSONRequest from 'shared/JSONRequest';
 import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
 
 describe('ConvertToPDFService', () => {
@@ -22,46 +23,38 @@ describe('ConvertToPDFService', () => {
   describe('upload', () => {
     it('should upload the file to the convert service', async () => {
       const expectedFile = await readFile(attachmentsPath('filename.txt'));
-
-      backend.post(
-        (url, request) =>
-          url === `${serviceURL}upload/${tenants.current().name}` &&
-          //@ts-ignore
-          expectedFile.toString() === request?.body?.get('file'),
-        { body: JSON.stringify({ success: true }) }
-      );
+      jest.spyOn(JSONRequest, 'uploadFile').mockResolvedValue({});
 
       await convertToPDFService.upload(
-        {
-          filename: 'filename.txt',
-          type: 'attachment',
-        },
+        { filename: 'filename.txt', type: 'attachment' },
         serviceURL
       );
-      expect(backend.calls().length).toBe(1);
+
+      expect(JSONRequest.uploadFile).toHaveBeenCalledWith(
+        `${serviceURL}upload/${tenants.current().name}`,
+        'filename.txt',
+        expectedFile
+      );
     });
   });
 
   describe('when mimetype is not supported', () => {
-    it('should throw an error', async () => {
-      const expectedFile = await readFile(attachmentsPath('filename.txt'));
-      backend.post(
-        (url, request) =>
-          url === `${serviceURL}upload/${tenants.current().name}` &&
-          //@ts-ignore
-          expectedFile.toString() === request?.body?.get('file'),
-        422
-      );
-
+    it('should throw a MimeTypeNotSupportedForConversion error', async () => {
+      jest.spyOn(JSONRequest, 'uploadFile').mockRejectedValue({
+        response: { status: 422, body: { detail: { code: 'FileNotSupported' } } },
+      });
       await expect(
-        convertToPDFService.upload(
-          {
-            filename: 'filename.txt',
-            type: 'attachment',
-          },
-          serviceURL
-        )
+        convertToPDFService.upload({ filename: 'filename.txt', type: 'attachment' }, serviceURL)
       ).rejects.toThrowError(MimeTypeNotSupportedForConversion);
+    });
+  });
+
+  describe('on upload error', () => {
+    it('should throw an error', async () => {
+      jest.spyOn(JSONRequest, 'uploadFile').mockRejectedValue(new Error('error'));
+      await expect(
+        convertToPDFService.upload({ filename: 'filename.txt', type: 'attachment' }, serviceURL)
+      ).rejects.toThrow();
     });
   });
 });

@@ -1,5 +1,6 @@
 import { storage } from 'api/files';
 import { tenants } from 'api/tenants';
+import JSONRequest from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 
 export class MimeTypeNotSupportedForConversion extends Error {
@@ -15,15 +16,17 @@ export const convertToPDFService = {
       throw Error('Filename or type are missing');
     }
 
-    const body = new URLSearchParams();
-    body.append('file', (await storage.fileContents(file.filename, file.type)).toString());
-    const response = await fetch(new URL(`/upload/${tenants.current().name}`, serviceUrl).href, {
-      method: 'POST',
-      body,
-    });
-
-    if (response.status === 422) {
-      throw new MimeTypeNotSupportedForConversion('mymetype not allowed');
+    try {
+      await JSONRequest.uploadFile(
+        new URL(`/upload/${tenants.current().name}`, serviceUrl).href,
+        file.filename,
+        await storage.fileContents(file.filename, file.type)
+      );
+    } catch (e) {
+      if (e.response?.body?.detail?.code === 'FileNotSupported') {
+        throw new MimeTypeNotSupportedForConversion('mymetype not allowed');
+      }
+      throw e;
     }
   },
 };
