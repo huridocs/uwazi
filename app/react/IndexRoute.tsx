@@ -1,18 +1,14 @@
 import React from 'react';
-import { Navigate, useLoaderData } from 'react-router-dom';
-import { UserSchema } from 'shared/types/userType';
-import { Settings } from 'shared/types/settingsType';
+import { Navigate } from 'react-router-dom';
 import { validateHomePageRoute } from './utils/routeHelpers';
 import { PageView } from './Pages/PageView';
 import { LibraryTable } from './Library/LibraryTable';
 import { LibraryMap } from './Library/LibraryMap';
 import { LibraryCards } from './Library/Library';
+import { store } from './store';
 
-const getLibraryDefault = (
-  user: UserSchema | undefined,
-  defaultLibraryView: string | undefined
-) => {
-  if (user?._id) {
+const getLibraryDefault = (userId: string | undefined, defaultLibraryView: string | undefined) => {
+  if (userId) {
     return <Navigate to="/library/?q=(includeUnpublished:!t)" />;
   }
 
@@ -30,16 +26,14 @@ const getLibraryDefault = (
 };
 
 const IndexRoute = () => {
-  const { user, collectionSettings } = useLoaderData() as {
-    user: UserSchema;
-    collectionSettings: Settings;
-  };
+  const reduxState = store?.getState();
+  const { settings, user } = reduxState || {};
 
-  const homePage = collectionSettings.home_page;
+  const homePage = settings?.collection.get('home_page');
   const customHomePage = homePage ? homePage.split('/').filter(v => v) : [];
 
   if (!validateHomePageRoute(homePage || '') || customHomePage.length === 0) {
-    return getLibraryDefault(user, collectionSettings.defaultLibraryView);
+    return getLibraryDefault(user?.get('_id'), settings?.collection.get('defaultLibraryView'));
   }
 
   if (customHomePage.includes('page')) {

@@ -38,11 +38,9 @@ import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
-import api from 'app/utils/api';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { IndexRoute } from './IndexRoute';
-import { RequestParams } from './utils/RequestParams';
 import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 
@@ -81,19 +79,7 @@ const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element
 
 const routesLayout = (
   <Route errorElement={<ErrorBoundary />}>
-    <Route
-      index
-      element={<IndexRoute />}
-      loader={async ({ request }) => {
-        const headers = {
-          Cookie: `${request.headers.get('cookie')}`,
-        };
-        const requestParams = new RequestParams({}, headers);
-        const { json: collectionSettings } = await api.get('settings');
-        const { json: user } = await api.get('user', requestParams);
-        return { collectionSettings, user };
-      }}
-    />
+    <Route index element={<IndexRoute />} />
     <Route path="login" element={<Login />} />
     <Route path="library" element={<LibraryCards />} />
     <Route path="library/map" element={<LibraryMap />} />
