@@ -106,20 +106,20 @@ export class DenormalizationService {
     });
   }
 
-  private async updateDenormalizedMetadataDirectly(entityIds: string[], language: string) {
+  private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
     await Promise.all(
-      entityIds.map(async sharedId => {
+      changedEntityIds.map(async sharedId => {
         const entities = await this.entitiesDS.getByIds([sharedId]).all();
         const entity = entities.find(e => e.language === language);
         if (!entity) throw new Error('missing entity');
-        // const metadataToUpdate = Object.fromEntries(
-        //   Object.entries(entity.metadata).filter(([propName]) => relPropNameSet.has(propName))
-        // );
 
-        console.log(entity)
+        const newValuesForProperties = relationshipProperties.map(property => ({
+          propertyName: property.name,
+          value: entity.metadata[property.denormalizedProperty],
+        }));
 
         await this.entitiesDS.updateDenormalizedTitle(
           relationshipPropertyNames,
@@ -127,16 +127,17 @@ export class DenormalizationService {
           language,
           entity.title
         );
-        // await this.entitiesDS.updateDenormalizedMetadataValues(
-        //   metadataToUpdate,
-        //   sharedId,
-        //   language
-        // );
+
+        await this.entitiesDS.updateDenormalizedMetadataValues(
+          newValuesForProperties,
+          sharedId,
+          language
+        );
       })
     );
 
     const affectedEntities = await this.entitiesDS
-      .getByDenormalizedId(relationshipPropertyNames, entityIds)
+      .getByDenormalizedId(relationshipPropertyNames, changedEntityIds)
       .all();
 
     this.transactionManager.onCommitted(async () => {

@@ -34,8 +34,10 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
   await Promise.all(
     // eslint-disable-next-line max-statements
     entity.joinedTemplate[0]?.properties.map(async property => {
-      if (property.type !== 'newRelationship') return;
-      if ((entity.obsoleteMetadata || []).includes(property.name)) {
+      if (
+        property.type === 'newRelationship' &&
+        (entity.obsoleteMetadata || []).includes(property.name)
+      ) {
         const configuredQuery = mapPropertyQuery(property.query);
         const configuredView = await defineGraphView(this, property);
         const results = await this.relationshipsDS
@@ -159,20 +161,20 @@ export class MongoEntitiesDataSource
   }
 
   async updateDenormalizedMetadataValues(
-    propertiesToNewValues: Record<string, any>,
+    propertiesToNewValues: { propertyName: string; value: any }[],
     sharedId: string,
     language: string
   ) {
     const stream = this.createBulkStream();
 
     await Promise.all(
-      Object.entries(propertiesToNewValues).map(async ([property, newValue]) => {
+      propertiesToNewValues.map(async ({ propertyName, value }) => {
         await stream.updateMany(
-          { [`metadata.${property}.value`]: sharedId, language },
+          { [`metadata.${propertyName}.value`]: sharedId, language },
           // @ts-ignore
           {
             $set: {
-              [`metadata.${property}.$[valueIndex].inheritedValue`]: newValue,
+              [`metadata.${propertyName}.$[valueIndex].inheritedValue`]: value,
             },
           },
           {

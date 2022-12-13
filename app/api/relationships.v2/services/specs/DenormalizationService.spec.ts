@@ -417,12 +417,9 @@ describe('denormalizeAfterUpdatingEntities()', () => {
         {
           $set: {
             title: 'entity4-es-edited',
+            'metadata.to_inherit': [{ value: 'inherited_value_es_edited' }],
           },
         }
-      );
-
-      console.log(
-        await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity4' }).toArray()
       );
 
       await service.denormalizeAfterUpdatingEntities(['entity4'], 'es');
@@ -458,7 +455,7 @@ describe('denormalizeAfterUpdatingEntities()', () => {
                 value: 'entity4',
                 label: 'entity4-es-edited',
                 inheritedType: 'text',
-                inheritedValue: [{ value: 'inherited_value_edited_es' }],
+                inheritedValue: [{ value: 'inherited_value_es_edited' }],
               },
             ],
           },

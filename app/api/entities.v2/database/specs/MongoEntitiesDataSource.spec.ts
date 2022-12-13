@@ -462,7 +462,11 @@ it('should update the inheritedValue of the denormalized value in all related en
     transactionManager
   );
 
-  await ds.updateDenormalizedMetadataValues({ relProp4: [{ value: 11 }] }, 'old_value', 'en');
+  await ds.updateDenormalizedMetadataValues(
+    [{ propertyName: 'relProp4', value: [{ value: 11 }] }],
+    'old_value',
+    'en'
+  );
 
   const entities = await testingDB.mongodb
     ?.collection('entities')
