@@ -333,7 +333,7 @@
     "supertest": "6.2.3",
     "terser-webpack-plugin": "^5.3.3",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.0",
+    "tsconfig-paths": "^4.1.1",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.5.0",
