@@ -25,7 +25,7 @@ const getLibraryDefault = (userId: string | undefined, defaultLibraryView: strin
   }
 };
 
-const IndexRoute = () => {
+const getIndexElement = () => {
   const reduxState = store?.getState();
   const { settings, user } = reduxState || {};
 
@@ -44,4 +44,4 @@ const IndexRoute = () => {
   return <Navigate to={customHomePage.join('/')} />;
 };
 
-export { IndexRoute };
+export { getIndexElement };
