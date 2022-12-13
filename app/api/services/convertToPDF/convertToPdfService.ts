@@ -2,6 +2,7 @@ import { storage } from 'api/files';
 import { tenants } from 'api/tenants';
 import JSONRequest from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
+import { Readable } from 'stream';
 
 export class MimeTypeNotSupportedForConversion extends Error {
   constructor(message: string) {
@@ -28,5 +29,9 @@ export const convertToPDFService = {
       }
       throw e;
     }
+  },
+
+  async download(url: URL) {
+    return (await fetch(url)).body as unknown as Readable;
   },
 };

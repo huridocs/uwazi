@@ -1,11 +1,13 @@
-import 'isomorphic-fetch';
 import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import backend from 'fetch-mock';
+import 'isomorphic-fetch';
+// eslint-disable-next-line node/no-restricted-import
+import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, writeFile } from 'fs/promises';
-import { tenants } from 'api/tenants';
 import JSONRequest from 'shared/JSONRequest';
+import { Readable } from 'stream';
 import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
 
 describe('ConvertToPDFService', () => {
@@ -55,6 +57,24 @@ describe('ConvertToPDFService', () => {
       await expect(
         convertToPDFService.upload({ filename: 'filename.txt', type: 'attachment' }, serviceURL)
       ).rejects.toThrow();
+    });
+  });
+
+  describe('download', () => {
+    it('should download file and return readable', async () => {
+      const file = new Readable();
+
+      // @ts-ignore
+      const fileResponse = new Response(file, {
+        headers: { 'Content-Type': 'application/octet-stream' },
+      });
+
+      backend.get(url => url === 'http://service:5060/file', fileResponse);
+
+      const downloadedFile = await convertToPDFService.download(
+        new URL('http://service:5060/file')
+      );
+      expect(downloadedFile).toBe(file);
     });
   });
 });
