@@ -93,7 +93,7 @@ const MenuComponent = ({
         }
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <I18NLink to={url} className="btn menuNav-btn" activeClassName="active-link">
+            <I18NLink to={url} className="btn menuNav-btn" activeclassname="active-link">
               {t('Menu', link.get('title'))}
             </I18NLink>
           </li>
@@ -136,7 +136,7 @@ const MenuComponent = ({
               to={libraryUrl()}
               onClick={setLibraryView}
               className="menuNav-btn btn btn-default public-documents"
-              activeClassName="active-link"
+              activeclassname="active-link"
               aria-label={t('System', 'Library', null, false)}
             >
               <Icon
@@ -155,7 +155,7 @@ const MenuComponent = ({
               <I18NLink
                 to="/settings/account"
                 className="menuNav-btn btn btn-default settings-section"
-                activeClassName="active-link"
+                activeclassname="active-link"
                 aria-label={t('System', 'Settings', null, false)}
               >
                 <Icon icon="cog" />
@@ -170,7 +170,7 @@ const MenuComponent = ({
               <I18NLink
                 to="/settings/"
                 className="menuNav-btn btn btn-default settings-section"
-                activeClassName="active-link"
+                activeclassname="active-link"
                 aria-label={t('System', 'Settings', null, false)}
               >
                 <Icon icon="cog" />
