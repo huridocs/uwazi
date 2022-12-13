@@ -40,7 +40,7 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { ProtectedRoute } from './ProtectedRoute';
-import { IndexRoute } from './IndexRoute';
+import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 
@@ -79,7 +79,7 @@ const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element
 
 const routesLayout = (
   <Route errorElement={<ErrorBoundary />}>
-    <Route index element={<IndexRoute />} />
+    <Route index element={getIndexElement()} />
     <Route path="login" element={<Login />} />
     <Route path="library" element={<LibraryCards />} />
     <Route path="library/map" element={<LibraryMap />} />
