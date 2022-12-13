@@ -1,7 +1,7 @@
-import { Field, Form, actions as formActions } from 'react-redux-form';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Field, actions as formActions } from 'react-redux-form';
+import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Icon } from 'UI';
@@ -16,6 +16,7 @@ import { SearchTipsContent } from 'app/App/SearchTipsContent';
 import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { IStore } from 'app/istore';
+import { Form } from 'app/Forms/Form';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {

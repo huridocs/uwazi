@@ -5,7 +5,7 @@ import { List } from 'immutable';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { actions as formActions, Control, Field, Form } from 'react-redux-form';
+import { actions as formActions, Control, Field } from 'react-redux-form';
 import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
 import { FormGroup } from 'app/Forms';
@@ -27,6 +27,7 @@ import { COLORS } from 'app/utils/colors';
 import { ClientPropertySchema } from 'app/istore';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { Form } from 'app/Forms/Form';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import { validate } from './ValidateTemplate';
 

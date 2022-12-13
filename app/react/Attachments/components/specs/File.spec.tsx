@@ -26,6 +26,7 @@ describe('file', () => {
       storeKey: 'library',
       updateFile: jasmine.createSpy('updateFile'),
       deleteFile: jasmine.createSpy('deleteFile'),
+      mainContext: { confirm: jest.fn },
     };
 
     context = { confirm: jasmine.createSpy('confirm') };

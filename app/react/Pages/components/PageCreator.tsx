@@ -1,4 +1,4 @@
-import { Form, Field, Control } from 'react-redux-form';
+import { Field, Control } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import React, { Component } from 'react';
@@ -16,6 +16,7 @@ import { BackButton } from 'app/Layout';
 import { Translate, I18NLink, t } from 'app/I18N';
 
 import { IStore } from 'app/istore';
+import { Form } from 'app/Forms/Form';
 import validator from './ValidatePage';
 
 const mapStateToProps = ({ page }: IStore) => ({

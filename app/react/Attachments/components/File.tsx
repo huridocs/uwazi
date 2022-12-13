@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { LocalForm, Control } from 'react-redux-form';
+import { Control } from 'react-redux-form';
 import { withContext } from 'app/componentWrappers';
 import { Translate, t } from 'app/I18N';
 import { Icon } from 'UI';
@@ -11,6 +11,7 @@ import { updateFile, deleteFile } from 'app/Attachments/actions/actions';
 import { wrapDispatch } from 'app/Multireducer';
 import { TocGeneratedLabel } from 'app/ToggledFeatures/tocGeneration';
 import { NeedAuthorization } from 'app/Auth';
+import { LocalForm } from 'app/Forms/Form';
 import { language as transformLanguage, availableLanguages } from 'shared/languagesList';
 import { isBlobFile } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
