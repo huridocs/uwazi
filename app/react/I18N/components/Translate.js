@@ -54,7 +54,7 @@ class Translate extends Component {
           const boldMatches = parseMarkdownBoldMarker(line);
           const italicMatches = parseMarkdownItalicMarker(line);
           return (
-            <Fragment key={line}>
+            <Fragment key={`${line}-${index.toString()}`}>
               {boldMatches ||
                 italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
                   <>{line}</>
