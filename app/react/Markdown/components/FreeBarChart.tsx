@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { Component } from 'react';
 
 import {
@@ -8,10 +6,10 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Bar,
   Tooltip,
   Cell,
 } from 'recharts';
+import { Bar } from './Bar';
 
 type layoutType = 'horizontal' | 'vertical' | undefined;
 
