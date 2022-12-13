@@ -129,7 +129,7 @@ export class OneUpEntityViewerBase extends Component<
   }
 
   render() {
-    const { entity, tab, relationships, oneUpState } = this.props;
+    const { entity, tab, relationships, oneUpState, mainContext } = this.props;
     const { panelOpen } = this.state;
     const selectedTab = tab ?? 'info';
 
@@ -141,7 +141,7 @@ export class OneUpEntityViewerBase extends Component<
         <div className="content-holder">
           <main className="content-main">
             <div className="content-header content-header-entity">
-              <OneUpTitleBar />
+              <OneUpTitleBar mainContext={mainContext} />
               {this.renderFullEditToggle()}
             </div>
             <div className="entity-viewer">
@@ -186,7 +186,11 @@ export class OneUpEntityViewerBase extends Component<
                           showType={false}
                           showSubset={this.nonMlProps()}
                         />
-                        <FileList files={entity.documents} entity={entity} />
+                        <FileList
+                          files={entity.documents}
+                          entity={entity}
+                          mainContext={mainContext}
+                        />
                         <AttachmentsList
                           attachments={entity.attachments}
                           parentId={entity._id}
