@@ -51,7 +51,7 @@ class RouteHandler extends Component {
 
   async getClientState(props) {
     let query;
-    const routeParams = props.params;
+    const { lang, ...routeParams } = props.params;
     if (props.location) {
       const params = new URLSearchParams(props.location.search);
       query = Object.fromEntries(params.entries());

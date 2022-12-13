@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { withContext } from 'app/componentWrappers';
+import { withRouter, withContext } from 'app/componentWrappers';
 import { I18NLink, t, Translate } from 'app/I18N';
 import {
   deleteRelationType,
@@ -124,6 +124,6 @@ function mapDispatchToProps(dispatch) {
 const RelationTypesList = connect(
   mapStateToProps,
   mapDispatchToProps
-)(withContext(RelationTypesListComponent));
+)(withRouter(withContext(RelationTypesListComponent)));
 
 export { RelationTypesList, mapStateToProps };
