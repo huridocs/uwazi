@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Control } from 'react-redux-form';
 import { withContext } from 'app/componentWrappers';
@@ -19,22 +19,21 @@ import { FileType } from 'shared/types/fileType';
 
 import { ViewDocumentLink } from './ViewDocumentLink';
 
-type FileProps = {
+type FileOwnProps = {
   file: FileType | ClientBlobFile;
-  storeKey: string;
   entity: EntitySchema;
-  updateFile: (file: FileType, entity: Object) => any | void;
-  deleteFile: (file: FileType, entity: Object) => any | void;
   mainContext: { confirm: Function };
 };
 type FileState = {
   editing: boolean;
 };
 
-class File extends Component<FileProps, FileState> {
-  static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
-
-  constructor(props: FileProps) {
+const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
+  bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, 'library'));
+const connector = connect(null, mapDispatchToProps);
+type mappedProps = ConnectedProps<typeof connector> & FileOwnProps;
+class File extends Component<mappedProps, FileState> {
+  constructor(props: mappedProps) {
     super(props);
     this.state = {
       editing: false,
@@ -215,9 +214,6 @@ class File extends Component<FileProps, FileState> {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>, props: FileProps) =>
-  bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, props.storeKey));
-
-export type { FileProps };
+export type { mappedProps as FileProps };
 export { File };
-export const ConnectedFile = connect(null, mapDispatchToProps)(withContext(File));
+export const ConnectedFile = connector(withContext(File));

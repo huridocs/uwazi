@@ -23,7 +23,6 @@ describe('file', () => {
     props = {
       file,
       entity,
-      storeKey: 'library',
       updateFile: jasmine.createSpy('updateFile'),
       deleteFile: jasmine.createSpy('deleteFile'),
       mainContext: { confirm: jest.fn },

@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { useLocation, useMatches, useNavigate, useParams } from 'react-router-dom';
 import { AppMainContext } from './App/AppMainContext';
 
-const withRouter = (Component: React.ComponentType) => (props: any) => {
+const withRouter = (Component: React.ComponentClass<any, any>) => (props: any) => {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -19,7 +19,7 @@ const withRouter = (Component: React.ComponentType) => (props: any) => {
   );
 };
 
-const withContext = (Component: React.ComponentType) => (props: any) => {
+const withContext = (Component: React.ComponentClass<any, any>) => (props: any) => {
   const mainContext = useContext(AppMainContext);
   return <Component {...props} mainContext={mainContext} />;
 };
