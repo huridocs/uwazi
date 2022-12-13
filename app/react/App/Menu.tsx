@@ -102,7 +102,8 @@ const MenuComponent = ({
 
       return <DropdownMenu link={fromJS(link.toJS() as ILink)} position={index!} key={index} />;
     })
-    .filter(v => v !== null);
+    .filter(v => v !== null)
+    .toArray();
 
   const setLibraryView = () => {
     setSidePanelView('library');
