@@ -10,13 +10,13 @@ import { fromJS as Immutable } from 'immutable';
 import { Provider } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { I18NUtils, t, Translate } from 'app/I18N';
-import JSONUtils from 'shared/JSONUtils';
+// import JSONUtils from 'shared/JSONUtils';
 import RouteHandler from 'app/App/RouteHandler';
 import api from 'app/utils/api';
 import settingsModel from 'api/settings';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
-import { getPropsFromRoute } from './utils';
+// import { getPropsFromRoute } from './utils';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import Routes from './Routes';
@@ -28,7 +28,7 @@ import { handleError } from '../api/utils';
 let assets = {};
 
 const renderComponentWithRoot = (
-  componentProps,
+  // componentProps,
   data,
   req,
   language,
@@ -115,7 +115,7 @@ function onlySystemTranslations(AllTranslations) {
   return { json: { rows } };
 }
 
-function handleRoute(res, renderProps, req) {
+function handleRoute(res, _renderProps, req) {
   //Testing whith this override since we cant get renderProps right now
   // const routeProps = getPropsFromRoute(renderProps, ['requestState']);
   const routeProps = { requestState: () => {} };
@@ -275,7 +275,7 @@ const allowedRoute = (user = {}, url = '') => {
   );
 };
 
-function routeMatch(req, res, location, languages) {
+function routeMatch(req, res, _location, _languages) {
   settingsModel.get().then(settings => {
     createStore({
       user: req.user,

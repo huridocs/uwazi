@@ -43,10 +43,10 @@ describe('UserGroupSidePanel', () => {
       expect(screen.queryByText('Name of the group')).toBeInTheDocument();
     });
 
-    it('should call the closePanel method on Cancel button click', () => {
+    it('should call the closePanel method on Cancel button click', async () => {
       render();
       const cancelButton = screen.getByText('Cancel').parentElement!;
-      act(() => {
+      await act(() => {
         fireEvent.click(cancelButton);
       });
       expect(defaultProps.closePanel).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('UserGroupSidePanel', () => {
       const newGroup = { name: 'NEW GROUP', members: [] };
       props.userGroup = { ...newGroup, [field]: value };
       render(props);
-      act(() => {
+      await act(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
       });
 
@@ -148,7 +148,7 @@ describe('UserGroupSidePanel', () => {
         render();
         const nameInput = screen.getByRole('textbox') as HTMLInputElement;
         expect(nameInput.value).toEqual(userGroup.name);
-        act(() => {
+        await act(() => {
           fireEvent.change(nameInput, {
             target: { value: 'GROUP 1' },
           });
@@ -166,13 +166,13 @@ describe('UserGroupSidePanel', () => {
   });
 
   describe('Adding users to the group', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const props = { ...defaultProps };
       // @ts-ignore
       props.users[2].using2fa = false;
       render(props);
       const [, , userToCheck] = screen.getAllByRole('checkbox') as HTMLInputElement[];
-      act(() => {
+      await act(() => {
         fireEvent.click(userToCheck);
       });
     });
@@ -203,15 +203,17 @@ describe('UserGroupSidePanel', () => {
       render();
       act(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      });
-
-      setTimeout(() => {
-        act(() => {
-          fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-        });
-        expect(defaultProps.onDelete).not.toHaveBeenCalled();
-        done();
-      }, 0);
+      })
+        .then(() => {
+          setTimeout(async () => {
+            await act(() => {
+              fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+            });
+            expect(defaultProps.onDelete).not.toHaveBeenCalled();
+            done();
+          }, 0);
+        })
+        .catch(() => fail('error on act'));
     });
 
     it('should call the delete callback when confirm deletion', async () => {
@@ -220,7 +222,7 @@ describe('UserGroupSidePanel', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
       });
 
-      act(() => {
+      await act(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
       });
       expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.userGroup);

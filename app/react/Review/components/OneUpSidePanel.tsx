@@ -20,7 +20,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { Icon } from 'UI';
-import { selectEntity, selectIsPristine, selectMlThesauri, selectOneUpState } from '../common';
+import { selectEntity, selectMlThesauri, selectOneUpState } from '../common';
 
 const defaultProps = {
   entity: {} as EntitySchema,
