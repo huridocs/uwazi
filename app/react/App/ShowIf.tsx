@@ -1,19 +1,11 @@
-import PropTypes from 'prop-types';
-import { Component } from 'react';
+import React from 'react';
 
-export class ShowIf extends Component {
-  render() {
-    if (!this.props.if) {
-      return false;
-    }
-
-    return this.props.children;
-  }
-}
-
-ShowIf.propTypes = {
-  children: PropTypes.object,
-  if: PropTypes.bool,
+type ShowIfProps = {
+  if: boolean;
+  children: React.ReactElement;
 };
+
+// eslint-disable-next-line react/jsx-no-useless-fragment
+const ShowIf = ({ if: condition, children }: ShowIfProps) => (!condition ? <></> : children);
 
 export default ShowIf;
