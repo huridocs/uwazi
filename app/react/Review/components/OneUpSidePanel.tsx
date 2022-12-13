@@ -40,7 +40,7 @@ const defaultProps = {
 
 export type OneUpSidePanelProps = typeof defaultProps;
 
-export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
+class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
   static defaultProps = defaultProps;
 
   mlProps() {
@@ -110,7 +110,7 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
         <div className="sidepanel-body">
           <Tabs selectedTab={selectedTab}>
             <TabContent for={selectedTab === 'connections' ? selectedTab : 'none'}>
-              <ConnectionsGroups connectionsGroups={connectionsGroups} />
+              <ConnectionsGroups />
             </TabContent>
             <TabContent for={selectedTab === 'info' ? selectedTab : 'none'}>
               <MetadataForm
@@ -124,7 +124,7 @@ export class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
           </Tabs>
         </div>
         <ShowIf if={selectedTab === 'connections'}>
-          <StateSelector isPristine={selectIsPristine}>
+          <StateSelector>
             {({ isPristine }: { isPristine: boolean }) => (
               <div className="sidepanel-footer">
                 <button
@@ -174,3 +174,4 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
 }
 
 export const OneUpSidePanel = connect(mapStateToProps, mapDispatchToProps)(OneUpSidePanelBase);
+export { OneUpSidePanelBase };
