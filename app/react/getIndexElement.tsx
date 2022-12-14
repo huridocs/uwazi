@@ -9,7 +9,7 @@ import { LibraryCards } from './Library/Library';
 
 const getLibraryDefault = (userId: string | undefined, defaultLibraryView: string | undefined) => {
   if (userId) {
-    return <Navigate to="/library/?q=(includeUnpublished:!t)" />;
+    return <Navigate to="/library/?q=(includeUnpublished:!t)" state={{ isClient: true }} />;
   }
 
   switch (defaultLibraryView) {

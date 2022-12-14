@@ -37,7 +37,7 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
     setLocale(getLocale(context));
-    if (!this.isRenderedFromServer() && isClient) {
+    if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
       this.getClientState(this.props);
     }
   }
