@@ -30,7 +30,7 @@ module.exports = production => {
     devtool: 'eval-source-map',
     mode: 'development',
     entry: {
-      main: path.join(rootPath, 'app/react/entry-client.js'),
+      main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {
