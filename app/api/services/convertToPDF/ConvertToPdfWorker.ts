@@ -1,4 +1,5 @@
-import { files, storage } from 'api/files';
+import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
+import { files, generateFileName, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
@@ -7,9 +8,26 @@ import * as os from 'os';
 import path from 'path';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
-import url from 'url';
 import { TaskManager } from '../tasksmanager/TaskManager';
 import { convertToPDFService } from './convertToPdfService';
+
+const ajv = new Ajv();
+
+const resultSchema = {
+  properties: {
+    file_url: { type: 'string' },
+    params: {
+      properties: {
+        namespace: { type: 'string' },
+        filename: { type: 'string' },
+      },
+    },
+  },
+  optionalProperties: {},
+} as const;
+
+type ConvertToPdfResult = JTDDataType<typeof resultSchema>;
+const validateResult = ajv.compile<ConvertToPdfResult>(resultSchema);
 
 export class ConvertToPdfWorker {
   public readonly SERVICE_NAME = 'convert-to-pdf';
@@ -20,25 +38,17 @@ export class ConvertToPdfWorker {
     this.taskManager = new TaskManager({
       serviceName: this.SERVICE_NAME,
       processResults: async result => {
-        if (!result?.params?.namespace) {
-          throw new Error('result missing required properties');
+        if (!validateResult(result)) {
+          throw new ValidationError(validateResult.errors || [{ message: 'validation failed' }]);
         }
-
         await tenants.run(async () => {
-          if (!result?.params?.filename || !result?.file_url) {
-            throw new Error('result missing required properties');
-          }
           const [attachment] = await files.get({ filename: result.params.filename });
           if (!attachment.entity) {
             throw new Error('attachment does not have an entity');
           }
           await files.save({ ...attachment, status: 'ready' });
 
-          const urlPathName = url.parse(result.file_url).pathname;
-          if (!urlPathName) {
-            throw new Error('file url is wrong');
-          }
-          const filename = path.basename(urlPathName);
+          const filename = `${generateFileName({})}.pdf`;
           const file: Readable = await convertToPDFService.download(new URL(result.file_url));
 
           await pipeline(file, createWriteStream(path.join(os.tmpdir(), filename)));

@@ -94,16 +94,13 @@ describe('convertToPdfWorker', () => {
     it('should add the downloaded pdf file as main document and process it', async () => {
       await waitForExpect(async () => {
         await tenants.run(async () => {
-          const [mainDocument] = await files.get(
-            { filename: 'converted_attachment.pdf' },
-            '+fullText'
-          );
+          const [mainDocument] = await files.get({ type: 'document' }, '+fullText');
           expect(mainDocument).toEqual({
             _id: expect.any(ObjectId),
             creationDate: expect.any(Number),
             entity: 'entity',
             type: 'document',
-            filename: 'converted_attachment.pdf',
+            filename: expect.stringMatching('.pdf'),
             status: 'ready',
             fullText: { 1: 'Converted[[1]] pdf[[1]]\n\n' },
             totalPages: 1,
