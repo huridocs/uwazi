@@ -598,6 +598,31 @@ describe('templates', () => {
     });
   });
 
+  describe('getPropertyByName()', () => {
+    it('should get properties with the name provided', async () => {
+      const newTemplate = {
+        name: 'created  template 2',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          { label: 'label', type: 'text' },
+          { label: 'Date', type: 'date' },
+        ],
+      };
+      await templates.save(newTemplate);
+      const property = await templates.getPropertyByName('date');
+      expect(property.name).toEqual('date');
+      expect(property.type).toEqual('date');
+    });
+
+    it('should throw an error when no template is found', async () => {
+      try {
+        await templates.getPropertyByName('nonexistent property name');
+      } catch (e) {
+        expect(e.message).toEqual('No template with the given property name');
+      }
+    });
+  });
+
   describe('inherit', () => {
     let savedTemplate;
     beforeEach(async () => {
