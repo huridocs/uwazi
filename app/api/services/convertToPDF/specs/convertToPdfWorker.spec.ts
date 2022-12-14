@@ -4,19 +4,30 @@ import { tenants } from 'api/tenants';
 import testingDB from 'api/utils/testing_db';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+import * as handleError from 'api/utils/handleError.js';
 import { ObjectId } from 'mongodb';
 import Redis from 'redis';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 describe('convertToPdfWorker', () => {
   const worker = new ConvertToPdfWorker();
+  const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
+  const redisClient = Redis.createClient(redisUrl);
+  const redisSMQ = new RedisSMQ({ client: redisClient });
+
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
     await testingDB.setupFixturesAndContext({
-      settings: [{ languages: [{ label: 'English', key: 'en' }] }],
+      settings: [
+        {
+          features: { convertToPdf: { active: true, url: 'http://localhost:5060' } },
+          languages: [{ label: 'English', key: 'en' }],
+        },
+      ],
       files: [
         {
           entity: 'entity',
@@ -36,10 +47,6 @@ describe('convertToPdfWorker', () => {
 
     tenants.add(tenant1);
 
-    const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
-    const redisClient = Redis.createClient(redisUrl);
-    const redisSMQ = new RedisSMQ({ client: redisClient });
-
     try {
       await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
     } catch (err) {
@@ -48,19 +55,6 @@ describe('convertToPdfWorker', () => {
       }
     }
     await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
-
-    const message = {
-      params: {
-        filename: 'attachment.docx',
-        namespace: 'tenant',
-      },
-      file_url: 'http://localhost:5060/download/converted_attachment.pdf',
-    };
-
-    await redisSMQ.sendMessageAsync({
-      qname: 'convert-to-pdf_results',
-      message: JSON.stringify(message),
-    });
 
     jest
       .spyOn(convertToPDFService, 'download')
@@ -76,6 +70,28 @@ describe('convertToPdfWorker', () => {
   });
 
   describe('process document', () => {
+    beforeAll(async () => {
+      const message = {
+        params: {
+          filename: 'attachment.docx',
+          namespace: 'tenant',
+        },
+        file_url: 'http://localhost:5060/download/converted_attachment.pdf',
+      };
+
+      await redisSMQ.sendMessageAsync({
+        qname: 'convert-to-pdf_results',
+        message: JSON.stringify(message),
+      });
+    });
+
+    it('needs permissions to get entities associated to the file', async () => {
+      await waitForExpect(() => {
+        jest.spyOn(permissionsContext, 'setCommandContext');
+        expect(permissionsContext.setCommandContext).toHaveBeenCalled();
+      });
+    });
+
     it('should maintaint the attachment and remove processing status', async () => {
       await waitForExpect(async () => {
         await tenants.run(async () => {
@@ -100,6 +116,7 @@ describe('convertToPdfWorker', () => {
             creationDate: expect.any(Number),
             entity: 'entity',
             type: 'document',
+            mimetype: 'application/pdf',
             filename: expect.stringMatching('.pdf'),
             status: 'ready',
             fullText: { 1: 'Converted[[1]] pdf[[1]]\n\n' },
@@ -108,21 +125,32 @@ describe('convertToPdfWorker', () => {
             language: 'eng',
           });
 
-          expect(storage.fileExists('converted_attachment.pdf', 'document'));
+          expect(
+            (await storage.fileContents(mainDocument.filename || '', 'document')).toString()
+          ).not.toEqual('');
           expect(convertToPDFService.download).toHaveBeenCalledWith(
             new URL('http://localhost:5060/download/converted_attachment.pdf')
           );
-          await storage.removeFile('converted_attachment.pdf', 'document');
         }, 'tenant');
       });
     });
+  });
 
-    it('should throw on failed result', () => {
-      fail();
-    });
+  describe('on error', () => {
+    it('should throw with error message', async () => {
+      const message = { success: false, error_message: 'error converting !' };
 
-    it('should send messages to sockets', () => {
-      fail();
+      jest.spyOn(handleError, 'handleError').mockImplementationOnce(() => {});
+      await redisSMQ.sendMessageAsync({
+        qname: 'convert-to-pdf_results',
+        message: JSON.stringify(message),
+      });
+
+      await waitForExpect(async () => {
+        expect(handleError.handleError).toHaveBeenCalledWith(new Error('error converting !'), {
+          useContext: false,
+        });
+      });
     });
   });
 });

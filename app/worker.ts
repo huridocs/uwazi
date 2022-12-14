@@ -11,6 +11,7 @@ import { tocService } from 'api/toc_generation/tocService';
 import { syncWorker } from 'api/sync/syncWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
+import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 
 let dbAuth = {};
 
@@ -33,6 +34,8 @@ DB.connect(config.DBHOST, dbAuth)
       console.info('==> 📡 starting external services...');
       ocrManager.start();
       new InformationExtraction().start();
+
+      new ConvertToPdfWorker().start();
 
       const segmentationConnector = new PDFSegmentation();
       segmentationConnector.start();
