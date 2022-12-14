@@ -7,6 +7,7 @@ import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import { matchRoutes, RouteObject } from 'react-router-dom';
+import { omit } from 'lodash';
 import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
@@ -18,8 +19,9 @@ import {
 } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { Settings } from 'shared/types/settingsType';
 import createStore from './store';
-import { routes } from './Routes';
+import { getRoutes } from './Routes';
 import { ClientTranslationSchema, IStore } from './istore';
 import { I18NUtils, t, Translate } from './I18N';
 import Root from './App/Root';
@@ -97,9 +99,7 @@ const getAssets = async () => {
   });
 };
 
-const prepareData = async (req: ExpressRequest, language: string) => {
-  const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
-
+const prepareStore = async (req: ExpressRequest, settings: Settings, language: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
 
   const headers = {
@@ -149,7 +149,7 @@ const prepareData = async (req: ExpressRequest, language: string) => {
     locale,
   });
 
-  return { reduxStore, assets };
+  return { reduxStore };
 };
 
 const setReduxState = async (
@@ -161,10 +161,12 @@ const setReduxState = async (
   let routeParams = {};
   const dataLoaders = matched
     ?.map(({ route, params }) => {
+      routeParams = { ...routeParams, ...params };
       if (route.element) {
         const component = route.element as React.ReactElement & {
           type: { requestState: Function };
         };
+        routeParams = { ...routeParams, ...component.props.params };
         if (component.props.children?.type?.requestState) {
           return component.props.children.type.requestState;
         }
@@ -172,18 +174,19 @@ const setReduxState = async (
           return component.type.requestState;
         }
       }
-      routeParams = { ...routeParams, ...params };
       return null;
     })
     .filter(v => v);
-
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams({ ...req.query, ...routeParams }, headers);
+    const requestParams = new RequestParams(
+      { ...req.query, ...omit(routeParams, 'lang') },
+      headers
+    );
 
     await Promise.all(
       dataLoaders.map(async loader => {
@@ -198,26 +201,35 @@ const setReduxState = async (
   }
 };
 
-const getSSRProperties = async (req: ExpressRequest, language: string) => {
-  const { reduxStore, assets } = await prepareData(req, language);
+const getSSRProperties = async (
+  req: ExpressRequest,
+  routes: RouteObject[],
+  settings: Settings,
+  language: string
+) => {
+  const { reduxStore } = await prepareStore(req, settings, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const staticHandleContext = await query(createFetchRequest(req));
   const router = createStaticRouter(routes, staticHandleContext as any);
 
   return {
     reduxStore,
-    assets,
     staticHandleContext,
     router,
   };
 };
 
+// eslint-disable-next-line max-statements
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
+  const routes = getRoutes(settings, req.user && req.user._id);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 
-  const { reduxStore, assets, staticHandleContext, router } = await getSSRProperties(
+  const { reduxStore, staticHandleContext, router } = await getSSRProperties(
     req,
+    routes,
+    settings,
     language || 'en'
   );
 

@@ -1,11 +1,15 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { routes } from './Routes';
+import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
 import { store } from './store';
 
-const router = createBrowserRouter(routes);
+const reduxState = store?.getState();
+
+const router = createBrowserRouter(
+  getRoutes(reduxState?.settings.collection.toJS(), reduxState?.user.get('_id'))
+);
 
 const App = () => (
   <Provider store={store as any}>

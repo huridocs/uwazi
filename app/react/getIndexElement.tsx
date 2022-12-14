@@ -1,11 +1,11 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { Settings } from 'shared/types/settingsType';
 import { validateHomePageRoute } from './utils/routeHelpers';
 import { PageView } from './Pages/PageView';
 import { LibraryTable } from './Library/LibraryTable';
 import { LibraryMap } from './Library/LibraryMap';
 import { LibraryCards } from './Library/Library';
-import { store } from './store';
 
 const getLibraryDefault = (userId: string | undefined, defaultLibraryView: string | undefined) => {
   if (userId) {
@@ -25,15 +25,12 @@ const getLibraryDefault = (userId: string | undefined, defaultLibraryView: strin
   }
 };
 
-const getIndexElement = () => {
-  const reduxState = store?.getState();
-  const { settings, user } = reduxState || {};
-
-  const homePage = settings?.collection.get('home_page');
+const getIndexElement = (settings: Settings | undefined, userId: string | undefined) => {
+  const homePage = settings?.home_page;
   const customHomePage = homePage ? homePage.split('/').filter(v => v) : [];
 
   if (!validateHomePageRoute(homePage || '') || customHomePage.length === 0) {
-    return getLibraryDefault(user?.get('_id'), settings?.collection.get('defaultLibraryView'));
+    return getLibraryDefault(userId, settings?.defaultLibraryView);
   }
 
   if (customHomePage.includes('page')) {

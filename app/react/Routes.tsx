@@ -39,6 +39,7 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
+import { Settings as settingsType } from 'shared/types/settingsType';
 import { ProtectedRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -77,9 +78,9 @@ import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 
 const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
 
-const routesLayout = (
+const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
-    <Route index element={getIndexElement()} />
+    <Route index element={getIndexElement(settings, userId)} />
     <Route path="login" element={<Login />} />
     <Route path="library" element={<LibraryCards />} />
     <Route path="library/map" element={<LibraryMap />} />
@@ -152,15 +153,18 @@ const routesLayout = (
   </Route>
 );
 
-const routes = createRoutesFromElements(
-  <Route path="/" element={<App />}>
-    {routesLayout}
-    <Route path=":lang">
-      {routesLayout}
+const getRoutes = (settings: settingsType | undefined, userId: string | undefined) => {
+  const layout = getRoutesLayout(settings, userId);
+  return createRoutesFromElements(
+    <Route path="/" element={<App />}>
+      {layout}
+      <Route path=":lang">
+        {layout}
+        <Route path="*" element={<GeneralError />} />
+      </Route>
       <Route path="*" element={<GeneralError />} />
     </Route>
-    <Route path="*" element={<GeneralError />} />
-  </Route>
-);
+  );
+};
 
-export { routes };
+export { getRoutes };
