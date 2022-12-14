@@ -377,7 +377,7 @@ describe('suggestions', () => {
 
       const propertyValues = entities?.map(entity => entity.metadata.age);
       expect(propertyValues).not.toBe(undefined);
-      const ages = propertyValues?.map(value => value[0].value);
+      const ages = propertyValues?.map(value => value[0].value) as string[];
       expect(ages[0]).toEqual('20');
       expect(ages[1]).toEqual('20');
       expect(ages[2]).toEqual('20');
