@@ -233,12 +233,13 @@ export default {
   },
 
   async getPropertyByName(propertyName: string): Promise<PropertySchema | undefined> {
-    const templates = await this.get({ 'properties.name': propertyName });
+    const templates = await this.get({
+      $or: [{ 'properties.name': propertyName }, { 'commonProperties.name': propertyName }],
+    });
     if (!templates.length) {
       throw createError('No template with the given property name');
     }
-    const template = templates[0];
-    return template.properties?.find(property => property.name === propertyName);
+    return templates[0].properties?.find(property => property.name === propertyName);
   },
 
   async setAsDefault(_id: string) {

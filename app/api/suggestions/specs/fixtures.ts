@@ -574,6 +574,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: heroTemplateId,
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
       properties: [
         {
           label: 'Age',
