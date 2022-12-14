@@ -89,7 +89,7 @@ describe('Property Configuration Modal', () => {
       expect(props.onAccept).toHaveBeenCalledWith(props.currentProperties);
     });
 
-    it('should call onAccept when the accept button is clicked', () => {
+    it('should call onClose when cancel button is clicked', () => {
       const acceptButton = screen.getByRole('button', { name: 'Cancel' });
       fireEvent.click(acceptButton);
       expect(props.onClose).toHaveBeenCalled();
