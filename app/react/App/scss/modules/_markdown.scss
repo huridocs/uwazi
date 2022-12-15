@@ -195,6 +195,15 @@
   margin-bottom: 5px;
   background: $c-grey-lighten;
 
+  .timelink-time-label {
+    width: 100%;
+    text-align: left;
+  }
+
+  span {
+    text-align: left;
+  }
+
   &:first-child {
     margin-top: 16px;
   }
@@ -227,6 +236,7 @@
 
 .video-container > .timelinks-form {
   margin-top: 10px;
+  margin-bottom: 10px;
 
   .add-timelink {
     background: #eceff1;

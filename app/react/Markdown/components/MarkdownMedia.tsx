@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
 import React, { createRef, LegacyRef, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
@@ -60,6 +62,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const { options } = propsToConfig(props);
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
+  const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
+
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -71,7 +75,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const playerRef: LegacyRef<ReactPlayer> | undefined = createRef();
 
   const seekTo = (seconds: number) => {
+    const playingStatus = isVideoPlaying;
     playerRef.current?.seekTo(seconds);
+    setVideoPlaying(playingStatus);
   };
 
   const constructTimelinksString = (timelinks: TimeLink[], url: string) => {
@@ -97,32 +103,48 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       }
 
       return (
-        <div
-          className="timelink"
-          key={timeKey + index.toString()}
-          onClick={() => {
-            seekTo(seconds);
-            setPlayingTimelinkIndex(index);
-          }}
-          title={timelinks[timeKey]}
-        >
-          <b>
+        <div className="timelink" key={timeKey + index.toString()} title={timelinks[timeKey]}>
+          <b
+            className="timelink-icon"
+            onClick={() => {
+              seekTo(seconds);
+              if (index === playingTimelinkIndex) {
+                setVideoPlaying(false);
+                setPlayingTimelinkIndex(-1);
+              } else {
+                setVideoPlaying(true);
+                setPlayingTimelinkIndex(index);
+              }
+            }}
+          >
             <Icon icon={index === playingTimelinkIndex ? 'pause' : 'play'} />
           </b>
-          <b>{displayTime}</b>
-          <span>{timelinks[timeKey]}</span>
+          <div
+            className="timelink-time-label"
+            onClick={() => {
+              seekTo(seconds);
+              setPlayingTimelinkIndex(index);
+            }}
+          >
+            <b>{displayTime}</b>
+            <span>{timelinks[timeKey]}</span>
+          </div>
         </div>
       );
     });
   };
 
   const updateTimelinks = (
-    payload: { action: 'append' | 'remove'; index?: number },
+    payload: { action: 'append' | 'remove'; index?: number; timelink?: TimeLink },
     url: string
   ) => {
     switch (payload.action) {
       case 'append':
-        append(newTimeline);
+        if (payload.timelink) {
+          append(payload.timelink);
+        } else {
+          append(newTimeline);
+        }
         setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
         break;
       case 'remove':
@@ -262,10 +284,17 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <div>
         <ReactPlayer
           className="react-player"
+          playing={isVideoPlaying}
           ref={playerRef}
           url={config.url}
           {...dimensions}
           controls
+          onPause={() => {
+            setVideoPlaying(false);
+          }}
+          onPlay={() => {
+            setVideoPlaying(true);
+          }}
         />
       </div>
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
@@ -280,12 +309,13 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
               const remainingSeconds = currentTime - hours * 3600;
               const minutes = Math.floor(remainingSeconds / 60);
               const seconds = Math.floor(remainingSeconds % 60);
-              setNewTimeline({
+              const timelink = {
                 timeHours: hours < 10 ? `0${hours.toString()}` : hours.toString(),
                 timeMinutes: minutes < 10 ? `0${minutes.toString()}` : minutes.toString(),
                 timeSeconds: seconds < 10 ? `0${seconds.toString()}` : seconds.toString(),
                 label: '',
-              });
+              };
+              updateTimelinks({ action: 'append', timelink }, config.url);
             }}
           >
             <Translate>Add timelink</Translate>
