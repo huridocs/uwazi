@@ -211,34 +211,37 @@ const getSSRProperties = async (
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const staticHandleContext = await query(createFetchRequest(req));
   const router = createStaticRouter(routes, staticHandleContext as any);
+  const reduxState = reduxStore.getState();
 
   return {
     reduxStore,
+    reduxState,
     staticHandleContext,
     router,
   };
 };
 
-// eslint-disable-next-line max-statements
+const resetTranslations = () => {
+  t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
+};
+
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
   const routes = getRoutes(settings, req.user && req.user._id);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 
-  const { reduxStore, staticHandleContext, router } = await getSSRProperties(
+  const { reduxStore, reduxState, staticHandleContext, router } = await getSSRProperties(
     req,
     routes,
     settings,
     language || 'en'
   );
 
-  const reduxState = reduxStore.getState();
-
   await setReduxState(req, reduxStore, reduxState, matched);
 
-  t.resetCachedTranslation();
-  Translate.resetCachedTranslation();
+  resetTranslations();
 
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={reduxStore as any}>
@@ -264,6 +267,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       assets={assets}
     />
   );
+
   res.send(`<!DOCTYPE html>${html}`);
 };
 
