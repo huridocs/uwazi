@@ -285,10 +285,12 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
           <div
             className="timelink"
             key="02:100"
-            onClick={[Function]}
             title="A rude awakening"
           >
-            <b>
+            <b
+              className="timelink-icon"
+              onClick={[Function]}
+            >
               <Connect(Icon)
                 icon="play"
               >
@@ -346,20 +348,27 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
                 </Icon>
               </Connect(Icon)>
             </b>
-            <b>
-              00:02:10
-            </b>
-            <span>
-              A rude awakening
-            </span>
+            <div
+              className="timelink-time-label"
+              onClick={[Function]}
+            >
+              <b>
+                00:02:10
+              </b>
+              <span>
+                A rude awakening
+              </span>
+            </div>
           </div>
           <div
             className="timelink"
             key="05:301"
-            onClick={[Function]}
             title="Finally, you are up!"
           >
-            <b>
+            <b
+              className="timelink-icon"
+              onClick={[Function]}
+            >
               <Connect(Icon)
                 icon="play"
               >
@@ -417,12 +426,17 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
                 </Icon>
               </Connect(Icon)>
             </b>
-            <b>
-              00:05:30
-            </b>
-            <span>
-              Finally, you are up!
-            </span>
+            <div
+              className="timelink-time-label"
+              onClick={[Function]}
+            >
+              <b>
+                00:05:30
+              </b>
+              <span>
+                Finally, you are up!
+              </span>
+            </div>
           </div>
         </div>
         <p
@@ -866,10 +880,12 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
           <div
             className="timelink"
             key="02:100"
-            onClick={[Function]}
             title="A rude awakening"
           >
-            <b>
+            <b
+              className="timelink-icon"
+              onClick={[Function]}
+            >
               <Connect(Icon)
                 icon="play"
               >
@@ -927,20 +943,27 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
                 </Icon>
               </Connect(Icon)>
             </b>
-            <b>
-              00:02:10
-            </b>
-            <span>
-              A rude awakening
-            </span>
+            <div
+              className="timelink-time-label"
+              onClick={[Function]}
+            >
+              <b>
+                00:02:10
+              </b>
+              <span>
+                A rude awakening
+              </span>
+            </div>
           </div>
           <div
             className="timelink"
             key="05:301"
-            onClick={[Function]}
             title="Finally, you are up!"
           >
-            <b>
+            <b
+              className="timelink-icon"
+              onClick={[Function]}
+            >
               <Connect(Icon)
                 icon="play"
               >
@@ -998,12 +1021,17 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
                 </Icon>
               </Connect(Icon)>
             </b>
-            <b>
-              00:05:30
-            </b>
-            <span>
-              Finally, you are up!
-            </span>
+            <div
+              className="timelink-time-label"
+              onClick={[Function]}
+            >
+              <b>
+                00:05:30
+              </b>
+              <span>
+                Finally, you are up!
+              </span>
+            </div>
           </div>
         </div>
         <p

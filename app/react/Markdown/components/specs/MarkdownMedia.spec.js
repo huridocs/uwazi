@@ -49,9 +49,8 @@ describe('MarkdownMedia', () => {
       });
 
       it('should interact with the player', () => {
-        const firstTimeLink = component.find('.timelink').at(0);
-        const secondTimeLink = component.find('.timelink').at(1);
-
+        const firstTimeLink = component.find('.timelink-time-label').at(0);
+        const secondTimeLink = component.find('.timelink-time-label').at(1);
         firstTimeLink.simulate('click');
         expect(ReactPlayerInstance.seekTo).toHaveBeenCalledWith(2 * 60 + 10);
         secondTimeLink.simulate('click');
