@@ -20,7 +20,7 @@ const optionUrl = (value, name, query) => {
     filters: { ...query.filters, [name]: { values: [value] } },
     from: 0,
     limit: 30,
-    includeUnpublished: false,
+    includeUnpublished: true,
     order: 'desc',
     sort: 'creationDate',
     unpublished: false,
