@@ -104,7 +104,7 @@ const MediaField = (props: MediaFieldProps) => {
         (type === MediaModalType.Image ? (
           <img src={file.fileURL} alt="" />
         ) : (
-          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} compact />
+          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />
         ))}
 
       <MediaModal
