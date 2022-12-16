@@ -20,7 +20,8 @@ const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 
 export default function create(initialData = data) {
-  store = createStore<IStore>(reducer, initialData, composeWithDevTools(applyMiddleware(thunk)));
+  const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 });
+  store = createStore<IStore>(reducer, initialData, composeEnhancers(applyMiddleware(thunk)));
 
   return store;
 }

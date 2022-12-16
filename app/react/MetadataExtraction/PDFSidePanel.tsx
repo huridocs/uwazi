@@ -9,6 +9,8 @@ import { ClientEntitySchema } from 'app/istore';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
+import { actions } from 'app/BasicReducer';
+import { deleteSelection, updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
 interface PDFSidePanelProps {
@@ -45,7 +47,27 @@ const PDFSidePanel = ({
     if (entitySuggestion.fileId) {
       fetchFile(entitySuggestion.fileId)
         .then(response => {
-          setFile(response.json[0]);
+          const responseFile = response.json[0];
+          setFile(responseFile);
+          // Load selections to the store
+          const defaultDoc = {
+            ...responseFile,
+            extractedMetadata: responseFile.extractedMetadata.filter(
+              (metadata: any) => metadata.name === entitySuggestion.propertyName
+            ),
+          };
+
+          if (responseFile.extractedMetadata) {
+            store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
+          }
+
+          if (entitySuggestion.selectionRectangles) {
+            const selection = {
+              text: entitySuggestion.suggestedValue as string,
+              selectionRectangles: entitySuggestion.selectionRectangles,
+            };
+            store?.dispatch(updateSelection(selection, entitySuggestion.propertyName, 'id'));
+          }
         })
         .catch(e => e);
     }
