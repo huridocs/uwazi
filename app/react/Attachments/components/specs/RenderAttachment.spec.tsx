@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { AttachmentSchema } from 'shared/types/commonTypes';
-import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
+import MarkdownMedia, { MarkdownMediaProps } from 'app/Markdown/components/MarkdownMedia';
 import ReactPlayer from 'react-player';
 import { RenderAttachment } from '../RenderAttachment';
 
@@ -93,10 +93,13 @@ describe('RenderAttachment', () => {
       });
 
       it('should render a MarkdownMedia component', () => {
-        const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
+        const video: ShallowWrapper<
+          MarkdownMediaProps,
+          never,
+          React.Component<{}, {}, any>
+        > = component.find(MarkdownMedia);
         expect(video.props()).toEqual({
           config: '(http://awesomecats.org/ahappycat.mp4)',
-          compact: false,
         });
       });
     });
@@ -113,8 +116,12 @@ describe('RenderAttachment', () => {
       });
 
       it('should render a tag image with the url of the image', () => {
-        const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
-        expect(video.props()).toEqual({ config: '(/api/files/4h4ppyc47.mp4)', compact: false });
+        const video: ShallowWrapper<
+          MarkdownMediaProps,
+          never,
+          React.Component<{}, {}, any>
+        > = component.find(MarkdownMedia);
+        expect(video.props()).toEqual({ config: '(/api/files/4h4ppyc47.mp4)' });
       });
     });
 
@@ -131,10 +138,14 @@ describe('RenderAttachment', () => {
       });
 
       it('should render a tag image with the url of the image', () => {
-        const video: ShallowWrapper<typeof MarkdownMedia> = component.find(MarkdownMedia);
+        const video: ShallowWrapper<
+          MarkdownMediaProps,
+          never,
+          React.Component<{}, {}, any>
+        > = component.find(MarkdownMedia);
+        console.log(video.props());
         expect(video.props()).toEqual({
           config: '(http://reacplayer.valid.url?w=happycat)',
-          compact: false,
         });
       });
     });
