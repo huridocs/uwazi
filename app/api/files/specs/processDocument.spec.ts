@@ -29,7 +29,7 @@ describe('processDocument', () => {
     });
 
     it('should save the document as an attachment (when feature is active)', async () => {
-      const uploadSpy = jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
+      jest.spyOn(convertToPDFService, 'upload').mockResolvedValue();
       await testingEnvironment.setUp({
         settings: [
           {
