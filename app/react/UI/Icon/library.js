@@ -65,6 +65,7 @@ import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
 import { faPassport } from '@fortawesome/free-solid-svg-icons/faPassport';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
+import { faPause } from '@fortawesome/free-solid-svg-icons/faPause';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons/faPowerOff';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
@@ -186,6 +187,7 @@ const icons = {
   faPassport,
   faPencilAlt,
   faPlay,
+  faPause,
   faPlus,
   faPowerOff,
   faQuestionCircle,

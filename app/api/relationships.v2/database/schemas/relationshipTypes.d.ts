@@ -3,24 +3,39 @@
 
 import { ObjectIdType } from 'api/common.v2/database/schemas/commonTypes';
 
-export interface JoinedRelationshipDBOType {
-  _id: ObjectIdType;
-  from: EntityInfoArrayType;
-  to: EntityInfoArrayType;
-  type: ObjectIdType;
-}
-
 export interface RelationshipDBOType {
   _id: ObjectIdType;
-  from: string;
-  to: string;
+  from:
+    | {
+        entity: string;
+        file: ObjectIdType;
+        selections: {
+          page: number;
+          top: number;
+          left: number;
+          width: number;
+          height: number;
+        }[];
+        text: string;
+      }
+    | {
+        entity: string;
+      };
+  to:
+    | {
+        entity: string;
+        file: ObjectIdType;
+        selections: {
+          page: number;
+          top: number;
+          left: number;
+          width: number;
+          height: number;
+        }[];
+        text: string;
+      }
+    | {
+        entity: string;
+      };
   type: ObjectIdType;
-}
-
-export type EntityInfoArrayType = EntityInfoType[];
-
-export interface EntityInfoType {
-  sharedId: string;
-  title: string;
-  [k: string]: unknown | undefined;
 }
