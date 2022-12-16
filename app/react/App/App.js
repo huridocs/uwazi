@@ -1,35 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'react-widgets/lib/scss/react-widgets.scss';
-import 'nprogress/nprogress.css';
-import 'flag-icon-css/sass/flag-icons.scss';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import Confirm from './Confirm';
-import './scss/styles.scss';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
 import Matomo from './Matomo';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'react-widgets/lib/scss/react-widgets.scss';
+import 'nprogress/nprogress.css';
+import 'flag-icon-css/sass/flag-icons.scss';
+import './scss/styles.scss';
 
 const App = () => {
   const [showmenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
   const location = useLocation();
-  // constructor(props, context) {
-  //   super(props, context);
-  //   this.state = { showmenu: false, confirmOptions: {} };
-
-  //   this.toggleMenu = this.toggleMenu.bind(this);
-  // }
-
-  // const getChildContext = () => ({
-  //   confirm: this.confirm.bind(this),
-  // });
+  const params = useParams();
 
   const toggleMenu = () => {
     setShowMenu(!showmenu);
@@ -40,16 +31,23 @@ const App = () => {
   };
 
   const appContext = useMemo(() => ({ confirm }));
-  // const renderTools = () =>
-  //   React.Children.map(this.props.children, child => {
-  //     //condition not tested
-  //     if (child.type.renderTools) {
-  //       return child.type.renderTools();
-  //     }
 
-  //     return undefined;
-  //   });
-  //    const { routes, location, params } = this.props;
+  // const renderTools = () => {
+  //   if (route.type.renderTools) {
+  //     return route.type.renderTools();
+  //   }
+
+  //   return undefined;
+  // };
+  // React.Children.map(this.props.children, child => {
+  //   //condition not tested
+  //   if (child.type.renderTools) {
+  //     return child.type.renderTools();
+  //   }
+
+  //   return undefined;
+  // });
+
   let MenuButtonIcon = 'bars';
   let navClass = 'menuNav';
 
@@ -58,21 +56,10 @@ const App = () => {
     navClass += ' is-active';
   }
 
-  /* CHECK WITH ROUTES
-  const customHomePageId = routes.reduce((memo, route) => {
-    if (Object.keys(route).includes('customHomePageId')) {
-      return route.customHomePageId;
-    }
-    return memo;
-  }, '');
-
-  const pageId = location.pathname.match('page/') && params.sharedId ? params.sharedId : '';
-
-  const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
-*/
+  const appClassName = params.sharedId ? `pageId_${params.sharedId}` : '';
 
   return (
-    <div id="app" className="">
+    <div id="app" className={appClassName}>
       <Notifications />
       <Cookiepopup />
       <div className="content">
@@ -93,7 +80,7 @@ const App = () => {
           <h1 className="logotype">
             <SiteName />
           </h1>
-          {/* {this.renderTools()} */}
+          {/* {renderTools()} */}
           <Menu location={location} onClick={toggleMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
@@ -109,30 +96,5 @@ const App = () => {
     </div>
   );
 };
-
-// App.defaultProps = {
-//   params: {},
-//   routes: [],
-// };
-
-// App.propTypes = {
-//   fetch: PropTypes.func,
-//   children: PropTypes.object,
-//   location: PropTypes.object,
-//   params: PropTypes.object,
-//   routes: PropTypes.array,
-// };
-
-// App.childContextTypes = {
-//   confirm: PropTypes.func,
-//   locale: PropTypes.string,
-// };
-
-// App.contextTypes = {
-//   getUser: PropTypes.func,
-//   router: PropTypes.object,
-// };
-
-// export default App;
 
 export { App };
