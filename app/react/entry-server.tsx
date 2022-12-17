@@ -8,7 +8,6 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import { matchRoutes, RouteObject } from 'react-router-dom';
 import { omit } from 'lodash';
-import { Store } from 'redux';
 import {
   unstable_createStaticRouter as createStaticRouter,
   unstable_StaticRouterProvider as StaticRouterProvider,
@@ -28,6 +27,7 @@ import Root from './App/Root';
 import CustomProvider from './App/Provider';
 import translationsApi from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
+import RouteHandler from './App/RouteHandler';
 
 const onlySystemTranslations = (translations: ClientTranslationSchema[]) => {
   const rows = translations.map(translation => {
@@ -154,7 +154,6 @@ const prepareStore = async (req: ExpressRequest, settings: Settings, language: s
 
 const setReduxState = async (
   req: ExpressRequest,
-  reduxStore: Store<IStore>,
   reduxState: IStore,
   matched: { route: RouteObject; params: {} }[] | null
 ) => {
@@ -177,6 +176,7 @@ const setReduxState = async (
       return null;
     })
     .filter(v => v);
+  const initialStore = createStore(reduxState);
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
@@ -193,12 +193,13 @@ const setReduxState = async (
         const actions = await loader(requestParams, reduxState);
         if (Array.isArray(actions)) {
           actions.forEach(action => {
-            reduxStore.dispatch(action);
+            initialStore.dispatch(action);
           });
         }
       })
     );
   }
+  return { initialStore, initialState: initialStore.getState() };
 };
 
 const getSSRProperties = async (
@@ -214,7 +215,6 @@ const getSSRProperties = async (
   const reduxState = reduxStore.getState();
 
   return {
-    reduxStore,
     reduxState,
     staticHandleContext,
     router,
@@ -227,25 +227,26 @@ const resetTranslations = () => {
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
+  RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
   const routes = getRoutes(settings, req.user && req.user._id);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 
-  const { reduxStore, reduxState, staticHandleContext, router } = await getSSRProperties(
+  const { reduxState, staticHandleContext, router } = await getSSRProperties(
     req,
     routes,
     settings,
     language || 'en'
   );
 
-  await setReduxState(req, reduxStore, reduxState, matched);
+  const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
 
   resetTranslations();
 
   const componentHtml = ReactDOMServer.renderToString(
-    <Provider store={reduxStore as any}>
-      <CustomProvider initialData={reduxState} user={req.user} language={reduxState.locale}>
+    <Provider store={initialStore as any}>
+      <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <React.StrictMode>
           <StaticRouterProvider
             router={router}
@@ -259,11 +260,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const html = ReactDOMServer.renderToString(
     <Root
-      language={reduxState.locale}
+      language={initialState.locale}
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
-      reduxData={reduxState}
+      reduxData={initialState}
       assets={assets}
     />
   );
