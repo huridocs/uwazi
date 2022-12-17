@@ -87,13 +87,6 @@ const MediaField = (props: MediaFieldProps) => {
 
   return (
     <div className="search__filter--selected__media">
-      {file.fileURL &&
-        (type === MediaModalType.Image ? (
-          <img src={file.fileURL} alt="" />
-        ) : (
-          <MarkdownMedia config={file.fileURL} />
-        ))}
-
       <div className="search__filter--selected__media-toolbar">
         <button type="button" onClick={() => setOpenModal(true)} className="btn">
           <Icon icon="plus" /> <Translate>{value ? 'Update' : 'Add file'}</Translate>
@@ -106,6 +99,13 @@ const MediaField = (props: MediaFieldProps) => {
           </button>
         )}
       </div>
+
+      {file.fileURL &&
+        (type === MediaModalType.Image ? (
+          <img src={file.fileURL} alt="" />
+        ) : (
+          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />
+        ))}
 
       <MediaModal
         isOpen={openModal}

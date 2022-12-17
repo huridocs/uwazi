@@ -217,6 +217,15 @@ const settingsSchema = {
         topicClassification: { type: 'boolean' },
         favorites: { type: 'boolean' },
         preserve: settingsPreserveConfigSchema,
+        convertToPdf: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['url', 'active'],
+          properties: {
+            active: { type: 'boolean' },
+            url: { type: 'string' },
+          },
+        },
         ocr: {
           type: 'object',
           additionalProperties: false,
