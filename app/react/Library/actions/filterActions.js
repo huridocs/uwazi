@@ -40,21 +40,18 @@ export function filterDocumentTypes(documentTypes, location, navigate) {
   };
 }
 
-export function resetFilters(storeKey) {
+export function resetFilters(navigate, location) {
   return (dispatch, getState) => {
     dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
     dispatch(
-      formActions.load(`${storeKey}.search`, {
+      formActions.load('library.search', {
         searchTerm: '',
         filters: {},
         order: 'desc',
         sort: 'creationDate',
       })
     );
-    libraryActions.searchDocuments({ search: getState()[storeKey].search }, storeKey)(
-      dispatch,
-      getState
-    );
+    libraryActions.searchDocuments({ navigate, location })(dispatch, getState);
   };
 }
 

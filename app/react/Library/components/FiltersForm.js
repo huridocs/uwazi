@@ -14,16 +14,19 @@ import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
 import { TemplatesFilter } from 'app/Library/components/TemplatesFilter';
 import { AssigneeFilter } from 'app/Library/components/AssigneeFilter';
+import { withRouter } from 'app/componentWrappers';
 import { PermissionsFilter } from './PermissionsFilter';
 import { PublishedFilters } from './PublishedFilters';
-
 import Filters from './FiltersFromProperties';
 
 class FiltersForm extends Component {
   constructor(props) {
     super(props);
-    this.search = debounce(search => {
-      this.props.searchDocuments({ search }, this.props.storeKey);
+    this.search = debounce(() => {
+      this.props.searchDocuments({
+        location: this.props.location,
+        navigate: this.props.navigate,
+      });
     }, 300);
 
     this.submit = this.submit.bind(this);
@@ -44,15 +47,15 @@ class FiltersForm extends Component {
     );
   }
 
-  onChange(search) {
+  onChange() {
     if (this.autoSearch) {
       this.autoSearch = false;
-      this.search(search, this.props.storeKey);
+      this.search();
     }
   }
 
-  submit(search) {
-    this.props.searchDocuments({ search }, this.props.storeKey);
+  submit() {
+    this.props.searchDocuments();
   }
 
   render() {
@@ -128,7 +131,8 @@ FiltersForm.propTypes = {
   aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
   fields: PropTypes.instanceOf(Immutable.List).isRequired,
   searchDocuments: PropTypes.func.isRequired,
-  search: PropTypes.object,
+  location: PropTypes.object.isRequired,
+  navigate: PropTypes.func.isRequired,
   documentTypes: PropTypes.instanceOf(Immutable.List).isRequired,
   storeKey: PropTypes.string.isRequired,
 };
@@ -147,4 +151,4 @@ function mapDispatchToProps(dispatch, props) {
 }
 
 export { FiltersForm, mapStateToProps };
-export default connect(mapStateToProps, mapDispatchToProps)(FiltersForm);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(FiltersForm));

@@ -49,7 +49,7 @@ class DocumentsList extends Component {
 
   loadMoreDocuments(amount, from) {
     this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
+    this.props.loadMoreDocuments(amount, from, this.props.location, this.props.navigate);
   }
 
   selectAllDocuments() {
@@ -305,7 +305,8 @@ DocumentsList.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string,
     query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
-  }),
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,
   scrollCount: PropTypes.number,
