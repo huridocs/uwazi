@@ -2,17 +2,17 @@ import { config } from 'api/config';
 import { files, storage, testingUploadPaths } from 'api/files';
 import { tenants } from 'api/tenants';
 import testingDB from 'api/utils/testing_db';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import * as setupSockets from 'api/socketio/setupSockets';
+import * as handleError from 'api/utils/handleError.js';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import * as handleError from 'api/utils/handleError.js';
 import { ObjectId } from 'mongodb';
 import Redis from 'redis';
 import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import * as setupSockets from 'api/socketio/setupSockets';
 
 describe('convertToPdfWorker', () => {
   const worker = new ConvertToPdfWorker();
@@ -36,6 +36,7 @@ describe('convertToPdfWorker', () => {
           type: 'attachment',
           status: 'processing',
           filename: 'attachment.docx',
+          originalname: 'attachment.docx',
         },
       ],
     });
@@ -103,6 +104,7 @@ describe('convertToPdfWorker', () => {
             entity: 'entity',
             type: 'attachment',
             filename: 'attachment.docx',
+            originalname: 'attachment.docx',
             status: 'ready',
           });
         }, 'tenant');
@@ -120,6 +122,7 @@ describe('convertToPdfWorker', () => {
             type: 'document',
             mimetype: 'application/pdf',
             filename: expect.stringMatching('.pdf'),
+            originalname: 'attachment.pdf',
             status: 'ready',
             fullText: { 1: 'Converted[[1]] pdf[[1]]\n\n' },
             totalPages: 1,
