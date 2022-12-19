@@ -10,7 +10,7 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import { actions } from 'app/BasicReducer';
-import { deleteSelection, updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
+import { updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
 interface PDFSidePanelProps {
