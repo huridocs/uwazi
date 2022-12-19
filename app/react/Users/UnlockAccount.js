@@ -2,22 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router-dom';
 import RouteHandler from 'app/App/RouteHandler';
 import { Translate } from 'app/I18N';
-
+import { withRouter } from 'app/componentWrappers';
 import auth from 'app/Auth';
 
-export class UnlockAccount extends RouteHandler {
+class UnlockAccount extends RouteHandler {
   unlockAccount() {
     const { username, code } = this.props.params;
     this.props
       .unlockAccount({ username, code })
       .then(() => {
-        browserHistory.push('/login');
+        this.props.navigate('/login');
       })
       .catch(() => {
-        browserHistory.push('/login');
+        this.props.navigate('/login');
       });
   }
 
@@ -55,4 +54,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(null, mapDispatchToProps)(UnlockAccount);
+export { UnlockAccount };
+export default connect(null, mapDispatchToProps)(withRouter(UnlockAccount));
