@@ -109,40 +109,6 @@ describe('Document', () => {
     });
   });
 
-  describe('when document changes', () => {
-    it('should unset selection', () => {
-      render();
-      instance.text = {
-        selected: jasmine.createSpy('selected'),
-        renderReferences: jasmine.createSpy('renderReferences'),
-        simulateSelection: jasmine.createSpy('simulateSelection'),
-        activate: jasmine.createSpy('activate'),
-      };
-      expect(props.unsetSelection.calls.count()).toBe(1);
-
-      component.setProps({
-        doc: Immutable.fromJS({ _id: 'documentId' }),
-        selectedSnippet: Immutable.fromJS({}),
-      });
-
-      expect(props.unsetSelection.calls.count()).toBe(1);
-      component.setProps({
-        doc: Immutable.fromJS({ _id: 'anotherId' }),
-        selectedSnippet: Immutable.fromJS({}),
-      });
-      expect(props.unsetSelection.calls.count()).toBe(2);
-    });
-  });
-
-  describe('componentDidMount', () => {
-    it('should unset selection', () => {
-      render();
-      expect(props.unsetSelection.calls.count()).toBe(1);
-      instance.componentDidMount();
-      expect(props.unsetSelection.calls.count()).toBe(2);
-    });
-  });
-
   describe('onTextSelected', () => {
     it('should set the selection changing regionId to page', () => {
       render();
