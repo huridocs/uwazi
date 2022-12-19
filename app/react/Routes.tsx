@@ -94,14 +94,8 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
-    {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} />
-    <Route path="uploads" component={Uploads} />
-    <Route path="entity/:sharedId(/:tabView)" component={ViewerRoute} onEnter={onEnter} />
-    <Route
-      path="semanticsearch/:searchId"
-      component={SemanticSearchResultsView}
-      onEnter={onEnter}
-    /> */}
+    {/* <Route path="semanticsearch/:searchId" element={<SemanticSearchResultsView />} /> */}
+    {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} /> */}
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
