@@ -235,7 +235,7 @@ describe('entities.save()', () => {
     const markSpy = jest
       .spyOn(v2Support, 'denormalizeAfterEntityCreation')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any, i: any) => Promise.resolve());
+      .mockImplementation(async (e: any) => Promise.resolve());
 
     const expected = {
       title: 'new_entity',
@@ -263,6 +263,7 @@ describe('entities.save()', () => {
         {
           _id: factory.id('entity2-en'),
           sharedId: 'entity2',
+          language: 'en',
           template: factory.id('template1'),
           title: 'entity2-en-renamed',
         },
