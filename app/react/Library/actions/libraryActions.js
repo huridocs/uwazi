@@ -240,14 +240,22 @@ function searchDocuments(
   return (dispatch, getState) => {
     const state = getState().library;
     const currentSearch = search || state.search;
-    let currentFilters = filters || state.filters;
-    currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
+    const currentFilters = filters || state.filters;
 
-    const searchParams = processFilters(currentSearch, currentFilters, limit, from);
-    searchParams.searchTerm = state.search.searchTerm;
+    const currentSearchParams = rison.decode(
+      decodeURIComponent(new URLSearchParams(location.search).q || '()')
+    );
 
-    const query = new URLSearchParams(location.search);
-    const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
+    const searchParams = {
+      ...processFilters(
+        currentSearch,
+        currentFilters.toJS ? currentFilters.toJS() : currentFilters,
+        limit,
+        from
+      ),
+      searchTerm: state.search.searchTerm,
+      customFilters: currentSearch.customFilters,
+    };
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
       searchParams.sort = '_score';
@@ -256,8 +264,6 @@ function searchDocuments(
     if (currentSearch.userSelectedSorting) {
       dispatch(actions.set('library.selectedSorting', currentSearch));
     }
-
-    searchParams.customFilters = currentSearch.customFilters;
 
     return setSearchInUrl(searchParams, location, navigate);
   };
