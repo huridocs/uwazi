@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
@@ -40,10 +40,12 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
-import { ProtectedRoute } from './ProtectedRoute';
+import { loggedInUsersRoute, adminsOnlyRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
+import ResetPassword from './Users/ResetPassword';
+import UnlockAccount from './Users/UnlockAccount';
 
 // const onEnter = () => {
 //   trackPage();
@@ -76,8 +78,6 @@ import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 //   return () => {};
 // };
 
-const adminRoute = (element: ReactElement) => <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>;
-
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
     <Route index element={getIndexElement(settings, userId)} />
@@ -92,63 +92,59 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
+    <Route path="setpassword/:key" element={<ResetPassword />} />
+    {/* <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} /> */}
     {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} />
     <Route path="uploads" component={Uploads} />
-    <Route path="setpassword/:key" component={ResetPassword} />
-    <Route path="unlockaccount/:username/:code" component={UnlockAccount} />
     <Route path="entity/:sharedId(/:tabView)" component={ViewerRoute} onEnter={onEnter} />
     <Route
       path="semanticsearch/:searchId"
       component={SemanticSearchResultsView}
       onEnter={onEnter}
     /> */}
-    <Route
-      path="settings"
-      element={
-        <ProtectedRoute>
-          <Settings />
-        </ProtectedRoute>
-      }
-    >
+    <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
-      <Route path="dashboard" element={adminRoute(<Dashboard />)} />
-      <Route path="2fa" element={adminRoute(<Configure2fa />)} />
-      <Route path="collection" element={adminRoute(<CollectionSettings />)} />
-      <Route path="navlinks" element={adminRoute(<NavlinksSettings />)} />
-      <Route path="users" element={adminRoute(<UserManagement />)} />
-      <Route path="preserve" element={adminRoute(<PreserveSettings />)} />
+      <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
+      <Route path="2fa" element={adminsOnlyRoute(<Configure2fa />)} />
+      <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
+      <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
+      <Route path="users" element={adminsOnlyRoute(<UserManagement />)} />
+      <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
-        <Route index element={adminRoute(<Pages />)} />
-        <Route path="new" element={adminRoute(<NewPage />)} />
-        <Route path="edit/:sharedId" element={adminRoute(<EditPage />)} />
+        <Route index element={adminsOnlyRoute(<Pages />)} />
+        <Route path="new" element={adminsOnlyRoute(<NewPage />)} />
+        <Route path="edit/:sharedId" element={adminsOnlyRoute(<EditPage />)} />
       </Route>
       <Route path="templates">
-        <Route index element={adminRoute(<EntityTypesList />)} />
-        <Route path="new" element={adminRoute(<NewTemplate />)} />
-        <Route path="edit/:templateId" element={adminRoute(<EditTemplate />)} />
+        <Route index element={adminsOnlyRoute(<EntityTypesList />)} />
+        <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
+        <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
       </Route>
-      <Route path="metadata_extraction" element={adminRoute(<MetadataExtractionDashboard />)} />
+      <Route
+        path="metadata_extraction"
+        element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
+      />
       {/* <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} /> */}
       <Route path="connections">
-        <Route index element={adminRoute(<RelationTypesList />)} />
-        <Route path="new" element={adminRoute(<NewRelationType />)} />
-        <Route path="edit/:_id" element={adminRoute(<EditRelationType />)} />
+        <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
+        <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
+        <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
       </Route>
       <Route path="dictionaries">
-        <Route index element={adminRoute(<ThesauriList />)} />
-        <Route path="new" element={adminRoute(<NewThesauri />)} />
-        <Route path="edit/:_id" element={adminRoute(<EditThesauri />)} />
-        <Route path="cockpit/:_id" element={adminRoute(<ThesaurusCockpit />)} />
+        <Route index element={adminsOnlyRoute(<ThesauriList />)} />
+        <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
+        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
+        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
       </Route>
-      <Route path="languages" element={adminRoute(<LanguageList />)} />
+      <Route path="languages" element={adminsOnlyRoute(<LanguageList />)} />
       <Route path="translations">
-        <Route index element={adminRoute(<TranslationsList />)} />
-        <Route path="edit/:context" element={adminRoute(<EditTranslations />)} />
+        <Route index element={adminsOnlyRoute(<TranslationsList />)} />
+        <Route path="edit/:context" element={adminsOnlyRoute(<EditTranslations />)} />
       </Route>
-      <Route path="filters" element={adminRoute(<FiltersForm />)} />
-      <Route path="customisation" element={adminRoute(<Customisation />)} />
-      <Route path="custom-uploads" element={adminRoute(<CustomUploads />)} />
-      <Route path="activitylog" element={adminRoute(<Activitylog />)} />
+      <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
+      <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
+      <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
+      <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
     </Route>
   </Route>
 );

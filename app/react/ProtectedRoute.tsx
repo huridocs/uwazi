@@ -23,4 +23,10 @@ const ProtectedRoute = ({
   return <Navigate to="/login" replace />;
 };
 
-export { ProtectedRoute };
+const adminsOnlyRoute = (element: ReactElement) => (
+  <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>
+);
+
+const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;
+
+export { loggedInUsersRoute, adminsOnlyRoute };
