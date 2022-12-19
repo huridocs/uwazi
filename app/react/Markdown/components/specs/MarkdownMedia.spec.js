@@ -1,12 +1,15 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
-import { shallow } from 'enzyme';
 import ReactPlayer from 'react-player';
 
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import MarkdownMedia from '../MarkdownMedia';
 
 describe('MarkdownMedia', () => {
   let component;
-  let instance;
   let props;
 
   beforeEach(() => {
@@ -17,8 +20,7 @@ describe('MarkdownMedia', () => {
   });
 
   const render = () => {
-    component = shallow(<MarkdownMedia {...props} />);
-    instance = component.instance();
+    component = renderConnectedMount(() => <MarkdownMedia {...props} />);
   };
 
   describe('render', () => {
@@ -33,19 +35,12 @@ describe('MarkdownMedia', () => {
       expect(component).toMatchSnapshot();
     });
 
-    it('should assign the ReactPlayer ref to this.player', () => {
-      const playerRef = {};
-      render();
-
-      const ReactPlayerComponent = component.find(ReactPlayer);
-      ReactPlayerComponent.getElement().ref(playerRef);
-      expect(instance.player).toBe(playerRef);
-    });
-
     describe('Video timeline', () => {
+      let ReactPlayerInstance;
       beforeEach(() => {
         render();
-        instance.player = { seekTo: jasmine.createSpy('seekTo') };
+        ReactPlayerInstance = component.find(ReactPlayer).instance();
+        ReactPlayerInstance.seekTo = jasmine.createSpy('seekTo');
       });
 
       it('should render the timelinks', () => {
@@ -54,13 +49,12 @@ describe('MarkdownMedia', () => {
       });
 
       it('should interact with the player', () => {
-        const firstTimeLink = component.find('.timelink').at(0);
-        const secondTimeLink = component.find('.timelink').at(1);
-
+        const firstTimeLink = component.find('.timelink-time-label').at(0);
+        const secondTimeLink = component.find('.timelink-time-label').at(1);
         firstTimeLink.simulate('click');
-        expect(instance.player.seekTo).toHaveBeenCalledWith(2 * 60 + 10);
+        expect(ReactPlayerInstance.seekTo).toHaveBeenCalledWith(2 * 60 + 10);
         secondTimeLink.simulate('click');
-        expect(instance.player.seekTo).toHaveBeenCalledWith(5 * 60 + 30);
+        expect(ReactPlayerInstance.seekTo).toHaveBeenCalledWith(5 * 60 + 30);
       });
     });
   });
