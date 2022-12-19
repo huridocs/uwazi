@@ -371,10 +371,10 @@ function deleteEntity(entity) {
   };
 }
 
-function loadMoreDocuments(storeKey, amount, from) {
+function loadMoreDocuments(amount, from, location, navigate) {
   return (dispatch, getState) => {
-    const { search } = getState()[storeKey];
-    searchDocuments({ search }, storeKey, amount, from)(dispatch, getState);
+    const { search } = getState().library;
+    searchDocuments({ search, location, navigate }, amount, from)(dispatch, getState);
   };
 }
 
