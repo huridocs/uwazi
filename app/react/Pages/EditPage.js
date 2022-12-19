@@ -4,9 +4,10 @@ import { actions as formActions } from 'react-redux-form';
 import RouteHandler from 'app/App/RouteHandler';
 
 import { PageCreator } from 'app/Pages/components/PageCreator';
+import { withRouter } from 'app/componentWrappers';
 import pagesAPI from './PagesAPI';
 
-export default class EditPage extends RouteHandler {
+class EditPageComponent extends RouteHandler {
   static async requestState(requestParams) {
     const page = await pagesAPI.getById(requestParams);
 
@@ -25,3 +26,7 @@ export default class EditPage extends RouteHandler {
     );
   }
 }
+
+const EditPage = withRouter(EditPageComponent);
+
+export { EditPage };
