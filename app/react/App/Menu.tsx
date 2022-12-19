@@ -32,6 +32,7 @@ const mapStateToProps = (state: IStore) => {
     uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links'),
     defaultLibraryView: settings.collection.get('defaultLibraryView'),
+    privateInstance: settings.collection.get('private'),
   };
 };
 
@@ -58,6 +59,7 @@ const MenuComponent = ({
   showSemanticSearch,
   links = fromJS([]),
   defaultLibraryView = 'cards',
+  privateInstance,
 }: mappedProps) => {
   const libraryUrl = () => {
     const location = useLocation();
@@ -131,25 +133,27 @@ const MenuComponent = ({
               </button>
             </li>
           </FeatureToggleSemanticSearch>
-          <li className="menuNav-item">
-            <I18NLink
-              to={libraryUrl()}
-              onClick={setLibraryView}
-              className="menuNav-btn btn btn-default public-documents"
-              activeclassname="active-link"
-              aria-label={t('System', 'Library', null, false)}
-            >
-              <Icon
-                icon={
-                  // @ts-ignore
-                  libraryViewInfo[defaultLibraryView].icon
-                }
-              />
-              <span className="tab-link-label">
-                <Translate>Library</Translate>
-              </span>
-            </I18NLink>
-          </li>
+          {(!privateInstance || (privateInstance === true && currentUser._id)) && (
+            <li className="menuNav-item">
+              <I18NLink
+                to={libraryUrl()}
+                onClick={setLibraryView}
+                className="menuNav-btn btn btn-default public-documents"
+                activeclassname="active-link"
+                aria-label={t('System', 'Library', null, false)}
+              >
+                <Icon
+                  icon={
+                    // @ts-ignore
+                    libraryViewInfo[defaultLibraryView].icon
+                  }
+                />
+                <span className="tab-link-label">
+                  <Translate>Library</Translate>
+                </span>
+              </I18NLink>
+            </li>
+          )}
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-desktop">
               <I18NLink

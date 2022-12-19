@@ -68,4 +68,6 @@ describe('Menu', () => {
       expect(libraryButton.length).toBe(1);
     });
   });
+
+  it.todo('it should not display the library button for private instances until the user logs in');
 });
