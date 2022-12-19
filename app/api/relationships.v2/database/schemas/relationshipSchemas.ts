@@ -2,22 +2,42 @@ import { objectIdSchema } from 'api/common.v2/database/schemas/commonSchemas';
 
 const emitSchemaTypes = true;
 
-const entityInfoSchema = {
+const Selection = {
   type: 'object',
-  additionalProperties: true,
-  title: 'EntityInfoType',
+  additionalProperties: false,
   properties: {
-    sharedId: { type: 'string' },
-    title: { type: 'string' },
+    page: { type: 'number' },
+    top: { type: 'number' },
+    left: { type: 'number' },
+    width: { type: 'number' },
+    height: { type: 'number' },
   },
-  required: ['sharedId', 'title'],
+  required: ['page', 'top', 'left', 'width', 'height'],
 };
 
-const entityInfoArraySchema = {
-  type: 'array',
-  definitions: { entityInfoSchema },
-  title: 'EntityInfoArrayType',
-  items: entityInfoSchema,
+const RelationshipReferencePointer = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    entity: { type: 'string' },
+    file: objectIdSchema,
+    selections: { type: 'array', items: Selection },
+    text: { type: 'string' },
+  },
+  required: ['entity', 'file', 'selections', 'text'],
+};
+
+const RelationshipEntityPointer = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    entity: { type: 'string' },
+  },
+  required: ['entity'],
+};
+
+const Pointer = {
+  oneOf: [RelationshipReferencePointer, RelationshipEntityPointer],
 };
 
 const RelationshipDBOSchema = {
@@ -26,28 +46,11 @@ const RelationshipDBOSchema = {
   additionalProperties: false,
   properties: {
     _id: objectIdSchema,
-    from: { type: 'string' },
-    to: { type: 'string' },
+    from: Pointer,
+    to: Pointer,
     type: objectIdSchema,
   },
   required: ['_id', 'from', 'to', 'type'],
 };
 
-const JoinedRelationshipDBOSchema = {
-  ...RelationshipDBOSchema,
-  title: 'JoinedRelationshipDBOType',
-  definitions: { entityInfoArraySchema },
-  properties: {
-    ...RelationshipDBOSchema.properties,
-    from: entityInfoArraySchema,
-    to: entityInfoArraySchema,
-  },
-};
-
-export {
-  entityInfoSchema,
-  entityInfoArraySchema,
-  RelationshipDBOSchema,
-  JoinedRelationshipDBOSchema,
-  emitSchemaTypes,
-};
+export { RelationshipDBOSchema, emitSchemaTypes };

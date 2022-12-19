@@ -7,6 +7,7 @@ import {
 } from 'api/common.v2/database/data_source_defaults';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -37,18 +38,13 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
-const CreateRelationshipService = (request: Request) => {
-  const transactionManager = DefaultTransactionManager();
+const DenormalizationService = (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const idGenerator = DefaultIdGenerator;
-  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const settingsDS = DefaultSettingsDataSource(transactionManager);
 
-  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
-  const denormalizationService = new GenericDenormalizationService(
+  const service = new GenericDenormalizationService(
     relationshipsDS,
     entitiesDS,
     templatesDS,
@@ -57,10 +53,26 @@ const CreateRelationshipService = (request: Request) => {
     indexEntitiesCallback
   );
 
+  return service;
+};
+
+const CreateRelationshipService = (request: Request) => {
+  const transactionManager = DefaultTransactionManager();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
+  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+  const idGenerator = DefaultIdGenerator;
+  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
+  const filesDS = DefaultFilesDataSource(transactionManager);
+
+  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
+  const denormalizationService = DenormalizationService(transactionManager);
+
   const service = new GenericCreateRelationshipService(
     relationshipsDS,
     relationshipTypesDS,
     entitiesDS,
+    filesDS,
     transactionManager,
     idGenerator,
     authService,
@@ -76,29 +88,13 @@ const DeleteRelationshipService = (request: Request) => {
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
+  const denormService = DenormalizationService(transactionManager);
 
   const service = new GenericDeleteRelationshipService(
     relationshipsDS,
     transactionManager,
-    authService
-  );
-
-  return service;
-};
-
-const DenormalizationService = (transactionManager: MongoTransactionManager) => {
-  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-  const templatesDS = DefaultTemplatesDataSource(transactionManager);
-  const settingsDS = DefaultSettingsDataSource(transactionManager);
-
-  const service = new GenericDenormalizationService(
-    relationshipsDS,
-    entitiesDS,
-    templatesDS,
-    settingsDS,
-    transactionManager,
-    indexEntitiesCallback
+    authService,
+    denormService
   );
 
   return service;
