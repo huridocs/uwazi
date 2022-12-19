@@ -11,6 +11,7 @@ import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import { actions } from 'app/BasicReducer';
 import { updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
+import { unsetSelection } from 'app/Viewer/actions/selectionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
 interface PDFSidePanelProps {
@@ -70,6 +71,10 @@ const PDFSidePanel = ({
           }
         })
         .catch(e => e);
+      return () => {
+        store?.dispatch(unsetSelection());
+        store?.dispatch(actions.update('viewer/doc', entity));
+      };
     }
   }, [entitySuggestion]);
 
