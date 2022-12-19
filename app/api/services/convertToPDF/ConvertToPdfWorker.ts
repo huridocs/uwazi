@@ -2,6 +2,7 @@ import Ajv, { JTDDataType, ValidationError } from 'ajv/dist/jtd';
 import { files, generateFileName, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { emitToTenant } from 'api/socketio/setupSockets';
 import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
@@ -67,6 +68,8 @@ export class ConvertToPdfWorker {
             destination: os.tmpdir(),
             mimetype: 'application/pdf',
           });
+
+          emitToTenant(result.params.namespace, 'documentProcessed', attachment.entity);
         }, result.params.namespace);
       },
     });

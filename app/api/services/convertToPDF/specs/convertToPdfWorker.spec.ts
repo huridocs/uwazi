@@ -12,6 +12,7 @@ import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import * as setupSockets from 'api/socketio/setupSockets';
 
 describe('convertToPdfWorker', () => {
   const worker = new ConvertToPdfWorker();
@@ -21,6 +22,7 @@ describe('convertToPdfWorker', () => {
 
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext({
       settings: [
         {
@@ -132,6 +134,16 @@ describe('convertToPdfWorker', () => {
             new URL('http://localhost:5060/download/converted_attachment.pdf')
           );
         }, 'tenant');
+      });
+    });
+
+    it('should emit a documentProcessed socket event to the tenant', async () => {
+      await waitForExpect(async () => {
+        expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+          'tenant',
+          'documentProcessed',
+          'entity'
+        );
       });
     });
   });
