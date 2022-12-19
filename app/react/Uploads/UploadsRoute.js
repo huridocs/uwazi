@@ -48,11 +48,7 @@ export default class Uploads extends RouteHandler {
     query.unpublished = true;
 
     const documents = await api.search(requestParams.set(query));
-    const filterState = libraryHelpers.URLQueryToState(
-      query,
-      globalResources.templates.toJS(),
-      globalResources.relationTypes.toJS()
-    );
+    const filterState = libraryHelpers.URLQueryToState(query, globalResources.templates.toJS());
 
     const addinsteadOfSet = Boolean(query.from);
 

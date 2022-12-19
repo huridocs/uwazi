@@ -6,7 +6,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 
-export interface PublishedFiltersProps {
+interface PublishedFiltersProps {
   onChange: () => void;
   aggregations: Aggregations;
 }
@@ -45,7 +45,7 @@ const generateOptions = (aggregations: Aggregations) => [
   },
 ];
 
-export const PublishedFilters = ({ onChange, aggregations }: PublishedFiltersProps) => {
+const PublishedFilters = ({ onChange, aggregations }: PublishedFiltersProps) => {
   const options = generateOptions(aggregations);
   const totalAggs = options.reduce((total, o) => total + o.results, 0);
   if (totalAggs === 0) {
@@ -65,3 +65,6 @@ export const PublishedFilters = ({ onChange, aggregations }: PublishedFiltersPro
     </NeedAuthorization>
   );
 };
+
+export type { PublishedFiltersProps };
+export { PublishedFilters };

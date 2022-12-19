@@ -72,12 +72,15 @@ const requestState = (
 
   return Promise.all([api.search(documentsRequest), markersRequest]).then(
     ([documents, markers]) => {
+      const useDefaultPublishedStatus =
+        !documentsRequest.data.includeUnpublished && !documentsRequest.data.unpublished;
       const templates = globalResources.templates.toJS();
       const filterState = libraryHelpers.URLQueryToState(
-        documentsRequest.data,
+        {
+          ...documentsRequest.data,
+          ...(useDefaultPublishedStatus && { includeUnpublished: false, unpublished: false }),
+        },
         templates,
-        globalResources.thesauris.toJS(),
-        globalResources.relationTypes.toJS(),
         requestParams.data.quickLabelThesaurus
           ? getThesaurusPropertyNames(requestParams.data.quickLabelThesaurus, templates)
           : []
