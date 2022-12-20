@@ -13,7 +13,7 @@ const assessFilterStatus = async () => {
 
 const goToPublishedEntities = async () => {
   await page.goto(host);
-
+  await page.waitForSelector('[title="Published"]');
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (!publishedSelected) {
     await page.click('[title="Published"]');
@@ -28,7 +28,7 @@ const goToPublishedEntities = async () => {
 
 const goToRestrictedEntities = async () => {
   await page.goto(host);
-
+  await page.waitForSelector('[title="Published"]');
   const [publishedSelected, restrcitedSelected] = await assessFilterStatus();
   if (publishedSelected) {
     await page.click('[title="Published"]');
