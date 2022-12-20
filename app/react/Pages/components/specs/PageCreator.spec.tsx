@@ -31,6 +31,7 @@ describe('PageCreator', () => {
       resetPage: jasmine.createSpy('deletePage'),
       updateValue: jasmine.createSpy('updateValue'),
       savingPage: false,
+      navigate: jasmine.createSpy('navigate'),
     };
   });
 

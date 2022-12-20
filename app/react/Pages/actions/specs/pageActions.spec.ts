@@ -20,6 +20,7 @@ jest.mock('react-router-dom', () => ({
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;
   let apiSave: jasmine.Spy;
+  const navigateSpy = jest.fn();
 
   // eslint-disable-next-line max-statements
   beforeEach(() => {
@@ -49,16 +50,20 @@ describe('Page actions', () => {
 
   describe('savePage', () => {
     it('should dispatch a saving page and save the data', () => {
-      actions.savePage({ title: 'A title' })(dispatch);
+      actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
       expect(dispatch.calls.count()).toBe(1);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
       expect(api.save).toHaveBeenCalledWith(new RequestParams({ title: 'A title' }));
+      expect(navigateSpy).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
     });
 
     describe('upon success', () => {
       beforeEach(done => {
         actions
-          .savePage({ title: 'A title' })(dispatch)
+          .savePage(
+            { title: 'A title' },
+            navigateSpy
+          )(dispatch)
           .then(() => {
             done();
           });
@@ -93,7 +98,10 @@ describe('Page actions', () => {
       it('should dispatch page saved', done => {
         apiSave.and.callFake(async () => Promise.reject(new Error()));
         actions
-          .savePage({ title: 'A title' })(dispatch)
+          .savePage(
+            { title: 'A title' },
+            navigateSpy
+          )(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
             done();
