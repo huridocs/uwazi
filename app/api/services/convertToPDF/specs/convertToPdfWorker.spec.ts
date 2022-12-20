@@ -1,3 +1,5 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { config } from 'api/config';
 import { files, storage, testingUploadPaths } from 'api/files';
 import { tenants } from 'api/tenants';
@@ -5,8 +7,6 @@ import testingDB from 'api/utils/testing_db';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import * as setupSockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError.js';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import Redis from 'redis';
 import RedisSMQ from 'rsmq';
@@ -19,6 +19,17 @@ describe('convertToPdfWorker', () => {
   const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
   const redisClient = Redis.createClient(redisUrl);
   const redisSMQ = new RedisSMQ({ client: redisClient });
+
+  const recreateRedisQueue = async () => {
+    try {
+      await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'queueNotFound') {
+        throw err;
+      }
+    }
+    await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
+  };
 
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
@@ -41,23 +52,14 @@ describe('convertToPdfWorker', () => {
       ],
     });
 
-    const tenant1 = {
+    tenants.add({
       name: 'tenant',
       dbName: testingDB.dbName,
       indexName: testingDB.dbName,
       ...(await testingUploadPaths()),
-    };
+    });
 
-    tenants.add(tenant1);
-
-    try {
-      await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'queueNotFound') {
-        throw err;
-      }
-    }
-    await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
+    await recreateRedisQueue();
 
     jest
       .spyOn(convertToPDFService, 'download')
