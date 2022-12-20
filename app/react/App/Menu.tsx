@@ -15,10 +15,32 @@ import { IStore } from 'app/istore';
 import { fromJS } from 'immutable';
 import { DropdownMenu, ILink } from './DropdownMenu';
 
+const getLink = (
+  to: string,
+  text: string,
+  icon: string,
+  className?: string,
+  onclick?: () => any
+  // eslint-disable-next-line max-params
+) => (
+  <I18NLink
+    to={to}
+    onClick={onclick}
+    className={`menuNav-btn btn btn-default ${className}`}
+    activeclassname="active-link"
+    aria-label={t('System', text, null, false)}
+  >
+    <Icon icon={icon} />
+    <span className="tab-link-label">
+      <Translate>{text}</Translate>
+    </span>
+  </I18NLink>
+);
+
 interface MenuProps {
   className: string;
   defaultLibraryView: any;
-  onClick: React.MouseEventHandler;
+  mobileMenuAction: React.MouseEventHandler;
 }
 
 const mapStateToProps = (state: IStore) => {
@@ -54,7 +76,7 @@ const MenuComponent = ({
   libraryFilters,
   user,
   className,
-  onClick,
+  mobileMenuAction,
   setSidePanelView,
   showSemanticSearch,
   links = fromJS([]),
@@ -112,11 +134,11 @@ const MenuComponent = ({
   };
   return (
     <ul className={className}>
-      <li className="menuItems" onClick={onClick}>
+      <li className="menuItems">
         <ul className="menuNav-list">{navLinks}</ul>
       </li>
       <I18NMenu />
-      <li className="menuActions mobile-menuActions" onClick={onClick}>
+      <li className="menuActions mobile-menuActions">
         <ul className="menuNav-list">
           <FeatureToggleSemanticSearch>
             <li className="menuNav-item semantic-search">
@@ -134,54 +156,37 @@ const MenuComponent = ({
             </li>
           </FeatureToggleSemanticSearch>
           {(!privateInstance || (privateInstance === true && currentUser._id)) && (
-            <li className="menuNav-item">
-              <I18NLink
-                to={libraryUrl()}
-                onClick={setLibraryView}
-                className="menuNav-btn btn btn-default public-documents"
-                activeclassname="active-link"
-                aria-label={t('System', 'Library', null, false)}
-              >
-                <Icon
-                  icon={
-                    // @ts-ignore
-                    libraryViewInfo[defaultLibraryView].icon
-                  }
-                />
-                <span className="tab-link-label">
-                  <Translate>Library</Translate>
-                </span>
-              </I18NLink>
-            </li>
+            <>
+              <li className="menuNav-item only-desktop">
+                {getLink(
+                  libraryUrl(),
+                  'Library',
+                  //@ts-ignore
+                  libraryViewInfo[defaultLibraryView].icon,
+                  'public-documents',
+                  setLibraryView
+                )}
+              </li>
+              <li className="menuNav-item only-mobile" onClick={mobileMenuAction}>
+                {getLink(
+                  libraryUrl(),
+                  'Library',
+                  //@ts-ignore
+                  libraryViewInfo[defaultLibraryView].icon,
+                  'public-documents',
+                  setLibraryView
+                )}
+              </li>
+            </>
           )}
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-desktop">
-              <I18NLink
-                to="/settings/account"
-                className="menuNav-btn btn btn-default settings-section"
-                activeclassname="active-link"
-                aria-label={t('System', 'Settings', null, false)}
-              >
-                <Icon icon="cog" />
-                <span className="tab-link-label">
-                  <Translate>Settings</Translate>
-                </span>
-              </I18NLink>
+              {getLink('/settings/account', 'Settings', 'cog', 'settings-section')}
             </li>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <li className="menuNav-item only-mobile">
-              <I18NLink
-                to="/settings/"
-                className="menuNav-btn btn btn-default settings-section"
-                activeclassname="active-link"
-                aria-label={t('System', 'Settings', null, false)}
-              >
-                <Icon icon="cog" />
-                <span className="tab-link-label">
-                  <Translate>Settings</Translate>
-                </span>
-              </I18NLink>
+            <li className="menuNav-item only-mobile" onClick={mobileMenuAction}>
+              {getLink('/settings', 'Settings', 'cog', 'settings-section')}
             </li>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
@@ -196,22 +201,8 @@ const MenuComponent = ({
           </NeedAuthorization>
           {(() => {
             if (!currentUser._id) {
-              return (
-                <li className="menuNav-item">
-                  <I18NLink
-                    to="/login"
-                    className="menuNav-btn btn btn-default"
-                    aria-label={t('System', 'Sign in', null, false)}
-                  >
-                    <Icon icon="power-off" />
-                    <span className="tab-link-label">
-                      <Translate>Sign in</Translate>
-                    </span>
-                  </I18NLink>
-                </li>
-              );
+              return <li className="menuNav-item">{getLink('/login', 'Sign in', 'power-off')}</li>;
             }
-
             return null;
           })()}
         </ul>
