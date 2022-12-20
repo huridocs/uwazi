@@ -9,7 +9,7 @@ import NavlinksSettings from './components/NavlinksSettings';
 import { RelationTypesList } from './components/RelationTypesList';
 import ThesauriList from './components/ThesauriList';
 import TranslationsList from './components/TranslationsList';
-import Settings from './Settings';
+import { Settings } from './Settings';
 import SettingsAPI from './SettingsAPI';
 import { Dashboard } from './components/Dashboard';
 import { PreserveSettings } from './components/PreserveSettings';

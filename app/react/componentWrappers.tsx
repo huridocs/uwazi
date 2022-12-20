@@ -1,7 +1,7 @@
 /* eslint-disable comma-spacing */
 /* eslint-disable react/no-multi-comp */
 import React, { useContext } from 'react';
-import { useLocation, useMatches, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useMatches, useNavigate, useOutlet, useParams } from 'react-router-dom';
 import { AppMainContext } from './App/AppMainContext';
 
 const withRouter =
@@ -29,4 +29,10 @@ const withContext =
     return <Component {...props} mainContext={mainContext} />;
   };
 
-export { withRouter, withContext };
+const withOutlet =
+  <T,>(Component: React.ComponentClass<T, any>) =>
+  (props: T) => {
+    const outlet = useOutlet(AppMainContext);
+    return <Component {...props} outlet={outlet} />;
+  };
+export { withRouter, withContext, withOutlet };

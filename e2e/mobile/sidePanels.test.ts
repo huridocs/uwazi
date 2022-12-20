@@ -21,6 +21,7 @@ describe('Side panels', () => {
     // iphone 6 measurements
     await page.setViewport({ width: 376, height: 667 });
     await disableTransitions();
+    await page.click('.menu-button');
   });
 
   afterAll(async () => {

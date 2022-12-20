@@ -1,6 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Outlet } from 'react-router-dom';
+import { withOutlet } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi, t } from 'app/I18N';
@@ -15,7 +16,7 @@ import { UserRole } from 'shared/types/userSchema';
 import { SettingsNavigation } from './components/SettingsNavigation';
 import SettingsAPI from './SettingsAPI';
 
-export class Settings extends RouteHandler {
+class SettingsComponent extends RouteHandler {
   static async requestState(requestParams) {
     const request = requestParams.onlyHeaders();
     const [user, thesauri, translations, collection, templates] = await Promise.all([
@@ -71,7 +72,7 @@ export class Settings extends RouteHandler {
   }
 
   render() {
-    const isSettingsParentRoute = !this.props.children;
+    const isSettingsParentRoute = !this.props.outlet;
     return (
       <div className="row settings">
         <Helmet>
@@ -86,4 +87,6 @@ export class Settings extends RouteHandler {
   }
 }
 
-export default Settings;
+const Settings = withOutlet(SettingsComponent);
+
+export { Settings, SettingsComponent };
