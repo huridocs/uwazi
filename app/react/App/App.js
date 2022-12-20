@@ -22,7 +22,7 @@ const App = () => {
   const location = useLocation();
   const params = useParams();
 
-  const toggleMenu = () => {
+  const toggleMobileMenu = () => {
     setShowMenu(!showmenu);
   };
 
@@ -71,7 +71,7 @@ const App = () => {
         <header>
           <button
             className="menu-button"
-            onClick={toggleMenu}
+            onClick={toggleMobileMenu}
             type="button"
             aria-label={t('System', 'Menu', null, false)}
           >
@@ -81,7 +81,7 @@ const App = () => {
             <SiteName />
           </h1>
           {/* {renderTools()} */}
-          <Menu location={location} onClick={toggleMenu} className={navClass} />
+          <Menu location={location} mobileMenuAction={toggleMobileMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
