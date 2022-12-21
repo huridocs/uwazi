@@ -195,6 +195,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         className="new-timestamp-btn"
         onClick={() => {
           appendTimelinkAndUpdateParent(url);
+          setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
         }}
       >
         <Icon icon="plus" />
