@@ -9,7 +9,7 @@ type Props = {
 
 const OnTemplateLoaded: React.FunctionComponent<Props> = ({ children }) => (
   <StateSelector
-    //@ts-ignore
+    // @ts-expect-error
     templateLoaded={createSelector(
       (state: IStore) => state.template.data._id,
       templateId => Boolean(templateId)
