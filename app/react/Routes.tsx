@@ -11,7 +11,7 @@ import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtr
 import { EditPage } from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';
-import EditRelationType from 'app/RelationTypes/EditRelationType';
+import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
