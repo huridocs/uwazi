@@ -19,20 +19,15 @@ declare global {
 const data = isClient && window.__reduxData__ ? window.__reduxData__ : {};
 let store: Store<IStore> | undefined;
 
-export default function create(isDev: boolean = false, initialData = data) {
-  if (isDev) {
-    const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 });
-    store = createStore<IStore>(reducer, initialData, composeEnhancers(applyMiddleware(thunk)));
-  } else {
-    store = createStore<IStore>(reducer, initialData, composeWithDevTools(applyMiddleware(thunk)));
-  }
+export default function create(initialData = data) {
+  store = createStore<IStore>(reducer, initialData, composeWithDevTools(applyMiddleware(thunk)));
 
   return store;
 }
 
 if (module.hot) {
   if (!window.store) {
-    window.store = create(true);
+    window.store = create();
   }
   store = window.store;
   module.hot.accept('./reducer', () => {
