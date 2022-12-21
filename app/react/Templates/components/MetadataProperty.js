@@ -128,6 +128,7 @@ class MetadataProperty extends Component {
             label
           ) : (
             <StateSelector
+              // @ts-expect-error
               propertyLabel={createSelector(
                 state =>
                   state.template.data.properties[this.props.index]
