@@ -166,28 +166,16 @@ const MenuComponent = ({
             </li>
           </FeatureToggleSemanticSearch>
           {(!privateInstance || (privateInstance === true && currentUser._id)) && (
-            <>
-              <li className="menuNav-item only-desktop">
-                {getLink(
-                  libraryUrl(),
-                  'Library',
-                  //@ts-ignore
-                  libraryViewInfo[defaultLibraryView].icon,
-                  'public-documents',
-                  setLibraryView
-                )}
-              </li>
-              <li className="menuNav-item only-mobile">
-                {getLink(
-                  libraryUrl(),
-                  'Library',
-                  //@ts-ignore
-                  libraryViewInfo[defaultLibraryView].icon,
-                  'public-documents',
-                  setLibraryView
-                )}
-              </li>
-            </>
+            <li className="menuNav-item">
+              {getLink(
+                libraryUrl(),
+                'Library',
+                //@ts-ignore
+                libraryViewInfo[defaultLibraryView].icon,
+                'public-documents',
+                setLibraryView
+              )}
+            </li>
           )}
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
             <li className="menuNav-item only-desktop">
