@@ -46,9 +46,9 @@ class ViewerRouteComponent extends RouteHandler {
     if (newSharedId === oldSharedId && newLang === oldLang) {
       return false;
     }
-    const { query } = this.props.location;
-    const { query: nextQuery } = nextProps.location;
-    const sameQueryFile = query.file === nextQuery.file;
+    const { search } = this.props.location;
+    const { search: nextSearch } = nextProps.location;
+    const sameQueryFile = search.file === nextSearch.file;
     return super.urlHasChanged(nextProps) || !sameQueryFile;
   }
 
