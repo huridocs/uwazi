@@ -15,32 +15,10 @@ import { IStore } from 'app/istore';
 import { fromJS } from 'immutable';
 import { DropdownMenu, ILink } from './DropdownMenu';
 
-const getLink = (
-  to: string,
-  text: string,
-  icon: string,
-  className?: string,
-  onclick?: () => any
-  // eslint-disable-next-line max-params
-) => (
-  <I18NLink
-    to={to}
-    onClick={onclick}
-    className={`menuNav-btn btn btn-default ${className}`}
-    activeclassname="active-link"
-    aria-label={t('System', text, null, false)}
-  >
-    <Icon icon={icon} />
-    <span className="tab-link-label">
-      <Translate>{text}</Translate>
-    </span>
-  </I18NLink>
-);
-
 interface MenuProps {
   className: string;
   defaultLibraryView: any;
-  mobileMenuAction: React.MouseEventHandler;
+  toggleMobileMenu: (visible: boolean) => void;
 }
 
 const mapStateToProps = (state: IStore) => {
@@ -76,13 +54,40 @@ const MenuComponent = ({
   libraryFilters,
   user,
   className,
-  mobileMenuAction,
+  toggleMobileMenu,
   setSidePanelView,
   showSemanticSearch,
   links = fromJS([]),
   defaultLibraryView = 'cards',
   privateInstance,
 }: mappedProps) => {
+  const hideMobileMenu = () => toggleMobileMenu(false);
+
+  const getLink = (
+    to: string,
+    text: string,
+    icon: string,
+    linkClassName?: string,
+    onclick?: (args: any) => any
+    // eslint-disable-next-line max-params
+  ) => (
+    <I18NLink
+      to={to}
+      onClick={(args: any) => {
+        if (onclick) onclick(args);
+        hideMobileMenu();
+      }}
+      className={`menuNav-btn btn btn-default ${linkClassName}`}
+      activeclassname="active-link"
+      aria-label={t('System', text, null, false)}
+    >
+      <Icon icon={icon} />
+      <span className="tab-link-label">
+        <Translate>{text}</Translate>
+      </span>
+    </I18NLink>
+  );
+
   const libraryUrl = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -117,7 +122,12 @@ const MenuComponent = ({
         }
         return (
           <li key={link.get('_id')} className="menuNav-item">
-            <I18NLink to={url} className="btn menuNav-btn" activeclassname="active-link">
+            <I18NLink
+              to={url}
+              className="btn menuNav-btn"
+              activeclassname="active-link"
+              onClick={hideMobileMenu}
+            >
               {t('Menu', link.get('title'))}
             </I18NLink>
           </li>
@@ -167,7 +177,7 @@ const MenuComponent = ({
                   setLibraryView
                 )}
               </li>
-              <li className="menuNav-item only-mobile" onClick={mobileMenuAction}>
+              <li className="menuNav-item only-mobile">
                 {getLink(
                   libraryUrl(),
                   'Library',
@@ -185,7 +195,7 @@ const MenuComponent = ({
             </li>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <li className="menuNav-item only-mobile" onClick={mobileMenuAction}>
+            <li className="menuNav-item only-mobile">
               {getLink('/settings', 'Settings', 'cog', 'settings-section')}
             </li>
           </NeedAuthorization>

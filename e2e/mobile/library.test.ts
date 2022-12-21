@@ -31,7 +31,6 @@ describe('library toolbar and action buttons', () => {
     beforeAll(async () => {
       await page.setViewport({ width: 376, height: 667 });
       await disableTransitions();
-      await page.click('.menu-button');
     });
 
     it('should hide the toolbar and actions buttons by default', async () => {

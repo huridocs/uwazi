@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Outlet } from 'react-router-dom';
-import { withOutlet } from 'app/componentWrappers';
+import { withOutlet, withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { I18NApi, t } from 'app/I18N';
@@ -87,6 +87,6 @@ class SettingsComponent extends RouteHandler {
   }
 }
 
-const Settings = withOutlet(SettingsComponent);
+const Settings = withRouter(withOutlet(SettingsComponent));
 
 export { Settings, SettingsComponent };

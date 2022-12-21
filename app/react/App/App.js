@@ -17,13 +17,13 @@ import 'flag-icon-css/sass/flag-icons.scss';
 import './scss/styles.scss';
 
 const App = () => {
-  const [showmenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
   const location = useLocation();
   const params = useParams();
 
-  const toggleMobileMenu = () => {
-    setShowMenu(!showmenu);
+  const toggleMobileMenu = visible => {
+    setShowMenu(visible);
   };
 
   const confirm = options => {
@@ -51,7 +51,7 @@ const App = () => {
   let MenuButtonIcon = 'bars';
   let navClass = 'menuNav';
 
-  if (showmenu) {
+  if (showMenu) {
     MenuButtonIcon = 'times';
     navClass += ' is-active';
   }
@@ -71,7 +71,7 @@ const App = () => {
         <header>
           <button
             className="menu-button"
-            onClick={toggleMobileMenu}
+            onClick={() => toggleMobileMenu(MenuButtonIcon === 'bars')}
             type="button"
             aria-label={t('System', 'Menu', null, false)}
           >
@@ -81,7 +81,7 @@ const App = () => {
             <SiteName />
           </h1>
           {/* {renderTools()} */}
-          <Menu location={location} mobileMenuAction={toggleMobileMenu} className={navClass} />
+          <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
