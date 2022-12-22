@@ -136,34 +136,11 @@ export class MongoEntitiesDataSource
     return new MongoResultSet(cursor, entityMapper.bind(this));
   }
 
-  async updateDenormalizedTitle(
-    properties: string[],
+  async updateDenormalizedMetadataValues(
     sharedId: string,
     language: string,
-    newTitle: string
-  ) {
-    const stream = this.createBulkStream();
-
-    await Promise.all(
-      properties.map(async property => {
-        await stream.updateMany(
-          { [`metadata.${property}.value`]: sharedId, language },
-          // @ts-ignore
-          { $set: { [`metadata.${property}.$[valueIndex].label`]: newTitle } },
-          {
-            arrayFilters: [{ 'valueIndex.value': sharedId }],
-          }
-        );
-      })
-    );
-
-    return stream.flush();
-  }
-
-  async updateDenormalizedMetadataValues(
-    propertiesToNewValues: { propertyName: string; value: any }[],
-    sharedId: string,
-    language: string
+    title: string,
+    propertiesToNewValues: { propertyName: string; value?: any }[]
   ) {
     const stream = this.createBulkStream();
 
@@ -174,7 +151,10 @@ export class MongoEntitiesDataSource
           // @ts-ignore
           {
             $set: {
-              [`metadata.${propertyName}.$[valueIndex].inheritedValue`]: value,
+              [`metadata.${propertyName}.$[valueIndex].label`]: title,
+              ...(value
+                ? { [`metadata.${propertyName}.$[valueIndex].inheritedValue`]: value }
+                : {}),
             },
           },
           {

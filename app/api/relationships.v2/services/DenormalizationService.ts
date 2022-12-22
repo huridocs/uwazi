@@ -110,31 +110,21 @@ export class DenormalizationService {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
-    await Promise.all(
-      changedEntityIds.map(async sharedId => {
-        const entities = await this.entitiesDS.getByIds([sharedId]).all();
-        const entity = entities.find(e => e.language === language);
-        if (!entity) throw new Error('missing entity');
+    await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {
+      const newValuesForProperties = relationshipProperties.map(property => ({
+        propertyName: property.name,
+        ...(property.denormalizedProperty
+          ? { value: entity.metadata[property.denormalizedProperty] }
+          : {}),
+      }));
 
-        const newValuesForProperties = relationshipProperties.map(property => ({
-          propertyName: property.name,
-          value: entity.metadata[property.denormalizedProperty],
-        }));
-
-        await this.entitiesDS.updateDenormalizedTitle(
-          relationshipPropertyNames,
-          sharedId,
-          language,
-          entity.title
-        );
-
-        await this.entitiesDS.updateDenormalizedMetadataValues(
-          newValuesForProperties,
-          sharedId,
-          language
-        );
-      })
-    );
+      await this.entitiesDS.updateDenormalizedMetadataValues(
+        entity.sharedId,
+        language,
+        entity.title,
+        newValuesForProperties
+      );
+    });
 
     const affectedEntities = await this.entitiesDS
       .getByDenormalizedId(relationshipPropertyNames, changedEntityIds)

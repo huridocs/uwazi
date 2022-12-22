@@ -42,13 +42,13 @@ export class MongoTemplatesDataSource
 
     return new MongoResultSet(
       cursor,
-      elem =>
+      template =>
         new RelationshipProperty(
-          elem.properties.name,
-          elem.properties.label,
-          mapPropertyQuery(elem.properties.query),
-          elem.properties.denormalizedProperty || 'title',
-          MongoIdHandler.mapToApp(elem._id)
+          template.properties.name,
+          template.properties.label,
+          mapPropertyQuery(template.properties.query),
+          MongoIdHandler.mapToApp(template._id),
+          template.properties.denormalizedProperty
         )
     );
   }

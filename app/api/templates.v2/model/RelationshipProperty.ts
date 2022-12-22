@@ -6,16 +6,16 @@ import { Property } from './Property';
 class RelationshipProperty extends Property {
   readonly query: MatchQueryNode['traversals'];
 
-  readonly denormalizedProperty: string;
+  readonly denormalizedProperty?: string;
 
   constructor(
     name: string,
     label: string,
     query: MatchQueryNode['traversals'],
-    denormalizedProperty: string,
-    template: string
+    template: string,
+    denormalizedProperty?: string
   ) {
-    super('RelationshipProperty', name, label, template);
+    super('newRelationship', name, label, template);
     this.query = query;
     this.denormalizedProperty = denormalizedProperty;
   }

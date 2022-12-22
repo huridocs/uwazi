@@ -369,7 +369,7 @@ it('should return the sharedIds of the entities that have a particular id within
   ).toEqual(['entity3', 'entity3', 'entity4', 'entity4']);
 });
 
-it('should update the label of the denormalized value in all related entities', async () => {
+it('should update the denormalizations value in all related entities', async () => {
   const db = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   const ds = new MongoEntitiesDataSource(
@@ -384,13 +384,14 @@ it('should update the label of the denormalized value in all related entities', 
     transactionManager
   );
 
-  await ds.updateDenormalizedTitle(
-    ['relProp1', 'relProp2', 'relProp3', 'relProp4'],
-    'valid value',
-    'en',
-    'new label'
-  );
-  await ds.updateDenormalizedTitle(['relProp3', 'relProp4'], 'old_value', 'en', 'new label');
+  await ds.updateDenormalizedMetadataValues('old_value', 'en', 'new_label', [
+    { propertyName: 'relProp3' },
+    { propertyName: 'relProp4', value: [{ value: 11 }] },
+  ]);
+
+  await ds.updateDenormalizedMetadataValues('valid value', 'en', 'new label', [
+    { propertyName: 'relProp1' },
+  ]);
 
   const entities = await testingDB.mongodb
     ?.collection('entities')
@@ -403,7 +404,7 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'en',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'new label' }],
-        relProp3: [{ value: 'old_value', label: 'new label' }],
+        relProp3: [{ value: 'old_value', label: 'new_label' }],
       },
     },
     {
@@ -422,67 +423,7 @@ it('should update the label of the denormalized value in all related entities', 
         relProp4: [
           {
             value: 'old_value',
-            label: 'new label',
-            inheritedType: 'numeric',
-            inheritedValue: [{ value: 0 }],
-          },
-        ],
-      },
-    },
-    {
-      sharedId: 'entity4',
-      language: 'pt',
-      metadata: {
-        relProp1: [{ value: 'valid value', label: 'valid label' }],
-        relProp4: [
-          {
-            value: 'old_value',
-            label: 'old_label',
-            inheritedType: 'numeric',
-            inheritedValue: [{ value: 0 }],
-          },
-        ],
-      },
-    },
-  ]);
-});
-
-it('should update the inheritedValue of the denormalized value in all related entities', async () => {
-  const db = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
-  const ds = new MongoEntitiesDataSource(
-    db,
-    new MongoTemplatesDataSource(db, transactionManager),
-    partialImplementation<MongoRelationshipsDataSource>({}),
-    partialImplementation<MongoSettingsDataSource>({
-      async getLanguageKeys() {
-        return Promise.resolve(['en', 'pt']);
-      },
-    }),
-    transactionManager
-  );
-
-  await ds.updateDenormalizedMetadataValues(
-    [{ propertyName: 'relProp4', value: [{ value: 11 }] }],
-    'old_value',
-    'en'
-  );
-
-  const entities = await testingDB.mongodb
-    ?.collection('entities')
-    .find({ sharedId: 'entity4' })
-    .toArray();
-
-  expect(entities).toMatchObject([
-    {
-      sharedId: 'entity4',
-      language: 'en',
-      metadata: {
-        relProp1: [{ value: 'valid value', label: 'valid label' }],
-        relProp4: [
-          {
-            value: 'old_value',
-            label: 'old_label',
+            label: 'new_label',
             inheritedType: 'numeric',
             inheritedValue: [{ value: 11 }],
           },
