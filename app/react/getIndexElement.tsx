@@ -6,10 +6,18 @@ import { PageView } from './Pages/PageView';
 import { LibraryTable } from './Library/LibraryTable';
 import { LibraryMap } from './Library/LibraryMap';
 import { LibraryCards } from './Library/Library';
+import { Login } from './Users/Login';
 
-const getLibraryDefault = (userId: string | undefined, defaultLibraryView: string | undefined) => {
+const getLibraryDefault = (
+  userId: string | undefined,
+  defaultLibraryView: string | undefined,
+  privateInstance: boolean | undefined
+) => {
   if (userId) {
     return <Navigate to="/library/?q=(includeUnpublished:!t)" state={{ isClient: true }} />;
+  }
+  if (privateInstance) {
+    return <Login />;
   }
 
   switch (defaultLibraryView) {
@@ -30,7 +38,7 @@ const getIndexElement = (settings: Settings | undefined, userId: string | undefi
   const customHomePage = homePage ? homePage.split('/').filter(v => v) : [];
 
   if (!validateHomePageRoute(homePage || '') || customHomePage.length === 0) {
-    return getLibraryDefault(userId, settings?.defaultLibraryView);
+    return getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
   }
 
   if (customHomePage.includes('page')) {

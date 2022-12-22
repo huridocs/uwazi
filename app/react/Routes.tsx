@@ -82,9 +82,18 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
   <Route errorElement={<ErrorBoundary />}>
     <Route index element={getIndexElement(settings, userId)} />
     <Route path="login" element={<Login />} />
-    <Route path="library" element={<LibraryCards />} />
-    <Route path="library/map" element={<LibraryMap />} />
-    <Route path="library/table" element={<LibraryTable />} />
+    <Route
+      path="library"
+      element={!settings?.private ? <LibraryCards /> : adminsOnlyRoute(<LibraryCards />)}
+    />
+    <Route
+      path="library/map"
+      element={!settings?.private ? <LibraryMap /> : adminsOnlyRoute(<LibraryMap />)}
+    />
+    <Route
+      path="library/table"
+      element={!settings?.private ? <LibraryTable /> : adminsOnlyRoute(<LibraryTable />)}
+    />
     <Route path="document/:sharedId/*" element={<ViewerRoute />} />
     <Route path="entity/:sharedId/*" element={<ViewerRoute />} />
     <Route path="entity/:sharedId/:tabView" element={<ViewerRoute />} />

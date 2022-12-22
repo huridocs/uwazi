@@ -28,5 +28,4 @@ const adminsOnlyRoute = (element: ReactElement) => (
 );
 
 const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;
-
 export { loggedInUsersRoute, adminsOnlyRoute };
