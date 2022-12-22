@@ -1,9 +1,11 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { config } from 'api/config';
 import { files, storage, testingUploadPaths } from 'api/files';
 import { tenants } from 'api/tenants';
 import testingDB from 'api/utils/testing_db';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import * as setupSockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError.js';
 import { ObjectId } from 'mongodb';
 import Redis from 'redis';
@@ -11,7 +13,6 @@ import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { convertToPDFService } from '../convertToPdfService';
 import { ConvertToPdfWorker } from '../ConvertToPdfWorker';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
 describe('convertToPdfWorker', () => {
   const worker = new ConvertToPdfWorker();
@@ -19,8 +20,20 @@ describe('convertToPdfWorker', () => {
   const redisClient = Redis.createClient(redisUrl);
   const redisSMQ = new RedisSMQ({ client: redisClient });
 
+  const recreateRedisQueue = async () => {
+    try {
+      await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'queueNotFound') {
+        throw err;
+      }
+    }
+    await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
+  };
+
   beforeAll(async () => {
     await testingDB.connect({ defaultTenant: false });
+    jest.spyOn(setupSockets, 'emitToTenant').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext({
       settings: [
         {
@@ -34,27 +47,19 @@ describe('convertToPdfWorker', () => {
           type: 'attachment',
           status: 'processing',
           filename: 'attachment.docx',
+          originalname: 'attachment.docx',
         },
       ],
     });
 
-    const tenant1 = {
+    tenants.add({
       name: 'tenant',
       dbName: testingDB.dbName,
       indexName: testingDB.dbName,
       ...(await testingUploadPaths()),
-    };
+    });
 
-    tenants.add(tenant1);
-
-    try {
-      await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
-    } catch (err) {
-      if (err instanceof Error && err.name !== 'queueNotFound') {
-        throw err;
-      }
-    }
-    await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
+    await recreateRedisQueue();
 
     jest
       .spyOn(convertToPDFService, 'download')
@@ -101,6 +106,7 @@ describe('convertToPdfWorker', () => {
             entity: 'entity',
             type: 'attachment',
             filename: 'attachment.docx',
+            originalname: 'attachment.docx',
             status: 'ready',
           });
         }, 'tenant');
@@ -118,6 +124,7 @@ describe('convertToPdfWorker', () => {
             type: 'document',
             mimetype: 'application/pdf',
             filename: expect.stringMatching('.pdf'),
+            originalname: 'attachment.pdf',
             status: 'ready',
             fullText: { 1: 'Converted[[1]] pdf[[1]]\n\n' },
             totalPages: 1,
@@ -132,6 +139,16 @@ describe('convertToPdfWorker', () => {
             new URL('http://localhost:5060/download/converted_attachment.pdf')
           );
         }, 'tenant');
+      });
+    });
+
+    it('should emit a documentProcessed socket event to the tenant', async () => {
+      await waitForExpect(async () => {
+        expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
+          'tenant',
+          'documentProcessed',
+          'entity'
+        );
       });
     });
   });
