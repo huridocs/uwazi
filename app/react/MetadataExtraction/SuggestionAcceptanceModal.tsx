@@ -25,7 +25,7 @@ export const SuggestionAcceptanceModal = ({
       </Modal.Header>
       <Modal.Body>
         <label className="language-checkbox">
-          {propertyType !== 'date' ? (
+          {!['date', 'numeric'].includes(propertyType) ? (
             <>
               <input
                 type="checkbox"

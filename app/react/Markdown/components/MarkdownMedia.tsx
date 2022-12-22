@@ -134,26 +134,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     });
   };
 
-  const updateTimelinks = (
-    payload: { action: 'append' | 'remove'; index?: number; timelink?: TimeLink },
-    url: string
-  ) => {
-    switch (payload.action) {
-      case 'append':
-        if (payload.timelink) {
-          append(payload.timelink);
-        } else {
-          append(newTimeline);
-        }
-        setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
-        break;
-      case 'remove':
-        remove(payload.index);
-        break;
-      default:
-    }
+  const updateParentForm = (url: string) => {
     const fullTimelinksString = constructTimelinksString(getValues().timelines, url);
     if (props.onTimeLinkAdded) props.onTimeLinkAdded(fullTimelinksString);
+  };
+
+  const appendTimelinkAndUpdateParent = (url: string, timelink?: TimeLink) => {
+    const currentTimelink = timelink || newTimeline;
+    append(currentTimelink);
+    updateParentForm(url);
   };
 
   const renderNewTimeLinkForm = (url: string) => (
@@ -205,7 +194,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         type="button"
         className="new-timestamp-btn"
         onClick={() => {
-          updateTimelinks({ action: 'append' }, url);
+          appendTimelinkAndUpdateParent(url);
+          setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
         }}
       >
         <Icon icon="plus" />
@@ -225,7 +215,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="timestamp-hours"
           placeholder="00"
           key={field.id}
-          {...register(`timelines.${index}.timeHours`)}
+          {...register(`timelines.${index}.timeHours`, {
+            onChange: _ => updateParentForm(url),
+          })}
         />
         <span className="seperator">:</span>
         <input
@@ -233,7 +225,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="timestamp-minutes"
           placeholder="00"
           key={field.id}
-          {...register(`timelines.${index}.timeMinutes`)}
+          {...register(`timelines.${index}.timeMinutes`, {
+            onChange: _ => updateParentForm(url),
+          })}
         />
         <span className="seperator">:</span>
         <input
@@ -241,7 +235,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="timestamp-seconds"
           placeholder="00"
           key={field.id}
-          {...register(`timelines.${index}.timeSeconds`)}
+          {...register(`timelines.${index}.timeSeconds`, {
+            onChange: _ => updateParentForm(url),
+          })}
         />
       </div>
       <input
@@ -249,13 +245,17 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         className="timestamp-label"
         placeholder="Enter title"
         key={field.id}
-        {...register(`timelines.${index}.label`)}
+        {...register(`timelines.${index}.label`, {
+          onChange: _ => updateParentForm(url),
+        })}
       />
       <button
+        title="Remove timelink"
         type="button"
         className="delete-timestamp-btn"
         onClick={() => {
-          updateTimelinks({ action: 'remove', index }, url);
+          remove(index);
+          updateParentForm(url);
         }}
       >
         <Icon icon="trash-alt" />
@@ -315,7 +315,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
                 timeSeconds: seconds < 10 ? `0${seconds.toString()}` : seconds.toString(),
                 label: '',
               };
-              updateTimelinks({ action: 'append', timelink }, config.url);
+              appendTimelinkAndUpdateParent(config.url, timelink);
             }}
           >
             <Translate>Add timelink</Translate>

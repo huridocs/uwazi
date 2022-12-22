@@ -380,7 +380,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { prefix } = this.props;
     const state = this.checked(group);
     return (
-      <li key={index} className="multiselect-group">
+      <li key={index} className="multiselect-group" aria-label="group">
         <div className="multiselectItem">
           <input
             type="checkbox"

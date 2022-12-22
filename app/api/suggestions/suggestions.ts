@@ -2,6 +2,7 @@ import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
+import templates from 'api/templates';
 import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
@@ -163,7 +164,12 @@ const Suggestions = {
     if (suggestion.error !== '') {
       throw new Error('Suggestion has an error');
     }
-    await updateEntitiesWithSuggestion(allLanguages, acceptedSuggestion, suggestion);
+    let shouldUpdateAllLanguages = allLanguages;
+    const property = await templates.getPropertyByName(suggestion.propertyName);
+    if (property && ['numeric', 'date'].includes(property.type)) {
+      shouldUpdateAllLanguages = true;
+    }
+    await updateEntitiesWithSuggestion(shouldUpdateAllLanguages, acceptedSuggestion, suggestion);
     await updateExtractedMetadata(suggestion);
     await Suggestions.updateStates({ _id: acceptedSuggestion._id });
   },
