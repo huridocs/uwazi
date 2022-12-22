@@ -348,7 +348,6 @@ class InformationExtraction {
       const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
 
       if (suggestionStatus.processed === suggestionStatus.total) {
-        console.log('Training complete');
         return { status: 'ready', message: 'Ready' };
       }
 
