@@ -4,7 +4,7 @@ import { createRoutesFromElements, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
-import EditTranslations from 'app/I18N/EditTranslations';
+import { EditTranslations } from 'app/I18N/EditTranslations';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
