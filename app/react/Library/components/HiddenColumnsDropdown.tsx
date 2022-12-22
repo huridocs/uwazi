@@ -61,7 +61,7 @@ export const HideColumnsComponent = ({
   columns: columnsMap,
 }: HideColumnsComponentProps) => {
   const [open, setOpen] = useState(false);
-  const [clickedOutside, setClickedOutside] = useState(false);
+  const [clickedOutside, setClickedOutside] = useState(true);
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
   const dropdownContainerRef = useRef(null);
@@ -74,7 +74,7 @@ export const HideColumnsComponent = ({
       (!target.parentElement || target.parentElement.className !== 'columns-hint')
     ) {
       setClickedOutside(true);
-      dropdownRef.current?.props.onToggle();
+      dropdownRef.current?.props.onToggle(null);
     }
   }, []);
 
@@ -107,8 +107,8 @@ export const HideColumnsComponent = ({
         onSelect={(selected: SelectableColumn) => {
           onSelect(selected);
         }}
-        onToggle={() => {
-          if (clickedOutside) {
+        onToggle={(value: boolean) => {
+          if (value === null || clickedOutside) {
             setOpen(false);
             setClickedOutside(false);
             dropdownRef.current?.forceUpdate();
