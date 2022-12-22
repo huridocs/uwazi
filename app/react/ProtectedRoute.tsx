@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { store } from 'app/store';
 import { UserRole } from 'shared/types/userSchema';
+import { Settings as settingsType } from 'shared/types/settingsType';
 
 const ProtectedRoute = ({
   children,
@@ -27,5 +28,8 @@ const adminsOnlyRoute = (element: ReactElement) => (
   <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>
 );
 
+const privateRoute = (element: ReactElement, settings: settingsType | undefined) =>
+  !settings?.private ? element : <ProtectedRoute>{element}</ProtectedRoute>;
+
 const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;
-export { loggedInUsersRoute, adminsOnlyRoute };
+export { loggedInUsersRoute, adminsOnlyRoute, privateRoute };

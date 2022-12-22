@@ -40,7 +40,7 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
-import { loggedInUsersRoute, adminsOnlyRoute } from './ProtectedRoute';
+import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
@@ -82,21 +82,12 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
   <Route errorElement={<ErrorBoundary />}>
     <Route index element={getIndexElement(settings, userId)} />
     <Route path="login" element={<Login />} />
-    <Route
-      path="library"
-      element={!settings?.private ? <LibraryCards /> : adminsOnlyRoute(<LibraryCards />)}
-    />
-    <Route
-      path="library/map"
-      element={!settings?.private ? <LibraryMap /> : adminsOnlyRoute(<LibraryMap />)}
-    />
-    <Route
-      path="library/table"
-      element={!settings?.private ? <LibraryTable /> : adminsOnlyRoute(<LibraryTable />)}
-    />
-    <Route path="document/:sharedId/*" element={<ViewerRoute />} />
-    <Route path="entity/:sharedId/*" element={<ViewerRoute />} />
-    <Route path="entity/:sharedId/:tabView" element={<ViewerRoute />} />
+    <Route path="library" element={privateRoute(<LibraryCards />, settings)} />
+    <Route path="library/map" element={privateRoute(<LibraryMap />, settings)} />
+    <Route path="library/table" element={privateRoute(<LibraryTable />, settings)} />
+    <Route path="document/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route path="entity/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
+    <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />
     <Route path="error/:errorCode" element={<GeneralError />} />
     <Route path="404" element={<GeneralError />} />
     <Route path="page/:sharedId" element={<PageView />} />
