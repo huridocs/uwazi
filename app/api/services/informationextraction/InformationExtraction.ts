@@ -336,12 +336,22 @@ class InformationExtraction {
       return { status: 'ready', message: 'Ready' };
     }
 
-    if (currentModel.status === ModelStatus.processing) {
+    if (currentModel.status === ModelStatus.processing && currentModel.findingSuggestions) {
       return { status: 'processing_model', message: 'Training model' };
+    }
+
+    if (currentModel.status === ModelStatus.processing && !currentModel.findingSuggestions) {
+      return { status: 'cancel', message: 'Canceling...' };
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
+
+      if (suggestionStatus.processed === suggestionStatus.total) {
+        console.log('Training complete');
+        return { status: 'ready', message: 'Ready' };
+      }
+
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
