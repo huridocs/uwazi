@@ -24,6 +24,7 @@ describe('Homepage entities', () => {
 
   it('should display entity details', async () => {
     await expect(page).toClick('div.item-document:first-child');
+    await page.waitForNetworkIdle();
     await page.waitForSelector('.metadata.tab-content-visible');
     await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
   });
