@@ -30,6 +30,6 @@ describe('Private instance', () => {
   it('shoud log out and be redirected to login page instead of library page', async () => {
     await logout();
     await page.goto(`${host}/library`);
-    await expect(page.url()).toBe(`${host}/login`);
+    expect(page.url()).toBe(`${host}/login`);
   });
 });

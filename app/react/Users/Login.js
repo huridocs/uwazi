@@ -7,7 +7,6 @@ import { Field, LocalForm, actions as formActions } from 'react-redux-form';
 import { Icon } from 'UI';
 
 import { t, Translate } from 'app/I18N';
-import { isClient } from 'app/utils';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
 import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
@@ -22,7 +21,13 @@ const reloadHome = () => {
 class LoginComponent extends RouteHandler {
   constructor(props, context) {
     super(props, context);
-    this.state = { error: false, error2fa: false, recoverPassword: false, tokenRequired: false };
+    this.state = {
+      error: false,
+      error2fa: false,
+      recoverPassword: false,
+      tokenRequired: false,
+      render: false,
+    };
     this.submit = this.submit.bind(this);
     this.setLogin = this.setLogin.bind(this);
     this.setRecoverPassword = this.setRecoverPassword.bind(this);
@@ -83,6 +88,10 @@ class LoginComponent extends RouteHandler {
     this.setState({ recoverPassword: false, tokenRequired: false, error: false, error2fa: false });
   }
 
+  componentDidMount() {
+    this.setState({ render: true });
+  }
+
   render() {
     let submitLabel = this.state.recoverPassword ? (
       <Translate>Send recovery email</Translate>
@@ -97,11 +106,12 @@ class LoginComponent extends RouteHandler {
     return (
       <div className="content login-content">
         <div className="row">
-          <div className="col-xs-12 col-sm-4 col-sm-offset-4" suppressHydrationWarning>
+          <div className="col-xs-12 col-sm-4 col-sm-offset-4">
             <h1 className="login-title">
               <img src="/public/logo.svg" title="uwazi" alt="uwazi" />
             </h1>
-            {isClient && (
+
+            {this.state.render && (
               <LocalForm
                 onSubmit={this.submit}
                 model="loginForm"
@@ -236,7 +246,7 @@ LoginComponent.propTypes = {
   navigate: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps({ settings }) {
+function mapStateToProps({ settings }) {
   return {
     private: settings.collection.get('private'),
   };
@@ -256,4 +266,4 @@ function mapDispatchToProps(dispatch) {
 
 const Login = withRouter(connect(mapStateToProps, mapDispatchToProps)(LoginComponent));
 
-export { Login };
+export { Login, mapStateToProps };
