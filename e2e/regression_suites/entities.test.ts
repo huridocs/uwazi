@@ -30,6 +30,7 @@ describe('Homepage entities', () => {
 
   it('should display relationships on the sidepanel', async () => {
     await expect(page).toClick('#tab-relationships');
+    await page.waitForSelector('.sidepanel-relationship-collapsible');
     await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
   });
 
