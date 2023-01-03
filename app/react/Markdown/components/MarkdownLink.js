@@ -8,7 +8,7 @@ const MarkdownLink = ({ url, classname, children }) => {
     console.warn('MarkdownLink is deprecated, use <Link to="url"></Link> instead');
   }
   return (
-    <Link to={url} className={classname} href={url}>
+    <Link to={url} className={classname}>
       {children}
     </Link>
   );
