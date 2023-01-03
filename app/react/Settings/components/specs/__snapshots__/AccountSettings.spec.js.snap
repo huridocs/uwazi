@@ -10,13 +10,11 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
-      >
+      <SettingsHeader>
         <Connect(Translate)>
           Account
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >
@@ -190,13 +188,11 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
-      >
+      <SettingsHeader>
         <Connect(Translate)>
           Account
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >

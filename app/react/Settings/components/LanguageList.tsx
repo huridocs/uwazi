@@ -7,6 +7,7 @@ import Confirm from 'app/App/Confirm';
 import { Translate, actions, I18NApi } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { SettingsHeader } from './SettingsHeader';
 
 const SetAsDefaultButton = ({
   className,
@@ -28,7 +29,6 @@ const TranslationAvailable = () => (
     <Translate>Available default translation</Translate>
   </div>
 );
-
 const DeleteButton = ({
   onClick,
   className,
@@ -43,7 +43,6 @@ const DeleteButton = ({
     </span>
   </button>
 );
-
 const ResetDefaultTranslationButton = ({
   onClick,
   className,
@@ -62,7 +61,6 @@ const ResetDefaultTranslationButton = ({
 const mapStateToProps = (state: IStore) => ({
   languages: state.settings.collection.get('languages'),
 });
-
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators(
     {
@@ -73,7 +71,6 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
     },
     dispatch
   );
-
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type MappedProps = ConnectedProps<typeof connector>;
 
@@ -112,10 +109,13 @@ const LanguageList = ({
 
   return (
     <div className="panel panel-default settings-content">
-      <div className="panel-heading">
-        <Translate>Active Languages</Translate>
-      </div>
+      <SettingsHeader>
+        <Translate>Languages</Translate>
+      </SettingsHeader>
       <div className="installed-languages">
+        <h2>
+          <Translate>Active Languages</Translate>
+        </h2>
         {installedLanguages.map((language: LanguageSchema) => (
           <div key={language.key} className="row">
             <div className="col">{`${language.label} (${language.key})`}</div>
@@ -142,9 +142,9 @@ const LanguageList = ({
           </div>
         ))}
       </div>
-      <div className="panel-heading">
+      <h2>
         <Translate>Available Languages</Translate>
-      </div>
+      </h2>
       <div className="available-languages">
         {availableLanguages.map(language => (
           <div key={language.key} className="row">
@@ -169,7 +169,6 @@ const LanguageList = ({
           </div>
         ))}
       </div>
-
       {addingLanguage && (
         <Confirm
           accept={() => {
@@ -200,19 +199,14 @@ const LanguageList = ({
           }}
           title={
             <>
-              <Translate>Confirm delete</Translate>&nbsp;{deletingLanguage.label}
+              <Translate>Confirm deletion of</Translate>&nbsp;{deletingLanguage.label}
             </>
           }
           message={
-            <>
-              <Translate>Are you sure you want to delete</Translate>&nbsp;{deletingLanguage.label}
-              &nbsp;
-              <Translate>language?</Translate>&nbsp;
-              <Translate translationKey="delete language warning">
-                This action may take some time, can not be undone and will delete all the
-                information in that language.
-              </Translate>
-            </>
+            <Translate translationKey="delete language warning">
+              Are you sure you want to delete this language? This action may take some time, cannot
+              be undone and will delete all the information available in this language.
+            </Translate>
           }
           extraConfirm
         />
@@ -232,11 +226,9 @@ const LanguageList = ({
             </>
           }
           message={
-            <>
-              <Translate>Are you sure you want to reset translation for</Translate>&nbsp;
-              {resettingLanguage.label}&nbsp;
-              <Translate>language?</Translate>
-            </>
+            <Translate translationKey="reset language warning">
+              Are you sure you want to reset translation for this language?
+            </Translate>
           }
           extraConfirm
           type="success"

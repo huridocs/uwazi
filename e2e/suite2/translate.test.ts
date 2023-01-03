@@ -1,10 +1,11 @@
 /*global page*/
-
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { changeLanguage } from '../helpers/changeLanguage';
+import { prepareToMatchImageSnapshot } from '../helpers/regression';
 
+prepareToMatchImageSnapshot();
 describe('Translations', () => {
   beforeAll(async () => {
     await insertFixtures();
@@ -44,14 +45,22 @@ describe('Translations', () => {
   });
 
   describe('Live translate', () => {
+    const translateESInline = async (
+      selector: string,
+      currentText: string,
+      translation: string
+    ) => {
+      await expect(page).toClick(selector, { text: currentText });
+      await page.waitForSelector('#es');
+      await expect(page).toFill('#es', translation);
+      await expect(page).toClick('.confirm-button');
+    };
+
     it('Should active live translate', async () => {
       await activateTranslation();
     });
-
     it('should translate a text', async () => {
-      await expect(page).toClick('.translation', { text: 'Filters' });
-      await expect(page).toFill('#es', 'Filtros');
-      await expect(page).toClick('.confirm-button');
+      await translateESInline('.translation', 'Filters', 'Filtros');
       await expect(page).toMatchElement('.alert-success');
     });
 

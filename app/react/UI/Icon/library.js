@@ -33,6 +33,7 @@ import { faCog } from '@fortawesome/free-solid-svg-icons/faCog';
 import { faComment } from '@fortawesome/free-solid-svg-icons/faComment';
 import { faCubes } from '@fortawesome/free-solid-svg-icons/faCubes';
 import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons/faCircle';
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons/faEllipsisH';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons/faEnvelope';
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
@@ -64,6 +65,7 @@ import { faParagraph } from '@fortawesome/free-solid-svg-icons/faParagraph';
 import { faPassport } from '@fortawesome/free-solid-svg-icons/faPassport';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
+import { faPause } from '@fortawesome/free-solid-svg-icons/faPause';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons/faPowerOff';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
@@ -152,6 +154,7 @@ const icons = {
   faCog,
   faComment,
   faCubes,
+  faEllipsisH,
   faEmptyCircle,
   faEnvelope,
   faExchangeAlt,
@@ -184,6 +187,7 @@ const icons = {
   faPassport,
   faPencilAlt,
   faPlay,
+  faPause,
   faPlus,
   faPowerOff,
   faQuestionCircle,

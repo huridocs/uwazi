@@ -64,6 +64,7 @@ export const showByType = (prop, compact, templateId) => {
       result = <GroupedGeolocationViewer members={prop.members} templateId={templateId} />;
       break;
     case 'relationship':
+    case 'newRelationship':
       result = renderRelationshipLinks(prop, compact);
       break;
     default:
@@ -172,49 +173,38 @@ const flattenInherittedRelationships = metadata =>
     return property;
   });
 
-const Metadata = ({
-  metadata,
-  compact,
-  renderLabel,
-  showSubset,
-  highlight,
-  groupGeolocations,
-  templateId,
-}) => {
+const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations, templateId }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
   const groupedMetadata = groupGeolocations
     ? groupAdjacentGeolocations(flattenedMetadata)
     : flattenedMetadata;
 
-  return (
-    <>
-      {groupedMetadata.map((prop, index) => {
-        let type = prop.type ? prop.type : 'default';
-        type = type === 'image' || type === 'media' ? 'multimedia' : type;
-        const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
-        const fullWidthClass = prop.fullWidth ? 'full-width' : '';
+  return groupedMetadata.map((prop, index) => {
+    let type = prop.type ? prop.type : 'default';
+    type = type === 'image' || type === 'media' ? 'multimedia' : type;
+    const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
+    const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
-        return (
-          <dl
-            className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
-            key={`${prop.name}_${index}`}
-          >
-            {renderLabel(prop, <dt>{t(prop.translateContext || 'System', prop.label)}</dt>)}
-            <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-              {showByType(prop, compact, templateId)}
-            </dd>
-          </dl>
-        );
-      })}
-    </>
-  );
+    return (
+      <dl
+        className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
+        key={`${prop.name}_${index}`}
+      >
+        <dt className={prop.noLabel ? 'hidden' : ''}>
+          {t(prop.translateContext || 'System', prop.label)}
+        </dt>
+        <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
+          {showByType(prop, compact, templateId)}
+        </dd>
+      </dl>
+    );
+  });
 };
 
 Metadata.defaultProps = {
   compact: false,
   showSubset: undefined,
-  renderLabel: (_prop, label) => label,
   highlight: [],
   groupGeolocations: false,
 };
@@ -240,7 +230,6 @@ Metadata.propTypes = {
   templateId: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
-  renderLabel: PropTypes.func,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
 };

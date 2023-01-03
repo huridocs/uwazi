@@ -67,6 +67,27 @@ function getFixturesFactory() {
       };
     },
 
+    entityInMultipleLanguages(
+      languages: string[],
+      id: string,
+      template?: string,
+      metadata: MetadataSchema = {},
+      defaultProps: EntitySchema = {},
+      propsPerLanguage:
+        | {
+            [key: string]: EntitySchema;
+          }
+        | undefined = undefined
+    ): EntitySchema[] {
+      return languages.map(language => {
+        const props = { ...defaultProps };
+        if (propsPerLanguage && language in propsPerLanguage) {
+          Object.assign(props, propsPerLanguage[language]);
+        }
+        return this.entity(id, template, metadata, { ...props, language });
+      });
+    },
+
     inherit(name: string, content: string, property: string, props = {}): PropertySchema {
       return this.relationshipProp(name, content, {
         inherit: { property: idMapper(property).toString() },

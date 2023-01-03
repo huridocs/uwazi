@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Field } from 'react-redux-form';
 import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { Icon } from 'UI';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 
@@ -48,7 +48,7 @@ export class ThesauriFormGroup extends Component {
               }}
               className="form-control"
               type="text"
-              placeholder="Group name"
+              placeholder={t('System', 'Group name', null, false)}
             />
             <button
               tabIndex={groupIndex + 500}

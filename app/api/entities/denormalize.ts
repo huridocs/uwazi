@@ -82,7 +82,10 @@ const oneJumpRelatedProps = async (contentId: string) => {
     (props, template) =>
       props.concat(
         (template.properties || [])
-          .filter(p => contentIds.includes(p.content?.toString() || ''))
+          .filter(<
+            (property: PropWithTemplate) => property is PropWithTemplate & { content: string }
+          >(property => property.hasOwnProperty('content')))
+          .filter(p => contentIds.includes(p.content.toString()))
           .map(p => ({
             ...p,
             template: template._id.toString(),
@@ -226,28 +229,28 @@ const denormalizeThesauriLabelInMetadata = async (
   parent: { id: string; label: string }
 ) => {
   const updates = await denormalizationUpdates(thesaurusId.toString(), ['label']);
-  await Promise.all(
-    updates.map(async entry =>
-      model.updateMany(
-        {
-          [entry.filterPath]: valueId,
-          language,
-          ...(entry.template ? { template: entry.template } : {}),
+
+  await updates.reduce(async (previous, entry) => {
+    await previous;
+    await model.updateMany(
+      {
+        [entry.filterPath]: valueId,
+        language,
+        ...(entry.template ? { template: entry.template } : {}),
+      },
+      {
+        $set: {
+          [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
+          ...(parent
+            ? {
+                [`${entry.valuePath}.$[valueIndex].parent.label`]: parent.label,
+              }
+            : {}),
         },
-        {
-          $set: {
-            [`${entry.valuePath}.$[valueIndex].label`]: newLabel,
-            ...(parent
-              ? {
-                  [`${entry.valuePath}.$[valueIndex].parent.label`]: parent.label,
-                }
-              : {}),
-          },
-        },
-        { arrayFilters: [{ 'valueIndex.value': valueId }] }
-      )
-    )
-  );
+      },
+      { arrayFilters: [{ 'valueIndex.value': valueId }] }
+    );
+  }, Promise.resolve());
 
   await reindexUpdates(valueId, language, updates);
 };

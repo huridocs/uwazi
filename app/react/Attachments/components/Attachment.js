@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
@@ -207,7 +207,7 @@ class Attachment extends Component {
               aria-haspopup="true"
               onClick={this.toggleDropdown}
             >
-              <Icon icon="pencil-alt" />
+              <Icon icon="ellipsis-h" />
             </button>
             <ul
               className="dropdown-menu dropdown-menu-right"
@@ -222,12 +222,12 @@ class Attachment extends Component {
               </li>
               <li>
                 <a href={item.url || item.downloadHref} target="_blank" rel="noopener noreferrer">
-                  <Icon icon="link" /> <Translate>Download</Translate>
+                  <Icon icon="cloud-download-alt" /> <Translate>Download</Translate>
                 </a>
               </li>
               <li>
                 <button type="button" onClick={this.toggleRename}>
-                  <Icon icon="pencil-alt" /> <Translate>Rename</Translate>
+                  <Icon icon="font" /> <Translate>Rename</Translate>
                 </button>
               </li>
               <li>

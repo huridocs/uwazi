@@ -17,6 +17,7 @@ import Tip from 'app/Layout/Tip';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
 import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
+import { NeedAuthorization } from 'app/Auth';
 import {
   DatePicker,
   DateRange,
@@ -115,22 +116,28 @@ class MetadataFormFields extends Component {
       localAttachments,
       multipleEdition,
       locale,
+      model,
     } = this.props;
     const propertyType = property.type;
     const plainAttachments = attachments.toJS();
     const plainLocalAttachments = localAttachments;
+    const isPublicForm = model === 'publicform';
 
     switch (propertyType) {
       case 'select':
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
-              }}
-            />
+            {!isPublicForm && (
+              <NeedAuthorization roles={['admin']}>
+                <AddThesauriValueButton
+                  values={translateOptions(thesauri)}
+                  onModalAccept={async newValue => {
+                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, false);
+                  }}
+                />
+              </NeedAuthorization>
+            )}
             <Select
               model={_model}
               optionsValue="id"
@@ -143,12 +150,16 @@ class MetadataFormFields extends Component {
         thesauri = thesauris.find(opt => opt.get('_id').toString() === property.content.toString());
         return (
           <>
-            <AddThesauriValueButton
-              values={translateOptions(thesauri)}
-              onModalAccept={async newValue => {
-                await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
-              }}
-            />
+            {!isPublicForm && (
+              <NeedAuthorization roles={['admin']}>
+                <AddThesauriValueButton
+                  values={translateOptions(thesauri)}
+                  onModalAccept={async newValue => {
+                    await this.onAddThesauriValueSaved(thesauri, newValue, _model, true);
+                  }}
+                />
+              </NeedAuthorization>
+            )}
             <MultiSelect
               model={_model}
               optionsValue="id"
@@ -296,14 +307,18 @@ class MetadataFormFields extends Component {
       label = (
         <>
           <Translate context={templateID}>{property.label}</Translate>
-          &nbsp;(<Translate>affects</Translate>&nbsp;
+          &nbsp;(
+          <Translate>
+            Multiple inherited properties warning ([property 1] affects [property 2])
+          </Translate>
+          &nbsp;
           {property.multiEditingRelationshipFields.map(p => (
             <span key={p._id}>
               &quot;<Translate context={templateID}>{p.label}</Translate>&quot;&nbsp;
             </span>
           ))}
           )
-          <Tip icon="info-circle" position="right">
+          <Tip icon="info-circle" position="left">
             <p>
               <Translate translationKey="Multiple relationships edit description">
                 Making changes to this property will affect other properties on this template

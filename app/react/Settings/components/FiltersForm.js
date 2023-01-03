@@ -12,6 +12,7 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { SettingsHeader } from './SettingsHeader';
 
 const removeItem = itemId => {
   const removeItemIterator = items =>
@@ -104,7 +105,7 @@ class FiltersForm extends Component {
 
   addGroup() {
     const { activeFilters } = this.state;
-    const newGroup = { id: ID(), name: 'New group', items: [] };
+    const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     this.setState({ activeFilters: activeFilters.concat([newGroup]) });
   }
 
@@ -198,9 +199,9 @@ class FiltersForm extends Component {
         <div className="FiltersForm">
           <div className="FiltersForm-list">
             <div className="panel panel-default">
-              <div className="panel-heading">
+              <SettingsHeader>
                 <Translate>Filters configuration</Translate>
-              </div>
+              </SettingsHeader>
               <div className="panel-body">
                 <div className="row">
                   <div className="col-sm-9">

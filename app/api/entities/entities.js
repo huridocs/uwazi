@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
+
 import { applicationEventsBus } from 'api/eventsbus';
 import { PDF, files } from 'api/files';
 import * as filesystem from 'api/files';
@@ -19,6 +20,13 @@ import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
+import {
+  deleteRelatedNewRelationships,
+  denormalizeAfterEntityUpdate,
+  ignoreNewRelationshipsMetadata,
+  denormalizeAfterEntityCreation,
+  assignNewRelationshipFieldsValues,
+} from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
 
@@ -82,6 +90,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
+        ignoreNewRelationshipsMetadata(currentDoc, toSave, template);
+
         const fullEntity = { ...currentDoc, ...toSave };
 
         if (template._id) {
@@ -137,6 +147,9 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
+  const newRelationshipPropertyNames =
+    docTemplate.properties.filter(p => p.type === propertyTypes.newRelationship).map(p => p.name) ||
+    [];
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
   return Promise.all(
     languages.map(async lang => {
@@ -160,6 +173,8 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
         langDoc.template.toString(),
         thesauriByKey
       );
+
+      langDoc.obsoleteMetadata = newRelationshipPropertyNames;
 
       return model.save(langDoc);
     })
@@ -370,6 +385,12 @@ export default {
       await search.indexEntities({ sharedId }, '+fullText');
     }
 
+    if (doc.sharedId) {
+      await denormalizeAfterEntityUpdate(entity);
+    } else {
+      await denormalizeAfterEntityCreation(entity, index);
+    }
+
     return entity;
   },
 
@@ -427,12 +448,16 @@ export default {
   },
 
   async getWithoutDocuments(query, select, options = {}) {
-    return model.getUnrestricted(query, select, options);
+    const entities = await model.getUnrestricted(query, select, options);
+    await assignNewRelationshipFieldsValues(entities);
+    return entities;
   },
 
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
-    return model.getUnrestricted(query, extendedSelect, options);
+    const entities = await model.getUnrestricted(query, extendedSelect, options);
+    await assignNewRelationshipFieldsValues(entities);
+    return entities;
   },
 
   async getUnrestrictedWithDocuments(query, select, options = {}) {
@@ -445,6 +470,8 @@ export default {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
     const entities = await model.get(query, extendedSelect, restOfOptions);
+    await assignNewRelationshipFieldsValues(entities);
+
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
 
@@ -465,6 +492,7 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
+    await assignNewRelationshipFieldsValues([doc]);
     return doc;
   },
 
@@ -513,8 +541,10 @@ export default {
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
-  getAllLanguages(sharedId) {
-    return model.get({ sharedId });
+  async getAllLanguages(sharedId) {
+    const entities = await model.get({ sharedId });
+    await assignNewRelationshipFieldsValues(entities);
+    return entities;
   },
 
   countByTemplate(template, language) {
@@ -522,14 +552,15 @@ export default {
     return model.count(query);
   },
 
-  getByTemplate(template, language, limit, onlyPublished = true) {
+  async getByTemplate(template, language, limit, onlyPublished = true) {
     const query = {
       template,
       language,
       ...(onlyPublished ? { published: true } : {}),
     };
     const queryLimit = limit ? { limit } : {};
-    return model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
+    return entities;
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
@@ -665,6 +696,8 @@ export default {
     ]);
 
     await applicationEventsBus.emit(new EntityDeletedEvent({ entity: docs }));
+
+    await deleteRelatedNewRelationships(sharedId);
 
     return docs;
   },

@@ -10,13 +10,13 @@ exports[`Configure2fa Component enable2fa (form submit) should set state to "con
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
+      <SettingsHeader
+        backUrl="settings/account/"
       >
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >
@@ -138,13 +138,13 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
+      <SettingsHeader
+        backUrl="settings/account/"
       >
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >
@@ -157,12 +157,11 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
           <div
             className="force-ltr"
           >
-            <Connect(Translate)>
+            <Connect(Translate)
+              translationKey="Two-step verification successfully"
+            >
               Congratulations!
-            </Connect(Translate)>
-            <br />
-            <Connect(Translate)>
-              You have successfully configured two-step verification.
+You have successfully configured two-step verification.
             </Connect(Translate)>
           </div>
         </div>
@@ -188,13 +187,13 @@ exports[`Configure2fa Component when user not already using 2fa should show a QR
     <div
       className="panel panel-default"
     >
-      <div
-        className="panel-heading"
+      <SettingsHeader
+        backUrl="settings/account/"
       >
         <Connect(Translate)>
           Two-step verification
         </Connect(Translate)>
-      </div>
+      </SettingsHeader>
       <div
         className="panel-body"
       >

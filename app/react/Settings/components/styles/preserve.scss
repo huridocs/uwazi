@@ -1,26 +1,40 @@
 .panel.panel-preserve {
   padding-left: 32px;
+  .panel-heading {
+    a {
+      display: inline;
+      @media (min-width: 1024px) {
+        display: none;
+      }
+    }
+  }
+
   .panel-preserve-heading {
     font-weight: 700;
     font-size: 18px;
     line-height: 25.2px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
 
     svg {
-      float: inline-start;
-      margin-right: 5px;
+      align-self: center;
     }
   }
+
   .panel-preserve-content {
     div.status {
       padding-top: 20px;
       padding-bottom: 20px;
     }
+
     div.setup {
       color: #78909c;
       div.span {
         width: 380px;
         padding-bottom: 10px;
       }
+
       div.install-buttons {
         display: flex;
         flex-direction: row;
@@ -42,6 +56,7 @@
           border-radius: 4px;
           color: white;
         }
+
         div {
           a {
             display: flex;
@@ -52,10 +67,12 @@
           }
         }
       }
+
       hr {
         border-block-color: #d7d7dc;
         border-block-width: 1.5px;
       }
+
       .preserve-token {
         color: #444444;
         form {

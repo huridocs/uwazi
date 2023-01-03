@@ -11,6 +11,7 @@ import {
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
+import { SettingsHeader } from './SettingsHeader';
 import Tip from '../../Layout/Tip';
 
 class EntityTypesList extends Component {
@@ -40,7 +41,7 @@ class EntityTypesList extends Component {
           },
           title: (
             <>
-              <Translate>Confirm delete of template:</Translate>&nbsp;{template.name}
+              <Translate>Confirm deletion of template:</Translate>&nbsp;{template.name}
             </>
           ),
           messageKey: 'confirm delete template',
@@ -54,7 +55,7 @@ class EntityTypesList extends Component {
           noCancel: true,
           title: (
             <>
-              <Translate>Can not delete template:</Translate>&nbsp;{template.name}
+              <Translate>Cannot delete template:</Translate>&nbsp;{template.name}
             </>
           ),
           message: 'This template has associated entities',
@@ -112,9 +113,9 @@ class EntityTypesList extends Component {
     return (
       <div className="settings-content">
         <div className="panel panel-default">
-          <div className="panel-heading">
+          <SettingsHeader>
             <Translate>Templates</Translate>
-          </div>
+          </SettingsHeader>
           <ul className="list-group document-types">
             {this.sortTemplates().map((template, index) => (
               <li key={index} className="list-group-item">

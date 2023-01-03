@@ -50,6 +50,7 @@ export interface Settings {
   home_page?: string;
   defaultLibraryView?: string;
   private?: boolean;
+  allowcustomJS?: boolean;
   openPublicEndpoint?: boolean;
   cookiepolicy?: boolean;
   mailerConfig?: string;
@@ -64,6 +65,7 @@ export interface Settings {
         [k: string]: unknown | undefined;
       };
   customCSS?: string;
+  customJS?: string;
   mapApiKey?: string;
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
@@ -79,6 +81,10 @@ export interface Settings {
     topicClassification?: boolean;
     favorites?: boolean;
     preserve?: PreserveConfig;
+    convertToPdf?: {
+      active: boolean;
+      url: string;
+    };
     ocr?: {
       url: string;
     };
@@ -99,6 +105,7 @@ export interface Settings {
         properties: string[];
       }[];
     };
+    newRelationships?: boolean;
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {

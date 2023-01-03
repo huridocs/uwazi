@@ -1,505 +1,505 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Metadata should not render an empty list 1`] = `<Fragment />`;
+exports[`Metadata should not render an empty list 1`] = `null`;
 
 exports[`Metadata should not render metadata without value 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-label  "
-    key="label_0"
+<dl
+  className="metadata-type-default metadata-name-label  "
+  key="label_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Label
-    </dt>
-    <dd
-      className=""
-    >
-      string value
-    </dd>
-  </dl>
-</Fragment>
+    Label
+  </dt>
+  <dd
+    className=""
+  >
+    string value
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render a Geolocation viewer when the metadata is type geolocation 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-geolocation metadata-name-geolocation_label  "
-    key="geolocation_label_0"
+<dl
+  className="metadata-type-geolocation metadata-name-geolocation_label  "
+  key="geolocation_label_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Geolocation Label
-    </dt>
-    <dd
-      className=""
-    >
-      <GeolocationViewer
-        onlyForCards={true}
-        points={
-          Array [
-            Object {
-              "lat": 13,
-              "lon": 7,
-            },
-          ]
-        }
-      />
-    </dd>
-  </dl>
-</Fragment>
+    Geolocation Label
+  </dt>
+  <dd
+    className=""
+  >
+    <GeolocationViewer
+      onlyForCards={true}
+      points={
+        Array [
+          Object {
+            "lat": 13,
+            "lon": 7,
+          },
+        ]
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render a Markdown when the metadata is type mardown 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-markdown metadata-name-label_array  "
-    key="label_array_0"
+<dl
+  className="metadata-type-markdown metadata-name-label_array  "
+  key="label_array_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label array
-    </dt>
-    <dd
-      className=""
-    >
-      <MarkdownViewer
-        compact={false}
-        html={true}
-        lists={Array []}
-        markdown="some markdown text"
-      />
-    </dd>
-  </dl>
-</Fragment>
+    label array
+  </dt>
+  <dd
+    className=""
+  >
+    <MarkdownViewer
+      compact={false}
+      html={true}
+      lists={Array []}
+      markdown="some markdown text"
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render a link 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-link metadata-name-link  "
-    key="link_0"
+<dl
+  className="metadata-type-link metadata-name-link  "
+  key="link_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Link
-    </dt>
-    <dd
-      className=""
+    Link
+  </dt>
+  <dd
+    className=""
+  >
+    <a
+      href="url"
+      rel="noopener noreferrer"
+      target="_blank"
     >
-      <a
-        href="url"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        label
-      </a>
-    </dd>
-  </dl>
-</Fragment>
+      label
+    </a>
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render a media field 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-multimedia metadata-name-media_label  "
-    key="media_label_0"
+<dl
+  className="metadata-type-multimedia metadata-name-media_label  "
+  key="media_label_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Media Label
-    </dt>
-    <dd
-      className=""
-    >
-      <MarkdownViewer
-        compact={true}
-        html={false}
-        lists={Array []}
-        markdown="{media}(http://youtube.com/videoid)"
-      />
-    </dd>
-  </dl>
-</Fragment>
+    Media Label
+  </dt>
+  <dd
+    className=""
+  >
+    <MarkdownViewer
+      compact={true}
+      html={false}
+      lists={Array []}
+      markdown="{media}(http://youtube.com/videoid)"
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render an image field 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-multimedia metadata-name-image_label  "
-    key="image_label_0"
+<dl
+  className="metadata-type-multimedia metadata-name-image_label  "
+  key="image_label_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Image Label
-    </dt>
-    <dd
-      className=""
-    >
-      <img
-        alt="Image Label"
-        className="multimedia-img cover"
-        key="http://some.url.com/image.jpg"
-        src="http://some.url.com/image.jpg"
-      />
-    </dd>
-  </dl>
-</Fragment>
+    Image Label
+  </dt>
+  <dd
+    className=""
+  >
+    <img
+      alt="Image Label"
+      className="multimedia-img cover"
+      key="http://some.url.com/image.jpg"
+      src="http://some.url.com/image.jpg"
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render array values separated by ", " 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-label_array  "
-    key="label_array_0"
+<dl
+  className="metadata-type-default metadata-name-label_array  "
+  key="label_array_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label array
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "label": "label array",
-            "name": "label_array",
-            "translateContext": "oneTranslateContext",
-            "value": Array [
-              Object {
-                "value": "first_value",
-              },
-              Object {
-                "value": "second_value",
-              },
-            ],
-          }
+    label array
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "label": "label array",
+          "name": "label_array",
+          "translateContext": "oneTranslateContext",
+          "value": Array [
+            Object {
+              "value": "first_value",
+            },
+            Object {
+              "value": "second_value",
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render links when multiple properties have url 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-relationship metadata-name-label_array  "
-    key="label_array_0"
+<dl
+  className="metadata-type-relationship metadata-name-label_array  "
+  key="label_array_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label array
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "label": "label array",
-            "name": "label_array",
-            "translateContext": "oneTranslateContext",
-            "type": "relationship",
-            "value": Array [
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue={
-                    Object {
-                      "url": "url1",
-                      "value": "first_value",
-                    }
+    label array
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "label": "label array",
+          "name": "label_array",
+          "translateContext": "oneTranslateContext",
+          "type": "relationship",
+          "value": Array [
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue={
+                  Object {
+                    "url": "url1",
+                    "value": "first_value",
                   }
-                />,
-              },
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue={
-                    Object {
-                      "url": "url2",
-                      "value": "second_value",
-                    }
+                }
+              />,
+            },
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue={
+                  Object {
+                    "url": "url2",
+                    "value": "second_value",
                   }
-                />,
-              },
-            ],
-          }
+                }
+              />,
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render links when the property has url 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-relationship metadata-name-withurl  "
-    key="withurl_0"
+<dl
+  className="metadata-type-relationship metadata-name-withurl  "
+  key="withurl_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      withUrl
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "label": "withUrl",
-            "name": "withurl",
-            "translateContext": "oneTranslateContext",
-            "type": "relationship",
-            "url": "url",
-            "value": Array [
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue="string value"
-                />,
-              },
-            ],
-          }
+    withUrl
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "label": "withUrl",
+          "name": "withurl",
+          "translateContext": "oneTranslateContext",
+          "type": "relationship",
+          "url": "url",
+          "value": Array [
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue="string value"
+              />,
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render links with icons if propery has url and icon 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-relationship metadata-name-withurl  "
-    key="withurl_0"
+<dl
+  className="metadata-type-relationship metadata-name-withurl  "
+  key="withurl_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      withUrl
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "icon": Object {
-              "_id": "icon",
-              "type": "Icons",
+    withUrl
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "icon": Object {
+            "_id": "icon",
+            "type": "Icons",
+          },
+          "label": "withUrl",
+          "name": "withurl",
+          "translateContext": "oneTranslateContext",
+          "type": "relationship",
+          "url": "url",
+          "value": Array [
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue="string value"
+              />,
             },
-            "label": "withUrl",
-            "name": "withurl",
-            "translateContext": "oneTranslateContext",
-            "type": "relationship",
-            "url": "url",
-            "value": Array [
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue="string value"
-                />,
-              },
-            ],
-          }
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render property not have this item when type is null 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-metadata_without_property  "
-    key="metadata_without_property_0"
+<dl
+  className="metadata-type-default metadata-name-metadata_without_property  "
+  key="metadata_without_property_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      metadata without property
-    </dt>
-    <dd
-      className=""
-    >
-      No property
-    </dd>
-  </dl>
-</Fragment>
+    metadata without property
+  </dt>
+  <dd
+    className=""
+  >
+    No property
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render sorted property with sorted styles 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-sortedby  "
-    key="sortedby_0"
+<dl
+  className="metadata-type-default metadata-name-sortedby  "
+  key="sortedby_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      sortedBy
-    </dt>
-    <dd
-      className="item-current-sort"
-    >
-      string value
-    </dd>
-  </dl>
-</Fragment>
+    sortedBy
+  </dt>
+  <dd
+    className="item-current-sort"
+  >
+    string value
+  </dd>
+</dl>
 `;
 
 exports[`Metadata should render string values 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-label  "
-    key="label_0"
+<dl
+  className="metadata-type-default metadata-name-label  "
+  key="label_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      Label
-    </dt>
-    <dd
-      className=""
-    >
-      string value
-    </dd>
-  </dl>
-</Fragment>
+    Label
+  </dt>
+  <dd
+    className=""
+  >
+    string value
+  </dd>
+</dl>
 `;
 
 exports[`Metadata when passing a prop with multivalue and parents should render the list with the parents too 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-default metadata-name-name  "
-    key="name_0"
+<dl
+  className="metadata-type-default metadata-name-name  "
+  key="name_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "label": "label",
-            "name": "name",
-            "parent": "Parent",
-            "value": Array [
-              Object {
-                "value": "Parent: one",
-              },
-              Object {
-                "value": "Parent: two",
-              },
-              Object {
-                "value": "Parent: two",
-              },
-              Object {
-                "value": "three",
-              },
-            ],
-          }
+    label
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "label": "label",
+          "name": "name",
+          "parent": "Parent",
+          "value": Array [
+            Object {
+              "value": "Parent: one",
+            },
+            Object {
+              "value": "Parent: two",
+            },
+            Object {
+              "value": "Parent: two",
+            },
+            Object {
+              "value": "three",
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata when passing a prop with parent should render the parent too 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-select metadata-name-name  "
-    key="name_0"
+<dl
+  className="metadata-type-select metadata-name-name  "
+  key="name_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label
-    </dt>
-    <dd
-      className=""
-    >
-      Parent: Child Value
-    </dd>
-  </dl>
-</Fragment>
+    label
+  </dt>
+  <dd
+    className=""
+  >
+    Parent: Child Value
+  </dd>
+</dl>
 `;
 
 exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-relationship metadata-name-label_array  "
-    key="label_array_0"
+<dl
+  className="metadata-type-relationship metadata-name-label_array  "
+  key="label_array_0"
+>
+  <dt
+    className=""
   >
-    <dt>
-      label array
-    </dt>
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={true}
-        property={
-          Object {
-            "label": "label array",
-            "name": "label_array",
-            "translateContext": "oneTranslateContext",
-            "type": "relationship",
-            "value": Array [
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue={
-                    Object {
-                      "url": "url1",
-                      "value": "first_value",
-                    }
+    label array
+  </dt>
+  <dd
+    className=""
+  >
+    <ValueList
+      compact={true}
+      property={
+        Object {
+          "label": "label array",
+          "name": "label_array",
+          "translateContext": "oneTranslateContext",
+          "type": "relationship",
+          "value": Array [
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue={
+                  Object {
+                    "url": "url1",
+                    "value": "first_value",
                   }
-                />,
-              },
-              Object {
-                "value": <Connect(RelationshipLink)
-                  propValue={
-                    Object {
-                      "url": "url2",
-                      "value": "second_value",
-                    }
+                }
+              />,
+            },
+            Object {
+              "value": <Connect(RelationshipLink)
+                propValue={
+                  Object {
+                    "url": "url2",
+                    "value": "second_value",
                   }
-                />,
-              },
-            ],
-          }
+                }
+              />,
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
 
 exports[`Metadata when passing inheritted relationships should flatten the results for display purposes 1`] = `
-<Fragment>
-  <dl
-    className="metadata-type-inherit metadata-name-inherited from relationship  "
-    key="inherited from relationship_0"
+<dl
+  className="metadata-type-inherit metadata-name-inherited from relationship  "
+  key="inherited from relationship_0"
+>
+  <dt
+    className=""
+  />
+  <dd
+    className=""
   >
-    <dt />
-    <dd
-      className=""
-    >
-      <ValueList
-        compact={false}
-        property={
-          Object {
-            "inheritedType": "relationship",
-            "name": "inherited from relationship",
-            "type": "inherit",
-            "value": Array [
-              Object {
-                "value": 1,
-              },
-              Object {
-                "value": 2,
-              },
-              Object {
-                "value": 1,
-              },
-              Object {
-                "value": 3,
-              },
-            ],
-          }
+    <ValueList
+      compact={false}
+      property={
+        Object {
+          "inheritedType": "relationship",
+          "name": "inherited from relationship",
+          "type": "inherit",
+          "value": Array [
+            Object {
+              "value": 1,
+            },
+            Object {
+              "value": 2,
+            },
+            Object {
+              "value": 1,
+            },
+            Object {
+              "value": 3,
+            },
+          ],
         }
-      />
-    </dd>
-  </dl>
-</Fragment>
+      }
+    />
+  </dd>
+</dl>
 `;
