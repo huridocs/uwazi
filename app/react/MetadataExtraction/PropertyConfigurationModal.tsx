@@ -6,7 +6,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import Icons from 'app/Templates/components/Icons';
 
-const SUPPORTED_PROPERTIES = ['text', 'number', 'date'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
 export interface IXTemplateConfiguration {
   template: ObjectIdSchema;
@@ -59,8 +59,7 @@ export const PropertyConfigurationModal = ({
 
   const handleSubmit = (submitedValues: string[]) => {
     const processedValues = submitedValues.reduce((result: IXTemplateConfiguration[], value) => {
-      const templateName = value.split('-')[0];
-      const propertyName = value.split('-')[1];
+      const [templateName, propertyName] = value.split('-');
       const template = templates.find(t => t._id === templateName);
 
       if (!template) {

@@ -237,6 +237,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
     </label>
   </li>
   <li
+    aria-label="group"
     className="multiselect-group"
     key="2"
   >

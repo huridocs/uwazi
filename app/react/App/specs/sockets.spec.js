@@ -126,7 +126,7 @@ describe('sockets', () => {
     it('should dispatch the documentProcessed action', () => {
       jest.spyOn(uploadActions, 'documentProcessed').mockImplementationOnce(() => {});
       socket._callbacks.$documentProcessed[0]('entitySharedId');
-      expect(uploadActions.documentProcessed).toHaveBeenCalledWith('entitySharedId');
+      expect(uploadActions.documentProcessed).toHaveBeenCalledWith('entitySharedId', 'library');
     });
   });
 });

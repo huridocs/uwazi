@@ -29,10 +29,6 @@ class Document extends Component {
     this.highlightReference = this.highlightReference.bind(this);
   }
 
-  componentDidMount() {
-    this.props.unsetSelection();
-  }
-
   componentDidUpdate(prevProps) {
     if (prevProps && prevProps.doc.get('_id') !== this.props.doc.get('_id')) {
       this.props.unsetSelection();
