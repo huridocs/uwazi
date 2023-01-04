@@ -21,7 +21,6 @@
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "emit-types": "node scripts/emitSchemaTypes.js",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
-    "install_redis_for_testing": "node ./scripts/run.js ./install_redis_for_testing.js",
     "production-build": "./webpack/build.sh",
     "run-production": "NODE_ENV=production node server.js",
     "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
