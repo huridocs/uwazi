@@ -12,6 +12,7 @@ import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import referencesAPI from 'app/Viewer/referencesAPI';
+import { searchParamsFromLocation } from 'app/utils/routeHelpers';
 import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
@@ -241,10 +242,7 @@ function searchDocuments(
     const state = getState().library;
     const currentSearch = search || state.search;
     const currentFilters = filters || state.filters;
-
-    const urlSearchParams = new URLSearchParams(location.search);
-
-    const currentSearchParams = rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
+    const currentSearchParams = searchParamsFromLocation(location);
 
     const searchParams = {
       ...processFilters(
