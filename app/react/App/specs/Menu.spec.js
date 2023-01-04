@@ -6,7 +6,7 @@ import { Menu } from '../Menu';
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: () => ({
-    search: { searchTerm: 'asd' },
+    search: '?q=(searchTerm:%27asd%27)',
   }),
   useParams: () => ({
     errorCode: 500,
