@@ -3,15 +3,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Field, LocalForm, actions as formActions } from 'react-redux-form';
-
 import { Icon } from 'UI';
-
 import { t, Translate } from 'app/I18N';
 import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
 import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { withRouter } from 'app/componentWrappers';
-
 import auth from 'app/Auth';
 
 const reloadHome = () => {
@@ -243,7 +240,6 @@ LoginComponent.propTypes = {
   recoverPassword: PropTypes.func,
   reloadThesauris: PropTypes.func,
   change: PropTypes.func,
-  navigate: PropTypes.func.isRequired,
 };
 
 function mapStateToProps({ settings }) {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Login on instance should render the component with the login form 1`] = `
+exports[`Login render should render the component with the login form 1`] = `
 <div
   className="content login-content"
 >
@@ -9,7 +9,6 @@ exports[`Login on instance should render the component with the login form 1`] =
   >
     <div
       className="col-xs-12 col-sm-4 col-sm-offset-4"
-      suppressHydrationWarning={true}
     >
       <h1
         className="login-title"
