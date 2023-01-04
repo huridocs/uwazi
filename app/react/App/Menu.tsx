@@ -22,14 +22,11 @@ interface MenuProps {
 }
 
 const mapStateToProps = (state: IStore) => {
-  const { user, settings, library, uploads } = state;
+  const { user, settings, library } = state;
   return {
     user,
     librarySearch: library.search,
     libraryFilters: library.filters,
-    uploadsSearch: uploads.search,
-    uploadsFilters: uploads.filters,
-    uploadsSelectedSorting: uploads.selectedSorting,
     links: settings.collection.get('links'),
     defaultLibraryView: settings.collection.get('defaultLibraryView'),
     privateInstance: settings.collection.get('private'),
