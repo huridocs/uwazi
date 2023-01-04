@@ -15,10 +15,19 @@ jest.mock('react-router-dom', () => ({
 
 describe('Menu', () => {
   let component;
+  let defaultLibraryView;
+  let user;
+  let isPrivate;
 
-  const render = (defaultLibraryView = 'cards') => {
+  beforeEach(() => {
+    defaultLibraryView = 'cards';
+    user = Immutable.fromJS({});
+    isPrivate = false;
+  });
+
+  const render = () => {
     const storeState = {
-      user: Immutable.fromJS({}),
+      user,
       settings: {
         collection: Immutable.fromJS({
           links: Immutable.fromJS([
@@ -28,6 +37,7 @@ describe('Menu', () => {
             { _id: 4, url: '/', title: 'single slash url' },
           ]),
           defaultLibraryView,
+          private: isPrivate,
         }),
       },
       libraryFilters: Immutable.fromJS({
@@ -72,7 +82,8 @@ describe('Menu', () => {
     });
 
     it('should navigate to the selected default view', () => {
-      render('table');
+      defaultLibraryView = 'table';
+      render();
 
       const libraryButton = component.find({
         to: "/library/table/?q=(searchTerm:'asd',sort:asc)",
@@ -81,5 +92,20 @@ describe('Menu', () => {
     });
   });
 
-  it.todo('it should not display the library button for private instances until the user logs in');
+  describe('private instance', () => {
+    it('it should not display the library button for not logged in users', () => {
+      isPrivate = true;
+      render();
+      const menuButtons = component.find('.tab-link-label');
+      expect(menuButtons.map(node => node.children().children().text())).not.toContain('Library');
+    });
+
+    it('should display the library button for logged in users', () => {
+      isPrivate = true;
+      user = Immutable.fromJS({ _id: 'user1' });
+      render();
+      const menuButtons = component.find('.tab-link-label');
+      expect(menuButtons.map(node => node.children().children().text())).toContain('Library');
+    });
+  });
 });
