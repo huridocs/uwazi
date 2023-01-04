@@ -17,6 +17,8 @@ const suggestionSharedId6Title = testingDB.id();
 const suggestionSharedId6Enemy = testingDB.id();
 const suggestionSharedId6EnemyEs = testingDB.id();
 
+const shared2AgeSuggestionId = testingDB.id();
+
 const file2Id = factory.id('F2');
 const file3Id = factory.id('F3');
 
@@ -118,6 +120,19 @@ const fixtures: DBFixture = {
       propertyName: 'super_powers',
       suggestedValue: 'scientific knowledge',
       segment: 'he relies on his own scientific knowledge',
+      language: 'en',
+      date: 4,
+      page: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      _id: shared2AgeSuggestionId,
+      fileId: factory.id('F2'),
+      entityId: 'shared2',
+      propertyName: 'age',
+      suggestedValue: '20',
+      segment: 'is aged 20',
       language: 'en',
       date: 4,
       page: 5,
@@ -366,7 +381,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared2',
       title: 'Batman ar',
       language: 'ar',
-      metadata: { super_powers: [{ value: 'scientific knowledge' }] },
+      metadata: { super_powers: [{ value: 'scientific knowledge' }], age: [{ value: 12 }] },
       template: personTemplateId,
     },
     {
@@ -374,7 +389,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared2',
       title: 'Batman en',
       language: 'en',
-      metadata: { super_powers: [{ value: 'scientific knowledge' }] },
+      metadata: { super_powers: [{ value: 'scientific knowledge' }], age: [{ value: 12 }] },
       template: personTemplateId,
     },
     {
@@ -382,7 +397,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared2',
       title: 'Batman es',
       language: 'es',
-      metadata: { super_powers: [{ value: 'conocimiento científico' }] },
+      metadata: { super_powers: [{ value: 'conocimiento científico' }], age: [{ value: 12 }] },
       template: factory.id('template1'),
     },
     {
@@ -482,6 +497,13 @@ const fixtures: DBFixture = {
           selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
         },
       },
+      {
+        name: 'age',
+        selection: {
+          text: '20',
+          selectionRectangles: [{ top: 0, left: 0, width: 1, height: 2, page: '2' }],
+        },
+      },
     ]),
     factory.file('F3', 'shared2', 'document', 'documentC.pdf', 'spa', '', [
       {
@@ -543,10 +565,16 @@ const fixtures: DBFixture = {
           type: 'text',
           name: 'enemy',
         },
+        {
+          label: 'Super powers',
+          type: 'text',
+          name: 'super_powers',
+        },
       ],
     },
     {
       _id: heroTemplateId,
+      commonProperties: [{ label: 'Title', type: 'text', name: 'title' }],
       properties: [
         {
           label: 'Age',
@@ -573,6 +601,11 @@ const fixtures: DBFixture = {
           type: 'text',
           name: 'super_powers',
         },
+        {
+          label: 'Age',
+          type: 'numeric',
+          name: 'age',
+        },
       ],
     },
   ],
@@ -590,4 +623,5 @@ export {
   personTemplateId,
   heroTemplateId,
   suggestionId,
+  shared2AgeSuggestionId,
 };
