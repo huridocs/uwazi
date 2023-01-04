@@ -242,9 +242,9 @@ function searchDocuments(
     const currentSearch = search || state.search;
     const currentFilters = filters || state.filters;
 
-    const currentSearchParams = rison.decode(
-      decodeURIComponent(new URLSearchParams(location.search).q || '()')
-    );
+    const urlSearchParams = new URLSearchParams(location.search);
+
+    const currentSearchParams = rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
 
     const searchParams = {
       ...processFilters(

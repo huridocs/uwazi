@@ -31,6 +31,8 @@ describe('libraryActions', () => {
   const templates = [{ name: 'Decision' }, { name: 'Ruling' }];
   const thesauris = [{ _id: 'abc1' }];
   let getState;
+  let location;
+  const navigate = jest.fn();
 
   describe('setDocuments', () => {
     it('should return a SET_DOCUMENTS action ', () => {
@@ -55,6 +57,7 @@ describe('libraryActions', () => {
         },
         library: { filters: Immutable.fromJS(filters), search: {} },
       });
+      jest.clearAllMocks();
     });
 
     it('should dispatch a SET_LIBRARY_TEMPLATES action ', () => {
@@ -202,11 +205,11 @@ describe('libraryActions', () => {
             },
           },
         };
-        spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
+        location = {
           pathname: '/library',
           query: { view: 'chart' },
           search: '?q=()',
-        });
+        };
         getState = jasmine.createSpy('getState').and.returnValue(store);
       });
 
@@ -306,11 +309,11 @@ describe('libraryActions', () => {
       });
 
       it('should set sort by relevance when the search term has changed and has value', () => {
-        browserHistory.getCurrentLocation.and.returnValue({
+        location = {
           pathname: '/library',
           query: { view: 'chart' },
           search: '?q=(searchTerm:%27batman%20begings%27)',
-        });
+        };
         spyOn(browserHistory, 'push');
         actions.searchDocuments(
           { search: { searchTerm: 'batman' }, filters: { properties: [] } },
@@ -322,20 +325,18 @@ describe('libraryActions', () => {
       });
 
       it('should respect the sorting criteria when the search term has not changed and has value', () => {
-        browserHistory.getCurrentLocation.and.returnValue({
+        location = {
           pathname: '/library',
-          query: { q: '(searchTerm:batman,sort:_score)' },
-          search: '?q=(searchTerm:%27batman%20begings%27)',
-        });
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments(
-          {
-            search: { searchTerm: 'batman', sort: 'title', order: 'desc' },
-            filters: { properties: [] },
-          },
-          storeKey
-        )(dispatch, getState);
-        expect(browserHistory.push).toHaveBeenCalledWith(
+          search: '?q=(searchTerm:%27batman%27)',
+        };
+
+        actions.searchDocuments({
+          search: { searchTerm: 'batman', sort: 'title', order: 'desc' },
+          location,
+          navigate,
+          filters: { properties: [] },
+        })(dispatch, getState);
+        expect(navigate).toHaveBeenCalledWith(
           "/library/?q=(from:0,limit:30,order:desc,searchTerm:'batman',sort:title)"
         );
       });

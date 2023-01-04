@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
+import rison from 'rison-node';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t, Translate } from 'app/I18N';
@@ -87,9 +88,10 @@ const MenuComponent = ({
 
   const libraryUrl = () => {
     const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
+    const urlSearchParams = new URLSearchParams(location.search);
+    const searchParams = rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
 
-    const searchTerm = searchParams.get('searchTerm') || '';
+    const searchTerm = searchParams.searchTerm || '';
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
     newParams.searchTerm = searchTerm;
 
