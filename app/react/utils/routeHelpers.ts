@@ -1,4 +1,7 @@
-export function validateHomePageRoute(route: string) {
+import { Location } from 'react-router-dom';
+import rison from 'rison-node';
+
+const validateHomePageRoute = (route: string) => {
   const queryParams = '(\\?.*)?)';
   const languageMatch = '(/[a-zA-Z]{2,3})?';
   const library = `(library(/map)?(/table)?/?${queryParams}`;
@@ -6,4 +9,11 @@ export function validateHomePageRoute(route: string) {
   const page = '(page/.+)';
   const matcher = new RegExp(`${languageMatch}/(${library}|${page}|${entity})$`);
   return route.match(matcher) !== null;
-}
+};
+
+const searchParamsFromLocation = (location: Location) => {
+  const urlSearchParams = new URLSearchParams(location.search);
+  return rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
+};
+
+export { validateHomePageRoute, searchParamsFromLocation };

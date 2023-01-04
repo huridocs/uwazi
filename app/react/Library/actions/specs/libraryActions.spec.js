@@ -1,14 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-
 import backend from 'fetch-mock';
 import qs from 'qs';
 import Immutable from 'immutable';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import rison from 'rison-node';
-import { browserHistory } from 'react-router-dom';
 import { APIURL } from 'app/config.js';
 import { RequestParams } from 'app/utils/RequestParams';
 import * as types from 'app/Library/actions/actionTypes';
@@ -167,7 +165,6 @@ describe('libraryActions', () => {
     describe('searchDocuments', () => {
       let store;
       let state;
-      const storeKey = 'library';
       beforeEach(() => {
         state = {
           properties: [
@@ -207,7 +204,6 @@ describe('libraryActions', () => {
         };
         location = {
           pathname: '/library',
-          query: { view: 'chart' },
           search: '?q=()',
         };
         getState = jasmine.createSpy('getState').and.returnValue(store);
@@ -242,16 +238,13 @@ describe('libraryActions', () => {
           types: ['decision'],
         };
 
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments({ search }, storeKey, 30)(dispatch, getState);
-        let queryObject = rison.decode(
-          browserHistory.push.calls.mostRecent().args[0].split('q=')[1]
-        );
+        actions.searchDocuments({ search, location, navigate }, 30)(dispatch, getState);
+        let queryObject = rison.decode(navigate.mock.calls[0][0].split('q=')[1]);
         expect(queryObject).toEqual(expectedQuery);
 
         search.filters.relationshipfilter.status.values = [];
-        actions.searchDocuments({ search }, storeKey, 'limit')(dispatch, getState);
-        queryObject = rison.decode(browserHistory.push.calls.mostRecent().args[0].split('q=')[1]);
+        actions.searchDocuments({ search, location, navigate }, 'limit')(dispatch, getState);
+        queryObject = rison.decode(navigate.mock.calls[1][0].split('q=')[1]);
         expect(queryObject.filters.relationshipfilter).not.toBeDefined();
       });
 
@@ -271,21 +264,19 @@ describe('libraryActions', () => {
         const { filters } = store.library;
 
         const limit = 60;
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments({ search, filters }, storeKey, limit)(dispatch, getState);
+        actions.searchDocuments({ search, location, navigate, filters }, limit)(dispatch, getState);
 
-        expect(browserHistory.push).toHaveBeenCalledWith(
-          "/library/?view=chart&q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+        expect(navigate).toHaveBeenCalledWith(
+          "/library/?q=(filters:(author:batman,nested:nestedValue,select:selectValue),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
         );
       });
 
       it('should use customFilters from the current search on the store', () => {
         const limit = 60;
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments({}, storeKey, limit)(dispatch, getState);
+        actions.searchDocuments({ location, navigate }, limit)(dispatch, getState);
 
-        expect(browserHistory.push).toHaveBeenCalledWith(
-          "/library/?view=chart&q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
+        expect(navigate).toHaveBeenCalledWith(
+          "/library/?q=(customFilters:(property:(values:!(value))),filters:(),from:0,limit:60,searchTerm:'batman',sort:_score,types:!(decision))" //eslint-disable-line
         );
       });
 
@@ -294,33 +285,31 @@ describe('libraryActions', () => {
           type: 'library.selectedSorting/SET',
           value: { searchTerm: 'batman', filters: { author: 'batman' }, userSelectedSorting: true },
         };
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments(
-          {
-            search: {
-              searchTerm: 'batman',
-              filters: { author: 'batman' },
-              userSelectedSorting: true,
-            },
+        actions.searchDocuments({
+          search: {
+            searchTerm: 'batman',
+            filters: { author: 'batman' },
+            userSelectedSorting: true,
           },
-          storeKey
-        )(dispatch, getState);
+          location,
+          navigate,
+        })(dispatch, getState);
         expect(dispatch).toHaveBeenCalledWith(expectedDispatch);
       });
 
       it('should set sort by relevance when the search term has changed and has value', () => {
         location = {
           pathname: '/library',
-          query: { view: 'chart' },
           search: '?q=(searchTerm:%27batman%20begings%27)',
         };
-        spyOn(browserHistory, 'push');
-        actions.searchDocuments(
-          { search: { searchTerm: 'batman' }, filters: { properties: [] } },
-          storeKey
-        )(dispatch, getState);
-        expect(browserHistory.push).toHaveBeenCalledWith(
-          "/library/?view=chart&q=(from:0,limit:30,searchTerm:'batman',sort:_score)"
+        actions.searchDocuments({
+          search: { searchTerm: 'batman' },
+          location,
+          navigate,
+          filters: { properties: [] },
+        })(dispatch, getState);
+        expect(navigate).toHaveBeenCalledWith(
+          "/library/?q=(from:0,limit:30,searchTerm:'batman',sort:_score)"
         );
       });
 
