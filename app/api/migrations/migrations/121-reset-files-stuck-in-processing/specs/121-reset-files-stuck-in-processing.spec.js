@@ -48,7 +48,7 @@ describe('migration reset files stuck in processing', () => {
     expect(filesFailedNames).toContain('status processsing file (no text 2)');
   });
 
-  it('should reindex if there files affected', async () => {
+  it('should reindex if there are files migrated', async () => {
     await testingDB.setupFixturesAndContext(fixtures);
     await migration.up(testingDB.mongodb);
     expect(migration.reindex).toBe(true);
