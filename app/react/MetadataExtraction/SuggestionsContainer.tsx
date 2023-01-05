@@ -1,6 +1,7 @@
 import React from 'react';
-import _ from 'lodash';
+import { isUndefined } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { ClientTemplateSchema, IStore } from 'app/istore';
 import { acceptSuggestion } from 'app/MetadataExtraction/actions/actions';
 import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
@@ -9,10 +10,11 @@ import { ensure } from 'shared/tsUtils';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 
 const SuggestionComponent = ({
-  routeParams: { propertyName },
   templates,
   acceptSuggestion: acceptIXSuggestion,
 }: ComponentProps) => {
+  const { propertyName } = useParams();
+  console.log(propertyName);
   const propertiesKey = propertyName === 'title' ? 'commonProperties' : 'properties';
 
   const property = templates
@@ -21,7 +23,7 @@ const SuggestionComponent = ({
         .get(propertiesKey)
         ?.find(p => p?.get('name') === propertyName)
     )
-    .filter(v => !_.isUndefined(v));
+    .filter(v => !isUndefined(v));
   if (property && property.size > 0) {
     return (
       <div className="settings-content">
@@ -51,12 +53,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
 
-type ComponentProps = SuggestionsContainerProps & MappedProps;
-
-export interface SuggestionsContainerProps {
-  routeParams: {
-    propertyName: string;
-  };
-}
+type ComponentProps = MappedProps;
 
 export const IXSuggestions = connect(mapStateToProps, mapDispatchToProps)(SuggestionComponent);

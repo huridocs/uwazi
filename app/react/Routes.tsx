@@ -46,6 +46,7 @@ import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
+import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
@@ -87,7 +88,10 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
         path="metadata_extraction"
         element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
       />
-      {/* <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} /> */}
+      <Route
+        path="metadata_extraction/suggestions/:propertyName"
+        element={adminsOnlyRoute(<IXSuggestions />)}
+      />
       <Route path="connections">
         <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
         <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
