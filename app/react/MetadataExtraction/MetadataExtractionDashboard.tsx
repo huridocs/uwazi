@@ -99,7 +99,7 @@ class MetadataExtractionComponent extends React.Component<
       this.props.settings.toJS().features!.metadataExtraction!.templates || [];
 
     return (
-      <div className="settings-content without-footer">
+      <div className="settings-content">
         <div className="panel panel-default">
           <SettingsHeader>
             <Translate>Metadata extraction dashboard</Translate>
@@ -107,15 +107,6 @@ class MetadataExtractionComponent extends React.Component<
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>
-          <button
-            className="btn btn-default"
-            type="button"
-            onClick={() => {
-              this.setState({ configurationModalIsOpen: true });
-            }}
-          >
-            <Translate>Configure properties</Translate>
-          </button>
           <PropertyConfigurationModal
             isOpen={this.state.configurationModalIsOpen}
             onClose={() => this.setState({ configurationModalIsOpen: false })}
@@ -128,16 +119,20 @@ class MetadataExtractionComponent extends React.Component<
               <thead>
                 <tr>
                   <th>
-                    <Translate>Metadata to extract</Translate>
+                    <Translate>Extractor Name</Translate>
                   </th>
                   <th>
-                    <Translate>Template</Translate>
+                    <Translate>Property</Translate>
+                  </th>
+                  <th>
+                    <Translate>Template(s)</Translate>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {Object.entries(formattedData).map(([propIndex, data]) => (
                   <tr key={propIndex}>
+                    <td />
                     <td>
                       <Icon icon={Icons[data.properties[0].type]} fixedWidth />
                       {data.properties[0].label}
@@ -164,6 +159,17 @@ class MetadataExtractionComponent extends React.Component<
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="settings-footer">
+            <button
+              className="btn btn-default"
+              type="button"
+              onClick={() => {
+                this.setState({ configurationModalIsOpen: true });
+              }}
+            >
+              <Translate>Create Extractor</Translate>
+            </button>
           </div>
         </div>
       </div>
