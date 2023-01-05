@@ -13,7 +13,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import { saveConfigurations } from './actions/actions';
-import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
+import { IXTemplateConfiguration, ExtractorCreationModal } from './ExtractorCreationModal';
 
 function mapStateToProps({ settings, templates }: any) {
   return {
@@ -31,6 +31,7 @@ class MetadataExtractionComponent extends React.Component<
     this.saveConfigs = this.saveConfigs.bind(this);
     this.state = {
       configurationModalIsOpen: false,
+      creationModelIsOpen: false,
     };
   }
 
@@ -107,9 +108,9 @@ class MetadataExtractionComponent extends React.Component<
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>
-          <PropertyConfigurationModal
-            isOpen={this.state.configurationModalIsOpen}
-            onClose={() => this.setState({ configurationModalIsOpen: false })}
+          <ExtractorCreationModal
+            isOpen={this.state.creationModelIsOpen}
+            onClose={() => this.setState({ creationModelIsOpen: false })}
             onAccept={this.saveConfigs}
             templates={this.props.templates.toJS()}
             currentProperties={extractionSettings}
@@ -165,7 +166,7 @@ class MetadataExtractionComponent extends React.Component<
               className="btn btn-default"
               type="button"
               onClick={() => {
-                this.setState({ configurationModalIsOpen: true });
+                this.setState({ creationModelIsOpen: true });
               }}
             >
               <Translate>Create Extractor</Translate>
@@ -192,6 +193,7 @@ export interface FormattedSettingsData {
 
 export interface MetadataExtractionDashboardStateTypes {
   configurationModalIsOpen: boolean;
+  creationModelIsOpen: boolean;
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
