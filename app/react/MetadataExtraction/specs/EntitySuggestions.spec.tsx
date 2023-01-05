@@ -47,7 +47,8 @@ describe('EntitySuggestions', () => {
   const renderComponent = (property = reviewedProperty) => {
     ({ renderResult } = renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
-      () => defaultState
+      () => defaultState,
+      'BrowserRouter'
     ));
   };
 
@@ -106,14 +107,12 @@ describe('EntitySuggestions', () => {
           type: 'text',
           label: 'Title',
         };
-        await act(async () => {
-          renderComponent(titleProperty);
-          const suggestionHeaders = screen
-            .getAllByRole('columnheader')
-            .map(header => header.textContent);
-          expect(suggestionHeaders).toContain('Suggestion');
-          expect(suggestionHeaders).not.toContain('Title');
-        });
+        await act(async () => renderComponent(titleProperty));
+        const suggestionHeaders = screen
+          .getAllByRole('columnheader')
+          .map(header => header.textContent);
+        expect(suggestionHeaders).toContain('Suggestion');
+        expect(suggestionHeaders).not.toContain('Title');
       });
     });
   });
@@ -159,8 +158,8 @@ describe('EntitySuggestions', () => {
       );
     });
     it('should retrieve suggestions data when state filter changed', async () => {
+      await act(async () => renderComponent());
       await act(async () => {
-        await renderComponent();
         const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
         fireEvent.change(within(header).getByRole('combobox'), {
           target: { value: SuggestionState.empty },

@@ -6,6 +6,7 @@ import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { showTab } from 'app/Entities/actions/uiActions';
+import { trackPage } from 'app/App/GoogleAnalytics';
 import { PDFViewComponent } from './PDFView';
 import EntityView from './EntityView';
 import { ViewerComponent } from './components/ViewerComponent';
@@ -58,6 +59,7 @@ class ViewerRouteComponent extends RouteHandler {
   }
 
   render() {
+    trackPage();
     this.selectTab(this.props.params);
     return <ViewerComponent {...this.props} />;
   }

@@ -5,6 +5,7 @@ import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { render } from '@testing-library/react';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 const middlewares = [thunk];
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
@@ -61,10 +62,26 @@ const renderConnectedMount = (
   );
 };
 
-const renderConnectedContainer = (children: JSX.Element, stateFunc: () => {}) => {
+const renderConnectedContainer = (
+  children: JSX.Element,
+  stateFunc: () => {},
+  routerWrapper?: 'BrowserRouter' | 'MemoryRouter'
+) => {
+  let wrapper;
+  switch (routerWrapper) {
+    case 'BrowserRouter':
+      wrapper = BrowserRouter;
+      break;
+    case 'MemoryRouter':
+      wrapper = MemoryRouter;
+      break;
+    default:
+      break;
+  }
+
   const store = configureStore<object>(middlewares)(stateFunc);
   return {
-    renderResult: render(<Provider store={store}>{children}</Provider>),
+    renderResult: render(<Provider store={store}>{children}</Provider>, wrapper && { wrapper }),
     store,
   };
 };

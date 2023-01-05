@@ -46,37 +46,7 @@ import { PageView } from './Pages/PageView';
 import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
-
-// const onEnter = () => {
-//   trackPage();
-// };
-
-// const goToLogin = () => {
-//   window.location.assign('/login');
-// };
-
-// const enterLogin = ({ location }) => {
-//   if (location.action === 'REPLACE') {
-//     goToLogin();
-//   }
-// };
-
-// const needsAuth = (_nxtState, _replace) => {
-//   if (!store.getState().user.get('_id')) {
-//     goToLogin();
-//   }
-// };
-
-// const enterOnLibrary = (_nxtState, _replace) => {
-//   const state = store.getState();
-//   if (blankState() && !state.user.get('_id')) {
-//     goToLogin();
-//     return () => {};
-//   }
-
-//   trackPage();
-//   return () => {};
-// };
+import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
@@ -118,7 +88,10 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
         path="metadata_extraction"
         element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
       />
-      {/* <Route path="metadata_extraction/suggestions/:propertyName" element={<IXSuggestions />} /> */}
+      <Route
+        path="metadata_extraction/suggestions/:propertyName"
+        element={adminsOnlyRoute(<IXSuggestions />)}
+      />
       <Route path="connections">
         <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
         <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />

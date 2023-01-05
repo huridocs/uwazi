@@ -93,7 +93,7 @@ const suggestionsTable = (
       },
       {
         id: 'action',
-        Header: () => <>''</>,
+        Header: () => <div />,
         Cell: actionsCell,
         className: 'action',
       },
