@@ -71,6 +71,8 @@ describe('convertToPdfWorker', () => {
   });
 
   afterAll(async () => {
+    redisClient.end(true);
+    await testingDB.disconnect();
     await worker.stop();
   });
 
@@ -91,8 +93,8 @@ describe('convertToPdfWorker', () => {
     });
 
     it('needs permissions to get entities associated to the file', async () => {
+      jest.spyOn(permissionsContext, 'setCommandContext');
       await waitForExpect(() => {
-        jest.spyOn(permissionsContext, 'setCommandContext');
         expect(permissionsContext.setCommandContext).toHaveBeenCalled();
       });
     });
