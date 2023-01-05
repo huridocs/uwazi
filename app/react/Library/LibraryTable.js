@@ -5,6 +5,7 @@ import LibraryLayout from 'app/Library/LibraryLayout';
 import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
 import { withRouter } from 'app/componentWrappers';
+import { trackPage } from 'app/App/GoogleAnalytics';
 
 class LibraryTableComponent extends Library {
   static async requestState(requestParams, globalResources) {
@@ -12,6 +13,7 @@ class LibraryTableComponent extends Library {
   }
 
   render() {
+    trackPage();
     return (
       <LibraryLayout sidePanelMode="unpinned-mode">
         <DocumentsList

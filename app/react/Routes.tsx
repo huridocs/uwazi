@@ -47,37 +47,6 @@ import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 
-// const onEnter = () => {
-//   trackPage();
-// };
-
-// const goToLogin = () => {
-//   window.location.assign('/login');
-// };
-
-// const enterLogin = ({ location }) => {
-//   if (location.action === 'REPLACE') {
-//     goToLogin();
-//   }
-// };
-
-// const needsAuth = (_nxtState, _replace) => {
-//   if (!store.getState().user.get('_id')) {
-//     goToLogin();
-//   }
-// };
-
-// const enterOnLibrary = (_nxtState, _replace) => {
-//   const state = store.getState();
-//   if (blankState() && !state.user.get('_id')) {
-//     goToLogin();
-//     return () => {};
-//   }
-
-//   trackPage();
-//   return () => {};
-// };
-
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
     <Route index element={getIndexElement(settings, userId)} />

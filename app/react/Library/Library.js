@@ -7,6 +7,7 @@ import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
 import { withRouter } from 'app/componentWrappers';
+import { trackPage } from 'app/App/GoogleAnalytics';
 
 class Library extends RouteHandler {
   constructor(props, context) {
@@ -57,6 +58,7 @@ class Library extends RouteHandler {
   }
 
   render() {
+    trackPage();
     return (
       <LibraryLayout
         sidePanelMode={this.props.sidePanelMode}

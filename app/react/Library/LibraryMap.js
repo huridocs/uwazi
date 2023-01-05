@@ -5,6 +5,7 @@ import { MapView } from 'app/Library/components/MapView';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import Library from 'app/Library/Library';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import { trackPage } from 'app/App/GoogleAnalytics';
 
 class LibraryMapComponent extends Library {
   static async requestState(requestParams, globalResources) {
@@ -12,6 +13,7 @@ class LibraryMapComponent extends Library {
   }
 
   render() {
+    trackPage();
     return (
       <LibraryLayout className="library-map-layout">
         <LibraryModeToggleButtons mapViewMode />
