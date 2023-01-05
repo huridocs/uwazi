@@ -25,7 +25,7 @@ const prepareValues = (
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
-  const urlLocation = location;
+  const urlLocation = { ...location };
 
   const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
 

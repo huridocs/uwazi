@@ -11,9 +11,17 @@ const validateHomePageRoute = (route: string) => {
   return route.match(matcher) !== null;
 };
 
-const searchParamsFromLocation = (location: Location) => {
+const searchParamsFromLocationSearch = (location: Location, param: string = 'q') => {
   const urlSearchParams = new URLSearchParams(location.search);
-  return rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
+  return rison.decode(decodeURIComponent(urlSearchParams.get(param) || '()'));
 };
 
-export { validateHomePageRoute, searchParamsFromLocation };
+const searchParamsFromSearchParams = (searchParams: Map<string, string>) => {
+  let params: {} = {};
+  searchParams.forEach((value, key) => {
+    params = { ...params, [key]: value };
+  });
+  return params;
+};
+
+export { validateHomePageRoute, searchParamsFromLocationSearch, searchParamsFromSearchParams };

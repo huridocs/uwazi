@@ -41,9 +41,9 @@ describe('SearchText', () => {
       }),
       location: {
         pathname: 'path',
-        query: { page: 1 },
       },
       navigate: jest.fn(),
+      searchParams: new URLSearchParams('?page=1'),
     };
   });
 

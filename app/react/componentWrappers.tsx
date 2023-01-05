@@ -1,7 +1,14 @@
 /* eslint-disable comma-spacing */
 /* eslint-disable react/no-multi-comp */
 import React, { useContext } from 'react';
-import { useLocation, useMatches, useNavigate, useOutlet, useParams } from 'react-router-dom';
+import {
+  useLocation,
+  useMatches,
+  useNavigate,
+  useOutlet,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { AppMainContext } from './App/AppMainContext';
 
 const withRouter =
@@ -11,6 +18,7 @@ const withRouter =
     const navigate = useNavigate();
     const params = useParams();
     const matches = useMatches();
+    const [searchParams, setSearchParams] = useSearchParams();
     return (
       <Component
         {...props}
@@ -18,6 +26,8 @@ const withRouter =
         location={location}
         params={{ ...params, ...(props.params ? props.params : {}) }}
         matches={matches}
+        searchParams={searchParams}
+        setSearchParams={setSearchParams}
       />
     );
   };

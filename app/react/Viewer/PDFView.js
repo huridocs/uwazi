@@ -11,6 +11,7 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { leaveEditMode } from 'app/Viewer/actions/documentActions';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
@@ -86,23 +87,22 @@ class PDFViewComponent extends Component {
   }
 
   changeBrowserHistoryPage(newPage) {
-    const {
-      query: { page, ...queryWithoutPage },
-    } = this.props.location;
-    queryWithoutPage.raw = queryWithoutPage.raw || undefined;
+    const { page, ...queryWithoutPage } = searchParamsFromSearchParams(this.props.searchParams);
+
     this.props.navigate(
       `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
     );
   }
 
   render() {
-    const { query = {}, pathname } = this.props.location;
-    const raw = query.raw === 'true' || !isClient;
+    const query = searchParamsFromSearchParams(this.props.searchParams);
     const page = Number(query.page || 1);
+    const { pathname } = this.props.location;
+    const raw = query.raw === 'true' || !isClient;
 
     return (
       <>
-        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
+        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${query.page}`} />}</Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}
@@ -130,6 +130,7 @@ PDFViewComponent.propTypes = {
     search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
+  searchParams: PropTypes.instanceOf(Object).isRequired,
 };
 
 PDFViewComponent.defaultProps = {

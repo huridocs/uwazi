@@ -11,6 +11,7 @@ import { Icon } from 'UI';
 import ModalTips from 'app/App/ModalTips';
 import { toUrlParams } from 'shared/JSONRequest';
 import { SearchTipsContent } from 'app/App/SearchTipsContent';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import SnippetList from './SnippetList';
 
 class SearchText extends Component {
@@ -52,8 +53,8 @@ class SearchText extends Component {
 
   submit(value) {
     const path = this.props.location.pathname;
-    const query = new URLSearchParams(this.props.location.search);
 
+    const query = searchParamsFromSearchParams(this.props.searchParams);
     query.searchTerm = value.searchTerm;
 
     this.props.navigate(path + toUrlParams(query));
@@ -146,6 +147,7 @@ SearchText.propTypes = {
     query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
     search: PropTypes.string,
   }).isRequired,
+  searchParams: PropTypes.instanceOf(Object).isRequired,
   navigate: PropTypes.func,
 };
 
