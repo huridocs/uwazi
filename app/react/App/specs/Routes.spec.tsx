@@ -5,13 +5,14 @@ import React from 'react';
 import { getIndexElement } from 'app/getIndexElement';
 import { Settings } from 'shared/types/settingsType';
 import { Login } from 'app/Users/Login';
+import { LibraryTable } from 'app/Library/LibraryTable';
 
 let settings: Settings;
 let userId: string;
 
 describe('Routes', () => {
   beforeEach(() => {
-    settings = { home_page: '', defaultLibraryView: 'cards', private: false };
+    settings = { home_page: '', defaultLibraryView: 'table', private: false };
     userId = 'user1';
   });
 
@@ -29,9 +30,10 @@ describe('Routes', () => {
         expect(result).toMatchObject(<Login />);
       });
 
-      it.todo(
-        'should replace the route to the default library if there is not user and it is not a blank state'
-      );
+      it('should replace the route to the default library if there is not user', () => {
+        const result = getIndexElement(settings, undefined);
+        expect(result).toMatchObject(<LibraryTable />);
+      });
     });
 
     it.todo('should track page when home page is a valid public page path');
