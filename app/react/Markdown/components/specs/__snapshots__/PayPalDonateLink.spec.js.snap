@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Link should allow nesting children inside 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=" paypal-donate"
   href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
   rel="noreferrer noopener"
@@ -13,38 +13,38 @@ exports[`Link should allow nesting children inside 1`] = `
   <span>
     Label
   </span>
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
 
 exports[`Link should allow to set a custom amount 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=" paypal-donate"
   href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&amount=10.15&source=url"
   rel="noreferrer noopener"
   target="_blank"
 >
   label
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
 
 exports[`Link should allow to set a custom class to the component 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=" paypal-donate"
   href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
   rel="noreferrer noopener"
   target="_blank"
 >
   label
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
 
 exports[`Link should render a react-router-dom Link with target _blank 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=" paypal-donate"
   href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=1234&currency_code=EUR&source=url"
   rel="noreferrer noopener"
   target="_blank"
 >
   label
-</ForwardRef(LinkWithRef)>
+</Link>
 `;

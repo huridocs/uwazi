@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Link should allow nesting children inside 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=""
   to="url"
 >
@@ -11,23 +11,23 @@ exports[`Link should allow nesting children inside 1`] = `
   <span>
     Label
   </span>
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
 
 exports[`Link should allow to set a custom class to the component 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=""
   to="url"
 >
   label
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
 
 exports[`Link should render a react-router-dom Link 1`] = `
-<ForwardRef(LinkWithRef)
+<Link
   className=""
   to="url"
 >
   label
-</ForwardRef(LinkWithRef)>
+</Link>
 `;
