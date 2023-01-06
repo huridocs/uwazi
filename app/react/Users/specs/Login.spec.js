@@ -1,40 +1,34 @@
 /**
  * @jest-environment jsdom
  */
-import Immutable from 'immutable';
+import React from 'react';
+import { shallow } from 'enzyme';
 import { actions as formActions } from 'react-redux-form';
-import { renderConnected } from 'app/utils/test/renderConnected';
-import { Login } from '../Login.js';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: () => {},
-  useNavigate: () => {},
-  useParams: () => {},
-  useMatches: () => [],
-}));
+import { LoginComponent } from '../Login.js';
 
 describe('Login', () => {
   let component;
-  let props;
   let instance;
+  let props;
   let formDispatch;
+  const { location } = window;
 
   const render = () => {
-    const storeState = {
-      settings: {
-        collection: Immutable.fromJS({
-          private: false,
-        }),
-      },
-    };
-
-    component = renderConnected(Login, props, storeState);
+    const context = { store: { getState: () => ({}) } };
+    component = shallow(<LoginComponent {...props} />, { context });
+    instance = component.instance();
+    instance.attachDispatch(formDispatch);
   };
 
   const expectState = (state, expected) => {
     expect(state).toEqual(expect.objectContaining(expected));
   };
+
+  beforeAll(() => {
+    delete window.location;
+    window.location = { ...location, assign: jest.fn() };
+  });
 
   beforeEach(() => {
     formDispatch = jasmine.createSpy('formDispatch');
@@ -46,15 +40,17 @@ describe('Login', () => {
       notify: jasmine.createSpy('notify'),
       reloadThesauris: jasmine.createSpy('reloadThesauris'),
       change: jasmine.createSpy('change'),
+      matches: [],
     };
     spyOn(formActions, 'reset').and.callFake(formName => formName);
     render();
-
-    instance = component.dive().instance();
-    component.instance().formDispatch = formDispatch;
   });
 
-  describe('render', () => {
+  afterAll(() => {
+    window.location = location;
+  });
+
+  describe('on instance', () => {
     it('should set state', () => {
       expect(instance.state).toEqual({
         error: false,
@@ -66,7 +62,7 @@ describe('Login', () => {
     });
 
     it('should render the component with the login form', () => {
-      expect(component.dive()).toMatchSnapshot();
+      expect(component).toMatchSnapshot();
     });
   });
 
@@ -81,7 +77,7 @@ describe('Login', () => {
         .catch(done.fail);
     });
 
-    xdescribe('when recoverPassword is true', () => {
+    describe('when recoverPassword is true', () => {
       it('should call recoverPassword with the email', async () => {
         instance.state.recoverPassword = true;
         await instance.submit({ username: 'email@recover.com' });
@@ -96,9 +92,8 @@ describe('Login', () => {
       });
     });
 
-    xdescribe('on response success', () => {
-      xit('should reload thesauris, set filters to include "restricted", and go to home', async () => {
-        spyOn(browserHistory, 'push');
+    describe('on response success', () => {
+      it('should reload thesauris, set filters to include "restricted", and go to home', async () => {
         expect(props.reloadThesauris).not.toHaveBeenCalled();
         expect(props.change).not.toHaveBeenCalled();
         await instance.submit('credentials');
@@ -108,7 +103,7 @@ describe('Login', () => {
           'published',
           'restricted',
         ]);
-        expect(browserHistory.push).toHaveBeenCalledWith('/');
+        expect(window.location.assign).toHaveBeenCalledWith('/');
       });
 
       describe('when the instance is private', () => {
@@ -130,7 +125,7 @@ describe('Login', () => {
       });
     });
 
-    xdescribe('on response failure', () => {
+    describe('on response failure', () => {
       const prepareLoginResponse = response => {
         props.login = jasmine.createSpy('login').and.returnValue(response);
         render();
@@ -174,7 +169,7 @@ describe('Login', () => {
     });
   });
 
-  xdescribe('setRecoverPassword()', () => {
+  describe('setRecoverPassword()', () => {
     it('should ser recoverPassword true, and error false', () => {
       instance.setRecoverPassword();
       expect(instance.state.error).toBe(false);

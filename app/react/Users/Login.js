@@ -262,4 +262,4 @@ function mapDispatchToProps(dispatch) {
 
 const Login = withRouter(connect(mapStateToProps, mapDispatchToProps)(LoginComponent));
 
-export { Login, mapStateToProps };
+export { Login, LoginComponent, mapStateToProps };
