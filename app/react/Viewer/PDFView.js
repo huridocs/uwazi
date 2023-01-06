@@ -33,15 +33,16 @@ class PDFViewComponent extends Component {
   }
 
   componentDidMount() {
-    const query = new URLSearchParams(this.props.location.search);
+    const query = searchParamsFromSearchParams(this.props.searchParams);
     if (query.searchTerm) {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
   }
 
   componentWillReceiveProps(props) {
-    const currentQuery = new URLSearchParams(this.props.location.search);
-    const query = new URLSearchParams(props.location.search);
+    const currentQuery = searchParamsFromSearchParams(this.props.searchParams);
+    const query = searchParamsFromSearchParams(props.searchParams);
+
     if (query.page !== currentQuery.page && query.raw !== 'true') {
       this.changePage(query.page);
     }
@@ -63,7 +64,8 @@ class PDFViewComponent extends Component {
 
   onDocumentReady(doc) {
     events.emit('documentLoaded');
-    const query = new URLSearchParams(this.props.location.search);
+    const query = searchParamsFromSearchParams(this.props.searchParams);
+
     if (query.raw === 'true') {
       return;
     }
@@ -78,7 +80,8 @@ class PDFViewComponent extends Component {
   }
 
   changePage(nextPage) {
-    const query = new URLSearchParams(this.props.location.search);
+    const query = searchParamsFromSearchParams(this.props.searchParams);
+
     if (!query.raw) {
       return scrollToPage(nextPage);
     }

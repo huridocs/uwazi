@@ -1,20 +1,50 @@
 /**
  * @jest-environment jsdom
  */
-
+import React from 'react';
 import { fromJS } from 'immutable';
+import { browserHistory } from 'react-router-dom';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
-import { browserHistory } from 'react-router-dom';
-import PDFView from 'app/Viewer/PDFView';
+import { PDFView } from 'app/Viewer/PDFView';
 import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnected } from 'app/utils/test/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import * as documentActions from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
+
+let page = 1;
+let raw = 'true';
+
+const mockUseLocation = jest.fn().mockImplementation(() => ({
+  search: `?raw=${raw},page=${page}`,
+}));
+
+const mockUseSearchParams = jest.fn().mockImplementation(() => {
+  const params = new Map();
+  params.set('raw', raw);
+  params.set('page', page);
+  return [params];
+});
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: () => mockUseSearchParams(),
+  useLocation: () => mockUseLocation(),
+  useNavigate: () => () => {},
+  useMatches: () => {},
+  // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
+  Link: props => <a {...props} href={props.to} />,
+}));
+jest.mock('app/ContextMenu', () => () => <div>ContextMenu</div>);
+jest.mock('app/App/Footer', () => () => <div>Footer</div>);
+jest.mock('app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
+jest.mock('app/Connections', () => ({
+  CreateConnectionPanel: () => <div>CreateConnectionPanel</div>,
+}));
 
 describe('PDFView', () => {
   let component;
@@ -22,10 +52,24 @@ describe('PDFView', () => {
   let context;
   let props;
 
+  const state = {
+    documentViewer: {
+      uiState: fromJS({ reference: { targetRange: [] } }),
+      targetDoc: fromJS({ _id: 'document1' }),
+      sidepanel: { tab: '1', metadata: { _id: 'prop1' } },
+      targetDocReferences: [],
+    },
+    connections: { connection: fromJS({}) },
+    user: fromJS({ _id: 'user1' }),
+    settings: { collection: fromJS({}) },
+    modals: fromJS({ ConfirmCloseForm: () => {} }),
+    semanticSearch: { selectedDocument: fromJS({}) },
+  };
+
   const render = () => {
     RouteHandler.renderedFromServer = true;
-    component = renderConnected(PDFView, props, context.store);
-    component.setContext({ ...component.context(), ...context });
+    component = renderConnectedMount(PDFView, state, props, true);
+    //component.setContext({ ...component.context(), ...context });
     instance = component.instance();
   };
 
@@ -55,14 +99,15 @@ describe('PDFView', () => {
   });
 
   it('should pass down raw property', () => {
-    props.location = { query: { raw: 'true', page: 2 } };
+    raw = 'true';
+    page = 2;
     render();
     expect(component.find(Viewer).props().raw).toEqual(true);
   });
 
   describe('when on server', () => {
     it('should always pass raw true', () => {
-      props.location = { query: { raw: 'false' } };
+      raw = 'false';
       // eslint-disable-next-line no-import-assign
       utils.isClient = false;
       render();
