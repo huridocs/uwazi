@@ -13,6 +13,7 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
+import ixextractors from 'api/services/informationextraction/ixextractors';
 
 const IX = new InformationExtraction();
 
@@ -193,6 +194,35 @@ export const suggestionsRoutes = (app: Application) => {
       const { suggestion, allLanguages } = req.body;
       await Suggestions.accept(suggestion, allLanguages);
       res.json({ success: true });
+    }
+  );
+
+  app.post(
+    '/api/ixextractors/create',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['name', 'property', 'templates'],
+          properties: {
+            name: { type: 'string' },
+            property: { type: 'string' },
+            templates: { type: 'array', items: { type: 'string' } },
+          },
+        },
+      },
+    }),
+    async (req, res, _next) => {
+      const created = await ixextractors.create(
+        req.body.name,
+        req.body.property,
+        req.body.templates
+      );
+      res.json(created);
     }
   );
 };

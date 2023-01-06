@@ -95,13 +95,7 @@ export const ExtractorCreationModal = ({
           //className="form-control"
           onChange={event => setName(event.target.value)}
         />
-        <MultiSelect
-          value={values}
-          onChange={setValues}
-          options={options}
-          optionsToShow={20}
-          showSearch
-        />
+        <MultiSelect value={values} onChange={setValues} options={options} optionsToShow={20} />
       </Modal.Body>
       <Modal.Footer>
         <span className="left">

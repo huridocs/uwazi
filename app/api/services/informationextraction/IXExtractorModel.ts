@@ -18,7 +18,7 @@ mongoSchema.index({ extractorId: 1 });
 mongoSchema.index({ property: 1, templates: 1 });
 mongoSchema.index({ templates: 1, property: 1 });
 
-const IXExtractorModel = instanceModel<IXExtractorType>('ixsuggestions', mongoSchema);
+const IXExtractorModel = instanceModel<IXExtractorType>('ixextractors', mongoSchema);
 
 export { IXExtractorModel };
 
