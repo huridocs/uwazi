@@ -4,7 +4,7 @@ import { IXExtractorModel as model } from './IXExtractorModel';
 
 const generateExtractorId = () => `${Date.now()}${Math.random().toString(36)}`;
 
-const existenceCheck = async (property: string, templateIds: string[]) => {
+const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
   const usedTemplates = objectIndex(
     await templates.get({ _id: { $in: templateIds } }),
     t => t._id.toString(),
@@ -31,9 +31,13 @@ const existenceCheck = async (property: string, templateIds: string[]) => {
 
 export default {
   get: model.get.bind(model),
-  delete: model.delete.bind(model),
+  delete: async (extractorIds: string[]) => {
+    const extractors = await model.get({ extractorId: { $in: extractorIds } });
+    if (extractors.length !== extractorIds.length) throw new Error('Missing extractor.');
+    await model.delete({ extractorId: { $in: extractorIds } });
+  },
   create: async (name: string, property: string, templateIds: string[]) => {
-    await existenceCheck(property, templateIds);
+    await templatePropertyExistenceCheck(property, templateIds);
     const saved = await model.save({
       extractorId: generateExtractorId(),
       name,
@@ -41,5 +45,19 @@ export default {
       templates: templateIds,
     });
     return saved;
+  },
+  update: async (extractorId: string, name: string, property: string, templateIds: string[]) => {
+    const [extractor] = await model.get({ extractorId });
+    if (!extractor) throw Error('Missing extractor.');
+
+    await templatePropertyExistenceCheck(property, templateIds);
+
+    const updated = await model.save({
+      ...extractor,
+      name,
+      property,
+      templates: templateIds,
+    });
+    return updated;
   },
 };

@@ -22,6 +22,14 @@ const app: Application = setUpApp(suggestionsRoutes, (req, _res, next) => {
 
 const fixturesFactory = getFixturesFactory();
 
+const existingExtractor = {
+  _id: fixturesFactory.id('extractor1'),
+  extractorId: 'extId1',
+  name: 'ext1',
+  property: 'text_property',
+  templates: [fixturesFactory.id('template1')],
+};
+
 const fixtures: DBFixture = {
   settings: [
     {
@@ -54,6 +62,23 @@ const fixtures: DBFixture = {
       fixturesFactory.property('number_property', 'numeric'),
     ]),
   ],
+  ixextractors: [
+    existingExtractor,
+    {
+      _id: fixturesFactory.id('extractor2'),
+      extractorId: 'extId2',
+      name: 'ext2',
+      property: 'text_property',
+      templates: [fixturesFactory.id('template1')],
+    },
+    {
+      _id: fixturesFactory.id('extractor3'),
+      extractorId: 'extId3',
+      name: 'ext3',
+      property: 'text_property',
+      templates: [fixturesFactory.id('template1')],
+    },
+  ],
 };
 
 describe('extractor routes', () => {
@@ -67,34 +92,36 @@ describe('extractor routes', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST /api/ixextractors/create', () => {
-    it('should reject non existing template', async () => {
-      const input = {
-        name: 'extr1',
-        property: 'text_property',
-        templates: [
-          fixturesFactory.id('template1').toString(),
-          fixturesFactory.id('non_existing_template').toString(),
-        ],
-      };
+    it.each([
+      {
+        reason: 'non existing template',
+        expectedMessage: 'Missing template.',
+        input: {
+          name: 'extr1',
+          property: 'text_property',
+          templates: [
+            fixturesFactory.id('template1').toString(),
+            fixturesFactory.id('non_existing_template').toString(),
+          ],
+        },
+      },
+      {
+        reason: 'non existing non existing property (in template)',
+        expectedMessage: 'Missing property.',
+        input: {
+          name: 'extr1',
+          property: 'other_text_property',
+          templates: [
+            fixturesFactory.id('template1').toString(),
+            fixturesFactory.id('template2').toString(),
+          ],
+        },
+      },
+    ])('should reject $reason', async ({ input, expectedMessage }) => {
       const response = await request(app).post('/api/ixextractors/create').send(input).expect(500);
-      expect(response.body.error).toBe('Missing template.');
+      expect(response.body.error).toBe(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
-      expect(extractors?.length).toBe(0);
-    });
-
-    it('should reject non existing property (in template)', async () => {
-      const input = {
-        name: 'extr1',
-        property: 'other_text_property',
-        templates: [
-          fixturesFactory.id('template1').toString(),
-          fixturesFactory.id('template2').toString(),
-        ],
-      };
-      const response = await request(app).post('/api/ixextractors/create').send(input).expect(500);
-      expect(response.body.error).toBe('Missing property.');
-      const extractors = await db?.collection('ixextractors').find().toArray();
-      expect(extractors?.length).toBe(0);
+      expect(extractors?.length).toBe(3);
     });
 
     it.each([
@@ -131,28 +158,104 @@ describe('extractor routes', () => {
       const response = await request(app).post('/api/ixextractors/create').send(input).expect(200);
 
       const extractors = await db?.collection('ixextractors').find().toArray();
-      expect(extractors).toMatchObject([expectedInDb]);
+      expect(extractors?.[3]).toMatchObject(expectedInDb);
 
       expect(response.body).toMatchObject({ ...input, extractorId: expect.any(String) });
     });
   });
 
   describe('POST /api/ixextractors/update', () => {
-    it('should reject non existing extractorId', async () => {});
+    it.each([
+      {
+        reason: 'non existing extractorId',
+        expectedMessage: 'Missing extractor.',
+        change: {
+          extractorId: 'non-existing-extractor-id',
+        },
+      },
+      {
+        reason: 'non existing template',
+        expectedMessage: 'Missing template.',
+        change: {
+          templates: [
+            fixturesFactory.id('template1'),
+            fixturesFactory.id('non_existing_template').toString(),
+          ],
+        },
+      },
+      {
+        reason: 'non existing non existing property (in template)',
+        expectedMessage: 'Missing property.',
+        change: {
+          property: 'non-existing-property',
+        },
+      },
+    ])('should reject $reason', async ({ change, expectedMessage }) => {
+      const input: any = { ...existingExtractor, ...change };
+      delete input._id;
+      const response = await request(app).post('/api/ixextractors/update').send(input).expect(500);
+      expect(response.body.error).toBe(expectedMessage);
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.[0]).toMatchObject(existingExtractor);
+    });
 
-    it('should reject non existing template', async () => {});
-
-    it('should reject non existing property (in template)', async () => {});
-
-    it('should update name, property, templates in the extractor with the proper extractorId', async () => {});
+    it.each([
+      {
+        updateTarget: 'name',
+        change: {
+          name: 'new_extractor_name',
+        },
+      },
+      {
+        updateTarget: 'property',
+        change: {
+          property: 'number_property',
+        },
+      },
+      {
+        updateTarget: 'adding template',
+        change: {
+          templates: [fixturesFactory.id('template1'), fixturesFactory.id('template2')],
+        },
+      },
+      {
+        updateTarget: 'changing template',
+        change: {
+          templates: [fixturesFactory.id('template2')],
+        },
+      },
+      {
+        updateTarget: 'everything',
+        change: {
+          name: 'new_extractor_name',
+          property: 'number_property',
+          templates: [fixturesFactory.id('template2')],
+        },
+      },
+    ])('should update $updateTarget', async ({ change }) => {
+      const input: any = { ...existingExtractor, ...change };
+      delete input._id;
+      const response = await request(app).post('/api/ixextractors/update').send(input).expect(200);
+      expect(response.body).toMatchObject(input);
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.[0]).toMatchObject(input);
+    });
   });
 
   describe('POST /api/ixextractors/delete', () => {
-    it('should reject non existing extractorId', async () => {});
+    it('should reject non existing extractorId', async () => {
+      const input = ['extId1', 'non-existing-extractorId'];
+      const response = await request(app).post('/api/ixextractors/delete').send(input).expect(500);
+      expect(response.body.error).toBe('Missing extractor.');
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.length).toBe(3);
+    });
 
-    it('should delete extractor', async () => {});
+    it('should delete extractor', async () => {
+      const input = ['extId1', 'extId2'];
+      await request(app).post('/api/ixextractors/delete').send(input).expect(200);
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.length).toBe(1);
+    });
   });
 });
-function getUser(): any {
-  throw new Error('Function not implemented.');
-}

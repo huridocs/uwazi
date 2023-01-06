@@ -1,7 +1,9 @@
+/* eslint-disable max-lines */
 import { Application, Request, Response } from 'express';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
+import ixextractors from 'api/services/informationextraction/ixextractors';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
@@ -13,7 +15,6 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 import { saveConfigurations } from './configurationManager';
-import ixextractors from 'api/services/informationextraction/ixextractors';
 
 const IX = new InformationExtraction();
 
@@ -223,6 +224,53 @@ export const suggestionsRoutes = (app: Application) => {
         req.body.templates
       );
       res.json(created);
+    }
+  );
+
+  app.post(
+    '/api/ixextractors/update',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['name', 'property', 'templates', 'extractorId'],
+          properties: {
+            extractorId: { type: 'string' },
+            name: { type: 'string' },
+            property: { type: 'string' },
+            templates: { type: 'array', items: { type: 'string' } },
+          },
+        },
+      },
+    }),
+    async (req, res, _next) => {
+      const updated = await ixextractors.update(
+        req.body.extractorId,
+        req.body.name,
+        req.body.property,
+        req.body.templates
+      );
+      res.json(updated);
+    }
+  );
+
+  app.post(
+    '/api/ixextractors/delete',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        body: { type: 'array', items: { type: 'string' } },
+      },
+    }),
+    async (req, res, _next) => {
+      await ixextractors.delete(req.body);
+      res.sendStatus(200);
     }
   );
 };
