@@ -80,9 +80,9 @@ class PDFViewComponent extends Component {
   }
 
   changePage(nextPage) {
-    const query = searchParamsFromSearchParams(this.props.searchParams);
+    const { raw = 'false' } = searchParamsFromSearchParams(this.props.searchParams);
 
-    if (!query.raw) {
+    if (String(raw).toLowerCase() === 'false') {
       return scrollToPage(nextPage);
     }
 
@@ -129,7 +129,6 @@ PDFViewComponent.propTypes = {
   leaveEditMode: PropTypes.func,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
     search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
