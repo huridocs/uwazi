@@ -1,8 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { I18NLink, mapStateToProps } from '../I18NLink';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => () => {},
+}));
 
 describe('I18NLink', () => {
   let component;
@@ -28,15 +33,14 @@ describe('I18NLink', () => {
 
   describe('render', () => {
     it('should pass other props, except for dispatch', () => {
-      I18NLink.navigate = jasmine.createSpy('navigate');
       spyOn(props, 'onClick');
       render();
-      const link = component.find(Link);
+      const link = component.find(NavLink);
       expect(link.props().onMouseOver).toBe(mouseOverAction);
       expect(link.props().dispatch).toBeUndefined();
       component.simulate('click', event);
       expect(props.onClick).toHaveBeenCalledWith(event);
-      expect(I18NLink.navigate).toHaveBeenCalledWith(props.to);
+      expect(link.props().to).toBe(props.to);
     });
   });
 
