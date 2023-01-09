@@ -180,7 +180,7 @@ describe('InformationExtraction', () => {
         page_width: 595,
         page_height: 841,
         language_iso: 'en',
-        label_text: '3/4/2011',
+        label_text: '2011-03-04',
         label_segments_boxes: [{ top: 0, left: 0, width: 0, height: 0, page_number: '1' }],
       });
     });
@@ -537,7 +537,7 @@ describe('InformationExtraction', () => {
         {
           property_name: 'property2',
           xml_file_name: 'documentC.xml',
-          text: 'October 12, 2019',
+          text: '2019-10-12',
           segment_text: 'Birthday of John Doe is October 12, 2019',
         },
       ]);
@@ -559,7 +559,7 @@ describe('InformationExtraction', () => {
       });
 
       expect(suggestions).toMatchObject([
-        { suggestedValue: 1570838400, suggestedText: 'October 12, 2019' },
+        { suggestedValue: 1570838400, suggestedText: '2019-10-12' },
       ]);
     });
 
