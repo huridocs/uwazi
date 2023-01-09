@@ -47,6 +47,7 @@ import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
+import OneUpReview from './Review/OneUpReview';
 
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<ErrorBoundary />}>
@@ -64,7 +65,7 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
-    {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} /> */}
+    <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
