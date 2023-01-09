@@ -64,7 +64,6 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
     <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
-    {/* <Route path="semanticsearch/:searchId" element={<SemanticSearchResultsView />} /> */}
     {/* <Route path="review" component={OneUpReview} onEnter={needsAuth} /> */}
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
