@@ -35,8 +35,5 @@ describe('Routes', () => {
         expect(result).toMatchObject(<LibraryTable />);
       });
     });
-
-    it.todo('should track page when home page is a valid public page path');
-    it.todo('should track page when home page is a valid public entity path');
   });
 });
