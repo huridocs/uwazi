@@ -19,10 +19,7 @@ describe('PagesList', () => {
         { _id: 3, title: 'Page 3', sharedId: 'a3' },
       ]),
       deletePage: jasmine.createSpy('deletePage').and.callFake(async () => Promise.resolve()),
-    };
-
-    context = {
-      confirm: jasmine.createSpy('confirm'),
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
   });
 
@@ -53,11 +50,11 @@ describe('PagesList', () => {
     });
 
     it('should confirm the action', () => {
-      expect(context.confirm).toHaveBeenCalled();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
     });
 
     it('should call on props.deletePage if confirmed', () => {
-      context.confirm.calls.argsFor(0)[0].accept();
+      props.mainContext.confirm.calls.argsFor(0)[0].accept();
       expect(props.deletePage).toHaveBeenCalledWith(page.toJS());
     });
   });
