@@ -11,15 +11,13 @@ exports[`ImportProgress rendering states should render a state for end 1`] = `
   <div
     className="force-ltr"
   >
-    <Connect(Translate)>
-      Import completed:
+    <Connect(Translate)
+      translationKey="Import completed"
+    >
+      Import completed. Number of entities created:
     </Connect(Translate)>
      
     5
-     
-    <Connect(Translate)>
-      created
-    </Connect(Translate)>
     <br />
     <Connect(Translate)>
       Indexing entities may take a few minutes

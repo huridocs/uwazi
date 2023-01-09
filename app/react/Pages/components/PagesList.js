@@ -16,7 +16,7 @@ class PagesList extends Component {
       },
       title: (
         <>
-          <Translate>Confirm delete page:</Translate>
+          <Translate>Confirm deletion of page:</Translate>
           &nbsp;{page.get('title')}
         </>
       ),

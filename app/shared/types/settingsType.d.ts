@@ -81,6 +81,10 @@ export interface Settings {
     topicClassification?: boolean;
     favorites?: boolean;
     preserve?: PreserveConfig;
+    convertToPdf?: {
+      active: boolean;
+      url: string;
+    };
     ocr?: {
       url: string;
     };

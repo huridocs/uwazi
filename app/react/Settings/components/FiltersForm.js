@@ -105,7 +105,7 @@ class FiltersForm extends Component {
 
   addGroup() {
     const { activeFilters } = this.state;
-    const newGroup = { id: ID(), name: 'New group', items: [] };
+    const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     this.setState({ activeFilters: activeFilters.concat([newGroup]) });
   }
 

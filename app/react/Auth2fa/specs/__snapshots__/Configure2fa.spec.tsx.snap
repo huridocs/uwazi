@@ -157,12 +157,11 @@ exports[`Configure2fa Component when user already using 2fa should show a "succe
           <div
             className="force-ltr"
           >
-            <Connect(Translate)>
+            <Connect(Translate)
+              translationKey="Two-step verification successfully"
+            >
               Congratulations!
-            </Connect(Translate)>
-            <br />
-            <Connect(Translate)>
-              You have successfully configured two-step verification.
+You have successfully configured two-step verification.
             </Connect(Translate)>
           </div>
         </div>

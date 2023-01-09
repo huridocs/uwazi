@@ -65,7 +65,7 @@ socket.on('translationsChange', translations => {
 });
 
 socket.on('documentProcessed', sharedId => {
-  store.dispatch(documentProcessed(sharedId));
+  store.dispatch(documentProcessed(sharedId, 'library'));
 });
 
 socket.on('IMPORT_CSV_START', () => store.dispatch(actions.set('importStart', true)));
