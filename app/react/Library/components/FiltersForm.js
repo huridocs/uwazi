@@ -55,7 +55,7 @@ class FiltersForm extends Component {
   }
 
   submit() {
-    this.props.searchDocuments();
+    this.props.searchDocuments({ location: this.props.location, navigate: this.props.navigate });
   }
 
   render() {
