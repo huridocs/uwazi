@@ -16,8 +16,8 @@ const searchParamsFromLocationSearch = (location: Location, param: string = 'q')
   return rison.decode(decodeURIComponent(urlSearchParams.get(param) || '()'));
 };
 
-const searchParamsFromSearchParams = (searchParams: Map<string, string>) => {
-  let params: {} = {};
+const searchParamsFromSearchParams = (searchParams: URLSearchParams) => {
+  let params: any = {};
   searchParams.forEach((value, key) => {
     params = { ...params, [key]: value };
   });

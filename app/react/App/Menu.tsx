@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import rison from 'rison-node';
+import { fromJS } from 'immutable';
 import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, I18NMenu, t, Translate } from 'app/I18N';
@@ -13,7 +13,7 @@ import { libraryViewInfo } from 'app/App/libraryViewInfo';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { IStore } from 'app/istore';
-import { fromJS } from 'immutable';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
 import { DropdownMenu, ILink } from './DropdownMenu';
 
 interface MenuProps {
@@ -88,9 +88,7 @@ const MenuComponent = ({
 
   const libraryUrl = () => {
     const location = useLocation();
-    const urlSearchParams = new URLSearchParams(location.search);
-    const searchParams = rison.decode(decodeURIComponent(urlSearchParams.get('q') || '()'));
-
+    const searchParams = searchParamsFromLocationSearch(location, 'q') || {};
     const searchTerm = searchParams.searchTerm || '';
     const newParams = processFilters(librarySearch, libraryFilters.toJS());
     newParams.searchTerm = searchTerm;

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { has } from 'lodash';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
 import Footer from 'app/App/Footer';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { t } from 'app/I18N';
 
 const handledErrors: { [k: string]: RequestError } = {
@@ -31,11 +33,12 @@ const handledErrors: { [k: string]: RequestError } = {
 };
 
 const GeneralError = () => {
-  const params = useParams();
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const { code } = handledErrors[params.errorCode || '404'];
-  const requestId = searchParams.get('requestId') || '';
+  const { errorCode } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const { requestId } = searchParamsFromSearchParams(searchParams);
+  const { code } =
+    errorCode && has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
   const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
   const error = handledErrors[code!];
   error.requestId = safeRequestId ? safeRequestId[0] : undefined;
