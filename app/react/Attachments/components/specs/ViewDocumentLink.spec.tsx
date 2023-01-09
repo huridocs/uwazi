@@ -7,14 +7,18 @@ import { EntitySchema } from 'shared/types/entityType';
 
 import { ViewDocumentLink } from '../ViewDocumentLink';
 
-const mockedUseLocation = jest.fn();
+let pathname = 'entity/';
+
+const mockUseLocation = jest.fn().mockImplementation(() => ({
+  pathname: `?page=${pathname}`,
+}));
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: () => mockedUseLocation,
+  useLocation: () => mockUseLocation(),
 }));
-const renderComponent = (entity: EntitySchema, pathname: string = 'entity/') => {
-  mockedUseLocation.mockReturnValue({ pathname });
+const renderComponent = (entity: EntitySchema) => {
+  mockUseLocation.mockReturnValue({ pathname });
   return shallow(
     <ViewDocumentLink entity={entity} filename="file.pdf">
       ' '
@@ -25,6 +29,9 @@ const renderComponent = (entity: EntitySchema, pathname: string = 'entity/') => 
 describe('ViewDocumentLink', () => {
   const entity: EntitySchema = { _id: 'id', sharedId: 'sharedId' };
 
+  beforeEach(() => {
+    pathname = 'entity/';
+  });
   describe('when on viewer route', () => {
     it('should change file name and set page 1', () => {
       const component = renderComponent(entity);
@@ -37,7 +44,8 @@ describe('ViewDocumentLink', () => {
 
   describe('when outside viewer route', () => {
     it('should link to viewer with specific file', () => {
-      const component = renderComponent(entity, 'outside');
+      pathname = 'outside';
+      const component = renderComponent(entity);
       expect(component.find(Link).props().to).toEqual('/entity/sharedId?file=file.pdf');
     });
   });
