@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration rename-usergroup-members_ref_id', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

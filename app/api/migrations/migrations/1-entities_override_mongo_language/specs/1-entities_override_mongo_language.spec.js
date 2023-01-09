@@ -6,7 +6,7 @@ import migration from '../index.js';
 
 describe('migration entities_override_mongo_language', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

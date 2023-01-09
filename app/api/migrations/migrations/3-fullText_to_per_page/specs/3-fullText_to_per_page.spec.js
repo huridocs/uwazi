@@ -6,7 +6,7 @@ import migration from '../index.js';
 
 describe('migration fullText_to_per_page', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = __dirname;
     await testingDB.clearAllAndLoad(fixtures);
   });

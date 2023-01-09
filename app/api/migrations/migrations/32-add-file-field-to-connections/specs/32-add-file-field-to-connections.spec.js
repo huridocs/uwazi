@@ -7,8 +7,8 @@ import migration from '../index.js';
 
 describe('migration add-file-field-to-connections', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
-    spyOn(errorLog, 'error');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = __dirname;
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });

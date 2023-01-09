@@ -5,7 +5,7 @@ import fixtures, { hub1, hub3, shared1, shared2, shared3, shared4, shared5 } fro
 
 describe('migration connections_sanitizing', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

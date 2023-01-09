@@ -29,7 +29,7 @@ describe('migration separate-custom-uploads-from-documents', () => {
   let originalUploadsPath;
 
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     originalDocumentsPath = config.defaultTenant.uploadedDocuments;
     originalUploadsPath = config.defaultTenant.customUploads;
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));

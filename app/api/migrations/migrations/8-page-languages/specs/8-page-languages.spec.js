@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration page-languages', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

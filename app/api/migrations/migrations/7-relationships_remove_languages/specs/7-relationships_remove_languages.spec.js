@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration relationships_remove_languages', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 

@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration missing_full_text', () => {
   beforeEach(done => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
   });
 
