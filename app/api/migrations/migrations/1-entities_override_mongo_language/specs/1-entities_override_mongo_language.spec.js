@@ -1,13 +1,12 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 
 import fixtures from './fixtures.js';
 import migration from '../index.js';
 
 describe('migration entities_override_mongo_language', () => {
-  beforeEach(done => {
+  beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(done => {
@@ -18,17 +17,14 @@ describe('migration entities_override_mongo_language', () => {
     expect(migration.delta).toBe(1);
   });
 
-  it('should migrate properly', done => {
-    migration
-      .up(testingDB.mongodb)
-      .then(() => testingDB.mongodb.collection('entities').find().toArray())
-      .then(entities => {
-        expect(entities.find(e => e.language === 'en').mongoLanguage).toBe('en');
-        expect(entities.find(e => e.language === 'es').mongoLanguage).toBe('es');
-        expect(entities.find(e => e.language === 'pt').mongoLanguage).toBe('pt');
-        expect(entities.find(e => e.language === 'ar').mongoLanguage).toBe('none');
-        done();
-      })
-      .catch(catchErrors(done));
+  it('should migrate properly', async () => {
+    await migration.up(testingDB.mongodb);
+
+    const entities = await testingDB.mongodb.collection('entities').find().toArray();
+
+    expect(entities.find(e => e.language === 'en').mongoLanguage).toBe('en');
+    expect(entities.find(e1 => e1.language === 'es').mongoLanguage).toBe('es');
+    expect(entities.find(e2 => e2.language === 'pt').mongoLanguage).toBe('pt');
+    expect(entities.find(e3 => e3.language === 'ar').mongoLanguage).toBe('none');
   });
 });

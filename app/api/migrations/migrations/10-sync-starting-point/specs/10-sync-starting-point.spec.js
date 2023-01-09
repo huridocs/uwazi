@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures, {
@@ -32,9 +31,9 @@ describe('migration sync-starting-point', () => {
     },
   });
 
-  beforeEach(done => {
+  beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(done => {
