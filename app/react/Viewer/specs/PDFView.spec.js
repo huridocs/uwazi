@@ -5,9 +5,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { fromJS } from 'immutable';
+import { shallow } from 'enzyme';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
-import { PDFView } from 'app/Viewer/PDFView';
+import { PDFView, PDFViewComponent } from 'app/Viewer/PDFView';
 import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
@@ -18,7 +19,7 @@ import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
 
 let page = 0;
-let raw = '';
+let raw = 'abc';
 let pathname = '';
 let ref = '';
 let anotherProp = '';
@@ -28,10 +29,15 @@ const mockUseLocation = jest.fn().mockImplementation(() => ({
   pathname,
 }));
 
+const mapProperties = props => {
+  const map = new Map();
+  Object.entries(props).forEach(([key, value]) => {
+    map.set(key, value);
+  });
+  return map;
+};
 const mockUseSearchParams = jest.fn().mockImplementation(() => {
-  const params = new Map();
-  params.set('raw', raw);
-  params.set('page', page);
+  const params = mapProperties({ raw, page });
   if (ref) {
     params.set('ref', ref);
   }
@@ -58,7 +64,6 @@ jest.mock('app/Connections', () => ({
 
 describe('PDFView', () => {
   let component;
-  let instance;
   let context;
   let props;
 
@@ -72,15 +77,13 @@ describe('PDFView', () => {
     connections: { connection: fromJS({}) },
     user: fromJS({ _id: 'user1' }),
     settings: { collection: fromJS({}) },
-    modals: fromJS({ ConfirmCloseForm: () => {} }),
+    modals: fromJS({ ConfirmCloseForm: fromJS({ _id: 'document1' }) }),
     semanticSearch: { selectedDocument: fromJS({}) },
   };
 
   const render = () => {
     RouteHandler.renderedFromServer = true;
     component = renderConnectedMount(PDFView, state, props, true, { context });
-    //component.setContext({ ...component.context(), ...context });
-    instance = component.instance();
     component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
@@ -107,9 +110,6 @@ describe('PDFView', () => {
       location: { query: {} },
       routes: [],
     };
-
-    render();
-
     spyOn(routeActions, 'requestViewerState');
 
     spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
@@ -135,6 +135,7 @@ describe('PDFView', () => {
   });
 
   it('should render the Viewer', () => {
+    render();
     expect(component.find(Viewer).length).toBe(1);
   });
 
@@ -264,33 +265,38 @@ describe('PDFView', () => {
     });
   });
 
+  const shallowComponent = searchParams =>
+    shallow(
+      <PDFViewComponent
+        searchParams={searchParams}
+        location={{ pathname: 'pathname' }}
+        entity={fromJS({})}
+        navigate={mockNavigate}
+      />
+    );
+
   describe('componentWillReceiveProps', () => {
-    const setProps = newProps => {
-      entitiesAPI.getRawPage.calls.reset();
-      component.setProps(newProps);
-      component.update();
-    };
-
-    beforeEach(() => {
-      props.params = { sharedId: 'entityId' };
-      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
-      render();
-    });
-
     it('should load raw page when page/raw changes and raw is true', async () => {
-      raw = 'true';
-      page = 15;
+      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
+      const searchParams = mapProperties({ raw: 'true', page: 15 });
+      const wrapper = shallowComponent(searchParams);
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-
-      setProps({ location: { query: { page: 16, raw: 'false' } } });
-      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-
+      wrapper.instance().context = context;
+      mockNavigate.mockClear();
       entitiesAPI.getRawPage.calls.reset();
-      await instance.componentWillReceiveProps({
-        params: { sharedId: 'entityId' },
-        location: { query: { page: 17, raw: 'true' } },
+      searchParams.set('page', 16);
+      searchParams.set('raw', 'false');
+      wrapper.setProps({ searchParams });
+      wrapper.update();
+      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
+      entitiesAPI.getRawPage.calls.reset();
+      const newSearchParams = mapProperties({ raw: 'true', page: 17 });
+
+      wrapper.setProps({
+        searchParams: newSearchParams,
         entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
+      await wrapper.update();
       expect(context.store.dispatch).toHaveBeenCalledWith(
         actions.set('viewer/rawText', 'raw text')
       );
@@ -302,25 +308,18 @@ describe('PDFView', () => {
 
   describe('changeBrowserHistoryPage', () => {
     it('should push new browserHistory with new page', () => {
-      raw = 'true';
-      page = 15;
-      anotherProp = 'test';
-      pathname = 'pathname';
-      render();
-
-      component.find({ page: 15 }).at(0).props().changePage(16);
-
+      const searchParams = mapProperties({ raw: 'true', page: 15, anotherProp: 'test' });
+      const wrapper = shallowComponent(searchParams);
+      wrapper.instance().changeBrowserHistoryPage(16);
       expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
 
-      raw = 'false';
-      page = 15;
-      anotherProp = 'test';
       mockNavigate.mockClear();
-      component.find(PDFView).update();
-
-      component.find({ page: 15 }).at(0).props().changePage(16);
-
-      expect(mockNavigate).toHaveBeenCalledWith('pathname?page=16');
+      searchParams.set('raw', 'false');
+      searchParams.delete('anotherProp');
+      wrapper.setProps({ searchParams });
+      wrapper.update();
+      wrapper.instance().changeBrowserHistoryPage(16);
+      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=false&page=16');
     });
   });
 
