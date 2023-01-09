@@ -21,8 +21,8 @@ describe('Repeater', () => {
   beforeEach(() => {
     jest.useFakeTimers('legacy');
 
-    callbackOne = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());
-    callbackTwo = jasmine.createSpy('callbackone').and.callFake(() => Promise.resolve());
+    callbackOne = jest.fn().mockImplementation(() => Promise.resolve());
+    callbackTwo = jest.fn().mockImplementation(() => Promise.resolve());
   });
 
   it('should be able to have two independant repeaters', async () => {

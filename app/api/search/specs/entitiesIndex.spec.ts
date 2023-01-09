@@ -35,7 +35,7 @@ describe('entitiesIndex', () => {
     };
 
     it('indexing without errors', async () => {
-      spyOn(errorLog, 'error').and.returnValue('Ok');
+      jest.spyOn(errorLog, 'error').mockReturnValue('Ok');
       await loadFailingFixtures();
       await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
       expect(errorLog.error).not.toHaveBeenCalled();

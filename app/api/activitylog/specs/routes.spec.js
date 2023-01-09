@@ -41,6 +41,7 @@ describe('Activitylog routes', () => {
 
   beforeEach(async () => {
     jest.spyOn(activitylog, 'get').mockImplementation(async () => Promise.resolve('activitylogs'));
+    activitylog.get.mockClear();
   });
 
   afterAll(async () => {

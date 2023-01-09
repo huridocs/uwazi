@@ -57,10 +57,10 @@ function fakeTopicClassification(url: string) {
 describe('templates utils', () => {
   beforeEach(async () => {
     await db.clearAllAndLoad(fixtures);
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
-    spyOn(JSONRequest, 'post').and.callFake(fakeTopicClassification);
-    spyOn(JSONRequest, 'get').and.callFake(fakeTopicClassification);
-    spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(JSONRequest, 'post').mockImplementation(fakeTopicClassification);
+    jest.spyOn(JSONRequest, 'get').mockImplementation(fakeTopicClassification);
+    jest.spyOn(topicClassification, 'IsTopicClassificationReachable').mockReturnValue(true);
   });
   afterAll(async () => {
     await db.disconnect();

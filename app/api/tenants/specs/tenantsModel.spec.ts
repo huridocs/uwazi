@@ -34,7 +34,7 @@ describe('tenantsModel', () => {
       close: jest.fn(),
     };
 
-    spyOn(Model, 'watch').and.returnValue(mockChangeStream);
+    jest.spyOn(Model, 'watch').mockReturnValue(mockChangeStream);
     model = await tenantsModel();
 
     await db.collection('tenants').deleteMany({});

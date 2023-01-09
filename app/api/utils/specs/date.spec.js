@@ -10,7 +10,7 @@ describe('date helper', () => {
     });
 
     it('transform "first-day-last-month" to timestamp', () => {
-      spyOn(Date, 'now').and.returnValue(moment('2018-07-04'));
+      jest.spyOn(Date, 'now').mockReturnValue(moment('2018-07-04'));
 
       expect(date.descriptionToTimestamp('first-day-last-month')).toBe(
         moment.utc('2018-06-01').unix()
@@ -18,7 +18,7 @@ describe('date helper', () => {
     });
 
     it('transform "last-day-last-month" to timestamp', () => {
-      spyOn(Date, 'now').and.returnValue(moment('2018-07-04'));
+      jest.spyOn(Date, 'now').mockReturnValue(moment('2018-07-04'));
 
       expect(date.descriptionToTimestamp('last-day-last-month')).toBe(
         moment.utc('2018-06-30T23:59:59').unix()

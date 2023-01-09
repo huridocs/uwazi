@@ -61,11 +61,11 @@ describe('entitySavingManager', () => {
   beforeAll(async () => {
     await writeFile(file.path!, 'sample content');
     await writeFile(newMainPdfDocument.path!, validPdfString);
-    jest.spyOn(search, 'indexEntities').mockImplementation(jest.fn());
   });
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
+    jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
   });
 
   afterAll(async () => {

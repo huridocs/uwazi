@@ -5,7 +5,7 @@ import entities from 'api/entities/entities';
 import { search } from 'api/search';
 
 import { testingDB } from 'api/utils/testing_db';
-import thesauri from '../thesauri.js';
+import { thesauri } from '../thesauri.js';
 import {
   fixtures,
   dictionaryId,
@@ -224,6 +224,7 @@ describe('thesauri', () => {
       });
 
       it('should properly delete values when thesauri have subgroups', async () => {
+        entities.deleteThesaurusFromMetadata.mockReset();
         jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
         const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
         thesaurus.values = thesaurus.values.filter(value => value.id !== '3');

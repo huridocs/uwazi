@@ -17,7 +17,7 @@ describe('entities get searchString', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
-    spyOn(requestShared, 'post').and.callFake(() => ({
+    jest.spyOn(requestShared, 'post').mockImplementation(() => ({
       json: { data: { token: 'sometoken' } },
     }));
   });

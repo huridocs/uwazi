@@ -11,9 +11,10 @@ const { ConnectionError } = elasticErrors;
 
 describe('handleError', () => {
   beforeEach(() => {
+    jest.resetAllMocks();
     jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     jest.spyOn(debugLog, 'debug').mockImplementation(() => {});
-    spyOn(appContext, 'get').and.returnValue(contextRequestId);
+    jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
   describe('errors by type', () => {
@@ -127,7 +128,7 @@ original error: {
   describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
-      expect(debugLog.debug.calls.mostRecent().args[0]).toContain('test error');
+      expect(debugLog.debug.mock.calls[0][0]).toContain('test error');
     });
 
     describe('and is instance of Error', () => {
@@ -135,7 +136,7 @@ original error: {
         const error = new Error('test error');
         error.name = 'Original error';
         handleError(createError(error, 400));
-        expect(debugLog.debug.calls.mostRecent().args[0]).toContain('Original error');
+        expect(debugLog.debug.mock.calls[0][0]).toContain('Original error');
       });
     });
   });
@@ -145,7 +146,7 @@ original error: {
       handleError(createError('test error', 400), {
         req: { body: { username: 'admin', password: '1234' } },
       });
-      expect(debugLog.debug.calls.allArgs()).toMatchSnapshot();
+      expect(debugLog.debug.mock.calls).toMatchSnapshot();
     });
   });
 
@@ -173,6 +174,7 @@ original error: {
 
 describe('handleError without context', () => {
   it('should append a tenant error message to the original error', () => {
+    jest.restoreAllMocks();
     jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     const error = handleError(new Error('original error message'));
     expect(error.prettyMessage).toEqual('original error message');

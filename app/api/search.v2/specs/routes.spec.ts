@@ -188,7 +188,9 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
-        spyOn(elastic, 'search').and.throwError('Error for test');
+        jest.spyOn(elastic, 'search').mockImplementation(() => {
+          throw new Error('Error for test');
+        });
         jest.spyOn(errorLog, 'error').mockImplementation(() => {});
         const { body, status } = await request(app).get('/api/v2/search');
 

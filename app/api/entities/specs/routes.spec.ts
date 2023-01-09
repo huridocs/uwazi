@@ -99,11 +99,11 @@ describe('entities routes', () => {
     });
 
     it('should call the saving manager with the correct filenames', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
+      jest.spyOn(entitySavingManager, 'saveEntity').mockImplementation(async () =>
         Promise.resolve({ entity: {} })
       );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+      jest.spyOn(templates, 'getById').mockImplementation(async () => Promise.resolve({}));
+      jest.spyOn(thesauri, 'templateToThesauri').mockImplementation(async () => Promise.resolve({}));
 
       await request(app)
         .post('/api/entities')
@@ -131,11 +131,11 @@ describe('entities routes', () => {
     });
 
     it('should log a deprecation notice if no original name provided in body', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
+      jest.spyOn(entitySavingManager, 'saveEntity').mockImplementation(async () =>
         Promise.resolve({ entity: {} })
       );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+      jest.spyOn(templates, 'getById').mockImplementation(async () => Promise.resolve({}));
+      jest.spyOn(thesauri, 'templateToThesauri').mockImplementation(async () => Promise.resolve({}));
       jest.spyOn(errorLog, 'debug').mockImplementation(() => {});
 
       await request(app)

@@ -29,8 +29,8 @@ describe('Users', () => {
     await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('save', () => {
@@ -460,9 +460,13 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
-    it('should find the matching email create a recover password doc in the database and send an email', async () => {
+    beforeEach(() => {
+      jest.restoreAllMocks();
       jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
       jest.spyOn(Date, 'now').mockReturnValue(1000);
+    });
+
+    it('should find the matching email create a recover password doc in the database and send an email', async () => {
       const key = SHA256(`test@email.com${1000}`).toString();
       const settings = await settingsModel.get();
       const response = await users.recoverPassword('test@email.com', 'domain');
@@ -480,9 +484,6 @@ describe('Users', () => {
     });
 
     it('should personalize the mail if recover password process is part of a newly created user', async () => {
-      jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
-      jest.spyOn(Date, 'now').mockReturnValue(1000);
-
       const key = SHA256(`peter@parker.com${1000}`).toString();
       const settings = await settingsModel.get();
 

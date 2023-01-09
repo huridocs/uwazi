@@ -11,7 +11,7 @@ import { Preserve } from '../preserve';
 describe('Preserve', () => {
   const user = { _id: userId1 };
   beforeAll(async () => {
-    spyOn(request, 'post').and.callFake(() => ({
+    jest.spyOn(request, 'post').mockImplementation(() => ({
       json: { data: { token: 'sometoken' } },
     }));
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');

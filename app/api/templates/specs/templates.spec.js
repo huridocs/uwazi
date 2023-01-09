@@ -176,7 +176,7 @@ describe('templates', () => {
 
       try {
         await templates.save(changedTemplate);
-        throw new Error('properties have swaped names, should have failed with an error')
+        throw new Error('properties have swaped names, should have failed with an error');
       } catch (error) {
         expect(error).toEqual({ code: 400, message: "Properties can't swap names: text" });
       }
@@ -392,9 +392,12 @@ describe('templates', () => {
     });
 
     describe('generatedId', () => {
-      const populateGeneratedIdByTemplateSpy = jest
-        .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
-        .mockImplementation(() => Promise.resolve());
+      let populateGeneratedIdByTemplateSpy;
+      beforeEach(() => {
+        populateGeneratedIdByTemplateSpy = jest
+          .spyOn(generatedIdPropertyAutoFiller, 'populateGeneratedIdByTemplate')
+          .mockImplementation(() => Promise.resolve());
+      });
 
       afterEach(() => {
         populateGeneratedIdByTemplateSpy.mockReset();

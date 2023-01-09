@@ -64,7 +64,7 @@ describe('relationship', () => {
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
 
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await prepareExtraFixtures();
     await runScenarios();
 

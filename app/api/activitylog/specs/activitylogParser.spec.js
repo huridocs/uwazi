@@ -16,15 +16,16 @@ import { typeParsers } from '../migrationsParser';
 
 jest.mock('../migrationsParser', () => ({
   typeParsers: {
-    stubLogTypeParser: jest.fn().mockReturnValue({
-      action: 'MIGRATE',
-      description: 'Dummy log',
-    }),
+    stubLogTypeParser: jest.fn(),
   },
 }));
 
 describe('Activitylog Parser', () => {
   beforeEach(async () => {
+    typeParsers.stubLogTypeParser.mockReturnValue({
+      action: 'MIGRATE',
+      description: 'Dummy log',
+    });
     await db.clearAllAndLoad(fixtures);
   });
 

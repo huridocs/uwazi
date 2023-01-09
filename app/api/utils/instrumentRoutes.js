@@ -95,6 +95,7 @@ export default (route, io) => {
     delete: jest.fn(),
     user: jest.fn(),
     options: jest.fn(),
+    use: jest.fn(),
   };
 
   const originalValidateRequest = validation.validateRequest;

@@ -44,7 +44,7 @@ describe('users routes', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setTenant();
-    await testingEnvironment.setRequestId();
+    testingEnvironment.setRequestId();
   });
 
   afterAll(async () => {
@@ -63,7 +63,7 @@ describe('users routes', () => {
   describe('POST', () => {
     describe('/users', () => {
       beforeEach(() => {
-        spyOn(users, 'save').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'save').mockImplementation(async () => Promise.resolve());
       });
 
       it('should call users save with the body', async () => {
@@ -93,7 +93,7 @@ describe('users routes', () => {
 
     describe('/users/new', () => {
       it('should call users newUser with the body', async () => {
-        spyOn(users, 'newUser').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'newUser').mockImplementation(async () => Promise.resolve());
         const response = await request(app).post('/api/users/new').send(userToUpdate);
 
         expect(response.status).toBe(200);
@@ -140,7 +140,7 @@ describe('users routes', () => {
       });
 
       it('should call recoverPassword with the body email', async () => {
-        spyOn(users, 'recoverPassword').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
         const response = await request(app)
           .post('/api/recoverpassword')
           .send({ email: 'recover@me.com' });
@@ -152,7 +152,9 @@ describe('users routes', () => {
       });
 
       it('should return an error if recover password fails', async () => {
-        spyOn(users, 'recoverPassword').and.throwError('error on recoverPassword');
+        jest.spyOn(users, 'recoverPassword').mockImplementation(() => {
+          throw new Error('error on recoverPassword');
+        });
         const response = await request(app)
           .post('/api/recoverpassword')
           .send({ email: 'recover@me.com' });
@@ -172,7 +174,7 @@ describe('users routes', () => {
       });
 
       it('should call users update with the body', async () => {
-        spyOn(users, 'resetPassword').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'resetPassword').mockImplementation(async () => Promise.resolve());
         const response = await request(app)
           .post('/api/resetpassword')
           .send({ key: 'key', password: 'pass' });
@@ -191,7 +193,7 @@ describe('users routes', () => {
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
       it('should call users.unlockAccount with the body', async () => {
-        spyOn(users, 'unlockAccount').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'unlockAccount').mockImplementation(async () => Promise.resolve());
         const response = await request(app)
           .post('/api/unlockAccount')
           .send({ username: 'user1', code: 'code' });
@@ -203,14 +205,14 @@ describe('users routes', () => {
 
   describe('GET', () => {
     it('should need authorization', async () => {
-      spyOn(users, 'get').and.callFake(async () => Promise.resolve(['users']));
+      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
       currentUser!.role = UserRole.EDITOR;
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(401);
     });
 
     it('should call users get', async () => {
-      spyOn(users, 'get').and.callFake(async () => Promise.resolve(['users']));
+      jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(200);
       expect(users.get).toHaveBeenCalled();
@@ -220,7 +222,7 @@ describe('users routes', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      spyOn(users, 'delete').and.callFake(async () => Promise.resolve({ json: 'ok' }));
+      jest.spyOn(users, 'delete').mockImplementation(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should invalidate if the schema is not matched', async () => {

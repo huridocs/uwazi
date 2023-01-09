@@ -1,6 +1,7 @@
 import { models } from 'api/odm';
 import { search } from 'api/search';
 import { storage } from 'api/files/storage';
+import 'api/utils/jasmineHelpers';
 
 import * as index from 'api/search/entitiesIndex';
 import instrumentRoutes from '../../utils/instrumentRoutes';
@@ -59,7 +60,7 @@ describe('sync', () => {
 
     describe('on error', () => {
       it('should call next', async () => {
-        models.model1.save.and.returnValue(Promise.reject(new Error('error')));
+        models.model1.save.mockReturnValue(Promise.reject(new Error('error')));
         try {
           await routes.post('/api/sync', req);
         } catch (error) {
@@ -72,7 +73,7 @@ describe('sync', () => {
       it('should update the mappings', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
         models.templates = {
-          save: jasmine.createSpy('templates.save'),
+          save: jest.fn(),
         };
 
         req.body = {
@@ -88,8 +89,8 @@ describe('sync', () => {
       it('should update the mappings if many templates are provided', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
         models.templates = {
-          save: jasmine.createSpy('templates.save'),
-          saveMultiple: jasmine.createSpy('templates.saveMultiple'),
+          save: jest.fn(),
+          saveMultiple: jest.fn(),
         };
 
         req.body = {
@@ -109,8 +110,8 @@ describe('sync', () => {
     describe('when namespace is entities', () => {
       it('should index on elastic', async () => {
         models.entities = {
-          save: jasmine.createSpy('entities.save'),
-          delete: jasmine.createSpy('entities.delete'),
+          save: jest.fn(),
+          delete: jest.fn(),
         };
 
         req.body = {
@@ -126,8 +127,8 @@ describe('sync', () => {
     describe('when namespace is files', () => {
       it('should index on elastic', async () => {
         models.files = {
-          save: jasmine.createSpy('files.save'),
-          delete: jasmine.createSpy('files.delete'),
+          save: jest.fn(),
+          delete: jest.fn(),
         };
 
         req.body = {
@@ -143,7 +144,7 @@ describe('sync', () => {
     describe('when namespace is settings', () => {
       it('should replace the incomming id with the local id', async () => {
         models.settings = {
-          save: jasmine.createSpy('settings.save'),
+          save: jest.fn(),
           get: () => Promise.resolve([{ _id: 'slaveId' }]),
         };
 
@@ -166,9 +167,9 @@ describe('sync', () => {
     describe('when namespace is translations', () => {
       it('should respect menu and filters translations', async () => {
         models.translations = {
-          save: jasmine.createSpy('entities.save'),
-          delete: jasmine.createSpy('entities.delete'),
-          get: jasmine.createSpy('entities.get').and.returnValue(
+          save: jest.fn(),
+          delete: jest.fn(),
+          get: jest.fn().mockReturnValue(
             Promise.resolve([
               {
                 _id: 'id',
@@ -208,7 +209,7 @@ describe('sync', () => {
     });
 
     it('should need authorization', () => {
-      expect(routes._delete('/api/sync', {})).toNeedAuthorization();
+      expect(routes._delete('/api/sync', req)).toNeedAuthorization();
     });
 
     it('should remove on the namespaced model', async () => {
@@ -225,8 +226,8 @@ describe('sync', () => {
     describe('when namespace is files', () => {
       beforeEach(() => {
         models.files = {
-          save: jasmine.createSpy('files.save'),
-          delete: jasmine.createSpy('files.delete'),
+          save: jest.fn(),
+          delete: jest.fn(),
           getById: () =>
             Promise.resolve({ entity: 'entityId', filename: 'filename', type: 'custom' }),
         };
@@ -251,8 +252,8 @@ describe('sync', () => {
     describe('when namespace is entities', () => {
       beforeEach(() => {
         models.entities = {
-          save: jasmine.createSpy('entities.save'),
-          delete: jasmine.createSpy('entities.delete'),
+          save: jest.fn(),
+          delete: jest.fn(),
         };
 
         req.query = {
@@ -270,7 +271,7 @@ describe('sync', () => {
         const error = new Error('Not Found :: 404');
         error.statusCode = 404;
 
-        search.delete.and.returnValue(Promise.reject(error));
+        search.delete.mockReturnValue(Promise.reject(error));
         const response = await routes.delete('/api/sync', req);
         expect(response).toBe('ok');
       });

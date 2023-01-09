@@ -22,7 +22,7 @@ describe('csvLoader languages', () => {
   beforeAll(async () => {
     await db.setupFixturesAndContext(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 
     const { languages = [] } = await settings.get();
     await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });
@@ -37,7 +37,7 @@ describe('csvLoader languages', () => {
     );
 
     const csv = path.join(__dirname, 'zipData/testLanguages.zip');
-    spyOn(filesystem, 'generateFileName').and.callFake(file => `generatedLang${file.originalname}`);
+    jest.spyOn(filesystem, 'generateFileName').mockImplementation(file => `generatedLang${file.originalname}`);
     await loader.load(csv, template1Id, { language: 'en', user: {} });
 
     imported = await entities.get();

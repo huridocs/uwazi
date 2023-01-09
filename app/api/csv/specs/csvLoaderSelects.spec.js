@@ -12,7 +12,6 @@ import { CSVLoader } from '../csvLoader';
 const loader = new CSVLoader();
 
 describe('loader', () => {
-  let fileSpy;
   let selectThesaurus;
   let selectLabels;
   let selectLabelsSet;
@@ -33,9 +32,9 @@ describe('loader', () => {
     multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
     multiselectLabelsSet = new Set(multiselectLabels);
   });
+
   afterAll(async () => {
     await testingEnvironment.tearDown();
-    fileSpy.mockRestore();
   });
 
   it('should create values in thesauri', async () => {

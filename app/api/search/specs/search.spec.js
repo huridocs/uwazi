@@ -376,7 +376,7 @@ describe('search', () => {
     });
 
     it('should filter by range values using descriptive timestamps', async () => {
-      jest.spyOn(date, 'descriptionToTimestamp').mockImplementation(value => {
+      jest.spyOn(date, 'descriptionToTimestamp').mockImplementationOnce(value => {
         if (value === 'first-day-last-month') {
           return 15;
         }
@@ -481,7 +481,7 @@ describe('search', () => {
   describe('when the query is for geolocation', () => {
     it('should set size to 9999', async () => {
       userFactory.mock(undefined);
-      jest.spyOn(elastic, 'search').mockImplementation(async () => Promise.resolve(result));
+      jest.spyOn(elastic, 'search').mockImplementationOnce(async () => Promise.resolve(result));
       await search.search({ searchTerm: '', geolocation: true }, 'en');
       const elasticQuery = elastic.search.mock.calls[0][0].body;
       expect(elasticQuery.size).toBe(9999);

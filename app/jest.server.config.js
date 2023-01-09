@@ -2,7 +2,6 @@
 const { defaults } = require('jest-config');
 
 module.exports = {
-  restoreMocks: true,
   displayName: 'Server',
   testMatch: ['**/api/**/specs/*spec.(j|t)s?(x)', '**/shared/**/specs/*spec.(j|t)s?(x)'],
   testEnvironment: 'node',

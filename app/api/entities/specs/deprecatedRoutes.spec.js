@@ -20,8 +20,8 @@ describe('entities', () => {
     await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('POST', () => {
@@ -214,6 +214,7 @@ describe('entities', () => {
         published: true,
       };
 
+      entities.getWithRelationships.mockClear();
       jest.spyOn(entities, 'getWithRelationships').mockImplementation(() => {});
       jest.spyOn(entities, 'get').mockImplementation(async () => Promise.resolve([expectedEntity]));
 

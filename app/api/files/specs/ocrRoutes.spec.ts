@@ -81,7 +81,7 @@ describe('OCR service', () => {
   }
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(FIXTURES);
     testingEnvironment.setPermissions(adminUser);
     requestMockedUser = adminUser;

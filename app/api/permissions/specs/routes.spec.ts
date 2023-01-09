@@ -42,7 +42,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        spyOn(entitiesPermissions, 'set').and.callFake(async () => Promise.resolve([]));
+        jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve([]));
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };
@@ -100,7 +100,9 @@ describe('permissions routes', () => {
       });
 
       it('should handle errors on POST', async () => {
-        spyOn(entitiesPermissions, 'set').and.throwError('error on save');
+        jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
+          throw new Error('error on save');
+        });
         user = { username: 'user 1', role: 'admin' };
         const permissionsData = {
           ids: ['shared1'],
@@ -111,7 +113,9 @@ describe('permissions routes', () => {
         expect(response.body.error).toContain('error on save');
       });
       it('should handle errors on PUT', async () => {
-        spyOn(entitiesPermissions, 'get').and.throwError('error on get');
+        jest.spyOn(entitiesPermissions, 'get').mockImplementation(() => {
+          throw new Error('error on get');
+        });
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .put('/api/entities/permissions')
@@ -120,7 +124,9 @@ describe('permissions routes', () => {
         expect(response.body.error).toContain('error on get');
       });
       it('should handle errors on collaborators search', async () => {
-        spyOn(collaborators, 'search').and.throwError('error on get');
+        jest.spyOn(collaborators, 'search').mockImplementation(() => {
+          throw new Error('error on get');
+        });
         user = { username: 'user 1', role: 'admin' };
         const response = await request(app)
           .get('/api/collaborators')
@@ -133,7 +139,7 @@ describe('permissions routes', () => {
     describe('PUT', () => {
       it('should get the permissions by an array of entities ids', async () => {
         user = { username: 'user 1', role: 'admin' };
-        spyOn(entitiesPermissions, 'get').and.returnValue(
+        jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {
               refId: 'user1',
@@ -150,7 +156,7 @@ describe('permissions routes', () => {
 
       it('should invalidate if data is not valid', async () => {
         user = { username: 'user 1', role: 'admin' };
-        spyOn(entitiesPermissions, 'get').and.returnValue(
+        jest.spyOn(entitiesPermissions, 'get').mockReturnValue(
           Promise.resolve([
             {
               refId: 'user1',
@@ -169,9 +175,9 @@ describe('permissions routes', () => {
   describe('search for a collaborator to share with', () => {
     describe('GET', () => {
       beforeEach(() => {
-        spyOn(collaborators, 'search').and.returnValue(
-          Promise.resolve([{ refId: 'user1', type: 'user' }])
-        );
+        jest
+          .spyOn(collaborators, 'search')
+          .mockReturnValue(Promise.resolve([{ refId: 'user1', type: 'user' }]));
       });
 
       it('should return the matched user and group list', async () => {

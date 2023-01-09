@@ -51,12 +51,12 @@ describe('documents', () => {
     });
 
     it('should need authorization', async () => {
-      spyOn(documents, 'save').and.callFake(async () => Promise.resolve('document'));
+      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
       await request(app).post('/api/documents').send(req).expect(401);
     });
 
     it('should create a new document with current user', async () => {
-      spyOn(documents, 'save').and.callFake(async () => Promise.resolve('document'));
+      jest.spyOn(documents, 'save').mockImplementation(async () => Promise.resolve('document'));
       currentUser = adminUser;
       const response = await request(app).post('/api/documents').send(document);
       expect(response.body).toBe('document');
@@ -69,7 +69,7 @@ describe('documents', () => {
 
   describe('GET /api/documents', () => {
     beforeEach(() => {
-      spyOn(documents, 'getById').and.callFake(async () => Promise.resolve('documents'));
+      jest.spyOn(documents, 'getById').mockImplementation(async () => Promise.resolve('documents'));
     });
 
     it('should return documents.get', async () => {
@@ -81,7 +81,7 @@ describe('documents', () => {
 
   describe('/api/documents/count_by_template', () => {
     beforeEach(() => {
-      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(2));
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(2));
     });
     it('should return a validation error if templateId is not passed', async () => {
       const response = await request(app).get('/api/documents/count_by_template').query({});
@@ -102,7 +102,7 @@ describe('documents', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      spyOn(documents, 'delete').and.callFake(async () => Promise.resolve({ json: 'ok' }));
+      jest.spyOn(documents, 'delete').mockImplementation(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should return a validation error if sharedId is not passed', async () => {

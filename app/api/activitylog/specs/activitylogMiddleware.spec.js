@@ -19,6 +19,7 @@ describe('activitylogMiddleware', () => {
   });
 
   beforeEach(() => {
+    jest.resetAllMocks();
     req = {
       method: 'POST',
       url: '/api/entities',
@@ -29,13 +30,13 @@ describe('activitylogMiddleware', () => {
     };
 
     res = {
-      status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json'),
+      status: jest.fn(),
+      json: jest.fn(),
     };
 
-    next = jasmine.createSpy('next');
+    next = jest.fn();
     jest.spyOn(activitylog, 'save').mockImplementation(() => {});
-    spyOn(Date, 'now').and.returnValue(1);
+    jest.spyOn(Date, 'now').mockReturnValue(1);
   });
 
   function testActivityLogNotSaved() {

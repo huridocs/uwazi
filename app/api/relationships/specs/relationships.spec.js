@@ -35,14 +35,15 @@ import { search } from '../../search';
 
 describe('relationships', () => {
   beforeEach(async () => {
+    jest.resetAllMocks();
     jest
       .spyOn(entities, 'updateMetdataFromRelationships')
       .mockImplementation(async () => Promise.resolve());
     await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('getByDocument()', () => {
