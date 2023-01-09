@@ -8,17 +8,17 @@ import Icons from 'app/Templates/components/Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
-export interface IXTemplateConfiguration {
-  template: ObjectIdSchema;
-  properties: string[];
+export interface IXExtractorInfo {
+  name: string;
+  property: string;
+  templates: ObjectIdSchema[];
 }
 
 export interface ExtractorCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAccept: (properties: IXTemplateConfiguration[]) => void;
+  onAccept: (extractorInfo: IXExtractorInfo) => void;
   templates: TemplateSchema[];
-  currentProperties: IXTemplateConfiguration[];
 }
 
 export const ExtractorCreationModal = ({
@@ -26,58 +26,48 @@ export const ExtractorCreationModal = ({
   onClose,
   onAccept,
   templates,
-  currentProperties,
 }: ExtractorCreationModalProps) => {
-  const currentValues = currentProperties.reduce((result: string[], config) => {
-    const { template, properties } = config;
-    const props = properties.map(prop => `${template}-${prop}`);
-    return result.concat(props);
-  }, []);
-
   const [name, setName] = useState('');
 
-  const [values, setValues] = useState(currentValues);
+  const [values, setValues] = useState([]);
+  // @ts-ignore
+  const filter = values.length ? values[0].split('-', 2)[1] : null;
   const options = templates.map(template => ({
     label: template.name,
     id: template._id,
     value: template._id,
     options: template.properties
-      ?.map(prop => ({
+      ?.filter(prop => !filter || prop.name === filter)
+      .map(prop => ({
         label: prop.label,
         value: `${template._id?.toString()}-${prop.name}`,
         type: prop.type,
         icon: { type: 'Icons', _id: Icons[prop.type] },
       }))
       .filter(p => SUPPORTED_PROPERTIES.includes(p.type))
-      .concat([
-        {
-          label: 'Title',
-          value: `${template._id?.toString()}-title`,
-          type: 'text',
-          icon: { type: 'Icons', _id: Icons.text },
-        },
-      ]),
+      .concat(
+        !filter || filter === 'title'
+          ? [
+              {
+                label: 'Title',
+                value: `${template._id?.toString()}-title`,
+                type: 'text',
+                icon: { type: 'Icons', _id: Icons.text },
+              },
+            ]
+          : []
+      ),
   }));
 
-  const handleSubmit = (submitedValues: string[]) => {
-    const processedValues = submitedValues.reduce((result: IXTemplateConfiguration[], value) => {
-      const [templateName, propertyName] = value.split('-');
-      const template = templates.find(t => t._id === templateName);
-
-      if (!template) {
-        return result;
-      }
-
-      const templateConfig = result.find(c => c.template === template._id);
-      if (templateConfig) {
-        templateConfig.properties.push(propertyName);
-        return result;
-      }
-
-      return result.concat({ template: template._id!.toString(), properties: [propertyName] });
-    }, []);
-
-    onAccept(processedValues);
+  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+    const result: null | IXExtractorInfo = submitedValues.length
+      ? {
+          name: submittedName,
+          property: submitedValues[0].split('-', 2)[1],
+          templates: submitedValues.map(value => value.split('-', 2)[0]),
+        }
+      : null;
+    onAccept(result);
   };
 
   return (
@@ -95,7 +85,13 @@ export const ExtractorCreationModal = ({
           //className="form-control"
           onChange={event => setName(event.target.value)}
         />
-        <MultiSelect value={values} onChange={setValues} options={options} optionsToShow={20} />
+        <MultiSelect
+          value={values}
+          onChange={setValues}
+          options={options}
+          optionsToShow={20}
+          disableTopLevel
+        />
       </Modal.Body>
       <Modal.Footer>
         <span className="left">
@@ -107,7 +103,7 @@ export const ExtractorCreationModal = ({
         <button
           type="button"
           className="btn confirm-button btn-success"
-          onClick={() => handleSubmit(values)}
+          onClick={() => handleSubmit(name, values)}
         >
           <Translate>Save</Translate>
         </button>

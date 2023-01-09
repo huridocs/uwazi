@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
+// eslint-disable-next-line max-classes-per-file
 import { Link } from 'react-router';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
@@ -36,6 +37,7 @@ type MultiSelectProps<ValueType> = {
   onFilter: (_searchTerm: string) => void;
   totalPossibleOptions: number;
   allowSelectGroup: boolean;
+  disableTopLevel: boolean;
 };
 
 const defaultProps = {
@@ -56,6 +58,7 @@ const defaultProps = {
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,
+  disableTopLevel: false,
 };
 
 interface MultiSelectState {
@@ -389,6 +392,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
             onChange={this.changeGroup.bind(this, group)}
             checked={state !== SelectStates.OFF}
             data-state={state}
+            disabled={this.props.disableTopLevel}
           />
           {this.label({ ...group, results: group.results })}
         </div>

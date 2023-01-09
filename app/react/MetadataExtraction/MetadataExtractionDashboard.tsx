@@ -12,13 +12,14 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
-import { saveConfigurations } from './actions/actions';
-import { IXTemplateConfiguration, ExtractorCreationModal } from './ExtractorCreationModal';
+import { saveConfigurations, createExtractor } from './actions/actions';
+import { IXExtractorInfo, ExtractorCreationModal } from './ExtractorCreationModal';
 
-function mapStateToProps({ settings, templates }: any) {
+function mapStateToProps({ settings, templates, ixextractors }: any) {
   return {
     settings: settings.collection,
     templates,
+    ixextractors,
   };
 }
 
@@ -29,6 +30,7 @@ class MetadataExtractionComponent extends React.Component<
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
     this.saveConfigs = this.saveConfigs.bind(this);
+    this.createExtractor = this.createExtractor.bind(this);
     this.state = {
       configurationModalIsOpen: false,
       creationModelIsOpen: false,
@@ -94,10 +96,15 @@ class MetadataExtractionComponent extends React.Component<
     await this.props.saveConfigurations(newSettingsConfigs);
   }
 
+  async createExtractor(extractorInfo: IXExtractorInfo) {
+    this.setState({ creationModelIsOpen: false });
+    await this.props.createExtractor(extractorInfo);
+  }
+
   render() {
     const formattedData: FormattedSettingsData = this.arrangeTemplatesAndProperties();
-    const extractionSettings =
-      this.props.settings.toJS().features!.metadataExtraction!.templates || [];
+    // const extractionSettings =
+    //   this.props.settings.toJS().features!.metadataExtraction!.templates || [];
 
     return (
       <div className="settings-content">
@@ -111,9 +118,8 @@ class MetadataExtractionComponent extends React.Component<
           <ExtractorCreationModal
             isOpen={this.state.creationModelIsOpen}
             onClose={() => this.setState({ creationModelIsOpen: false })}
-            onAccept={this.saveConfigs}
+            onAccept={this.createExtractor}
             templates={this.props.templates.toJS()}
-            currentProperties={extractionSettings}
           />
           <div className="metadata-extraction-table">
             <table className="table">
@@ -182,6 +188,7 @@ export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
   settings: IImmutable<ClientSettings>;
   saveConfigurations: (configurations: IXTemplateConfiguration[]) => void;
+  createExtractor: (extractorInfo: IXExtractorInfo) => void;
 }
 
 export interface FormattedSettingsData {
@@ -197,7 +204,7 @@ export interface MetadataExtractionDashboardStateTypes {
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ saveConfigurations }, dispatch);
+  bindActionCreators({ saveConfigurations, createExtractor }, dispatch);
 
 export const MetadataExtractionDashboard = connect(
   mapStateToProps,
