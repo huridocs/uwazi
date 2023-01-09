@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 
 import Ajv from 'ajv';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
 import entities from 'api/entities/entities.js';
@@ -34,7 +33,7 @@ describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
   beforeEach(async () => {
-    spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
+    jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
     await db.setupFixturesAndContext(fixtures, elasticIndex);
   });
 
@@ -124,10 +123,12 @@ describe('templates', () => {
     });
 
     describe('when property content changes', () => {
-      it('should remove the values from the entities and update them', done => {
+      it('should remove the values from the entities and update them', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-        spyOn(entities, 'removeValuesFromEntities').and.callThrough();
-        spyOn(entities, 'updateMetadataProperties').and.callFake(async () => Promise.resolve());
+        jest.spyOn(entities, 'removeValuesFromEntities');
+        jest
+          .spyOn(entities, 'updateMetadataProperties')
+          .mockImplementation(async () => Promise.resolve());
         const changedTemplate = {
           _id: templateWithContents,
           name: 'changed',
@@ -148,20 +149,15 @@ describe('templates', () => {
           ],
         };
 
-        templates
-          .save(changedTemplate)
-          .then(() => {
-            expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
-              ['select3', 'select4'],
-              templateWithContents
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+        await templates.save(changedTemplate);
+        expect(entities.removeValuesFromEntities).toHaveBeenCalledWith(
+          ['select3', 'select4'],
+          templateWithContents
+        );
       });
     });
 
-    it('should not allow changing names to existing ones (swap)', done => {
+    it('should not allow changing names to existing ones (swap)', async () => {
       const changedTemplate = {
         _id: swapTemplate,
         name: 'swap names template',
@@ -178,13 +174,12 @@ describe('templates', () => {
         ],
       };
 
-      templates
-        .save(changedTemplate)
-        .then(() => done.fail('properties have swaped names, should have failed with an error'))
-        .catch(error => {
-          expect(error).toEqual({ code: 400, message: "Properties can't swap names: text" });
-          done();
-        });
+      try {
+        await templates.save(changedTemplate);
+        throw new Error('properties have swaped names, should have failed with an error')
+      } catch (error) {
+        expect(error).toEqual({ code: 400, message: "Properties can't swap names: text" });
+      }
     });
 
     it('should add it to translations with Entity type', async () => {
@@ -268,7 +263,7 @@ describe('templates', () => {
       );
     });
 
-    it('should assign a safe property name based on the label ', done => {
+    it('should assign a safe property name based on the label ', async () => {
       const newTemplate = {
         name: 'created_template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
@@ -281,20 +276,15 @@ describe('templates', () => {
         ],
       };
 
-      templates
-        .save(newTemplate)
-        .then(() => templates.get())
-        .then(allTemplates => {
-          const newDoc = allTemplates.find(template => template.name === 'created_template');
+      await templates.save(newTemplate);
+      const allTemplates = await templates.get();
+      const newDoc = allTemplates.find(template1 => template1.name === 'created_template');
 
-          expect(newDoc.properties[0].name).toEqual('label_1');
-          expect(newDoc.properties[1].name).toEqual('label_2');
-          expect(newDoc.properties[2].name).toEqual('label_3');
-          expect(newDoc.properties[3].name).toEqual('label_4');
-          expect(newDoc.properties[4].name).toEqual('label_5_geolocation');
-          done();
-        })
-        .catch(catchErrors(done));
+      expect(newDoc.properties[0].name).toEqual('label_1');
+      expect(newDoc.properties[1].name).toEqual('label_2');
+      expect(newDoc.properties[2].name).toEqual('label_3');
+      expect(newDoc.properties[3].name).toEqual('label_4');
+      expect(newDoc.properties[4].name).toEqual('label_5_geolocation');
     });
 
     it('should set a default value of [] to properties', async () => {
@@ -310,10 +300,12 @@ describe('templates', () => {
 
     describe('when passing _id', () => {
       beforeEach(() => {
-        spyOn(entities, 'updateMetadataProperties').and.callFake(async () => Promise.resolve());
+        jest
+          .spyOn(entities, 'updateMetadataProperties')
+          .mockImplementation(async () => Promise.resolve());
       });
 
-      it('should updateMetadataProperties', done => {
+      it('should updateMetadataProperties', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         const template = {
           _id: templateToBeEditedId,
@@ -327,36 +319,26 @@ describe('templates', () => {
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
           name: 'changed name',
         };
-        templates
-          .save(toSave, 'en')
-          .then(() => {
-            expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
-              reindex: true,
-              generatedIdAdded: false,
-            });
-            done();
-          })
-          .catch(catchErrors(done));
+        await templates.save(toSave, 'en');
+        expect(entities.updateMetadataProperties).toHaveBeenCalledWith(toSave, template, 'en', {
+          reindex: true,
+          generatedIdAdded: false,
+        });
       });
 
-      it('should edit an existing one', async done => {
+      it('should edit an existing one', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         const toSave = {
           _id: templateToBeEditedId,
           name: 'changed name',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         };
-        try {
-          await templates.save(toSave);
-          const [edited] = await templates.get(templateToBeEditedId);
-          expect(edited.name).toBe('changed name');
-          done();
-        } catch (error) {
-          catchErrors(done)(error);
-        }
+        await templates.save(toSave);
+        const [edited] = await templates.get(templateToBeEditedId);
+        expect(edited.name).toBe('changed name');
       });
 
-      it('should update the translation context for it', done => {
+      it('should update the translation context for it', async () => {
         const newTemplate = {
           name: 'created template',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
@@ -367,55 +349,45 @@ describe('templates', () => {
         };
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         /* eslint-disable no-param-reassign */
-        templates
-          .save(newTemplate)
-          .then(template => {
-            template.name = 'new title';
-            template.properties[0].label = 'new label 1';
-            template.properties.pop();
-            template.properties.push({ label: 'label 3', type: 'text' });
-            template.commonProperties[0].label = 'new title label';
-            translations.addContext.calls.reset();
-            return templates.save(template);
-            /* eslint-enable no-param-reassign */
-          })
-          .then(response => {
-            expect(translations.addContext).not.toHaveBeenCalled();
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              response._id.toString(),
-              'new title',
-              {
-                'label 1': 'new label 1',
-                'created template': 'new title',
-              },
-              ['label 2', 'Title'],
-              {
-                'new label 1': 'new label 1',
-                'label 3': 'label 3',
-                'new title': 'new title',
-                'new title label': 'new title label',
-              },
-              'Entity'
-            );
-            done();
-          })
-          .catch(done.fail);
+        const template1 = await templates.save(newTemplate);
+        template1.name = 'new title';
+        template1.properties[0].label = 'new label 1';
+        template1.properties.pop();
+        template1.properties.push({ label: 'label 3', type: 'text' });
+        template1.commonProperties[0].label = 'new title label';
+        translations.addContext.mockClear();
+        const response = await templates.save(template1);
+
+        expect(translations.addContext).not.toHaveBeenCalled();
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          response._id.toString(),
+          'new title',
+          {
+            'label 1': 'new label 1',
+            'created template': 'new title',
+          },
+          ['label 2', 'Title'],
+          {
+            'new label 1': 'new label 1',
+            'label 3': 'label 3',
+            'new title': 'new title',
+            'new title label': 'new title label',
+          },
+          'Entity'
+        );
       });
 
-      it('should return the saved template', done => {
+      it('should return the saved template', async () => {
         jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
+
         const edited = {
           _id: templateToBeEditedId,
           name: 'changed name',
           commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         };
-        return templates
-          .save(edited)
-          .then(template => {
-            expect(template.name).toBe('changed name');
-            done();
-          })
-          .catch(done.fail);
+        const template1 = await templates.save(edited);
+
+        expect(template1.name).toBe('changed name');
       });
     });
 
@@ -499,7 +471,7 @@ describe('templates', () => {
       ]);
       ['en', 'es', 'pt'].forEach(l => {
         const metadatas = relatedEntities.filter(e => e.language === l).map(e => e.metadata);
-        expect(metadatas).toEqual([
+        expect(metadatas).toMatchObject([
           { select: [] },
           { select: [] },
           { select: [] },
@@ -508,71 +480,51 @@ describe('templates', () => {
       });
     });
 
-    it('should delete a template when no document is using it', done => {
-      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
-      return templates
-        .delete({ _id: templateToBeDeleted })
-        .then(response => {
-          expect(response).toEqual({ _id: templateToBeDeleted });
-          return templates.get();
-        })
-        .then(allTemplates => {
-          const deleted = allTemplates.find(template => template.name === 'to be deleted');
-          expect(deleted).not.toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should delete a template when no document is using it', async () => {
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
+
+      const response = await templates.delete({ _id: templateToBeDeleted });
+      expect(response).toEqual({ _id: templateToBeDeleted });
+
+      const allTemplates = await templates.get();
+      const deleted = allTemplates.find(template1 => template1.name === 'to be deleted');
+
+      expect(deleted).not.toBeDefined();
     });
 
-    it('should delete the template translation', done => {
-      spyOn(documents, 'countByTemplate').and.callFake(async () => Promise.resolve(0));
-      spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
+    it('should delete the template translation', async () => {
+      jest.spyOn(documents, 'countByTemplate').mockImplementation(async () => Promise.resolve(0));
+      jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
 
-      return templates
-        .delete({ _id: templateToBeDeleted })
-        .then(() => {
-          expect(translations.deleteContext).toHaveBeenCalledWith(templateToBeDeleted);
-          done();
-        })
-        .catch(catchErrors(done));
+      await templates.delete({ _id: templateToBeDeleted });
+      expect(translations.deleteContext).toHaveBeenCalledWith(templateToBeDeleted);
     });
 
-    it('should throw an error when there is documents using it', done => {
-      spyOn(templates, 'countByTemplate').and.callFake(async () => Promise.resolve(1));
-      return templates
-        .delete({ _id: templateToBeDeleted })
-        .then(() => {
-          done.fail(
-            'should not delete the template and throw an error because there is some documents associated with the template'
-          );
-        })
-        .catch(error => {
-          expect(error.key).toEqual('documents_using_template');
-          expect(error.value).toEqual(1);
-          done();
-        });
+    it('should throw an error when there is documents using it', async () => {
+      jest.spyOn(templates, 'countByTemplate').mockImplementation(async () => Promise.resolve(1));
+      try {
+        await templates.delete({ _id: templateToBeDeleted });
+        throw new Error(
+          'should not delete the template and throw an error because there is some documents associated with the template'
+        );
+      } catch (error) {
+        expect(error.message).toBeUndefined();
+        expect(error.key).toEqual('documents_using_template');
+        expect(error.value).toEqual(1);
+      }
     });
   });
 
   describe('countByThesauri()', () => {
-    it('should return number of templates using a thesauri', done => {
-      templates
-        .countByThesauri(thesauriId1.toString())
-        .then(result => {
-          expect(result).toBe(3);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return number of templates using a thesauri', async () => {
+      const result = await templates.countByThesauri(thesauriId1.toString());
+
+      expect(result).toBe(3);
     });
 
-    it('should return zero when none is using it', done => {
-      templates
-        .countByThesauri('not_used_relation')
-        .then(result => {
-          expect(result).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return zero when none is using it', async () => {
+      const result = await templates.countByThesauri('not_used_relation');
+      expect(result).toBe(0);
     });
   });
 

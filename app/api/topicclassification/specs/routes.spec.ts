@@ -1,5 +1,4 @@
 import * as topicClassification from 'api/config/topicClassification';
-import 'api/utils/jasmineHelpers';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { NextFunction } from 'express';
@@ -74,9 +73,9 @@ describe('topic classification routes', () => {
   beforeEach(async () => {
     const elasticIndex = 'tc_routes_test';
     await db.setupFixturesAndContext(fixtures, elasticIndex);
-    spyOn(JSONRequest, 'post').and.callFake(fakePost);
-    spyOn(JSONRequest, 'get').and.callFake(fakeGet);
-    spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
+    jest.spyOn(JSONRequest, 'post').mockImplementation(fakePost);
+    jest.spyOn(JSONRequest, 'get').mockImplementation(fakeGet);
+    jest.spyOn(topicClassification, 'IsTopicClassificationReachable').mockReturnValue(true);
   });
 
   afterAll(async () => {

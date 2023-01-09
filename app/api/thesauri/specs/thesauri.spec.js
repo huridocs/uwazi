@@ -3,7 +3,6 @@ import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
 import { search } from 'api/search';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 
 import { testingDB } from 'api/utils/testing_db';
 import thesauri from '../thesauri.js';
@@ -17,7 +16,7 @@ import {
 
 describe('thesauri', () => {
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
@@ -27,7 +26,7 @@ describe('thesauri', () => {
 
   describe('get()', () => {
     it('should return all thesauri including entity templates as options', async () => {
-      search.indexEntities.and.callThrough();
+      search.indexEntities.mockRestore();
       const elasticIndex = 'thesauri.spec.elastic.index';
       await testingDB.setupFixturesAndContext(fixtures, elasticIndex);
       const thesaurus = await thesauri.get(null, 'es');
@@ -94,24 +93,19 @@ describe('thesauri', () => {
   describe('delete()', () => {
     let templatesCountSpy;
     beforeEach(() => {
-      templatesCountSpy = spyOn(templates, 'countByThesauri').and.callFake(async () => {
+      templatesCountSpy = jest.spyOn(templates, 'countByThesauri').mockImplementation(async () => {
         Promise.resolve(0);
       });
-      spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
+      jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
     });
 
-    it('should delete a thesauri', done =>
-      thesauri
-        .delete(dictionaryId)
-        .then(response => {
-          expect(response.ok).toBe(true);
-          return thesauri.get({ _id: dictionaryId });
-        })
-        .then(dictionaries => {
-          expect(dictionaries.length).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done)));
+    it('should delete a thesauri', async () => {
+      const response = await thesauri.delete(dictionaryId);
+      expect(response.ok).toBe(true);
+
+      const dictionaries = await thesauri.get({ _id: dictionaryId });
+      expect(dictionaries.length).toBe(0);
+    });
 
     it('should delete the translation', async () => {
       const response = await thesauri.delete(dictionaryId);
@@ -120,22 +114,21 @@ describe('thesauri', () => {
     });
 
     describe('when the dictionary is in use', () => {
-      it('should return an error in the response', done => {
-        templatesCountSpy.and.callFake(async () => Promise.resolve(1));
-        thesauri
-          .delete(dictionaryId)
-          .then(catchErrors(done))
-          .catch(response => {
-            expect(response.key).toBe('templates_using_dictionary');
-            done();
-          });
+      it('should return an error in the response', async () => {
+        try {
+          templatesCountSpy.mockImplementation(async () => Promise.resolve(1));
+          await thesauri.delete(dictionaryId);
+          throw new Error('should return an error in the response');
+        } catch (response) {
+          expect(response.key).toBe('templates_using_dictionary');
+        }
       });
     });
   });
 
   describe('save', () => {
     beforeEach(() => {
-      spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
+      jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
     });
 
     it('should create a thesauri', async () => {
@@ -160,7 +153,7 @@ describe('thesauri', () => {
           },
         ],
       };
-      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
+      jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
       const response = await thesauri.save(data);
       expect(translations.addContext).toHaveBeenCalledWith(
         response._id,
@@ -176,56 +169,42 @@ describe('thesauri', () => {
       );
     });
 
-    it('should set a default value of [] to values property if its missing', done => {
+    it('should set a default value of [] to values property if its missing', async () => {
       const data = { name: 'Scarecrow nightmares' };
 
-      thesauri
-        .save(data)
-        .then(() => thesauri.get())
-        .then(response => {
-          const newThesauri = response.find(thesaurus => thesaurus.name === 'Scarecrow nightmares');
+      await thesauri.save(data);
+      const response = await thesauri.get();
+      const newThesauri = response.find(thesaurus => thesaurus.name === 'Scarecrow nightmares');
 
-          expect(newThesauri.name).toBe('Scarecrow nightmares');
-          expect(newThesauri.values).toEqual([]);
-          done();
-        })
-        .catch(catchErrors(done));
+      expect(newThesauri.name).toBe('Scarecrow nightmares');
+      expect(newThesauri.values).toEqual([]);
     });
 
     describe('when passing _id', () => {
-      it('should edit an existing one', done => {
-        spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
+      it('should edit an existing one', async () => {
+        jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
         const data = { _id: dictionaryId, name: 'changed name' };
-        return thesauri
-          .save(data)
-          .then(() => thesauri.getById(dictionaryId))
-          .then(edited => {
-            expect(edited.name).toBe('changed name');
-            done();
-          })
-          .catch(catchErrors(done));
+        await thesauri.save(data);
+
+        const edited = await thesauri.getById(dictionaryId);
+        expect(edited.name).toBe('changed name');
       });
 
-      it('should update the translation', done => {
+      it('should update the translation', async () => {
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
           values: [{ id: dictionaryValueId, label: 'Marios game' }],
         };
-        return thesauri
-          .save(data)
-          .then(response => {
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              response._id,
-              'Top 1 games',
-              { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
-              ['Fundation'],
-              { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
-              'Thesaurus'
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+        const response = await thesauri.save(data);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          response._id,
+          'Top 1 games',
+          { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
+          ['Fundation'],
+          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
+          'Thesaurus'
+        );
       });
 
       it('should remove deleted values from entities', async () => {
@@ -237,7 +216,7 @@ describe('thesauri', () => {
         };
 
         await thesauri.save(data);
-        expect(entities.deleteThesaurusFromMetadata.calls.count()).toBe(1);
+        expect(entities.deleteThesaurusFromMetadata.mock.calls.length).toBe(1);
         expect(entities.deleteThesaurusFromMetadata).toHaveBeenCalledWith(
           '2',
           dictionaryIdToTranslate
@@ -251,11 +230,9 @@ describe('thesauri', () => {
 
         await thesauri.save(thesaurus);
 
-        const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.calls
-          .allArgs()
-          .map(args => args[0]);
+        const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.mock.calls[0][0];
 
-        expect(deletedValuesFromEntities).toEqual(['3']);
+        expect(deletedValuesFromEntities).toEqual('3');
       });
 
       it('should update labels on entities with the thesauri values', async () => {
@@ -450,13 +427,13 @@ describe('thesauri', () => {
   describe('update', () => {
     describe('when the name of thesaurus is updated', () => {
       it('should update the translations key', async () => {
+        translations.updateContext.mockRestore();
         const data = { ...fixtures.dictionaries[1], name: 'new name' };
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-
         expect(context.values['new name']).toBe('dictionary 2');
       });
     });

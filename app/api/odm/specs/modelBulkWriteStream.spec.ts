@@ -1,5 +1,4 @@
 import userModel from 'api/users/usersModel';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import { ModelBulkWriteStream } from '../modelBulkWriteStream';
@@ -49,8 +48,8 @@ const stackLimit = 5;
 describe('modelBulkWriteStream', () => {
   let stream: ModelBulkWriteStream;
 
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.setupFixturesAndContext(fixtures);
     stream = new ModelBulkWriteStream(userModel, stackLimit);
   });
 

@@ -1,5 +1,3 @@
-import 'api/utils/jasmineHelpers';
-
 import { models } from 'api/odm';
 import { search } from 'api/search';
 import { storage } from 'api/files/storage';
@@ -26,13 +24,13 @@ describe('sync', () => {
     jest.mock('../../auth');
     routes = instrumentRoutes(syncRoutes);
     models.model1 = {
-      save: jasmine.createSpy('model1.save'),
-      delete: jasmine.createSpy('model1.delete'),
+      save: jest.fn(),
+      delete: jest.fn(),
     };
 
     models.model2 = {
-      save: jasmine.createSpy('model2.save'),
-      delete: jasmine.createSpy('model2.delete'),
+      save: jest.fn(),
+      delete: jest.fn(),
     };
     jest.spyOn(search, 'delete').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
