@@ -15,9 +15,9 @@ const defaultProps = {
   mainContext: { confirm: (_props: {}) => {} },
 };
 
-export type OneUpTitleBarProps = typeof defaultProps;
+type OneUpTitleBarProps = typeof defaultProps;
 
-export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
+class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   static defaultProps = defaultProps;
 
   backToThesaurus() {
@@ -123,6 +123,8 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   );
 }
 
+export { OneUpTitleBarBase };
+export type { OneUpTitleBarProps };
 export const OneUpTitleBar = connect(
   mapStateToProps,
   mapDispatchToProps

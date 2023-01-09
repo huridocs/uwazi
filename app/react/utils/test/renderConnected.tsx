@@ -1,6 +1,7 @@
 import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import { InitialEntry } from '@remix-run/router';
 import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
@@ -65,23 +66,35 @@ const renderConnectedMount = (
 const renderConnectedContainer = (
   children: JSX.Element,
   stateFunc: () => {},
-  routerWrapper?: 'BrowserRouter' | 'MemoryRouter'
+  routerWrapper?: 'BrowserRouter' | 'MemoryRouter',
+  memoryRouterLocation: InitialEntry[] | undefined = undefined
 ) => {
-  let wrapper;
+  const store = configureStore<object>(middlewares)(stateFunc);
+
+  let renderResult;
+
   switch (routerWrapper) {
     case 'BrowserRouter':
-      wrapper = BrowserRouter;
+      renderResult = render(<Provider store={store}>{children}</Provider>, {
+        wrapper: BrowserRouter,
+      });
       break;
+
     case 'MemoryRouter':
-      wrapper = MemoryRouter;
+      renderResult = render(
+        <MemoryRouter initialEntries={memoryRouterLocation}>
+          <Provider store={store}>{children}</Provider>
+        </MemoryRouter>
+      );
       break;
+
     default:
+      renderResult = render(<Provider store={store}>{children}</Provider>);
       break;
   }
 
-  const store = configureStore<object>(middlewares)(stateFunc);
   return {
-    renderResult: render(<Provider store={store}>{children}</Provider>, wrapper && { wrapper }),
+    renderResult,
     store,
   };
 };

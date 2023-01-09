@@ -46,16 +46,13 @@ const defaultProps = {
   mainContext: { confirm: (_props: {}) => {} },
 };
 
-export type OneUpEntityViewerProps = typeof defaultProps;
+type OneUpEntityViewerProps = typeof defaultProps;
 
-export interface OneUpEntityViewerState {
+interface OneUpEntityViewerState {
   panelOpen: boolean;
 }
 
-export class OneUpEntityViewerBase extends Component<
-  OneUpEntityViewerProps,
-  OneUpEntityViewerState
-> {
+class OneUpEntityViewerBase extends Component<OneUpEntityViewerProps, OneUpEntityViewerState> {
   static defaultProps = defaultProps;
 
   constructor(props: OneUpEntityViewerProps, context: any) {
@@ -271,6 +268,8 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   );
 }
 
+export type { OneUpEntityViewerProps, OneUpEntityViewerState };
+export { OneUpEntityViewerBase };
 export const OneUpEntityViewer = connect(
   mapStateToProps,
   mapDispatchToProps

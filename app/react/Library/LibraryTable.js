@@ -35,4 +35,5 @@ const LibraryTable = Object.assign(SSRLibraryComponent, {
   requestState: LibraryTableComponent.requestState,
 });
 
+export { LibraryTableComponent };
 export { LibraryTable };
