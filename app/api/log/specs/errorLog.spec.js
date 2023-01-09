@@ -13,8 +13,8 @@ describe('errorLog', () => {
   it('should call transports with tenant name and message', async () => {
     const anErrorLog = createErrorLog();
 
-    spyOn(anErrorLog.transports[0], 'log');
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     tenants.add({ name: 'tenant' });
 
@@ -33,8 +33,8 @@ describe('errorLog', () => {
     it('should call transports with fallback name, message and tenant error', () => {
       const anErrorLog = createErrorLog();
 
-      spyOn(anErrorLog.transports[0], 'log');
-      spyOn(anErrorLog.transports[1], 'log');
+      jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+      jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
       anErrorLog.error('a message');
 
@@ -52,7 +52,7 @@ describe('errorLog', () => {
     process.env.LOGS_DIR = './some_dir';
 
     const anErrorLog = createErrorLog();
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     expect(anErrorLog.transports[0].dirname).toBe('./some_dir');
     expect(anErrorLog.transports[0].filename).toBe('error.log');
@@ -67,8 +67,8 @@ describe('errorLog', () => {
 
     const anErrorLog = createErrorLog();
 
-    spyOn(anErrorLog.transports[0], 'log');
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     await tenants.run(async () => {
       anErrorLog.error('a message');

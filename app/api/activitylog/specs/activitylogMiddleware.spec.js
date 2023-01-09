@@ -34,7 +34,7 @@ describe('activitylogMiddleware', () => {
     };
 
     next = jasmine.createSpy('next');
-    spyOn(activitylog, 'save');
+    jest.spyOn(activitylog, 'save').mockImplementation(() => {});
     spyOn(Date, 'now').and.returnValue(1);
   });
 

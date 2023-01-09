@@ -339,7 +339,7 @@ describe('files routes', () => {
 
   describe('POST/files/upload/document', () => {
     it('should save the attached file', async () => {
-      spyOn(errorLog, 'debug');
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => {});
       const response = await request(app)
         .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));

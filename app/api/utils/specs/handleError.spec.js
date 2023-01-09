@@ -11,8 +11,8 @@ const { ConnectionError } = elasticErrors;
 
 describe('handleError', () => {
   beforeEach(() => {
-    spyOn(errorLog, 'error');
-    spyOn(debugLog, 'debug');
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(debugLog, 'debug').mockImplementation(() => {});
     spyOn(appContext, 'get').and.returnValue(contextRequestId);
   });
 
@@ -173,7 +173,7 @@ original error: {
 
 describe('handleError without context', () => {
   it('should append a tenant error message to the original error', () => {
-    spyOn(errorLog, 'error');
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     const error = handleError(new Error('original error message'));
     expect(error.prettyMessage).toEqual('original error message');
     expect(errorLog.error).toHaveBeenCalledWith(

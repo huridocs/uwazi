@@ -29,7 +29,7 @@ const templateToSave = {
   commonProperties: templateCommonProperties,
 };
 
-const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
+const emitToCurrentTenantSpy = jest.fn();
 
 describe('templates routes', () => {
   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
@@ -42,7 +42,7 @@ describe('templates routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
-    spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -245,7 +245,9 @@ describe('templates routes', () => {
 
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
-        spyOn(entitiesIndex, 'updateMapping').and.throwError('not 409');
+        jest.spyOn(entitiesIndex, 'updateMapping').mockImplementation(() => {
+          throw new Error('not 409');
+        });
         await postToEndpoint(
           '/api/templates',
           {

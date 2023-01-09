@@ -69,7 +69,7 @@ describe('upload routes', () => {
       };
 
       db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
-      spyOn(errorLog, 'error'); //just to avoid annoying console output
+      jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
     });
   });
 
@@ -77,7 +77,7 @@ describe('upload routes', () => {
     beforeEach(async done => {
       await deleteAllFiles(async () => {
         spyOn(Date, 'now').and.returnValue(1000);
-        spyOn(mailer, 'send');
+        jest.spyOn(mailer, 'send').mockImplementation(() => {});
         const buffer = await fs.readFile(`${__dirname}/12345.test.pdf`);
         file = {
           fieldname: 'file',

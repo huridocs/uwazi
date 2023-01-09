@@ -36,7 +36,7 @@ describe('public routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
-    spyOn(errorLog, 'error');
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     await db.clearAllAndLoad(fixtures);
     await setupTestUploadedPaths();
   });
@@ -82,7 +82,7 @@ describe('public routes', () => {
     });
 
     it('should send an email', async () => {
-      spyOn(mailer, 'send');
+      jest.spyOn(mailer, 'send').mockImplementation(() => {});
       await request(app)
         .post('/api/public')
         .field(

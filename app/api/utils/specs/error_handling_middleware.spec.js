@@ -12,7 +12,7 @@ describe('Error handling middleware', () => {
     req = {};
     next = jasmine.createSpy('next');
     res = { json: jasmine.createSpy('json'), status: jasmine.createSpy('status') };
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
+    jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
     spyOn(appContext, 'get').and.returnValue(contextRequestId);
   });
 

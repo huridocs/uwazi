@@ -218,7 +218,7 @@ describe('entities', () => {
         published: true,
       };
 
-      spyOn(entities, 'getWithRelationships');
+      jest.spyOn(entities, 'getWithRelationships').mockImplementation(() => {});
       spyOn(entities, 'get').and.callFake(async () => Promise.resolve([expectedEntity]));
 
       const req = {

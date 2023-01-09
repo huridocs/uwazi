@@ -34,9 +34,9 @@ describe('sync', () => {
       save: jasmine.createSpy('model2.save'),
       delete: jasmine.createSpy('model2.delete'),
     };
-    spyOn(search, 'delete');
-    spyOn(search, 'indexEntities');
-    spyOn(storage, 'removeFile');
+    jest.spyOn(search, 'delete').mockImplementation(() => {});
+    jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
+    jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
   });
 
   describe('POST', () => {
@@ -72,7 +72,7 @@ describe('sync', () => {
 
     describe('when namespace is templates', () => {
       it('should update the mappings', async () => {
-        spyOn(index, 'updateMapping');
+        jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
         models.templates = {
           save: jasmine.createSpy('templates.save'),
         };
@@ -88,7 +88,7 @@ describe('sync', () => {
       });
 
       it('should update the mappings if many templates are provided', async () => {
-        spyOn(index, 'updateMapping');
+        jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
         models.templates = {
           save: jasmine.createSpy('templates.save'),
           saveMultiple: jasmine.createSpy('templates.saveMultiple'),

@@ -29,7 +29,7 @@ describe('upload routes', () => {
   beforeEach(async () => {
     spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
     spyOn(Date, 'now').and.returnValue(1000);
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
+    jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
     await testingEnvironment.setUp(fixtures);
   });
 

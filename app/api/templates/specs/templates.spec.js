@@ -125,7 +125,7 @@ describe('templates', () => {
 
     describe('when property content changes', () => {
       it('should remove the values from the entities and update them', done => {
-        spyOn(translations, 'updateContext');
+        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         spyOn(entities, 'removeValuesFromEntities').and.callThrough();
         spyOn(entities, 'updateMetadataProperties').and.callFake(async () => Promise.resolve());
         const changedTemplate = {
@@ -214,7 +214,7 @@ describe('templates', () => {
     });
 
     it('should update translations when name of the template changes', async () => {
-      spyOn(translations, 'updateContext');
+      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
       const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
 
       testTemplate.name = 'changed name';
@@ -234,7 +234,7 @@ describe('templates', () => {
     });
 
     it('should update translations with the name of the title property, and remove old custom value', async () => {
-      spyOn(translations, 'updateContext');
+      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
       const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
 
       testTemplate.commonProperties[0].label = 'First New Title';
@@ -314,7 +314,7 @@ describe('templates', () => {
       });
 
       it('should updateMetadataProperties', done => {
-        spyOn(translations, 'updateContext');
+        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         const template = {
           _id: templateToBeEditedId,
           name: 'template to be edited',
@@ -340,7 +340,7 @@ describe('templates', () => {
       });
 
       it('should edit an existing one', async done => {
-        spyOn(translations, 'updateContext');
+        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         const toSave = {
           _id: templateToBeEditedId,
           name: 'changed name',
@@ -365,7 +365,7 @@ describe('templates', () => {
             { label: 'label 2', type: 'text' },
           ],
         };
-        spyOn(translations, 'updateContext');
+        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         /* eslint-disable no-param-reassign */
         templates
           .save(newTemplate)
@@ -403,7 +403,7 @@ describe('templates', () => {
       });
 
       it('should return the saved template', done => {
-        spyOn(translations, 'updateContext');
+        jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
         const edited = {
           _id: templateToBeEditedId,
           name: 'changed name',

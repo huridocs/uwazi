@@ -229,7 +229,7 @@ describe('thesauri', () => {
       });
 
       it('should remove deleted values from entities', async () => {
-        spyOn(entities, 'deleteThesaurusFromMetadata');
+        jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
         const data = {
           _id: dictionaryIdToTranslate,
           name: 'Top 1 games',
@@ -245,7 +245,7 @@ describe('thesauri', () => {
       });
 
       it('should properly delete values when thesauri have subgroups', async () => {
-        spyOn(entities, 'deleteThesaurusFromMetadata');
+        jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
         const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
         thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
 

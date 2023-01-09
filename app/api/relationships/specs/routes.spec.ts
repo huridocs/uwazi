@@ -18,7 +18,7 @@ describe('relationships routes', () => {
   const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
-    spyOn(errorLog, 'error');
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     await testingEnvironment.setUp({
       settings: [{ languages: [{ key: 'en', label: 'EN', default: true }] }],
     });
