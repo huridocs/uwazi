@@ -33,4 +33,5 @@ const LibraryMap = Object.assign(SSRLibraryComponent, {
   requestState: LibraryMapComponent.requestState,
 });
 
+export { LibraryMapComponent };
 export { LibraryMap };
