@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
 import { withRouter } from 'app/componentWrappers';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -23,7 +24,7 @@ const getItemsToShow = (fromFilters, templates, settings) => {
   return items;
 };
 
-export class DocumentTypesList extends Component {
+class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -150,10 +151,9 @@ export class DocumentTypesList extends Component {
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
 
-    const searchParams = new URLSearchParams(this.props.location.search);
-
-    const { q = '(filters:())' } = searchParams.get('query') || {};
-    const query = rison.decode(q);
+    const query = searchParamsFromLocationSearch(this.props.location, 'q') || {
+      filters: [],
+    };
 
     return (
       <li className="multiselectItem" key={index} title={item.name}>
@@ -263,7 +263,7 @@ DocumentTypesList.propTypes = {
   navigate: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     settings: state.settings,
     templates: state.templates,
@@ -276,4 +276,5 @@ function mapDispatchToProps(dispatch, _ownProps) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
+export { DocumentTypesList, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(DocumentTypesList));

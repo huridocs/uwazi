@@ -107,7 +107,6 @@ describe('PDFView', () => {
 
     props = {
       entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
-      location: { query: {} },
       routes: [],
     };
     spyOn(routeActions, 'requestViewerState');
