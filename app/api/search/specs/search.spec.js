@@ -2,7 +2,6 @@
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
@@ -25,9 +24,12 @@ describe('search', () => {
     userFactory.mockEditorUser();
   });
 
+  afterEach(() => {
+    userFactory.restore();
+  });
+
   afterAll(async () => {
     await db.disconnect();
-    userFactory.restore();
   });
 
   describe('searchSnippets', () => {
@@ -83,32 +85,26 @@ describe('search', () => {
     });
 
     describe('when document is not matched', () => {
-      it('should return snippet object with 0 count and empty arrays', done => {
+      it('should return snippet object with 0 count and empty arrays', async () => {
         userFactory.mock(undefined);
-        search
-          .searchSnippets('not matching string', ids.batmanFinishes, 'es')
-          .then(snippets => {
-            expect(snippets).toEqual({
-              count: 0,
-              metadata: [],
-              fullText: [],
-            });
-            done();
-          })
-          .catch(catchErrors(done));
+        const snippets = await search.searchSnippets(
+          'not matching string',
+          ids.batmanFinishes,
+          'es'
+        );
+        expect(snippets).toEqual({
+          count: 0,
+          metadata: [],
+          fullText: [],
+        });
       });
     });
 
     describe('when searchTerm is empty', () => {
-      it('should return empty array', done => {
+      it('should return empty array', async () => {
         userFactory.mock(undefined);
-        search
-          .searchSnippets('', ids.batmanFinishes, 'es')
-          .then(snippets => {
-            expect(snippets.fullText.length).toBe(0);
-            done();
-          })
-          .catch(catchErrors(done));
+        const snippets = await search.searchSnippets('', ids.batmanFinishes, 'es');
+        expect(snippets.fullText.length).toBe(0);
       });
     });
 
@@ -133,9 +129,19 @@ describe('search', () => {
     expect(resultsFound.rows.length).toBe(2);
   });
 
-  it('should perform a fullTextSearch on fullText and title', done => {
+  it('should perform a fullTextSearch on fullText and title', async () => {
     userFactory.mock(undefined);
-    Promise.all([
+    const [
+      spanish,
+      none,
+      english,
+      batmanFinishes,
+      batmanBegins,
+      batmanOR,
+      batman,
+      fullTextNormal,
+      fullTextExactMatch,
+    ] = await Promise.all([
       search.search({ searchTerm: 'spanish' }, 'es'),
       search.search({ searchTerm: 'english' }, 'es'),
       search.search({ searchTerm: 'english' }, 'en'),
@@ -145,42 +151,26 @@ describe('search', () => {
       search.search({ searchTerm: 'Batman' }, 'en'),
       search.search({ searchTerm: 'document english' }, 'en'),
       search.search({ searchTerm: '"document english"' }, 'en'),
-    ])
-      .then(
-        ([
-          spanish,
-          none,
-          english,
-          batmanFinishes,
-          batmanBegins,
-          batmanOR,
-          batman,
-          fullTextNormal,
-          fullTextExactMatch,
-        ]) => {
-          expect(
-            english.rows.find(r =>
-              r.snippets.fullText[0].text.match('<b>english</b>\fdocument\f<b>english</b>')
-            ).snippets.fullText[0].page
-          ).toBe(12);
-          expect(
-            english.rows.find(r => r.snippets.fullText[0].text.match('<b>english</b>\fanother'))
-              .snippets.fullText[0].page
-          ).toBe(2);
-          expect(english.rows.length).toBe(2);
+    ]);
 
-          expect(spanish.rows.length).toBe(1);
-          expect(none.rows.length).toBe(0);
-          expect(batmanFinishes.rows.length).toBe(1);
-          expect(batmanBegins.rows.length).toBe(1);
-          expect(batmanOR.rows.length).toBe(2);
-          expect(batman.rows.length).toBe(2);
-          expect(fullTextNormal.rows.length).toBe(2);
-          expect(fullTextExactMatch.rows.length).toBe(1);
-          done();
-        }
-      )
-      .catch(catchErrors(done));
+    expect(
+      english.rows.find(r =>
+        r.snippets.fullText[0].text.match('<b>english</b>\fdocument\f<b>english</b>')
+      ).snippets.fullText[0].page
+    ).toBe(12);
+    expect(
+      english.rows.find(r1 => r1.snippets.fullText[0].text.match('<b>english</b>\fanother'))
+        .snippets.fullText[0].page
+    ).toBe(2);
+    expect(english.rows.length).toBe(2);
+    expect(spanish.rows.length).toBe(1);
+    expect(none.rows.length).toBe(0);
+    expect(batmanFinishes.rows.length).toBe(1);
+    expect(batmanBegins.rows.length).toBe(1);
+    expect(batmanOR.rows.length).toBe(2);
+    expect(batman.rows.length).toBe(2);
+    expect(fullTextNormal.rows.length).toBe(2);
+    expect(fullTextExactMatch.rows.length).toBe(1);
   });
 
   it('should return generatedToc aggregations when requested for', async () => {
@@ -192,18 +182,13 @@ describe('search', () => {
     expect(aggregations.find(a => a.key === 'true').filtered.doc_count).toBe(1);
   });
 
-  it('should return aggregations when searching by 2 terms', done => {
+  it('should return aggregations when searching by 2 terms', async () => {
     userFactory.mock(undefined);
-    search
-      .search({ searchTerm: 'english document' }, 'es')
-      .then(response => {
-        const aggregation = response.aggregations.all._types.buckets.find(
-          bucket => bucket.key === ids.template1.toString()
-        );
-        expect(aggregation.filtered.doc_count).toBe(1);
-        done();
-      })
-      .catch(catchErrors(done));
+    const response = await search.search({ searchTerm: 'english document' }, 'es');
+    const aggregation = response.aggregations.all._types.buckets.find(
+      bucket => bucket.key === ids.template1.toString()
+    );
+    expect(aggregation.filtered.doc_count).toBe(1);
   });
 
   it('should match entities related somehow with other entities with a title that is the search term', async () => {
@@ -265,24 +250,21 @@ describe('search', () => {
     expect(template1AndMissing.rows.length).toBe(7);
   });
 
-  it('should allow searching only within specific Ids', done => {
+  it('should allow searching only within specific Ids', async () => {
     userFactory.mock(undefined);
-    Promise.all([
+    const [es, en, both] = await Promise.all([
       search.search({ ids: [ids.batmanBegins] }, 'es'),
       search.search({ ids: ids.batmanBegins }, 'en'),
       search.search({ ids: [ids.batmanFinishes, ids.batmanBegins] }, 'en'),
-    ])
-      .then(([es, en, both]) => {
-        expect(es.rows.length).toBe(1);
-        expect(es.rows[0].title).toBe('Batman begins es');
-        expect(en.rows.length).toBe(1);
-        expect(en.rows[0].title).toBe('Batman begins en');
-        expect(both.rows.length).toBe(2);
-        expect(both.rows.find(r => r.title === 'Batman finishes en')).not.toBe(null);
-        expect(both.rows.find(r => r.title === 'Batman begins en')).not.toBe(null);
-        done();
-      })
-      .catch(catchErrors(done));
+    ]);
+
+    expect(es.rows.length).toBe(1);
+    expect(es.rows[0].title).toBe('Batman begins es');
+    expect(en.rows.length).toBe(1);
+    expect(en.rows[0].title).toBe('Batman begins en');
+    expect(both.rows.length).toBe(2);
+    expect(both.rows.find(r => r.title === 'Batman finishes en')).not.toBe(null);
+    expect(both.rows.find(r1 => r1.title === 'Batman begins en')).not.toBe(null);
   });
 
   it('should return the label with the aggregations', async () => {
@@ -394,7 +376,7 @@ describe('search', () => {
     });
 
     it('should filter by range values using descriptive timestamps', async () => {
-      spyOn(date, 'descriptionToTimestamp').and.callFake(value => {
+      jest.spyOn(date, 'descriptionToTimestamp').mockImplementationOnce(value => {
         if (value === 'first-day-last-month') {
           return 15;
         }
@@ -497,34 +479,28 @@ describe('search', () => {
   });
 
   describe('when the query is for geolocation', () => {
-    it('should set size to 9999', done => {
+    it('should set size to 9999', async () => {
       userFactory.mock(undefined);
-      spyOn(elastic, 'search').and.callFake(async () => Promise.resolve(result));
-      search.search({ searchTerm: '', geolocation: true }, 'en').then(() => {
-        const elasticQuery = elastic.search.calls.argsFor(0)[0].body;
-        expect(elasticQuery.size).toBe(9999);
-        done();
-      });
+      jest.spyOn(elastic, 'search').mockImplementationOnce(async () => Promise.resolve(result));
+      await search.search({ searchTerm: '', geolocation: true }, 'en');
+      const elasticQuery = elastic.search.mock.calls[0][0].body;
+      expect(elasticQuery.size).toBe(9999);
     });
 
-    it('should only get entities with geolocation fields ', done => {
+    it('should only get entities with geolocation fields ', async () => {
       userFactory.mock(undefined);
-      search.search({ searchTerm: '', geolocation: true }, 'en').then(entities => {
-        expect(entities.rows.length).toBe(4);
-        done();
-      });
+      const entities = await search.search({ searchTerm: '', geolocation: true }, 'en');
+      expect(entities.rows.length).toBe(4);
     });
 
-    it('should only select title and geolocation fields ', done => {
+    it('should only select title and geolocation fields ', async () => {
       userFactory.mock(undefined);
-      search.search({ searchTerm: '', geolocation: true }, 'en').then(({ rows }) => {
-        expect(rows[0].title).toBeDefined();
-        expect(rows[0].template).toBeDefined();
-        expect(rows[0].sharedId).toBeDefined();
-        expect(rows[0].language).toBeDefined();
-        expect(Object.keys(rows[0].metadata).length).toBe(1);
-        done();
-      });
+      const { rows } = await search.search({ searchTerm: '', geolocation: true }, 'en');
+      expect(rows[0].title).toBeDefined();
+      expect(rows[0].template).toBeDefined();
+      expect(rows[0].sharedId).toBeDefined();
+      expect(rows[0].language).toBeDefined();
+      expect(Object.keys(rows[0].metadata).length).toBe(1);
     });
   });
 
@@ -673,9 +649,9 @@ describe('search', () => {
     });
   });
   describe('multiselect aggregations', () => {
-    it('should return aggregations of multiselect fields', done => {
+    it('should return aggregations of multiselect fields', async () => {
       userFactory.mock(undefined);
-      Promise.all([
+      const [template1, template2, both, filtered] = await Promise.all([
         search.search({ types: [ids.templateMetadata1] }, 'en'),
         search.search({ types: [ids.templateMetadata2] }, 'en'),
         search.search({ types: [ids.templateMetadata1, ids.templateMetadata2] }, 'en'),
@@ -688,41 +664,30 @@ describe('search', () => {
           },
           'en'
         ),
-      ])
-        .then(([template1, template2, both, filtered]) => {
-          const template1Aggs = template1.aggregations.all.multiselect1.buckets;
-          expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
-          expect(template1Aggs.find(a => a.key === 'missing')).not.toBeDefined();
-          expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
-
-          const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
-          const europeBucket = template1groupedAggs.find(a => a.key === 'EuropeID');
-          expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(2);
-          expect(europeBucket.values.find(a => a.key === 'franceID')).not.toBeDefined();
-
-          const template2Aggs = template2.aggregations.all.multiselect1.buckets;
-          expect(template2Aggs.find(a => a.key === 'EgyptID')).not.toBeDefined();
-          expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
-
-          const bothAggs = both.aggregations.all.multiselect1.buckets;
-          expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
-          expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
-
-          const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
-          const templateAggs = filtered.aggregations.all._types.buckets;
-          expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
-          expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
-
-          expect(filteredAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
-
-          expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
-          expect(templateAggs.find(a => a.key === ids.template1)).not.toBeDefined();
-          expect(templateAggs.find(a => a.key === ids.template2)).not.toBeDefined();
-
-          done();
-        })
-        .catch(catchErrors(done));
+      ]);
+      const template1Aggs = template1.aggregations.all.multiselect1.buckets;
+      expect(template1Aggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(template1Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(2);
+      expect(template1Aggs.find(a => a.key === 'missing')).not.toBeDefined();
+      expect(template1Aggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
+      const template1groupedAggs = template1.aggregations.all.groupedDictionary.buckets;
+      const europeBucket = template1groupedAggs.find(a => a.key === 'EuropeID');
+      expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(2);
+      expect(europeBucket.values.find(a => a.key === 'franceID')).not.toBeDefined();
+      const template2Aggs = template2.aggregations.all.multiselect1.buckets;
+      expect(template2Aggs.find(a => a.key === 'EgyptID')).not.toBeDefined();
+      expect(template2Aggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
+      const bothAggs = both.aggregations.all.multiselect1.buckets;
+      expect(bothAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(bothAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
+      const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
+      const templateAggs = filtered.aggregations.all._types.buckets;
+      expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(2);
+      expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(3);
+      expect(filteredAggs.find(a => a.key === 'missing').filtered.doc_count).toBe(1);
+      expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
+      expect(templateAggs.find(a => a.key === ids.template1)).not.toBeDefined();
+      expect(templateAggs.find(a => a.key === ids.template2)).not.toBeDefined();
     });
 
     describe('allAggregations', () => {
@@ -751,40 +716,32 @@ describe('search', () => {
         expect(filtered.totalRows).toBe(5);
       });
 
-      it('should restrict the results to those who have all values of the filter', done => {
+      it('should restrict the results to those who have all values of the filter', async () => {
         userFactory.mock(undefined);
-        search
-          .search(
-            {
-              filters: {
-                multiselect1: {
-                  values: ['EgyptID', 'SpainID'],
-                  and: true,
-                },
+        const filtered = await search.search(
+          {
+            filters: {
+              multiselect1: {
+                values: ['EgyptID', 'SpainID'],
+                and: true,
               },
-              types: [ids.templateMetadata1, ids.templateMetadata2],
             },
-            'en'
-          )
-          .then(filtered => {
-            const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
-            const templateAggs = filtered.aggregations.all._types.buckets;
-            expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(1);
-            expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
-            expect(templateAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(
-              1
-            );
-
-            done();
-          })
-          .catch(catchErrors(done));
+            types: [ids.templateMetadata1, ids.templateMetadata2],
+          },
+          'en'
+        );
+        const filteredAggs = filtered.aggregations.all.multiselect1.buckets;
+        const templateAggs = filtered.aggregations.all._types.buckets;
+        expect(filteredAggs.find(a => a.key === 'EgyptID').filtered.doc_count).toBe(1);
+        expect(filteredAggs.find(a => a.key === 'SpainID').filtered.doc_count).toBe(1);
+        expect(templateAggs.find(a => a.key === ids.templateMetadata1).filtered.doc_count).toBe(1);
       });
     });
 
     describe('nested', () => {
-      it('should search by nested and calculate nested aggregations of fields when filtering by types', done => {
+      it('should search by nested and calculate nested aggregations of fields when filtering by types', async () => {
         userFactory.mock(undefined);
-        Promise.all([
+        const [template2NestedAggs, nestedSearchFirstLevel] = await Promise.all([
           search.search({ types: [ids.templateMetadata2] }, 'en'),
           search.search(
             {
@@ -793,50 +750,43 @@ describe('search', () => {
             },
             'en'
           ),
-        ])
-          .then(([template2NestedAggs, nestedSearchFirstLevel]) => {
-            const nestedAggs =
-              template2NestedAggs.aggregations.all.nestedField_nested.nested1.buckets;
-
-            expect(template2NestedAggs.rows.length).toBe(2);
-            expect(nestedAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
-            expect(nestedAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
-            expect(nestedAggs.find(a => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
-            expect(nestedAggs.find(a => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
-            expect(nestedAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
-
-            const bothTemplatesAggs =
-              nestedSearchFirstLevel.aggregations.all.nestedField_nested.nested1.buckets;
-            expect(nestedSearchFirstLevel.rows.length).toBe(3);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '1').filtered.total.filtered.doc_count
-            ).toBe(1);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '2').filtered.total.filtered.doc_count
-            ).toBe(1);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '3').filtered.total.filtered.doc_count
-            ).toBe(2);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '4').filtered.total.filtered.doc_count
-            ).toBe(1);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '6').filtered.total.filtered.doc_count
-            ).toBe(1);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '7').filtered.total.filtered.doc_count
-            ).toBe(1);
-            expect(
-              bothTemplatesAggs.find(a => a.key === '5').filtered.total.filtered.doc_count
-            ).toBe(2);
-            done();
-          })
-          .catch(catchErrors(done));
+        ]);
+        const nestedAggs = template2NestedAggs.aggregations.all.nestedField_nested.nested1.buckets;
+        expect(template2NestedAggs.rows.length).toBe(2);
+        expect(nestedAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(1);
+        expect(nestedAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(1);
+        expect(nestedAggs.find(a => a.key === '6').filtered.total.filtered.doc_count).toBe(1);
+        expect(nestedAggs.find(a => a.key === '7').filtered.total.filtered.doc_count).toBe(1);
+        expect(nestedAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(2);
+        const bothTemplatesAggs =
+          nestedSearchFirstLevel.aggregations.all.nestedField_nested.nested1.buckets;
+        expect(nestedSearchFirstLevel.rows.length).toBe(3);
+        expect(bothTemplatesAggs.find(a => a.key === '1').filtered.total.filtered.doc_count).toBe(
+          1
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '2').filtered.total.filtered.doc_count).toBe(
+          1
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '3').filtered.total.filtered.doc_count).toBe(
+          2
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '4').filtered.total.filtered.doc_count).toBe(
+          1
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '6').filtered.total.filtered.doc_count).toBe(
+          1
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '7').filtered.total.filtered.doc_count).toBe(
+          1
+        );
+        expect(bothTemplatesAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(
+          2
+        );
       });
 
-      it('should search second level of nested field', done => {
+      it('should search second level of nested field', async () => {
         userFactory.mock(undefined);
-        Promise.all([
+        const [value1, value2, value3, value35] = await Promise.all([
           search.search(
             {
               types: [ids.templateMetadata1, ids.templateMetadata2],
@@ -873,30 +823,22 @@ describe('search', () => {
             },
             'en'
           ),
-        ])
-          .then(([value1, value2, value3, value35]) => {
-            expect(value1.rows.length).toBe(1);
-            expect(value1.rows[0].title).toBe('metadata1');
-
-            expect(value2.rows.length).toBe(1);
-            expect(value2.rows[0].title).toBe('metadata1');
-
-            expect(value3.rows.length).toBe(2);
-            expect(value3.rows.find(r => r.title === 'metadata1')).toBeDefined();
-            expect(value3.rows.find(r => r.title === ' Metadáta4')).toBeDefined();
-
-            expect(value35.rows.length).toBe(1);
-            expect(value35.rows.find(r => r.title === ' Metadáta4')).toBeDefined();
-
-            done();
-          })
-          .catch(catchErrors(done));
+        ]);
+        expect(value1.rows.length).toBe(1);
+        expect(value1.rows[0].title).toBe('metadata1');
+        expect(value2.rows.length).toBe(1);
+        expect(value2.rows[0].title).toBe('metadata1');
+        expect(value3.rows.length).toBe(2);
+        expect(value3.rows.find(r => r.title === 'metadata1')).toBeDefined();
+        expect(value3.rows.find(r => r.title === ' Metadáta4')).toBeDefined();
+        expect(value35.rows.length).toBe(1);
+        expect(value35.rows.find(r => r.title === ' Metadáta4')).toBeDefined();
       });
 
       describe('strict nested filter', () => {
-        it('should return only results with values selected in the same key', done => {
+        it('should return only results with values selected in the same key', async () => {
           userFactory.mock(undefined);
-          Promise.all([
+          const [strict15, strict12] = await Promise.all([
             search.search(
               {
                 types: [ids.templateMetadata1, ids.templateMetadata2],
@@ -921,21 +863,17 @@ describe('search', () => {
               },
               'en'
             ),
-          ])
-            .then(([strict15, strict12]) => {
-              expect(strict15.rows.length).toBe(0);
-              expect(strict12.rows.length).toBe(1);
-              done();
-            })
-            .catch(catchErrors(done));
+          ]);
+          expect(strict15.rows.length).toBe(0);
+          expect(strict12.rows.length).toBe(1);
         });
       });
     });
   });
 
-  it('should sort (ignoring case and leading whitespaces) if sort is present', done => {
+  it('should sort (ignoring case and leading whitespaces) if sort is present', async () => {
     userFactory.mock(undefined);
-    Promise.all([
+    const [asc, desc] = await Promise.all([
       search.search(
         { types: [ids.templateMetadata1, ids.templateMetadata2], order: 'asc', sort: 'title' },
         'en'
@@ -944,20 +882,15 @@ describe('search', () => {
         { types: [ids.templateMetadata1, ids.templateMetadata2], order: 'desc', sort: 'title' },
         'en'
       ),
-    ])
-      .then(([asc, desc]) => {
-        expect(asc.rows[0].title).toBe('metadata1');
-        expect(asc.rows[1].title).toBe('Metadata2');
-        expect(asc.rows[2].title).toBe('metádata3');
-        expect(asc.rows[3].title).toBe(' Metadáta4');
-
-        expect(desc.rows[0].title).toBe('metadata5');
-        expect(desc.rows[1].title).toBe(' Metadáta4');
-        expect(desc.rows[2].title).toBe('metádata3');
-        expect(desc.rows[3].title).toBe('Metadata2');
-        done();
-      })
-      .catch(catchErrors(done));
+    ]);
+    expect(asc.rows[0].title).toBe('metadata1');
+    expect(asc.rows[1].title).toBe('Metadata2');
+    expect(asc.rows[2].title).toBe('metádata3');
+    expect(asc.rows[3].title).toBe(' Metadáta4');
+    expect(desc.rows[0].title).toBe('metadata5');
+    expect(desc.rows[1].title).toBe(' Metadáta4');
+    expect(desc.rows[2].title).toBe('metádata3');
+    expect(desc.rows[3].title).toBe('Metadata2');
   });
 
   it('sort by metadata values', async () => {

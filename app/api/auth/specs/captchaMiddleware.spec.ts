@@ -1,5 +1,4 @@
 import db from 'api/utils/testing_db';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import { NextFunction } from 'express';
 import captchaMiddleware from '../captchaMiddleware';
 import { CaptchaModel } from '../CaptchaModel';
@@ -13,13 +12,13 @@ describe('captchaMiddleware', () => {
   let next: NextFunction;
   let captchaId: ObjectIdSchema;
 
-  beforeEach(done => {
+  beforeEach(async () => {
     req = { body: {}, session: {}, cookies: {}, get: getMock };
     res = {
-      status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json'),
+      status: jest.fn(),
+      json: jest.fn(),
     };
-    next = jasmine.createSpy('next');
+    next = jest.fn();
 
     captchaId = db.id();
 
@@ -27,7 +26,7 @@ describe('captchaMiddleware', () => {
       captchas: [{ _id: captchaId, text: 'k0n2170' }],
     };
 
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => db.disconnect());

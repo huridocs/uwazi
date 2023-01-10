@@ -22,7 +22,7 @@ beforeAll(() => {
 });
 
 beforeEach(async () => {
-  spyOn(search, 'indexEntities').and.returnValue(Promise.resolve());
+  jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
   await db.setupFixturesAndContext({
     templates: [
       fixturesFactory.template(notExtractedTemplateName, [

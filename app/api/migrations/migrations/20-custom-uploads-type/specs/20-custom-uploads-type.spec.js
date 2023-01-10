@@ -1,12 +1,11 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
 describe('migration custom-uploads-type', () => {
-  beforeEach(done => {
-    spyOn(process.stdout, 'write');
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(done => {

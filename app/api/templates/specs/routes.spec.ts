@@ -1,13 +1,15 @@
+import translations from 'api/i18n';
+import { errorLog } from 'api/log';
+import * as entitiesIndex from 'api/search/entitiesIndex';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { testingDB } from 'api/utils/testing_db';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import translations from 'api/i18n';
-import * as entitiesIndex from 'api/search/entitiesIndex';
-import { testingDB } from 'api/utils/testing_db';
-import { templateCommonProperties, fixtures, fixtureFactory } from './fixtures/routesFixtures';
-import templates from '../templates';
+import { Logger } from 'winston';
 import templateRoutes from '../routes';
+import templates from '../templates';
+import { fixtureFactory, fixtures, templateCommonProperties } from './fixtures/routesFixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -29,7 +31,7 @@ const templateToSave = {
   commonProperties: templateCommonProperties,
 };
 
-const emitToCurrentTenantSpy = jasmine.createSpy('emitToCurrentTenant');
+const emitToCurrentTenantSpy = jest.fn();
 
 describe('templates routes', () => {
   const app: Application = setUpApp(templateRoutes, (req, _res, next: NextFunction) => {
@@ -42,7 +44,7 @@ describe('templates routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
-    spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
   });
 
   afterAll(async () => testingEnvironment.tearDown());
@@ -245,7 +247,10 @@ describe('templates routes', () => {
 
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
-        spyOn(entitiesIndex, 'updateMapping').and.throwError('not 409');
+        jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({} as Logger));
+        jest.spyOn(entitiesIndex, 'updateMapping').mockImplementation(() => {
+          throw new Error('not 409');
+        });
         await postToEndpoint(
           '/api/templates',
           {

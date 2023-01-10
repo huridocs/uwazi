@@ -5,7 +5,7 @@ import fixturesWithoutFormat from './fixtures_without_format.js';
 
 describe('migration settings-date-format', () => {
   beforeEach(() => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   afterAll(done => {

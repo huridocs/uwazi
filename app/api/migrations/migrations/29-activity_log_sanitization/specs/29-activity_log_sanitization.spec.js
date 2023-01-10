@@ -6,7 +6,7 @@ import fixtures from './fixtures.js';
 
 describe('migration activity log sanitization', () => {
   beforeAll(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

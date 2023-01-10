@@ -20,6 +20,7 @@ import {
   entity4es,
   entity5es,
 } from './fixturesTitleSearch';
+import { Logger } from 'winston';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -188,8 +189,10 @@ describe('entities get searchString', () => {
 
     describe('Error handling', () => {
       it('should handle errors on POST', async () => {
-        spyOn(elastic, 'search').and.throwError('Error for test');
-        spyOn(errorLog, 'error');
+        jest.spyOn(elastic, 'search').mockImplementation(() => {
+          throw new Error('Error for test');
+        });
+        jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
         const { body, status } = await request(app).get('/api/v2/search');
 
         expect(status).toBe(500);

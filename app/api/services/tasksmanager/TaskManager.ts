@@ -85,8 +85,8 @@ export class TaskManager {
     return queueAttributes.msgs;
   }
 
-  subscribeToResults(): void {
-    this.repeater = new Repeater(this.checkForResults.bind(this), 500);
+  subscribeToResults(interval = 500): void {
+    this.repeater = new Repeater(this.checkForResults.bind(this), interval);
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.repeater.start();
   }

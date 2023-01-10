@@ -19,7 +19,8 @@ const expectReindex = async (template, reindex) => {
 describe('reindex', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures, 'reindex');
-    spyOn(search, 'indexEntities').and.returnValue({});
+    jest.spyOn(search, 'indexEntities').mockReturnValue({});
+    search.indexEntities.mockClear();
   });
 
   afterAll(async () => {

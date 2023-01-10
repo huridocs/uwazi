@@ -5,5 +5,5 @@ export default function () {
 }
 
 export function mockID(uniqueID = 'unique_id') {
-  spyOn(Math, 'uniqueID').and.returnValue(uniqueID);
+  jest.spyOn(Math, 'uniqueID').mockReturnValue(uniqueID);
 }
