@@ -4,8 +4,7 @@
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface IXExtractorType {
-  _id?: ObjectIdSchema;
-  extractorId: string;
+  _id: ObjectIdSchema;
   name: string;
   property: string;
   templates: ObjectIdSchema[];

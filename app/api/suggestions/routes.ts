@@ -237,9 +237,9 @@ export const suggestionsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['name', 'property', 'templates', 'extractorId'],
+          required: ['name', 'property', 'templates', '_id'],
           properties: {
-            extractorId: { type: 'string' },
+            _id: { type: 'string' },
             name: { type: 'string' },
             property: { type: 'string' },
             templates: { type: 'array', items: { type: 'string' } },
@@ -249,7 +249,7 @@ export const suggestionsRoutes = (app: Application) => {
     }),
     async (req, res, _next) => {
       const updated = await ixextractors.update(
-        req.body.extractorId,
+        req.body._id,
         req.body.name,
         req.body.property,
         req.body.templates

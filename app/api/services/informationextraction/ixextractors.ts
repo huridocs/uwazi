@@ -1,8 +1,7 @@
 import templates from 'api/templates';
+import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { IXExtractorModel as model } from './IXExtractorModel';
-
-const generateExtractorId = () => `${Date.now()}${Math.random().toString(36)}`;
 
 const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
   const usedTemplates = objectIndex(
@@ -31,23 +30,23 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
 
 export default {
   get: model.get.bind(model),
-  delete: async (extractorIds: string[]) => {
-    const extractors = await model.get({ extractorId: { $in: extractorIds } });
-    if (extractors.length !== extractorIds.length) throw new Error('Missing extractor.');
-    await model.delete({ extractorId: { $in: extractorIds } });
+  delete: async (_ids: string[]) => {
+    const ids = _ids.map(id => new ObjectId(id));
+    const extractors = await model.get({ _id: { $in: ids } });
+    if (extractors.length !== ids.length) throw new Error('Missing extractor.');
+    await model.delete({ _id: { $in: ids } });
   },
   create: async (name: string, property: string, templateIds: string[]) => {
     await templatePropertyExistenceCheck(property, templateIds);
     const saved = await model.save({
-      extractorId: generateExtractorId(),
       name,
       property,
       templates: templateIds,
     });
     return saved;
   },
-  update: async (extractorId: string, name: string, property: string, templateIds: string[]) => {
-    const [extractor] = await model.get({ extractorId });
+  update: async (id: string, name: string, property: string, templateIds: string[]) => {
+    const [extractor] = await model.get({ _id: new ObjectId(id) });
     if (!extractor) throw Error('Missing extractor.');
 
     await templatePropertyExistenceCheck(property, templateIds);

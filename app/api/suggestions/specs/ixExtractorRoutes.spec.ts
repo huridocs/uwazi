@@ -24,7 +24,6 @@ const fixturesFactory = getFixturesFactory();
 
 const existingExtractor = {
   _id: fixturesFactory.id('extractor1'),
-  extractorId: 'extId1',
   name: 'ext1',
   property: 'text_property',
   templates: [fixturesFactory.id('template1')],
@@ -66,14 +65,12 @@ const fixtures: DBFixture = {
     existingExtractor,
     {
       _id: fixturesFactory.id('extractor2'),
-      extractorId: 'extId2',
       name: 'ext2',
       property: 'text_property',
       templates: [fixturesFactory.id('template1')],
     },
     {
       _id: fixturesFactory.id('extractor3'),
-      extractorId: 'extId3',
       name: 'ext3',
       property: 'text_property',
       templates: [fixturesFactory.id('template1')],
@@ -89,7 +86,9 @@ describe('extractor routes', () => {
     db = testingDB.mongodb;
   });
 
-  afterAll(async () => testingEnvironment.tearDown());
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
 
   describe('POST /api/ixextractors/create', () => {
     it.each([
@@ -135,7 +134,6 @@ describe('extractor routes', () => {
           ],
         },
         expectedInDb: {
-          extractorId: expect.any(String),
           name: 'extr1',
           property: 'text_property',
           templates: [fixturesFactory.id('template1'), fixturesFactory.id('template2')],
@@ -148,7 +146,6 @@ describe('extractor routes', () => {
           templates: [fixturesFactory.id('template2').toString()],
         },
         expectedInDb: {
-          extractorId: expect.any(String),
           name: 'extr2',
           property: 'number_property',
           templates: [fixturesFactory.id('template2')],
@@ -160,17 +157,17 @@ describe('extractor routes', () => {
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.[3]).toMatchObject(expectedInDb);
 
-      expect(response.body).toMatchObject({ ...input, extractorId: expect.any(String) });
+      expect(response.body).toMatchObject(input);
     });
   });
 
   describe('POST /api/ixextractors/update', () => {
     it.each([
       {
-        reason: 'non existing extractorId',
+        reason: 'non existing _id',
         expectedMessage: 'Missing extractor.',
         change: {
-          extractorId: 'non-existing-extractor-id',
+          _id: fixturesFactory.id('non_existing_extractor').toString(),
         },
       },
       {
@@ -192,7 +189,6 @@ describe('extractor routes', () => {
       },
     ])('should reject $reason', async ({ change, expectedMessage }) => {
       const input: any = { ...existingExtractor, ...change };
-      delete input._id;
       const response = await request(app).post('/api/ixextractors/update').send(input).expect(500);
       expect(response.body.error).toBe(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
@@ -234,7 +230,6 @@ describe('extractor routes', () => {
       },
     ])('should update $updateTarget', async ({ change }) => {
       const input: any = { ...existingExtractor, ...change };
-      delete input._id;
       const response = await request(app).post('/api/ixextractors/update').send(input).expect(200);
       expect(response.body).toMatchObject(input);
       const extractors = await db?.collection('ixextractors').find().toArray();
@@ -243,8 +238,11 @@ describe('extractor routes', () => {
   });
 
   describe('POST /api/ixextractors/delete', () => {
-    it('should reject non existing extractorId', async () => {
-      const input = ['extId1', 'non-existing-extractorId'];
+    it('should reject non existing _id', async () => {
+      const input = [
+        fixturesFactory.id('extractor1'),
+        fixturesFactory.id('non-existing-extractor'),
+      ];
       const response = await request(app).post('/api/ixextractors/delete').send(input).expect(500);
       expect(response.body.error).toBe('Missing extractor.');
       const extractors = await db?.collection('ixextractors').find().toArray();
@@ -252,7 +250,7 @@ describe('extractor routes', () => {
     });
 
     it('should delete extractor', async () => {
-      const input = ['extId1', 'extId2'];
+      const input = [fixturesFactory.id('extractor1'), fixturesFactory.id('extractor2')];
       await request(app).post('/api/ixextractors/delete').send(input).expect(200);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(1);
