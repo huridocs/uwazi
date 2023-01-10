@@ -10,13 +10,6 @@ import api from 'app/Pages/PagesAPI';
 
 import * as actions from '../pageActions';
 
-const mockedUseNavigate = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...(jest.requireActual('react-router-dom') as any),
-  useNavigate: () => mockedUseNavigate,
-}));
-
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;
   let apiSave: jasmine.Spy;
@@ -49,24 +42,18 @@ describe('Page actions', () => {
   });
 
   describe('savePage', () => {
-    it('should dispatch a saving page and save the data', () => {
-      actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
-      expect(dispatch.calls.count()).toBe(1);
+    it('should dispatch a saving page and save the data', async () => {
+      dispatch.calls.reset();
+      await actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
+      expect(dispatch.calls.count()).toBe(4);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
       expect(api.save).toHaveBeenCalledWith(new RequestParams({ title: 'A title' }));
       expect(navigateSpy).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
     });
 
     describe('upon success', () => {
-      beforeEach(done => {
-        actions
-          .savePage(
-            { title: 'A title' },
-            navigateSpy
-          )(dispatch)
-          .then(() => {
-            done();
-          });
+      beforeEach(async () => {
+        await actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
       });
 
       it('should dispatch a page saved with response', () => {
@@ -91,7 +78,7 @@ describe('Page actions', () => {
       });
 
       it('should navigate to pages edit with the sharedId', () => {
-        expect(mockedUseNavigate).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
+        expect(navigateSpy).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
       });
     });
     describe('on error', () => {
