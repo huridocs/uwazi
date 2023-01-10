@@ -1,18 +1,19 @@
-import path from 'path';
+import { Application, NextFunction, Request, Response } from 'express';
 import os from 'os';
-import request from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
+import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
+import request from 'supertest';
 
-import { search } from 'api/search';
-import db from 'api/utils/testing_db';
-import { errorLog } from 'api/log';
-import { setupTestUploadedPaths, storage } from 'api/files';
-import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
+import { setupTestUploadedPaths, storage } from 'api/files';
+import { errorLog } from 'api/log';
+import { search } from 'api/search';
 import mailer from 'api/utils/mailer';
+import { setUpApp, socketEmit } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { Logger } from 'winston';
 import { routes } from '../jsRoutes';
 import { fixtures, templateId } from './fixtures';
 
@@ -36,8 +37,8 @@ describe('public routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
-    await db.clearAllAndLoad(fixtures);
+    jest.spyOn(errorLog, 'error').mockImplementation(() => new Logger());
+    await db.setupFixturesAndContext(fixtures);
     await setupTestUploadedPaths();
   });
 
@@ -82,7 +83,7 @@ describe('public routes', () => {
     });
 
     it('should send an email', async () => {
-      jest.spyOn(mailer, 'send').mockImplementation(() => {});
+      jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve());
       await request(app)
         .post('/api/public')
         .field(

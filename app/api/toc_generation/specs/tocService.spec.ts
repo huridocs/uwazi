@@ -3,6 +3,7 @@ import { errorLog } from 'api/log';
 import { tenants } from 'api/tenants';
 import { testingDB } from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
+import { Logger } from 'winston';
 import { tocService } from '../tocService';
 import { fixtures } from './fixtures';
 
@@ -10,7 +11,7 @@ describe('tocService', () => {
   let requestMock: jest.SpyInstance;
 
   beforeAll(async () => {
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
     requestMock = jest.spyOn(request, 'uploadFile');
     await testingDB.connect({ defaultTenant: false });
     tenants.add({ name: 'tenant1', dbName: 'tenant1', indexName: 'tenant1' });

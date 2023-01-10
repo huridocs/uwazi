@@ -1,4 +1,4 @@
-import { Application, Request, Response, NextFunction } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
@@ -8,25 +8,26 @@ import { errorLog } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
-import db from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
-import {
-  fixtures,
-  uploadId,
-  uploadId2,
-  restrictedUploadId2,
-  adminUser,
-  writerUser,
-  externalUrlFileId,
-} from './fixtures';
+import { Logger } from 'winston';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { storage } from '../storage';
+import {
+  adminUser,
+  externalUrlFileId,
+  fixtures,
+  restrictedUploadId2,
+  uploadId,
+  uploadId2,
+  writerUser,
+} from './fixtures';
 
 expect.extend({ toEmitEvent, toEmitEventWith });
 
@@ -339,7 +340,7 @@ describe('files routes', () => {
 
   describe('POST/files/upload/document', () => {
     it('should save the attached file', async () => {
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => {});
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
       const response = await request(app)
         .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));

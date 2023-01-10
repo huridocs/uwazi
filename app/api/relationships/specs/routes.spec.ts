@@ -6,6 +6,7 @@ import { setUpApp } from 'api/utils/testingRoutes';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import routes from '../routes';
+import { Logger } from 'winston';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -18,7 +19,7 @@ describe('relationships routes', () => {
   const app: Application = setUpApp(routes);
 
   beforeEach(async () => {
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
     await testingEnvironment.setUp({
       settings: [{ languages: [{ key: 'en', label: 'EN', default: true }] }],
     });

@@ -59,7 +59,9 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Api calls', () => {
     beforeEach(() => {
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve({ private: true }));
+      jest
+        .spyOn(settings, 'get')
+        .mockImplementation(async () => Promise.resolve({ private: true }));
     });
 
     it('should return an unauthorized error when there is no user, the instance is configured as private and the call is to the api', done => {
@@ -85,7 +87,9 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Other private-related calls', () => {
     beforeEach(() => {
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve({ private: true }));
+      jest
+        .spyOn(settings, 'get')
+        .mockImplementation(async () => Promise.resolve({ private: true }));
       req.url = 'host:port/uploaded_documents/somefile.png';
     });
 
@@ -117,7 +121,9 @@ describe('privateInstanceMiddleware', () => {
 
   describe('Routes', () => {
     beforeEach(() => {
-      jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve({ private: true }));
+      jest
+        .spyOn(settings, 'get')
+        .mockImplementation(async () => Promise.resolve({ private: true }));
     });
 
     it('should call next when instance is private and the url matches login', () => {

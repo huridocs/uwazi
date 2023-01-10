@@ -11,9 +11,14 @@ import { Preserve } from '../preserve';
 describe('Preserve', () => {
   const user = { _id: userId1 };
   beforeAll(async () => {
-    jest.spyOn(request, 'post').mockImplementation(() => ({
-      json: { data: { token: 'sometoken' } },
-    }));
+    jest.spyOn(request, 'post').mockImplementation(async () =>
+      Promise.resolve({
+        json: { data: { token: 'sometoken' } },
+        status: 200,
+        headers: new Headers(),
+        cookie: 'cookie',
+      })
+    );
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
   });
   afterAll(async () => {

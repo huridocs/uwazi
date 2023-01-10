@@ -104,6 +104,7 @@ describe('index (search)', () => {
         beforeEach(() => {
           jest.resetAllMocks();
           jest.spyOn(elastic, 'bulk').mockReturnValue(
+            // @ts-ignore
             Promise.resolve({
               body: {
                 items: [

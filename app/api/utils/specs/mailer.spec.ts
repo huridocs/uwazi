@@ -9,7 +9,9 @@ describe('mailer', () => {
   const ORIGINAL_ENV = process.env;
   beforeEach(() => {
     testingTenants.mockCurrentTenant({ name: 'default' });
-    jest.spyOn(settings, 'get').mockImplementation(async () => Promise.resolve({ mailerConfig: '{}' }));
+    jest
+      .spyOn(settings, 'get')
+      .mockImplementation(async () => Promise.resolve({ mailerConfig: '{}' }));
     process.env = { ...ORIGINAL_ENV };
   });
 

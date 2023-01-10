@@ -8,10 +8,12 @@ import { TaskProvider } from 'shared/tasks/tasks';
 import { SyncArgs, syncEntity } from '../sync';
 import fixtures, { e1, e3 } from './fixtures';
 
-function fakeTopicClassification(url: string) {
+async function fakeTopicClassification(url: string) {
   if (url === `${topicClassification.tcServer}/models/list?filter=%5Eundefined`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         models: ['undefined-topmovies'],
         error: '',
@@ -21,6 +23,8 @@ function fakeTopicClassification(url: string) {
   if (url === `${topicClassification.tcServer}/models?model=undefined-topmovies`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         preferred: '123',
       },
@@ -29,6 +33,8 @@ function fakeTopicClassification(url: string) {
   if (url === `${topicClassification.tcServer}/classify?model=undefined-topmovies`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         samples: [
           {
@@ -51,16 +57,23 @@ function fakeTopicClassification(url: string) {
       },
     };
   }
-  return { status: 404 };
+  return {
+    status: 404,
+    headers: new Headers(),
+    cookie: 'cookie',
+    json: {},
+  };
 }
 
 describe('templates utils', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(JSONRequest, 'post').mockImplementation(fakeTopicClassification);
     jest.spyOn(JSONRequest, 'get').mockImplementation(fakeTopicClassification);
-    jest.spyOn(topicClassification, 'IsTopicClassificationReachable').mockReturnValue(true);
+    jest
+      .spyOn(topicClassification, 'IsTopicClassificationReachable')
+      .mockReturnValue(Promise.resolve(true));
   });
   afterAll(async () => {
     await db.disconnect();

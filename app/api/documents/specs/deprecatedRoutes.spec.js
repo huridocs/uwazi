@@ -102,7 +102,9 @@ describe('documents', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      jest.spyOn(documents, 'delete').mockImplementation(async () => Promise.resolve({ json: 'ok' }));
+      jest
+        .spyOn(documents, 'delete')
+        .mockImplementation(async () => Promise.resolve({ json: 'ok' }));
     });
 
     it('should return a validation error if sharedId is not passed', async () => {

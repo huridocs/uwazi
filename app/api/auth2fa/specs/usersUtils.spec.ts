@@ -18,7 +18,7 @@ type Error = { code: number; message: string };
 
 describe('auth2fa userUtils', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -43,7 +43,7 @@ describe('auth2fa userUtils', () => {
     await expectError(method, db.id(), 'any token', { code: 403, message: 'user not found' });
   };
 
-  const verifyTokenMock = (params: { token: string; secret: string }) => {
+  const verifyTokenMock = (params: { token?: string; secret?: string }) => {
     if (params.token === 'correctToken' && params.secret === 'correctSecret') {
       return true;
     }

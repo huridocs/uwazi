@@ -7,6 +7,7 @@ import { collaborators } from 'api/permissions/collaborators';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PUBLIC_PERMISSION } from '../publicPermission';
+import { MemberWithPermission } from 'shared/types/entityPermisions';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -42,7 +43,7 @@ describe('permissions routes', () => {
   describe('entities', () => {
     describe('POST', () => {
       beforeEach(() => {
-        jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve([]));
+        jest.spyOn(entitiesPermissions, 'set').mockImplementation(async () => Promise.resolve());
       });
       it('should save the permissions ', async () => {
         user = { username: 'user 1', role: 'admin' };
@@ -144,7 +145,7 @@ describe('permissions routes', () => {
             {
               refId: 'user1',
               level: 'read',
-            },
+            } as MemberWithPermission,
           ])
         );
         const response = await request(app)
@@ -161,7 +162,7 @@ describe('permissions routes', () => {
             {
               refId: 'user1',
               level: 'read',
-            },
+            } as MemberWithPermission,
           ])
         );
         const response = await request(app)
@@ -177,7 +178,9 @@ describe('permissions routes', () => {
       beforeEach(() => {
         jest
           .spyOn(collaborators, 'search')
-          .mockReturnValue(Promise.resolve([{ refId: 'user1', type: 'user' }]));
+          .mockReturnValue(
+            Promise.resolve([{ refId: 'user1', type: 'user' } as MemberWithPermission])
+          );
       });
 
       it('should return the matched user and group list', async () => {

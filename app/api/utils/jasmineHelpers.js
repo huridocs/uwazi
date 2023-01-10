@@ -53,3 +53,12 @@ const matchers = {
 };
 
 expect.extend(matchers);
+
+export function catchErrors(done) {
+  return error => {
+    if (error instanceof Error) {
+      return done.fail(error);
+    }
+    return done.fail(JSON.stringify(error));
+  };
+}

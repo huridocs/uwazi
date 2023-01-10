@@ -8,6 +8,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
+import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -51,7 +52,7 @@ describe('usergroups routes', () => {
   }
 
   describe('GET', () => {
-    const groups = [{ name: 'group1' }];
+    const groups = [{ _id: new ObjectId(), name: 'group1', members: [] }];
 
     beforeEach(() => {
       jest.spyOn(userGroups, 'get').mockImplementation(async () => Promise.resolve(groups));
@@ -61,7 +62,7 @@ describe('usergroups routes', () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await getUserGroups();
       expect(userGroups.get).toHaveBeenCalledWith({});
-      expect(response.body).toEqual(groups);
+      expect(response.body).toMatchObject([{ name: 'group1' }]);
     });
   });
 
@@ -108,6 +109,7 @@ describe('usergroups routes', () => {
       jest.resetAllMocks();
       jest
         .spyOn(userGroups, 'delete')
+        //@ts-ignore
         .mockImplementation(async () => Promise.resolve({ _id: 'user1' }));
     });
     it('should delete the group with the specified query', async () => {

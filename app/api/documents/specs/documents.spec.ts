@@ -1,21 +1,23 @@
-import { mockID } from 'shared/uniqueID';
-import relationships from 'api/relationships';
 import entities from 'api/entities';
+import { fileExistsOnPath, uploadsPath } from 'api/files';
+import relationships from 'api/relationships';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { fileExistsOnPath, uploadsPath } from 'api/files';
+import { mockID } from 'shared/uniqueID';
 
-import { fixtures } from './fixtures';
-import { documents } from '../documents.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { documents } from '../documents.js';
+import { fixtures } from './fixtures';
 
 describe('documents', () => {
   beforeEach(async () => {
     jest
       .spyOn(relationships, 'saveEntityBasedReferences')
       .mockImplementation(async () => Promise.resolve());
+    // @ts-ignore
     jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
+    // @ts-ignore
     jest.spyOn(search, 'bulkIndex').mockImplementation(async () => Promise.resolve());
     mockID();
     await db.setupFixturesAndContext(fixtures);

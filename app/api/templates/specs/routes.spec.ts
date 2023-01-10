@@ -42,7 +42,7 @@ describe('templates routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'templates_index');
-    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
   });
 
   afterAll(async () => testingEnvironment.tearDown());

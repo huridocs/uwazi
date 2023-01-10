@@ -1,13 +1,16 @@
 import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 
+import { errorLog } from 'api/log';
+import { WithId } from 'api/odm/model.js';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NextFunction, Request, Response } from 'express';
+import { DeleteResult } from 'mongodb';
 import { UserRole } from 'shared/types/userSchema';
 import { UserSchema } from 'shared/types/userType';
-import { errorLog } from 'api/log';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userRoutes from '../routes.js';
 import users from '../users.js';
+import { User } from '../usersModel.js';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -63,7 +66,9 @@ describe('users routes', () => {
   describe('POST', () => {
     describe('/users', () => {
       beforeEach(() => {
-        jest.spyOn(users, 'save').mockImplementation(async () => Promise.resolve());
+        jest
+          .spyOn(users, 'save')
+          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
       });
 
       it('should call users save with the body', async () => {
@@ -93,7 +98,9 @@ describe('users routes', () => {
 
     describe('/users/new', () => {
       it('should call users newUser with the body', async () => {
-        jest.spyOn(users, 'newUser').mockImplementation(async () => Promise.resolve());
+        jest
+          .spyOn(users, 'newUser')
+          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
         const response = await request(app).post('/api/users/new').send(userToUpdate);
 
         expect(response.status).toBe(200);
@@ -174,7 +181,8 @@ describe('users routes', () => {
       });
 
       it('should call users update with the body', async () => {
-        jest.spyOn(users, 'resetPassword').mockImplementation(async () => Promise.resolve());
+        //@ts-ignore
+        jest.spyOn(users, 'resetPassword').mockImplementation(async () => Promise.resolve({}));
         const response = await request(app)
           .post('/api/resetpassword')
           .send({ key: 'key', password: 'pass' });
@@ -193,7 +201,9 @@ describe('users routes', () => {
         expect(response.body.errors[0].keyword).toEqual(keyword);
       });
       it('should call users.unlockAccount with the body', async () => {
-        jest.spyOn(users, 'unlockAccount').mockImplementation(async () => Promise.resolve());
+        jest
+          .spyOn(users, 'unlockAccount')
+          .mockImplementation(async () => Promise.resolve({} as WithId<User>));
         const response = await request(app)
           .post('/api/unlockAccount')
           .send({ username: 'user1', code: 'code' });
@@ -222,7 +232,9 @@ describe('users routes', () => {
 
   describe('DELETE', () => {
     beforeEach(() => {
-      jest.spyOn(users, 'delete').mockImplementation(async () => Promise.resolve({ json: 'ok' }));
+      jest
+        .spyOn(users, 'delete')
+        .mockImplementation(async () => Promise.resolve({} as DeleteResult));
     });
 
     it('should invalidate if the schema is not matched', async () => {

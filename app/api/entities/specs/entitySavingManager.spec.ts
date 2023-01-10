@@ -65,7 +65,7 @@ describe('entitySavingManager', () => {
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => {

@@ -1,6 +1,6 @@
 import { config } from 'api/config';
 import { DB } from 'api/odm/DB';
-import { Db, ObjectID } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -34,6 +34,7 @@ describe('tenantsModel', () => {
       close: jest.fn(),
     };
 
+    //@ts-ignore
     jest.spyOn(Model, 'watch').mockReturnValue(mockChangeStream);
     model = await tenantsModel();
 
@@ -60,12 +61,12 @@ describe('tenantsModel', () => {
 
       expect(tenants).toEqual([
         expect.objectContaining({
-          _id: expect.any(ObjectID),
+          _id: expect.any(ObjectId),
           name: 'tenant one',
           dbName: 'tenant_one',
         }),
         expect.objectContaining({
-          _id: expect.any(ObjectID),
+          _id: expect.any(ObjectId),
           name: 'tenant two',
           dbName: 'tenant_two',
         }),
