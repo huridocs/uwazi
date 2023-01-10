@@ -6,7 +6,6 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
-import { browserHistory } from 'react-router-dom';
 import { DocumentContentSnippets } from '../SnippetList';
 
 describe('SnippetList', () => {
@@ -18,10 +17,6 @@ describe('SnippetList', () => {
   };
 
   beforeEach(() => {
-    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
-      pathname: 'path',
-      query: { page: 1 },
-    });
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       searchTerm: 'snippet',
