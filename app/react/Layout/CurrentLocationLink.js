@@ -1,7 +1,6 @@
-import { Link, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import React from 'react';
-
+import PropTypes from 'prop-types';
+import { Link, useLocation } from 'react-router-dom';
 import { toUrlParams } from 'shared/JSONRequest';
 
 const newParams = (oldQuery, newQuery) => {
@@ -22,7 +21,6 @@ const validProps = props => {
 const CurrentLocationLink = ({ children, queryParams, ...otherProps }) => {
   const location = useLocation();
   return (
-    // eslint-disable-next-line jsx-a11y/anchor-is-valid
     <Link
       to={`${location.pathname}${toUrlParams(newParams(location.query, queryParams))}`}
       {...validProps(otherProps)}
