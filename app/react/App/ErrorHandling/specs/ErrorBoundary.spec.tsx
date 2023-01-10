@@ -6,6 +6,10 @@ import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useRouteError: jest.fn().mockImplementation(() => {}),
+}));
 describe('ErrorBoundary', () => {
   class ComponentWithError extends Component {
     render() {
