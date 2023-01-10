@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { I18NLink } from 'app/I18N';
 import SearchDescription from 'app/Library/components/SearchDescription';
+import { withContext } from 'app/componentWrappers';
 import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';
@@ -18,10 +19,9 @@ export class SearchItem extends Component {
   }
 
   delete(e) {
-    const { confirm } = this.context;
     const { onDeleteClicked, search } = this.props;
     e.preventDefault();
-    confirm({
+    this.props.mainContext.confirm({
       accept: onDeleteClicked.bind(this, search._id),
       title: 'Confirm delete',
       message: 'Are you sure you want to delete this search?',
@@ -100,6 +100,9 @@ SearchItem.propTypes = {
   onDeleteClicked: PropTypes.func.isRequired,
   onStopClicked: PropTypes.func.isRequired,
   onResumeClicked: PropTypes.func.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
@@ -113,4 +116,4 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(null, mapDispatchToProps)(SearchItem);
+export default connect(null, mapDispatchToProps)(withContext(SearchItem));
