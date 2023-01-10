@@ -26,10 +26,10 @@ describe('migration sanitize_empty_geolocations', () => {
     expect(doc1.metadata.geolocation_geolocation).toBeUndefined();
 
     const doc2 = entities.find(e1 => e1.title === 'doc2');
-    expect(doc2.metadata.description).toBe('two');
-    expect(doc2.metadata.geolocation_geolocation).toBeUndefined();
-    expect(doc2.metadata.other_geolocation).toBeUndefined();
-    expect(doc2.metadata.data_geolocation).toEqual({ lat: 5, lon: 8 });
+    expect(doc2.metadata).toEqual({
+      description: 'two',
+      data_geolocation: { lat: 5, lon: 8 },
+    });
 
     const doc3 = entities.find(e2 => e2.title === 'doc3');
     expect(doc3.metadata).toBeUndefined();
