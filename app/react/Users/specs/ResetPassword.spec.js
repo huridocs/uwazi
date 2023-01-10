@@ -1,11 +1,7 @@
-/**
- * @jest-environment jsdom
- */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router-dom';
 
-import ResetPassword from '../ResetPassword';
+import { ResetPasswordComponent as ResetPassword } from '../ResetPassword';
 
 describe('ResetPassword', () => {
   let component;
@@ -13,16 +9,18 @@ describe('ResetPassword', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(browserHistory, 'push');
     props = {
       resetPassword: jasmine.createSpy('resetPassword').and.returnValue({ then: cb => cb() }),
       params: { key: 'asd' },
       routes: [],
+      navigate: jest.fn(),
+      location: { search: '' },
+      matches: [],
     };
 
-    context = { store: { getState: () => ({}) }, router: { location: '' } };
+    context = { store: { getState: () => ({}) } };
 
-    component = shallow(<ResetPassword.WrappedComponent {...props} />, { context });
+    component = shallow(<ResetPassword {...props} />, { context });
   });
 
   describe('When not creating an account', () => {
@@ -33,8 +31,8 @@ describe('ResetPassword', () => {
 
   describe('When creating an account', () => {
     it('should render an additional information box', () => {
-      context.router = { location: { search: '?createAccount=true' } };
-      component = shallow(<ResetPassword.WrappedComponent {...props} />, { context });
+      props.location = { search: '?createAccount=true' };
+      component = shallow(<ResetPassword {...props} />, { context });
       expect(component.find('.alert.alert-info').length).toBe(1);
     });
   });
@@ -49,7 +47,7 @@ describe('ResetPassword', () => {
     it('should redirect to login upon success', () => {
       component.setState({ password: 'ultraSecret', repeatPassword: 'ultraSecret' });
       component.find('form').simulate('submit', { preventDefault: () => {} });
-      expect(browserHistory.push).toHaveBeenCalledWith('/login');
+      expect(props.navigate).toHaveBeenCalledWith('/login');
     });
 
     it('should empty the passwords values', () => {

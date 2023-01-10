@@ -10,7 +10,7 @@ import { withRouter } from 'app/componentWrappers';
 
 import auth from 'app/Auth';
 
-class ResetPassword extends RouteHandler {
+class ResetPasswordComponent extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = { error: false, password: '', repeatPassword: '' };
@@ -107,7 +107,7 @@ class ResetPassword extends RouteHandler {
   }
 }
 
-ResetPassword.propTypes = {
+ResetPasswordComponent.propTypes = {
   resetPassword: PropTypes.func,
   params: PropTypes.shape({
     key: PropTypes.string,
@@ -118,4 +118,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetPassword: auth.actions.resetPassword }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(withRouter(ResetPassword));
+export { ResetPasswordComponent };
+export default connect(null, mapDispatchToProps)(withRouter(ResetPasswordComponent));
