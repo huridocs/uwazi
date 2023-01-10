@@ -155,11 +155,11 @@ describe('UserGroupSidePanel', () => {
         });
         await waitFor(() => {
           fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-        });
-        expect(defaultProps.onSave).toHaveBeenCalledWith({
-          _id: 'group1Id',
-          name: 'GROUP 1',
-          members: [{ refId: 'user2' }, { refId: 'user1' }],
+          expect(defaultProps.onSave).toHaveBeenCalledWith({
+            _id: 'group1Id',
+            name: 'GROUP 1',
+            members: [{ refId: 'user2' }, { refId: 'user1' }],
+          });
         });
       });
     });
@@ -189,42 +189,29 @@ describe('UserGroupSidePanel', () => {
     it('should save the group with its members', async () => {
       await waitFor(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-      });
-      expect(defaultProps.onSave).toHaveBeenCalledWith({
-        _id: 'group1Id',
-        name: 'Group 1',
-        members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
+        expect(defaultProps.onSave).toHaveBeenCalledWith({
+          _id: 'group1Id',
+          name: 'Group 1',
+          members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
+        });
       });
     });
   });
 
   describe('Deleting user group', () => {
-    it('should not call the delete callback when cancel deletion', done => {
+    it('should not call the delete callback when cancel deletion', async () => {
       render();
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      })
-        .then(() => {
-          setTimeout(async () => {
-            await act(() => {
-              fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-            });
-            expect(defaultProps.onDelete).not.toHaveBeenCalled();
-            done();
-          }, 0);
-        })
-        .catch(() => fail('error on act'));
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(defaultProps.onDelete).not.toHaveBeenCalled();
     });
 
     it('should call the delete callback when confirm deletion', async () => {
       render();
-      await waitFor(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
 
-      await act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
-      });
       expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });

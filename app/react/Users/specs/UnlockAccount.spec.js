@@ -3,7 +3,6 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-
 import { UnlockAccount } from '../UnlockAccount';
 
 describe('UnlockAccount', () => {
@@ -26,6 +25,7 @@ describe('UnlockAccount', () => {
     renderComponent();
     setTimeout(() => {
       expect(props.unlockAccount).toHaveBeenCalledWith(props.params);
+      expect(props.navigate).toHaveBeenCalledWith('/login');
       done();
     }, 0);
   });

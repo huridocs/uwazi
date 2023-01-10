@@ -126,4 +126,4 @@ const RelationTypesList = connect(
   mapDispatchToProps
 )(withRouter(withContext(RelationTypesListComponent)));
 
-export { RelationTypesList, mapStateToProps };
+export { RelationTypesList, mapStateToProps, RelationTypesListComponent };
