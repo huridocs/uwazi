@@ -29,4 +29,4 @@ class EditPageComponent extends RouteHandler {
 
 const EditPage = withRouter(EditPageComponent);
 
-export { EditPage };
+export { EditPage, EditPageComponent };

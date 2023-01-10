@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import PagesAPI from 'app/Pages/PagesAPI';
 import { PageCreator } from 'app/Pages/components/PageCreator';
 import RouteHandler from 'app/App/RouteHandler';
-import { EditPage } from '../EditPage';
+import { EditPageComponent as EditPage } from '../EditPage';
 
 describe('EditPage', () => {
   const page = { _id: 'abc2', title: 'Page 1' };
