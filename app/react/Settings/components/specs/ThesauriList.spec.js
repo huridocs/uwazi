@@ -11,6 +11,7 @@ describe('ThesaurisList', () => {
 
   beforeEach(() => {
     props = {
+      mainContext: { confirm: jasmine.createSpy('confirm') },
       deleteThesaurus: jasmine
         .createSpy('deleteThesaurus')
         .and.callFake(async () => Promise.resolve()),
@@ -80,14 +81,10 @@ describe('ThesaurisList', () => {
         },
       ]),
     };
-
-    context = {
-      confirm: jasmine.createSpy('confirm'),
-    };
   });
 
   const render = () => {
-    component = shallow(<ThesauriList {...props} />, { context });
+    component = shallow(<ThesauriList {...props} />);
   };
 
   describe('render', () => {
@@ -134,7 +131,7 @@ describe('ThesaurisList', () => {
         .instance()
         .deleteThesaurus({ _id: 'thesaurusUnderscoreId2', name: 'Issues' })
         .then(() => {
-          expect(context.confirm).toHaveBeenCalled();
+          expect(props.mainContext.confirm).toHaveBeenCalled();
           expect(props.checkThesaurusCanBeDeleted).toHaveBeenCalled();
           done();
         });
