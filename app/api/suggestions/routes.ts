@@ -273,4 +273,14 @@ export const suggestionsRoutes = (app: Application) => {
       res.sendStatus(200);
     }
   );
+
+  app.get(
+    '/api/ixextractors/all',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    async (req, res, _next) => {
+      const extractors = await ixextractors.get_all();
+      res.json(extractors);
+    }
+  );
 };

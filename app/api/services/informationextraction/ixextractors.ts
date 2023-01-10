@@ -30,6 +30,7 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
 
 export default {
   get: model.get.bind(model),
+  get_all: async () => model.get({}),
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
     const extractors = await model.get({ _id: { $in: ids } });

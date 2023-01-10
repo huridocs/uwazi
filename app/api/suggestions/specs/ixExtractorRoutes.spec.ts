@@ -22,12 +22,28 @@ const app: Application = setUpApp(suggestionsRoutes, (req, _res, next) => {
 
 const fixturesFactory = getFixturesFactory();
 
-const existingExtractor = {
+const extractorToUpdate = {
   _id: fixturesFactory.id('extractor1'),
   name: 'ext1',
   property: 'text_property',
   templates: [fixturesFactory.id('template1')],
 };
+
+const existingExtractors = [
+  extractorToUpdate,
+  {
+    _id: fixturesFactory.id('extractor2'),
+    name: 'ext2',
+    property: 'text_property',
+    templates: [fixturesFactory.id('template1')],
+  },
+  {
+    _id: fixturesFactory.id('extractor3'),
+    name: 'ext3',
+    property: 'text_property',
+    templates: [fixturesFactory.id('template1')],
+  },
+];
 
 const fixtures: DBFixture = {
   settings: [
@@ -61,21 +77,7 @@ const fixtures: DBFixture = {
       fixturesFactory.property('number_property', 'numeric'),
     ]),
   ],
-  ixextractors: [
-    existingExtractor,
-    {
-      _id: fixturesFactory.id('extractor2'),
-      name: 'ext2',
-      property: 'text_property',
-      templates: [fixturesFactory.id('template1')],
-    },
-    {
-      _id: fixturesFactory.id('extractor3'),
-      name: 'ext3',
-      property: 'text_property',
-      templates: [fixturesFactory.id('template1')],
-    },
-  ],
+  ixextractors: existingExtractors,
 };
 
 describe('extractor routes', () => {
@@ -188,11 +190,11 @@ describe('extractor routes', () => {
         },
       },
     ])('should reject $reason', async ({ change, expectedMessage }) => {
-      const input: any = { ...existingExtractor, ...change };
+      const input: any = { ...extractorToUpdate, ...change };
       const response = await request(app).post('/api/ixextractors/update').send(input).expect(500);
       expect(response.body.error).toBe(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
-      expect(extractors?.[0]).toMatchObject(existingExtractor);
+      expect(extractors?.[0]).toMatchObject(extractorToUpdate);
     });
 
     it.each([
@@ -229,7 +231,7 @@ describe('extractor routes', () => {
         },
       },
     ])('should update $updateTarget', async ({ change }) => {
-      const input: any = { ...existingExtractor, ...change };
+      const input: any = { ...extractorToUpdate, ...change };
       const response = await request(app).post('/api/ixextractors/update').send(input).expect(200);
       expect(response.body).toMatchObject(input);
       const extractors = await db?.collection('ixextractors').find().toArray();
@@ -254,6 +256,17 @@ describe('extractor routes', () => {
       await request(app).post('/api/ixextractors/delete').send(input).expect(200);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(1);
+    });
+  });
+
+  describe('GET /api/ixextractors/all', () => {
+    it('should return all extractors', async () => {
+      const response = await request(app).get('/api/ixextractors/all').expect(200);
+      expect(response.body).toMatchObject([
+        { ...existingExtractors[0], _id: existingExtractors[0]._id.toString() },
+        { ...existingExtractors[1], _id: existingExtractors[1]._id.toString() },
+        { ...existingExtractors[2], _id: existingExtractors[2]._id.toString() },
+      ]);
     });
   });
 });
