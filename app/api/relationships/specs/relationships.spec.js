@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-nested-callbacks */
 
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
 
@@ -35,13 +34,16 @@ import relationships from '../relationships';
 import { search } from '../../search';
 
 describe('relationships', () => {
-  beforeEach(done => {
-    spyOn(entities, 'updateMetdataFromRelationships').and.callFake(async () => Promise.resolve());
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    jest.resetAllMocks();
+    jest
+      .spyOn(entities, 'updateMetdataFromRelationships')
+      .mockImplementation(async () => Promise.resolve());
+    await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('getByDocument()', () => {
@@ -501,9 +503,9 @@ describe('relationships', () => {
         expect(result[2].entityData.hub).toEqual(result[3].entityData.hub);
       });
 
-      it('should not allow mixing references with and without hubs in each group', async done => {
-        relationships
-          .save(
+      it('should not allow mixing references with and without hubs in each group', async () => {
+        try {
+          await relationships.save(
             [
               [
                 { entity: 'entity3', hub: hub1 },
@@ -512,38 +514,16 @@ describe('relationships', () => {
               [{ entity: 'entity3', hub: hub2 }, { entity: 'entity4' }],
             ],
             'en'
-          )
-          .then(() => {
-            done.fail('Should throw an error');
-          })
-          .catch(error => {
-            expect(error.code).toBe(500);
-            done();
-          });
-        relationships
-          .save(
-            [
-              [
-                { entity: 'entity3', hub: hub1 },
-                { entity: 'entity4', hub: hub1 },
-              ],
-              { entity: 'entity3', hub: hub2 },
-              { entity: 'entity4' },
-            ],
-            'en'
-          )
-          .then(() => {
-            done.fail('Should throw an error');
-          })
-          .catch(error => {
-            expect(error.code).toBe(500);
-            done();
-          });
+          );
+          throw new Error('Should throw an error');
+        } catch (error) {
+          expect(error.code).toBe(500);
+        }
       });
 
-      it('should not allow groups of one reference without hub', async done => {
-        relationships
-          .save(
+      it('should not allow groups of one reference without hub', async () => {
+        try {
+          await relationships.save(
             [
               [
                 { entity: 'entity3', hub: hub1 },
@@ -552,32 +532,11 @@ describe('relationships', () => {
               [{ entity: 'entity4' }],
             ],
             'en'
-          )
-          .then(() => {
-            done.fail('Should throw an error');
-          })
-          .catch(error => {
-            expect(error.code).toBe(500);
-            done();
-          });
-        relationships
-          .save(
-            [
-              [
-                { entity: 'entity3', hub: hub1 },
-                { entity: 'entity4', hub: hub1 },
-              ],
-              { entity: 'entity4' },
-            ],
-            'en'
-          )
-          .then(() => {
-            done.fail('Should throw an error');
-          })
-          .catch(error => {
-            expect(error.code).toBe(500);
-            done();
-          });
+          );
+          throw new Error('Should throw an error');
+        } catch (error) {
+          expect(error.code).toBe(500);
+        }
       });
     });
   });
@@ -664,29 +623,31 @@ describe('relationships', () => {
   describe('search()', () => {
     it('should prepare a query with ids based on an entity id and a searchTerm', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
-      spyOn(search, 'search').and.returnValue(searchResponse);
+      jest.spyOn(search, 'search').mockReturnValue(searchResponse);
       await relationships.search('entity2', { filter: {}, searchTerm: 'something' }, 'en');
-      const actualQuery = search.search.calls.mostRecent().args[0];
+      const actualQuery = search.search.mock.calls[0][0];
       expect(actualQuery.searchTerm).toEqual('something');
-      expect(actualQuery.ids).containItems(['doc5', 'doc4', 'entity3', 'entity1']);
+      expect(actualQuery.ids).toEqual(
+        expect.arrayContaining(['doc5', 'doc4', 'entity3', 'entity1'])
+      );
       expect(actualQuery.includeUnpublished).toBe(true);
       expect(actualQuery.limit).toBe(9999);
     });
 
     it('should filter out ids based on filtered relation types and templates, and pass the user to search', async () => {
       const searchResponse = Promise.resolve({ rows: [] });
-      spyOn(search, 'search').and.returnValue(searchResponse);
+      jest.spyOn(search, 'search').mockReturnValue(searchResponse);
       const query = { filter: {}, searchTerm: 'something' };
       query.filter[relation2] = [relation2 + template];
 
       await relationships.search('entity2', query, 'en', 'user');
 
-      const actualQuery = search.search.calls.mostRecent().args[0];
-      const language = search.search.calls.mostRecent().args[1];
-      const user = search.search.calls.mostRecent().args[2];
+      const actualQuery = search.search.mock.calls[0][0];
+      const language = search.search.mock.calls[0][1];
+      const user = search.search.mock.calls[0][2];
 
       expect(actualQuery.searchTerm).toEqual('something');
-      expect(actualQuery.ids).containItems(['doc4', 'entity3']);
+      expect(actualQuery.ids).toEqual(expect.arrayContaining(['doc4', 'entity3']));
       expect(actualQuery.includeUnpublished).toBe(true);
       expect(actualQuery.limit).toBe(9999);
 
@@ -703,7 +664,7 @@ describe('relationships', () => {
           { sharedId: 'doc5' },
         ],
       });
-      spyOn(search, 'search').and.returnValue(searchResponse);
+      jest.spyOn(search, 'search').mockReturnValue(searchResponse);
       const result = await relationships.search(
         'entity2',
         { filter: {}, searchTerm: 'something' },
@@ -726,7 +687,7 @@ describe('relationships', () => {
           { sharedId: 'doc5' },
         ],
       });
-      spyOn(search, 'search').and.returnValue(searchResponse);
+      jest.spyOn(search, 'search').mockReturnValue(searchResponse);
 
       const result = await relationships.search(
         'entity2',
@@ -804,7 +765,7 @@ describe('relationships', () => {
 
       const expectedDocs = ['doc2', 'IHaveNoTemplate', 'thomasWayne', 'bruceWayne'];
       let expectedLanguages = ['en', 'es'];
-      const args = entities.updateMetdataFromRelationships.calls.allArgs();
+      const args = entities.updateMetdataFromRelationships.mock.calls;
       args.forEach(arg => {
         const [docs, languages] = arg;
         expectedDocs.forEach(doc => {

@@ -1,4 +1,4 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
+import 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 
@@ -24,32 +24,22 @@ describe('thesauri routes', () => {
       expect(routes.get.validation('/api/thesauris')).toMatchSnapshot();
     });
 
-    it('should return all thesauri by default, passing user', done => {
-      spyOn(thesauri, 'get').and.callFake(async () => Promise.resolve('response'));
-      routes
-        .get('/api/thesauris', { language: 'es', user: 'user' })
-        .then(response => {
-          let undefinedVar;
-          expect(thesauri.get).toHaveBeenCalledWith(undefinedVar, 'es', 'user');
-          expect(response).toEqual({ rows: 'response' });
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return all thesauri by default, passing user', async () => {
+      jest.spyOn(thesauri, 'get').mockImplementation(async () => Promise.resolve('response'));
+      const response = await routes.get('/api/thesauris', { language: 'es', user: 'user' });
+      let undefinedVar;
+      expect(thesauri.get).toHaveBeenCalledWith(undefinedVar, 'es', 'user');
+      expect(response).toEqual({ rows: 'response' });
     });
 
     describe('when passing id', () => {
-      it('should get passing id', done => {
-        spyOn(thesauri, 'get').and.callFake(async () => Promise.resolve('response'));
+      it('should get passing id', async () => {
+        jest.spyOn(thesauri, 'get').mockImplementation(async () => Promise.resolve('response'));
         const req = { query: { _id: 'id' } };
 
-        routes
-          .get('/api/thesauris', req)
-          .then(() => {
-            let undefinedVar;
-            expect(thesauri.get).toHaveBeenCalledWith('id', undefinedVar, undefinedVar);
-            done();
-          })
-          .catch(catchErrors(done));
+        await routes.get('/api/thesauris', req);
+        let undefinedVar;
+        expect(thesauri.get).toHaveBeenCalledWith('id', undefinedVar, undefinedVar);
       });
     });
 
@@ -58,28 +48,23 @@ describe('thesauri routes', () => {
         expect(routes.get.validation('/api/dictionaries')).toMatchSnapshot();
       });
 
-      it('should return all dictionaries by default', done => {
-        spyOn(thesauri, 'dictionaries').and.callFake(async () => Promise.resolve('response'));
-        routes
-          .get('/api/dictionaries')
-          .then(response => {
-            expect(thesauri.dictionaries).toHaveBeenCalled();
-            expect(response).toEqual({ rows: 'response' });
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should return all dictionaries by default', async () => {
+        jest
+          .spyOn(thesauri, 'dictionaries')
+          .mockImplementation(async () => Promise.resolve('response'));
+        const response = await routes.get('/api/dictionaries');
+        expect(thesauri.dictionaries).toHaveBeenCalled();
+        expect(response).toEqual({ rows: 'response' });
       });
+
       describe('when passing id', () => {
-        it('should get matching id', done => {
-          spyOn(thesauri, 'dictionaries').and.callFake(async () => Promise.resolve('response'));
-          routes
-            .get('/api/dictionaries', { query: { _id: 'id' } })
-            .then(response => {
-              expect(thesauri.dictionaries).toHaveBeenCalledWith({ _id: 'id' });
-              expect(response).toEqual({ rows: 'response' });
-              done();
-            })
-            .catch(catchErrors(done));
+        it('should get matching id', async () => {
+          jest
+            .spyOn(thesauri, 'dictionaries')
+            .mockImplementation(async () => Promise.resolve('response'));
+          const response = await routes.get('/api/dictionaries', { query: { _id: 'id' } });
+          expect(thesauri.dictionaries).toHaveBeenCalledWith({ _id: 'id' });
+          expect(response).toEqual({ rows: 'response' });
         });
       });
     });
@@ -90,16 +75,11 @@ describe('thesauri routes', () => {
       expect(routes.delete.validation('/api/thesauris')).toMatchSnapshot();
     });
 
-    it('should delete a thesauri', done => {
-      spyOn(thesauri, 'delete').and.callFake(async () => Promise.resolve());
+    it('should delete a thesauri', async () => {
+      jest.spyOn(thesauri, 'delete').mockImplementation(async () => Promise.resolve());
       const req = { query: { _id: 'abc', _rev: '123' } };
-      return routes
-        .delete('/api/thesauris', req)
-        .then(() => {
-          expect(thesauri.delete).toHaveBeenCalledWith('abc', '123');
-          done();
-        })
-        .catch(catchErrors(done));
+      await routes.delete('/api/thesauris', req);
+      expect(thesauri.delete).toHaveBeenCalledWith('abc', '123');
     });
   });
 
@@ -108,17 +88,12 @@ describe('thesauri routes', () => {
       expect(routes.post.validation('/api/thesauris')).toMatchSnapshot();
     });
 
-    it('should create a thesauri', done => {
-      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
+    it('should create a thesauri', async () => {
+      jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
       const req = { body: { name: 'Batman wish list', values: [{ id: '1', label: 'Joker BFF' }] } };
-      routes
-        .post('/api/thesauris', req)
-        .then(response => {
-          expect(response.values[0].id).toEqual('1');
-          expect(response.values[0].label).toEqual('Joker BFF');
-          done();
-        })
-        .catch(catchErrors(done));
+      const response = await routes.post('/api/thesauris', req);
+      expect(response.values[0].id).toEqual('1');
+      expect(response.values[0].label).toEqual('Joker BFF');
     });
   });
 });

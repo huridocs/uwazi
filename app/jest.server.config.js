@@ -3,7 +3,6 @@ const { defaults } = require('jest-config');
 
 module.exports = {
   workerIdleMemoryLimit: 0.2,
-  testRunner: 'jest-jasmine2',
   displayName: 'Server',
   testMatch: ['**/api/**/specs/*spec.(j|t)s?(x)', '**/shared/**/specs/*spec.(j|t)s?(x)'],
   testEnvironment: 'node',

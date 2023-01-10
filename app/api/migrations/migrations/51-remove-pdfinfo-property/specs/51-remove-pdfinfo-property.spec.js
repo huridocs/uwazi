@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration remove-pdfinfo-property', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingEnvironment.setUp(fixtures);
   });
 

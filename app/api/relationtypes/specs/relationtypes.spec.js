@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import translations from 'api/i18n/translations';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -16,127 +15,90 @@ describe('relationtypes', () => {
   });
 
   describe('get()', () => {
-    it('should return all the relationtypes in the database', done => {
-      relationtypes
-        .get()
-        .then(result => {
-          expect(result.length).toBe(3);
-          expect(result[0].name).toBe('Against');
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return all the relationtypes in the database', async () => {
+      const result = await relationtypes.get();
+      expect(result.length).toBe(3);
+      expect(result[0].name).toBe('Against');
     });
   });
 
   describe('getById()', () => {
-    it('should return the relationtype with the id', done => {
-      relationtypes
-        .getById(against)
-        .then(result => {
-          expect(result.name).toBe('Against');
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should return the relationtype with the id', async () => {
+      const result = await relationtypes.getById(against);
+      expect(result.name).toBe('Against');
     });
   });
 
   describe('save()', () => {
     beforeEach(() => {
-      spyOn(translations, 'addContext').and.callFake(async () => Promise.resolve());
-      spyOn(translations, 'updateContext').and.callFake(async () => Promise.resolve());
+      jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
+      jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
     });
 
-    it('should generate names and ids for the properties', done => {
-      relationtypes
-        .save({ name: 'Indiferent', properties: [{ label: 'Property one' }] })
-        .then(result => {
-          expect(result.properties[0].name).toBe('property_one');
-          expect(result.properties[0]._id).toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should generate names and ids for the properties', async () => {
+      const result = await relationtypes.save({
+        name: 'Indiferent',
+        properties: [{ label: 'Property one' }],
+      });
+      expect(result.properties[0].name).toBe('property_one');
+      expect(result.properties[0]._id).toBeDefined();
     });
 
     describe('when the relation type did not exist', () => {
-      it('should create a new one and return it', done => {
-        relationtypes
-          .save({ name: 'Indiferent', properties: [] })
-          .then(result => {
-            expect(result.name).toBe('Indiferent');
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should create a new one and return it', async () => {
+        const result = await relationtypes.save({ name: 'Indiferent', properties: [] });
+        expect(result.name).toBe('Indiferent');
       });
 
-      it('should create a new translation for it', done => {
-        relationtypes
-          .save({ name: 'Indiferent', properties: [] })
-          .then(response => {
-            expect(translations.addContext).toHaveBeenCalledWith(
-              response._id,
-              'Indiferent',
-              { Indiferent: 'Indiferent' },
-              ContextType.relationshipType
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should create a new translation for it', async () => {
+        const response = await relationtypes.save({ name: 'Indiferent', properties: [] });
+        expect(translations.addContext).toHaveBeenCalledWith(
+          response._id,
+          'Indiferent',
+          { Indiferent: 'Indiferent' },
+          ContextType.relationshipType
+        );
       });
     });
 
     describe('when the relation type exists', () => {
-      it('should update it', done => {
-        relationtypes
-          .getById(against)
-          .then(relationtype => {
-            relationtype.name = 'Not that Against';
-            return relationtypes.save(relationtype);
-          })
-          .then(result => {
-            expect(result.name).toBe('Not that Against');
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should update it', async () => {
+        const relationtype = await relationtypes.getById(against);
+        relationtype.name = 'Not that Against';
+        const result = await relationtypes.save(relationtype);
+        expect(result.name).toBe('Not that Against');
       });
 
-      it('should update the translation for it', done => {
-        relationtypes
-          .getById(against)
-          .then(relationtype => {
-            relationtype.name = 'Pro';
-            return relationtypes.save(relationtype);
-          })
-          .then(response => {
-            expect(translations.updateContext).toHaveBeenCalledWith(
-              response._id,
-              'Pro',
-              { Against: 'Pro' },
-              [],
-              { Pro: 'Pro' },
-              'Connection'
-            );
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should update the translation for it', async () => {
+        const relationtype = await relationtypes.getById(against);
+        relationtype.name = 'Pro';
+        const response = await relationtypes.save(relationtype);
+        expect(translations.updateContext).toHaveBeenCalledWith(
+          response._id,
+          'Pro',
+          { Against: 'Pro' },
+          [],
+          { Pro: 'Pro' },
+          'Connection'
+        );
       });
     });
 
     describe('when its duplicated', () => {
-      it('should return an error', done => {
+      it('should return an error', async () => {
         const relationtype = { name: 'Against', properties: [] };
-        return relationtypes
-          .save(relationtype)
-          .then(catchErrors(done))
-          .catch(error => {
-            expect(error).toBe('duplicated_entry');
-            done();
-          });
+        try {
+          await relationtypes.save(relationtype);
+          throw new Error('should return an error');
+        } catch (error) {
+          expect(error).toBe('duplicated_entry');
+        }
       });
     });
 
     describe('delete()', () => {
       beforeEach(() => {
-        spyOn(translations, 'deleteContext').and.callFake(async () => Promise.resolve());
+        jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
       });
 
       it('should remove it from the database and return true', done => {
@@ -159,18 +121,11 @@ describe('relationtypes', () => {
         });
       });
 
-      it('when its been used should not delete it and return false', done => {
-        relationtypes
-          .delete(canNotBeDeleted)
-          .then(result => {
-            expect(result).toBe(false);
-            return relationtypes.getById(canNotBeDeleted);
-          })
-          .then(result => {
-            expect(result._id.equals(canNotBeDeleted)).toBe(true);
-            done();
-          })
-          .catch(catchErrors(done));
+      it('when its been used should not delete it and return false', async () => {
+        const result = await relationtypes.delete(canNotBeDeleted);
+        expect(result).toBe(false);
+        const result2 = await relationtypes.getById(canNotBeDeleted);
+        expect(result2._id.equals(canNotBeDeleted)).toBe(true);
       });
     });
   });

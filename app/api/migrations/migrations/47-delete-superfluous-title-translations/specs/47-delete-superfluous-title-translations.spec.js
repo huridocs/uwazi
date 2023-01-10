@@ -38,7 +38,7 @@ const results = [
 
 describe('migration delete-superfluous-title-translations', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

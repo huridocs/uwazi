@@ -81,8 +81,8 @@ export class ConvertToPdfWorker {
     });
   }
 
-  start() {
-    this.taskManager.subscribeToResults();
+  start(interval = 500) {
+    this.taskManager.subscribeToResults(interval);
   }
 
   async stop() {

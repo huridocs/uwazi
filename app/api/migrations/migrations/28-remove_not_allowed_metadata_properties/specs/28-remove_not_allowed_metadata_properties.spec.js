@@ -4,7 +4,7 @@ import fixtures, { template1, template2 } from './fixtures.js';
 
 describe('migration remove_not_allowed_metadata_properties', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

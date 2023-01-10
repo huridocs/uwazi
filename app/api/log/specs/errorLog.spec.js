@@ -13,8 +13,8 @@ describe('errorLog', () => {
   it('should call transports with tenant name and message', async () => {
     const anErrorLog = createErrorLog();
 
-    spyOn(anErrorLog.transports[0], 'log');
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     tenants.add({ name: 'tenant' });
 
@@ -22,10 +22,10 @@ describe('errorLog', () => {
       anErrorLog.error('a message');
     }, 'tenant');
 
-    const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
+    const fileArgs = anErrorLog.transports[0].log.mock.calls[0][0];
     expect(fileArgs[Symbol.for('message')]).toContain('[tenant] a message');
 
-    const consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
+    const consoleArgs = anErrorLog.transports[1].log.mock.calls[0][0];
     expect(consoleArgs[Symbol.for('message')]).toContain('[tenant] a message');
   });
 
@@ -33,16 +33,16 @@ describe('errorLog', () => {
     it('should call transports with fallback name, message and tenant error', () => {
       const anErrorLog = createErrorLog();
 
-      spyOn(anErrorLog.transports[0], 'log');
-      spyOn(anErrorLog.transports[1], 'log');
+      jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+      jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
       anErrorLog.error('a message');
 
-      const fileArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
+      const fileArgs = anErrorLog.transports[0].log.mock.calls[0][0];
       expect(fileArgs[Symbol.for('message')]).toContain('[localhost] a message');
       expect(fileArgs[Symbol.for('message')]).toContain('[Tenant error]');
 
-      const consoleArgs = anErrorLog.transports[1].log.calls.mostRecent().args[0];
+      const consoleArgs = anErrorLog.transports[1].log.mock.calls[0][0];
       expect(consoleArgs[Symbol.for('message')]).toContain('[localhost] a message');
       expect(consoleArgs[Symbol.for('message')]).toContain('[Tenant error]');
     });
@@ -52,7 +52,7 @@ describe('errorLog', () => {
     process.env.LOGS_DIR = './some_dir';
 
     const anErrorLog = createErrorLog();
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     expect(anErrorLog.transports[0].dirname).toBe('./some_dir');
     expect(anErrorLog.transports[0].filename).toBe('error.log');
@@ -67,14 +67,14 @@ describe('errorLog', () => {
 
     const anErrorLog = createErrorLog();
 
-    spyOn(anErrorLog.transports[0], 'log');
-    spyOn(anErrorLog.transports[1], 'log');
+    jest.spyOn(anErrorLog.transports[0], 'log').mockImplementation(() => {});
+    jest.spyOn(anErrorLog.transports[1], 'log').mockImplementation(() => {});
 
     await tenants.run(async () => {
       anErrorLog.error('a message');
     });
 
-    let calledArgs = anErrorLog.transports[0].log.calls.mostRecent().args[0];
+    let calledArgs = anErrorLog.transports[0].log.mock.calls[0][0];
     calledArgs = Object.getOwnPropertySymbols(calledArgs).map(s => calledArgs[s]);
 
     expect(calledArgs[1]).toContain('a message');

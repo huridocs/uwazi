@@ -67,7 +67,8 @@ describe('convertToPdfWorker', () => {
         createReadStream(`${__dirname}/../../../files/specs/converted_attachment.pdf`)
       );
 
-    worker.start();
+    jest.spyOn(permissionsContext, 'setCommandContext');
+    worker.start(0);
   });
 
   afterAll(async () => {
@@ -93,7 +94,6 @@ describe('convertToPdfWorker', () => {
     });
 
     it('needs permissions to get entities associated to the file', async () => {
-      jest.spyOn(permissionsContext, 'setCommandContext');
       await waitForExpect(() => {
         expect(permissionsContext.setCommandContext).toHaveBeenCalled();
       });
@@ -160,6 +160,7 @@ describe('convertToPdfWorker', () => {
       const message = { success: false, error_message: 'error converting !' };
 
       jest.spyOn(handleError, 'handleError').mockImplementationOnce(() => {});
+
       await redisSMQ.sendMessageAsync({
         qname: 'convert-to-pdf_results',
         message: JSON.stringify(message),

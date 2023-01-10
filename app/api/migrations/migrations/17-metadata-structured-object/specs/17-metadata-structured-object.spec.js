@@ -4,7 +4,7 @@ import fixtures, { i2 } from './fixtures';
 
 describe('migration metadata-structured-object', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

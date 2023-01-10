@@ -1,16 +1,15 @@
 import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import { errorLog } from 'api/log';
 import fixtures, { connectionWithRangeId, documentId } from './fixtures.js';
 import migration from '../index.js';
 
 describe('migration add-file-field-to-connections', () => {
-  beforeEach(done => {
-    spyOn(process.stdout, 'write');
-    spyOn(errorLog, 'error');
+  beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = __dirname;
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {

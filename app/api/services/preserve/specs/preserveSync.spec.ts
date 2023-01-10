@@ -79,7 +79,7 @@ describe('preserveSync', () => {
 
     tenants.add(tenant1);
 
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => db.disconnect());

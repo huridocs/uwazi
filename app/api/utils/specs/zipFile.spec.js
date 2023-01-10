@@ -26,23 +26,25 @@ describe('zipFile', () => {
   });
 
   describe('findReadStream', () => {
-    it('should return a readable stream for matched file', async done => {
+    it('should return a readable stream for matched file', async () => {
       let fileContents;
-      (
-        await zipFile(path.join(__dirname, '/zipData/zipTest.zip')).findReadStream(
-          entry => entry === 'test.csv'
-        )
-      )
-        .on('data', chunk => {
-          fileContents += chunk;
-        })
-        .on('end', () => {
-          expect(fileContents).toMatchSnapshot();
-          done();
-        })
-        .on('error', e => {
-          done.fail(e);
-        });
+      await new Promise((resolve, reject) => {
+        zipFile(path.join(__dirname, '/zipData/zipTest.zip'))
+          .findReadStream(entry => entry === 'test.csv')
+          .then(file => {
+            file
+              .on('data', chunk => {
+                fileContents += chunk;
+              })
+              .on('end', () => {
+                expect(fileContents).toMatchSnapshot();
+                resolve();
+              })
+              .on('error', e => {
+                reject(e);
+              });
+          });
+      });
     });
 
     describe('when not file found', () => {

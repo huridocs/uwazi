@@ -4,7 +4,7 @@ import fixtures, { thesauri1, thesauri2, entity1, entity2, entity3, entity4 } fr
 
 describe('migration fix-malformed-metadata', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     await migration.up(testingDB.mongodb);
   });

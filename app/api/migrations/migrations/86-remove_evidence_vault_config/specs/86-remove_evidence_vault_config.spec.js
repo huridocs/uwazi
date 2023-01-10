@@ -4,7 +4,7 @@ import migration from '../index.js';
 
 describe('migration remove_evidence_vault_config', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   afterAll(async () => {
