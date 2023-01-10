@@ -7,7 +7,6 @@ import { ThesauriList } from '../ThesauriList';
 describe('ThesaurisList', () => {
   let component;
   let props;
-  let context;
 
   beforeEach(() => {
     props = {

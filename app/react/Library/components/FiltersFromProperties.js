@@ -1,13 +1,15 @@
+import React from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import rison from 'rison-node';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import { selectTemplates } from 'app/utils/coreSelectors';
-import rison from 'rison-node';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
@@ -20,7 +22,7 @@ const optionUrl = (value, name, query) => {
     filters: { ...query.filters, [name]: { values: [value] } },
     from: 0,
     limit: 30,
-    includeUnpublished: true,
+    includeUnpublished: false,
     order: 'desc',
     sort: 'creationDate',
     unpublished: false,
@@ -31,10 +33,7 @@ const optionUrl = (value, name, query) => {
 };
 
 const prepareOptions = (property, location) => {
-  const searchParams = new URLSearchParams(location.search);
-  const { q = '(filters:())' } = Object.fromEntries(searchParams.entries());
-
-  const query = rison.decode(q);
+  const query = searchParamsFromLocationSearch(location, 'q') || {};
   const filteredProperty = {
     ...property,
     options: property.options.filter(option => option.id !== 'any'),
