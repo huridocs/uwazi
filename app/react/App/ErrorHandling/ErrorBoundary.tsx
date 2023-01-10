@@ -1,25 +1,38 @@
-import React, { ErrorInfo } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
-import { useRouteError } from 'react-router-dom';
-import { RequestError } from './ErrorUtils';
 
 interface ErrorBoundaryProps {
-  error?: RequestError;
+  error?: Error;
   errorInfo?: ErrorInfo;
-  children?: React.ReactElement;
+  children?: ReactNode;
 }
 
-const ErrorBoundary = ({
-  error: elementError,
-  errorInfo,
-  children = <> </>,
-}: ErrorBoundaryProps) => {
-  const routeError = useRouteError() as RequestError;
-  const error = elementError || routeError;
-  if (error?.message) {
-    return <ErrorFallback error={error} errorInfo={errorInfo} />;
-  }
-  return children;
+const defaultProps = {
+  error: {},
+  errorInfo: '',
+  children: '',
 };
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
+  static defaultProps = defaultProps;
+
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { error: props.error, errorInfo: props.errorInfo };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    this.setState({
+      error,
+      errorInfo,
+    });
+  }
+
+  render() {
+    if (this.state.error?.message) {
+      return <ErrorFallback error={this.state.error} errorInfo={this.state.errorInfo} />;
+    }
+    return this.props.children;
+  }
+}
 
 export { ErrorBoundary };

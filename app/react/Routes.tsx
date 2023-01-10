@@ -43,14 +43,14 @@ import { Settings as settingsType } from 'shared/types/settingsType';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
-import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
+import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
 
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
-  <Route errorElement={<ErrorBoundary />}>
+  <Route errorElement={<RouteErrorBoundary />}>
     <Route index element={getIndexElement(settings, userId)} />
     <Route path="login" element={<Login />} />
     <Route path="library" element={privateRoute(<LibraryCards />, settings)} />
