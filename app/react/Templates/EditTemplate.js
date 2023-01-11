@@ -45,4 +45,4 @@ class EditTemplateComponent extends RouteHandler {
 }
 
 const EditTemplate = withRouter(EditTemplateComponent);
-export { EditTemplate };
+export { EditTemplate, EditTemplateComponent };
