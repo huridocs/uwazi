@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { LocalForm, actions, Control } from 'react-redux-form';
+import { actions, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Immutable from 'immutable';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
+import { LocalForm } from 'app/Forms/Form';
 import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
