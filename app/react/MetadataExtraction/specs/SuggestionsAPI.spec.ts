@@ -5,7 +5,8 @@ import {
   trainModel,
   ixStatus,
   acceptEntitySuggestion,
-  saveConfigurations,
+  createExtractor,
+  deleteExtractors,
 } from 'app/MetadataExtraction/SuggestionsAPI';
 
 describe('SuggestionsAPI', () => {
@@ -46,11 +47,20 @@ describe('SuggestionsAPI', () => {
     });
   });
 
-  describe('saveConfigurations', () => {
-    it('should return settings after saving the configurations', async () => {
+  describe('createExtractor', () => {
+    it('should return extractor after saving', async () => {
       const request = new RequestParams();
       spyOn(api, 'post').and.returnValue(Promise.resolve({ json: 'success' }));
-      const result = await saveConfigurations(request);
+      const result = await createExtractor(request);
+      expect(result).toEqual('success');
+    });
+  });
+
+  describe('deleteExtractors', () => {
+    it('should return result after delete', async () => {
+      const request = new RequestParams();
+      spyOn(api, 'post').and.returnValue(Promise.resolve({ json: 'success' }));
+      const result = await deleteExtractors(request);
       expect(result).toEqual('success');
     });
   });

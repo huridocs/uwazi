@@ -13,6 +13,7 @@ import {
   ExtractedMetadataSchema,
 } from 'shared/types/commonTypes';
 import { UpdateLog } from 'api/updatelogs';
+import { IXExtractorType } from 'shared/types/extractorType';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -186,6 +187,13 @@ function getFixturesFactory() {
       mongoId: idMapper(mongoId),
       timestamp,
       deleted,
+    }),
+
+    ixExtractor: (name: string, property: string, templates: string[] = []): IXExtractorType => ({
+      _id: idMapper(name),
+      name,
+      property,
+      templates: templates.map(idMapper),
     }),
   });
 }
