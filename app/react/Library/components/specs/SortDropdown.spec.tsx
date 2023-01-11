@@ -10,6 +10,7 @@ import { SortDropdown } from '../SortDropdown';
 describe('Sort dropdown', () => {
   let props: any;
   let renderResult: RenderResult;
+  let search: string;
 
   const templates = [
     {
@@ -44,12 +45,6 @@ describe('Sort dropdown', () => {
 
   beforeEach(() => {
     props = {
-      location: {
-        pathname: '/en/library/',
-        query: {
-          q: '(from:0,includeUnpublished:!t,limit:30,order:desc)',
-        },
-      },
       locale: 'en',
       templates: fromJS(templates),
       search: {
@@ -58,6 +53,7 @@ describe('Sort dropdown', () => {
         searchTerm: '',
       },
     };
+    search = '(from:0,includeUnpublished:!t,limit:30,order:desc)';
   });
 
   const render = () => {
@@ -65,7 +61,9 @@ describe('Sort dropdown', () => {
       <SortDropdown.WrappedComponent {...props} />,
       () => ({
         ...defaultState,
-      })
+      }),
+      'MemoryRouter',
+      [`/en/library/?q=${search}`]
     ));
   };
 
@@ -75,19 +73,19 @@ describe('Sort dropdown', () => {
     expect(sortButton.parentElement).toHaveClass('dropdown-button');
     expect(listOption.closest('a')).toHaveAttribute(
       'href',
-      'library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate)'
+      '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate)'
     );
   });
 
   it.each`
     option             | link
-    ${'Title'}         | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:title)'}
-    ${'Date modified'} | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:editDate)'}
-    ${'Date'}          | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.date)'}
-    ${'Number'}        | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.number)'}
-    ${'My select'}     | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.my_select)'}
-    ${'Sortable name'} | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.sortable_name)'}
-    ${'Inherited 1'}   | ${'library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.inherited_1.inheritedValue)'}
+    ${'Title'}         | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:title)'}
+    ${'Date modified'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:editDate)'}
+    ${'Date'}          | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.date)'}
+    ${'Number'}        | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.number)'}
+    ${'My select'}     | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.my_select)'}
+    ${'Sortable name'} | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc,sort:metadata.sortable_name)'}
+    ${'Inherited 1'}   | ${'/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,sort:metadata.inherited_1.inheritedValue)'}
   `(
     'should display the sortable option $option with the link, and correct sort and order',
     ({ option, link }) => {
@@ -136,7 +134,7 @@ describe('Sort dropdown', () => {
 
   describe('when there is an active search term', () => {
     it('should display sort by search relevance option in the button and in the list, and disable the sort button', () => {
-      props.location.query.q = "(searchTerm:'my search',sort:_score)";
+      search = "(searchTerm:'my search',sort:_score)";
       render();
       const byRelevanceText = screen.getAllByText('Search relevance');
       expect(byRelevanceText).toHaveLength(2);
@@ -149,15 +147,14 @@ describe('Sort dropdown', () => {
       render();
       expect(screen.getByText('Sort ascending').parentElement?.parentElement).toHaveAttribute(
         'href',
-        'library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc)'
+        '/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:asc)'
       );
 
-      props.location.query.q =
-        "(from:0,includeUnpublished:!t,limit:30,order:asc,searchTerm:'some search')";
+      search = "(from:0,includeUnpublished:!t,limit:30,order:asc,searchTerm:'some search')";
       render();
       expect(screen.getByText('Sort descending').parentElement?.parentElement).toHaveAttribute(
         'href',
-        "library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,searchTerm:'some search')"
+        "/en/library/?q=(from:0,includeUnpublished:!t,limit:30,order:desc,searchTerm:'some search')"
       );
     });
   });

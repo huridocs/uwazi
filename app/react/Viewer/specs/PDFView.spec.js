@@ -83,7 +83,7 @@ describe('PDFView', () => {
 
   const render = () => {
     RouteHandler.renderedFromServer = true;
-    component = renderConnectedMount(PDFView, state, props, true, { context });
+    component = renderConnectedMount(PDFView, state, props, true);
     component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
