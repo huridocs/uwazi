@@ -84,7 +84,6 @@ describe('PDFView', () => {
   const render = () => {
     RouteHandler.renderedFromServer = true;
     component = renderConnectedMount(PDFView, state, props, true, { context });
-    component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
   beforeEach(() => {
@@ -208,7 +207,7 @@ describe('PDFView', () => {
     });
 
     it('should activate text reference if query parameters have reference id', () => {
-      spyOn(uiActions, 'activateReference');
+      spyOn(uiActions, 'activateReference').and.returnValue({ type: 'ABC' });
       raw = 'false';
       ref = 'refId';
       pathname = 'pathname';
