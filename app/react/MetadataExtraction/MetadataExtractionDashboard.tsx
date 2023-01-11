@@ -12,12 +12,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
-import {
-  saveConfigurations,
-  loadExtractors,
-  createExtractor,
-  deleteExtractors,
-} from './actions/actions';
+import { loadExtractors, createExtractor, deleteExtractors } from './actions/actions';
 import { IXExtractorInfo, ExtractorCreationModal } from './ExtractorCreationModal';
 
 type indexedTemplates = {
@@ -50,7 +45,6 @@ class MetadataExtractionComponent extends React.Component<
     this.createExtractor = this.createExtractor.bind(this);
     this.deleteExtractors = this.deleteExtractors.bind(this);
     this.state = {
-      configurationModalIsOpen: false,
       creationModelIsOpen: false,
       selectedExtractorIds: new Set<string>(),
     };
@@ -250,16 +244,12 @@ export interface FormattedSettingsData {
 }
 
 export interface MetadataExtractionDashboardStateTypes {
-  configurationModalIsOpen: boolean;
   creationModelIsOpen: boolean;
   selectedExtractorIds: Set<string>;
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators(
-    { saveConfigurations, createExtractor, deleteExtractors, loadExtractors },
-    dispatch
-  );
+  bindActionCreators({ createExtractor, deleteExtractors, loadExtractors }, dispatch);
 
 export const MetadataExtractionDashboard = connect(
   mapStateToProps,

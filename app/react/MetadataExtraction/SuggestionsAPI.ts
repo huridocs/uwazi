@@ -1,7 +1,6 @@
 import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/utils/api';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { IXTemplateConfiguration } from './PropertyConfigurationModal';
 import { IXExtractorInfo } from './ExtractorCreationModal';
 
 const getSuggestions = async (requestParams: RequestParams) => {
@@ -36,10 +35,6 @@ const acceptEntitySuggestion = async (requestParams: RequestParams) => {
   const { json: response } = await api.post('suggestions/accept', requestParams);
   return response;
 };
-const saveConfigurations = async (requestParams: RequestParams<IXTemplateConfiguration[]>) => {
-  const { json: response } = await api.post('suggestions/configurations', requestParams);
-  return response;
-};
 
 const getAllExtractors = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('ixextractors/all', requestParams);
@@ -63,7 +58,6 @@ export {
   cancelFindingSuggestions,
   ixStatus,
   acceptEntitySuggestion,
-  saveConfigurations,
   getAllExtractors,
   createExtractor,
   deleteExtractors,

@@ -11,19 +11,10 @@ import scroller from 'app/Viewer/utils/Scroller';
 import { actions } from 'app/BasicReducer';
 import { IXExtractorInfo } from '../ExtractorCreationModal';
 import {
-  saveConfigurations as saveConfigs,
   getAllExtractors,
   createExtractor as createExtractorAPICall,
   deleteExtractors as deleteExtractorsAPICall,
 } from '../SuggestionsAPI';
-import { IXTemplateConfiguration } from '../PropertyConfigurationModal';
-
-const saveConfigurations =
-  (newSettingsConfigs: IXTemplateConfiguration[]) => async (dispatch: any) => {
-    const settings = await saveConfigs(new RequestParams(newSettingsConfigs));
-    dispatch(actions.set('settings/collection', settings));
-    dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));
-  };
 
 const loadExtractors = () => async (dispatch: any) => {
   const extractors = await getAllExtractors(new RequestParams());
@@ -89,5 +80,4 @@ export {
   fetchEntity,
   fetchFile,
   scrollToPage,
-  saveConfigurations,
 };
