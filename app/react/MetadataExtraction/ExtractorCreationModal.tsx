@@ -3,15 +3,15 @@ import Modal from 'app/Layout/Modal';
 import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { TemplateSchema } from 'shared/types/templateType';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import Icons from 'app/Templates/components/Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
 export interface IXExtractorInfo {
+  _id?: string;
   name: string;
   property: string;
-  templates: ObjectIdSchema[];
+  templates: string[];
 }
 
 export interface ExtractorCreationModalProps {
@@ -67,7 +67,17 @@ export const ExtractorCreationModal = ({
           templates: submitedValues.map(value => value.split('-', 2)[0]),
         }
       : null;
-    onAccept(result);
+    if (result === null) {
+      onClose();
+    } else {
+      onAccept(result);
+    }
+  };
+
+  const handleClose = () => {
+    setName('');
+    setValues([]);
+    onClose();
   };
 
   return (
@@ -97,7 +107,7 @@ export const ExtractorCreationModal = ({
         <span className="left">
           *<Translate>Only text, number and date properties are currently supported</Translate>
         </span>
-        <button type="button" className="btn btn-default cancel-button" onClick={onClose}>
+        <button type="button" className="btn btn-default cancel-button" onClick={handleClose}>
           <Translate>Cancel</Translate>
         </button>
         <button

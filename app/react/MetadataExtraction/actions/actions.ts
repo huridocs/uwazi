@@ -10,7 +10,11 @@ import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
 import { actions } from 'app/BasicReducer';
 import { IXExtractorInfo } from '../ExtractorCreationModal';
-import { saveConfigurations as saveConfigs } from '../SuggestionsAPI';
+import {
+  saveConfigurations as saveConfigs,
+  getAllExtractors,
+  createExtractor as createExtractorAPICall,
+} from '../SuggestionsAPI';
 import { IXTemplateConfiguration } from '../PropertyConfigurationModal';
 
 const saveConfigurations =
@@ -20,8 +24,14 @@ const saveConfigurations =
     dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));
   };
 
-const createExtractor = async (newExtractorInfo: IXExtractorInfo) => {
-  console.log(newExtractorInfo);
+const loadExtractors = () => async (dispatch: any) => {
+  const extractors = await getAllExtractors(new RequestParams());
+  dispatch(actions.set('ixExtractors', extractors));
+};
+
+const createExtractor = (newExtractorInfo: IXExtractorInfo) => async (dispatch: any) => {
+  const extractor = await createExtractorAPICall(new RequestParams(newExtractorInfo));
+  dispatch(actions.push('ixExtractors', extractor));
 };
 
 const fetchEntity = async (entityId: string, language: string) => {
@@ -62,6 +72,7 @@ const acceptSuggestion =
 
 export {
   acceptSuggestion,
+  loadExtractors,
   createExtractor,
   fetchEntity,
   fetchFile,
