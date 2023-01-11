@@ -93,7 +93,7 @@ CustomUploadsComponent.propTypes = {
   deleteCustomUpload: PropTypes.func.isRequired,
 };
 
-export const mapStateToProps = ({ customUploads, progress }) => ({
+const mapStateToProps = ({ customUploads, progress }) => ({
   customUploads,
   progress: !!progress.filter((_v, key) => key.match(/customUpload/)).size,
 });
@@ -105,4 +105,4 @@ const CustomUploads = connect(
   mapDispatchToProps
 )(withRouter(CustomUploadsComponent));
 
-export { CustomUploads };
+export { CustomUploads, CustomUploadsComponent, mapStateToProps };

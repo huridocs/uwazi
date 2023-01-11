@@ -36,7 +36,7 @@ describe('TranslationsList', () => {
       ]),
       settings: { collection: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }) },
     };
-    renderConnectedContainer(<TranslationsList />, () => state);
+    renderConnectedContainer(<TranslationsList />, () => state, 'BrowserRouter');
   };
 
   describe('render', () => {

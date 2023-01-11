@@ -6,7 +6,7 @@ import api from 'app/utils/api';
 import { ConfirmButton } from 'app/Layout';
 import { RequestParams } from 'app/utils/RequestParams';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import { CustomUploads, mapStateToProps } from '../CustomUploads';
+import { CustomUploadsComponent, mapStateToProps } from '../CustomUploads';
 
 describe('CustomUploads', () => {
   let component;
@@ -23,7 +23,7 @@ describe('CustomUploads', () => {
   });
 
   const render = () => {
-    component = renderConnectedMount(CustomUploads, {}, props, true);
+    component = renderConnectedMount(CustomUploadsComponent, {}, props, true, true);
   };
 
   it('should render CustomUploads component with uploaded files', () => {
@@ -78,7 +78,7 @@ describe('CustomUploads', () => {
   describe('requestState', () => {
     it('should get the uploads', async () => {
       const request = new RequestParams();
-      const actions = await CustomUploads.requestState(request);
+      const actions = await CustomUploadsComponent.requestState(request);
 
       const expectedParams = new RequestParams({ type: 'custom' });
       expect(api.get).toHaveBeenCalledWith('files', expectedParams);

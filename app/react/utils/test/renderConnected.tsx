@@ -52,15 +52,25 @@ const renderConnectedMount = (
   Component: ConnectedComponent<any, any> | ((props: any) => any),
   state: any = {},
   props: any = {},
-  useDefaultTranslationState = false
+  useDefaultTranslationState = false,
+  useBrowserRouter = false
 ): ReactWrapper<React.Component['props'], React.Component['state'], React.Component> => {
   const reduxStore = { ...defaultState, ...state };
   const store = mockStoreCreator(useDefaultTranslationState ? reduxStore : state);
-  return mount(
+
+  const WrappedComponent = useBrowserRouter ? (
+    <BrowserRouter>
+      <Provider store={store}>
+        <Component {...props} />
+      </Provider>
+    </BrowserRouter>
+  ) : (
     <Provider store={store}>
       <Component {...props} />
     </Provider>
   );
+
+  return mount(WrappedComponent);
 };
 
 const renderConnectedContainer = (
