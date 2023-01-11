@@ -15,7 +15,6 @@ describe('Attachment', () => {
   let component;
   let props;
   let file;
-  let context;
 
   beforeEach(() => {
     file = { originalname: 'Human name 1', filename: 'filename.ext' };
@@ -33,13 +32,12 @@ describe('Attachment', () => {
       resetForm: jasmine.createSpy('resetForm'),
       isSourceDocument: false,
       entity: { sharedID: 'parentSharedId' },
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
-
-    context = { confirm: jasmine.createSpy('confirm') };
   });
 
   const render = () => {
-    component = shallow(<Attachment {...props} />, { context });
+    component = shallow(<Attachment {...props} />);
   };
 
   it('should render originalname of the attachment', () => {
@@ -103,9 +101,9 @@ describe('Attachment', () => {
       const deleteButton = component.find('.dropdown-menu').find('.is--delete');
 
       deleteButton.simulate('click');
-      expect(context.confirm).toHaveBeenCalled();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
 
-      context.confirm.calls.argsFor(0)[0].accept();
+      props.mainContext.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteAttachment).toHaveBeenCalledWith('parentSharedId', file, 'storeKey');
     });
 
