@@ -731,6 +731,13 @@
 .multiselectItem {
   line-height: 1.2em;
   padding: 5px 0;
+
+  &.no-top-level-select {
+    .multiselectItem-icon,
+    .multiselectItem-name {
+      cursor: pointer;
+    }
+  }
 }
 
 .multiselectItem-icon {
