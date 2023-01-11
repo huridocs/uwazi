@@ -49,10 +49,7 @@ const flattenConfiguredFilters = (configuredFilters: SettingsFilterSchema[]) =>
     return result;
   }, []);
 
-export class TemplatesFilterComponent extends React.Component<
-  ComponentProps,
-  TemplatesFilterState
-> {
+class TemplatesFilterComponent extends React.Component<ComponentProps, TemplatesFilterState> {
   constructor(props: ComponentProps) {
     super(props);
     const configuredFilters: string[] = flattenConfiguredFilters(
@@ -128,5 +125,7 @@ export class TemplatesFilterComponent extends React.Component<
     );
   }
 }
+
+export const ConnectedComponent = connector(TemplatesFilterComponent);
 
 export const TemplatesFilter = connector(withRouter(TemplatesFilterComponent));
