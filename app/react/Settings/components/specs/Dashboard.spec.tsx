@@ -30,7 +30,7 @@ describe('Dashboard', () => {
       ...defaultState,
       settings: { stats: Immutable.fromJS(systenStats) },
     };
-    renderConnectedContainer(<Dashboard />, () => store);
+    renderConnectedContainer(<Dashboard />, () => store, 'BrowserRouter');
   };
 
   describe('Users report', () => {
