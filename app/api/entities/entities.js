@@ -667,23 +667,20 @@ export default {
   },
 
   async deleteMultiple(sharedIds) {
-    let allEntitiesDeleted = [];
+    let entitiesDeleted = [];
 
     try {
       // eslint-disable-next-line no-restricted-syntax
       for (const sharedId of sharedIds) {
         // eslint-disable-next-line no-await-in-loop
-        const deletedEntitiesForSharedId = (await this.delete(sharedId, false)).map(e => ({
-          _id: e._id,
-        }));
-        allEntitiesDeleted = allEntitiesDeleted.concat(deletedEntitiesForSharedId);
+        entitiesDeleted = entitiesDeleted.concat(await this.delete(sharedId, false));
       }
     } catch (e) {
-      await search.bulkDelete(allEntitiesDeleted);
+      await search.bulkDelete(entitiesDeleted);
       throw e;
     }
 
-    await search.bulkDelete(allEntitiesDeleted);
+    await search.bulkDelete(entitiesDeleted);
   },
 
   async delete(sharedId, deleteIndex = true) {
