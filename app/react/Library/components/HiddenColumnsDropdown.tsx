@@ -61,7 +61,7 @@ export const HideColumnsComponent = ({
   columns: columnsMap,
 }: HideColumnsComponentProps) => {
   const [open, setOpen] = useState(false);
-  const [clickedOutside, setClickedOutside] = useState(true);
+  const [clickedOutside, setClickedOutside] = useState(false);
 
   const { sortedColumns, hiddenColumns } = processColumns(columnsMap);
   const dropdownContainerRef = useRef(null);
@@ -93,8 +93,6 @@ export const HideColumnsComponent = ({
 
   return (
     <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
-      {/*
-        // @ts-ignore */}
       <DropdownList
         ref={dropdownRef}
         open={open}
