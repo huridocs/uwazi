@@ -37,7 +37,8 @@ type MultiSelectProps<ValueType> = {
   onFilter: (_searchTerm: string) => void;
   totalPossibleOptions: number;
   allowSelectGroup: boolean;
-  disableTopLevel: boolean;
+  // TEST!!!
+  topLevelSelectable: boolean;
 };
 
 const defaultProps = {
@@ -58,7 +59,7 @@ const defaultProps = {
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,
-  disableTopLevel: false,
+  topLevelSelectable: true,
 };
 
 interface MultiSelectState {
@@ -340,15 +341,16 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return toggled || this.checked(parent) !== SelectStates.OFF;
   }
 
-  label(option: Option) {
+  label(option: Option, isSelect = true) {
     const { optionsValue, optionsLabel, prefix } = this.props;
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
-        <span className="multiselectItem-icon">
+        <span className={`multiselectItem-icon${!isSelect ? ' no-select' : ''}`}>
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
           <Icon icon="minus" className="checkbox-partial" />
           <Icon icon={['fas', 'square']} className="checkbox-group" />
+          <Icon icon="chevron-right" className="chevron-right" />
         </span>
         <span className="multiselectItem-name">
           <CustomIcon className="item-icon" data={option.icon} />
@@ -384,17 +386,22 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const state = this.checked(group);
     return (
       <li key={index} className="multiselect-group" aria-label="group">
-        <div className="multiselectItem">
-          <input
-            type="checkbox"
-            className="group-checkbox multiselectItem-input"
-            id={prefix + group.id}
-            onChange={this.changeGroup.bind(this, group)}
-            checked={state !== SelectStates.OFF}
-            data-state={state}
-            disabled={this.props.disableTopLevel}
-          />
-          {this.label({ ...group, results: group.results })}
+        <div
+          className={`multiselectItem${
+            !this.props.topLevelSelectable ? ' no-top-level-select' : ''
+          }`}
+        >
+          {this.props.topLevelSelectable && (
+            <input
+              type="checkbox"
+              className="group-checkbox multiselectItem-input"
+              id={prefix + group.id}
+              onChange={this.changeGroup.bind(this, group)}
+              checked={state !== SelectStates.OFF}
+              data-state={state}
+            />
+          )}
+          {this.label({ ...group, results: group.results }, this.props.topLevelSelectable)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">

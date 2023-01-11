@@ -750,6 +750,18 @@
     display: none;
     color: $c-success;
   }
+  .chevron-right {
+    display: none;
+  }
+
+  &.no-select {
+    .checkbox-empty {
+      display: none;
+    }
+    .chevron-right {
+      display: block;
+    }
+  }
 }
 
 .multiselectItem-input:disabled {

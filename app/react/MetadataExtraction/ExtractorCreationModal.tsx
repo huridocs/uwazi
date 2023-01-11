@@ -28,9 +28,8 @@ export const ExtractorCreationModal = ({
   templates,
 }: ExtractorCreationModalProps) => {
   const [name, setName] = useState('');
+  const [values, setValues] = useState<string[]>([]);
 
-  const [values, setValues] = useState([]);
-  // @ts-ignore
   const filter = values.length ? values[0].split('-', 2)[1] : null;
   const options = templates.map(template => ({
     label: template.name,
@@ -81,41 +80,47 @@ export const ExtractorCreationModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} type="content" className="suggestion-acceptance-modal">
+    <Modal isOpen={isOpen} type="content" className="extractor-creation-modal">
       <Modal.Header>
         <h1>
           <Translate>Add property</Translate>
-          <span>*</span>
         </h1>
       </Modal.Header>
       <Modal.Body>
         <input
           value={name}
           type="text"
-          //className="form-control"
+          className="form-control"
           onChange={event => setName(event.target.value)}
+          placeholder="Extractor name"
         />
-        <MultiSelect
-          value={values}
-          onChange={setValues}
-          options={options}
-          optionsToShow={20}
-          disableTopLevel
-        />
+        <div className="property-selection">
+          <MultiSelect
+            value={values}
+            onChange={setValues}
+            options={options}
+            optionsToShow={20}
+            topLevelSelectable={false}
+          />
+        </div>
+        <span className="left">
+          * <Translate>Only text, number and date properties are currently supported</Translate>
+        </span>
       </Modal.Body>
       <Modal.Footer>
-        <span className="left">
-          *<Translate>Only text, number and date properties are currently supported</Translate>
-        </span>
-        <button type="button" className="btn btn-default cancel-button" onClick={handleClose}>
+        <button
+          type="button"
+          className="btn btn-default btn-extra-padding cancel-button"
+          onClick={handleClose}
+        >
           <Translate>Cancel</Translate>
         </button>
         <button
           type="button"
-          className="btn confirm-button btn-success"
+          className="btn confirm-button btn-extra-padding btn-success"
           onClick={() => handleSubmit(name, values)}
         >
-          <Translate>Save</Translate>
+          <Translate>Add</Translate>
         </button>
       </Modal.Footer>
     </Modal>
