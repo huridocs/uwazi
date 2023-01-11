@@ -1,13 +1,20 @@
 import entities from 'api/entities';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import db, { DBFixture } from 'api/utils/testing_db';
+import db from 'api/utils/testing_db';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 import entitiesModel from '../entitiesModel';
 
-const load = async (data: DBFixture, index?: string) =>
+const factory = getFixturesFactory();
+const loadFixtures = async () =>
   db.setupFixturesAndContext(
     {
-      ...data,
+      templates: [factory.template('templateA', [])],
+      entities: [
+        factory.entity('1', 'templateA'),
+        factory.entity('2', 'templateA'),
+        factory.entity('3', 'templateA'),
+        factory.entity('4', 'templateA'),
+      ],
       settings: [
         {
           _id: db.id(),
@@ -17,31 +24,20 @@ const load = async (data: DBFixture, index?: string) =>
           ],
         },
       ],
-      translations: data.translations || [
+      translations: [
         { locale: 'en', contexts: [] },
         { locale: 'es', contexts: [] },
       ],
     },
-    index
+    'entities.delete.multiple.spec2'
   );
 
 describe('Entities deleteMultiple', () => {
-  const factory = getFixturesFactory();
-
   afterAll(async () => db.disconnect());
 
   describe('without errors', () => {
     beforeAll(async () => {
-      const fixtures: DBFixture = {
-        templates: [factory.template('templateA', [])],
-        entities: [
-          factory.entity('1', 'templateA'),
-          factory.entity('2', 'templateA'),
-          factory.entity('3', 'templateA'),
-          factory.entity('4', 'templateA'),
-        ],
-      };
-      await load(fixtures, 'entities.delete.multiple.spec');
+      await loadFixtures();
       await entities.deleteMultiple(['1', '2', '4']);
     });
 
@@ -59,16 +55,7 @@ describe('Entities deleteMultiple', () => {
 
   describe('when some entity throws an error', () => {
     beforeAll(async () => {
-      const fixtures: DBFixture = {
-        templates: [factory.template('templateA', [])],
-        entities: [
-          factory.entity('1', 'templateA'),
-          factory.entity('2', 'templateA'),
-          factory.entity('3', 'templateA'),
-          factory.entity('4', 'templateA'),
-        ],
-      };
-      await load(fixtures, 'entities.delete.multiple.spec2');
+      await loadFixtures();
       const originalDelete = entitiesModel.delete.bind(entitiesModel);
       jest.spyOn(entitiesModel, 'delete').mockImplementation(async deleteQuery => {
         if (deleteQuery.sharedId === '3') {
