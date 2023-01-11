@@ -208,7 +208,7 @@ describe('PDFView', () => {
     });
 
     it('should activate text reference if query parameters have reference id', () => {
-      spyOn(uiActions, 'activateReference');
+      spyOn(uiActions, 'activateReference').and.returnValue({ type: 'ABC' });
       raw = 'false';
       ref = 'refId';
       pathname = 'pathname';

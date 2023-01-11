@@ -1,22 +1,36 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow } from 'enzyme';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { UserManagement } from 'app/Users/UserManagement';
-import { Tabs } from 'react-tabs-redux';
+import * as Users from 'app/Users/components/Users';
+import * as UserGroups from 'app/Users/components/usergroups/UserGroups';
 
+import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
+
+const FakeTabContent = () => <span>Users</span>;
 describe('UserGroupList', () => {
+  beforeEach(() => {
+    spyOn(Users, 'Users').and.returnValue(<FakeTabContent />);
+    spyOn(UserGroups, 'UserGroups').and.returnValue(<FakeTabContent />);
+  });
   function render() {
-    return shallow(<UserManagement />);
+    return renderConnectedContainer(<UserManagement />, () => defaultState);
   }
   it('should render users as default tab', () => {
-    const component = render();
-    const tabs = component.find(Tabs).at(0);
-    expect(tabs.props().selectedTab).toBe('users');
+    render();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs[0].className).toContain('react-tabs__tab--selected');
+    expect(tabs[1].className).not.toContain('react-tabs__tab--selected');
   });
-  it('should handle select updating the selected tab state', () => {
-    const component = render();
-    const tabs = component.find(Tabs).at(0);
-    tabs.props().handleSelect?.('usergroups', '');
-    const updatedTabs = component.find(Tabs).at(0);
-    expect(updatedTabs.props().selectedTab).toBe('usergroups');
+  it('should handle select updating the selected tab state', async () => {
+    render();
+    const tabs = screen.getAllByRole('tab');
+    await act(() => {
+      fireEvent.click(tabs[1]);
+    });
+    expect(tabs[0].className).not.toContain('react-tabs__tab--selected');
+    expect(tabs[1].className).toContain('react-tabs__tab--selected');
   });
 });
