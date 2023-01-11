@@ -753,6 +753,9 @@
   .chevron-right {
     display: none;
   }
+  .chevron-down {
+    display: none;
+  }
 
   &.no-select {
     .checkbox-empty {
@@ -760,6 +763,15 @@
     }
     .chevron-right {
       display: block;
+    }
+
+    &.expanded {
+      .chevron-right {
+        display: none;
+      }
+      .chevron-down {
+        display: block;
+      }
     }
   }
 }

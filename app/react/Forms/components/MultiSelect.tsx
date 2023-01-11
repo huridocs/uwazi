@@ -343,16 +343,23 @@ abstract class MultiSelectBase<ValueType> extends Component<
 
   label(option: Option, isSelect = true) {
     const { optionsValue, optionsLabel, prefix } = this.props;
+    const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
-        <span className={`multiselectItem-icon${!isSelect ? ' no-select' : ''}`}>
+        <span
+          className={`multiselectItem-icon${
+            !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
+          }`}
+          onClick={clickEvent}
+        >
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
           <Icon icon="minus" className="checkbox-partial" />
           <Icon icon={['fas', 'square']} className="checkbox-group" />
           <Icon icon="chevron-right" className="chevron-right" />
+          <Icon icon="chevron-down" className="chevron-down" />
         </span>
-        <span className="multiselectItem-name">
+        <span className="multiselectItem-name" onClick={clickEvent}>
           <CustomIcon className="item-icon" data={option.icon} />
           {this.state.serverSideRender && option.url ? (
             <Link to={option.url}>{option[optionsLabel]}</Link>
@@ -363,7 +370,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         &nbsp;
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
-          {option.options && (
+          {isSelect && option.options && (
             <span
               className="multiselectItem-action"
               onClick={this.toggleOptions.bind(this, option)}
