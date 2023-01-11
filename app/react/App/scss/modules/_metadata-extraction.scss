@@ -23,3 +23,29 @@
     text-decoration: underline;
   }
 }
+
+.extractor-creation-modal {
+  min-height: 100px;
+  min-width: 400px;
+
+  .modal-header {
+    h1 {
+      font-size: 20px;
+      margin: 0 0 0 10px;
+    }
+  }
+
+  .modal-body {
+    min-height: 70px;
+
+    .property-selection {
+      margin-top: 12px;
+    }
+  }
+
+  .modal-footer {
+    .btn.cancel-button {
+      opacity: 1;
+    }
+  }
+}
