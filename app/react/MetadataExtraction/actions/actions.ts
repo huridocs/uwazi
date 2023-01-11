@@ -14,6 +14,7 @@ import {
   saveConfigurations as saveConfigs,
   getAllExtractors,
   createExtractor as createExtractorAPICall,
+  deleteExtractors as deleteExtractorsAPICall,
 } from '../SuggestionsAPI';
 import { IXTemplateConfiguration } from '../PropertyConfigurationModal';
 
@@ -33,6 +34,16 @@ const createExtractor = (newExtractorInfo: IXExtractorInfo) => async (dispatch: 
   const extractor = await createExtractorAPICall(new RequestParams(newExtractorInfo));
   dispatch(actions.push('ixExtractors', extractor));
 };
+
+const deleteExtractors =
+  (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => async (dispatch: any) => {
+    await deleteExtractorsAPICall(new RequestParams(extractorIds));
+    const idSet = new Set(extractorIds);
+    const newExtractors = currentExtractors.filter(
+      (extractor: IXExtractorInfo) => extractor._id && !idSet.has(extractor._id)
+    );
+    dispatch(actions.set('ixExtractors', newExtractors));
+  };
 
 const fetchEntity = async (entityId: string, language: string) => {
   const entityRequest = new RequestParams({ _id: entityId });
@@ -74,6 +85,7 @@ export {
   acceptSuggestion,
   loadExtractors,
   createExtractor,
+  deleteExtractors,
   fetchEntity,
   fetchFile,
   scrollToPage,

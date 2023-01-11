@@ -12,7 +12,12 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
-import { saveConfigurations, loadExtractors, createExtractor } from './actions/actions';
+import {
+  saveConfigurations,
+  loadExtractors,
+  createExtractor,
+  deleteExtractors,
+} from './actions/actions';
 import { IXExtractorInfo, ExtractorCreationModal } from './ExtractorCreationModal';
 
 type indexedTemplates = {
@@ -43,9 +48,11 @@ class MetadataExtractionComponent extends React.Component<
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
     this.createExtractor = this.createExtractor.bind(this);
+    this.deleteExtractors = this.deleteExtractors.bind(this);
     this.state = {
       configurationModalIsOpen: false,
       creationModelIsOpen: false,
+      selectedExtractorIds: new Set<string>(),
     };
   }
 
@@ -53,9 +60,27 @@ class MetadataExtractionComponent extends React.Component<
     await this.props.loadExtractors();
   }
 
+  handleExtractorSelection(extractorId: string, selected: boolean) {
+    const { selectedExtractorIds } = this.state;
+    if (selected) {
+      selectedExtractorIds.add(extractorId);
+    } else {
+      selectedExtractorIds.delete(extractorId);
+    }
+    this.setState({ selectedExtractorIds });
+  }
+
   async createExtractor(extractorInfo: IXExtractorInfo) {
     await this.props.createExtractor(extractorInfo);
     this.setState({ creationModelIsOpen: false });
+  }
+
+  async deleteExtractors() {
+    await this.props.deleteExtractors(
+      this.props.ixExtractors.toJS(),
+      Array.from(this.state.selectedExtractorIds)
+    );
+    this.setState({ selectedExtractorIds: new Set<string>() });
   }
 
   prepareTemplates() {
@@ -66,7 +91,11 @@ class MetadataExtractionComponent extends React.Component<
         {
           _id: t._id,
           name: t.name,
-          properties: Object.fromEntries((t.properties || []).map(p => [p.name, p])),
+          properties: Object.fromEntries(
+            (t.properties || [])
+              .map(p => [p.name, p])
+              .concat([['title', { name: 'title', label: 'Title', type: 'text' }]])
+          ),
         },
       ])
     );
@@ -126,6 +155,9 @@ class MetadataExtractionComponent extends React.Component<
               <thead>
                 <tr>
                   <th>
+                    <Icon icon={['far', 'square']} className="checkbox-empty" />
+                  </th>
+                  <th>
                     <Translate>Extractor Name</Translate>
                   </th>
                   <th>
@@ -139,6 +171,18 @@ class MetadataExtractionComponent extends React.Component<
               <tbody>
                 {shownExtractors.map(extractor => (
                   <tr key={extractor.name + extractor._id}>
+                    <td>
+                      {' '}
+                      <input
+                        type="checkbox"
+                        value={extractor._id}
+                        onChange={event => {
+                          if (extractor._id) {
+                            this.handleExtractorSelection(event.target.value, event.target.checked);
+                          }
+                        }}
+                      />
+                    </td>
                     <td> {extractor.name} </td>
                     <td>
                       <Icon icon={Icons[extractor.type || 'text']} fixedWidth />
@@ -177,6 +221,11 @@ class MetadataExtractionComponent extends React.Component<
             >
               <Translate>Create Extractor</Translate>
             </button>
+            {!!this.state.selectedExtractorIds.size && (
+              <button className="btn btn-danger" type="button" onClick={this.deleteExtractors}>
+                <Translate>Delete</Translate>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -189,6 +238,7 @@ export interface MetadataExtractionDashboardPropTypes {
   settings: IImmutable<ClientSettings>;
   ixExtractors: IImmutable<IXExtractorInfo[]>;
   createExtractor: (extractorInfo: IXExtractorInfo) => void;
+  deleteExtractors: (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => void;
   loadExtractors: () => void;
 }
 
@@ -202,10 +252,14 @@ export interface FormattedSettingsData {
 export interface MetadataExtractionDashboardStateTypes {
   configurationModalIsOpen: boolean;
   creationModelIsOpen: boolean;
+  selectedExtractorIds: Set<string>;
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ saveConfigurations, createExtractor, loadExtractors }, dispatch);
+  bindActionCreators(
+    { saveConfigurations, createExtractor, deleteExtractors, loadExtractors },
+    dispatch
+  );
 
 export const MetadataExtractionDashboard = connect(
   mapStateToProps,

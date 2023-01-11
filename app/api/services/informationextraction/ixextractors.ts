@@ -22,7 +22,7 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
     ])
   );
   templateIds.forEach(id => {
-    if (!propertyMap[id].has(property)) {
+    if (property !== 'title' && !propertyMap[id].has(property)) {
       throw Error('Missing property.');
     }
   });

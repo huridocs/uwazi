@@ -51,6 +51,11 @@ const createExtractor = async (requestParams: RequestParams<IXExtractorInfo>) =>
   return response;
 };
 
+const deleteExtractors = async (requestParams: RequestParams<string[]>) => {
+  const { json: response } = await api.post('ixextractors/delete', requestParams);
+  return response;
+};
+
 export {
   getSuggestions,
   getStats,
@@ -61,4 +66,5 @@ export {
   saveConfigurations,
   getAllExtractors,
   createExtractor,
+  deleteExtractors,
 };
