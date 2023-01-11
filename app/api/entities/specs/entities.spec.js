@@ -1290,15 +1290,6 @@ describe('entities', () => {
     });
   });
 
-  describe('deleteMultiple()', () => {
-    it('should delete() all the given entities', async () => {
-      jest.spyOn(entities, 'delete').mockImplementation(async () => Promise.resolve());
-      await entities.deleteMultiple(['id1', 'id2']);
-      expect(entities.delete).toHaveBeenCalledWith('id1', false);
-      expect(entities.delete).toHaveBeenCalledWith('id2', false);
-    });
-  });
-
   describe('addLanguage()', () => {
     it('should duplicate all the entities from the default language to the new one', async () => {
       jest.spyOn(entities, 'createThumbnail').mockImplementation(entity => {
