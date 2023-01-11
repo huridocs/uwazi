@@ -9,7 +9,6 @@ describe('SelectMultiplePanel', () => {
   let component;
   let instance;
   let props;
-  let context;
 
   beforeEach(() => {
     props = {
@@ -34,12 +33,12 @@ describe('SelectMultiplePanel', () => {
       thesauris: Immutable.fromJS([]),
       template: Immutable.fromJS({ properties: [] }),
       storeKey: 'library',
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
-    context = { confirm: jasmine.createSpy('confirm') };
   });
 
   const render = () => {
-    component = shallow(<SelectMultiplePanel {...props} />, { context });
+    component = shallow(<SelectMultiplePanel {...props} />);
     instance = component.instance();
   };
 
@@ -77,8 +76,8 @@ describe('SelectMultiplePanel', () => {
     it('should confirm before deleting all the selectedEntities', () => {
       render();
       component.find('.delete').simulate('click');
-      expect(context.confirm).toHaveBeenCalled();
-      context.confirm.calls.mostRecent().args[0].accept();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
+      props.mainContext.confirm.calls.mostRecent().args[0].accept();
       expect(props.deleteEntities).toHaveBeenCalledWith(props.entitiesSelected.toJS());
     });
   });
