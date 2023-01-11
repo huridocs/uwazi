@@ -313,4 +313,5 @@ DocumentsList.propTypes = {
 };
 
 export { DocumentsList };
+
 export default withRouter(DocumentsList);
