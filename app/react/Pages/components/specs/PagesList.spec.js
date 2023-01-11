@@ -9,7 +9,6 @@ import { PagesList } from '../PagesList';
 describe('PagesList', () => {
   let component;
   let props;
-  let context;
 
   beforeEach(() => {
     props = {
@@ -24,7 +23,7 @@ describe('PagesList', () => {
   });
 
   const render = () => {
-    component = shallow(<PagesList {...props} />, { context });
+    component = shallow(<PagesList {...props} />);
   };
 
   describe('render', () => {

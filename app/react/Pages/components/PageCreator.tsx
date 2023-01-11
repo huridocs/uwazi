@@ -41,7 +41,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & PageCreatorOwnProps;
 
-class PageCreator extends Component<mappedProps> {
+class PageCreatorComponent extends Component<mappedProps> {
   componentWillUnmount() {
     const { resetPage } = this.props;
     resetPage();
@@ -204,7 +204,7 @@ class PageCreator extends Component<mappedProps> {
   }
 }
 
-const container = connector(withRouter(PageCreator));
+const container = connector(withRouter(PageCreatorComponent));
 
 export type { mappedProps };
-export { container as PageCreator };
+export { container as PageCreator, PageCreatorComponent };
