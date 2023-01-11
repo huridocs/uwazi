@@ -2,13 +2,19 @@
  * @jest-environment jsdom
  */
 import backend from 'fetch-mock';
-import * as reactRouterDom from 'react-router-dom';
 import { APIURL } from 'app/config';
 import { store } from 'app/store';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
+
+const mockRedirect = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  redirect: jest.fn().mockImplementation(path => mockRedirect(path)),
+}));
 
 describe('api', () => {
   const validationErrorResponse = {
@@ -33,7 +39,6 @@ describe('api', () => {
     spyOn(loadingBar, 'done');
     spyOn(store, 'dispatch');
     spyOn(notifyActions, 'notify').and.returnValue('notify action');
-    spyOn(reactRouterDom, 'redirect');
     backend.restore();
     backend
       .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
@@ -168,7 +173,7 @@ describe('api', () => {
     describe('401', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('unauthorized', () => {
-          expect(reactRouterDom.redirect).toHaveBeenCalledWith('/login');
+          expect(mockRedirect).toHaveBeenCalledWith('/login');
         });
       });
     });
@@ -176,7 +181,7 @@ describe('api', () => {
     describe('404', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('notfound', () => {
-          expect(reactRouterDom.redirect).toHaveBeenCalledWith('/404');
+          expect(mockRedirect).toHaveBeenCalledWith('/404');
         });
       });
     });
