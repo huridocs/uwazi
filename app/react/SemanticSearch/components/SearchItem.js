@@ -10,22 +10,12 @@ import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';
 
-export class SearchItem extends Component {
+class SearchItemComponent extends Component {
   constructor(props) {
     super(props);
     this.delete = this.delete.bind(this);
     this.handleResumeClicked = this.handleResumeClicked.bind(this);
     this.handleStopClicked = this.handleStopClicked.bind(this);
-  }
-
-  delete(e) {
-    const { onDeleteClicked, search } = this.props;
-    e.preventDefault();
-    this.props.mainContext.confirm({
-      accept: onDeleteClicked.bind(this, search._id),
-      title: 'Confirm delete',
-      message: 'Are you sure you want to delete this search?',
-    });
   }
 
   handleStopClicked(e) {
@@ -38,6 +28,16 @@ export class SearchItem extends Component {
     const { search, onResumeClicked } = this.props;
     onResumeClicked(search._id);
     e.preventDefault();
+  }
+
+  delete(e) {
+    const { onDeleteClicked, search } = this.props;
+    e.preventDefault();
+    this.props.mainContext.confirm({
+      accept: onDeleteClicked.bind(this, search._id),
+      title: 'Confirm delete',
+      message: 'Are you sure you want to delete this search?',
+    });
   }
 
   renderButtons() {
@@ -89,7 +89,7 @@ export class SearchItem extends Component {
   }
 }
 
-SearchItem.propTypes = {
+SearchItemComponent.propTypes = {
   search: PropTypes.shape({
     _id: PropTypes.string,
     searchTerm: PropTypes.string,
@@ -105,7 +105,7 @@ SearchItem.propTypes = {
   }).isRequired,
 };
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       onDeleteClicked: deleteSearch,
@@ -116,4 +116,5 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(null, mapDispatchToProps)(withContext(SearchItem));
+const SearchItem = connect(null, mapDispatchToProps)(withContext(SearchItemComponent));
+export { SearchItemComponent, mapDispatchToProps, SearchItem };
