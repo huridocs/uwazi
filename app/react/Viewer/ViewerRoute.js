@@ -68,7 +68,9 @@ class ViewerRouteComponent extends RouteHandler {
 ViewerRouteComponent.defaultProps = {
   params: {},
 };
-export const ViewerRoute = Object.assign(withRouter(ViewerRouteComponent), {
+const ViewerRoute = Object.assign(withRouter(ViewerRouteComponent), {
   requestState: ViewerRouteComponent.requestState,
 });
+
+export { ViewerRouteComponent, ViewerRoute };
 export default ViewerRoute;
