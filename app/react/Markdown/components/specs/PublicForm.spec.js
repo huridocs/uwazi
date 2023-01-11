@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import Immutable from 'immutable';
-import { LocalForm } from 'react-redux-form';
+import { LocalForm } from 'app/Forms/Form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
