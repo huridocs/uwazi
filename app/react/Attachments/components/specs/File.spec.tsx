@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { LocalForm } from 'react-redux-form';
+import { LocalForm } from 'app/Forms/Form';
 import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { File, FileProps } from '../File';
@@ -8,7 +8,6 @@ import { File, FileProps } from '../File';
 describe('file', () => {
   let component: ShallowWrapper<File>;
   let props: FileProps;
-  let context: any;
 
   beforeEach(() => {
     const file: FileType = {
@@ -25,15 +24,13 @@ describe('file', () => {
       entity,
       updateFile: jasmine.createSpy('updateFile'),
       deleteFile: jasmine.createSpy('deleteFile'),
-      mainContext: { confirm: jest.fn },
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
-
-    context = { confirm: jasmine.createSpy('confirm') };
   });
 
   const render = () => {
     //eslint-disable-next-line react/jsx-props-no-spreading
-    component = shallow(<File {...props} />, { context });
+    component = shallow(<File {...props} />);
   };
 
   it('should render the file originalName and language', () => {
@@ -66,8 +63,8 @@ describe('file', () => {
       render();
       component.find('.file-edit').simulate('click');
       component.find('.btn-outline-danger').simulate('click');
-      expect(context.confirm).toHaveBeenCalled();
-      context.confirm.calls.argsFor(0)[0].accept();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
+      (props.mainContext.confirm as jasmine.Spy).calls.argsFor(0)[0].accept();
       expect(props.deleteFile).toHaveBeenCalledWith(props.file, props.entity);
     });
 
