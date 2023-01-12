@@ -9,6 +9,12 @@ import { defaultState, renderConnectedContainer } from 'app/utils/test/renderCon
 import { actions, I18NApi } from 'app/I18N';
 import LanguageList from '../LanguageList';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useLocation: () => jest.fn(),
+}));
+
 describe('Languages', () => {
   let renderResult: RenderResult;
 
@@ -86,7 +92,14 @@ describe('Languages', () => {
     };
     await waitFor(async () =>
       act(async () => {
-        ({ renderResult } = renderConnectedContainer(<LanguageList />, () => reduxStore));
+        ({ renderResult } = renderConnectedContainer(
+          <LanguageList />,
+          () => ({
+            ...reduxStore,
+          }),
+          'MemoryRouter',
+          ['']
+        ));
       })
     );
   });
