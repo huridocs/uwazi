@@ -4,17 +4,11 @@
 import React from 'react';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { UserManagement } from 'app/Users/UserManagement';
-import * as Users from 'app/Users/components/Users';
-import * as UserGroups from 'app/Users/components/usergroups/UserGroups';
-
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 
-const FakeTabContent = () => <span>Users</span>;
+jest.mock('app/Users/components/usergroups/UserGroupsAPI');
+
 describe('UserGroupList', () => {
-  beforeEach(() => {
-    spyOn(Users, 'Users').and.returnValue(<FakeTabContent />);
-    spyOn(UserGroups, 'UserGroups').and.returnValue(<FakeTabContent />);
-  });
   function render() {
     return renderConnectedContainer(<UserManagement />, () => defaultState);
   }
