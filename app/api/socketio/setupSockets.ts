@@ -27,6 +27,10 @@ declare global {
 }
 
 let io: SocketIoServer | Emitter;
+
+let pubClient: RedisClient;
+let subClient: RedisClient;
+
 const emitToTenant = (tenantName: string, event: string, ...data: any[]) => {
   if (!io) {
     throw new Error('Socket.io Server not initialized');
@@ -56,9 +60,9 @@ const setupApiSockets = (server: Server, app: Application) => {
   };
 
   if (config.redis.activated) {
-    const pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
-    const subClient = pubClient.duplicate();
-    // @ts-ignore
+    pubClient = new RedisClient({ host: config.redis.host, port: config.redis.port });
+    subClient = pubClient.duplicate();
+
     io.adapter(createAdapter(pubClient, subClient));
     io.of('/').adapter.on('error', e => {
       handleError(e, { useContext: false });
@@ -99,4 +103,9 @@ const closeSockets = () => {
   io.disconnectSockets();
 };
 
-export { setupApiSockets, setupWorkerSockets, emitToTenant, closeSockets };
+const endSocketServer = () => {
+  pubClient.end(true);
+  subClient.end(true);
+};
+
+export { setupApiSockets, setupWorkerSockets, emitToTenant, closeSockets, endSocketServer };

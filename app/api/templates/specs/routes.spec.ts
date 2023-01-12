@@ -43,7 +43,7 @@ describe('templates routes', () => {
     request(app).post(route).send(body).expect(expectedCode);
 
   beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures, 'templates_index');
+    await testingEnvironment.setUp(fixtures);
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
   });
 
@@ -209,6 +209,7 @@ describe('templates routes', () => {
     });
 
     it('should check mapping of new added inherited properties', async () => {
+      await testingEnvironment.setUp(fixtures, 'templates_index');
       const inheritPropId = testingDB.id();
       const inheritPropNum = testingDB.id();
       const templateA = {

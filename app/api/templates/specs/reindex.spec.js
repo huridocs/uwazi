@@ -17,9 +17,12 @@ const expectReindex = async (template, reindex) => {
 };
 
 describe('reindex', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     await db.setupFixturesAndContext(fixtures, 'reindex');
     jest.spyOn(search, 'indexEntities').mockReturnValue({});
+  });
+
+  beforeEach(() => {
     search.indexEntities.mockClear();
   });
 
@@ -83,6 +86,14 @@ describe('reindex', () => {
   });
 
   describe('Reindex', () => {
+    beforeAll(async () => {
+      await db.setupFixturesAndContext(fixtures, 'reindex');
+      jest.spyOn(search, 'indexEntities').mockReturnValue({});
+    });
+
+    beforeEach(() => {
+      search.indexEntities.mockClear();
+    });
     describe('Property', () => {
       it.each([
         {
