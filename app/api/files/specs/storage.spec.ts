@@ -71,6 +71,7 @@ describe('storage', () => {
       )
     );
     await s3.send(new DeleteBucketCommand({ Bucket: 'uwazi-development' }));
+    s3.destroy();
   });
 
   describe('readableFile', () => {

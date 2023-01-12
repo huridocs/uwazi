@@ -12,7 +12,7 @@ describe('Error handling middleware', () => {
     req = {};
     next = jest.fn();
     res = { json: jest.fn(), status: jest.fn() };
-    jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 

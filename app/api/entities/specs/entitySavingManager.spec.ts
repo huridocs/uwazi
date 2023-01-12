@@ -29,6 +29,7 @@ import {
   template2Id,
   textFile,
 } from './entitySavingManagerFixtures';
+import { Logger } from 'winston';
 
 const validPdfString = `
 %PDF-1.0
@@ -580,6 +581,7 @@ describe('entitySavingManager', () => {
         });
 
         it('should return an error if an existing main document cannot be saved', async () => {
+          jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({} as Logger));
           jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
 
           const { errors } = await saveEntity(

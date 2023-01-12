@@ -45,6 +45,7 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);

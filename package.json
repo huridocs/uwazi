@@ -60,7 +60,7 @@
   "jest": {
     "projects": [
       "app/jest.client.config.js",
-      "app/jest.server.config.js"
+      "app/jest.server.config.json"
     ]
   },
   "resolutions": {
