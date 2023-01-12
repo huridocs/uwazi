@@ -144,7 +144,7 @@ describe('entities routes', () => {
       jest
         .spyOn(thesauri, 'templateToThesauri')
         .mockImplementation(async () => Promise.resolve({}));
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => new Logger());
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
 
       await request(app)
         .post('/api/entities')
