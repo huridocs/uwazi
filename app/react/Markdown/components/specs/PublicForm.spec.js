@@ -1,7 +1,9 @@
 /**
  * @jest-environment jsdom
  */
+
 import Immutable from 'immutable';
+import { act } from 'react-dom/test-utils';
 import { LocalForm } from 'app/Forms/Form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
@@ -112,7 +114,9 @@ describe('PublicForm', () => {
     expect(title.props().defaultValue).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
 
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    await formSubmit({ title: 'test' });
+    await act(async () => {
+      await formSubmit({ title: 'test' });
+    });
 
     component.update();
     const title1 = component.find('#title').at(0);
@@ -193,13 +197,22 @@ describe('PublicForm', () => {
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
+
     render({ attachments: true });
+
     const attachments = component.find('.preview-title');
     expect(attachments.length).toEqual(0);
+
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    component.find(Dropzone).props().onDrop([newFile]);
+
+    await act(() => {
+      component.find(Dropzone).props().onDrop([newFile]);
+    });
+
     component.update();
+
     await formSubmit({ title: 'test' });
+
     request.then(uploadCompletePromise => {
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
