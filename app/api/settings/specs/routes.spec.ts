@@ -24,7 +24,8 @@ describe('Settings routes', () => {
 
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
-    await testingEnvironment.setUp(fixtures);
+    const elasticIndex = 'settings_index';
+    await testingEnvironment.setUp(fixtures, elasticIndex);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
