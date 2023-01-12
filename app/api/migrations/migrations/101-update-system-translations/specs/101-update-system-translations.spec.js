@@ -36,13 +36,13 @@ describe('migration remove-obsolete-translation-keys', () => {
   let translations;
 
   beforeAll(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     await migration.up(testingDB.mongodb);
     translations = await testingDB.mongodb.collection('translations').find({}).toArray();
   });
 
   beforeEach(async () => {
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     migration.reindex = false;
   });
 

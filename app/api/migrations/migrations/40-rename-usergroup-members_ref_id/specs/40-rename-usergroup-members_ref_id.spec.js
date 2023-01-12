@@ -20,8 +20,7 @@ describe('migration rename-usergroup-members_ref_id', () => {
     await migration.up(testingDB.mongodb);
     const membersWithIdCount = await testingDB.mongodb
       .collection('usergroups')
-      .find({ 'members._id': { $exists: true, $ne: null } })
-      .count();
+      .countDocuments({ 'members._id': { $exists: true, $ne: null } });
     expect(membersWithIdCount).toBe(0);
     const membersWithRefId = await testingDB.mongodb
       .collection('usergroups')
