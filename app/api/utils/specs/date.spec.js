@@ -36,7 +36,7 @@ describe('date helper', () => {
     it.each`
       stringDate                     | language     | expectedMilliseconds
       ${'5-2-2020'}                  | ${'eng'}     | ${1580860800}
-      ${'5-2-2020'}                  | ${'eng'}     | ${1588377600}
+      ${'5-2-2020'}                  | ${'en-US'}   | ${1588377600}
       ${'2020-01-01'}                | ${undefined} | ${1577836800}
       ${'17-05-2018'}                | ${undefined} | ${1526515200}
       ${'17/05/2018'}                | ${undefined} | ${1526515200}
@@ -52,18 +52,6 @@ describe('date helper', () => {
       ${'28 августа 2017'}           | ${'rus'}     | ${1503878400}
       ${'августа 28, 2017'}          | ${'rus'}     | ${1503878400}
       ${'1 de septiembre de 2001'}   | ${'spa'}     | ${999302400}
-    `(
-      'should convert $stringDate to $expectedMilliseconds',
-      ({ stringDate, language, expectedMilliseconds }) => {
-        expect(date.dateToSeconds(stringDate, language)).toBe(expectedMilliseconds);
-      }
-    );
-  });
-
-  fdescribe('dateToSeconds', () => {
-    it.each`
-      stringDate            | language | expectedMilliseconds
-      ${'августа 28, 2017'} | ${'ru'}  | ${1503878400}
     `(
       'should convert $stringDate to $expectedMilliseconds',
       ({ stringDate, language, expectedMilliseconds }) => {

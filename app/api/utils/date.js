@@ -33,7 +33,7 @@ export default {
     const { removeStopwords, ...languages } = stopword;
 
     if (locale) {
-      parsedValue = removeStopwords(parsedValue.split(' '), languages[locale]);
+      parsedValue = removeStopwords(parsedValue.split(' '), languages[locale]).join(' ');
     }
 
     let getDate = parser.fromString(parsedValue, locale);
