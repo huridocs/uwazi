@@ -3,7 +3,7 @@
  */
 import Immutable from 'immutable';
 import React from 'react';
-import { fireEvent, screen, RenderResult, within, waitFor } from '@testing-library/react';
+import { fireEvent, screen, RenderResult, within, waitFor, act } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { actions, I18NApi } from 'app/I18N';
@@ -84,9 +84,11 @@ describe('Languages', () => {
         collection: Immutable.fromJS({ languages: Immutable.fromJS(currentLanguages) }),
       },
     };
-    await waitFor(() => {
-      ({ renderResult } = renderConnectedContainer(<LanguageList />, () => reduxStore));
-    });
+    await waitFor(async () =>
+      act(async () => {
+        ({ renderResult } = renderConnectedContainer(<LanguageList />, () => reduxStore));
+      })
+    );
   });
 
   const getLanguageRow = (section: string, languageLabel: string) => {
