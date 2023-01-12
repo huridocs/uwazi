@@ -279,6 +279,7 @@ class InformationExtraction {
   getSuggestions = async (property: string) => {
     const files = await getFilesForSuggestions(property);
     if (files.length === 0) {
+      await this.saveModelProcess(property, ModelStatus.ready, false);
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
     }
@@ -303,6 +304,7 @@ class InformationExtraction {
       model.findingSuggestions = true;
       await IXModelsModel.save(model);
     }
+
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
@@ -368,16 +370,21 @@ class InformationExtraction {
     return true;
   };
 
-  saveModelProcess = async (property: string) => {
+  saveModelProcess = async (
+    property: string,
+    status: ModelStatus = ModelStatus.processing,
+    findingSuggestions = true
+  ) => {
     const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
 
     await ixmodels.save({
       ...currentModel,
-      status: ModelStatus.processing,
+      status,
       creationDate: new Date().getTime(),
       propertyName: property,
+      findingSuggestions,
     });
   };
 
@@ -396,11 +403,7 @@ class InformationExtraction {
       });
 
       if (message.task === 'create_model' && message.success) {
-        await ixmodels.save({
-          ...currentModel,
-          status: ModelStatus.ready,
-          creationDate: new Date().getTime(),
-        });
+        await this.saveModelProcess(message.params!.property_name, ModelStatus.ready);
         await this.updateSuggestionStatus(message, currentModel);
       }
 
