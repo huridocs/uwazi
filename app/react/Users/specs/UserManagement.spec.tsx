@@ -8,9 +8,21 @@ import { renderConnectedContainer, defaultState } from 'app/utils/test/renderCon
 
 jest.mock('app/Users/components/usergroups/UserGroupsAPI');
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useLocation: () => jest.fn(),
+}));
 describe('UserGroupList', () => {
   function render() {
-    return renderConnectedContainer(<UserManagement />, () => defaultState);
+    return renderConnectedContainer(
+      <UserManagement />,
+      () => ({
+        ...defaultState,
+      }),
+      'MemoryRouter',
+      ['']
+    );
   }
   it('should render users as default tab', () => {
     render();
