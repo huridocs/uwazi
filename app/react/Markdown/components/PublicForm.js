@@ -18,7 +18,7 @@ import { Loader } from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import { generateID } from 'shared/IDGenerator';
 
-class PublicForm extends Component {
+class PublicFormComponent extends Component {
   static renderTitle(template) {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
     const useGeneratedId = Boolean(titleProperty.get('generatedId'));
@@ -110,10 +110,13 @@ class PublicForm extends Component {
     }
   }
 
-  fileDropped(files) {
+  async fileDropped(files) {
     const uploadedFiles = files;
     this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({ files: uploadedFiles });
+    this.setState(prevState => ({
+      ...prevState,
+      files: uploadedFiles,
+    }));
   }
 
   renderFileField(id, options) {
@@ -220,10 +223,10 @@ class PublicForm extends Component {
         getDispatch={dispatch => this.attachDispatch(dispatch)}
         onSubmit={this.handleSubmit}
       >
-        {submiting && PublicForm.renderSubmitState()}
+        {submiting && PublicFormComponent.renderSubmitState()}
         {!submiting && (
           <div className="public-form">
-            {PublicForm.renderTitle(template)}
+            {PublicFormComponent.renderTitle(template)}
             <MetadataFormFields
               thesauris={thesauris}
               model="publicform"
@@ -244,7 +247,7 @@ class PublicForm extends Component {
     );
   }
 }
-PublicForm.propTypes = {
+PublicFormComponent.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
   remote: PropTypes.bool.isRequired,
@@ -262,4 +265,5 @@ export const mapStateToProps = (state, props) => ({
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);
+export { PublicFormComponent };
+export default connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);

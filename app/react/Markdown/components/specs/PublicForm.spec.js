@@ -1,16 +1,30 @@
 /**
  * @jest-environment jsdom
  */
-
+/* eslint-disable max-statements */
 import Immutable from 'immutable';
 import { act } from 'react-dom/test-utils';
 import { LocalForm } from 'app/Forms/Form';
 import Dropzone from 'react-dropzone';
 import { MetadataFormFields } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
-import api from 'app/utils/api';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import PublicForm from '../PublicForm';
+import { PublicFormComponent as PublicForm } from '../PublicForm';
+
+const mockApiGet = jest.fn().mockResolvedValue({
+  json: {
+    data: [
+      { title: 'Southern Nights', documents: [], attachments: [] },
+      { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
+    ],
+  },
+});
+jest.mock('app/utils/api', () => ({
+  ...jest.requireActual('app/utils/api'),
+  __esModule: true,
+  default: { get: () => mockApiGet() },
+  get: () => mockApiGet(),
+}));
 
 describe('PublicForm', () => {
   let props;
@@ -77,18 +91,7 @@ describe('PublicForm', () => {
       ]),
     };
     const mappedProps = { ...props, ...customProps };
-    spyOn(api, 'get').and.returnValue(
-      Promise.resolve({
-        json: {
-          data: [
-            { title: 'Southern Nights', documents: [], attachments: [] },
-            { title: 'elenore', documents: [{ originalName: 'The Turtles' }], attachments: [] },
-          ],
-        },
-      })
-    );
-
-    component = renderConnectedMount(PublicForm.WrappedComponent, state, mappedProps, true);
+    component = renderConnectedMount(PublicForm, state, mappedProps, true);
     prepareMocks();
   };
 
@@ -189,11 +192,7 @@ describe('PublicForm', () => {
     });
   });
 
-  it('should keep attachments after a submission error', async done => {
-    request = new Promise(resolve => {
-      resolve({ promise: Promise.reject() });
-    });
-
+  it('should NOT clear the form attachments on submission error', async done => {
     const newFile = new File([Buffer.from('image').toString('base64')], 'image.jpg', {
       type: 'image/jpg',
     });
@@ -202,17 +201,19 @@ describe('PublicForm', () => {
 
     const attachments = component.find('.preview-title');
     expect(attachments.length).toEqual(0);
-
     const formSubmit = component.find(LocalForm).props().onSubmit;
-
-    await act(() => {
-      component.find(Dropzone).props().onDrop([newFile]);
+    await act(async () => {
+      await component.find(Dropzone).props().onDrop([newFile]);
+      component.update();
     });
-
-    component.update();
-
-    await formSubmit({ title: 'test' });
-
+    request = new Promise(resolve => {
+      resolve({ promise: Promise.reject() });
+    });
+    submit = jasmine.createSpy('submit').and.returnValue(request);
+    await act(async () => {
+      await formSubmit({ title: 'test' });
+      component.update();
+    });
     request.then(uploadCompletePromise => {
       uploadCompletePromise.promise
         .then(() => fail('should throw error'))
