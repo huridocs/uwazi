@@ -1,7 +1,7 @@
 /*global page*/
 /*global browser*/
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
-import _ from 'lodash';
+import { kebabCase } from 'lodash';
 import { BoundingBox, ElementHandle, Page, ScreenshotOptions } from 'puppeteer';
 
 import { ensure } from 'shared/tsUtils';
@@ -20,7 +20,7 @@ const displayGraph = async () => {
     input.getAttribute('value')
   );
 
-  const pageUrl = `${host}/page/${pageID}/${_.kebabCase(pageTitle || '')}`;
+  const pageUrl = `${host}/page/${pageID}/${kebabCase(pageTitle || '')}`;
 
   await expect(page).toClick('a', { text: '(view page)' });
 
