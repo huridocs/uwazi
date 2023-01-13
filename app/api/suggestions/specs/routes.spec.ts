@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
@@ -304,7 +303,6 @@ describe('suggestions routes', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   describe('POST /api/suggestions/configurations', () => {
     const superPowerPayload = {
       template: personTemplateId.toString(),

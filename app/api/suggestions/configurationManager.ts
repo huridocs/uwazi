@@ -169,7 +169,6 @@ const calculateNewConfig = async (
   return newConfig;
 };
 
-// eslint-disable-next-line max-statements
 const saveConfigurations = async (settingsTemplates: ISettingsTemplate[]) => {
   const currentSettings = await settings.get();
   const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
