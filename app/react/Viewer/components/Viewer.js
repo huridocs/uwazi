@@ -226,7 +226,7 @@ Viewer.propTypes = {
   panelIsOpen: PropTypes.bool,
   addReference: PropTypes.func,
   targetDoc: PropTypes.bool,
-  /* TEST!!!!!!! */ sidepanelTab: PropTypes.string,
+  sidepanelTab: PropTypes.string,
   loadTargetDocument: PropTypes.func,
   showConnections: PropTypes.bool,
   showTextSelectMenu: PropTypes.bool,
@@ -250,7 +250,7 @@ const mapStateToProps = state => {
     panelIsOpen: !!uiState.panel,
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     locale: state.locale,
-    /* TEST!!!!! */ sidepanelTab: documentViewer.sidepanel.tab,
+    sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
       !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
