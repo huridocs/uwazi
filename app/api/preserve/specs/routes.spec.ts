@@ -16,7 +16,7 @@ describe('entities get searchString', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
+    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index-routes');
     jest.spyOn(requestShared, 'post').mockImplementation(async () =>
       Promise.resolve({
         json: { data: { token: 'sometoken' } },

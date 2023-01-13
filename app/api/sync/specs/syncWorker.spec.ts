@@ -21,7 +21,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
-import { rmdir, writeFile } from 'fs/promises';
+import { rm, writeFile } from 'fs/promises';
 import { Server } from 'http';
 import 'isomorphic-fetch';
 import _ from 'lodash';
@@ -152,10 +152,10 @@ describe('syncWorker', () => {
 
   afterAll(async () => {
     await tenants.run(async () => {
-      await rmdir(attachmentsPath(), { recursive: true });
+      await rm(attachmentsPath(), { recursive: true });
     }, 'target1');
     await tenants.run(async () => {
-      await rmdir(attachmentsPath(), { recursive: true });
+      await rm(attachmentsPath(), { recursive: true });
     }, 'target2');
     await new Promise(resolve => {
       server.close(resolve);
