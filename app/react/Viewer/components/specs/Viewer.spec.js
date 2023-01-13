@@ -32,6 +32,7 @@ describe('Viewer', () => {
       location: { query: {} },
       templates: fromJS([]),
       locale: 'es',
+      sidepanelTab: 'metadata',
     };
   });
 
@@ -157,6 +158,14 @@ describe('Viewer', () => {
     it('should loadDefaultViewerMenu()', () => {
       render({ mount: true });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'LOAD_DEFAULT_VIEWER_MENU' });
+    });
+  });
+
+  describe('relationships', () => {
+    it('should display the document relationships', () => {
+      props.sidepanelTab = 'relationships';
+      render();
+      expect(component).toMatchSnapshot();
     });
   });
 });
