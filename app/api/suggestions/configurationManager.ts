@@ -2,6 +2,7 @@ import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
+import _ from 'lodash';
 import languages from 'shared/languages';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
@@ -60,41 +61,6 @@ const deleteSuggestionsNotConfigured = async (
   }
 };
 
-const getTemplatesWithNewProps = (
-  settingsTemplates: ISettingsTemplate[],
-  currentSettingsTemplates: ISettingsTemplate[]
-) =>
-  settingsTemplates
-    .map(newTemp => {
-      const oldTemplate = currentSettingsTemplates?.find(
-        oldTemp => oldTemp.template === newTemp.template
-      );
-      if (newTemp.properties.length === oldTemplate?.properties.length || !oldTemplate) {
-        return null;
-      }
-      const newProps = newTemp.properties;
-      const oldProps = oldTemplate?.properties || [];
-      const addedProps: string[] = newProps
-        .map((prop: any) => (!oldProps.includes(prop) ? prop : false))
-        .filter(p => p);
-      return { ...newTemp, properties: addedProps };
-    })
-    .filter(t => t);
-
-const getTemplateDifference = (
-  currentSettingsTemplates: ISettingsTemplate[],
-  settingsTemplates: ISettingsTemplate[]
-) => {
-  const newTemplates = settingsTemplates.filter(temp => {
-    const oldTemplateIds = currentSettingsTemplates?.map(oldTemp => oldTemp.template) || [];
-    return !oldTemplateIds.includes(temp.template);
-  });
-
-  const combedNewTemplates = getTemplatesWithNewProps(settingsTemplates, currentSettingsTemplates);
-
-  return newTemplates.concat(combedNewTemplates as ISettingsTemplate[]);
-};
-
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
 
@@ -131,6 +97,7 @@ const createDefaultSuggestionsForFiles = async (
   defaultLanguage: string
 ) => {
   const blankSuggestions: IXSuggestionType[] = [];
+
   fileList.forEach((file: FileType) => {
     const language = file.language
       ? languages.get(file.language, 'ISO639_1') || defaultLanguage
@@ -177,6 +144,32 @@ const createDefaultSuggestions = async (
   await Promise.all(templatesPromises);
 };
 
+const calculateNewConfig = async (
+  currentConfig: ISettingsTemplate[],
+  inputConfig: ISettingsTemplate[]
+) => {
+  const newConfig: ISettingsTemplate[] = [];
+  const currentTemplates = new Set(currentConfig.map(t => t.template));
+  const [newTemplates, oldTemplates] = _.partition(
+    inputConfig,
+    t => !currentTemplates.has(t.template)
+  );
+
+  newTemplates.forEach(t => {
+    newConfig.push(t);
+  });
+  oldTemplates.forEach(t => {
+    const currentProps = new Set(
+      currentConfig.find(temp => temp.template === t.template)?.properties
+    );
+    const newProps = t.properties.filter(p => !currentProps.has(p));
+    newConfig.push({ ...t, properties: newProps });
+  });
+
+  return newConfig;
+};
+
+// eslint-disable-next-line max-statements
 const saveConfigurations = async (settingsTemplates: ISettingsTemplate[]) => {
   const currentSettings = await settings.get();
   const defaultLanguage = currentSettings?.languages?.find(lang => lang.default)?.key;
@@ -189,8 +182,9 @@ const saveConfigurations = async (settingsTemplates: ISettingsTemplate[]) => {
   currentSettings.features.metadataExtraction.templates = settingsTemplates;
   await settings.save(currentSettings);
 
-  const newTemplates = getTemplateDifference(currentSettingsTemplates, settingsTemplates);
-  await createDefaultSuggestions(newTemplates, defaultLanguage as string);
+  const newConfig = await calculateNewConfig(currentSettingsTemplates, settingsTemplates);
+
+  await createDefaultSuggestions(newConfig, defaultLanguage as string);
 
   return currentSettings;
 };

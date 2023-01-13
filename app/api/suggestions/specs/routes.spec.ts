@@ -496,5 +496,42 @@ describe('suggestions routes', () => {
       );
       expect(ageSugg).toMatchObject(expectedAgeSuggestions);
     });
+
+    it('should add blank states when adding another property to an existing template', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload])
+        .expect(200);
+      let superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      let ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject([]);
+
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([
+          {
+            template: personTemplateId.toString(),
+            properties: ['super_powers', 'age'],
+          },
+        ])
+        .expect(200);
+      superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject(expectedAgeSuggestions);
+    });
   });
 });
