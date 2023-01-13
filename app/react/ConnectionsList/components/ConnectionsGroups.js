@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { Icon } from 'UI';
 import { connect } from 'react-redux';
 import { t } from 'app/I18N';
-import { RelationshipsFormButtons } from 'app/Relationships';
 import ConnectionsGroup from './ConnectionsGroup';
 import { LibraryViewRelationships } from './LibraryViewRelationships';
 
@@ -33,7 +32,6 @@ class ConnectionsGroupsComponent extends Component {
                 ))}
               </ul>
             </div>
-            <RelationshipsFormButtons />
           </div>
         );
       }

@@ -108,7 +108,7 @@ class Viewer extends Component {
     if (doc.get('_id') && !doc.get('documents').size) {
       return this.renderNoDoc();
     }
-    const includeFooter = user.get('_id') && sidepanelTab === 'connections';
+    const includeFooter = user.get('_id') && sidepanelTab === 'relationships';
     const className = this.prepareClassName(includeFooter);
     const { raw, searchTerm, pageText, page } = this.props;
     const documentTitle = doc.get('title') ? doc.get('title') : '';
@@ -121,7 +121,7 @@ class Viewer extends Component {
         <ShowIf if={!targetDoc}>
           <div className="content-header content-header-document">
             <div className="content-header-title">
-              {sidepanelTab !== 'connections' && (
+              {sidepanelTab !== 'relationships' && (
                 <>
                   <PaginatorWithPage totalPages={file.totalPages} onPageChange={changePage} />
                   <NeedAuthorization roles={['admin', 'editor']}>
@@ -184,7 +184,7 @@ class Viewer extends Component {
           onRangedConnect={loadTargetDocument}
           file={file}
         />
-        {sidepanelTab === 'connections' && (
+        {sidepanelTab === 'relationships' && (
           <>
             <RelationshipMetadata />
             <AddEntitiesPanel />
