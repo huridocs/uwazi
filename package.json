@@ -38,6 +38,7 @@
     "import-csv": "node scripts/run.js ../database/import_csv.js",
     "blank-state": "./database/blank_state.sh",
     "admin-user": "./database/admin_user.sh",
+    "ix-config": "./database/ix_config.sh",
     "dump-db": "./database/dump_db.sh",
     "restore-db": "./database/restore_db.sh",
     "fixtures": "./uwazi-fixtures/restore.sh",
