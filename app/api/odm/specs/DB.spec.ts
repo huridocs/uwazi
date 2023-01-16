@@ -31,6 +31,8 @@ describe('DB', () => {
   });
 
   afterAll(async () => {
+    await db1.dropDatabase();
+    await db2.dropDatabase();
     await DB.disconnect();
   });
 

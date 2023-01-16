@@ -21,12 +21,12 @@ jest.mock('../migrationsParser', () => ({
 }));
 
 describe('Activitylog Parser', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     typeParsers.stubLogTypeParser.mockReturnValue({
       action: 'MIGRATE',
       description: 'Dummy log',
     });
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -35,9 +35,7 @@ describe('Activitylog Parser', () => {
 
   async function testBeautified(log, expected) {
     const semanticData = await getSemanticData(log);
-    expect(semanticData).toEqual({
-      ...expected,
-    });
+    expect(semanticData).toEqual(expected);
   }
 
   describe('getSemanticData', () => {

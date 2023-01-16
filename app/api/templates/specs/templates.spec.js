@@ -32,7 +32,15 @@ import fixtures, {
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
 
-  beforeEach(async () => {
+  const resetTemplateToBeEdited = async () => {
+    const [testTemplate] = await templates.get({ _id: templateToBeEditedId });
+    testTemplate.name = 'template to be edited';
+    testTemplate.properties = [];
+    testTemplate.commonProperties = [{ name: 'title', label: 'Title', type: 'text' }];
+    return templates.save(testTemplate, 'es', true, false);
+  };
+
+  beforeAll(async () => {
     jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
     await db.setupFixturesAndContext(fixtures, elasticIndex);
   });
@@ -58,6 +66,7 @@ describe('templates', () => {
       const template = await templates.save(newTemplate);
       expect(template._id).toBeDefined();
       expect(template.name).toBe('created_template');
+      expect(template.properties[0].label).toEqual('fieldLabel');
     });
 
     it('should validate after generating property names', async () => {
@@ -104,22 +113,6 @@ describe('templates', () => {
       expect(
         newMapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
       ).toBeDefined();
-    });
-
-    it('should create a template', async () => {
-      const newTemplate = {
-        name: 'created_template',
-        properties: [{ label: 'fieldLabel', type: 'text' }],
-        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
-      };
-
-      await templates.save(newTemplate);
-
-      const allTemplates = await templates.get();
-      const newDoc = allTemplates.find(template => template.name === 'created_template');
-
-      expect(newDoc.name).toBe('created_template');
-      expect(newDoc.properties[0].label).toEqual('fieldLabel');
     });
 
     describe('when property content changes', () => {
@@ -209,11 +202,11 @@ describe('templates', () => {
     });
 
     it('should update translations when name of the template changes', async () => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-      const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
-
+      const testTemplate = await resetTemplateToBeEdited();
+      jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
       testTemplate.name = 'changed name';
       await templates.save(testTemplate, 'es', true, false);
+
       const expectedContext = {
         'template to be edited': 'changed name',
       };
@@ -229,9 +222,9 @@ describe('templates', () => {
     });
 
     it('should update translations with the name of the title property, and remove old custom value', async () => {
-      jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
-      const testTemplate = (await templates.get({ _id: templateToBeEditedId }))[0];
+      const testTemplate = await resetTemplateToBeEdited();
 
+      jest.spyOn(translations, 'updateContext').mockImplementationOnce(() => {});
       testTemplate.commonProperties[0].label = 'First New Title';
       await templates.save(testTemplate);
       let expectedContext = {
@@ -265,41 +258,41 @@ describe('templates', () => {
 
     it('should assign a safe property name based on the label ', async () => {
       const newTemplate = {
-        name: 'created_template',
+        name: 'new template',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
-          { label: 'label 1', type: 'text' },
-          { label: 'label 2', type: 'select', content: thesauriId1.toString() },
-          { label: 'label 3', type: 'image' },
-          { label: 'label 4', name: 'name', type: 'text' },
-          { label: 'label 5', type: 'geolocation' },
+          { label: 'new label 1', type: 'text' },
+          { label: 'new label 2', type: 'select', content: thesauriId1.toString() },
+          { label: 'new label 3', type: 'image' },
+          { label: 'new label 4', name: 'name', type: 'text' },
+          { label: 'new label 5', type: 'geolocation' },
         ],
       };
 
       await templates.save(newTemplate);
-      const allTemplates = await templates.get();
-      const newDoc = allTemplates.find(template1 => template1.name === 'created_template');
+      const [createdTemplate] = await templates.get({ name: 'new template' });
 
-      expect(newDoc.properties[0].name).toEqual('label_1');
-      expect(newDoc.properties[1].name).toEqual('label_2');
-      expect(newDoc.properties[2].name).toEqual('label_3');
-      expect(newDoc.properties[3].name).toEqual('label_4');
-      expect(newDoc.properties[4].name).toEqual('label_5_geolocation');
+      expect(createdTemplate.properties[0].name).toEqual('new_label_1');
+      expect(createdTemplate.properties[1].name).toEqual('new_label_2');
+      expect(createdTemplate.properties[2].name).toEqual('new_label_3');
+      expect(createdTemplate.properties[3].name).toEqual('new_label_4');
+      expect(createdTemplate.properties[4].name).toEqual('new_label_5_geolocation');
     });
 
     it('should set a default value of [] to properties', async () => {
       const newTemplate = {
-        name: 'created_template',
+        name: 'new template default properties',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
       };
       await templates.save(newTemplate);
-      const allTemplates = await templates.get();
-      const newDoc = allTemplates.find(template => template.name === 'created_template');
-      expect(newDoc.properties).toEqual([]);
+
+      const [newCreatedTemplate] = await templates.get({ name: 'new template default properties' });
+      expect(newCreatedTemplate.properties).toEqual([]);
     });
 
     describe('when passing _id', () => {
-      beforeEach(() => {
+      beforeAll(async () => {
+        await db.setupFixturesAndContext(fixtures, elasticIndex);
         jest
           .spyOn(entities, 'updateMetadataProperties')
           .mockImplementation(async () => Promise.resolve());
@@ -580,9 +573,9 @@ describe('templates', () => {
 
   describe('inherit', () => {
     let savedTemplate;
-    beforeEach(async () => {
+    beforeAll(async () => {
       savedTemplate = await templates.save({
-        name: 'template',
+        name: 'template inherit',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           {
