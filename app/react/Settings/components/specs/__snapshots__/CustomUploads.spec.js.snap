@@ -94,6 +94,7 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                   >
                     <NavLink
                       className="only-mobile"
+                      end={true}
                       onClick={[Function]}
                       to="/en/settings/"
                     >
@@ -533,6 +534,7 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
                   >
                     <NavLink
                       className="only-mobile"
+                      end={true}
                       onClick={[Function]}
                       to="/en/settings/"
                     >
