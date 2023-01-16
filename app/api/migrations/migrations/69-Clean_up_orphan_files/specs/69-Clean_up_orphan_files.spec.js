@@ -8,7 +8,7 @@ import { fixtures } from './fixtures';
 describe('migration Clean up orphan files', () => {
   beforeEach(async () => {
     jest.spyOn(fs.promises, 'unlink').mockReturnValue(Promise.resolve());
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = `${__dirname}/documents`;
     config.defaultTenant.attachments = `${__dirname}/attachments`;
     config.defaultTenant.customUploads = `${__dirname}/custom`;

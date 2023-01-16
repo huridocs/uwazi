@@ -18,7 +18,7 @@ describe('Auth Routes', () => {
   let app;
 
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
     routes = instrumentRoutes(authRoutes);
   });
 
@@ -35,12 +35,12 @@ describe('Auth Routes', () => {
 
     const expectNextOnError = async username => {
       const req = { body: { username, password: 'badPassword' }, get: () => {} };
-      const next = jasmine.createSpy('next');
+      const next = jest.fn();
       try {
         await routes.post('/api/login', req, {}, next);
       } catch (err) {
-        expect(next.calls.mostRecent().args[0].code).toBe(401);
-        expect(next.calls.mostRecent().args[0].message).toMatch(/invalid username or password/i);
+        expect(next.mock.calls[0][0].code).toBe(401);
+        expect(next.mock.calls[0][0].message).toMatch(/invalid username or password/i);
       }
     };
 
@@ -87,7 +87,7 @@ describe('Auth Routes', () => {
 
   describe('/captcha', () => {
     it('should return the captcha and store its value', async () => {
-      spyOn(svgCaptcha, 'create').and.returnValue({ data: 'captchaSvg', text: '42' });
+      jest.spyOn(svgCaptcha, 'create').mockReturnValue({ data: 'captchaSvg', text: '42' });
       const req = { session: {} };
       const response = await routes.get('/api/captcha', req);
 

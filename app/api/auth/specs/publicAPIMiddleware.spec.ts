@@ -7,8 +7,7 @@ jest.mock('../index', () => ({
 }));
 
 describe('publicAPIMiddleware', () => {
-  const captchaMock = jest.fn();
-  (<jest.Mock>auth.captchaAuthorization).mockImplementation(() => captchaMock);
+  let captchaMock: jest.Mock<any, any>;
 
   const setUpSettings = async (open: boolean) =>
     testingDB.clearAllAndLoad({
@@ -20,6 +19,8 @@ describe('publicAPIMiddleware', () => {
     });
 
   beforeEach(() => {
+    captchaMock = jest.fn();
+    (<jest.Mock>auth.captchaAuthorization).mockImplementation(() => captchaMock);
     captchaMock.mockReset();
   });
 

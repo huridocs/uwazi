@@ -17,16 +17,20 @@ describe('csvLoader', () => {
 
   beforeAll(async () => {
     await db.setupFixturesAndContext(fixtures);
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(entities, 'save').mockImplementation(async e => e);
   });
 
   afterAll(async () => db.disconnect());
 
   describe('user', () => {
     it('should use the passed user', async () => {
-      spyOn(entities, 'save').and.callFake(e => e);
       await loader.load(csvFile, template1Id, { user: { username: 'user' }, language: 'en' });
-      expect(entities.save.calls.argsFor(0)[1].user).toEqual({ username: 'user' });
+      expect(entities.save.mock.calls[0][1].user).toEqual({ username: 'user' });
     });
   });
 
@@ -119,6 +123,8 @@ describe('csvLoader', () => {
     const events = [];
 
     beforeAll(async () => {
+      jest.restoreAllMocks();
+      await db.setupFixturesAndContext(fixtures);
       loader.on('entityLoaded', entity => {
         events.push(entity.title);
       });
@@ -203,13 +209,13 @@ describe('csvLoader', () => {
       const testingLoader = new CSVLoader();
 
       await db.setupFixturesAndContext(fixtures);
-      spyOn(entities, 'save').and.callFake(entity => {
+      jest.spyOn(entities, 'save').mockImplementation(entity => {
         throw new Error(`error-${entity.title}`);
       });
 
       try {
         await testingLoader.load(csvFile, template1Id);
-        fail('should fail');
+        throw new Error('should fail');
       } catch (e) {
         expect(e).toEqual(new Error('error-title1'));
       }
@@ -225,7 +231,7 @@ describe('csvLoader', () => {
 
       try {
         await testingLoader.load(csvFile, template1Id);
-        fail('should fail');
+        throw new Error('should fail');
       } catch (e) {
         expect(e).toEqual(new Error('error-title2'));
       }
@@ -233,8 +239,8 @@ describe('csvLoader', () => {
   });
 
   describe('no stop on errors', () => {
-    beforeAll(async () => {
-      spyOn(entities, 'save').and.callFake(entity => {
+    beforeEach(async () => {
+      jest.spyOn(entities, 'save').mockImplementation(entity => {
         if (entity.title === 'title1' || entity.title === 'title3') {
           throw new Error(`error-${entity.title}`);
         }
@@ -266,7 +272,7 @@ describe('csvLoader', () => {
 
       try {
         await testingLoader.load(csvFile, template1Id);
-        fail('should fail');
+        throw new Error('should fail');
       } catch (e) {
         expect(e.message).toMatch(/multiple errors/i);
         expect(testingLoader.errors()).toEqual({
@@ -277,8 +283,8 @@ describe('csvLoader', () => {
     });
 
     it('should fail when parsing throws an error', async () => {
-      entities.save.and.callFake(() => Promise.resolve({}));
-      spyOn(typeParsers, 'text').and.callFake(entity => {
+      jest.spyOn(entities, 'save').mockImplementation(() => Promise.resolve({}));
+      jest.spyOn(typeParsers, 'text').mockImplementation(entity => {
         if (entity.title === 'title2') {
           throw new Error(`error-${entity.title}`);
         }
@@ -288,7 +294,7 @@ describe('csvLoader', () => {
 
       try {
         await testingLoader.load(csvFile, template1Id);
-        fail('should fail');
+        throw new Error('should fail');
       } catch (e) {
         expect(testingLoader.errors()).toEqual({
           1: new Error('error-title2'),
@@ -298,6 +304,11 @@ describe('csvLoader', () => {
   });
 
   describe('when sharedId is provided', () => {
+    beforeEach(async () => {
+      jest.restoreAllMocks();
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     it('should update the entity', async () => {
       const entity = await entities.save(
         { title: 'entity4444', template: template1Id },
@@ -320,16 +331,17 @@ describe('csvLoader', () => {
   });
 
   describe('when the title is not provided', () => {
-    let readStreamMock;
-    afterEach(() => {
-      readStreamMock.mockRestore();
+    beforeEach(async () => {
+      jest.restoreAllMocks();
+      await db.setupFixturesAndContext(fixtures);
     });
+
     describe('title not marked with generated Id option', () => {
       it('should throw a validation error', async () => {
         const csv = `title , numeric label
                        , 10
                  title2, 10`;
-        readStreamMock = mockCsvFileReadStream(csv);
+        mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
 
         try {
@@ -340,12 +352,13 @@ describe('csvLoader', () => {
         }
       });
     });
+
     describe('title marked with generated Id option', () => {
       it('should set a generatedId as the title if a value is not provided', async () => {
         const csv = `title , numeric label
                        , 10
                  title2, 10`;
-        readStreamMock = mockCsvFileReadStream(csv);
+        mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
 
         await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
@@ -358,11 +371,12 @@ describe('csvLoader', () => {
         expect(result[0].title).toEqual(expect.stringMatching(/^[a-zA-Z0-9-]{12}$/));
         expect(result[1].title).toBe('title2');
       });
+
       it('should set a generatedId as the title if column is not provided', async () => {
         const csv = `numeric label
                      20
                      22`;
-        readStreamMock = mockCsvFileReadStream(csv);
+        mockCsvFileReadStream(csv);
         const testingLoader = new CSVLoader();
         await testingLoader.load('mockedFileFromString', templateWithGeneratedTitle, {
           language: 'en',

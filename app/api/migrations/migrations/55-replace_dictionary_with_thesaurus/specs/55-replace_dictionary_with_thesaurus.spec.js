@@ -7,8 +7,8 @@ describe('migration replace_dictionary_with_thesaurus', () => {
   let contexts = [];
 
   beforeEach(async () => {
-    //spyOn(process.stdout, 'write');
-    await testingDB.clearAllAndLoad(fixtures);
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    await testingDB.setupFixturesAndContext(fixtures);
     await migration.up(testingDB.mongodb);
     translations = await testingDB.mongodb.collection('translations').find({}).toArray();
     translations.forEach(translation => {

@@ -42,6 +42,18 @@ const conformValidationErrors = (routeCanFail, expected) =>
 const conformMessage = (result, routeCanFail, expected) =>
   result.pass ? 'route is authorized' : conformValidationErrors(routeCanFail, expected);
 
+const matchers = {
+  toNeedAuthorization(routeResult, expected) {
+    const routeCanFail = assessStatus(routeResult) === 401;
+    const routeValidatesExpected = expected ? assessAuthorized(routeResult, expected) : true;
+    const result = { pass: routeCanFail && routeValidatesExpected };
+    result.message = () => conformMessage(result, routeCanFail, expected);
+    return result;
+  },
+};
+
+expect.extend(matchers);
+
 export function catchErrors(done) {
   return error => {
     if (error instanceof Error) {
@@ -50,37 +62,3 @@ export function catchErrors(done) {
     return done.fail(JSON.stringify(error));
   };
 }
-
-const matchers = {
-  toNeedAuthorization() {
-    return {
-      compare(routeResult, expected) {
-        const routeCanFail = assessStatus(routeResult) === 401;
-        const routeValidatesExpected = expected ? assessAuthorized(routeResult, expected) : true;
-        const result = { pass: routeCanFail && routeValidatesExpected };
-        result.message = () => conformMessage(result, routeCanFail, expected);
-        return result;
-      },
-    };
-  },
-  containItems() {
-    return {
-      compare(actual, expected) {
-        const result = {};
-        const missingItems = expected.filter(item => !actual.includes(item));
-        result.pass = !missingItems.length && actual.length === expected.length;
-        if (result.pass) {
-          result.message = 'Collections are equal';
-        } else {
-          result.message = `Expected: [${expected}] but got: [${actual}]`;
-        }
-        return result;
-      },
-    };
-  },
-  toContainEqual: jasmine.matchers ? jasmine.matchers.toContain : () => {},
-};
-
-beforeEach(() => {
-  jasmine.addMatchers(matchers);
-});

@@ -6,7 +6,7 @@ import fixtures from './fixtures.js';
 
 describe('migration activity log sanitization', () => {
   beforeAll(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 
@@ -26,8 +26,7 @@ describe('migration activity log sanitization', () => {
     it('should remove activity entries with unwanted methods', async () => {
       const deletedMethods = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ method: { $in: ['GET', 'OPTIONS', 'HEAD'] } })
-        .count();
+        .countDocuments({ method: { $in: ['GET', 'OPTIONS', 'HEAD'] } });
 
       expect(deletedMethods).toBe(0);
     });
@@ -35,16 +34,14 @@ describe('migration activity log sanitization', () => {
     it('should keep all wanted entries', async () => {
       const remainingEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ method: { $not: { $in: ['GET', 'OPTIONS', 'HEAD'] } } })
-        .count();
+        .countDocuments({ method: { $not: { $in: ['GET', 'OPTIONS', 'HEAD'] } } });
       expect(remainingEntries).toBe(7);
     });
 
     it('should remove activity entries with unwanted urls', async () => {
       const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ url: { $in: IGNORED_ENDPOINTS } })
-        .count();
+        .countDocuments({ url: { $in: IGNORED_ENDPOINTS } });
 
       expect(unWantedEntries).toBe(0);
     });
@@ -52,8 +49,7 @@ describe('migration activity log sanitization', () => {
     it('should remove upload activity entries without body', async () => {
       const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: {} })
-        .count();
+        .countDocuments({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: {} });
 
       expect(unWantedEntries).toBe(0);
     });
@@ -61,8 +57,7 @@ describe('migration activity log sanitization', () => {
     it('should keep upload activity entries with body', async () => {
       const remainingEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: "{ entityId: 'entity1' }" })
-        .count();
+        .countDocuments({ url: { $in: BODY_REQUIRED_ENDPOINTS }, body: "{ entityId: 'entity1' }" });
 
       expect(remainingEntries).toBe(2);
     });
@@ -71,8 +66,7 @@ describe('migration activity log sanitization', () => {
       const expireAt = date.addYearsToCurrentDate(1);
       const unWantedEntries = await testingDB.mongodb
         .collection('activitylogs')
-        .find({ expireAt })
-        .count();
+        .countDocuments({ expireAt });
 
       expect(unWantedEntries).toBe(7);
     });
@@ -80,9 +74,9 @@ describe('migration activity log sanitization', () => {
     it('should remove updatelog entries for activitylog', async () => {
       const unWantedEntries = await testingDB.mongodb
         .collection('updatelogs')
-        .count({ namespace: 'activitylog' });
+        .countDocuments({ namespace: 'activitylog' });
 
-      const remainingEntries = await testingDB.mongodb.collection('updatelogs').count();
+      const remainingEntries = await testingDB.mongodb.collection('updatelogs').countDocuments();
 
       expect(unWantedEntries).toBe(0);
       expect(remainingEntries).toBe(2);

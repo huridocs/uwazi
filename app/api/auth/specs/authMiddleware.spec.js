@@ -8,10 +8,10 @@ describe('authMiddleware', () => {
   beforeEach(() => {
     req = { get: () => 'XMLHttpRequest' };
     res = {
-      status: jasmine.createSpy('status'),
-      json: jasmine.createSpy('json'),
+      status: jest.fn(),
+      json: jest.fn(),
     };
-    next = jasmine.createSpy('next');
+    next = jest.fn();
   });
 
   it('should return an error when there is no user in the request', () => {

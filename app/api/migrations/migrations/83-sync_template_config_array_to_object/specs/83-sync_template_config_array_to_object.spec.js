@@ -4,7 +4,7 @@ import { fixtures } from './fixtures.js';
 
 describe('migration sync_template_config_array_to_object', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
   });
 

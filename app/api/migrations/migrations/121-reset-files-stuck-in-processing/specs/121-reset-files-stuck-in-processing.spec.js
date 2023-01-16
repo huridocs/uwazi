@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration reset files stuck in processing', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     migration.reindex = false;
   });
 

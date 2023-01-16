@@ -2,7 +2,7 @@ import migration from '../index.js';
 
 describe('migration Remove raw field from elastic', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   it('should have a delta number', () => {

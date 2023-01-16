@@ -16,7 +16,7 @@ describe('GrayLogTransport', () => {
       instance_name: 'some_name',
     });
 
-    spyOn(aTransport.graylog, 'log');
+    jest.spyOn(aTransport.graylog, 'log').mockImplementation(() => {});
 
     await tenants.run(async () => {
       aTransport.log({ message: 'message', timestamp: 'timestamp' }, () => {});

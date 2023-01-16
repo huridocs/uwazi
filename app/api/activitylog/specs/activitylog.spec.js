@@ -7,9 +7,10 @@ import fixtures from './fixtures';
 describe('activitylog', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
-    spyOn(activityLogParser, 'getSemanticData').and.returnValue(
-      Promise.resolve({ beautified: true })
-    );
+    jest.resetAllMocks();
+    jest
+      .spyOn(activityLogParser, 'getSemanticData')
+      .mockReturnValue(Promise.resolve({ beautified: true }));
   });
 
   afterAll(async () => {
@@ -34,7 +35,7 @@ describe('activitylog', () => {
 
     it('should include semantic info for each result', async () => {
       const { rows: entries } = await activitylog.get();
-      expect(activityLogParser.getSemanticData.calls.count()).toBe(5);
+      expect(activityLogParser.getSemanticData.mock.calls.length).toBe(5);
       expect(activityLogParser.getSemanticData).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'DELETE',

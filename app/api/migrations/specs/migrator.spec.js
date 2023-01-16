@@ -1,7 +1,6 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
-import { catchErrors } from '../../utils/jasmineHelpers';
 import migration1 from './testMigrations/1-migrationTest';
 import migration10 from './testMigrations/10-migrationTest';
 import migration2 from './testMigrations/2-migrationTest';
@@ -34,102 +33,82 @@ describe('migrator', () => {
       jest.spyOn(migration10, 'up');
     });
 
-    it('should execute all migrations in order', done => {
-      migrator
-        .migrate(connection.db)
-        .then(() => {
-          expect(migration1.up).toHaveBeenCalledWith(connection.db);
-          expect(migration2.up).toHaveBeenCalledWith(connection.db);
-          expect(migration10.up).toHaveBeenCalledWith(connection.db);
+    it('should execute all migrations in order', async () => {
+      await migrator.migrate(connection.db);
 
-          expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
-          expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
-          done();
-        })
-        .catch(catchErrors(done));
+      expect(migration1.up).toHaveBeenCalledWith(connection.db);
+      expect(migration2.up).toHaveBeenCalledWith(connection.db);
+      expect(migration10.up).toHaveBeenCalledWith(connection.db);
+      expect(migration1.up).toHaveBeenCalledBefore(migration2.up);
+      expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
     });
 
-    it('should save migrations run on the db', done => {
-      migrator
-        .migrate(connection.db)
-        .then(() => migrationsModel.get())
-        .then(migrations => {
-          expect(
-            migrations.map(({ delta, description, reindex }) => ({
-              delta,
-              description,
-              reindex,
-            }))
-          ).toEqual([
-            {
-              delta: 1,
-              description: 'migration test 1',
-            },
-            {
-              delta: 2,
-              description: 'migration test 2',
-              reindex: true,
-            },
-            {
-              delta: 10,
-              description: 'migration test 10',
-              reindex: false,
-            },
-          ]);
-          done();
-        });
+    it('should save migrations run on the db', async () => {
+      await migrator.migrate(connection.db);
+
+      const migrations = await migrationsModel.get();
+      expect(
+        migrations.map(({ delta, description, reindex }) => ({
+          delta,
+          description,
+          reindex,
+        }))
+      ).toEqual([
+        {
+          delta: 1,
+          description: 'migration test 1',
+        },
+        {
+          delta: 2,
+          description: 'migration test 2',
+          reindex: true,
+        },
+        {
+          delta: 10,
+          description: 'migration test 10',
+          reindex: false,
+        },
+      ]);
     });
 
-    it('should only run migrations that had not been run before', done => {
+    it('should only run migrations that had not been run before', async () => {
       migration1.up.mockClear();
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel
-        .save({ delta: 1 })
-        .then(() => migrator.migrate(connection.db))
-        .then(() => {
-          expect(migration1.up).not.toHaveBeenCalled();
-          expect(migration2.up).toHaveBeenCalledWith(connection.db);
-          expect(migration10.up).toHaveBeenCalledWith(connection.db);
-          expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
-          done();
-        })
-        .catch(catchErrors(done));
+      await migrationsModel.save({ delta: 1 });
+      await migrator.migrate(connection.db);
+
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration2.up).toHaveBeenCalledWith(connection.db);
+      expect(migration10.up).toHaveBeenCalledWith(connection.db);
+      expect(migration2.up).toHaveBeenCalledBefore(migration10.up);
     });
 
-    it('should only run migrations that had not been run before', done => {
+    it('should only run migrations that had not been run before', async () => {
       migration1.up.mockClear();
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel
-        .saveMultiple([{ delta: 1 }, { delta: 2 }])
-        .then(() => migrator.migrate(connection.db))
-        .then(() => {
-          expect(migration1.up).not.toHaveBeenCalled();
-          expect(migration2.up).not.toHaveBeenCalled();
-          expect(migration10.up).toHaveBeenCalledWith(connection.db);
-          done();
-        })
-        .catch(catchErrors(done));
+      await migrationsModel.saveMultiple([{ delta: 1 }, { delta: 2 }]);
+      await migrator.migrate(connection.db);
+
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration2.up).not.toHaveBeenCalled();
+      expect(migration10.up).toHaveBeenCalledWith(connection.db);
     });
 
-    it('should not run any migration when the last one has already been run', done => {
+    it('should not run any migration when the last one has already been run', async () => {
       migration1.up.mockClear();
       migration2.up.mockClear();
       migration10.up.mockClear();
 
-      migrationsModel
-        .saveMultiple([{ delta: 10 }])
-        .then(() => migrator.migrate(connection.db))
-        .then(() => {
-          expect(migration1.up).not.toHaveBeenCalled();
-          expect(migration2.up).not.toHaveBeenCalled();
-          expect(migration10.up).not.toHaveBeenCalled();
-          done();
-        })
-        .catch(catchErrors(done));
+      await migrationsModel.saveMultiple([{ delta: 10 }]);
+      await migrator.migrate(connection.db);
+
+      expect(migration1.up).not.toHaveBeenCalled();
+      expect(migration2.up).not.toHaveBeenCalled();
+      expect(migration10.up).not.toHaveBeenCalled();
     });
   });
 });

@@ -8,6 +8,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
+import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -51,17 +52,17 @@ describe('usergroups routes', () => {
   }
 
   describe('GET', () => {
-    const groups = [{ name: 'group1' }];
+    const groups = [{ _id: new ObjectId(), name: 'group1', members: [] }];
 
     beforeEach(() => {
-      spyOn(userGroups, 'get').and.callFake(async () => Promise.resolve(groups));
+      jest.spyOn(userGroups, 'get').mockImplementation(async () => Promise.resolve(groups));
     });
 
     it('should query and return an array of existing user groups', async () => {
       user = { username: 'user 1', role: 'admin' };
       const response = await getUserGroups();
       expect(userGroups.get).toHaveBeenCalledWith({});
-      expect(response.body).toEqual(groups);
+      expect(response.body).toMatchObject([{ name: 'group1' }]);
     });
   });
 
@@ -105,7 +106,11 @@ describe('usergroups routes', () => {
   describe('DELETE', () => {
     beforeEach(() => {
       user = { username: 'user 1', role: 'admin' };
-      spyOn(userGroups, 'delete').and.callFake(async () => Promise.resolve({ _id: 'user1' }));
+      jest.resetAllMocks();
+      jest
+        .spyOn(userGroups, 'delete')
+        //@ts-ignore
+        .mockImplementation(async () => Promise.resolve({ _id: 'user1' }));
     });
     it('should delete the group with the specified query', async () => {
       const response = await deleteUserGroup({ _id: 'group1' });
@@ -170,9 +175,15 @@ describe('usergroups routes', () => {
       ) => {
         user = { username: 'user 1', role: 'admin' };
         testingTenants.mockCurrentTenant({ name: 'default' });
-        spyOn(userGroups, 'delete').and.throwError('unhandled error');
-        spyOn(userGroups, 'get').and.throwError('unhandled error');
-        spyOn(userGroups, 'save').and.throwError('unhandled error');
+        jest.spyOn(userGroups, 'delete').mockImplementation(() => {
+          throw new Error('unhandled error');
+        });
+        jest.spyOn(userGroups, 'get').mockImplementation(() => {
+          throw new Error('unhandled error');
+        });
+        jest.spyOn(userGroups, 'save').mockImplementation(() => {
+          throw new Error('unhandled error');
+        });
         const response: request.Response = await endpointCall();
         expect(response.status).toBe(500);
         expect(response.body.prettyMessage).toContain('unhandled error');

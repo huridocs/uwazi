@@ -10,17 +10,22 @@ describe('migration populate-mimetype-on-attachments', () => {
   let mimeMock;
 
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
-    headRequestMock = spyOn(request, 'head');
-    attachmentPathMock = spyOn(attachmentMethods, 'attachmentsPath');
-    mimeMock = spyOn(mime, 'lookup');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    headRequestMock = jest.spyOn(request, 'head').mockImplementation(() => {});
+    attachmentPathMock = jest
+      .spyOn(attachmentMethods, 'attachmentsPath')
+      .mockImplementation(() => {});
+    mimeMock = jest.spyOn(mime, 'lookup').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    headRequestMock.mockRestore();
+    attachmentPathMock.mockRestore();
+    mimeMock.mockRestore();
   });
 
   afterAll(async () => {
     await testingDB.disconnect();
-    headRequestMock.mockRestore();
-    attachmentPathMock.mockRestore();
-    mimeMock.mockRestore();
   });
 
   it('should have a delta number', () => {
@@ -35,7 +40,7 @@ describe('migration populate-mimetype-on-attachments', () => {
     const headers = {
       get: jest.fn().mockReturnValueOnce('application/pdf').mockReturnValueOnce('mimetype2'),
     };
-    headRequestMock.and.returnValue(
+    headRequestMock.mockReturnValue(
       Promise.resolve({
         headers,
       })
@@ -78,8 +83,8 @@ describe('migration populate-mimetype-on-attachments', () => {
       ],
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
-    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
-    mimeMock.and.returnValue('application/pdf');
+    attachmentPathMock.mockReturnValue('/some/path/to/file.pdf');
+    mimeMock.mockReturnValue('application/pdf');
     await migration.up(testingDB.mongodb);
 
     const file = await testingDB.mongodb.collection('files').findOne({});
@@ -96,8 +101,8 @@ describe('migration populate-mimetype-on-attachments', () => {
       ],
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
-    mimeMock.and.returnValue('application/pdf');
-    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    mimeMock.mockReturnValue('application/pdf');
+    attachmentPathMock.mockReturnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
     const file = await testingDB.mongodb.collection('files').findOne({});
@@ -117,8 +122,8 @@ describe('migration populate-mimetype-on-attachments', () => {
       ],
     };
     await testingDB.clearAllAndLoad(fixturesWithFilenames);
-    mimeMock.and.returnValue('application/pdf');
-    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    mimeMock.mockReturnValue('application/pdf');
+    attachmentPathMock.mockReturnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
     expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalledWith(
@@ -140,13 +145,13 @@ describe('migration populate-mimetype-on-attachments', () => {
     const headers = {
       get: jest.fn().mockReturnValueOnce('application/pdf').mockReturnValueOnce('mimetype2'),
     };
-    headRequestMock.and.returnValue(
+    headRequestMock.mockReturnValue(
       Promise.resolve({
         headers,
       })
     );
-    mimeMock.and.returnValue('application/pdf');
-    attachmentPathMock.and.returnValue('/some/path/to/file.pdf');
+    mimeMock.mockReturnValue('application/pdf');
+    attachmentPathMock.mockReturnValue('/some/path/to/file.pdf');
     await migration.up(testingDB.mongodb);
 
     expect(attachmentMethods.attachmentsPath).not.toHaveBeenCalled();

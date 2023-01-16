@@ -22,7 +22,7 @@ jest.mock(
 describe('Settings routes', () => {
   const app: Application = setUpApp(settingsRoutes);
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
     const elasticIndex = 'settings_index';
     await testingEnvironment.setUp(fixtures, elasticIndex);
