@@ -204,6 +204,7 @@
     "socket.io": "4.5.3",
     "socket.io-client": "4.5.4",
     "socket.io-parser": "4.2.1",
+    "stopword": "^2.0.5",
     "superagent": "8.0.6",
     "svg-captcha": "^1.4.0",
     "tiny-cookie": "^2.3.2",
