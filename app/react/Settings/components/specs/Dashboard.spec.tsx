@@ -3,9 +3,9 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { screen } from '@testing-library/react';
+import { screen, act } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-
+import SettingsAPI from '../../SettingsAPI';
 import { Dashboard } from '../Dashboard';
 
 describe('Dashboard', () => {
@@ -25,10 +25,10 @@ describe('Dashboard', () => {
     };
   });
 
-  const render = () => {
+  const render = (emptyStore?: boolean) => {
     const store = {
       ...defaultState,
-      settings: { stats: Immutable.fromJS(systenStats) },
+      settings: { stats: emptyStore ? Immutable.fromJS({}) : Immutable.fromJS(systenStats) },
     };
     renderConnectedContainer(<Dashboard />, () => store, 'BrowserRouter');
   };
@@ -87,5 +87,19 @@ describe('Dashboard', () => {
         expect(screen.getByText(expectedValue)).toBeInTheDocument();
       }
     );
+  });
+
+  describe('No system statistics', () => {
+    it('should request for the system statistics', async () => {
+      jest
+        .spyOn(SettingsAPI, 'stats')
+        .mockImplementationOnce(async () => Promise.resolve(systenStats));
+
+      await act(() => {
+        render(true);
+      });
+
+      expect(screen.getByText('Total users').parentElement?.textContent).toBe('12 Total users');
+    });
   });
 });

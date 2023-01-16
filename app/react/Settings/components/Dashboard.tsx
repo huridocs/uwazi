@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { SettingsHeader } from './SettingsHeader';
+import SettingsAPI from '../SettingsAPI';
 
 const formatBytes = (bytes: number) => {
   //Sourced from https://stackoverflow.com/questions/15900485
@@ -21,15 +22,28 @@ const connector = connect(mapStateToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const DashboardComponent = ({ stats }: mappedProps) => {
-  if (!stats || !stats.get('storage')) {
+  const [statistics, setStatistics] = useState(stats?.toJS());
+
+  useEffect(() => {
+    if (!statistics || !statistics.storage) {
+      SettingsAPI.stats()
+        .then(response => {
+          setStatistics(response);
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  if (!statistics || !statistics.storage) {
     return <div />;
   }
 
-  const storage = formatBytes(stats.get('storage').get('total'));
+  const storage = formatBytes(statistics.storage.total);
+
   const [adminUsers, editorUsers, collaboratorUsers] = [
-    stats.get('users').get('admin'),
-    stats.get('users').get('editor'),
-    stats.get('users').get('collaborator'),
+    statistics.users.admin,
+    statistics.users.editor,
+    statistics.users.collaborator,
   ];
 
   return (
@@ -49,7 +63,7 @@ const DashboardComponent = ({ stats }: mappedProps) => {
                 </div>
 
                 <div className="body">
-                  <span className="count">{stats.get('users').get('total')} </span>
+                  <span className="count">{statistics.users.total} </span>
                   <Translate>Total users</Translate>
                 </div>
                 <div className="footer">
@@ -100,7 +114,7 @@ const DashboardComponent = ({ stats }: mappedProps) => {
                 </div>
 
                 <div className="body">
-                  <span className="count">{stats.get('entities').get('total')} </span>
+                  <span className="count">{statistics.entities.total} </span>
                   <Translate>Total entities</Translate>
                 </div>
 
@@ -119,7 +133,7 @@ const DashboardComponent = ({ stats }: mappedProps) => {
                 </div>
 
                 <div className="body">
-                  <span className="count">{stats.get('files').get('total')} </span>
+                  <span className="count">{statistics.files.total} </span>
                   <Translate>Total files</Translate>
                 </div>
 
