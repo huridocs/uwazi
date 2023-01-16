@@ -1,7 +1,6 @@
+import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import React from 'react';
-
 import { ThesauriList } from '../ThesauriList';
 
 describe('ThesaurisList', () => {
@@ -83,7 +82,9 @@ describe('ThesaurisList', () => {
   });
 
   const render = () => {
-    component = shallow(<ThesauriList {...props} />);
+    component = shallow(<ThesauriList {...props} />, {
+      context: { store: { getState: () => ({}) } },
+    });
   };
 
   describe('render', () => {
