@@ -110,7 +110,7 @@ const prepareStore = async (req: ExpressRequest, settings: Settings, language: s
 
   const requestParams = new RequestParams({}, headers);
 
-  api.APIURL('http://localhost:3000/api/');
+  api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
   const translations = await translationsApi.get();
 
