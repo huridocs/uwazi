@@ -8,6 +8,7 @@ import {
   renderConnectedContainer,
 } from 'app/utils/test/renderConnected';
 import * as uploadActions from 'app/Uploads/actions/uploadsActions';
+import { actions as basicActions } from 'app/BasicReducer';
 import { ShallowWrapper } from 'enzyme';
 import { act, fireEvent, screen } from '@testing-library/react';
 import { fromJS } from 'immutable';
@@ -15,18 +16,17 @@ import { Provider } from 'react-redux';
 import { LibraryFooter } from '../LibraryFooter';
 
 describe('LibraryFooter', () => {
-  it.each(['library', 'uploads'])(
-    'should dispatch an action to open the entity creation panel',
-    storeKey => {
-      spyOn(uploadActions, 'newEntity').and.returnValue(async () => Promise.resolve());
-      const props = { storeKey };
-      const component = renderConnected(LibraryFooter, props, {});
+  it('should dispatch an action to open the entity creation panel and select the matadata tab', () => {
+    spyOn(uploadActions, 'newEntity').and.returnValue(async () => Promise.resolve());
+    spyOn(basicActions, 'set').and.returnValue(() => {});
+    const props = { storeKey: 'library' };
+    const component = renderConnected(LibraryFooter, props, {});
 
-      const createButton = component.find({ icon: 'plus' }).parent();
-      createButton.simulate('click');
-      expect(uploadActions.newEntity).toHaveBeenCalledWith(storeKey);
-    }
-  );
+    const createButton = component.find({ icon: 'plus' }).parent();
+    createButton.simulate('click');
+    expect(uploadActions.newEntity).toHaveBeenCalledWith('library');
+    expect(basicActions.set).toHaveBeenCalledWith('library.sidepanel.tab', 'metadata');
+  });
 
   it('should dispatch an action to open the import panel', () => {
     spyOn(uploadActions, 'showImportPanel').and.returnValue(async () => Promise.resolve());
