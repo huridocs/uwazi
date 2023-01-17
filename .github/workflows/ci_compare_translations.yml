@@ -1,0 +1,41 @@
+name: compare translations repository
+
+on:
+  push:
+    branches:
+      - production
+      - development
+      - staging
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compare_translations:
+    runs-on: ubuntu-18.04
+    services:
+      mongodb:
+        image: mongo:4.2.6
+        ports:
+          - 27017/tcp
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: yarn blank-state
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+      - run: yarn compare-translations
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

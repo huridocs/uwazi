@@ -19,11 +19,25 @@ const getClient = async () => {
 const getTranslationsFromDB = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
-  const collection = db.collection('translations');
-  const [firstTranslation] = await collection.find().toArray();
-  const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
+  const translations = await db.collection('translations').find().toArray();
   client.close();
-  return systemContext.values;
+  const locToSystemContext = {};
+  translations.forEach(tr => {
+    const context = tr.contexts.find(c => c.id === 'System');
+    const [keys, values, keyValues] = context.values.reduce(
+      (newValues, currentTranslation) => {
+        newValues[0].push(currentTranslation.key);
+        newValues[1].push(currentTranslation.value);
+        // eslint-disable-next-line no-param-reassign
+        newValues[2] = { ...newValues[2], [currentTranslation.key]: currentTranslation.value };
+        return newValues;
+      },
+      [[], [], {}]
+    );
+    locToSystemContext[tr.locale] = { keys, values, keyValues };
+  });
+
+  return locToSystemContext;
 };
 
 const getAvaiableLanguages = async () => {
@@ -106,7 +120,6 @@ async function processLanguage(keysFromDB, valuesFromDB, locale) {
   const unTranslated = repositoryTranslations.filter(translation =>
     unTranslatedValues.includes(translation.value)
   );
-
   const obsoleteTranslations = _.difference(keysInRepository, keysFromDB);
   const missingTranslations = _.difference(keysFromDB, keysInRepository);
   return {
@@ -121,15 +134,10 @@ async function processLanguage(keysFromDB, valuesFromDB, locale) {
 async function compareTranslations(locale, update) {
   try {
     const dbTranslations = await getTranslationsFromDB();
-    const dbKeyValues = dbTranslations.reduce(
-      (accum, translation) => ({
-        ...accum,
-        [translation.key]: translation.value,
-      }),
-      {}
-    );
-    const keysFromDB = Object.keys(dbKeyValues);
-    const valuesFromDB = Object.values(dbKeyValues);
+
+    const keysFromDB = dbTranslations.en.keys;
+    const valuesFromDB = dbTranslations.en.values;
+    const dbKeyValues = dbTranslations.en.keyValues;
 
     const languages = locale ? [locale] : await getAvaiableLanguages();
     const result = await Promise.all(
