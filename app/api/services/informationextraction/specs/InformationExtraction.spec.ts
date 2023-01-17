@@ -194,6 +194,14 @@ describe('InformationExtraction', () => {
         task: 'create_model',
       });
     });
+
+    it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
+      const result = await informationExtraction.trainModel('property3');
+
+      expect(result).toMatchObject({ status: 'error', message: 'No labeled data' });
+      const [model] = await IXModelsModel.get({ propertyName: 'property3' });
+      expect(model.findingSuggestions).toBe(false);
+    });
   });
 
   describe('when model is trained', () => {

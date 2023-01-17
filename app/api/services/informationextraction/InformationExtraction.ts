@@ -307,7 +307,6 @@ class InformationExtraction {
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
     if (!materialsSent) {
-      // TODO: continue here, write smoketest with the original version
       if (model) {
         model.findingSuggestions = false;
         await IXModelsModel.save(model);
