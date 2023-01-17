@@ -346,7 +346,7 @@ class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, model, showSubset, storeKey, locale } = this.props;
+    const { thesauris, template, model, showSubset, storeKey, pdfLanguage } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
@@ -395,7 +395,7 @@ class MetadataFormFields extends Component {
                           fieldId={property._id}
                           fieldType={property.type}
                           model={`${model}.metadata.${property.name}`}
-                          locale={locale}
+                          locale={pdfLanguage}
                         />
                       )}
                       {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
@@ -424,6 +424,7 @@ MetadataFormFields.defaultProps = {
   localAttachments: [],
   storeKey: '',
   locale: '',
+  pdfLanguage: '',
 };
 
 MetadataFormFields.propTypes = {
@@ -443,6 +444,7 @@ MetadataFormFields.propTypes = {
   change: PropTypes.func.isRequired,
   push: PropTypes.func.isRequired,
   locale: PropTypes.string,
+  pdfLanguage: PropTypes.string,
 };
 
 export const mapStateToProps = (state, ownProps) => {
@@ -450,6 +452,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   let attachments = Immutable.fromJS([]);
   let localAttachments;
+  let pdfLanguage;
 
   if (storeKey === 'library') {
     const selectedDocuments = state.library.ui.get('selectedDocuments');
@@ -459,6 +462,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   if (storeKey === 'documentViewer') {
     const entity = state[storeKey].doc;
+    pdfLanguage = entity.get('defaultDoc').get('language');
     attachments = entity.get('attachments');
     localAttachments = state[storeKey].sidepanel.metadata.attachments;
   }
@@ -476,6 +480,7 @@ export const mapStateToProps = (state, ownProps) => {
     attachments,
     localAttachments,
     locale,
+    pdfLanguage,
   };
 };
 
