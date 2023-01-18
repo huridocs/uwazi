@@ -1,5 +1,6 @@
-## One time set up
-Make sure you have running uwazi [dependencies](https://github.com/huridocs/uwazi#dependencies)
+## First one time set up
+Make sure you have running uwazi [dependencies](https://github.com/huridocs/uwazi#dependencies).
+
 First time installing uwazi we are going to create a basic folder structure to deploy the code and the folders that will contain potential uploaded or created files by uwazi.
 create this folder structure
 ```
@@ -40,5 +41,8 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 - ```NODE_ENV=production yarn migrate-and-reindex```
 
 ## Run uwazi
-- You should be able to run uwazi now in production mode
-- ```DATABASE_NAME=my_db_name INDEX_NAME=my_db_name NODE_ENV=production FILES_ROOT_PATH=/home/user/uwazi/ node server.js```
+You should be able to run uwazi now in production mode
+```DATABASE_NAME=my_db_name INDEX_NAME=my_db_name NODE_ENV=production FILES_ROOT_PATH=/home/user/uwazi/ node server.js```
+
+By default, Uwazi runs on localhost on the port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
+It is advisable to create your own system service configuration. Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).

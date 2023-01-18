@@ -15,7 +15,7 @@ const {
   SENTRY_API_DSN,
   MONGO_CONNECTION_POOL_SIZE,
   ENVIRONMENT,
-  FILES_ROOT_PATH
+  FILES_ROOT_PATH,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
