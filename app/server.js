@@ -129,6 +129,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
     // eslint-disable-next-line global-require
     require('./worker');
   }
+
   if (!config.multiTenant && !config.clusterMode) {
     await tenants.run(async () => {
       const shouldMigrate = await migrator.shouldMigrate();
