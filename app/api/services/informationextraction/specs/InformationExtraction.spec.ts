@@ -283,6 +283,13 @@ describe('InformationExtraction', () => {
         })
       );
     });
+
+    it('should stop the model when when the all the suggestions are done', async () => {
+      await informationExtraction.getSuggestions('property1');
+      await informationExtraction.getSuggestions('property1');
+      const [model] = await IXModelsModel.get({ propertyName: 'property1' });
+      expect(model.findingSuggestions).toBe(false);
+    });
   });
 
   describe('processResults', () => {
