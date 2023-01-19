@@ -88,10 +88,7 @@ const LibraryFooterComponent = ({
 
 function mapDispatchToProps(dispatch: Dispatch<any>, props: LibraryFooterOwnProps) {
   return bindActionCreators(
-    {
-      newEntity: newEntityAction,
-      showImportPanel: showImportPanelAction,
-    },
+    { newEntity: newEntityAction, showImportPanel: showImportPanelAction },
     wrapDispatch(dispatch, props.storeKey)
   );
 }
