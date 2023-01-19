@@ -46,6 +46,7 @@ const getAvaiableLanguages = async () => {
   const response = await fetch(url, {
     headers: {
       accept: 'application/json',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
     },
   });
   const languages = await response.json();
@@ -58,6 +59,7 @@ const getKeysFromRepository = async locale => {
   const response = await fetch(url, {
     headers: {
       accept: 'application/vnd.github.v4.raw',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
     },
   });
   const fileContent = await response.text();
