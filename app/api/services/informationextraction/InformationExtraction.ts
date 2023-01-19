@@ -279,6 +279,7 @@ class InformationExtraction {
   getSuggestions = async (property: string) => {
     const files = await getFilesForSuggestions(property);
     if (files.length === 0) {
+      await this.stopModel(property);
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
     }
@@ -308,6 +309,10 @@ class InformationExtraction {
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
     if (!materialsSent) {
+      if (model) {
+        model.findingSuggestions = false;
+        await IXModelsModel.save(model);
+      }
       return { status: 'error', message: 'No labeled data' };
     }
 
