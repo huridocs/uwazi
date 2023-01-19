@@ -142,7 +142,7 @@ const reportByLanguage = language => {
   if (
     obsoleteTranslations.length > 0 ||
     missingTranslations.length > 0 ||
-    missingTranslations.length > 0
+    unTranslatedKeys.length > 0
   ) {
     process.stdout.write(`\x1b[7m ===  ${language.locale} === \x1b[0m\x1b[37m\n`);
   }
