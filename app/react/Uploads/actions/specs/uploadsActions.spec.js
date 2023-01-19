@@ -350,6 +350,10 @@ describe('uploadsActions', () => {
     it('should select the metadata tab', () => {
       expect(basicActions.set).toHaveBeenCalledWith('library.sidepanel.tab', 'metadata');
     });
+
+    it('should clear the entity relationships count', () => {
+      expect(basicActions.set).toHaveBeenCalledWith('relationships/list/connectionsGroups', []);
+    });
   });
 
   describe('documentProcessed', () => {
