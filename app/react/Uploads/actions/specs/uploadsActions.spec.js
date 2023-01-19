@@ -2,9 +2,11 @@ import superagent from 'superagent';
 import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
+import { fromJS } from 'immutable';
 import { RequestParams } from 'app/utils/RequestParams';
 import { APIURL } from 'app/config.js';
 import { actions as basicActions } from 'app/BasicReducer';
+import { actions as metadataActions } from 'app/Metadata';
 import * as actions from 'app/Uploads/actions/uploadsActions';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
@@ -322,6 +324,31 @@ describe('uploadsActions', () => {
           done();
         });
       });
+    });
+  });
+
+  describe('newEntity', () => {
+    const store = mockStore({ templates: fromJS({}) });
+    jest
+      .spyOn(metadataActions, 'loadInReduxForm')
+      .mockImplementation(() => store.dispatch({ type: 'action' }));
+
+    jest.spyOn(basicActions, 'set');
+
+    beforeEach(() => {
+      store.dispatch(actions.newEntity('library'));
+    });
+
+    it('should load the redux form', () => {
+      expect(metadataActions.loadInReduxForm).toHaveBeenCalledWith(
+        'library.sidepanel.metadata',
+        { title: '', type: 'entity' },
+        {}
+      );
+    });
+
+    it('should select the metadata tab', () => {
+      expect(basicActions.set).toHaveBeenCalledWith('library.sidepanel.tab', 'metadata');
     });
   });
 
