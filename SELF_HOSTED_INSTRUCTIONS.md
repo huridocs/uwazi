@@ -2,7 +2,7 @@ This example shows a basic approach at deploying a working Uwazi.
 
 ## First one-time setup
 
-Ensure you have all [Uwazi dependencies](https://github.com/huridocs/uwazi#dependencies) correctly congifured an running.
+Ensure you have all [Uwazi dependencies](https://github.com/huridocs/uwazi#dependencies) correctly configured an running.
 
 During the first time installation, create a basic folder structure with folders for potential uploaded files, files created by Uwazi and the production-build code for Uwazi.
 To create this folder structure run:
@@ -17,7 +17,7 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 │   ├── temporal_files/
 ```
 
-- From within the `uwazi` folder, download latest release tar:
+- From within the `uwazi` folder, download the latest release .tar file:
 
 `wget https://github.com/huridocs/uwazi/releases/latest/download/uwazi.tgz`
 
@@ -45,10 +45,10 @@ mkdir -p uwazi/log uwazi/uploaded_documents uwazi/custom_uploads uwazi/temporal_
 
 `NODE_ENV=production yarn blank-state my_db_name`
 
-## Update uwazi to a new release
+## Update Uwazi to a new release
 
-- Rename or delete previous latest folder
-- From within `uwazi` folder download latest release tar, unpack, rename to `latest` and remove the previou .tar file.
+- Rename or delete previous `latest` folder
+- From within `uwazi` folder, download the latest release .tar file, unpack, rename to `latest` and remove the previou .tar file.
 
 ```
 wget https://github.com/huridocs/uwazi/releases/latest/download/uwazi.tgz
@@ -60,9 +60,9 @@ mv prod latest && rm uwazi.tgz
 
 `NODE_ENV=production yarn migrate-and-reindex`
 
-## Run uwazi
+## Run Uwazi
 
-You should now be able to run an Uwazi instacne in production mode:
+You should now be able to run an Uwazi instance in production mode:
 
 `DATABASE_NAME=my_db_name INDEX_NAME=my_db_name NODE_ENV=production FILES_ROOT_PATH=/home/user/uwazi/ node server.js`
 
