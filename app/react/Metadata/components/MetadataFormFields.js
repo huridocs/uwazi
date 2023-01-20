@@ -346,7 +346,7 @@ class MetadataFormFields extends Component {
   }
 
   render() {
-    const { thesauris, template, model, showSubset, storeKey, pdfLanguage } = this.props;
+    const { thesauris, template, model, showSubset, storeKey, pdfLanguage, locale } = this.props;
 
     const mlThesauri = thesauris
       .filter(thes => !!thes.get('enable_classification'))
@@ -395,7 +395,7 @@ class MetadataFormFields extends Component {
                           fieldId={property._id}
                           fieldType={property.type}
                           model={`${model}.metadata.${property.name}`}
-                          locale={pdfLanguage}
+                          locale={pdfLanguage || locale}
                         />
                       )}
                       {this.getField(property, `.metadata.${property.name}`, thesauris, model)}
@@ -462,7 +462,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   if (storeKey === 'documentViewer') {
     const entity = state[storeKey].doc;
-    pdfLanguage = entity.get('defaultDoc').get('language');
+    pdfLanguage = entity.get('defaultDoc')?.get('language');
     attachments = entity.get('attachments');
     localAttachments = state[storeKey].sidepanel.metadata.attachments;
   }
