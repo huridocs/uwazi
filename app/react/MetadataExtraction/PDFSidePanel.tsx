@@ -53,14 +53,14 @@ const PDFSidePanel = ({
           // Load selections to the store
           const defaultDoc = {
             ...responseFile,
-            extractedMetadata: responseFile.extractedMetadata.filter(
-              (metadata: any) => metadata.name === entitySuggestion.propertyName
-            ),
+            extractedMetadata: responseFile.extractedMetadata
+              ? responseFile.extractedMetadata.filter(
+                  (metadata: any) => metadata.name === entitySuggestion.propertyName
+                )
+              : undefined,
           };
 
-          if (responseFile.extractedMetadata) {
-            store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
-          }
+          store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
 
           if (entitySuggestion.selectionRectangles) {
             const selection = {
