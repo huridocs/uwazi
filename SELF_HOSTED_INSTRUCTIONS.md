@@ -70,7 +70,7 @@ By default, Uwazi runs on `localhost` on port 3000, so point your browser to htt
 It is advisable to create your own system service configuration. Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
 
 ## How to upgrade from a previous install.sh installation
-Previous installation with install.sh created uploaded files folders inside the uwazi build folder, to migrate and use the release that we publish just follow the [First one-time setup](#First one-time setup) but instead of creating the folders, move them from the previous installation path
+Previous installation with install.sh created uploaded files folders inside the uwazi build folder, to migrate and use the release that we publish just follow the [First one-time setup](#first-one-time-setup) but instead of creating the folders, move them from the previous installation path
 ```
 mv old_uwazi_path/uwazi-production/uploaded_files /home/user/uwazi
 mv old_uwazi_path/uwazi-production/custom_uploads /home/user/uwazi
@@ -78,5 +78,5 @@ mv old_uwazi_path/uwazi-production/temporal_files /home/user/uwazi
 mv old_uwazi_path/uwazi-production/log /home/user/uwazi
 ```
 
-After this, [Update to the next release](#Update Uwazi to a new release), keep in mind that probably you were using the default database name and elastic index `uwazi_development` if that is the case and you want to keep using it you will need omit DATABASE_NAME and INDEX_NAME from all the commands you run
+After this, [Update to the next release](#update-uwazi-to-a-new-release), keep in mind that probably you were using the default database name and elastic index `uwazi_development` if that is the case and you want to keep using it you will need omit DATABASE_NAME and INDEX_NAME from all the commands you run
 
