@@ -1,80 +1,62 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
-import { mockID } from 'shared/uniqueID';
-import relationships from 'api/relationships';
 import entities from 'api/entities';
+import { fileExistsOnPath, uploadsPath } from 'api/files';
+import relationships from 'api/relationships';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
-import { fileExistsOnPath, uploadsPath } from 'api/files';
+import { mockID } from 'shared/uniqueID';
 
-import { fixtures } from './fixtures';
-import { documents } from '../documents.js';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { documents } from '../documents.js';
+import { fixtures } from './fixtures';
 
 describe('documents', () => {
-  beforeEach(done => {
-    spyOn(relationships, 'saveEntityBasedReferences').and.callFake(async () => Promise.resolve());
-    spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
-    spyOn(search, 'bulkIndex').and.callFake(async () => Promise.resolve());
+  beforeEach(async () => {
+    jest
+      .spyOn(relationships, 'saveEntityBasedReferences')
+      .mockImplementation(async () => Promise.resolve());
+    // @ts-ignore
+    jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
+    // @ts-ignore
+    jest.spyOn(search, 'bulkIndex').mockImplementation(async () => Promise.resolve());
     mockID();
-    db.setupFixturesAndContext(fixtures).then(done).catch(catchErrors(done));
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => db.disconnect());
 
   describe('get', () => {
     describe('when passing query', () => {
-      it('should return matching document', done => {
-        documents
-          .get({ sharedId: 'shared' })
-          .then(docs => {
-            expect(docs[1].title).toBe('Penguin almost done');
-            expect(docs[1].fullText).not.toBeDefined();
-            expect(docs[0].title).toBe('Batman finishes');
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should return matching document', async () => {
+        const docs = await documents.get({ sharedId: 'shared' });
+        expect(docs[1].title).toBe('Penguin almost done');
+        expect(docs[1].fullText).not.toBeDefined();
+        expect(docs[0].title).toBe('Batman finishes');
       });
     });
   });
 
   describe('save', () => {
-    it('should call entities.save', done => {
-      spyOn(entities, 'save').and.callFake(async () => Promise.resolve('result'));
+    it('should call entities.save', async () => {
+      jest.spyOn(entities, 'save').mockImplementation(async () => Promise.resolve('result'));
       const doc = { title: 'Batman begins' };
       const user = { _id: db.id() };
       const language = 'es';
 
-      documents
-        .save(doc, { user, language })
-        .then(docs => {
-          expect(entities.save).toHaveBeenCalledWith(
-            { title: 'Batman begins' },
-            { user, language }
-          );
-          expect(docs).toBe('result');
-          done();
-        })
-        .catch(catchErrors(done));
+      const docs = await documents.save(doc, { user, language });
+      expect(entities.save).toHaveBeenCalledWith({ title: 'Batman begins' }, { user, language });
+      expect(docs).toBe('result');
     });
 
-    it('should not allow passing a file', done => {
-      spyOn(entities, 'save').and.callFake(async () => Promise.resolve('result'));
+    it('should not allow passing a file', async () => {
+      jest.spyOn(entities, 'save').mockImplementation(async () => Promise.resolve('result'));
       const doc = { title: 'Batman begins', file: 'file' };
       const user = { _id: db.id() };
       const language = 'es';
 
-      documents
-        .save(doc, { user, language })
-        .then(docs => {
-          expect(entities.save).toHaveBeenCalledWith(
-            { title: 'Batman begins' },
-            { user, language }
-          );
-          expect(docs).toBe('result');
-          done();
-        })
-        .catch(catchErrors(done));
+      const docs = await documents.save(doc, { user, language });
+      expect(entities.save).toHaveBeenCalledWith({ title: 'Batman begins' }, { user, language });
+      expect(docs).toBe('result');
     });
   });
 

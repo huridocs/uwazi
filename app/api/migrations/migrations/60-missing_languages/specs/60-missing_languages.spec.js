@@ -7,7 +7,7 @@ let db;
 
 describe('migration missing_languages', () => {
   beforeAll(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
     db = testingDB.mongodb;
     await migration.up(db);

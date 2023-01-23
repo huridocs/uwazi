@@ -17,7 +17,7 @@ describe('languageMiddleware', () => {
         //@ts-ignore
         ({ 'content-language': 'es', 'accept-language': 'en-US' }[headerName]),
     };
-    next = jasmine.createSpy('next');
+    next = jest.fn();
   });
 
   afterAll(async () => {

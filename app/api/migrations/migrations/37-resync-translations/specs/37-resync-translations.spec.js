@@ -6,9 +6,9 @@ describe('migration resync translations', () => {
   let updatelogs;
 
   beforeEach(async () => {
-    await testingDB.clearAllAndLoad(fixtures);
-    spyOn(process.stdout, 'write');
-    spyOn(Date, 'now').and.returnValue(1000);
+    await testingDB.setupFixturesAndContext(fixtures);
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(Date, 'now').mockReturnValue(1000);
     await migration.up(testingDB.mongodb);
   });
 

@@ -4,7 +4,7 @@ import fixtures, { text, numeric, multiselect } from './fixtures.js';
 
 describe('migration fix_migration_45_inherit_property', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

@@ -15,6 +15,7 @@ import { files } from '../files';
 import uploadRoutes from '../routes';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { Logger } from 'winston';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -27,9 +28,9 @@ describe('upload routes', () => {
   const app: Application = setUpApp(uploadRoutes);
 
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
-    spyOn(Date, 'now').and.returnValue(1000);
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(Date, 'now').mockReturnValue(1000);
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
     await testingEnvironment.setUp(fixtures);
   });
 

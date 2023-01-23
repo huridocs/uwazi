@@ -18,7 +18,7 @@ const expectedMultiSelect = [
 
 describe('migration resolve_duplicate_thesauri_entries', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
     migration.reindex = false;
     await migration.up(testingDB.mongodb);

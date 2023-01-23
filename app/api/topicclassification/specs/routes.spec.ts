@@ -1,5 +1,4 @@
 import * as topicClassification from 'api/config/topicClassification';
-import 'api/utils/jasmineHelpers';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { NextFunction } from 'express';
@@ -16,10 +15,12 @@ jest.mock(
   }
 );
 
-function fakeGet(url: string, _data: any, _headers: any) {
+async function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/models/list?filter=undefined-topmovies`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         models: ['undefined-topmovies'],
         error: '',
@@ -29,6 +30,8 @@ function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/models?model=undefined-topmovies`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         preferred: '123',
       },
@@ -37,16 +40,26 @@ function fakeGet(url: string, _data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/task?name=train-undefined-topmovies`) {
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         state: 'done',
         status: 'done training',
       },
     };
   }
-  return { status: 404 };
+  return {
+    status: 404,
+    headers: new Headers(),
+    cookie: 'cookie',
+    json: {
+      state: 'not found',
+      status: 'not found',
+    },
+  };
 }
 
-function fakePost(url: string, data: any, _headers: any) {
+async function fakePost(url: string, data: any, _headers: any) {
   if (url === `${topicClassification.tcServer}/task`) {
     expect(data).toEqual({
       provider: 'TrainModel',
@@ -59,13 +72,23 @@ function fakePost(url: string, data: any, _headers: any) {
     });
     return {
       status: 200,
+      headers: new Headers(),
+      cookie: 'cookie',
       json: {
         state: 'running',
         status: 'started training',
       },
     };
   }
-  return { status: 404 };
+  return {
+    status: 404,
+    headers: new Headers(),
+    cookie: 'cookie',
+    json: {
+      state: 'not found',
+      status: 'not found',
+    },
+  };
 }
 
 describe('topic classification routes', () => {
@@ -74,9 +97,11 @@ describe('topic classification routes', () => {
   beforeEach(async () => {
     const elasticIndex = 'tc_routes_test';
     await db.setupFixturesAndContext(fixtures, elasticIndex);
-    spyOn(JSONRequest, 'post').and.callFake(fakePost);
-    spyOn(JSONRequest, 'get').and.callFake(fakeGet);
-    spyOn(topicClassification, 'IsTopicClassificationReachable').and.returnValue(true);
+    jest.spyOn(JSONRequest, 'post').mockImplementation(fakePost);
+    jest.spyOn(JSONRequest, 'get').mockImplementation(fakeGet);
+    jest
+      .spyOn(topicClassification, 'IsTopicClassificationReachable')
+      .mockReturnValue(Promise.resolve(true));
   });
 
   afterAll(async () => {

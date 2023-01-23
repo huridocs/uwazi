@@ -3,7 +3,7 @@ import migration from '../index.js';
 
 describe('migration delete-orphaned-connections', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   afterAll(async () => {

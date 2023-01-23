@@ -16,16 +16,17 @@ import { typeParsers } from '../migrationsParser';
 
 jest.mock('../migrationsParser', () => ({
   typeParsers: {
-    stubLogTypeParser: jest.fn().mockReturnValue({
-      action: 'MIGRATE',
-      description: 'Dummy log',
-    }),
+    stubLogTypeParser: jest.fn(),
   },
 }));
 
 describe('Activitylog Parser', () => {
-  beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+  beforeAll(async () => {
+    typeParsers.stubLogTypeParser.mockReturnValue({
+      action: 'MIGRATE',
+      description: 'Dummy log',
+    });
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -34,9 +35,7 @@ describe('Activitylog Parser', () => {
 
   async function testBeautified(log, expected) {
     const semanticData = await getSemanticData(log);
-    expect(semanticData).toEqual({
-      ...expected,
-    });
+    expect(semanticData).toEqual(expected);
   }
 
   describe('getSemanticData', () => {

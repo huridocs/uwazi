@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import { config } from 'api/config';
@@ -165,14 +164,10 @@ describe('translations', () => {
   });
 
   describe('save()', () => {
-    it('should save the translation and return it', done => {
-      translations
-        .save({ locale: 'fr' })
-        .then(result => {
-          expect(result._id).toBeDefined();
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should save the translation and return it', async () => {
+      const result = await translations.save({ locale: 'fr' });
+
+      expect(result._id).toBeDefined();
     });
 
     it('should transform values from map to array if its a map', async () => {
@@ -195,7 +190,9 @@ describe('translations', () => {
 
     describe('when saving a dictionary context', () => {
       it('should propagate translation changes to entities denormalized label', async () => {
-        spyOn(thesauri, 'renameThesaurusInMetadata').and.callFake(async () => Promise.resolve());
+        jest
+          .spyOn(thesauri, 'renameThesaurusInMetadata')
+          .mockImplementation(async () => Promise.resolve());
         await translations.save({
           _id: englishTranslation,
           locale: 'en',

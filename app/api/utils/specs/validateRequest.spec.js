@@ -8,11 +8,11 @@ describe('validateRequest', () => {
   const req = {};
 
   beforeEach(() => {
-    next = jasmine.createSpy('next');
+    next = jest.fn();
     res = {
-      json: jasmine.createSpy('json'),
-      status: jasmine.createSpy('status'),
-      error: jasmine.createSpy('error'),
+      json: jest.fn(),
+      status: jest.fn(),
+      error: jest.fn(),
     };
   });
 
@@ -41,7 +41,7 @@ describe('validateRequest', () => {
       req.body = { prop1: 55, prop2: 'must be number' };
       middleware(schema)(req, res, next);
 
-      expect(next.calls.argsFor(0)).toMatchSnapshot();
+      expect(next.mock.calls[0]).toMatchSnapshot();
     });
   });
 
@@ -71,7 +71,7 @@ describe('validateRequest', () => {
       await middleware(schema)(req, res, next);
       expect(next).toHaveBeenCalledWith();
 
-      next.calls.reset();
+      next.mockReset();
       req.query = { prop1: 'string', prop2: 25 };
       await middleware(schema)(req, res, next);
       expect(next).toHaveBeenCalledWith();
@@ -101,7 +101,7 @@ describe('validateRequest', () => {
         ],
         code: 400,
       });
-      expect(next.calls.argsFor(0)).toEqual([expected]);
+      expect(next.mock.calls[0]).toEqual([expected]);
     });
   });
 });

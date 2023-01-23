@@ -1,4 +1,3 @@
-import 'api/utils/jasmineHelpers';
 import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 import qs from 'qs';
@@ -41,7 +40,8 @@ describe('Activitylog routes', () => {
   });
 
   beforeEach(async () => {
-    spyOn(activitylog, 'get').and.callFake(async () => Promise.resolve('activitylogs'));
+    jest.spyOn(activitylog, 'get').mockImplementation(async () => Promise.resolve('activitylogs'));
+    activitylog.get.mockClear();
   });
 
   afterAll(async () => {

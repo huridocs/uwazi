@@ -4,7 +4,7 @@ import { fixtures } from './fixtures.js';
 
 describe('thesauri_translations_in_entity_metadata', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

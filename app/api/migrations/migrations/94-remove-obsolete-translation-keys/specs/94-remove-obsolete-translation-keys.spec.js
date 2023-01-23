@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration remove-obsolete-translation-keys', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     migration.reindex = false;
   });
 
