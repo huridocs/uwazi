@@ -58,7 +58,7 @@ mv prod latest && rm uwazi.tgz
 
 - From within `uwazi/latest` run any migrations needed since your previous version and reindex the Elastic Search index:
 
-`NODE_ENV=production yarn migrate-and-reindex`
+`NODE_ENV=production DATABASE_NAME=my_db_name INDEX_NAME=my_db_name yarn migrate-and-reindex`
 
 ## Run Uwazi
 
