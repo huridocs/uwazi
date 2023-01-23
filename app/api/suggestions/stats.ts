@@ -14,8 +14,10 @@ interface Groups {
 
 const addCount = <T>(sum: number, group: StateGroup<T>) => sum + group.count;
 
-const addCountsOf = (groups: Groups, states: SuggestionState[]) =>
-  groups.buckets.filter(g => states.includes(g._id)).reduce(addCount, 0);
+const addCountsOf = (groups: Groups, _states: SuggestionState[]) => {
+  const states = new Set(_states);
+  return groups.buckets.filter(g => states.has(g._id)).reduce(addCount, 0);
+};
 
 const getGroups = async (propertyName: string): Promise<Groups> =>
   IXSuggestionsModel.db
