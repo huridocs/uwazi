@@ -43,6 +43,18 @@ const getGroups = async (propertyName: string): Promise<Groups> =>
     ])
     .then(([result]) => result);
 
+const calcAccuracy = (groups: Groups) => {
+  const correct = addCountsOf(groups, [SuggestionState.labelMatch, SuggestionState.valueMatch]);
+  const incorect = addCountsOf(groups, [
+    SuggestionState.labelMismatch,
+    SuggestionState.valueMismatch,
+    SuggestionState.labelEmpty,
+    SuggestionState.valueEmpty,
+  ]);
+  const total = correct + incorect;
+  return total ? correct / total : 0;
+};
+
 const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   const groups = await getGroups(propertyName);
 
@@ -61,8 +73,7 @@ const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   ]);
   const all = groups.all[0]?.count || 0;
 
-  const labeledNonEmpty = nonLabeledMatching + nonLabeledNotMatching;
-  const accuracy = labeledNonEmpty ? nonLabeledMatching / labeledNonEmpty : 0;
+  const accuracy = calcAccuracy(groups);
 
   return {
     counts: {
