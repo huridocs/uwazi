@@ -78,5 +78,5 @@ mv old_uwazi_path/uwazi-production/temporal_files /home/user/uwazi
 mv old_uwazi_path/uwazi-production/log /home/user/uwazi
 ```
 
-After this, [Update to the next release](#update-uwazi-to-a-new-release), keep in mind that probably you were using the default database name and elastic index `uwazi_development` if that is the case and you want to keep using it you will need omit DATABASE_NAME and INDEX_NAME from all the commands you run
+After this, [Update to the next release](#update-uwazi-to-a-new-release), keep in mind that probably you were using the default database name and elastic index `uwazi_development` if that is the case and you want to keep using it you can omit DATABASE_NAME and INDEX_NAME from all the commands you run
 
