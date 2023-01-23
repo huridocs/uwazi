@@ -37,13 +37,13 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: install dependencies
         run: yarn install
       - run: yarn blank-state
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn compare-translations
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
