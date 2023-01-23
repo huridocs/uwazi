@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.102.0-rc1",
+  "version": "1.103.0-rc1",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -38,6 +38,7 @@
     "import-csv": "node scripts/run.js ../database/import_csv.js",
     "blank-state": "./database/blank_state.sh",
     "admin-user": "./database/admin_user.sh",
+    "ix-config": "./database/ix_config.sh",
     "dump-db": "./database/dump_db.sh",
     "restore-db": "./database/restore_db.sh",
     "fixtures": "./uwazi-fixtures/restore.sh",
@@ -203,6 +204,7 @@
     "socket.io": "4.5.3",
     "socket.io-client": "4.5.4",
     "socket.io-parser": "4.2.1",
+    "stopword": "^2.0.5",
     "superagent": "8.0.6",
     "svg-captcha": "^1.4.0",
     "tiny-cookie": "^2.3.2",
