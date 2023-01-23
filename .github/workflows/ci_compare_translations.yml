@@ -43,7 +43,7 @@ jobs:
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - run: yarn compare-translations
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
