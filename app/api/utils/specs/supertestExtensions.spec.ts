@@ -4,8 +4,10 @@ import { extendSupertest } from '../supertestExtensions';
 
 describe('assertStatus', () => {
   const mockError = new Error('mock error');
-  const assertStatusMock = jest.fn().mockReturnValue(mockError);
+  let assertStatusMock: jest.Mock<any, any>;
+
   beforeEach(() => {
+    assertStatusMock = jest.fn().mockReturnValue(mockError);
     Test.prototype._assertStatus = assertStatusMock;
     extendSupertest();
   });

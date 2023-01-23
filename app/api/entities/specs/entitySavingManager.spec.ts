@@ -29,6 +29,7 @@ import {
   template2Id,
   textFile,
 } from './entitySavingManagerFixtures';
+import { Logger } from 'winston';
 
 const validPdfString = `
 %PDF-1.0
@@ -61,11 +62,11 @@ describe('entitySavingManager', () => {
   beforeAll(async () => {
     await writeFile(file.path!, 'sample content');
     await writeFile(newMainPdfDocument.path!, validPdfString);
-    jest.spyOn(search, 'indexEntities').mockImplementation(jest.fn());
   });
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   afterAll(async () => {
@@ -580,6 +581,7 @@ describe('entitySavingManager', () => {
         });
 
         it('should return an error if an existing main document cannot be saved', async () => {
+          jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({} as Logger));
           jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
 
           const { errors } = await saveEntity(

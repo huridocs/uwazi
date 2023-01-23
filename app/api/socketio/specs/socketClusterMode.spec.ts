@@ -8,7 +8,7 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { config } from 'api/config';
 import waitForExpect from 'wait-for-expect';
 
-import { setupApiSockets } from '../setupSockets';
+import { endSocketServer, setupApiSockets } from '../setupSockets';
 import { emitSocketEvent } from '../standaloneEmitSocketEvent';
 
 const closeServer = async (httpServer: Server): Promise<void> =>
@@ -84,6 +84,7 @@ describe('socket middlewares setup', () => {
     socket4TenantDefault.disconnect();
 
     await closeServer(server);
+    endSocketServer();
   });
 
   const captureEvents = (eventName: string = 'eventName') => {

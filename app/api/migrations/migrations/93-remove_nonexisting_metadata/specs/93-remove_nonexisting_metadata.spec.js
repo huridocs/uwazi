@@ -12,7 +12,7 @@ let db;
 
 describe('migration remove_nonexisting_metadata', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     db = testingDB.mongodb;
     await migration.up(db);

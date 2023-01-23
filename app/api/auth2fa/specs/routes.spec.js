@@ -15,9 +15,9 @@ describe('Auth2fa Routes', () => {
 
   beforeEach(() => {
     routes = instrumentRoutes(auth2faRoutes);
-    spyOn(usersUtils, 'setSecret').and.callFake(() => {});
-    spyOn(usersUtils, 'enable2fa').and.callFake(() => {});
-    spyOn(usersUtils, 'reset2fa').and.callFake(() => {});
+    jest.spyOn(usersUtils, 'setSecret').mockImplementation(() => {});
+    jest.spyOn(usersUtils, 'enable2fa').mockImplementation(() => {});
+    jest.spyOn(usersUtils, 'reset2fa').mockImplementation(() => {});
   });
 
   const validateAuthorizationAndValidation = (path, roles) => {
@@ -39,16 +39,16 @@ describe('Auth2fa Routes', () => {
     passedUser._id === 'userId' ? Promise.resolve(success) : Promise.reject(incorrectUser);
 
   const expectResponseToMatch = async (util, url, mock) => {
-    usersUtils[util].and.callFake(mock);
+    usersUtils[util].mockImplementation(mock);
     const response = await routes.post(url, req);
     expect(response).toMatchSnapshot();
   };
 
   const expectNextWithError = async (util, url) => {
     const expectedError = new Error('Error passed by usersUtils');
-    usersUtils[util].and.callFake(() => Promise.reject(expectedError));
+    usersUtils[util].mockImplementation(() => Promise.reject(expectedError));
 
-    const next = jasmine.createSpy('next');
+    const next = jest.fn();
     try {
       await routes.post(url, req, {}, next);
       fail('Should call next');

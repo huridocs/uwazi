@@ -21,7 +21,7 @@ async function clearFiles() {
 
 describe('migration Re create thumbnails', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = `${__dirname}`;
     await testingDB.clearAllAndLoad(fixtures);
   });

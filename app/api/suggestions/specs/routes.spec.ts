@@ -50,7 +50,7 @@ describe('suggestions routes', () => {
   });
   beforeEach(async () => {
     user = { username: 'user 1', role: 'admin' };
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
   });
 
   const app: Application = setUpApp(
@@ -304,82 +304,232 @@ describe('suggestions routes', () => {
   });
 
   describe('POST /api/suggestions/configurations', () => {
-    const payload = [
+    const superPowerPayload = {
+      template: personTemplateId.toString(),
+      properties: ['super_powers'],
+    };
+
+    const expectedSuperPowerSuggestion = [
       {
-        template: personTemplateId.toString(),
-        properties: ['super_powers'],
+        entityId: 'shared2',
+        propertyName: 'super_powers',
+        segment: '',
+        suggestedValue: '',
+        state: SuggestionState.labelEmpty,
+        status: 'ready',
       },
       {
-        template: heroTemplateId.toString(),
-        properties: ['enemy'],
+        entityId: 'shared2',
+        propertyName: 'super_powers',
+        segment: '',
+        suggestedValue: '',
+        state: SuggestionState.labelEmpty,
+        status: 'ready',
       },
     ];
 
-    const removeSuggestionsFromDBAndSaveConfigs = async () => {
-      user = { username: 'user 1', role: 'admin' };
-      await IXSuggestionsModel.delete({});
-      await request(app).post('/api/suggestions/configurations').send(payload).expect(200);
+    const agePayload = {
+      template: personTemplateId.toString(),
+      properties: ['age'],
     };
 
-    beforeAll(async () => {
-      await removeSuggestionsFromDBAndSaveConfigs();
+    const expectedAgeSuggestions = [
+      {
+        status: 'ready',
+        entityId: 'shared2',
+        propertyName: 'age',
+        segment: '',
+        suggestedValue: '',
+        state: SuggestionState.labelEmpty,
+      },
+      {
+        status: 'ready',
+        entityId: 'shared2',
+        propertyName: 'age',
+        segment: '',
+        suggestedValue: '',
+        state: SuggestionState.valueEmpty,
+      },
+    ];
+
+    const heroPayload = {
+      template: heroTemplateId.toString(),
+      properties: ['enemy'],
+    };
+
+    const expectedHeroSuggestions = [
+      {
+        entityId: 'shared5',
+        propertyName: 'enemy',
+        segment: '',
+        suggestedValue: '',
+      },
+      {
+        entityId: 'shared6',
+        propertyName: 'enemy',
+        segment: '',
+        suggestedValue: '',
+      },
+      {
+        entityId: 'shared7',
+        propertyName: 'enemy',
+        segment: '',
+        suggestedValue: '',
+      },
+      {
+        entityId: 'shared8',
+        propertyName: 'enemy',
+        segment: '',
+        suggestedValue: '',
+      },
+    ];
+
+    beforeEach(async () => {
+      user = { username: 'user 1', role: 'admin' };
+      await testingEnvironment.setFixtures(fixtures);
+      await IXSuggestionsModel.delete({});
     });
 
     it('should save configurations in settings', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload, heroPayload])
+        .expect(200);
       const set = await settings.get();
-      expect(set.features?.metadataExtraction?.templates).toMatchObject(payload);
+      expect(set.features?.metadataExtraction?.templates).toMatchObject([
+        superPowerPayload,
+        heroPayload,
+      ]);
     });
 
     it('should create placeholder suggestions', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload, heroPayload])
+        .expect(200);
       const superPowerSugg = await IXSuggestionsModel.get({
         propertyName: 'super_powers',
       });
 
-      expect(superPowerSugg).toMatchObject([
-        {
-          entityId: 'shared2',
-          propertyName: 'super_powers',
-          segment: '',
-          suggestedValue: '',
-          state: SuggestionState.labelEmpty,
-          status: 'ready',
-        },
-        {
-          entityId: 'shared2',
-          propertyName: 'super_powers',
-          segment: '',
-          suggestedValue: '',
-          state: SuggestionState.labelEmpty,
-          status: 'ready',
-        },
-      ]);
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
       const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
-      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([
-        {
-          entityId: 'shared5',
-          propertyName: 'enemy',
-          segment: '',
-          suggestedValue: '',
-        },
-        {
-          entityId: 'shared6',
-          propertyName: 'enemy',
-          segment: '',
-          suggestedValue: '',
-        },
-        {
-          entityId: 'shared7',
-          propertyName: 'enemy',
-          segment: '',
-          suggestedValue: '',
-        },
-        {
-          entityId: 'shared8',
-          propertyName: 'enemy',
-          segment: '',
-          suggestedValue: '',
-        },
-      ]);
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
+        expectedHeroSuggestions
+      );
+    });
+
+    it('should delete related suggestions', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload, heroPayload])
+        .expect(200);
+      await request(app).post('/api/suggestions/configurations').send([heroPayload]).expect(200);
+
+      let superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject([]);
+      let enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
+        expectedHeroSuggestions
+      );
+
+      await request(app).post('/api/suggestions/configurations').send([]).expect(200);
+      superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject([]);
+      enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([]);
+    });
+
+    it('should be able to create and delete at the same time', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload])
+        .expect(200);
+      let superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      let enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([]);
+
+      await request(app).post('/api/suggestions/configurations').send([heroPayload]).expect(200);
+      superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject([]);
+      enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
+        expectedHeroSuggestions
+      );
+    });
+
+    it('should be able to create and delete at the same time, from the same template', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload])
+        .expect(200);
+      let superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      let ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject([]);
+
+      await request(app).post('/api/suggestions/configurations').send([agePayload]).expect(200);
+      superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject([]);
+      ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject(expectedAgeSuggestions);
+    });
+
+    it('should add blank states when adding another property to an existing template', async () => {
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([superPowerPayload])
+        .expect(200);
+      let superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      let ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject([]);
+
+      await request(app)
+        .post('/api/suggestions/configurations')
+        .send([
+          {
+            template: personTemplateId.toString(),
+            properties: ['super_powers', 'age'],
+          },
+        ])
+        .expect(200);
+      superPowerSugg = await IXSuggestionsModel.get({
+        propertyName: 'super_powers',
+      });
+      expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
+      ageSugg = await IXSuggestionsModel.get(
+        { propertyName: 'age' },
+        {},
+        { sort: { language: 1 } }
+      );
+      expect(ageSugg).toMatchObject(expectedAgeSuggestions);
     });
   });
 });

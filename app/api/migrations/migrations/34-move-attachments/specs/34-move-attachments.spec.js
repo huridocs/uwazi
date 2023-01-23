@@ -5,7 +5,7 @@ import fixtures from './fixtures.js';
 
 describe('migration move-attachments', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

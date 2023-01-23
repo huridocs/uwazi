@@ -1,19 +1,21 @@
+import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
 
-import routes from 'api/entities/routes';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
-import path from 'path';
 import * as entitySavingManager from 'api/entities/entitySavingManager';
+import routes from 'api/entities/routes';
+import { errorLog } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import path from 'path';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
 import fixtures, { permissions } from './fixtures';
-import { errorLog } from 'api/log';
+import { ObjectId } from 'mongodb';
+import { Logger } from 'winston';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -99,11 +101,13 @@ describe('entities routes', () => {
     });
 
     it('should call the saving manager with the correct filenames', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
-        Promise.resolve({ entity: {} })
-      );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+      jest
+        .spyOn(entitySavingManager, 'saveEntity')
+        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+      jest.spyOn(templates, 'getById').mockImplementation(async () => Promise.resolve(null));
+      jest
+        .spyOn(thesauri, 'templateToThesauri')
+        .mockImplementation(async () => Promise.resolve({}));
 
       await request(app)
         .post('/api/entities')
@@ -131,12 +135,16 @@ describe('entities routes', () => {
     });
 
     it('should log a deprecation notice if no original name provided in body', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
-        Promise.resolve({ entity: {} })
-      );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
-      spyOn(errorLog, 'debug');
+      jest
+        .spyOn(entitySavingManager, 'saveEntity')
+        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async () => Promise.resolve({ _id: new ObjectId(), name: 'template' }));
+      jest
+        .spyOn(thesauri, 'templateToThesauri')
+        .mockImplementation(async () => Promise.resolve({}));
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
 
       await request(app)
         .post('/api/entities')
