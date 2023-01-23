@@ -56,6 +56,8 @@ const getAvaiableLanguages = async () => {
 const getKeysFromRepository = async locale => {
   const url = `https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/${locale}.csv`;
 
+  process.stdout.write(`\x1b[7m === TOKEN ${process.env.GITHUB_TOKEN} === \x1b[0m\x1b[37m\n`);
+
   const response = await fetch(url, {
     headers: {
       accept: 'application/vnd.github.v4.raw',
