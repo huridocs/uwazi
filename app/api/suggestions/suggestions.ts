@@ -3,7 +3,11 @@ import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
-import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import {
+  ExtractedMetadataSchema,
+  LanguagesListSchema,
+  ObjectIdSchema,
+} from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
@@ -11,6 +15,7 @@ import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
   getEntityStage,
+  getEntityTemplateFilterStage,
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
@@ -80,6 +85,47 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   return files.save(file);
 };
 
+const buildListQuery = (
+  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  setLanguages: LanguagesListSchema | undefined,
+  entityTemplates: string[] | undefined,
+  offset: number,
+  limit: number
+) => {
+  const pipeline = [
+    { $match: { ...filters, status: { $ne: 'processing' } } },
+    { $sort: { date: 1, state: -1 } },
+    ...getEntityStage(setLanguages!),
+    ...getCurrentValueStage(),
+    ...getFileStage(),
+    ...getLabeledValueStage(),
+    {
+      $project: {
+        entityId: '$entity._id',
+        entityTemplateId: '$entity.template',
+        sharedId: '$entity.sharedId',
+        entityTitle: '$entity.title',
+        fileId: 1,
+        language: 1,
+        propertyName: 1,
+        suggestedValue: 1,
+        segment: 1,
+        currentValue: 1,
+        state: 1,
+        page: 1,
+        date: 1,
+        error: 1,
+        labeledValue: 1,
+        selectionRectangles: 1,
+      },
+    },
+    ...getEntityTemplateFilterStage(entityTemplates),
+    { $skip: offset },
+    { $limit: limit },
+  ];
+  return pipeline;
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -90,41 +136,15 @@ const Suggestions = {
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
 
-    const { language, ...filters } = filter;
+    const { language, entityTemplates, ...filters } = filter;
 
     const count = await IXSuggestionsModel.db
       .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
       .then(result => (result?.length ? result[0].count : 0));
 
-    const suggestions = await IXSuggestionsModel.db.aggregate([
-      { $match: { ...filters, status: { $ne: 'processing' } } },
-      { $sort: { date: 1, state: -1 } },
-      { $skip: offset },
-      { $limit: limit },
-      ...getEntityStage(setLanguages!),
-      ...getCurrentValueStage(),
-      ...getFileStage(),
-      ...getLabeledValueStage(),
-      {
-        $project: {
-          entityId: '$entity._id',
-          sharedId: '$entity.sharedId',
-          entityTitle: '$entity.title',
-          fileId: 1,
-          language: 1,
-          propertyName: 1,
-          suggestedValue: 1,
-          segment: 1,
-          currentValue: 1,
-          state: 1,
-          page: 1,
-          date: 1,
-          error: 1,
-          labeledValue: 1,
-          selectionRectangles: 1,
-        },
-      },
-    ]);
+    const suggestions = await IXSuggestionsModel.db.aggregate(
+      buildListQuery(filters, setLanguages, entityTemplates, offset, limit)
+    );
 
     const totalPages = Math.ceil(count / limit);
     return { suggestions, totalPages };

@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
@@ -128,3 +129,14 @@ export const getLabeledValueStage = () => [
     },
   },
 ];
+
+export const getEntityTemplateFilterStage = (entityTemplates: string[] | undefined) =>
+  entityTemplates
+    ? [
+        {
+          $match: {
+            entityTemplateId: { $in: (entityTemplates || []).map(id => new ObjectId(id)) },
+          },
+        },
+      ]
+    : [];

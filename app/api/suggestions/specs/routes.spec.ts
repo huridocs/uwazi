@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
@@ -166,6 +167,17 @@ describe('suggestions routes', () => {
             currentValue: '',
           }),
         ]);
+      });
+
+      // eslint-disable-next-line jest/no-focused-tests
+      it('should filter by entity template', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({
+            filter: { propertyName: 'enemy', entityTemplates: [personTemplateId.toString()] },
+          })
+          .expect(200);
+        console.log(response.body)
       });
     });
 
