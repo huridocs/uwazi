@@ -16,7 +16,7 @@ const equalsForType = (type: PropertySchema['type']) => (first: any, second: any
     return isSameDate(first, second);
   }
 
-  if (type === 'text') {
+  if (type === 'text' && typeof first === typeof second) {
     return first.replace(/(\r\n|\n|\r)/gm, ' ') === second.replace(/(\r\n|\n|\r)/gm, ' ');
   }
 
