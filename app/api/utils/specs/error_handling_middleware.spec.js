@@ -10,10 +10,10 @@ describe('Error handling middleware', () => {
   const contextRequestId = '1234';
   beforeEach(() => {
     req = {};
-    next = jasmine.createSpy('next');
-    res = { json: jasmine.createSpy('json'), status: jasmine.createSpy('status') };
-    spyOn(errorLog, 'error'); //just to avoid annoying console output
-    spyOn(appContext, 'get').and.returnValue(contextRequestId);
+    next = jest.fn();
+    res = { json: jest.fn(), status: jest.fn() };
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
   it('should respond with the error and error code as status', () => {

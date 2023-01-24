@@ -1,5 +1,4 @@
 /*eslint-disable max-lines*/
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { settingsModel } from 'api/settings/settingsModel';
@@ -44,11 +43,11 @@ describe('upload routes', () => {
     cb();
   };
 
-  beforeEach(async done => {
+  beforeEach(async () => {
     await createDirIfNotExists(directory);
-    await deleteAllFiles(() => {
-      spyOn(search, 'delete').and.callFake(async () => Promise.resolve());
-      spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    await deleteAllFiles(async () => {
+      jest.spyOn(search, 'delete').mockImplementation(async () => Promise.resolve());
+      jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
       routes = instrumentRoutes(uploadRoutes);
       file = {
         fieldname: 'file',
@@ -67,17 +66,16 @@ describe('upload routes', () => {
         body: { document: 'sharedId1' },
         files: [file],
       };
-
-      db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
-      spyOn(errorLog, 'error'); //just to avoid annoying console output
     });
+    await db.setupFixturesAndContext(fixtures);
+    jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
   });
 
   describe('api/public', () => {
-    beforeEach(async done => {
+    beforeEach(async () => {
       await deleteAllFiles(async () => {
-        spyOn(Date, 'now').and.returnValue(1000);
-        spyOn(mailer, 'send');
+        jest.spyOn(Date, 'now').mockReturnValue(1000);
+        jest.spyOn(mailer, 'send').mockImplementation(() => {});
         const buffer = await fs.readFile(`${__dirname}/12345.test.pdf`);
         file = {
           fieldname: 'file',
@@ -103,7 +101,6 @@ describe('upload routes', () => {
           files: [file, attachment],
           io: {},
         };
-        done();
       });
     });
 
@@ -176,9 +173,8 @@ describe('upload routes', () => {
     });
   });
 
-  afterAll(async done => {
-    await deleteAllFiles(() => {
-      db.disconnect().then(done);
-    });
+  afterAll(async () => {
+    await deleteAllFiles(() => {});
+    await db.disconnect();
   });
 });

@@ -11,7 +11,7 @@ describe('DistributedLoopLock', () => {
 
   beforeEach(async () => {
     pendingTasks = [];
-    task = jasmine.createSpy('callbackone').and.callFake(
+    task = jest.fn().mockImplementation(
       () =>
         new Promise((resolve, reject) => {
           pendingTasks.push(resolve);

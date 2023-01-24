@@ -8,6 +8,7 @@ import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
 import { elastic } from '../elastic';
 import { updateMapping, reindexAll } from '../entitiesIndex';
+import { Logger } from 'winston';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
@@ -18,7 +19,7 @@ describe('entitiesIndex', () => {
   const userFactory = new UserInContextMockFactory();
 
   beforeEach(async () => {
-    await db.clearAllAndLoad({}, elasticIndex);
+    await db.setupFixturesAndContext({}, elasticIndex);
   });
 
   afterAll(async () => {
@@ -27,7 +28,7 @@ describe('entitiesIndex', () => {
 
   describe('indexEntities', () => {
     const loadFailingFixtures = async () => {
-      await db.clearAllAndLoad(fixturesForIndexErrors);
+      await db.setupFixturesAndContext(fixturesForIndexErrors);
       await elasticTesting.resetIndex();
       // force indexing will ensure that all exceptions are mapper_parsing. Otherwise you get different kinds of exceptions
       await forceIndexingOfNumberBasedProperty();
@@ -35,7 +36,7 @@ describe('entitiesIndex', () => {
     };
 
     it('indexing without errors', async () => {
-      spyOn(errorLog, 'error').and.returnValue('Ok');
+      jest.spyOn(errorLog, 'error').mockImplementation(() => new Logger());
       await loadFailingFixtures();
       await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
       expect(errorLog.error).not.toHaveBeenCalled();
@@ -47,7 +48,7 @@ describe('entitiesIndex', () => {
 
   describe('indexEntities by query', () => {
     it('should only index the entities that match the query', async () => {
-      await db.clearAllAndLoad({
+      await db.setupFixturesAndContext({
         entities: [
           { title: 'title1', language: 'en' },
           { title: 'titulo1', language: 'es' },
@@ -113,7 +114,7 @@ describe('entitiesIndex', () => {
         { title: 'titulo2', language: 'es' },
       ];
 
-      await db.clearAllAndLoad({ entities });
+      await db.setupFixturesAndContext({ entities });
       userFactory.mock({
         _id: 'user1',
         username: 'collaborator',

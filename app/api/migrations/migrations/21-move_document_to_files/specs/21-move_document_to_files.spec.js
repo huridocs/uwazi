@@ -33,7 +33,7 @@ describe('migration move_document_to_files', () => {
     setupTestUploadedPaths();
     await createThumbnail(fixtures.entities[0]);
     await createThumbnail(fixtures.entities[2]);
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

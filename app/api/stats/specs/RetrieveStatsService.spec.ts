@@ -11,14 +11,14 @@ describe('RetrieveStats', () => {
 
   beforeAll(async () => {
     db = (await testingDB.connect()).db;
-    // @ts-ignore
-    jest.spyOn(db, 'stats').mockResolvedValue({
-      storageSize: 15000,
-    });
   });
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'stats');
+    // @ts-ignore
+    jest.spyOn(db, 'stats').mockResolvedValue({
+      storageSize: 15000,
+    });
     elasticMock = jest
       .spyOn(elastic.cat, 'indices')
       // @ts-ignore

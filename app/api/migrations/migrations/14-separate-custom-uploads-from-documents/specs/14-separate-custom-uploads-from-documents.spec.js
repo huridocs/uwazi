@@ -1,7 +1,6 @@
 //eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import path from 'path';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import testingDB from 'api/utils/testing_db';
 import { config } from 'api/config';
 import migration from '../index.js';
@@ -28,11 +27,11 @@ describe('migration separate-custom-uploads-from-documents', () => {
   let originalDocumentsPath;
   let originalUploadsPath;
 
-  beforeEach(done => {
-    spyOn(process.stdout, 'write');
+  beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     originalDocumentsPath = config.defaultTenant.uploadedDocuments;
     originalUploadsPath = config.defaultTenant.customUploads;
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterEach(done => {

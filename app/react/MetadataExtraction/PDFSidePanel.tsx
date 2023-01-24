@@ -50,17 +50,18 @@ const PDFSidePanel = ({
         .then(response => {
           const responseFile = response.json[0];
           setFile(responseFile);
+
           // Load selections to the store
           const defaultDoc = {
             ...responseFile,
-            extractedMetadata: responseFile.extractedMetadata.filter(
-              (metadata: any) => metadata.name === entitySuggestion.propertyName
-            ),
+            extractedMetadata: responseFile.extractedMetadata
+              ? responseFile.extractedMetadata.filter(
+                  (metadata: any) => metadata.name === entitySuggestion.propertyName
+                )
+              : [],
           };
 
-          if (responseFile.extractedMetadata) {
-            store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
-          }
+          store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
 
           if (entitySuggestion.selectionRectangles) {
             const selection = {
@@ -71,6 +72,7 @@ const PDFSidePanel = ({
           }
         })
         .catch(e => e);
+
       return () => {
         store?.dispatch(unsetSelection());
         store?.dispatch(actions.update('viewer/doc', entity));

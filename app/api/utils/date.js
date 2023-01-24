@@ -1,6 +1,7 @@
 import moment from 'moment';
 // @ts-ignore
 import parser from 'any-date-parser';
+import * as stopword from 'stopword';
 
 export default {
   currentUTC() {
@@ -27,7 +28,14 @@ export default {
   },
 
   dateToSeconds(value, locale) {
-    const parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    let parsedValue = value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    const { removeStopwords, ...languages } = stopword;
+
+    if (locale) {
+      parsedValue = removeStopwords(parsedValue.split(' '), languages[locale]).join(' ');
+    }
+
     let getDate = parser.fromString(parsedValue, locale);
     if (getDate.invalid) {
       getDate = Date.parse(`${parsedValue} GMT`);

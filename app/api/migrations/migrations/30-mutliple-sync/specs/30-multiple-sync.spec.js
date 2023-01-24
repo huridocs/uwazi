@@ -5,7 +5,7 @@ import fixturesWithoutSync from './fixtures_without_sync.js';
 
 describe('migration multiple sync', () => {
   beforeEach(() => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   afterAll(async () => {

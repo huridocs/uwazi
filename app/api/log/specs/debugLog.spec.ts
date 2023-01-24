@@ -15,16 +15,16 @@ interface ExtendedLogger extends winston.Logger {
 
 describe('Debug Log', () => {
   let debugLog: ExtendedLogger;
-  let logSpy: jasmine.Spy;
+  let logSpy: jest.Mock<any, any>;
 
   const instatiateLog = () => {
     debugLog = createDebugLog();
-    logSpy = jasmine.createSpy('log');
+    logSpy = jest.fn();
     debugLog.transports[0].log = logSpy;
   };
 
   const getLogResult = () => {
-    const callArgs = logSpy.calls.mostRecent().args[0];
+    const callArgs = logSpy.mock.calls[0][0];
     return callArgs[Symbol.for('message')];
   };
 

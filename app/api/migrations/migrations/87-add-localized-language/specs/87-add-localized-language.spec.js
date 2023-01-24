@@ -3,6 +3,7 @@ import migration from '../index.js';
 
 describe('migration add-localized-language', () => {
   beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext({
       settings: [
         {

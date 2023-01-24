@@ -10,7 +10,7 @@ describe('date helper', () => {
     });
 
     it('transform "first-day-last-month" to timestamp', () => {
-      spyOn(Date, 'now').and.returnValue(moment('2018-07-04'));
+      jest.spyOn(Date, 'now').mockReturnValue(moment('2018-07-04'));
 
       expect(date.descriptionToTimestamp('first-day-last-month')).toBe(
         moment.utc('2018-06-01').unix()
@@ -18,7 +18,7 @@ describe('date helper', () => {
     });
 
     it('transform "last-day-last-month" to timestamp', () => {
-      spyOn(Date, 'now').and.returnValue(moment('2018-07-04'));
+      jest.spyOn(Date, 'now').mockReturnValue(moment('2018-07-04'));
 
       expect(date.descriptionToTimestamp('last-day-last-month')).toBe(
         moment.utc('2018-06-30T23:59:59').unix()
@@ -35,7 +35,7 @@ describe('date helper', () => {
   describe('dateToSeconds', () => {
     it.each`
       stringDate                     | language     | expectedMilliseconds
-      ${'5-2-2020'}                  | ${'en-GB'}   | ${1580860800}
+      ${'5-2-2020'}                  | ${'eng'}     | ${1580860800}
       ${'5-2-2020'}                  | ${'en-US'}   | ${1588377600}
       ${'2020-01-01'}                | ${undefined} | ${1577836800}
       ${'17-05-2018'}                | ${undefined} | ${1526515200}
@@ -49,8 +49,9 @@ describe('date helper', () => {
       ${'22 decembre 2012'}          | ${undefined} | ${1356134400}
       ${'mercredi 22 décembre 2010'} | ${undefined} | ${1292976000}
       ${'Marzo 14, 2006'}            | ${undefined} | ${1142294400}
-      ${'28 августа 2017'}           | ${'ru'}      | ${1503878400}
-      ${'августа 28, 2017'}          | ${'ru'}      | ${1503878400}
+      ${'28 августа 2017'}           | ${'rus'}     | ${1503878400}
+      ${'августа 28, 2017'}          | ${'rus'}     | ${1503878400}
+      ${'1 de septiembre de 2001'}   | ${'spa'}     | ${999302400}
     `(
       'should convert $stringDate to $expectedMilliseconds',
       ({ stringDate, language, expectedMilliseconds }) => {
