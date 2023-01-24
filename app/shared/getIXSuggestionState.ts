@@ -11,8 +11,17 @@ interface SuggestionValues {
   date: number;
 }
 
-const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
-  type === 'date' ? isSameDate(first, second) : first === second;
+const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) => {
+  if (type === 'date') {
+    return isSameDate(first, second);
+  }
+
+  if (type === 'text') {
+    return first.replace(/(\r\n|\n|\r)/gm, ' ') === second.replace(/(\r\n|\n|\r)/gm, ' ');
+  }
+
+  return first === second;
+};
 
 const getLabelingState = ({ currentValue, labeledValue }: SuggestionValues) => {
   if (labeledValue) {
