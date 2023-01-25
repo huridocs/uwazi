@@ -19,7 +19,7 @@ const {
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
-const filesRootPath = FILES_ROOT_PATH || `${__dirname}/../../`;
+const filesRootPath = FILES_ROOT_PATH || rootPath;
 
 // this needs to be true in order for uwazi to work properly
 // when using multiple node processes
