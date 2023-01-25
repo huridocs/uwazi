@@ -95,6 +95,10 @@ describe('suggestions routes', () => {
         },
       ]);
       expect(response.body.totalPages).toBe(1);
+      expect(response.body.aggregations).toMatchObject({
+        template: [{ _id: personTemplateId.toString(), count: 2 }],
+        state: [{ _id: 'adf', count: -1 }],
+      });
     });
 
     it('should include failed suggestions but not processing ones', async () => {
@@ -174,10 +178,35 @@ describe('suggestions routes', () => {
         const response = await request(app)
           .get('/api/suggestions/')
           .query({
-            filter: { propertyName: 'enemy', entityTemplates: [personTemplateId.toString()] },
+            filter: { propertyName: 'title', entityTemplates: [personTemplateId.toString()] },
           })
           .expect(200);
-        console.log(response.body)
+        expect(response.body.suggestions).toMatchObject([
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared4',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared3',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared1',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared1',
+            language: 'es',
+          },
+        ]);
       });
     });
 

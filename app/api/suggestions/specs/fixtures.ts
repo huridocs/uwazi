@@ -398,7 +398,7 @@ const fixtures: DBFixture = {
       title: 'Batman es',
       language: 'es',
       metadata: { super_powers: [{ value: 'conocimiento científico' }], age: [{ value: 12 }] },
-      template: factory.id('template1'),
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),

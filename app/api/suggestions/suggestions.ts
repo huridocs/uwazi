@@ -126,6 +126,26 @@ const buildListQuery = (
   return pipeline;
 };
 
+const buildTemplateAggregationsQuery = (
+  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  setLanguages: LanguagesListSchema | undefined,
+  entityTemplates: string[] | undefined,
+  offset: number,
+  limit: number
+) => {
+  const pipeline = [
+    { $match: { ...filters, status: { $ne: 'processing' } } },
+    ...getEntityStage(setLanguages!),
+    {
+      $group: {
+        _id: '$entity.template',
+        count: { $sum: 1 },
+      },
+    },
+  ];
+  return pipeline;
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -146,8 +166,12 @@ const Suggestions = {
       buildListQuery(filters, setLanguages, entityTemplates, offset, limit)
     );
 
+    const templateAggregations = await IXSuggestionsModel.db.aggregate(
+      buildTemplateAggregationsQuery(filters, setLanguages, entityTemplates, offset, limit)
+    );
+
     const totalPages = Math.ceil(count / limit);
-    return { suggestions, totalPages };
+    return { suggestions, aggregations: { template: templateAggregations }, totalPages };
   },
 
   getStats,
