@@ -2,12 +2,14 @@ import { ObjectId } from 'mongodb';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsFilter } from 'shared/types/suggestionType';
 
-export const getMatchStage = (filters: IXSuggestionsFilter) => ({
-  $match: {
-    ...filters,
-    status: { $ne: 'processing' },
+export const getMatchStage = (filters: IXSuggestionsFilter) => [
+  {
+    $match: {
+      ...filters,
+      status: { $ne: 'processing' },
+    },
   },
-});
+];
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
   const defaultLanguage = languages.find(l => l.default)?.key;

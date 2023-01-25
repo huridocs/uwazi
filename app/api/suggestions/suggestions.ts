@@ -95,7 +95,7 @@ const buildListQuery = (
   limit: number
 ) => {
   const pipeline = [
-    getMatchStage(filters),
+    ...getMatchStage(filters),
     { $sort: { date: 1, state: -1 } },
     ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
@@ -133,7 +133,7 @@ const buildTemplateAggregationsQuery = (
   setLanguages: LanguagesListSchema | undefined
 ) => {
   const pipeline = [
-    getMatchStage(filters),
+    ...getMatchStage(filters),
     ...getEntityStage(setLanguages!),
     ...groupByAndSort('$entity.template'),
   ];
@@ -147,7 +147,7 @@ const buildStateAggregationsQuery = (
 ) => {
   const { state, ...filters } = _filters;
   const pipeline = [
-    getMatchStage(filters),
+    ...getMatchStage(filters),
     ...getEntityStage(setLanguages!),
     {
       $addFields: { entityTemplateId: '$entity.template' },
@@ -158,7 +158,7 @@ const buildStateAggregationsQuery = (
   return pipeline;
 };
 
-const performQueries = async (
+const fetchAndAggregateSuggestions = async (
   filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
   setLanguages: LanguagesListSchema | undefined,
   entityTemplates: string[] | undefined,
@@ -181,7 +181,11 @@ const performQueries = async (
     buildStateAggregationsQuery(filters, setLanguages, entityTemplates)
   );
 
-  return { suggestions, templateAggregations, stateAggregations, count };
+  return {
+    suggestions,
+    aggregations: { template: templateAggregations, state: stateAggregations },
+    totalPages: Math.ceil(count / limit),
+  };
 };
 
 const Suggestions = {
@@ -193,23 +197,9 @@ const Suggestions = {
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-
     const { language, entityTemplates, ...filters } = filter;
 
-    const { suggestions, templateAggregations, stateAggregations, count } = await performQueries(
-      filters,
-      setLanguages,
-      entityTemplates,
-      offset,
-      limit
-    );
-
-    const totalPages = Math.ceil(count / limit);
-    return {
-      suggestions,
-      aggregations: { template: templateAggregations, state: stateAggregations },
-      totalPages,
-    };
+    return fetchAndAggregateSuggestions(filters, setLanguages, entityTemplates, offset, limit);
   },
 
   getStats,
