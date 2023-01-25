@@ -18,6 +18,8 @@ import {
   getEntityTemplateFilterStage,
   getFileStage,
   getLabeledValueStage,
+  getMatchStage,
+  groupByAndSort,
 } from './pipelineStages';
 import { getStats } from './stats';
 import { updateStates } from './updateState';
@@ -93,7 +95,7 @@ const buildListQuery = (
   limit: number
 ) => {
   const pipeline = [
-    { $match: { ...filters, status: { $ne: 'processing' } } },
+    getMatchStage(filters),
     { $sort: { date: 1, state: -1 } },
     ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
@@ -131,15 +133,9 @@ const buildTemplateAggregationsQuery = (
   setLanguages: LanguagesListSchema | undefined
 ) => {
   const pipeline = [
-    { $match: { ...filters, status: { $ne: 'processing' } } },
+    getMatchStage(filters),
     ...getEntityStage(setLanguages!),
-    {
-      $group: {
-        _id: '$entity.template',
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { _id: 1 } },
+    ...groupByAndSort('$entity.template'),
   ];
   return pipeline;
 };
@@ -151,19 +147,13 @@ const buildStateAggregationsQuery = (
 ) => {
   const { state, ...filters } = _filters;
   const pipeline = [
-    { $match: { ...filters, status: { $ne: 'processing' } } },
+    getMatchStage(filters),
     ...getEntityStage(setLanguages!),
     {
       $addFields: { entityTemplateId: '$entity.template' },
     },
     ...getEntityTemplateFilterStage(entityTemplates),
-    {
-      $group: {
-        _id: '$state',
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { _id: 1 } },
+    ...groupByAndSort('$state'),
   ];
   return pipeline;
 };
