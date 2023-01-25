@@ -128,10 +128,7 @@ const buildListQuery = (
 
 const buildTemplateAggregationsQuery = (
   filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
-  setLanguages: LanguagesListSchema | undefined,
-  entityTemplates: string[] | undefined,
-  offset: number,
-  limit: number
+  setLanguages: LanguagesListSchema | undefined
 ) => {
   const pipeline = [
     { $match: { ...filters, status: { $ne: 'processing' } } },
@@ -142,8 +139,59 @@ const buildTemplateAggregationsQuery = (
         count: { $sum: 1 },
       },
     },
+    { $sort: { _id: 1 } },
   ];
   return pipeline;
+};
+
+const buildStateAggregationsQuery = (
+  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  setLanguages: LanguagesListSchema | undefined,
+  entityTemplates: string[] | undefined
+) => {
+  const { state, ...filters } = _filters;
+  const pipeline = [
+    { $match: { ...filters, status: { $ne: 'processing' } } },
+    ...getEntityStage(setLanguages!),
+    {
+      $addFields: { entityTemplateId: '$entity.template' },
+    },
+    ...getEntityTemplateFilterStage(entityTemplates),
+    {
+      $group: {
+        _id: '$state',
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ];
+  return pipeline;
+};
+
+const performQueries = async (
+  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  setLanguages: LanguagesListSchema | undefined,
+  entityTemplates: string[] | undefined,
+  offset: number,
+  limit: number
+) => {
+  const count = await IXSuggestionsModel.db
+    .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+    .then(result => (result?.length ? result[0].count : 0));
+
+  const suggestions = await IXSuggestionsModel.db.aggregate(
+    buildListQuery(filters, setLanguages, entityTemplates, offset, limit)
+  );
+
+  const templateAggregations = await IXSuggestionsModel.db.aggregate(
+    buildTemplateAggregationsQuery(filters, setLanguages)
+  );
+
+  const stateAggregations = await IXSuggestionsModel.db.aggregate(
+    buildStateAggregationsQuery(filters, setLanguages, entityTemplates)
+  );
+
+  return { suggestions, templateAggregations, stateAggregations, count };
 };
 
 const Suggestions = {
@@ -158,20 +206,20 @@ const Suggestions = {
 
     const { language, entityTemplates, ...filters } = filter;
 
-    const count = await IXSuggestionsModel.db
-      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
-      .then(result => (result?.length ? result[0].count : 0));
-
-    const suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(filters, setLanguages, entityTemplates, offset, limit)
-    );
-
-    const templateAggregations = await IXSuggestionsModel.db.aggregate(
-      buildTemplateAggregationsQuery(filters, setLanguages, entityTemplates, offset, limit)
+    const { suggestions, templateAggregations, stateAggregations, count } = await performQueries(
+      filters,
+      setLanguages,
+      entityTemplates,
+      offset,
+      limit
     );
 
     const totalPages = Math.ceil(count / limit);
-    return { suggestions, aggregations: { template: templateAggregations }, totalPages };
+    return {
+      suggestions,
+      aggregations: { template: templateAggregations, state: stateAggregations },
+      totalPages,
+    };
   },
 
   getStats,
