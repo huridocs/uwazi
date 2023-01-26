@@ -30,7 +30,6 @@ describe('Homepage entities', () => {
 
   it('should display relationships on the sidepanel', async () => {
     await expect(page).toClick('div.item-document:first-child');
-    
     await expect(page).toClick('#tab-relationships');
     await testSelectorShot('.metadata-sidepanel', { threshold: 0.08 });
   });
