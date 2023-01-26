@@ -1,9 +1,13 @@
-import Joi from 'joi';
 import { Application, Request } from 'express';
+import Joi from 'joi';
 
+import { paths } from 'api/swagger';
 import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
+
+type UwaziReq = Request & { query: NonNullable<paths['/api/pages']['get']['parameters']>['query'] };
+type UwaziReq2 = Request & { query: NonNullable<paths['/api/page']['get']['parameters']>['query'] };
 
 export default (app: Application) => {
   app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
@@ -13,43 +17,16 @@ export default (app: Application) => {
       .catch(next);
   });
 
-  app.get(
-    '/api/pages',
+  app.get('/api/pages', (req: UwaziReq, res, next) => {
+    pages
+      .get({ ...req.query, language: req.language })
+      .then(res.json.bind(res))
+      .catch(next);
+  });
 
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
-
-    (req, res, next) => {
-      pages
-        .get({ ...req.query, language: req.language })
-        .then(res.json.bind(res))
-        .catch(next);
-    }
-  );
-
-  app.get(
-    '/api/page',
-
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-          slug: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
-
-    (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
-      pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
-    }
-  );
+  app.get('/api/page', (req: UwaziReq2, res, next) => {
+    pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
+  });
 
   app.delete(
     '/api/pages',

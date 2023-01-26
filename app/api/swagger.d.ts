@@ -111,6 +111,7 @@ export interface paths {
                         inheritedType?: string;
                       })[]) | undefined;
                   };
+                  obsoleteMetadata?: (string)[];
                   suggestedMetadata?: {
                     [key: string]: (({
                         value: OneOf<[null, string, number, boolean, {
@@ -169,7 +170,93 @@ export interface paths {
       };
     };
   };
+  "/api/pages": {
+    /**
+     * Get pages 
+     * @description Get pages
+     */
+    get: {
+      /**
+       * Get pages 
+       * @description Get pages
+       */
+      parameters?: {
+        query?: {
+          sharedId?: string;
+        };
+      };
+      responses: {
+        /** @description Get an array of pages */
+        200: {
+          content: {
+            "application/json": {
+              data?: ({
+                  _id?: string | Record<string, never>;
+                  title: string;
+                  language?: string;
+                  sharedId?: string;
+                  creationDate?: number;
+                  metadata?: {
+                    _id?: string | Record<string, never>;
+                    content?: string;
+                    script?: string;
+                  };
+                  user?: string | Record<string, never>;
+                  entityView?: boolean;
+                  __v?: number;
+                })[];
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/page": {
+    /**
+     * Get a single page 
+     * @description Get a single page
+     */
+    get: {
+      /**
+       * Get a single page 
+       * @description Get a single page
+       */
+      parameters: {
+        query: {
+          sharedId: string;
+          slug?: string;
+        };
+      };
+      responses: {
+        /** @description Get an array of pages */
+        200: {
+          content: {
+            "application/json": {
+              /** PageType */
+              data?: {
+                _id?: string | Record<string, never>;
+                title: string;
+                language?: string;
+                sharedId?: string;
+                creationDate?: number;
+                metadata?: {
+                  _id?: string | Record<string, never>;
+                  content?: string;
+                  script?: string;
+                };
+                user?: string | Record<string, never>;
+                entityView?: boolean;
+                __v?: number;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
 }
+
+export type webhooks = Record<string, never>;
 
 export type components = Record<string, never>;
 

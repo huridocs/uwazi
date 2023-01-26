@@ -28,7 +28,6 @@ export default (app, server) => {
   require('./documents/routes').documentRoutes(app);
   require('./contact/routes').default(app);
   require('./entities/routes').default(app);
-  require('./pages/routes').default(app);
   require('./files/jsRoutes.js').default(app);
   require('./files/routes').default(app);
   require('./files/exportRoutes').default(app);
@@ -45,18 +44,20 @@ export default (app, server) => {
   require('./stats/routes').default(app);
 
   app.use(
+    '/api',
     OpenApiValidator.middleware({
       apiSpec: `${__dirname}/../../swagger.json`,
       // validateRequests: true, // (default)
       // coerceTypes: 'array',
       validateApiSpec: false,
       // validateRequests: {
-      //   allowUnknownQueryParameters: false,
-      //   removeAdditional: true
+      //   // allowUnknownQueryParameters: false,
+      //   // removeAdditional: true
       // },
       // validateResponses: true, // false by default
     })
   );
 
+  require('./pages/routes').default(app);
   require('./search.v2/routes').searchRoutes(app);
 };
