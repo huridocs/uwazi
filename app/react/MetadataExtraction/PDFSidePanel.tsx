@@ -10,7 +10,6 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { clearMetadataSelections, loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import { actions } from 'app/BasicReducer';
-import { updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
 import { unsetSelection } from 'app/Viewer/actions/selectionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
