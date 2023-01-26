@@ -4184,6 +4184,210 @@
       }
     },
     "/api/pages": {
+      "post": {
+        "summary": "Create or update a page",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "http://json-schema.org/schema#",
+                "$async": false,
+                "type": "object",
+                "validatePageIsNotEntityView": true,
+                "additionalProperties": false,
+                "title": "PageType",
+                "definitions": {
+                  "objectIdSchema": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "tsType": "ObjectId"
+                      }
+                    ]
+                  }
+                },
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "sharedId": {
+                    "type": "string"
+                  },
+                  "creationDate": {
+                    "type": "number"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "definitions": {
+                      "objectIdSchema": {
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "tsType": "ObjectId"
+                          }
+                        ]
+                      }
+                    },
+                    "properties": {
+                      "_id": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "script": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "user": {
+                    "type": "string"
+                  },
+                  "entityView": {
+                    "type": "boolean"
+                  },
+                  "__v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Will return the page created / updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$schema": "http://json-schema.org/schema#",
+                      "$async": true,
+                      "type": "object",
+                      "validatePageIsNotEntityView": true,
+                      "additionalProperties": false,
+                      "title": "PageType",
+                      "definitions": {
+                        "objectIdSchema": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "tsType": "ObjectId"
+                            }
+                          ]
+                        }
+                      },
+                      "properties": {
+                        "_id": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "tsType": "ObjectId"
+                            }
+                          ]
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "language": {
+                          "type": "string"
+                        },
+                        "sharedId": {
+                          "type": "string"
+                        },
+                        "creationDate": {
+                          "type": "number"
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "definitions": {
+                            "objectIdSchema": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "tsType": "ObjectId"
+                                }
+                              ]
+                            }
+                          },
+                          "properties": {
+                            "_id": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "object",
+                                  "tsType": "ObjectId"
+                                }
+                              ]
+                            },
+                            "content": {
+                              "type": "string"
+                            },
+                            "script": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "user": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "tsType": "ObjectId"
+                            }
+                          ]
+                        },
+                        "entityView": {
+                          "type": "boolean"
+                        },
+                        "__v": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "title"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "summary": "Get pages",
         "description": "Get pages",

@@ -36,6 +36,47 @@ export const swaggerDocument = {
       },
     },
     '/api/pages': {
+      post: {
+        summary: 'Create or update a page',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                ...PageSchema,
+                properties: {
+                  ...PageSchema.properties,
+                  _id: { type: 'string' },
+                  user: { type: 'string' },
+                  metadata: {
+                    ...PageSchema.properties.metadata,
+                    properties: {
+                      ...PageSchema.properties.metadata.properties,
+                      _id: { type: 'string' },
+                    },
+                  },
+                },
+                $async: false,
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Will return the page created / updated',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    data: PageSchema,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       get: {
         summary: 'Get pages',
         description: 'Get pages',

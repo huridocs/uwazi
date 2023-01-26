@@ -210,6 +210,54 @@ export interface paths {
         };
       };
     };
+    /** Create or update a page */
+    post: {
+      /** Create or update a page */
+      requestBody: {
+        content: {
+          "application/json": {
+            _id?: string;
+            title: string;
+            language?: string;
+            sharedId?: string;
+            creationDate?: number;
+            metadata?: {
+              _id?: string;
+              content?: string;
+              script?: string;
+            };
+            user?: string;
+            entityView?: boolean;
+            __v?: number;
+          };
+        };
+      };
+      responses: {
+        /** @description Will return the page created / updated */
+        200: {
+          content: {
+            "application/json": {
+              /** PageType */
+              data?: {
+                _id?: string | Record<string, never>;
+                title: string;
+                language?: string;
+                sharedId?: string;
+                creationDate?: number;
+                metadata?: {
+                  _id?: string | Record<string, never>;
+                  content?: string;
+                  script?: string;
+                };
+                user?: string | Record<string, never>;
+                entityView?: boolean;
+                __v?: number;
+              };
+            };
+          };
+        };
+      };
+    };
   };
   "/api/page": {
     /**

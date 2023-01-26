@@ -6,11 +6,15 @@ import { validation } from 'api/utils';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
 
+interface UwaziReqPost extends Request {
+  body: paths['/api/pages']['post']['requestBody']['content']['application/json'];
+}
+
 type UwaziReq = Request & { query: NonNullable<paths['/api/pages']['get']['parameters']>['query'] };
 type UwaziReq2 = Request & { query: NonNullable<paths['/api/page']['get']['parameters']>['query'] };
 
 export default (app: Application) => {
-  app.post('/api/pages', needsAuthorization(['admin']), (req, res, next) => {
+  app.post('/api/pages', needsAuthorization(['admin']), (req: UwaziReqPost, res, next) => {
     pages
       .save(req.body, req.user, req.language)
       .then(response => res.json(response))
