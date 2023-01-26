@@ -1,8 +1,10 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
+import { connect } from 'react-redux';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
 import { store } from 'app/store';
@@ -12,9 +14,12 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { TemplateSchema } from 'shared/types/templateType';
 import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import {
@@ -27,16 +32,62 @@ import {
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
-import { FiltersSidePanel } from './FilterSidePanel';
+import {
+  FiltersSidePanel,
+  SuggestionStateSelectionsType,
+  TemplateSelectionsType,
+} from './FilterSidePanel';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
+  settings: IImmutable<ClientSettings>;
+  templates: IImmutable<TemplateSchema[]>;
 }
 
-export const EntitySuggestions = ({
+function mapStateToProps({ settings, templates }: any) {
+  return {
+    settings: settings.collection,
+    templates,
+  };
+}
+
+const getRelevantTemplates = (
+  settings: IImmutable<ClientSettings>,
+  templates: IImmutable<TemplateSchema[]>,
+  property: PropertySchema
+): TemplateSelectionsType => {
+  const ixTemplates: {
+    template: string;
+    properties: string[];
+  }[] = settings.get('features')?.get('metadataExtraction')?.get('templates')?.toJS() || [];
+  const templateNamesById = objectIndex<TemplateSchema, string>(
+    templates.toJS(),
+    t => t._id?.toString() || '',
+    t => t.name
+  );
+  const relevantTemplates = ixTemplates
+    .filter(t => t.properties.find(p => p === property.name))
+    .map(t => ({ _id: t.template, name: templateNamesById[t.template], selected: false }));
+  return relevantTemplates;
+};
+
+const getInitialSuggestionStateSelections = (): SuggestionStateSelectionsType =>
+  Object.entries(SuggestionState)
+    .map(([key, value]) => ({
+      key,
+      label: value,
+      selected: false,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label))
+    .filter(s => s.label !== SuggestionState.processing);
+
+// eslint-disable-next-line max-statements
+const EntitySuggestionsComponent = ({
   property: reviewedProperty,
   acceptIXSuggestion,
+  settings,
+  templates,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
@@ -51,6 +102,16 @@ export const EntitySuggestions = ({
   const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
+
+  const relevantTemplates = useMemo(
+    () => getRelevantTemplates(settings, templates, reviewedProperty),
+    [settings, templates, reviewedProperty]
+  );
+  const [templateSelection, setTemplateSelection] =
+    useState<TemplateSelectionsType>(relevantTemplates);
+  const initialSuggestionStates = useMemo(() => getInitialSuggestionStateSelections(), []);
+  const [sueggestionStateSelection, setSuggestionStateSelection] =
+    useState<SuggestionStateSelectionsType>(initialSuggestionStates);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -332,6 +393,8 @@ export const EntitySuggestions = ({
           hideFilters={() => {
             setFiltersOpen(false);
           }}
+          templateSelection={templateSelection}
+          stateSelection={sueggestionStateSelection}
         />
         <div className="dashboard-link">
           <I18NLink to="settings/metadata_extraction">
@@ -361,7 +424,7 @@ export const EntitySuggestions = ({
             </div>
             <div>
               <button onClick={() => setFiltersOpen(true)}>
-                <Icon icon="filter"/>
+                <Icon icon="filter" />
                 <Translate>Show Filters</Translate>
               </button>
             </div>
@@ -429,3 +492,5 @@ export const EntitySuggestions = ({
     </>
   );
 };
+
+export const EntitySuggestions = connect(mapStateToProps)(EntitySuggestionsComponent);
