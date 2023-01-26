@@ -4,8 +4,8 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 
 interface SuggestionValues {
   currentValue: string | number | null;
-  labeledValue: string | null;
-  suggestedValue: string | null;
+  labeledValue: string | number | null;
+  suggestedValue: string | number | null;
   modelCreationDate: number;
   error: string;
   date: number;
@@ -18,6 +18,10 @@ const equalsForType = (type: PropertySchema['type']) => (first: any, second: any
 
   if (type === 'text' && typeof first === typeof second) {
     return first.replace(/(\r\n|\n|\r)/gm, ' ') === second.replace(/(\r\n|\n|\r)/gm, ' ');
+  }
+
+  if (type === 'numeric') {
+    return Number.parseFloat(first) === Number.parseFloat(second);
   }
 
   return first === second;
