@@ -38,7 +38,7 @@ const PageSelectionsComponent = ({ userSelections, entityDocument, isEditing }: 
       }))
     : [];
 
-  const selections = uniqueSelections(currentSelections, newSelections);
+  const selections = [...currentSelections, ...newSelections]; // uniqueSelections(currentSelections, newSelections);
 
   if (selections.length) {
     return (

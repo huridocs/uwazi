@@ -68,7 +68,7 @@ const PDFSidePanel = ({
               text: entitySuggestion.suggestedValue as string,
               selectionRectangles: entitySuggestion.selectionRectangles,
             };
-            store?.dispatch(updateSelection(selection, entitySuggestion.propertyName, 'id'));
+            store?.dispatch(updateSelection(selection, entitySuggestion.propertyName));
           }
         })
         .catch(e => e);
