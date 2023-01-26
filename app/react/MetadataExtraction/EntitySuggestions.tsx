@@ -27,6 +27,7 @@ import {
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
+import { FiltersSidePanel } from './FilterSidePanel';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -48,6 +49,8 @@ export const EntitySuggestions = ({
   const [openCancelFindingSuggestions, setOpenCancelFindingSuggestions] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
+
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(true);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -323,6 +326,13 @@ export const EntitySuggestions = ({
   return (
     <>
       <div className="panel entity-suggestions">
+        <FiltersSidePanel
+          open={filtersOpen}
+          reset={() => {}}
+          hideFilters={() => {
+            setFiltersOpen(false);
+          }}
+        />
         <div className="dashboard-link">
           <I18NLink to="settings/metadata_extraction">
             <Icon icon="arrow-left" />
