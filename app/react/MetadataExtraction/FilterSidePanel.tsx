@@ -10,7 +10,7 @@ interface FiltersSidePanelProps {
 }
 
 export const FiltersSidePanel = ({ open, hideFilters, reset }: FiltersSidePanelProps) => (
-  <SidePanel className="library-filters" open={open}>
+  <SidePanel className="metadata-sidepanel" open={open}>
     <div className="sidepanel-body">
       <div className="sidepanel-title">
         <div>{t('System', 'Filters configuration')}</div>

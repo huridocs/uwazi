@@ -50,7 +50,7 @@ export const EntitySuggestions = ({
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
 
-  const [filtersOpen, setFiltersOpen] = useState<boolean>(true);
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -357,6 +357,12 @@ export const EntitySuggestions = ({
                 onClick={onFindSuggestionButtonClicked}
               >
                 <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+            </div>
+            <div>
+              <button onClick={() => setFiltersOpen(true)}>
+                <Icon icon="filter"/>
+                <Translate>Show Filters</Translate>
               </button>
             </div>
           </div>
