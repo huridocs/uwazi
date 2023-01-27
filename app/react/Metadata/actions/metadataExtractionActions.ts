@@ -78,8 +78,20 @@ const updateFormField = async (
     return formActions.change(model, coercedValue);
   }
 
-  if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {
-    return formActions.change(model, '0');
+  if (fieldType === 'numeric') {
+    const requestParams = new RequestParams({
+      locale,
+      value,
+      type: 'numeric',
+    });
+    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
+    if (!success) {
+      return notificationActions.notify(
+        t('System', 'Value cannot be transformed to numeric', null, false),
+        'danger'
+      );
+    }
+    return formActions.change(model, coercedValue);
   }
 
   return formActions.change(model, value);

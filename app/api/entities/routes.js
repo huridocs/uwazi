@@ -32,6 +32,13 @@ function coerceValues(value, type, locale) {
         return { success: false };
       }
       return { success: true, value: dateSeconds };
+    case 'numeric':
+      try {
+        const numeric = Number.parseFloat(value);
+        return { success: true, value: numeric };
+      } catch (e) {
+        return { success: false };
+      }
     default:
       throw Error('Unsupported type');
   }
