@@ -139,24 +139,25 @@ class PublicFormComponent extends Component {
                     : undefined
                 }
               >
-                {({ getRootProps }) => (
+                {({ getRootProps, getInputProps }) => (
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()}>
-                    <label>
-                      <div className="text-content">
-                        <div id="icon">
-                          <Icon icon="cloud-upload-alt" />
-                        </div>
-                        <div id="upload-text">
-                          <Translate>Drop your files here to upload or</Translate>
-                        </div>
-                        <div id="upload-button">
-                          <div id="button">
-                            <Translate>Select files on your device</Translate>
+                    <div className="drop-zone">
+                      <label>
+                        <div className="text-content">
+                          <div id="icon">
+                            <Icon icon="cloud-upload-alt" />
+                          </div>
+                          <div id="upload-text">
+                            <Translate>Drop your files here to upload or</Translate>
                           </div>
                         </div>
-                      </div>
-                    </label>
+                      </label>
+                      <input id="upload-button" {...getInputProps()} />
+                      <button id="button" type="button">
+                        <Translate>Select files on your device</Translate>
+                      </button>
+                    </div>
                   </div>
                 )}
               </Dropzone>

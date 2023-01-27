@@ -40,11 +40,12 @@ class CustomUploadsComponent extends RouteHandler {
           </SettingsHeader>
           <div className="panel-body custom-uploads">
             <Dropzone className="upload-box" onDrop={this.onDrop}>
-              {({ getRootProps }) => (
+              {({ getRootProps, getInputProps }) => (
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 <div {...getRootProps()}>
                   <div className="upload-box_wrapper">
                     <Icon icon="upload" />
+                    <input {...getInputProps()} />
                     <button className="upload-box_link" type="button">
                       <Translate>Browse files to upload</Translate>
                     </button>
