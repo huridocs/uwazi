@@ -8,6 +8,17 @@ import { t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientFile } from 'app/istore';
 
+const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
+  const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
+  if (!success) {
+    return notificationActions.notify(
+      t('System', 'Value cannot be transformed to numeric', null, false),
+      'danger'
+    );
+  }
+  return formActions.change(model, coercedValue);
+};
+
 const updateSelection = (
   selection: { text: string; selectionRectangles: any[] },
   fieldName: string,
@@ -81,17 +92,6 @@ const updateFormField = async (
   }
 
   return formActions.change(model, value);
-};
-
-const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
-  const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
-  if (!success) {
-    return notificationActions.notify(
-      t('System', 'Value cannot be transformed to numeric', null, false),
-      'danger'
-    );
-  }
-  return formActions.change(model, coercedValue);
 };
 
 export { updateSelection, updateFormField, deleteSelection };
