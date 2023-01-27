@@ -13,7 +13,7 @@ const getAndUpdateCoercedValue = async (params: RequestParams, model: string) =>
   if (!success) {
     return [
       notificationActions.notify(
-        t('System', `Value cannot be transformed to the correct type`, null, false),
+        t('System', 'Value cannot be transformed to the correct type', null, false),
         'danger'
       ),
       formActions.change(model, 0),

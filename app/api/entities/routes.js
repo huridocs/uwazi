@@ -40,11 +40,13 @@ function coerceValues(value, type, locale) {
         return { success: false };
       }
     case 'text':
-      const newLinesRemoved = value
-        .replace(/(\n|\r)/g, ' ')
-        .replace(/ +/g, ' ')
-        .trim();
-      return { success: true, value: newLinesRemoved };
+      return {
+        success: true,
+        value: value
+          .replace(/(\n|\r)/g, ' ')
+          .replace(/ +/g, ' ')
+          .trim(),
+      };
     default:
       throw Error('Unsupported type');
   }
