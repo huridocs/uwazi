@@ -30,12 +30,6 @@ Before anything else you will need to install the application dependencies:
 - **Yarn** https://yarnpkg.com/en/docs/install.
 - **pdftotext (Poppler)** tested to work on version 0.86 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
-and change some global settings:
-
-```
-$ npm config set scripts-prepend-node-path auto
-```
-
 # Production
 
 [Install/upgrade procedure](./SELF_HOSTED_INSTRUCTIONS.md)
