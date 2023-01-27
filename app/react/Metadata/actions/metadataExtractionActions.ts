@@ -8,7 +8,7 @@ import { t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientFile } from 'app/istore';
 
-const getAndUpdateCoercedValue = async (params: RequestParams, model: string, type: string) => {
+const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
   if (!success) {
     return notificationActions.notify(
@@ -79,7 +79,7 @@ const updateFormField = async (
       value,
       type: 'date',
     });
-    return getAndUpdateCoercedValue(requestParams, model, fieldType);
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
   if (fieldType === 'numeric') {
@@ -88,10 +88,15 @@ const updateFormField = async (
       value: value.trim(),
       type: 'numeric',
     });
-    return getAndUpdateCoercedValue(requestParams, model, fieldType);
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
-  return formActions.change(model, value);
+  const requestParams = new RequestParams({
+    locale,
+    value,
+    type: 'text',
+  });
+  return getAndUpdateCoercedValue(requestParams, model);
 };
 
 export { updateSelection, updateFormField, deleteSelection };
