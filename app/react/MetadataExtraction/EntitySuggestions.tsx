@@ -180,14 +180,23 @@ const EntitySuggestionsComponent = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
-    const queryFilter = filters.reduce(
-      (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
-      {}
-    );
+  const retrieveSuggestions = (
+    pageNumber: number = pageIndex + 1,
+    _stateSelection: string[] = [],
+    _templateSelection: string[] = []
+  ) => {
+    console.log('templateSelection', _templateSelection);
+    console.log('stateSelection', _stateSelection);
+    const filter: {
+      propertyName?: string;
+      states?: string[];
+      entityTemplates?: string[];
+    } = { propertyName: reviewedProperty.name };
+    if (_stateSelection.length > 0) filter.states = _stateSelection;
+    if (_templateSelection.length > 0) filter.entityTemplates = _templateSelection;
     const params = new RequestParams({
       page: { number: pageNumber, size: pageSize },
-      filter: { ...queryFilter, propertyName: reviewedProperty.name },
+      filter,
     });
     getSuggestions(params)
       .then((response: any) => {
@@ -305,6 +314,16 @@ const EntitySuggestionsComponent = ({
     }
   };
 
+  const onStateSelectionChange = (values: string[]) => {
+    setSuggestionStateSelection(values);
+    retrieveSuggestions(pageIndex + 1, values, templateSelection);
+  };
+
+  const onTemplateSelectionChange = (values: string[]) => {
+    setTemplateSelection(values);
+    retrieveSuggestions(pageIndex + 1, sueggestionStateSelection, values);
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
   useEffect(() => {
     if (isMounted.current) {
@@ -376,7 +395,7 @@ const EntitySuggestionsComponent = ({
               results: count,
             })),
             selected: templateSelection,
-            setSelection: setTemplateSelection,
+            setSelection: onTemplateSelectionChange,
           }}
           states={{
             options: aggregations.state.map(({ _id, count }) => ({
@@ -385,7 +404,7 @@ const EntitySuggestionsComponent = ({
               results: count,
             })),
             selected: sueggestionStateSelection,
-            setSelection: setSuggestionStateSelection,
+            setSelection: onStateSelectionChange,
           }}
         />
         <div className="dashboard-link">
