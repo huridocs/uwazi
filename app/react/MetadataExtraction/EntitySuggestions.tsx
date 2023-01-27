@@ -185,8 +185,6 @@ const EntitySuggestionsComponent = ({
     _stateSelection: string[] = [],
     _templateSelection: string[] = []
   ) => {
-    console.log('templateSelection', _templateSelection);
-    console.log('stateSelection', _stateSelection);
     const filter: {
       propertyName?: string;
       states?: string[];

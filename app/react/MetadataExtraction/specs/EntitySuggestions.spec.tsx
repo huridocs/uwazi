@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-lines */
+import Immutable from 'immutable';
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -47,7 +48,7 @@ describe('EntitySuggestions', () => {
   const renderComponent = (property = reviewedProperty) => {
     ({ renderResult } = renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
-      () => defaultState
+      () => ({ ...defaultState, templates: Immutable.fromJS([]) })
     ));
   };
 
