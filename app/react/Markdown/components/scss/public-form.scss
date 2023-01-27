@@ -1,41 +1,45 @@
-.attachments-list {
-  label {
-    width: 100%;
-    height: 186px;
-    border: 1px dashed #6D6C7C;
-    border-radius: 4px;
-
-    .text-content {
-      width: 240px;
-      height: 100%;
+.public-form {
+  .attachments-list {
+    .drop-zone {
+      width: 100%;
+      height: 186px;
+      border: 1px dashed #6d6c7c;
+      border-radius: 4px;
       text-align: center;
-      margin-left: 35%;
-      color: #818181;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      .text-content {
+        width: 240px;
+        margin-left: 35%;
+        color: #818181;
 
-      #icon {
-        font-size: 3em;
-        color: #ddd;
-      }
-
-      #upload-button {
-        #button {
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          height: 30px;
-          width: 70%;
-          margin-left: 17%;
-          font-style: normal;
-          font-weight: normal;
-          font-size: 12px;
-          line-height: 14px;
-          padding-top: 0.9vh;
-          cursor: pointer;
+        #icon {
+          font-size: 3em;
+          color: #ddd;
         }
       }
     }
-
     input {
-      display: none
+      display: none;
+    }
+    #button {
+      border: 1px solid #ddd;
+      background-color: white;
+      border-radius: 4px;
+      height: 30px;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      align-self: center;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 14px;
+      padding-top: 0.9vh;
+      cursor: pointer;
     }
   }
   .preview-list {
@@ -64,7 +68,7 @@
         }
 
         div > span {
-          border: 1px solid #CA5C54;
+          border: 1px solid #ca5c54;
           box-sizing: border-box;
           border-radius: 4px;
           padding: 3px 6px 3px 6px;
@@ -77,6 +81,6 @@
     }
   }
   .dropzone {
-    width: 100%
+    width: 100%;
   }
 }
