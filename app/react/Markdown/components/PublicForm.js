@@ -98,7 +98,7 @@ class PublicFormComponent extends Component {
       files: prevState.files.filter(file => file !== removedFile),
     }));
     if (!this.state.files.length) {
-      const input = document.querySelector('input[name="publicform.file"]');
+      const input = document.querySelector('#upload-button');
       input.value = '';
     }
   }
@@ -153,6 +153,7 @@ class PublicFormComponent extends Component {
                           </div>
                         </div>
                       </label>
+                      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                       <input id="upload-button" {...getInputProps()} />
                       <button id="button" type="button">
                         <Translate>Select files on your device</Translate>
