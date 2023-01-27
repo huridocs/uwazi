@@ -68,33 +68,30 @@ const updateFormField = async (
       value,
       type: 'date',
     });
-    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
-    if (!success) {
-      return notificationActions.notify(
-        t('System', 'Value cannot be transformed to date', null, false),
-        'danger'
-      );
-    }
-    return formActions.change(model, coercedValue);
+    return await getAndUpdateCoercedValue(requestParams, model);
   }
 
   if (fieldType === 'numeric') {
     const requestParams = new RequestParams({
       locale,
-      value,
+      value: value.trim(),
       type: 'numeric',
     });
-    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
-    if (!success) {
-      return notificationActions.notify(
-        t('System', 'Value cannot be transformed to numeric', null, false),
-        'danger'
-      );
-    }
-    return formActions.change(model, coercedValue);
+    return await getAndUpdateCoercedValue(requestParams, model);
   }
 
   return formActions.change(model, value);
+};
+
+const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
+  const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
+  if (!success) {
+    return notificationActions.notify(
+      t('System', 'Value cannot be transformed to numeric', null, false),
+      'danger'
+    );
+  }
+  return formActions.change(model, coercedValue);
 };
 
 export { updateSelection, updateFormField, deleteSelection };
