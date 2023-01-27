@@ -8,11 +8,11 @@ import { t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientFile } from 'app/istore';
 
-const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
+const getAndUpdateCoercedValue = async (params: RequestParams, model: string, type: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
   if (!success) {
     return notificationActions.notify(
-      t('System', 'Value cannot be transformed to numeric', null, false),
+      t('System', `Value cannot be transformed to ${type}`, null, false),
       'danger'
     );
   }
@@ -79,7 +79,7 @@ const updateFormField = async (
       value,
       type: 'date',
     });
-    return getAndUpdateCoercedValue(requestParams, model);
+    return getAndUpdateCoercedValue(requestParams, model, fieldType);
   }
 
   if (fieldType === 'numeric') {
@@ -88,7 +88,7 @@ const updateFormField = async (
       value: value.trim(),
       type: 'numeric',
     });
-    return getAndUpdateCoercedValue(requestParams, model);
+    return getAndUpdateCoercedValue(requestParams, model, fieldType);
   }
 
   return formActions.change(model, value);
