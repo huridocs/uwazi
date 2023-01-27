@@ -15,8 +15,10 @@ describe('metadataExtractionActions', () => {
     });
 
     it('should update the form fields with the selected value', async () => {
-      await updateFormField('value to put in form', 'fieldModel');
-      expect(formActions.change).toHaveBeenCalledWith('fieldModel', 'value to put in form');
+      const value = 'value to put in form';
+      spyOn(api, 'coerceValue').and.returnValue(Promise.resolve({ value, success: true }));
+      await updateFormField(value, 'fieldModel');
+      expect(formActions.change).toHaveBeenCalledWith('fieldModel', value);
     });
 
     it.each(['01/30/1999', '30/01/1999', '01-30-1999', '01 30 1999', '30 01 1999'])(
@@ -43,12 +45,14 @@ describe('metadataExtractionActions', () => {
 
     describe('numeric fields', () => {
       it('should check that selections for numeric fields are actual numbers', async () => {
+        spyOn(api, 'coerceValue').and.returnValue(Promise.resolve({ value: 12345, success: true }));
         await updateFormField('12345', 'fieldModel', 'numeric');
-        expect(formActions.change).toHaveBeenCalledWith('fieldModel', '12345');
+        expect(formActions.change).toHaveBeenCalledWith('fieldModel', 12345);
       });
       it('should set the numeric field to 0 if the value is not a number', async () => {
+        spyOn(api, 'coerceValue').and.returnValue(Promise.resolve({ success: false }));
         await updateFormField('une two three', 'fieldModel', 'numeric');
-        expect(formActions.change).toHaveBeenCalledWith('fieldModel', '0');
+        expect(formActions.change).toHaveBeenCalledWith('fieldModel', 0);
       });
     });
   });

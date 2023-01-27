@@ -11,10 +11,13 @@ import { ClientFile } from 'app/istore';
 const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
   if (!success) {
-    return notificationActions.notify(
-      t('System', `Value cannot be transformed to the correct type`, null, false),
-      'danger'
-    );
+    return [
+      notificationActions.notify(
+        t('System', `Value cannot be transformed to the correct type`, null, false),
+        'danger'
+      ),
+      formActions.change(model, 0),
+    ];
   }
   return formActions.change(model, coercedValue);
 };
