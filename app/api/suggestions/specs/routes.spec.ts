@@ -167,7 +167,7 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'enemy', state: SuggestionState.empty } })
+          .query({ filter: { propertyName: 'enemy', states: [SuggestionState.empty] } })
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
@@ -255,7 +255,7 @@ describe('suggestions routes', () => {
       it('should return aggregations for a specific state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title', state: SuggestionState.valueMatch } })
+          .query({ filter: { propertyName: 'title', states: [SuggestionState.valueMatch] } })
           .expect(200);
         expect(response.body.aggregations).toMatchObject({
           template: sortAggregateById([
@@ -276,7 +276,7 @@ describe('suggestions routes', () => {
             filter: {
               propertyName: 'title',
               entityTemplates: [heroTemplateId.toString()],
-              state: SuggestionState.valueMatch,
+              states: [SuggestionState.valueMatch],
             },
           })
           .expect(200);

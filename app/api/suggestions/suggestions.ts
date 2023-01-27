@@ -141,7 +141,9 @@ const buildTemplateAggregationsQuery = (
 };
 
 const buildStateAggregationsQuery = (
-  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'> & {
+    state?: { $in: string[] };
+  },
   setLanguages: LanguagesListSchema | undefined,
   entityTemplates: string[] | undefined
 ) => {
@@ -159,12 +161,18 @@ const buildStateAggregationsQuery = (
 };
 
 const fetchAndAggregateSuggestions = async (
-  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
   setLanguages: LanguagesListSchema | undefined,
   entityTemplates: string[] | undefined,
   offset: number,
   limit: number
 ) => {
+  const {
+    states,
+    ...filters
+  }: { states?: string[]; propertyName: string; state?: { $in: string[] } } = _filters;
+  if (states) filters.state = { $in: _filters.states || [] };
+
   const count = await IXSuggestionsModel.db
     .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
     .then(result => (result?.length ? result[0].count : 0));

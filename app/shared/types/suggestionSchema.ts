@@ -89,7 +89,7 @@ export const SuggestionsQueryFilterSchema = {
   properties: {
     language: { type: 'string' },
     propertyName: { type: 'string' },
-    state: { type: 'string', enum: Object.values(SuggestionState) },
+    states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
     entityTemplates: { type: 'array', items: { type: 'string' } },
   },
   required: ['propertyName'],

@@ -92,7 +92,7 @@ export interface IXSuggestionsStatsQuery {
 export interface IXSuggestionsFilter {
   language?: string;
   propertyName: string;
-  state?:
+  states?: (
     | 'Match / Label'
     | 'Mismatch / Label'
     | 'Match / Value'
@@ -103,6 +103,7 @@ export interface IXSuggestionsFilter {
     | 'Empty / Value'
     | 'Error'
     | 'Processing'
-    | 'Mismatch / Empty';
+    | 'Mismatch / Empty'
+  )[];
   entityTemplates?: string[];
 }
