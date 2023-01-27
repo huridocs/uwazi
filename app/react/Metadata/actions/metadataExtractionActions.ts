@@ -68,7 +68,7 @@ const updateFormField = async (
       value,
       type: 'date',
     });
-    return await getAndUpdateCoercedValue(requestParams, model);
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
   if (fieldType === 'numeric') {
@@ -77,7 +77,7 @@ const updateFormField = async (
       value: value.trim(),
       type: 'numeric',
     });
-    return await getAndUpdateCoercedValue(requestParams, model);
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
   return formActions.change(model, value);
