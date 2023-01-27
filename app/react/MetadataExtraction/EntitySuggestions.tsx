@@ -32,11 +32,7 @@ import {
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
-import {
-  FiltersSidePanel,
-  SuggestionStateSelectionsType,
-  TemplateSelectionsType,
-} from './FilterSidePanel';
+import { FiltersSidePanel } from './FilterSidePanel';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -56,7 +52,7 @@ const getRelevantTemplates = (
   settings: IImmutable<ClientSettings>,
   templates: IImmutable<TemplateSchema[]>,
   property: PropertySchema
-): TemplateSelectionsType => {
+) => {
   const ixTemplates: {
     template: string;
     properties: string[];
@@ -72,12 +68,11 @@ const getRelevantTemplates = (
   return relevantTemplates;
 };
 
-const getInitialSuggestionStateSelections = (): SuggestionStateSelectionsType =>
+const getInitialSuggestionStateSelections = () =>
   Object.entries(SuggestionState)
     .map(([key, value]) => ({
       key,
       label: value,
-      selected: false,
     }))
     .sort((a, b) => a.label.localeCompare(b.label))
     .filter(s => s.label !== SuggestionState.processing);
@@ -91,6 +86,7 @@ const EntitySuggestionsComponent = ({
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
+  const [aggregations, setAggregations] = useState<any>({ state: [], template: [] });
   const [totalPages, setTotalPages] = useState(0);
   const [resetActivePage, setResetActivePage] = useState(false);
   const [status, setStatus] = useState<{ key: string; data?: undefined; message?: string }>({
@@ -103,15 +99,13 @@ const EntitySuggestionsComponent = ({
 
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
 
-  const relevantTemplates = useMemo(
-    () => getRelevantTemplates(settings, templates, reviewedProperty),
-    [settings, templates, reviewedProperty]
-  );
-  const [templateSelection, setTemplateSelection] =
-    useState<TemplateSelectionsType>(relevantTemplates);
-  const initialSuggestionStates = useMemo(() => getInitialSuggestionStateSelections(), []);
-  const [sueggestionStateSelection, setSuggestionStateSelection] =
-    useState<SuggestionStateSelectionsType>(initialSuggestionStates);
+  // const relevantTemplates = useMemo(
+  //   () => getRelevantTemplates(settings, templates, reviewedProperty),
+  //   [settings, templates, reviewedProperty]
+  // );
+  const [templateSelection, setTemplateSelection] = useState<string[]>([]);
+  // const initialSuggestionStates = useMemo(() => getInitialSuggestionStateSelections(), []);
+  const [sueggestionStateSelection, setSuggestionStateSelection] = useState<string[]>([]);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -217,6 +211,7 @@ const EntitySuggestionsComponent = ({
     getSuggestions(params)
       .then((response: any) => {
         setSuggestions(response.suggestions);
+        setAggregations(response.aggregations);
         setTotalPages(response.totalPages);
       })
       .catch(() => {});
@@ -393,8 +388,24 @@ const EntitySuggestionsComponent = ({
           hideFilters={() => {
             setFiltersOpen(false);
           }}
-          templateSelection={templateSelection}
-          stateSelection={sueggestionStateSelection}
+          templates={{
+            options: aggregations.template.map(({ _id, count }) => ({
+              key: _id,
+              label: _id,
+              results: count,
+            })),
+            selected: templateSelection,
+            setSelection: setTemplateSelection,
+          }}
+          states={{
+            options: aggregations.state.map(({ _id, count }) => ({
+              key: _id,
+              label: _id,
+              results: count,
+            })),
+            selected: sueggestionStateSelection,
+            setSelection: setSuggestionStateSelection,
+          }}
         />
         <div className="dashboard-link">
           <I18NLink to="settings/metadata_extraction">

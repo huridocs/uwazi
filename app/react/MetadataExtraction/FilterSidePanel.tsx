@@ -2,96 +2,82 @@ import { MultiSelect } from 'app/Forms';
 import { t, Translate } from 'app/I18N';
 import { SidePanel } from 'app/Layout';
 import { Icon } from 'app/UI';
-import React, { useState } from 'react';
+import React from 'react';
 
-interface TemplateSelectionType {
-  _id: string;
-  name: string;
-  selected: boolean;
-}
-type TemplateSelectionsType = TemplateSelectionType[];
-
-interface SuggestionStateSelectionType {
+interface SuggestionStateOptions {
   key: string;
   label: string;
-  selected: boolean;
+  results: number;
 }
-type SuggestionStateSelectionsType = SuggestionStateSelectionType[];
+
+interface FilterDetails {
+  options: SuggestionStateOptions[];
+  selected: string[];
+  setSelection: (values: string[]) => void;
+}
 
 interface FiltersSidePanelProps {
   open: boolean;
   hideFilters: () => void;
   reset: () => void;
-  stateSelection: SuggestionStateSelectionsType;
-  templateSelection: TemplateSelectionsType;
+  states: FilterDetails;
+  templates: FilterDetails;
 }
 
 export const FiltersSidePanel = ({
   open,
   hideFilters,
   reset,
-  stateSelection,
-  templateSelection,
-}: FiltersSidePanelProps) => {
-  const [selectedStates, setSelectedStates] = useState<string[]>([]);
-  const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
-
-  return (
-    <SidePanel className="metadata-sidepanel" open={open}>
-      <div className="sidepanel-body">
-        <div className="sidepanel-title">
-          <div>{t('System', 'Filters configuration')}</div>
-          <div className="filter-buttons">
-            <button
-              type="button"
-              className="closeSidepanel"
-              onClick={hideFilters}
-              aria-label="Close side panel"
-            >
-              <Icon icon="times" />
-            </button>
-          </div>
-        </div>
-        <div>
-          <MultiSelect
-            options={stateSelection}
-            value={selectedStates}
-            optionsLabel="label"
-            optionsValue="key"
-            optionsToShow={20}
-            onChange={setSelectedStates}
-            hideSearch
-            showAll
-          />
-        </div>
-        <div>
-          <MultiSelect
-            options={templateSelection}
-            value={selectedTemplates}
-            optionsLabel="name"
-            optionsValue="_id"
-            optionsToShow={20}
-            onChange={setSelectedTemplates}
-            hideSearch
-            showAll
-          />
+  states,
+  templates,
+}: FiltersSidePanelProps) => (
+  <SidePanel className="metadata-sidepanel" open={open}>
+    <div className="sidepanel-body">
+      <div className="sidepanel-title">
+        <div>{t('System', 'Filters configuration')}</div>
+        <div className="filter-buttons">
+          <button
+            type="button"
+            className="closeSidepanel"
+            onClick={hideFilters}
+            aria-label="Close side panel"
+          >
+            <Icon icon="times" />
+          </button>
         </div>
       </div>
-      <div className="sidepanel-footer">
-        <button type="button" className="btn btn-default" onClick={reset}>
-          <Icon icon="times" />
-          <span className="btn-label">
-            <Translate>Clear Filters</Translate>
-          </span>
-        </button>
+      <div>
+        <MultiSelect
+          options={states.options}
+          value={states.selected}
+          optionsLabel="label"
+          optionsValue="key"
+          optionsToShow={20}
+          onChange={states.setSelection}
+          hideSearch
+          showAll
+        />
       </div>
-    </SidePanel>
-  );
-};
-
-export type {
-  SuggestionStateSelectionType,
-  SuggestionStateSelectionsType,
-  TemplateSelectionType,
-  TemplateSelectionsType,
-};
+      <div>
+        <MultiSelect
+          options={templates.options}
+          value={templates.selected}
+          optionsLabel="label"
+          optionsValue="key"
+          optionsToShow={20}
+          onChange={templates.setSelection}
+          hideSearch
+          showAll
+        />
+      </div>
+    </div>
+    <div className="sidepanel-footer">
+      <button type="button" className="btn btn-default" onClick={reset}>
+        <Icon icon="times" />
+        <span className="btn-label">
+          <Translate>Clear Filters</Translate>
+        </span>
+      </button>
+    </div>
+  </SidePanel>
+);
