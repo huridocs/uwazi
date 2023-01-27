@@ -10,9 +10,11 @@
       flex-direction: column;
     }
     label {
+      display: flex;
+      justify-content: center;
+
       .text-content {
         width: 240px;
-        margin-left: 35%;
         color: #818181;
 
         #icon {
