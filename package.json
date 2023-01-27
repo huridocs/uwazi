@@ -221,7 +221,7 @@
   },
   "devDependencies": {
     "@babel/cli": "7.19.3",
-    "@babel/core": "7.20.5",
+    "@babel/core": "7.20.12",
     "@babel/eslint-parser": "7.18.9",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-string-parser": "^7.19.4",
