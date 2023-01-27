@@ -1,10 +1,10 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
 import { connect } from 'react-redux';
-import { ClientSettings } from 'app/apiResponseTypes';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
 import { store } from 'app/store';
@@ -37,56 +37,41 @@ import { FiltersSidePanel } from './FilterSidePanel';
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
-  settings: IImmutable<ClientSettings>;
   templates: IImmutable<TemplateSchema[]>;
 }
 
-function mapStateToProps({ settings, templates }: any) {
+interface AggregategationsType {
+  state: { _id: string; count: number }[];
+  template: { _id: string; count: number }[];
+}
+
+function mapStateToProps({ templates }: any) {
   return {
-    settings: settings.collection,
     templates,
   };
 }
 
-const getRelevantTemplates = (
-  settings: IImmutable<ClientSettings>,
-  templates: IImmutable<TemplateSchema[]>,
-  property: PropertySchema
-) => {
-  const ixTemplates: {
-    template: string;
-    properties: string[];
-  }[] = settings.get('features')?.get('metadataExtraction')?.get('templates')?.toJS() || [];
+const getTemplateMap = (templates: IImmutable<TemplateSchema[]>) => {
   const templateNamesById = objectIndex<TemplateSchema, string>(
     templates.toJS(),
     t => t._id?.toString() || '',
     t => t.name
   );
-  const relevantTemplates = ixTemplates
-    .filter(t => t.properties.find(p => p === property.name))
-    .map(t => ({ _id: t.template, name: templateNamesById[t.template], selected: false }));
-  return relevantTemplates;
+  return templateNamesById;
 };
-
-const getInitialSuggestionStateSelections = () =>
-  Object.entries(SuggestionState)
-    .map(([key, value]) => ({
-      key,
-      label: value,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label))
-    .filter(s => s.label !== SuggestionState.processing);
 
 // eslint-disable-next-line max-statements
 const EntitySuggestionsComponent = ({
   property: reviewedProperty,
   acceptIXSuggestion,
-  settings,
   templates,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
-  const [aggregations, setAggregations] = useState<any>({ state: [], template: [] });
+  const [aggregations, setAggregations] = useState<AggregategationsType>({
+    state: [],
+    template: [],
+  });
   const [totalPages, setTotalPages] = useState(0);
   const [resetActivePage, setResetActivePage] = useState(false);
   const [status, setStatus] = useState<{ key: string; data?: undefined; message?: string }>({
@@ -99,12 +84,8 @@ const EntitySuggestionsComponent = ({
 
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
 
-  // const relevantTemplates = useMemo(
-  //   () => getRelevantTemplates(settings, templates, reviewedProperty),
-  //   [settings, templates, reviewedProperty]
-  // );
+  const templateNamesById = useMemo(() => getTemplateMap(templates), [templates]);
   const [templateSelection, setTemplateSelection] = useState<string[]>([]);
-  // const initialSuggestionStates = useMemo(() => getInitialSuggestionStateSelections(), []);
   const [sueggestionStateSelection, setSuggestionStateSelection] = useState<string[]>([]);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
@@ -391,7 +372,7 @@ const EntitySuggestionsComponent = ({
           templates={{
             options: aggregations.template.map(({ _id, count }) => ({
               key: _id,
-              label: _id,
+              label: templateNamesById[_id],
               results: count,
             })),
             selected: templateSelection,
