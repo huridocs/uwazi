@@ -51,6 +51,9 @@ export default {
       {
         key: 'Value cannot be transformed to numeric',
       },
+      {
+        key: 'Value cannot be transformed to date',
+      },
     ];
     await insertSystemKeys(db, systemKeys);
   },

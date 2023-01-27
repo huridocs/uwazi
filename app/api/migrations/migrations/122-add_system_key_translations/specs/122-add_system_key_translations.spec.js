@@ -8,6 +8,10 @@ const newKeyValues = [
     key: 'Value cannot be transformed to numeric',
     value: 'Value cannot be transformed to numeric',
   },
+  {
+    key: 'Value cannot be transformed to date',
+    value: 'Value cannot be transformed to date',
+  },
 ];
 const alreadyInAllContexts = {
   key: 'Duplicated label',
