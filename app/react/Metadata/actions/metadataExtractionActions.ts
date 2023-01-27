@@ -12,7 +12,7 @@ const getAndUpdateCoercedValue = async (params: RequestParams, model: string, ty
   const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
   if (!success) {
     return notificationActions.notify(
-      t('System', `Value cannot be transformed to ${type}`, null, false),
+      t('System', `Value cannot be transformed to the correct type`, null, false),
       'danger'
     );
   }

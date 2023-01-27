@@ -49,10 +49,7 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'Value cannot be transformed to numeric',
-      },
-      {
-        key: 'Value cannot be transformed to date',
+        key: 'Value cannot be transformed to the correct type',
       },
     ];
     await insertSystemKeys(db, systemKeys);

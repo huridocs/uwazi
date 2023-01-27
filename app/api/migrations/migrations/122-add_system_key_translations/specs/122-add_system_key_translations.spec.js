@@ -5,12 +5,8 @@ import { fixtures, templateId, defaultTemplateName, defaultTemplateTitle } from 
 const locales = ['en', 'es', 'hu'];
 const newKeyValues = [
   {
-    key: 'Value cannot be transformed to numeric',
-    value: 'Value cannot be transformed to numeric',
-  },
-  {
-    key: 'Value cannot be transformed to date',
-    value: 'Value cannot be transformed to date',
+    key: 'Value cannot be transformed to the correct type',
+    value: 'Value cannot be transformed to the correct type',
   },
 ];
 const alreadyInAllContexts = {
