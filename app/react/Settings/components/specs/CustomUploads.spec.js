@@ -10,6 +10,11 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
 import { CustomUploadsComponent as CustomUploads, mapStateToProps } from '../CustomUploads';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
+
 describe('CustomUploads', () => {
   let props;
   let renderResult;
@@ -29,7 +34,12 @@ describe('CustomUploads', () => {
       ...defaultState,
     };
 
-    ({ renderResult } = renderConnectedContainer(<CustomUploads {...props} />, () => reduxStore));
+    ({ renderResult } = renderConnectedContainer(
+      <CustomUploads {...props} />,
+      () => reduxStore,
+      'MemoryRouter',
+      [{ pathname: '/test' }]
+    ));
   };
 
   it('should render CustomUploads component with uploaded files', () => {
