@@ -98,7 +98,7 @@ class PublicFormComponent extends Component {
       files: prevState.files.filter(file => file !== removedFile),
     }));
     if (!this.state.files.length) {
-      const input = document.querySelector('input[name="publicform.file"]');
+      const input = document.querySelector('#upload-button');
       input.value = '';
     }
   }
