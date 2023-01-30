@@ -104,7 +104,7 @@ describe('entities routes', () => {
 
         expect(response.body).toMatchObject({
           success: true,
-          value: `this is a text`,
+          value: 'this is a text',
         });
       });
     });
