@@ -3,7 +3,6 @@ import React from 'react';
 import _ from 'lodash';
 import {
   Column,
-  FilterProps,
   Row,
   useFilters,
   usePagination,
@@ -27,28 +26,6 @@ const suggestionsTable = (
   actionsCell: Function,
   segmentCell: Function
 ) => {
-  const stateFilter = ({
-    column: { filterValue, setFilter },
-  }: FilterProps<EntitySuggestionType>) => (
-    <select
-      className={filterValue ? 'filtered' : ''}
-      value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined);
-      }}
-    >
-      <option value="">{t('System', 'All', 'All', false)}</option>
-      {Object.values(SuggestionState)
-        .filter(state => state !== SuggestionState.processing)
-        .sort()
-        .map(state => (
-          <option key={state} value={state}>
-            {t('System', state, state, false)}
-          </option>
-        ))}
-    </select>
-  );
-
   const formatValue = (value: PropertyValueSchema | undefined) => {
     if (!value) return '-';
     if (reviewedProperty.type === 'date' && _.isNumber(value)) {
@@ -121,6 +98,7 @@ const suggestionsTable = (
         accessor: 'state' as const,
         Header: () => (
           <>
+            <Translate>State</Translate>
             <ModalTips
               label={<Icon icon="question-circle" />}
               title={t('System', 'State Legend', 'State Legend', false)}
@@ -208,7 +186,6 @@ const suggestionsTable = (
                 </Translate>
               </div>
             </ModalTips>
-            <Translate>State</Translate>
           </>
         ),
         Cell: ({ row }: { row: Row<EntitySuggestionType> }) => {
@@ -219,7 +196,6 @@ const suggestionsTable = (
             </div>
           );
         },
-        Filter: stateFilter,
         className: 'state',
       },
     ],
