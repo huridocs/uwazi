@@ -25,7 +25,11 @@ const defaultHeaders = [
   ].join(''),
 ];
 
-const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number } = {
+const suggestionsData: {
+  suggestions: EntitySuggestionType[];
+  aggregations: any;
+  totalPages: number;
+} = {
   suggestions: [
     {
       entityId: 'shared1',
@@ -70,6 +74,10 @@ const suggestionsData: { suggestions: EntitySuggestionType[]; totalPages: number
       fileId: 'fileId1',
     },
   ],
+  aggregations: {
+    template: [],
+    state: [],
+  },
   totalPages: 4,
 };
 
