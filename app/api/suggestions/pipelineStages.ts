@@ -1,8 +1,9 @@
 import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 
-export const getMatchStage = (filters: IXSuggestionsFilter) => [
+export const getMatchStage = (filters: FilterQuery<IXSuggestionType>) => [
   {
     $match: {
       ...filters,

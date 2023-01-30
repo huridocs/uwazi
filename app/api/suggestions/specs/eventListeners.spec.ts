@@ -200,6 +200,7 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
   });
 });
 
+// eslint-disable-next-line jest/no-focused-tests
 describe(`On ${FileCreatedEvent.name}`, () => {
   it('should create blank suggestions, if the new file is an entity document', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
@@ -221,6 +222,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
@@ -232,6 +234,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
@@ -243,6 +246,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',

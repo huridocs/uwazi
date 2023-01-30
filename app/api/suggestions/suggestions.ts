@@ -1,3 +1,5 @@
+import { FilterQuery } from 'mongoose';
+
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
@@ -88,15 +90,16 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
 };
 
 const buildListQuery = (
-  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  filters: FilterQuery<IXSuggestionType>,
   setLanguages: LanguagesListSchema | undefined,
-  entityTemplates: string[] | undefined,
   offset: number,
   limit: number
 ) => {
   const pipeline = [
     ...getMatchStage(filters),
     { $sort: { date: 1, state: -1 } },
+    { $skip: offset },
+    { $limit: limit },
     ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
     ...getFileStage(),
@@ -121,72 +124,56 @@ const buildListQuery = (
         selectionRectangles: 1,
       },
     },
-    ...getEntityTemplateFilterStage(entityTemplates),
-    { $skip: offset },
-    { $limit: limit },
   ];
   return pipeline;
 };
 
-const buildTemplateAggregationsQuery = (
-  filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
-  setLanguages: LanguagesListSchema | undefined
-) => {
-  const pipeline = [
-    ...getMatchStage(filters),
-    ...getEntityStage(setLanguages!),
-    ...groupByAndSort('$entity.template'),
-  ];
+const buildTemplateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
+  const { entityTemplate, ...filters } = _filters;
+  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$entityTemplate')];
   return pipeline;
 };
 
-const buildStateAggregationsQuery = (
-  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'> & {
-    state?: { $in: string[] };
-  },
-  setLanguages: LanguagesListSchema | undefined,
-  entityTemplates: string[] | undefined
-) => {
+const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
   const { state, ...filters } = _filters;
-  const pipeline = [
-    ...getMatchStage(filters),
-    ...getEntityStage(setLanguages!),
-    {
-      $addFields: { entityTemplateId: '$entity.template' },
-    },
-    ...getEntityTemplateFilterStage(entityTemplates),
-    ...groupByAndSort('$state'),
-  ];
+  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$state')];
   return pipeline;
 };
 
 const fetchAndAggregateSuggestions = async (
-  _filters: Omit<IXSuggestionsFilter, 'language' | 'entityTemplates'>,
+  _filters: Omit<IXSuggestionsFilter, 'language'>,
   setLanguages: LanguagesListSchema | undefined,
-  entityTemplates: string[] | undefined,
   offset: number,
   limit: number
 ) => {
   const {
     states,
+    entityTemplates,
     ...filters
-  }: { states?: string[]; propertyName: string; state?: { $in: string[] } } = _filters;
+  }: {
+    states?: string[];
+    entityTemplates?: string[];
+    propertyName: string;
+    state?: { $in: string[] };
+    entityTemplate?: { $in: string[] };
+  } = _filters;
   if (states) filters.state = { $in: _filters.states || [] };
+  if (entityTemplates) filters.entityTemplate = { $in: _filters.entityTemplates || [] };
 
   const count = await IXSuggestionsModel.db
     .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
     .then(result => (result?.length ? result[0].count : 0));
 
   const suggestions = await IXSuggestionsModel.db.aggregate(
-    buildListQuery(filters, setLanguages, entityTemplates, offset, limit)
+    buildListQuery(filters, setLanguages, offset, limit)
   );
 
   const templateAggregations = await IXSuggestionsModel.db.aggregate(
-    buildTemplateAggregationsQuery(filters, setLanguages)
+    buildTemplateAggregationsQuery(filters)
   );
 
   const stateAggregations = await IXSuggestionsModel.db.aggregate(
-    buildStateAggregationsQuery(filters, setLanguages, entityTemplates)
+    buildStateAggregationsQuery(filters)
   );
 
   return {
@@ -205,9 +192,9 @@ const Suggestions = {
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-    const { language, entityTemplates, ...filters } = filter;
+    const { language, ...filters } = filter;
 
-    return fetchAndAggregateSuggestions(filters, setLanguages, entityTemplates, offset, limit);
+    return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
   },
 
   getStats,
