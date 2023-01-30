@@ -43,8 +43,8 @@ const style = index => (
         </b>
         &nbsp;
         <Translate translationKey="Multimedia fill description">
-          will attempt to fill the container, using it&#39;s entire width. In cards, cropping is
-          likely to occur.
+          will attempt to fill the container, using its entire width. In cards, cropping is likely
+          to occur.
         </Translate>
       </p>
     </div>

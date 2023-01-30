@@ -10,7 +10,6 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { clearMetadataSelections, loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import { actions } from 'app/BasicReducer';
-import { updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
 import { unsetSelection } from 'app/Viewer/actions/selectionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
@@ -62,14 +61,6 @@ const PDFSidePanel = ({
           };
 
           store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
-
-          if (entitySuggestion.selectionRectangles) {
-            const selection = {
-              text: entitySuggestion.suggestedValue as string,
-              selectionRectangles: entitySuggestion.selectionRectangles,
-            };
-            store?.dispatch(updateSelection(selection, entitySuggestion.propertyName, 'id'));
-          }
         })
         .catch(e => e);
 
