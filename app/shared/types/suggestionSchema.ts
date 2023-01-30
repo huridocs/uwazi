@@ -29,6 +29,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -42,7 +43,7 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
+  required: ['propertyName', 'entityId', 'entityTemplate', 'suggestedValue', 'segment', 'language'],
 };
 
 export const EntitySuggestionSchema = {
