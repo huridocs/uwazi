@@ -2,7 +2,7 @@
 const obsoleteTranslationKeys = ['Value cannot be transformed to date'];
 
 export default {
-  delta: 94,
+  delta: 123,
 
   name: 'remove-obsolete-translation-keys',
 

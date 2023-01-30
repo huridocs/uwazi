@@ -13,7 +13,7 @@ describe('migration remove-obsolete-translation-keys', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(94);
+    expect(migration.delta).toBe(123);
   });
 
   it('should remove the obsoletes keys in all languages', async () => {
