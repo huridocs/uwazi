@@ -9,9 +9,31 @@ export const swaggerDocument = {
     description: '',
     version: '1.0.0',
   },
+  components: {
+    schemas: {
+      entity: entitySchema,
+      page: {
+        ...PageSchema,
+        properties: {
+          ...PageSchema.properties,
+          _id: { type: 'string' },
+          user: { type: 'string' },
+          metadata: {
+            ...PageSchema.properties.metadata,
+            properties: {
+              ...PageSchema.properties.metadata.properties,
+              _id: { type: 'string' },
+            },
+          },
+        },
+        $async: false,
+      },
+    },
+  },
   paths: {
     '/api/v2/search': {
       get: {
+        tags: ['/v2/search'],
         summary: 'Search entities',
         description: 'Search entities',
         parameters: searchGetParameters,
@@ -25,7 +47,7 @@ export const swaggerDocument = {
                   properties: {
                     data: {
                       type: 'array',
-                      items: entitySchema,
+                      items: { $ref: '#/components/schemas/entity' },
                     },
                   },
                 },
@@ -36,31 +58,67 @@ export const swaggerDocument = {
       },
     },
     '/api/pages': {
+      delete: {
+        tags: ['/pages'],
+        summary: 'delete a page',
+        parameters: [
+          {
+            in: 'query',
+            name: 'sharedId',
+            schema: { type: 'string' },
+            required: true,
+          },
+          {
+            in: 'header',
+            name: 'X-Requested-With',
+            schema: { type: 'string' },
+            example: 'XMLHttpRequest',
+            required: true,
+          },
+        ],
+        responses: {
+          200: {
+            description: 'will return acknowledged deletion',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    acknowledged: { type: 'boolean' },
+                    deletedCount: { type: 'number' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       post: {
+        tags: ['/pages'],
         summary: 'Create or update a page',
         requestBody: {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                ...PageSchema,
-                properties: {
-                  ...PageSchema.properties,
-                  _id: { type: 'string' },
-                  user: { type: 'string' },
-                  metadata: {
-                    ...PageSchema.properties.metadata,
-                    properties: {
-                      ...PageSchema.properties.metadata.properties,
-                      _id: { type: 'string' },
-                    },
-                  },
+              schema: { $ref: '#/components/schemas/page' },
+              example: {
+                title: 'test page',
+                metadata: {
+                  content: 'my page content',
                 },
-                $async: false,
               },
             },
           },
         },
+        parameters: [
+          {
+            in: 'header',
+            name: 'X-Requested-With',
+            schema: { type: 'string' },
+            example: 'XMLHttpRequest',
+            required: true,
+          },
+        ],
         responses: {
           200: {
             description: 'Will return the page created / updated',
@@ -69,7 +127,7 @@ export const swaggerDocument = {
                 schema: {
                   type: 'object',
                   properties: {
-                    data: PageSchema,
+                    data: { $ref: '#/components/schemas/page' },
                   },
                 },
               },
@@ -78,6 +136,7 @@ export const swaggerDocument = {
         },
       },
       get: {
+        tags: ['/pages'],
         summary: 'Get pages',
         description: 'Get pages',
         parameters: [
@@ -97,7 +156,7 @@ export const swaggerDocument = {
                   properties: {
                     data: {
                       type: 'array',
-                      items: PageSchema,
+                      items: { $ref: '#/components/schemas/page' },
                     },
                   },
                 },
@@ -109,6 +168,7 @@ export const swaggerDocument = {
     },
     '/api/page': {
       get: {
+        tags: ['/pages'],
         summary: 'Get a single page',
         description: 'Get a single page',
         parameters: [
@@ -132,7 +192,7 @@ export const swaggerDocument = {
                 schema: {
                   type: 'object',
                   properties: {
-                    data: PageSchema,
+                    data: { $ref: '#/components/schemas/page' },
                   },
                 },
               },

@@ -1,14 +1,12 @@
 import { Application, Request, Response } from 'express';
 
 import { elastic } from 'api/search/elastic';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { SearchQuerySchema } from 'shared/types/SearchQuerySchema';
-import { SearchQuery, Page } from 'shared/types/SearchQueryType';
+import { Page } from 'shared/types/SearchQueryType';
 
 import { mapResults } from 'api/search.v2/searchResponse';
+import { paths } from 'api/swagger';
 import qs from 'qs';
 import { buildQuery } from './buildQuery';
-import { paths } from 'api/swagger';
 
 interface UwaziResponse {
   data: any;
