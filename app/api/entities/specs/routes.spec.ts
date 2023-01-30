@@ -64,47 +64,75 @@ describe('entities routes', () => {
     });
 
     describe('coerce_values', () => {
-      it('should coerce numbers from strings', async () => {
-        const valuesToCoerce = { type: 'numeric', value: '12' };
-        new UserInContextMockFactory().mock(user);
-        const response: SuperTestResponse = await request(app)
-          .post('/api/entities/coerce_value')
-          .send(valuesToCoerce);
+      describe('happy path', () => {
+        it('should coerce numbers from strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: '12' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
 
-        expect(response.body).toMatchObject({
-          success: true,
-          value: 12,
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 12,
+          });
+        });
+
+        it('should coerce dates from strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'November 2001', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 1004572800,
+          });
+        });
+
+        it('should coerce strings by removing new lines and breaks', async () => {
+          const valuesToCoerce = {
+            type: 'text',
+            value: `this is
+            a text`,
+            locale: 'en',
+          };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 'this is a text',
+          });
         });
       });
 
-      it('should coerve dates from strings', async () => {
-        const valuesToCoerce = { type: 'date', value: 'November 2001', locale: 'en' };
-        new UserInContextMockFactory().mock(user);
-        const response: SuperTestResponse = await request(app)
-          .post('/api/entities/coerce_value')
-          .send(valuesToCoerce);
+      describe('sad path', () => {
+        it('should fail coercing numbers from invalid strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: 'error' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
 
-        expect(response.body).toMatchObject({
-          success: true,
-          value: 1004572800,
+          expect(response.body).toMatchObject({
+            success: false,
+          });
         });
-      });
 
-      it('should coerce strings by removing new lines and breaks', async () => {
-        const valuesToCoerce = {
-          type: 'text',
-          value: `this is
-          a text`,
-          locale: 'en',
-        };
-        new UserInContextMockFactory().mock(user);
-        const response: SuperTestResponse = await request(app)
-          .post('/api/entities/coerce_value')
-          .send(valuesToCoerce);
+        it('should fail coercing dates from invalid strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'whatever date', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
 
-        expect(response.body).toMatchObject({
-          success: true,
-          value: 'this is a text',
+          expect(response.body).toMatchObject({
+            success: false,
+          });
         });
       });
     });

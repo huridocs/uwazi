@@ -35,6 +35,9 @@ function coerceValues(value, type, locale) {
     case 'numeric':
       try {
         const numeric = Number.parseFloat(value);
+        if (!numeric) {
+          return { success: false };
+        }
         return { success: true, value: numeric };
       } catch (e) {
         return { success: false };
