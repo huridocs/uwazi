@@ -2,28 +2,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { PropertySchema } from 'shared/types/commonTypes';
 
-const defaultHeaders = [
-  'Context',
-  'Suggestion',
-  '',
-  'Current value',
-  'Title',
-  'Language',
-  [
-    'State',
-    'All',
-    'Empty / Empty',
-    'Empty / Label',
-    'Empty / Value',
-    'Error',
-    'Match / Label',
-    'Match / Value',
-    'Mismatch / Empty',
-    'Mismatch / Label',
-    'Mismatch / Value',
-    'Obsolete',
-  ].join(''),
-];
+const defaultHeaders = ['Context', 'Suggestion', '', 'Current value', 'Title', 'Language', 'State'];
 
 const suggestionsData: {
   suggestions: EntitySuggestionType[];
