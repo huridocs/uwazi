@@ -76,7 +76,7 @@ module.exports = production => {
           ],
         },
         {
-          test: /\.s?[ac]ss$/,
+          test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },

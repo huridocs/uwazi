@@ -15,6 +15,7 @@ import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icons.scss';
 import './scss/styles.scss';
+import './styles/globals.css';
 
 const App = () => {
   const [showMenu, setShowMenu] = useState(false);
