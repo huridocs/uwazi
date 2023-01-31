@@ -1,7 +1,3 @@
-//eslint-disable-next-line node/no-restricted-import
-import * as fs from 'fs';
-import csv from 'api/csv/csv';
-
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };
   const newTranslation = keysToUpdate.find(row => row.key === currentTranslation.key);
