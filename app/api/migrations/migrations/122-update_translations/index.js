@@ -25,7 +25,6 @@ export default {
 
   async up(db) {
     const keysToInsert = [{ key: 'Value cannot be transformed to the correct type' }];
-    const keysToUpdate = [];
     const keysToDelete = [{ key: 'Value cannot be transformed to date' }];
     const translations = await db.collection('translations').find().toArray();
     const locToSystemContext = {};
@@ -40,7 +39,7 @@ export default {
           deletedTranslation => deletedTranslation.key === currentTranslation.key
         );
         if (!deleted) {
-          const translation = updateTranslation(currentTranslation, keysToUpdate, loc);
+          const translation = updateTranslation(currentTranslation, [], loc);
           newValues.push(translation);
         }
         keysToInsert.forEach(newEntry => {
