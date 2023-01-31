@@ -17,7 +17,6 @@ import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
   getEntityStage,
-  getEntityTemplateFilterStage,
   getFileStage,
   getLabeledValueStage,
   getMatchStage,
