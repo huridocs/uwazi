@@ -210,18 +210,32 @@ export const EntitySuggestions = ({
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    const changedPropertyValue = (entity[reviewedProperty.name] ||
-      entity.metadata?.[reviewedProperty.name]) as string;
+    const propertyName = reviewedProperty.name;
+    const changedPropertyValue = (entity[propertyName] ||
+      entity.metadata?.[propertyName]) as string;
+
     selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
       ? changedPropertyValue[0].value || '-'
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
     const acceptedSuggestion = selectedFlatRows[0].original;
-    selectedFlatRows[0].values.state = getWrappedSuggestionState(
-      acceptedSuggestion,
-      entity.title as string
-    );
+
+    // @ts-ignore
+    const selections = entity.__extractedMetadata?.selections;
+    if (selections.length) {
+      // There was a label
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
+        changedPropertyValue
+      );
+    } else {
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        acceptedSuggestion,
+        changedPropertyValue
+      );
+    }
+
     selectedFlatRows[0].setState({});
     updateError(changedPropertyValue);
     retriveStats();
