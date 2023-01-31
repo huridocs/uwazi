@@ -14,24 +14,6 @@ const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   return translation;
 };
 
-const getTranslationChanges = async () => {
-  const keysToInsertPath = 'app/api/migrations/migrations/122-update_translations/system_keys.csv';
-  const keysToUpdatePath = 'app/api/migrations/migrations/122-update_translations/updated_keys.csv';
-  const keysToDeletePath = 'app/api/migrations/migrations/122-update_translations/removed_keys.csv';
-
-  let fstream = fs.createReadStream(keysToInsertPath);
-  const keysToInsert = await csv(fstream).read();
-  fstream.close();
-  fstream = fs.createReadStream(keysToUpdatePath);
-  const keysToUpdate = await csv(fstream).read();
-  fstream.close();
-  fstream = fs.createReadStream(keysToDeletePath);
-  const keysToDelete = await csv(fstream).read();
-  fstream.close();
-
-  return { keysToInsert, keysToUpdate, keysToDelete };
-};
-
 export default {
   delta: 122,
 
@@ -42,7 +24,9 @@ export default {
   description: 'Updates some translations reported with errors',
 
   async up(db) {
-    const { keysToInsert, keysToUpdate, keysToDelete } = await getTranslationChanges();
+    const keysToInsert = [{ key: 'Value cannot be transformed to the correct type' }];
+    const keysToUpdate = [];
+    const keysToDelete = [{ key: 'Value cannot be transformed to date' }];
     const translations = await db.collection('translations').find().toArray();
     const locToSystemContext = {};
     translations.forEach(tr => {

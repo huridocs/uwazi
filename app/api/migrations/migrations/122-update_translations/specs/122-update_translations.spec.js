@@ -24,8 +24,6 @@ describe('migration update translations of settings tooltips', () => {
       tr.contexts.filter(ctx => ctx.type === 'Uwazi UI')
     );
 
-    console.log(allTranslations);
-
     const previousSystemValues = {
       key: 'existing-key-in-system',
       value: 'existing-key-in-system',
