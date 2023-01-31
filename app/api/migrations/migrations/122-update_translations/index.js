@@ -15,12 +15,9 @@ const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
 };
 
 const getTranslationChanges = async () => {
-  const keysToInsertPath =
-    'app/api/migrations/migrations/119-update_problematic_UI_translations/system_keys.csv';
-  const keysToUpdatePath =
-    'app/api/migrations/migrations/119-update_problematic_UI_translations/updated_keys.csv';
-  const keysToDeletePath =
-    'app/api/migrations/migrations/119-update_problematic_UI_translations/removed_keys.csv';
+  const keysToInsertPath = 'app/api/migrations/migrations/122-update_translations/system_keys.csv';
+  const keysToUpdatePath = 'app/api/migrations/migrations/122-update_translations/updated_keys.csv';
+  const keysToDeletePath = 'app/api/migrations/migrations/122-update_translations/removed_keys.csv';
 
   let fstream = fs.createReadStream(keysToInsertPath);
   const keysToInsert = await csv(fstream).read();
@@ -40,7 +37,7 @@ export default {
 
   reindex: false,
 
-  name: 'update_problematic_UI_translations',
+  name: 'update_translations',
 
   description: 'Updates some translations reported with errors',
 

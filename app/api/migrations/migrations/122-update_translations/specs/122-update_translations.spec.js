@@ -13,7 +13,6 @@ describe('migration update translations of settings tooltips', () => {
   });
 
   it('should have a delta number', () => {
-    console.log('here');
     expect(migration.delta).toBe(124);
   });
 
@@ -25,6 +24,8 @@ describe('migration update translations of settings tooltips', () => {
       tr.contexts.filter(ctx => ctx.type === 'Uwazi UI')
     );
 
+    console.log(allTranslations);
+
     const previousSystemValues = {
       key: 'existing-key-in-system',
       value: 'existing-key-in-system',
@@ -32,28 +33,13 @@ describe('migration update translations of settings tooltips', () => {
 
     const addedKeys = [
       expect.objectContaining({
-        key: 'Default view',
-        value: 'Default view',
-      }),
-      expect.objectContaining({
-        key: 'Item',
-        value: 'Item',
-      }),
-      expect.objectContaining({
-        key: 'Page name',
-        value: 'Page name',
+        key: 'Value cannot be transformed to the correct type',
+        value: 'Value cannot be transformed to the correct type',
       }),
     ];
     const defaultContextContent = expect.objectContaining({
       type: 'Uwazi UI',
-      values: expect.arrayContaining([
-        previousSystemValues,
-        expect.objectContaining({
-          key: 'Cannot delete template:',
-          value: 'Cannot delete template:',
-        }),
-        ...addedKeys,
-      ]),
+      values: expect.arrayContaining([previousSystemValues, ...addedKeys]),
     });
     expect(uwaziUI).toMatchObject([
       expect.objectContaining({
@@ -65,14 +51,7 @@ describe('migration update translations of settings tooltips', () => {
         contexts: [
           expect.objectContaining({
             type: 'Uwazi UI',
-            values: expect.arrayContaining([
-              previousSystemValues,
-              expect.objectContaining({
-                key: 'Confirm deletion of relationship type:',
-                value: 'Confirmar eliminación de tipo de relación:',
-              }),
-              ...addedKeys,
-            ]),
+            values: expect.arrayContaining([previousSystemValues, ...addedKeys]),
           }),
           templateContext,
         ],
