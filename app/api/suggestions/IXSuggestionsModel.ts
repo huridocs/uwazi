@@ -21,7 +21,3 @@ mongoSchema.index({ propertyName: 1, entityTemplate: 1, state: 1 });
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 
 export { IXSuggestionsModel };
-
-// flows to consider:
-// template:
-  // update entity template
