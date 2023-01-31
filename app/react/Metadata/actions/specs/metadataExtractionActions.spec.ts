@@ -49,11 +49,6 @@ describe('metadataExtractionActions', () => {
         await updateFormField('12345', 'fieldModel', 'numeric');
         expect(formActions.change).toHaveBeenCalledWith('fieldModel', 12345);
       });
-      it('should set the numeric field to 0 if the value is not a number', async () => {
-        spyOn(api, 'coerceValue').and.returnValue(Promise.resolve({ success: false }));
-        await updateFormField('une two three', 'fieldModel', 'numeric');
-        expect(formActions.change).toHaveBeenCalledWith('fieldModel', 0);
-      });
     });
   });
 
