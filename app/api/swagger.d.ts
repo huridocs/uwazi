@@ -20,7 +20,7 @@ export interface paths {
        * Search entities 
        * @description Search entities
        */
-      parameters: {
+      parameters?: {
         query?: {
           page?: {
             limit?: number;
@@ -41,9 +41,6 @@ export interface paths {
           };
           sort?: string;
           fields?: (string)[];
-        };
-        path: {
-          id: string;
         };
       };
       responses: {
@@ -72,6 +69,17 @@ export interface paths {
         query?: {
           sharedId?: string;
         };
+          /** @example en */
+          /**
+           * @description The natural language and locale that the client prefers,
+           *             will be used if no content-language is provided, in case none are provided.
+           *             (api will asume default language configured) 
+           * @example en
+           */
+        header?: {
+          "Content-Language"?: string;
+          "Accept-Language"?: string;
+        };
       };
       responses: {
         /** @description Get an array of pages */
@@ -87,10 +95,19 @@ export interface paths {
     /** Create or update a page */
     post: {
       /** Create or update a page */
-      parameters: {
+      parameters?: {
           /** @example XMLHttpRequest */
-        header: {
-          "X-Requested-With": string;
+          /** @example en */
+          /**
+           * @description The natural language and locale that the client prefers,
+           *             will be used if no content-language is provided, in case none are provided.
+           *             (api will asume default language configured) 
+           * @example en
+           */
+        header?: {
+          "X-Requested-With"?: string;
+          "Content-Language"?: string;
+          "Accept-Language"?: string;
         };
       };
       requestBody: {
@@ -125,8 +142,17 @@ export interface paths {
           sharedId: string;
         };
           /** @example XMLHttpRequest */
-        header: {
-          "X-Requested-With": string;
+          /** @example en */
+          /**
+           * @description The natural language and locale that the client prefers,
+           *             will be used if no content-language is provided, in case none are provided.
+           *             (api will asume default language configured) 
+           * @example en
+           */
+        header?: {
+          "X-Requested-With"?: string;
+          "Content-Language"?: string;
+          "Accept-Language"?: string;
         };
       };
       responses: {
@@ -156,6 +182,17 @@ export interface paths {
         query: {
           sharedId: string;
           slug?: string;
+        };
+          /** @example en */
+          /**
+           * @description The natural language and locale that the client prefers,
+           *             will be used if no content-language is provided, in case none are provided.
+           *             (api will asume default language configured) 
+           * @example en
+           */
+        header?: {
+          "Content-Language"?: string;
+          "Accept-Language"?: string;
         };
       };
       responses: {

@@ -1,11 +1,13 @@
 import bodyParser from 'body-parser';
 import express, { Application, Request, Response, NextFunction, RequestHandler } from 'express';
 import { Response as SuperTestResponse } from 'supertest';
+import * as OpenApiValidator from 'express-openapi-validator';
 
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
+import { config } from 'api/config';
 
 extendSupertest();
 
@@ -25,6 +27,17 @@ const setUpApp = (
     };
     next();
   });
+
+  app.use(
+    OpenApiValidator.middleware({
+      apiSpec: `${config.rootPath}/swagger.json`,
+      validateApiSpec: false,
+      ignoreUndocumented: true,
+      validateRequests: {
+        coerceTypes: 'array',
+      },
+    })
+  );
 
   app.use(languageMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));

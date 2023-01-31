@@ -1,6 +1,5 @@
 import { entitySchema } from 'shared/types/entitySchema';
 import { PageSchema } from 'shared/types/pageSchema';
-import { searchGetParameters } from 'shared/types/SearchQuerySchema';
 
 export const swaggerDocument = {
   openapi: '3.0.0',
@@ -36,7 +35,77 @@ export const swaggerDocument = {
         tags: ['/v2/search'],
         summary: 'Search entities',
         description: 'Search entities',
-        parameters: searchGetParameters,
+        'x-eov-unknown-query-parameters': false,
+        parameters: [
+          {
+            in: 'query',
+            name: 'page',
+            schema: {
+              title: 'Page',
+              type: 'object',
+              additionalProperties: false,
+              required: [],
+              properties: {
+                limit: { type: 'number' },
+                offset: { type: 'number' },
+              },
+            },
+            style: 'deepObject',
+          },
+          {
+            in: 'query',
+            name: 'filter',
+            schema: {
+              type: 'object',
+              required: [],
+              additionalProperties: {
+                anyOf: [
+                  {
+                    title: 'RangeFilter',
+                    type: 'object',
+                    additionalProperties: false,
+                    required: [],
+                    properties: {
+                      from: { type: 'number' },
+                      to: { type: 'number' },
+                    },
+                  },
+                  {
+                    title: 'CompoundFilter',
+                    type: 'object',
+                    additionalProperties: false,
+                    required: [],
+                    properties: {
+                      values: { type: 'array', items: { type: 'string' } },
+                      operator: { type: 'string', enum: ['AND', 'OR'] },
+                    },
+                  },
+                  { type: 'string' },
+                  { type: 'number' },
+                  { type: 'boolean' },
+                ],
+              },
+              properties: {
+                searchString: { type: 'string' },
+                sharedId: { type: 'string' },
+                published: { type: 'boolean' },
+              },
+            },
+            style: 'deepObject',
+          },
+          {
+            in: 'query',
+            name: 'sort',
+            schema: { type: 'string' },
+            style: 'deepObject',
+          },
+          {
+            in: 'query',
+            name: 'fields',
+            schema: { type: 'array', items: { type: 'string', minLength: 1 } },
+            style: 'deepObject',
+          },
+        ],
         responses: {
           200: {
             description: 'A JSON array of entities',
@@ -73,7 +142,21 @@ export const swaggerDocument = {
             name: 'X-Requested-With',
             schema: { type: 'string' },
             example: 'XMLHttpRequest',
-            required: true,
+          },
+          {
+            in: 'header',
+            name: 'Content-Language',
+            schema: { type: 'string' },
+            example: 'en',
+          },
+          {
+            in: 'header',
+            name: 'Accept-Language',
+            schema: { type: 'string' },
+            example: 'en',
+            description: `The natural language and locale that the client prefers,
+            will be used if no content-language is provided, in case none are provided.
+            (api will asume default language configured)`,
           },
         ],
         responses: {
@@ -116,7 +199,21 @@ export const swaggerDocument = {
             name: 'X-Requested-With',
             schema: { type: 'string' },
             example: 'XMLHttpRequest',
-            required: true,
+          },
+          {
+            in: 'header',
+            name: 'Content-Language',
+            schema: { type: 'string' },
+            example: 'en',
+          },
+          {
+            in: 'header',
+            name: 'Accept-Language',
+            schema: { type: 'string' },
+            example: 'en',
+            description: `The natural language and locale that the client prefers,
+            will be used if no content-language is provided, in case none are provided.
+            (api will asume default language configured)`,
           },
         ],
         responses: {
@@ -144,6 +241,21 @@ export const swaggerDocument = {
             in: 'query',
             name: 'sharedId',
             schema: { type: 'string' },
+          },
+          {
+            in: 'header',
+            name: 'Content-Language',
+            schema: { type: 'string' },
+            example: 'en',
+          },
+          {
+            in: 'header',
+            name: 'Accept-Language',
+            schema: { type: 'string' },
+            example: 'en',
+            description: `The natural language and locale that the client prefers,
+            will be used if no content-language is provided, in case none are provided.
+            (api will asume default language configured)`,
           },
         ],
         responses: {
@@ -182,6 +294,21 @@ export const swaggerDocument = {
             in: 'query',
             name: 'slug',
             schema: { type: 'string' },
+          },
+          {
+            in: 'header',
+            name: 'Content-Language',
+            schema: { type: 'string' },
+            example: 'en',
+          },
+          {
+            in: 'header',
+            name: 'Accept-Language',
+            schema: { type: 'string' },
+            example: 'en',
+            description: `The natural language and locale that the client prefers,
+            will be used if no content-language is provided, in case none are provided.
+            (api will asume default language configured)`,
           },
         ],
         responses: {

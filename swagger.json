@@ -4133,14 +4133,8 @@
         ],
         "summary": "Search entities",
         "description": "Search entities",
+        "x-eov-unknown-query-parameters": false,
         "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "in": "query",
             "name": "page",
@@ -4292,8 +4286,24 @@
             "schema": {
               "type": "string"
             },
-            "example": "XMLHttpRequest",
-            "required": true
+            "example": "XMLHttpRequest"
+          },
+          {
+            "in": "header",
+            "name": "Content-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en",
+            "description": "The natural language and locale that the client prefers,\n            will be used if no content-language is provided, in case none are provided.\n            (api will asume default language configured)"
           }
         ],
         "responses": {
@@ -4345,8 +4355,24 @@
             "schema": {
               "type": "string"
             },
-            "example": "XMLHttpRequest",
-            "required": true
+            "example": "XMLHttpRequest"
+          },
+          {
+            "in": "header",
+            "name": "Content-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en",
+            "description": "The natural language and locale that the client prefers,\n            will be used if no content-language is provided, in case none are provided.\n            (api will asume default language configured)"
           }
         ],
         "responses": {
@@ -4380,6 +4406,23 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Content-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en",
+            "description": "The natural language and locale that the client prefers,\n            will be used if no content-language is provided, in case none are provided.\n            (api will asume default language configured)"
           }
         ],
         "responses": {
@@ -4426,6 +4469,23 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Content-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en"
+          },
+          {
+            "in": "header",
+            "name": "Accept-Language",
+            "schema": {
+              "type": "string"
+            },
+            "example": "en",
+            "description": "The natural language and locale that the client prefers,\n            will be used if no content-language is provided, in case none are provided.\n            (api will asume default language configured)"
           }
         ],
         "responses": {

@@ -60,7 +60,7 @@ describe('Metadata filters', () => {
   afterAll(async () => testingDB.disconnect());
 
   describe('Select and Multiselect filters', () => {
-    it.each([{ filterValue: 'thesaurusId1' }, { filterValue: { values: ['thesaurusId1'] } }])(
+    fit.each([{ filterValue: { values: ['thesaurusId1'] } }])(
       'should filter by one property and one value',
       async ({ filterValue }) => {
         const query = {

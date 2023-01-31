@@ -27,10 +27,7 @@ describe('Pages Routes', () => {
     it('should validate with minimum required props', async () => {
       const goodData = { title: 'good structure' };
 
-      const response = await request(app)
-        .post('/api/pages')
-        .set('content-language', 'en')
-        .send(goodData);
+      const response = await request(app).post('/api/pages').send(goodData);
 
       expect(response.status).toBe(200);
     });
@@ -40,8 +37,8 @@ describe('Pages Routes', () => {
 
       const response = await request(app).post('/api/pages').send(badData);
 
-      expect(response.status).toBe(422);
-      expect(response.text).toContain('validation failed');
+      expect(response.status).toBe(400);
+      expect(response.text).toContain('error');
     });
   });
 });

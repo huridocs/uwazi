@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { HttpError } from 'express-openapi-validator/dist/framework/types';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -84,6 +85,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result.code = 400;
   }
 
+  // if (error instanceof HttpError) {
+  //   result = { code: error.status || 500, message: error.message, validations: error.errors };
+  // }
+  //
   if (uncaught) {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }

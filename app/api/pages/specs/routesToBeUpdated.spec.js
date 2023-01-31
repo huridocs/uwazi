@@ -59,21 +59,9 @@ describe('Pages Routes (to be updated)', () => {
     });
   });
 
-  describe('GET', () => {
-    describe('/api/pages', () => {
-      it('should have a validation schema', () => {
-        expect(routes.get.validation('/api/pages')).toMatchSnapshot();
-      });
-    });
-  });
-
   describe('DELETE', () => {
     beforeEach(() => {
       jest.spyOn(pages, 'delete').mockImplementation(async () => Promise.resolve({ json: 'ok' }));
-    });
-
-    it('should have a validation schema', () => {
-      expect(routes.delete.validation('/api/pages')).toMatchSnapshot();
     });
 
     it('should use pages to delete it', async () => {
