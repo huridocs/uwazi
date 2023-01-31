@@ -231,7 +231,7 @@ export const EntitySuggestions = ({
       );
     } else {
       selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        acceptedSuggestion,
+        { ...acceptedSuggestion, currentValue: changedPropertyValue, labeledValue: null },
         changedPropertyValue
       );
     }
