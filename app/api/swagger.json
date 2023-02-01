@@ -4133,7 +4133,6 @@
         ],
         "summary": "Search entities",
         "description": "Search entities",
-        "x-eov-unknown-query-parameters": false,
         "parameters": [
           {
             "in": "query",

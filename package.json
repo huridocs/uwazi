@@ -323,6 +323,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "node-sass": "7.0.3",
     "nodemon": "^2.0.19",
+    "openapi-typescript": "^6.1.0",
     "plop": "^3.0.6",
     "prettier": "2.7.1",
     "puppeteer": "^13.5.2",

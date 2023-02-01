@@ -46,7 +46,7 @@ export default (app, server) => {
   app.use(
     '/api',
     OpenApiValidator.middleware({
-      apiSpec: `${__dirname}/../../swagger.json`,
+      apiSpec: './swagger.json',
       // validateRequests: true, // (default)
       // coerceTypes: 'array',
       validateApiSpec: false,
