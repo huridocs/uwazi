@@ -23,6 +23,8 @@ export default app => {
     session({
       secret: app.get('env') === 'production' ? config.userSessionSecret : 'harvey&lola',
       store: MongoStore.create({
+        touchAfter: 24 * 3600,
+        dbName: config.SHARED_DB,
         client: DB.connectionForDB(config.SHARED_DB, {
           useCache: true,
           noListener: false,

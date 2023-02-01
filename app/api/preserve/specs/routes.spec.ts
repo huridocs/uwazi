@@ -16,10 +16,15 @@ describe('entities get searchString', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
-    spyOn(requestShared, 'post').and.callFake(() => ({
-      json: { data: { token: 'sometoken' } },
-    }));
+    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index-routes');
+    jest.spyOn(requestShared, 'post').mockImplementation(async () =>
+      Promise.resolve({
+        json: { data: { token: 'sometoken' } },
+        status: 200,
+        headers: new Headers(),
+        cookie: 'cooke',
+      })
+    );
   });
 
   afterAll(async () => testingEnvironment.tearDown());

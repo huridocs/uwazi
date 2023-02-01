@@ -21,6 +21,9 @@ describe('ConvertToPDFService', () => {
   });
 
   afterEach(() => backend.restore());
+  afterAll(async () => {
+    await testingEnvironment.tearDown();
+  });
 
   describe('upload', () => {
     it('should upload the file to the convert service', async () => {

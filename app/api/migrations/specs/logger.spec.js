@@ -3,8 +3,8 @@ import logger from '../logger';
 
 describe('Migrations ActivityLog logger', () => {
   it('should create a new fieldParseError log', () => {
-    spyOn(model, 'save');
-    spyOn(Date, 'now').and.returnValue(0);
+    jest.spyOn(model, 'save').mockImplementation(() => {});
+    jest.spyOn(Date, 'now').mockReturnValue(0);
 
     logger.logFieldParseError(
       {

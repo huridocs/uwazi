@@ -14,8 +14,10 @@ interface Groups {
 
 const addCount = <T>(sum: number, group: StateGroup<T>) => sum + group.count;
 
-const addCountsOf = (groups: Groups, states: SuggestionState[]) =>
-  groups.buckets.filter(g => states.includes(g._id)).reduce(addCount, 0);
+const addCountsOf = (groups: Groups, _states: SuggestionState[]) => {
+  const states = new Set(_states);
+  return groups.buckets.filter(g => states.has(g._id)).reduce(addCount, 0);
+};
 
 const getGroups = async (propertyName: string): Promise<Groups> =>
   IXSuggestionsModel.db
@@ -43,6 +45,18 @@ const getGroups = async (propertyName: string): Promise<Groups> =>
     ])
     .then(([result]) => result);
 
+const calcAccuracy = (groups: Groups) => {
+  const correct = addCountsOf(groups, [SuggestionState.labelMatch, SuggestionState.valueMatch]);
+  const incorect = addCountsOf(groups, [
+    SuggestionState.labelMismatch,
+    SuggestionState.valueMismatch,
+    SuggestionState.labelEmpty,
+    SuggestionState.valueEmpty,
+  ]);
+  const total = correct + incorect;
+  return total ? correct / total : 0;
+};
+
 const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   const groups = await getGroups(propertyName);
 
@@ -61,8 +75,7 @@ const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
   ]);
   const all = groups.all[0]?.count || 0;
 
-  const labeledNonEmpty = nonLabeledMatching + nonLabeledNotMatching;
-  const accuracy = labeledNonEmpty ? nonLabeledMatching / labeledNonEmpty : 0;
+  const accuracy = calcAccuracy(groups);
 
   return {
     counts: {

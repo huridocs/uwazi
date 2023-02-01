@@ -31,12 +31,8 @@ describe('taskManager', () => {
   });
 
   afterAll(async () => {
-    try {
-      await externalDummyService.stop();
-      await taskManager?.stop();
-    } catch (e) {
-      console.log(JSON.stringify(e, null, ' '));
-    }
+    await externalDummyService.stop();
+    await taskManager?.stop();
   });
 
   afterEach(() => {
@@ -134,7 +130,7 @@ describe('taskManager', () => {
 
       await externalDummyService.sendFinishedMessage(task);
       service.processResults = jest.fn().mockRejectedValue('error');
-      jest.spyOn(handleError, 'handleError');
+      jest.spyOn(handleError, 'handleError').mockImplementation(() => {});
 
       await waitForExpect(async () => {
         expect(service.processResults).toHaveBeenCalledWith(task);

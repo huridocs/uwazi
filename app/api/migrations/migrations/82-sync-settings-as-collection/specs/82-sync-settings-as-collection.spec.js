@@ -3,7 +3,7 @@ import migration from '../index.js';
 
 describe('migration sync-settings-as-collection', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
   });
 
   afterAll(async () => {

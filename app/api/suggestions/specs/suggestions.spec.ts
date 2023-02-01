@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -154,8 +153,8 @@ const newErroringSuggestion: IXSuggestionType = {
 };
 
 describe('suggestions', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {

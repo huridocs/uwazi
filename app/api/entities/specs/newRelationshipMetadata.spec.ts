@@ -258,7 +258,7 @@ describe('entities.save()', () => {
 
   describe('when updating an entity', () => {
     it('should update the denormalized title in the related entities', async () => {
-      spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+      jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
       await entities.save(
         {
           _id: factory.id('entity2-en'),

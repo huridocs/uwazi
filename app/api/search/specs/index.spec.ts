@@ -7,7 +7,7 @@ import { fixturesTimeOut } from './fixtures_elastic';
 describe('index (search)', () => {
   beforeEach(async () => {
     const elasticIndex = 'index_for_index_testing';
-    await db.clearAllAndLoad({}, elasticIndex);
+    await db.setupFixturesAndContext({}, elasticIndex);
   }, fixturesTimeOut);
 
   afterAll(async () => {
@@ -102,7 +102,9 @@ describe('index (search)', () => {
     describe('when there is an indexation error', () => {
       describe('if elastic fails indexing one or more items', () => {
         beforeEach(() => {
-          spyOn(elastic, 'bulk').and.returnValue(
+          jest.resetAllMocks();
+          jest.spyOn(elastic, 'bulk').mockReturnValue(
+            // @ts-ignore
             Promise.resolve({
               body: {
                 items: [
@@ -133,6 +135,10 @@ describe('index (search)', () => {
   });
 
   describe('delete', () => {
+    beforeAll(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should delete the index', async () => {
       const entity = {
         _id: 'id',

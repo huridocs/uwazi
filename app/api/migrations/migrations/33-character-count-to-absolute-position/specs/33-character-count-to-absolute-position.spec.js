@@ -3,7 +3,6 @@
 import testingDB from 'api/utils/testing_db';
 import { errorLog } from 'api/log';
 import { config } from 'api/config';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import {
   connectionOutOfRangeId,
   connectionToMissingDocumentId,
@@ -18,12 +17,12 @@ import fixtures from './fixtures.js';
 import migration from '../index.js';
 
 describe('conversion of character count to absolute position', () => {
-  beforeEach(done => {
-    spyOn(process.stdout, 'write');
-    spyOn(process.stderr, 'write');
-    spyOn(errorLog, 'error');
+  beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
+    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = __dirname;
-    testingDB.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+    await testingDB.setupFixturesAndContext(fixtures);
   });
 
   afterAll(done => {

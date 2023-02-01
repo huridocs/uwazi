@@ -10,7 +10,6 @@ import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
 import { clearMetadataSelections, loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
 import { actions } from 'app/BasicReducer';
-import { updateSelection } from 'app/Metadata/actions/metadataExtractionActions';
 import { unsetSelection } from 'app/Viewer/actions/selectionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
@@ -50,27 +49,21 @@ const PDFSidePanel = ({
         .then(response => {
           const responseFile = response.json[0];
           setFile(responseFile);
+
           // Load selections to the store
           const defaultDoc = {
             ...responseFile,
-            extractedMetadata: responseFile.extractedMetadata.filter(
-              (metadata: any) => metadata.name === entitySuggestion.propertyName
-            ),
+            extractedMetadata: responseFile.extractedMetadata
+              ? responseFile.extractedMetadata.filter(
+                  (metadata: any) => metadata.name === entitySuggestion.propertyName
+                )
+              : [],
           };
 
-          if (responseFile.extractedMetadata) {
-            store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
-          }
-
-          if (entitySuggestion.selectionRectangles) {
-            const selection = {
-              text: entitySuggestion.suggestedValue as string,
-              selectionRectangles: entitySuggestion.selectionRectangles,
-            };
-            store?.dispatch(updateSelection(selection, entitySuggestion.propertyName, 'id'));
-          }
+          store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
         })
         .catch(e => e);
+
       return () => {
         store?.dispatch(unsetSelection());
         store?.dispatch(actions.update('viewer/doc', entity));

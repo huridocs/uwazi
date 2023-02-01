@@ -41,7 +41,7 @@ export const EntitySuggestions = ({
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [resetActivePage, setResetActivePage] = useState(false);
-  const [status, setStatus] = useState<{ key: string; data?: undefined }>({
+  const [status, setStatus] = useState<{ key: string; data?: undefined; message?: string }>({
     key: 'ready',
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
@@ -200,6 +200,14 @@ export const EntitySuggestions = ({
     retriveStats();
   };
 
+  const errorIsNoLabeledData = () => status.key === 'error' && status.message === 'No labeled data';
+
+  const updateError = (changedPropertyValue: string) => {
+    if (errorIsNoLabeledData() && changedPropertyValue && changedPropertyValue.length > 0) {
+      setStatus({ key: 'ready' });
+    }
+  };
+
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const changedPropertyValue = (entity[reviewedProperty.name] ||
@@ -215,6 +223,7 @@ export const EntitySuggestions = ({
       entity.title as string
     );
     selectedFlatRows[0].setState({});
+    updateError(changedPropertyValue);
     retriveStats();
   };
 
@@ -226,7 +235,7 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus({ key: response.status, data: response.data });
+    setStatus({ key: response.status, data: response.data, message: response.message });
     store?.dispatch(notify(response.message, type));
     if (status.key === 'ready') {
       await retrieveSuggestions();
@@ -249,6 +258,8 @@ export const EntitySuggestions = ({
     if (status.key === 'ready') {
       setStatus({ key: 'sending_labeled_data' });
       await _trainModel();
+    } else if (errorIsNoLabeledData()) {
+      setStatus({ key: 'ready' });
     } else {
       setOpenCancelFindingSuggestions(true);
     }
@@ -270,7 +281,7 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status, data: response.data });
+        setStatus({ key: response.status, data: response.data, message: response.message });
       })
       .catch(() => {
         setStatus({ key: 'error' });

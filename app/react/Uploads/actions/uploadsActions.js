@@ -51,6 +51,8 @@ export function newEntity(storeKey = 'uploads') {
         getState().templates.toJS()
       )
     );
+    dispatch(basicActions.set('library.sidepanel.tab', 'metadata'));
+    dispatch(basicActions.set('relationships/list/connectionsGroups', []));
     await dispatch(selectSingleDocument(newEntityMetadata));
   };
 }

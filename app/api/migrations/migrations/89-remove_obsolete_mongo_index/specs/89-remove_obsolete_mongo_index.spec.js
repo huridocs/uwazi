@@ -21,7 +21,7 @@ describe('migration remove_obsolete_mongo_index', () => {
   };
 
   beforeAll(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     const db = testingDB.mongodb;
     await createIndexes(db);

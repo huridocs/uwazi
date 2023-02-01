@@ -18,7 +18,7 @@ type Error = { code: number; message: string };
 
 describe('auth2fa userUtils', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -43,7 +43,7 @@ describe('auth2fa userUtils', () => {
     await expectError(method, db.id(), 'any token', { code: 403, message: 'user not found' });
   };
 
-  const verifyTokenMock = (params: { token: string; secret: string }) => {
+  const verifyTokenMock = (params: { token?: string; secret?: string }) => {
     if (params.token === 'correctToken' && params.secret === 'correctSecret') {
       return true;
     }
@@ -52,7 +52,7 @@ describe('auth2fa userUtils', () => {
 
   describe('setSecret', () => {
     beforeEach(() => {
-      spyOn(otplib.authenticator, 'generateSecret').and.returnValue('aVerySecretSecret');
+      jest.spyOn(otplib.authenticator, 'generateSecret').mockReturnValue('aVerySecretSecret');
     });
 
     it("should save the secret string on a non-previously-2fa'd user and return it along with the otpauth url", async () => {
@@ -89,7 +89,7 @@ describe('auth2fa userUtils', () => {
 
   describe('verfiyToken', () => {
     beforeEach(() => {
-      spyOn(otplib.authenticator, 'verify').and.callFake(verifyTokenMock);
+      jest.spyOn(otplib.authenticator, 'verify').mockImplementation(verifyTokenMock);
     });
 
     it('should verify with valid token', async () => {
@@ -109,7 +109,7 @@ describe('auth2fa userUtils', () => {
 
   describe('enable2fa', () => {
     beforeEach(() => {
-      spyOn(otplib.authenticator, 'verify').and.callFake(verifyTokenMock);
+      jest.spyOn(otplib.authenticator, 'verify').mockImplementation(verifyTokenMock);
     });
 
     it('should set "using2fa" to true if token matches', async () => {

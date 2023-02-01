@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.11.2-amd64
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
         ports:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
@@ -30,10 +30,6 @@ jobs:
           MINIO_ROOT_USER: minioadmin
           MINIO_ROOT_PASSWORD: minioadmin
         options: --name=minio --health-cmd "curl http://localhost:9000/minio/health/live"
-      # mongodb:
-      #   image: mongo:4.2.6
-      #   ports:
-      #     - 27017:27017
       redis:
         image: redis
         options: >-
@@ -66,16 +62,6 @@ jobs:
       - name: install dependencies
         run: yarn install
 
-      - name: Cache testing redis
-        id: cache-redis
-        uses: actions/cache@v2
-        with:
-          path: ./redis-bin
-          key: ${{ runner.os }}-yarn-${{ hashFiles('.redis_version') }}
-      - name: install redis for testing
-        if: steps.cache-redis.outputs.cache-hit != 'true'
-        run: yarn install_redis_for_testing
-
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -84,7 +70,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3

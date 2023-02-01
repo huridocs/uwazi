@@ -4,7 +4,6 @@
 import { createError } from 'api/utils';
 import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import * as random from 'shared/uniqueID';
@@ -26,27 +25,23 @@ import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
 
 describe('Users', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.setupFixturesAndContext(fixtures);
   });
 
-  afterAll(done => {
-    db.disconnect().then(done);
+  afterAll(async () => {
+    await db.disconnect();
   });
 
   describe('save', () => {
     let currentUser = { _id: userId };
 
-    it('should save user matching id', done =>
-      users
-        .save({ _id: userId.toString(), password: 'new_password' }, currentUser)
-        .then(() => users.get({ _id: userId }, '+password'))
-        .then(async ([user]) => {
-          expect(await comparePasswords('new_password', user.password)).toBe(true);
-          expect(user.username).toBe('username');
-          done();
-        })
-        .catch(catchErrors(done)));
+    it('should save user matching id', async () => {
+      await users.save({ _id: userId.toString(), password: 'new_password' }, currentUser);
+      const [user1] = await users.get({ _id: userId }, '+password');
+      expect(await comparePasswords('new_password', user1.password)).toBe(true);
+      expect(user1.username).toBe('username');
+    });
 
     it('should not save a null password on update', async () => {
       const user = { _id: recoveryUserId, role: 'admin' };
@@ -116,34 +111,26 @@ describe('Users', () => {
     );
 
     describe('when you try to change role', () => {
-      it('should be an admin', done => {
+      it('should be an admin', async () => {
         currentUser = { _id: userId, role: 'editor' };
         const user = { _id: recoveryUserId, role: 'admin' };
-        return users
-          .save(user, currentUser)
-          .then(() => {
-            done.fail('should throw an error');
-          })
-          .catch(error => {
-            expect(error).toEqual(createError('Unauthorized', 403));
-            done();
-          })
-          .catch(catchErrors(done));
+        try {
+          await users.save(user, currentUser);
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Unauthorized', 403));
+        }
       });
 
-      it('should not modify yourself', done => {
+      it('should not modify yourself', async () => {
         currentUser = { _id: userId, role: 'admin' };
         const user = { _id: userId.toString(), role: 'editor' };
-        return users
-          .save(user, currentUser)
-          .then(() => {
-            done.fail('should throw an error');
-          })
-          .catch(error => {
-            expect(error).toEqual(createError('Can not change your own role', 403));
-            done();
-          })
-          .catch(catchErrors(done));
+        try {
+          await users.save(user, currentUser);
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Can not change your own role', 403));
+        }
       });
     });
 
@@ -151,30 +138,25 @@ describe('Users', () => {
       const domain = 'http://localhost';
 
       beforeEach(() => {
-        spyOn(users, 'recoverPassword').and.callFake(async () => Promise.resolve());
+        jest.spyOn(users, 'recoverPassword').mockImplementation(async () => Promise.resolve());
         jest.spyOn(random, 'default').mockReturnValue('mypass');
       });
 
-      it('should do the recover password process (as a new user)', done => {
-        users
-          .newUser(
-            {
-              username: 'spidey',
-              email: 'peter@parker.com',
-              password: 'mypass',
-              role: 'editor',
-            },
-            domain
-          )
-          .then(() => users.get({ username: 'spidey' }))
-          .then(([user]) => {
-            expect(user.username).toBe('spidey');
-            expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
-              newUser: true,
-            });
-            done();
-          })
-          .catch(catchErrors(done));
+      it('should do the recover password process (as a new user)', async () => {
+        await users.newUser(
+          {
+            username: 'spidey',
+            email: 'peter@parker.com',
+            password: 'mypass',
+            role: 'editor',
+          },
+          domain
+        );
+        const [user] = await users.get({ username: 'spidey' });
+        expect(user.username).toBe('spidey');
+        expect(users.recoverPassword).toHaveBeenCalledWith('peter@parker.com', domain, {
+          newUser: true,
+        });
       });
 
       it('should create a random password when none is provided', async () => {
@@ -192,36 +174,30 @@ describe('Users', () => {
         expect(await comparePasswords('mypass', user.password)).toBe(true);
       });
 
-      it('should not allow repeat username', done => {
-        users
-          .newUser(
+      it('should not allow repeat username', async () => {
+        try {
+          await users.newUser(
             { username: 'username', email: 'peter@parker.com', role: 'editor' },
             currentUser,
             domain
-          )
-          .then(() => {
-            done.fail('should throw an error');
-          })
-          .catch(error => {
-            expect(error).toEqual(createError('Username already exists', 409));
-            done();
-          });
+          );
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Username already exists', 409));
+        }
       });
 
-      it('should not allow repeat email', done => {
-        users
-          .newUser(
+      it('should not allow repeat email', async () => {
+        try {
+          await users.newUser(
             { username: 'spidey', email: 'test@email.com', role: 'editor' },
             currentUser,
             domain
-          )
-          .then(() => {
-            done.fail('should throw an error');
-          })
-          .catch(error => {
-            expect(error).toEqual(createError('Email already exists', 409));
-            done();
-          });
+          );
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error).toEqual(createError('Email already exists', 409));
+        }
       });
 
       it('should not allow sending two-step verification data on creation', async () => {
@@ -386,7 +362,7 @@ describe('Users', () => {
         testUser.using2fa = true;
         testUser.failedLogins = 4;
 
-        spyOn(usersUtils, 'verifyToken').and.callFake((_user, token) => {
+        jest.spyOn(usersUtils, 'verifyToken').mockImplementation((_user, token) => {
           if (token === 'correctToken') {
             return Promise.resolve({ validToken: true });
           }
@@ -484,184 +460,143 @@ describe('Users', () => {
   });
 
   describe('recoverPassword', () => {
-    it('should find the matching email create a recover password doc in the database and send an email', async done => {
-      spyOn(mailer, 'send').and.callFake(async () => Promise.resolve('OK'));
-      spyOn(Date, 'now').and.returnValue(1000);
-      const key = SHA256(`test@email.com${1000}`).toString();
-      const settings = await settingsModel.get();
-      users
-        .recoverPassword('test@email.com', 'domain')
-        .then(response => {
-          expect(response).toBe('OK');
-          return passwordRecoveriesModel.get({ key });
-        })
-        .then(recoverPasswordDb => {
-          expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
-          const emailSender = mailer.createSenderDetails(settings[0]);
-          const expectedMailOptions = {
-            from: emailSender,
-            to: 'test@email.com',
-            subject: 'Password set',
-            text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
-          };
-          expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
-          done();
-        })
-        .catch(catchErrors(done));
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
+      jest.spyOn(Date, 'now').mockReturnValue(1000);
     });
 
-    it('should personalize the mail if recover password process is part of a newly created user', async done => {
-      spyOn(mailer, 'send').and.callFake(async () => Promise.resolve('OK'));
-      spyOn(Date, 'now').and.returnValue(1000);
+    it('should find the matching email create a recover password doc in the database and send an email', async () => {
+      const key = SHA256(`test@email.com${1000}`).toString();
+      const settings = await settingsModel.get();
+      const response = await users.recoverPassword('test@email.com', 'domain');
+      expect(response).toBe('OK');
+      const recoverPasswordDb = await passwordRecoveriesModel.get({ key });
+      expect(recoverPasswordDb[0].user.toString()).toBe(userId.toString());
+      const emailSender = mailer.createSenderDetails(settings[0]);
+      const expectedMailOptions = {
+        from: emailSender,
+        to: 'test@email.com',
+        subject: 'Password set',
+        text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
+      };
+      expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
+    });
 
+    it('should personalize the mail if recover password process is part of a newly created user', async () => {
       const key = SHA256(`peter@parker.com${1000}`).toString();
       const settings = await settingsModel.get();
-      let newUserId;
 
-      users
-        .newUser(
-          { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
-          'http://localhost'
-        )
-        .then(newUser => {
-          newUserId = newUser._id.toString();
-          return users.recoverPassword('peter@parker.com', 'http://localhost', { newUser: true });
-        })
-        .then(response => {
-          expect(response).toBe('OK');
-          return passwordRecoveriesModel.get({ key });
-        })
-        .then(recoverPasswordDb => {
-          expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
-          const emailSender = mailer.createSenderDetails(settings[0]);
-          const expectedMailOptions = {
-            from: emailSender,
-            to: 'peter@parker.com',
-            subject: 'Welcome to Uwazi instance',
-            text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
-          };
-          expect(mailer.send.calls.mostRecent().args[0].from).toBe(expectedMailOptions.from);
-          expect(mailer.send.calls.mostRecent().args[0].to).toBe(expectedMailOptions.to);
-          expect(mailer.send.calls.mostRecent().args[0].subject).toBe(expectedMailOptions.subject);
+      const newUser = await users.newUser(
+        { username: 'spidey', email: 'peter@parker.com', password: 'mypass', role: 'editor' },
+        'http://localhost'
+      );
+      const newUserId = newUser._id.toString();
+      const response = await users.recoverPassword('peter@parker.com', 'http://localhost', {
+        newUser: true,
+      });
+      expect(response).toBe('OK');
+      const recoverPasswordDb = await passwordRecoveriesModel.get({ key });
+      expect(recoverPasswordDb[0].user.toString()).toBe(newUserId);
+      const emailSender = mailer.createSenderDetails(settings[0]);
+      const expectedMailOptions = {
+        from: emailSender,
+        to: 'peter@parker.com',
+        subject: 'Welcome to Uwazi instance',
+        text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
+      };
 
-          expect(mailer.send.calls.mostRecent().args[0].text).toContain('administrators');
-          expect(mailer.send.calls.mostRecent().args[0].text).toContain('Uwazi instance');
-          expect(mailer.send.calls.mostRecent().args[0].text).toContain('spidey');
-          expect(mailer.send.calls.mostRecent().args[0].text).toContain(
-            `http://localhost/setpassword/${key}?createAccount=true`
-          );
-
-          expect(mailer.send.calls.mostRecent().args[0].html).toContain('administrators');
-          expect(mailer.send.calls.mostRecent().args[0].html).toContain('Uwazi instance');
-          expect(mailer.send.calls.mostRecent().args[0].html).toContain('<b>spidey</b></p>');
-          expect(mailer.send.calls.mostRecent().args[0].html).toContain(
-            '<a href="https://www.uwazi.io">https://www.uwazi.io</a>'
-          );
-
-          expect(mailer.send.calls.mostRecent().args[0].html).toContain(
-            `<a href="http://localhost/setpassword/${key}?createAccount=true">http://localhost/setpassword/${key}?createAccount=true</a>`
-          );
-          done();
-        })
-        .catch(catchErrors(done));
+      expect(mailer.send.mock.calls[0][0].from).toBe(expectedMailOptions.from);
+      expect(mailer.send.mock.calls[0][0].to).toBe(expectedMailOptions.to);
+      expect(mailer.send.mock.calls[0][0].subject).toBe(expectedMailOptions.subject);
+      expect(mailer.send.mock.calls[0][0].text).toContain('administrators');
+      expect(mailer.send.mock.calls[0][0].text).toContain('Uwazi instance');
+      expect(mailer.send.mock.calls[0][0].text).toContain('spidey');
+      expect(mailer.send.mock.calls[0][0].text).toContain(
+        `http://localhost/setpassword/${key}?createAccount=true`
+      );
+      expect(mailer.send.mock.calls[0][0].html).toContain('administrators');
+      expect(mailer.send.mock.calls[0][0].html).toContain('Uwazi instance');
+      expect(mailer.send.mock.calls[0][0].html).toContain('<b>spidey</b></p>');
+      expect(mailer.send.mock.calls[0][0].html).toContain(
+        '<a href="https://www.uwazi.io">https://www.uwazi.io</a>'
+      );
+      expect(mailer.send.mock.calls[0][0].html).toContain(
+        `<a href="http://localhost/setpassword/${key}?createAccount=true">http://localhost/setpassword/${key}?createAccount=true</a>`
+      );
     });
 
     describe('when something fails with the mailer', () => {
-      it('should reject the promise and return the error', done => {
-        spyOn(mailer, 'send').and.callFake(() => Promise.reject(new Error('some error')));
+      it('should reject the promise and return the error', async () => {
+        jest
+          .spyOn(mailer, 'send')
+          .mockImplementation(() => Promise.reject(new Error('some error')));
 
-        users
-          .recoverPassword('test@email.com')
-          .then(() => {
-            done.fail('should not have resolved');
-          })
-          .catch(error => {
-            expect(error.message).toBe('some error');
-            done();
-          });
+        try {
+          await users.recoverPassword('test@email.com');
+          throw new Error('should throw an error');
+        } catch (error) {
+          expect(error.message).toBe('some error');
+        }
       });
     });
 
     describe('when the user does not exist with that email', () => {
-      it('should not create the entry in the database, should not send a mail, and return an error.', done => {
-        spyOn(Date, 'now').and.returnValue(1000);
+      it('should not create the entry in the database, should not send a mail, and return an error.', async () => {
+        jest.spyOn(Date, 'now').mockReturnValue(1000);
         const key = SHA256(`false@email.com${1000}`).toString();
-        users
-          .recoverPassword('false@email.com')
-          .catch(error => {
-            expect(error.code).toBe(403);
-            return passwordRecoveriesModel.get({ key });
-          })
-          .then(response => {
-            expect(response.length).toBe(0);
-            done();
-          })
-          .catch(catchErrors(done));
+        let response;
+        try {
+          response = await users.recoverPassword('false@email.com');
+        } catch (error) {
+          expect(error.code).toBe(403);
+          response = await passwordRecoveriesModel.get({ key });
+        }
+        expect(response.length).toBe(0);
       });
     });
   });
 
   describe('resetPassword', () => {
-    it('should reset the password for the user based on the provided key', done => {
-      users
-        .resetPassword({ key: expectedKey, password: '1234' })
-        .then(() => users.get({ _id: recoveryUserId }, '+password'))
-        .then(async ([user]) => {
-          expect(await comparePasswords('1234', user.password)).toBe(true);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should reset the password for the user based on the provided key', async () => {
+      await users.resetPassword({ key: expectedKey, password: '1234' });
+      const [user] = await users.get({ _id: recoveryUserId }, '+password');
+      expect(await comparePasswords('1234', user.password)).toBe(true);
     });
 
-    it('should delete the resetPassword', done => {
-      passwordRecoveriesModel
-        .get({ key: expectedKey })
-        .then(response => {
-          expect(response.length).toBe(1);
-          return users.resetPassword({ key: expectedKey, password: '1234' });
-        })
-        .then(() => passwordRecoveriesModel.get({ key: expectedKey }))
-        .then(response => {
-          expect(response.length).toBe(0);
-          done();
-        })
-        .catch(catchErrors(done));
+    it('should delete the resetPassword', async () => {
+      const response = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(response.length).toBe(1);
+      await users.resetPassword({ key: expectedKey, password: '1234' });
+      const response2 = await passwordRecoveriesModel.get({ key: expectedKey });
+      expect(response2.length).toBe(0);
     });
   });
 
   describe('delete()', () => {
-    it('should delete the user', done => {
-      users
-        .delete(userId, { _id: 'another_user' })
-        .then(() => users.getById(userId))
-        .then(user => {
-          expect(user).toBe(null);
-          done();
-        });
+    it('should delete the user', async () => {
+      await users.delete(userId, { _id: 'another_user' });
+      const user = await users.getById(userId);
+      expect(user).toBe(null);
     });
 
-    it('should not allow to delete self', done => {
-      users
-        .delete(userId.toString(), { _id: userId })
-        .then(() => {
-          done.fail('should throw an error');
-        })
-        .catch(error => {
-          expect(error).toEqual(createError('Can not delete yourself', 403));
-          return users.getById(userId);
-        })
-        .then(user => {
-          expect(user).not.toBe(null);
-          done();
-        });
+    it('should not allow to delete self', async () => {
+      try {
+        await users.delete(userId.toString(), { _id: userId });
+        throw new Error('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Can not delete yourself', 403));
+        const user = await users.getById(userId);
+        expect(user).not.toBe(null);
+      }
     });
 
-    it('should not allow to delete the last user', async done => {
+    it('should not allow to delete the last user', async () => {
       await users.delete(userToDelete.toString(), { _id: 'someone' });
       await users.delete(recoveryUserId.toString(), { _id: 'someone' });
       try {
         await users.delete(userId.toString(), { _id: 'someone' });
-        done.fail('should throw an error');
+        throw new Error('should throw an error');
       } catch (error) {
         expect(error).toEqual(createError('Can not delete last user', 403));
         const user = await users.getById(userId);
@@ -671,7 +606,6 @@ describe('Users', () => {
           role: 'admin',
           username: 'username',
         });
-        done();
       }
     });
 

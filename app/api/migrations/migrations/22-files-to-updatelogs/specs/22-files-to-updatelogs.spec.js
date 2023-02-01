@@ -7,7 +7,7 @@ const query = (collectionName, queryObject = {}, select = {}) =>
 
 describe('migration files-to-updatelogs', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
   });
 

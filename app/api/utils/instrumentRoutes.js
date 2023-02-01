@@ -3,7 +3,7 @@
 import { validation } from 'api/utils';
 
 const createSpy = (key, resolve) =>
-  jasmine.createSpy(key).and.callFake((...args) => {
+  jest.fn().mockImplementation((...args) => {
     resolve(`${key}:${args.join(',')}`);
   });
 
@@ -29,7 +29,7 @@ const executeRoute = (
   app = {},
   runRoute = true
 ) => {
-  const args = app[method].calls.allArgs().find(a => a[0] === routePath);
+  const args = app[method].mock.calls.find(a => a[0] === routePath);
   if (!args) {
     throw new Error(`Route ${method.toUpperCase()} ${routePath} is not defined`);
   }
@@ -51,7 +51,7 @@ const executeRoute = (
     res.sendFile = createSpy('sendFile', resolve);
     res.send = createSpy('send', resolve);
 
-    res.json = jasmine.createSpy('json').and.callFake(response => {
+    res.json = jest.fn().mockImplementation(response => {
       if (statusCode) {
         response.status = statusCode;
       }
@@ -89,9 +89,17 @@ const executeRoute = (
 };
 
 export default (route, io) => {
-  const app = jasmine.createSpyObj('app', ['get', 'post', 'delete', 'use', 'options']);
+  const app = {
+    get: jest.fn(),
+    post: jest.fn(),
+    delete: jest.fn(),
+    user: jest.fn(),
+    options: jest.fn(),
+    use: jest.fn(),
+  };
+
   const originalValidateRequest = validation.validateRequest;
-  spyOn(validation, 'validateRequest').and.callFake(schema => schema);
+  jest.spyOn(validation, 'validateRequest').mockImplementation(schema => schema);
   route(app, io);
   validation.validateRequest = originalValidateRequest;
 

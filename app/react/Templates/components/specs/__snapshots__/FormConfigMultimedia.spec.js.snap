@@ -109,7 +109,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
         <Connect(Translate)
           translationKey="Multimedia fill description"
         >
-          will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
+          will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
         </Connect(Translate)>
       </p>
     </div>
@@ -231,7 +231,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
         <Connect(Translate)
           translationKey="Multimedia fill description"
         >
-          will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
+          will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
         </Connect(Translate)>
       </p>
     </div>
@@ -454,7 +454,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
         <Connect(Translate)
           translationKey="Multimedia fill description"
         >
-          will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
+          will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
         </Connect(Translate)>
       </p>
     </div>
@@ -589,7 +589,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
         <Connect(Translate)
           translationKey="Multimedia fill description"
         >
-          will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur.
+          will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
         </Connect(Translate)>
       </p>
     </div>
