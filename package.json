@@ -124,7 +124,7 @@
     "enzyme-adapter-react-16": "^1.15.3",
     "express": "^4.17.3",
     "express-http-proxy": "^1.6.2",
-    "express-prom-bundle": "^6.5.0",
+    "express-prom-bundle": "^6.6.0",
     "express-session": "1.17.3",
     "filesize": "^10.0.6",
     "flag-icon-css": "^4.1.7",
