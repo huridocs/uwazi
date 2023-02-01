@@ -22,6 +22,8 @@ export { IXExtractorModel };
 
 /*
 TODO: flows to consider
+this:
+  delete related models and suggestions when deleted
 property:
     update: when updating property name, update this as well,
     delete when deleting a property from a template, remove the template, if it is there
