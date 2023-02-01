@@ -224,7 +224,6 @@ export const EntitySuggestions = ({
 
     // @ts-ignore
     const selection = entity.__extractedMetadata?.selections[0];
-    console.log(selection);
     if (selection.selection.text !== '') {
       // There was a label
       selectedFlatRows[0].values.state = getWrappedSuggestionState(
