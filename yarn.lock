@@ -7074,10 +7074,10 @@ express-http-proxy@^1.6.2:
     es6-promise "^4.1.1"
     raw-body "^2.3.0"
 
-express-prom-bundle@^6.5.0:
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/express-prom-bundle/-/express-prom-bundle-6.5.0.tgz#cdf28b29907618cae933ed14d5b727f7404e810b"
-  integrity sha512-paFAm0FK7TV1Ln6Blh9edDt2mJ4Pk6Py/fjhZDMcoMHENYryBjCpnXDXuCu8NE1kkvp58IrPcAAkNeNqdvZnnw==
+express-prom-bundle@^6.6.0:
+  version "6.6.0"
+  resolved "https://registry.yarnpkg.com/express-prom-bundle/-/express-prom-bundle-6.6.0.tgz#9c33c1bd1478d70e3961a53aed2d17f15ef821ca"
+  integrity sha512-tZh2P2p5a8/yxQ5VbRav011Poa4R0mHqdFwn9Swe/obXDe5F0jY9wtRAfNYnqk4LXY7akyvR/nrvAHxQPWUjsQ==
   dependencies:
     on-finished "^2.3.0"
     url-value-parser "^2.0.0"
