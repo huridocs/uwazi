@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
 import { swaggerDocument } from '../app/swagger';
