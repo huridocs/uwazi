@@ -10,6 +10,7 @@ import { elasticClient } from 'api/search/elastic';
 import { propertyTypes } from 'shared/propertyTypes';
 import * as generatedIdPropertyAutoFiller from 'api/entities/generatedIdPropertyAutoFiller';
 
+import { spyOnEmit } from 'api/eventsbus/eventTesting';
 import templates from '../templates';
 
 import fixtures, {
@@ -28,6 +29,7 @@ import fixtures, {
   select3id,
   select4id,
 } from './fixtures/fixtures.js';
+import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
@@ -113,6 +115,40 @@ describe('templates', () => {
       expect(
         newMapping.body[elasticIndex].mappings.properties.metadata.properties.new_mapped_prop
       ).toBeDefined();
+    });
+
+    it('should emit an TemplateUpdatedEvent', async () => {
+      const emitSpy = spyOnEmit();
+      const template = {
+        _id: templateToBeEditedId,
+        name: 'template to be edited',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          {
+            name: 'other_prop',
+            label: 'other prop',
+            type: 'text',
+          },
+        ],
+        default: true,
+      };
+
+      const previousTemplate = await db.mongodb
+        .collection('templates')
+        .find({ _id: templateToBeEditedId })
+        .toArray();
+
+      await templates.save(template);
+
+      const currentTemplate = await db.mongodb
+        .collection('templates')
+        .find({ _id: templateToBeEditedId })
+        .toArray();
+
+      emitSpy.expectToEmitEvent(TemplateUpdatedEvent, {
+        before: previousTemplate[0],
+        after: currentTemplate[0],
+      });
     });
 
     describe('when property content changes', () => {
