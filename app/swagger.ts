@@ -1,7 +1,8 @@
+/* eslint-disable max-lines */
 import { entitySchema } from 'shared/types/entitySchema';
 import { PageSchema } from 'shared/types/pageSchema';
 
-export const swaggerDocument = {
+const swaggerDocument = {
   openapi: '3.0.0',
   info: {
     title: 'Uwazi API',
@@ -35,7 +36,6 @@ export const swaggerDocument = {
         tags: ['/v2/search'],
         summary: 'Search entities',
         description: 'Search entities',
-        'x-eov-unknown-query-parameters': false,
         parameters: [
           {
             in: 'query',
@@ -332,3 +332,5 @@ export const swaggerDocument = {
 };
 
 console.log(JSON.stringify(swaggerDocument));
+
+export { swaggerDocument };

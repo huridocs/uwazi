@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
 
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
@@ -17,6 +18,7 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
+
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -35,9 +37,7 @@ import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
 
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
-import swaggerUi from 'swagger-ui-express';
-import { entitySchema } from 'shared/types/entitySchema';
-import { swaggerDocument } from './swagget';
+import { swaggerDocument } from './swagger';
 
 mongoose.Promise = Promise;
 
