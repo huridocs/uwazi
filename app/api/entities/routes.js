@@ -28,17 +28,11 @@ function coerceValues(value, type, locale) {
   switch (type) {
     case 'date':
       dateSeconds = date.dateToSeconds(value, locale);
-      if (Number.isNaN(dateSeconds)) {
-        return { success: false };
-      }
-      return { success: true, value: dateSeconds };
+      return Number.isNaN(dateSeconds) ? { success: false } : { success: true, value: dateSeconds };
     case 'numeric':
       try {
         const numeric = Number.parseFloat(value);
-        if (!numeric) {
-          return { success: false };
-        }
-        return { success: true, value: numeric };
+        return !numeric ? { success: false } : { success: true, value: numeric };
       } catch (e) {
         return { success: false };
       }
