@@ -331,6 +331,4 @@ const swaggerDocument = {
   },
 };
 
-console.log(JSON.stringify(swaggerDocument));
-
 export { swaggerDocument };

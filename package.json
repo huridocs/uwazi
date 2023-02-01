@@ -20,6 +20,7 @@
     "check-types": "tsc --noEmit --pretty",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "emit-types": "node scripts/emitSchemaTypes.js & ./node_modules/.bin/openapi-typescript app/api/swagger.json --output app/api/swagger.d.ts",
+    "generate-swagger": "node scripts/run.js ./createSwaggerJson.ts",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
     "production-build": "./webpack/build.sh",
     "run-production": "NODE_ENV=production node server.js",
