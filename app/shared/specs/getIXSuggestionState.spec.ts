@@ -30,7 +30,7 @@ describe('getIXSuggestionState', () => {
       expect(state).toEqual('Empty / Label');
     });
 
-    it('should return empty when currentValue has value and suggestedValue, labeledValue are empty', () => {
+    it('should return empty / value when currentValue has value and suggestedValue, labeledValue are empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some value',
         date: 1234,
@@ -56,19 +56,6 @@ describe('getIXSuggestionState', () => {
       const state = getSuggestionState(values, 'text');
 
       expect(state).toEqual('Error');
-    });
-    it('should return empty when currentValue has value and suggestedValue, labeledValue are empty', () => {
-      const values = <SuggestionValues>{
-        currentValue: 'some value',
-        date: 1234,
-        labeledValue: '',
-        suggestedValue: '',
-        modelCreationDate: 2,
-      };
-
-      const state = getSuggestionState(values, 'text');
-
-      expect(state).toEqual('Empty / Value');
     });
 
     it('should return match / label when currentValue = suggestedValue, labeledValue is not empty', () => {

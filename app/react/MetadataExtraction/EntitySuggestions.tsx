@@ -172,11 +172,12 @@ export const EntitySuggestions = ({
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
     newCurrentValue: string | number | null
-  ) =>
-    getSuggestionState(
+  ) => {
+    return getSuggestionState(
       { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
       reviewedProperty.type
     );
+  };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
@@ -222,8 +223,9 @@ export const EntitySuggestions = ({
     const acceptedSuggestion = selectedFlatRows[0].original;
 
     // @ts-ignore
-    const selections = entity.__extractedMetadata?.selections;
-    if (selections.length) {
+    const selection = entity.__extractedMetadata?.selections[0];
+    console.log(selection);
+    if (selection.selection.text !== '') {
       // There was a label
       selectedFlatRows[0].values.state = getWrappedSuggestionState(
         { ...acceptedSuggestion, labeledValue: changedPropertyValue },
@@ -231,7 +233,7 @@ export const EntitySuggestions = ({
       );
     } else {
       selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, currentValue: changedPropertyValue, labeledValue: null },
+        { ...acceptedSuggestion, labeledValue: '' },
         changedPropertyValue
       );
     }
