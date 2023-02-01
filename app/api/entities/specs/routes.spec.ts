@@ -63,6 +63,80 @@ describe('entities routes', () => {
       new UserInContextMockFactory().mock(user);
     });
 
+    describe('coerce_values', () => {
+      describe('happy path', () => {
+        it('should coerce numbers from strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: '12' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 12,
+          });
+        });
+
+        it('should coerce dates from strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'November 2001', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 1004572800,
+          });
+        });
+
+        it('should coerce strings by removing new lines and breaks', async () => {
+          const valuesToCoerce = {
+            type: 'text',
+            value: `this is
+            a text`,
+            locale: 'en',
+          };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 'this is a text',
+          });
+        });
+      });
+
+      describe('sad path', () => {
+        it('should fail coercing numbers from invalid strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: 'error' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: false,
+          });
+        });
+
+        it('should fail coercing dates from invalid strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'whatever date', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: false,
+          });
+        });
+      });
+    });
+
     it('should return saved entity when passed as data (`legacy`) with its permissions', async () => {
       new UserInContextMockFactory().mock(user);
       const response: SuperTestResponse = await request(app)
