@@ -5,8 +5,9 @@ import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { search } from 'api/search';
+import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
+import db, { testingDB } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { FileType } from 'shared/types/fileType';
 import { registerEventListeners } from '../eventListeners';
@@ -16,6 +17,57 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
+const otherExtractedTemplateName = 'other_extracted_template';
+
+const fixtures = {
+  templates: [
+    fixturesFactory.template(notExtractedTemplateName, [
+      fixturesFactory.property('some_property', propertyTypes.text),
+    ]),
+    fixturesFactory.template(extractedTemplateName, [
+      fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+      fixturesFactory.property('extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+    ]),
+    fixturesFactory.template(otherExtractedTemplateName, [
+      fixturesFactory.property('extracted_property_1', propertyTypes.text),
+    ]),
+  ],
+  entities: [
+    fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
+    fixturesFactory.entity(
+      'ent2',
+      notExtractedTemplateName,
+      {},
+      { sharedId: 'entity with template not in config' }
+    ),
+  ],
+  settings: [
+    {
+      _id: db.id(),
+      languages: [{ key: 'en', default: true, label: 'English' }],
+      features: {
+        metadataExtraction: {
+          url: 'service-url',
+          templates: [
+            {
+              template: fixturesFactory.id(extractedTemplateName).toString(),
+              properties: ['extracted_property_1', 'extracted_property_2', 'title'],
+            },
+          ],
+        },
+      },
+    },
+  ],
+  ixextractors: [
+    fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+      extractedTemplateName,
+      otherExtractedTemplateName,
+    ]),
+    fixturesFactory.ixExtractor('extractor2', 'some_property', ['some_other_template']),
+  ],
+};
 
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
@@ -23,45 +75,7 @@ beforeAll(() => {
 
 beforeEach(async () => {
   jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
-  await db.setupFixturesAndContext({
-    templates: [
-      fixturesFactory.template(notExtractedTemplateName, [
-        fixturesFactory.property('some_property', propertyTypes.text),
-      ]),
-      fixturesFactory.template(extractedTemplateName, [
-        fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-        fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-        fixturesFactory.property('extracted_property_1', propertyTypes.text),
-        fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-      ]),
-    ],
-    entities: [
-      fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
-      fixturesFactory.entity(
-        'ent2',
-        notExtractedTemplateName,
-        {},
-        { sharedId: 'entity with template not in config' }
-      ),
-    ],
-    settings: [
-      {
-        _id: db.id(),
-        languages: [{ key: 'en', default: true, label: 'English' }],
-        features: {
-          metadataExtraction: {
-            url: 'service-url',
-            templates: [
-              {
-                template: fixturesFactory.id(extractedTemplateName).toString(),
-                properties: ['extracted_property_1', 'extracted_property_2', 'title'],
-              },
-            ],
-          },
-        },
-      },
-    ],
-  });
+  await db.setupFixturesAndContext(fixtures);
 });
 
 afterAll(async () => {
@@ -399,5 +413,42 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
 
     expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
     deleteSpy.mockRestore();
+  });
+});
+
+describe(`On ${TemplateUpdatedEvent.name}`, () => {
+  it('should delete the template from the extractor if the property not longer exists', async () => {
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+          ],
+        },
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'some_property', ['some_other_template']),
+    ]);
   });
 });

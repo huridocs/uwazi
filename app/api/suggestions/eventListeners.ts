@@ -12,6 +12,8 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
+import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
+import { IXExtractorModel } from 'api/services/informationextraction/IXExtractorModel';
 import { createDefaultSuggestionsForFiles } from './configurationManager';
 import { Suggestions } from './suggestions';
 
@@ -70,6 +72,17 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   eventsBus.on(FilesDeletedEvent, async ({ files }) => {
     await Suggestions.delete({ fileId: { $in: files.map(f => f._id) } });
+  });
+
+  eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {
+    const templatePropertyNames = after.properties?.map(p => p.name);
+    await IXExtractorModel.updateMany(
+      {
+        templates: after._id?.toString(),
+        property: { $nin: templatePropertyNames },
+      },
+      { $pull: { templates: after._id?.toString() } }
+    );
   });
 };
 
