@@ -164,7 +164,7 @@
     "pdfjs-dist": "2.15.349",
     "prom-client": "^14.1.0",
     "prop-types": "^15.8.1",
-    "qrcode.react": "^3.0.2",
+    "qrcode.react": "^3.1.0",
     "qs": "^6.10.1",
     "react": "16.14.0",
     "react-color": "^2.19.3",
