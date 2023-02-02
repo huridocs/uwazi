@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/react/ComponentLibrary/*.{js,jsx,ts,tsx}'],
+  content: [
+    './app/react/ComponentLibrary/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     extend: {},
   },
@@ -8,6 +11,7 @@ module.exports = {
     {
       preflight: false,
     },
+    // eslint-disable-next-line global-require
+    require('flowbite/plugin'),
   ],
-  prefix: 'tw-',
 };

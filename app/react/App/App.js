@@ -16,6 +16,7 @@ import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icons.scss';
 import './scss/styles.scss';
 import './styles/globals.css';
+import 'flowbite';
 
 const App = () => {
   const [showMenu, setShowMenu] = useState(false);
