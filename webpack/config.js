@@ -84,6 +84,10 @@ module.exports = production => {
           ],
         },
         {
+          test: /(main\.css|globals\.css)$/,
+          use: ['postcss-loader'],
+        },
+        {
           test: /world-countries/,
           loader: 'country-loader',
         },

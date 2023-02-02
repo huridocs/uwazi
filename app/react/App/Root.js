@@ -28,6 +28,9 @@ const googelFonts = (
     href="https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400,500,700|Roboto+Slab:100,300,400,700|Roboto:100,300,400,500,700,900"
   />
 );
+// const flowbite = (
+//   <link rel="stylesheet" href="https://unpkg.com/flowbite@latest/dist/flowbite.min.css" />
+// );
 
 const getFaviconURL = reduxData => {
   const favicon = reduxData.settings.collection.get('favicon');
@@ -57,6 +60,7 @@ export const headTag = (head, CSS, reduxData) => (
     )}
     {googelFonts}
     <link rel="shortcut icon" href={getFaviconURL(reduxData)} />
+    {/* {flowbite} */}
   </head>
 );
 

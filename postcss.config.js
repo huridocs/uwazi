@@ -1,6 +1,11 @@
 const tailwindcss = require('tailwindcss');
-const autoprefixer = require('autoprefixer');
+const prefixSelector = require('postcss-prefix-selector');
 
 module.exports = {
-  plugins: [tailwindcss('./tailwind.config.js'), autoprefixer],
+  plugins: [
+    tailwindcss('./tailwind.config.js'),
+    prefixSelector({
+      prefix: '.tw-content',
+    }),
+  ],
 };
