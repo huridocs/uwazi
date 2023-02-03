@@ -298,16 +298,16 @@ class InformationExtraction {
     await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
   };
 
-  trainModel = async (property: string) => {
-    const [model] = await IXModelsModel.get({ propertyName: property });
+  trainModel = async (extractorId: ObjectIdSchema) => {
+    const [model] = await IXModelsModel.get({ extractorId });
     if (model && !model.findingSuggestions) {
       model.findingSuggestions = true;
       await IXModelsModel.save(model);
     }
 
-    const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
+    const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(extractorId);
     const serviceUrl = await this.serviceUrl();
-    const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
+    const materialsSent = await this.materialsForModel(templates, extractorId, serviceUrl);
     if (!materialsSent) {
       if (model) {
         model.findingSuggestions = false;
@@ -319,18 +319,16 @@ class InformationExtraction {
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
-      params: { property_name: property },
+      params: { id: extractorId },
     });
 
-    await this.saveModelProcess(property);
+    await this.saveModelProcess(extractorId);
 
     return { status: 'processing_model', message: 'Training model' };
   };
 
-  status = async (property: string) => {
-    const [currentModel] = await ixmodels.get({
-      propertyName: property,
-    });
+  status = async (extractorId: ObjectIdSchema) => {
+    const [currentModel] = await ixmodels.get({ extractorId });
 
     if (!currentModel) {
       return { status: 'ready', message: 'Ready' };
@@ -341,7 +339,10 @@ class InformationExtraction {
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
-      const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
+      const suggestionStatus = await this.getSuggestionsStatus(
+        extractorId,
+        currentModel.creationDate
+      );
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
@@ -352,9 +353,9 @@ class InformationExtraction {
     return { status: 'ready', message: 'Ready' };
   };
 
-  stopModel = async (propertyName: string) => {
+  stopModel = async (extractorId: ObjectIdSchema) => {
     const res = await IXModelsModel.db.findOneAndUpdate(
-      { propertyName },
+      { extractorId },
       { $set: { findingSuggestions: false } },
       {}
     );
@@ -375,19 +376,17 @@ class InformationExtraction {
   };
 
   saveModelProcess = async (
-    property: string,
+    extractorId: ObjectIdSchema,
     status: ModelStatus = ModelStatus.processing,
     findingSuggestions = true
   ) => {
-    const [currentModel] = await ixmodels.get({
-      propertyName: property,
-    });
+    const [currentModel] = await ixmodels.get({ extractorId });
 
     await ixmodels.save({
       ...currentModel,
       status,
       creationDate: new Date().getTime(),
-      propertyName: property,
+      extractorId,
       findingSuggestions,
     });
   };
@@ -403,11 +402,11 @@ class InformationExtraction {
   processResults = async (message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
       const [currentModel] = await IXModelsModel.get({
-        propertyName: message.params!.property_name,
+        extractorId: message.params!.id,
       });
 
       if (message.task === 'create_model' && message.success) {
-        await this.saveModelProcess(message.params!.property_name, ModelStatus.ready);
+        await this.saveModelProcess(message.params!.id, ModelStatus.ready);
         await this.updateSuggestionStatus(message, currentModel);
       }
 
@@ -417,17 +416,11 @@ class InformationExtraction {
       }
 
       if (!currentModel.findingSuggestions) {
-        emitToTenant(
-          message.tenant,
-          'ix_model_status',
-          message.params!.property_name,
-          'ready',
-          'Canceled'
-        );
+        emitToTenant(message.tenant, 'ix_model_status', message.params!.id, 'ready', 'Canceled');
         return;
       }
 
-      await this.getSuggestions(message.params!.property_name);
+      await this.getSuggestions(message.params!.id);
     }, message.tenant);
   };
 

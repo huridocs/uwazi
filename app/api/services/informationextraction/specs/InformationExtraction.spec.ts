@@ -1,4 +1,6 @@
 /* eslint-disable max-lines */
+import { ObjectId } from 'mongodb';
+
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -11,7 +13,6 @@ import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
-import { ObjectId } from 'mongodb';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -200,7 +201,7 @@ describe('InformationExtraction', () => {
       const result = await informationExtraction.trainModel('property3');
 
       expect(result).toMatchObject({ status: 'error', message: 'No labeled data' });
-      const [model] = await IXModelsModel.get({ propertyName: 'property3' });
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
     });
   });
@@ -288,7 +289,7 @@ describe('InformationExtraction', () => {
     it('should stop the model when when the all the suggestions are done', async () => {
       await informationExtraction.getSuggestions('property1');
       await informationExtraction.getSuggestions('property1');
-      const [model] = await IXModelsModel.get({ propertyName: 'property1' });
+      const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(model.findingSuggestions).toBe(false);
     });
   });

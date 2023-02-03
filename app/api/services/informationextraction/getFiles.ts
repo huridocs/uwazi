@@ -122,8 +122,8 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
   return getFilesWithAggregations(filesWithEntityValue);
 }
 
-async function getFilesForSuggestions(property: string) {
-  const [currentModel] = await ixmodels.get({ propertyName: property });
+async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
+  const [currentModel] = await ixmodels.get({ extractorId });
 
   const suggestions = await IXSuggestionsModel.get(
     { propertyName: property, date: { $lt: currentModel.creationDate } },

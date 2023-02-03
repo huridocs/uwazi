@@ -18,13 +18,13 @@ const getModelCreationDateStage = () => [
     $lookup: {
       from: 'ixmodels',
       let: {
-        localFieldPropertyName: '$propertyName',
+        localFieldExtractorId: '$extractorId',
       },
       pipeline: [
         {
           $match: {
             $expr: {
-              $eq: ['$propertyName', '$$localFieldPropertyName'],
+              $eq: ['$extractorId', '$$localFieldExtractorId'],
             },
           },
         },
