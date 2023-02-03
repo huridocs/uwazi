@@ -13,7 +13,8 @@ import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { ensure } from 'shared/tsUtils';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
-import { IXExtractorModel } from 'api/services/informationextraction/IXExtractorModel';
+import ixextractors from 'api/services/informationextraction/ixextractors';
+import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { createDefaultSuggestionsForFiles } from './configurationManager';
 import { Suggestions } from './suggestions';
 
@@ -75,14 +76,15 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   });
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {
-    const templatePropertyNames = after.properties?.map(p => p.name);
-    await IXExtractorModel.updateMany(
-      {
-        templates: after._id?.toString(),
-        property: { $nin: templatePropertyNames },
-      },
-      { $pull: { templates: after._id?.toString() } }
+    const templatePropertyNames = after.properties?.map(p => p.name) || [];
+    await ixextractors.cleanupTemplateFromPropertyExtractors(
+      after._id!.toString(),
+      templatePropertyNames
     );
+  });
+
+  eventsBus.on(TemplateDeletedEvent, async ({ templateId }) => {
+    await ixextractors.cleanupTemplateFromPropertyExtractors(templateId, []);
   });
 };
 

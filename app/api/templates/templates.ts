@@ -14,6 +14,7 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
@@ -301,6 +302,8 @@ export default {
     await translations.deleteContext(_id);
     await this.removePropsWithNonexistentId(_id);
     await model.delete(_id);
+
+    await applicationEventsBus.emit(new TemplateDeletedEvent({ templateId: _id }));
 
     return template;
   },

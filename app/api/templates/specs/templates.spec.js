@@ -30,6 +30,7 @@ import fixtures, {
   select4id,
 } from './fixtures/fixtures.js';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
+import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
@@ -530,6 +531,14 @@ describe('templates', () => {
 
       await templates.delete({ _id: templateToBeDeleted });
       expect(translations.deleteContext).toHaveBeenCalledWith(templateToBeDeleted);
+    });
+
+    it(`should emit a ${TemplateDeletedEvent.name} event`, async () => {
+      const emitSpy = spyOnEmit();
+
+      await templates.delete({ _id: templateToBeDeleted });
+
+      emitSpy.expectToEmitEvent(TemplateDeletedEvent, { template: templateToBeDeleted });
     });
 
     it('should throw an error when there is documents using it', async () => {

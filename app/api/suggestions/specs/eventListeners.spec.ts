@@ -5,6 +5,7 @@ import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { search } from 'api/search';
+import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { testingDB } from 'api/utils/testing_db';
@@ -65,7 +66,11 @@ const fixtures = {
       extractedTemplateName,
       otherExtractedTemplateName,
     ]),
-    fixturesFactory.ixExtractor('extractor2', 'some_property', ['some_other_template']),
+    fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+      extractedTemplateName,
+      otherExtractedTemplateName,
+    ]),
+    fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
   ],
 };
 
@@ -436,6 +441,46 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
           properties: [
             fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
             fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+          ],
+        },
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    ]);
+  });
+
+  it('should delete the template from the extractor if the property changed names', async () => {
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
             fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
           ],
         },
@@ -446,9 +491,35 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
 
     expect(extractors).toEqual([
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        extractedTemplateName,
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    ]);
+  });
+});
+
+describe(`On ${TemplateDeletedEvent.name}`, () => {
+  it('should delete the template from the extractor if the property not longer exists', async () => {
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
     ]);
   });
 });

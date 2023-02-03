@@ -60,4 +60,16 @@ export default {
     });
     return updated;
   },
+  cleanupTemplateFromPropertyExtractors: async (
+    templateId: string,
+    propertyNamesToKeep: string[]
+  ) => {
+    await model.updateMany(
+      {
+        templates: templateId,
+        property: { $nin: propertyNamesToKeep },
+      },
+      { $pull: { templates: templateId } }
+    );
+  },
 };
