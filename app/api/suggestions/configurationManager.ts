@@ -108,6 +108,10 @@ const createDefaultSuggestionsForFiles = async (
           language,
           fileId: file._id,
           entityId: file.entity,
+          entityTemplate:
+            typeof template.template === 'string'
+              ? template.template
+              : template.template.toString(),
           propertyName,
           status: 'ready',
           error: '',

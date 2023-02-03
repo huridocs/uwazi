@@ -78,6 +78,7 @@ const fixtures: DBFixture = {
   ixsuggestions: [
     {
       entityId: 'shared1',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       suggestedValue: 'Red Robin',
       segment: 'Red Robin, a variation on the traditional Robin persona.',
@@ -89,6 +90,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared1',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: 'Red Robin',
       segment: 'Red Robin, a variation on the traditional Robin persona.',
@@ -100,6 +102,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared1',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       suggestedValue: 'HCT-04-CR-SC-0074',
       segment: 'Robin Rojo, una variante del Robin tradicional',
@@ -111,6 +114,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared2',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
       suggestedValue: 'NOT_READY',
       segment: 'Red Robin, a variation on the traditional Robin persona.',
@@ -123,6 +127,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F2'),
       entityId: 'shared2',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
       suggestedValue: 'scientific knowledge',
       segment: 'he relies on his own scientific knowledge',
@@ -136,6 +141,7 @@ const fixtures: DBFixture = {
       _id: shared2AgeSuggestionId,
       fileId: factory.id('F2'),
       entityId: 'shared2',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       suggestedValue: '20',
       segment: 'is aged 20',
@@ -149,6 +155,7 @@ const fixtures: DBFixture = {
       _id: suggestionId,
       fileId: factory.id('F3'),
       entityId: 'shared2',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
       suggestedValue: 'scientific knowledge es',
       segment: 'el confía en su propio conocimiento científico',
@@ -160,6 +167,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared3',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       suggestedValue: 'Alfred Pennyworth',
       segment: "Batman's butler, Alfred Pennyworth",
@@ -171,6 +179,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared3',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: 'Alfred 67 years old',
@@ -182,6 +191,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared4',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'title',
       suggestedValue: 'Joker',
       segment: ' Joker is a homicidal psychopath',
@@ -193,6 +203,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared4',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       suggestedValue: null,
       segment: 'Joker age is 45',
@@ -204,6 +215,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared3',
+      entityTemplate: personTemplateId.toString(),
       propertyName: 'age',
       suggestedValue: 24,
       segment: 'Alfred 67 years old processing',
@@ -215,6 +227,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared5',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'title',
       fileId: factory.id('Fshared5').toString(),
       suggestedValue: 'Poison Ivy',
@@ -227,6 +240,7 @@ const fixtures: DBFixture = {
     },
     {
       entityId: 'shared5',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'age',
       fileId: factory.id('Fshared5').toString(),
       suggestedValue: 25,
@@ -240,6 +254,7 @@ const fixtures: DBFixture = {
     {
       _id: suggestionSharedId6Title,
       entityId: 'shared6',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'title',
       suggestedValue: 'Penguin',
       segment: 'The Penguin is a Gotham City mobster.',
@@ -252,6 +267,7 @@ const fixtures: DBFixture = {
     {
       _id: suggestionSharedId6Enemy,
       entityId: 'shared6',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: 'Batman',
       segment: 'Enemy: Batman',
@@ -265,6 +281,7 @@ const fixtures: DBFixture = {
       _id: suggestionSharedId6EnemyEs,
       fileId: factory.id('F4'),
       entityId: 'shared6',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: '',
       segment: 'Enemy: Batman',
@@ -278,6 +295,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F4'),
       _id: testingDB.id(),
       entityId: 'shared6',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: '',
       segment: 'Enemy: Batman',
@@ -291,6 +309,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F5'),
       _id: testingDB.id(),
       entityId: 'shared7',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'first_encountered',
       suggestedValue: '',
       segment: 'Some text',
@@ -304,6 +323,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F5'),
       _id: testingDB.id(),
       entityId: 'shared7',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'first_encountered',
       suggestedValue: 1654732800,
       segment: 'Some text',
@@ -317,6 +337,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F5'),
       _id: testingDB.id(),
       entityId: 'shared7',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'first_encountered',
       suggestedValue: 1234,
       segment: 'Some text',
@@ -330,6 +351,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F6'),
       _id: testingDB.id(),
       entityId: 'shared8',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'first_encountered',
       suggestedValue: 1654732800,
       segment: 'Some text',
@@ -343,6 +365,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F6'),
       _id: testingDB.id(),
       entityId: 'shared8',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: '',
       segment: 'Some text',
@@ -356,6 +379,7 @@ const fixtures: DBFixture = {
       fileId: factory.id('F8'),
       _id: testingDB.id(),
       entityId: 'shared9',
+      entityTemplate: heroTemplateId.toString(),
       propertyName: 'enemy',
       suggestedValue: 'Some text',
       segment: 'Some text',
@@ -404,7 +428,7 @@ const fixtures: DBFixture = {
       title: 'Batman es',
       language: 'es',
       metadata: { super_powers: [{ value: 'conocimiento científico' }], age: [{ value: 12 }] },
-      template: factory.id('template1'),
+      template: personTemplateId,
     },
     {
       _id: testingDB.id(),

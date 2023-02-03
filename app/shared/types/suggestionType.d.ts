@@ -48,6 +48,7 @@ export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
   extractorId: ObjectIdSchema;
+  entityTemplate: string;
   fileId?: ObjectIdSchema;
   propertyName: string;
   suggestedValue: PropertyValueSchema;
@@ -94,7 +95,7 @@ export interface IXSuggestionsStatsQuery {
 export interface IXSuggestionsFilter {
   language?: string;
   extractorId?: string;
-  state?:
+  states?: (
     | 'Match / Label'
     | 'Mismatch / Label'
     | 'Match / Value'
@@ -105,5 +106,7 @@ export interface IXSuggestionsFilter {
     | 'Empty / Value'
     | 'Error'
     | 'Processing'
-    | 'Mismatch / Empty';
+    | 'Mismatch / Empty'
+  )[];
+  entityTemplates?: string[];
 }

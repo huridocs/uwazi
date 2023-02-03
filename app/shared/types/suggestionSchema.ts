@@ -30,6 +30,7 @@ export const IXSuggestionSchema = {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
     extractorId: objectIdSchema,
+    entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -43,7 +44,15 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'extractorId', 'suggestedValue', 'segment', 'language'],
+  required: [
+    'propertyName',
+    'entityId',
+    'extractorId',
+    'entityTemplate',
+    'suggestedValue',
+    'segment',
+    'language',
+  ],
 };
 
 export const EntitySuggestionSchema = {
@@ -92,7 +101,8 @@ export const SuggestionsQueryFilterSchema = {
   properties: {
     language: { type: 'string' },
     extractorId: { type: 'string' },
-    state: { type: 'string', enum: Object.values(SuggestionState) },
+    states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
+    entityTemplates: { type: 'array', items: { type: 'string' } },
   },
   required: ['propertyName'],
 };

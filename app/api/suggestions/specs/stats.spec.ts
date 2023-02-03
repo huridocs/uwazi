@@ -9,6 +9,7 @@ const fixturesFactory = getFixturesFactory();
 const suggestionBase = {
   entityId: '',
   propertyName: 'age',
+  entityTemplate: fixturesFactory.id('template').toString(),
   extractorId: fixturesFactory.id('age_extractor'),
   suggestedValue: '',
   segment: '',

@@ -188,6 +188,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F1'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
       extractorId: factory.id('prop1extractor'),
@@ -200,6 +201,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F3'),
       entityId: 'A3',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
       extractorId: factory.id('prop1extractor'),
@@ -212,6 +214,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
@@ -224,6 +227,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
@@ -236,6 +240,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
@@ -248,6 +253,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
@@ -260,6 +266,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',

@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-lines */
+import Immutable from 'immutable';
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -47,7 +48,10 @@ describe('EntitySuggestions', () => {
   const renderComponent = (property = reviewedProperty) => {
     ({ renderResult } = renderConnectedContainer(
       <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
-      () => defaultState
+      () => ({
+        ...defaultState,
+        templates: Immutable.fromJS([]),
+      })
     ));
   };
 
@@ -152,30 +156,6 @@ describe('EntitySuggestions', () => {
     });
   });
 
-  describe('State filter', () => {
-    beforeEach(async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
-        Promise.resolve(suggestionsData)
-      );
-    });
-    it('should retrieve suggestions data when state filter changed', async () => {
-      await act(async () => {
-        await renderComponent();
-        const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
-        fireEvent.change(within(header).getByRole('combobox'), {
-          target: { value: SuggestionState.empty },
-        });
-      });
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: {
-          filter: { state: SuggestionState.empty, propertyName: 'other_title' },
-          page: { size: 100, number: 1 },
-        },
-        headers: {},
-      });
-    });
-  });
-
   describe('date property', () => {
     const dateProperty: PropertySchema = {
       name: 'fecha',
@@ -188,7 +168,14 @@ describe('EntitySuggestions', () => {
       expectedSuggestionCell: string
     ) => {
       spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
-        Promise.resolve({ suggestions: [suggestion], totalPages: 1 })
+        Promise.resolve({
+          suggestions: [suggestion],
+          totalPages: 1,
+          aggregations: {
+            template: [],
+            state: [],
+          },
+        })
       );
       await act(async () => {
         await renderComponent(dateProperty);
@@ -313,7 +300,14 @@ describe('EntitySuggestions', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
         spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
-          Promise.resolve({ suggestions: [{ ...dateSuggestion }], totalPages: 1 })
+          Promise.resolve({
+            suggestions: [{ ...dateSuggestion }],
+            totalPages: 1,
+            aggregations: {
+              template: [],
+              state: [],
+            },
+          })
         );
         await act(async () =>
           renderComponent({

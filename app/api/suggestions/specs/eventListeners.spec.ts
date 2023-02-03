@@ -1,3 +1,4 @@
+import entities from 'api/entities';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -8,9 +9,10 @@ import { search } from 'api/search';
 import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db, { testingDB } from 'api/utils/testing_db';
+import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { FileType } from 'shared/types/fileType';
+import { UserRole } from 'shared/types/userSchema';
 import { registerEventListeners } from '../eventListeners';
 import { Suggestions } from '../suggestions';
 
@@ -18,9 +20,17 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
+const extractedTemplate2Name = 'extracted_template2';
+
 const otherExtractedTemplateName = 'other_extracted_template';
 
-const fixtures = {
+const adminUser = {
+  username: 'admin',
+  role: UserRole.ADMIN,
+  email: 'user@test.com',
+};
+
+const fixtures: DBFixture = {
   templates: [
     fixturesFactory.template(notExtractedTemplateName, [
       fixturesFactory.property('some_property', propertyTypes.text),
@@ -33,6 +43,8 @@ const fixtures = {
     ]),
     fixturesFactory.template(otherExtractedTemplateName, [
       fixturesFactory.property('extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2_2', propertyTypes.numeric),
     ]),
   ],
   entities: [
@@ -42,6 +54,15 @@ const fixtures = {
       notExtractedTemplateName,
       {},
       { sharedId: 'entity with template not in config' }
+    ),
+  ],
+  files: [
+    fixturesFactory.file('entfile', 'entity for new file', 'document', 'entfile.pdf'),
+    fixturesFactory.file(
+      'entfile2',
+      'entity with template not in config',
+      'document',
+      'entfile2.pdf'
     ),
   ],
   settings: [
@@ -69,6 +90,50 @@ const fixtures = {
       otherExtractedTemplateName,
     ]),
     fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+  ],
+  ixsuggestions: [
+    {
+      status: 'ready',
+      entityId: 'entity for new file',
+      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+      language: 'en',
+      fileId: fixturesFactory.id('entfile'),
+      propertyName: 'extracted_property_1',
+      extractorId: fixturesFactory.id('extractor1'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value',
+    },
+    {
+      status: 'ready',
+      entityId: 'entity for new file',
+      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+      language: 'en',
+      fileId: fixturesFactory.id('entfile'),
+      propertyName: 'extracted_property_2',
+      extractorId: fixturesFactory.id('extractor2'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value',
+    },
+    {
+      status: 'ready',
+      entityId: 'entity for new file',
+      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+      language: 'en',
+      fileId: fixturesFactory.id('entfile'),
+      propertyName: 'title',
+      extractorId: fixturesFactory.id('title_extractor'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value',
+    },
   ],
 };
 
@@ -188,6 +253,119 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     );
     expect(updateSpy).toHaveBeenCalled();
   });
+
+  it.each([
+    {
+      case: 'should not update suggestions if template is not changed',
+      sharedId: 'entity for new file',
+      newTemplate: fixturesFactory.id(extractedTemplateName),
+      expectedSuggestions: [
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_2',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'title',
+          fileId: fixturesFactory.id('entfile'),
+        },
+      ],
+    },
+    {
+      case: 'should update suggestions if template is changed from configured to not configured',
+      sharedId: 'entity for new file',
+      newTemplate: fixturesFactory.id(notExtractedTemplateName),
+      expectedSuggestions: [],
+    },
+    {
+      case: 'should create suggestions if template is changed from not configured to configured',
+      sharedId: 'entity with template not in config',
+      newTemplate: fixturesFactory.id(extractedTemplateName),
+      expectedSuggestions: [
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_2',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_2',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'title',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'title',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+      ],
+    },
+    {
+      case: 'should update suggestions if template is changed from configured to another configured',
+      sharedId: 'entity for new file',
+      newTemplate: fixturesFactory.id(extractedTemplate2Name),
+      expectedSuggestions: [
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          propertyName: 'extracted_property_2_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          propertyName: 'extracted_property_2_2',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          propertyName: 'title',
+          fileId: fixturesFactory.id('entfile'),
+        },
+      ],
+    },
+  ])('$case', async ({ sharedId, newTemplate, expectedSuggestions }) => {
+    const current = await entities.getById(sharedId, 'en');
+    const toSave = { ...current, template: newTemplate };
+    await entities.save(toSave, { user: adminUser, language: 'en' });
+    const allSuggestions =
+      (await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({}, { sort: { propertyName: 1 } })
+        .toArray()) || [];
+    expect(allSuggestions).toHaveLength(expectedSuggestions.length);
+    expect(allSuggestions).toMatchObject(expectedSuggestions);
+  });
 });
 
 describe(`On ${EntityDeletedEvent.name}`, () => {
@@ -238,6 +416,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
@@ -250,6 +429,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
@@ -262,6 +442,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
       {
         date: expect.any(Number),
         entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',

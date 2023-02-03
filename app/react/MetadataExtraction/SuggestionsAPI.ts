@@ -7,6 +7,7 @@ const getSuggestions = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('suggestions', requestParams);
   return {
     suggestions: response.suggestions,
+    aggregations: response.aggregations,
     totalPages: response.totalPages,
   };
 };

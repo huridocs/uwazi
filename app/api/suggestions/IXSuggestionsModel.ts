@@ -16,6 +16,7 @@ mongoSchema.index({ entityId: 1 });
 mongoSchema.index({ fileId: 1 });
 mongoSchema.index({ extractorId: 1, entityId: 1, fileId: 1 });
 mongoSchema.index({ extractorId: 1, date: 1, state: -1 });
+mongoSchema.index({ extractorId: 1, entityTemplate: 1, state: 1 });
 
 const IXSuggestionsModel = instanceModel<IXSuggestionType>('ixsuggestions', mongoSchema);
 

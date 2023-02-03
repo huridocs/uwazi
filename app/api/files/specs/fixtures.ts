@@ -160,6 +160,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'sharedId1',
+      entityTemplate: templateId.toString(),
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 1',
@@ -172,6 +173,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'sharedId1',
+      entityTemplate: templateId.toString(),
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 2',
@@ -184,6 +186,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'restrictedSharedId',
+      entityTemplate: templateId.toString(),
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 1',
@@ -196,6 +199,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'restrictedSharedId',
+      entityTemplate: templateId.toString(),
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 2',
