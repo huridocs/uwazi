@@ -289,7 +289,7 @@
     "@typescript-eslint/parser": "5.39.0",
     "assets-webpack-plugin": "7.1.1",
     "babel-jest": "^29.4.1",
-    "babel-loader": "9.0.0",
+    "babel-loader": "9.1.2",
     "babel-plugin-module-resolver": "5.0.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "canvas": "^2.10.2",
