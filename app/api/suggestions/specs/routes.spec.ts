@@ -7,6 +7,7 @@ import { search } from 'api/search';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import {
+  factory,
   fixtures,
   heroTemplateId,
   personTemplateId,
@@ -408,11 +409,13 @@ describe('suggestions routes', () => {
         .send([superPowerPayload, heroPayload])
         .expect(200);
       const superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
 
       expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
-      const enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      const enemySugg = await IXSuggestionsModel.get({
+        extractorId: factory.id('enemy_extractor'),
+      });
       expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
         expectedHeroSuggestions
       );
@@ -426,20 +429,20 @@ describe('suggestions routes', () => {
       await request(app).post('/api/suggestions/configurations').send([heroPayload]).expect(200);
 
       let superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject([]);
-      let enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      let enemySugg = await IXSuggestionsModel.get({ extractorId: factory.id('enemy_extractor') });
       expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
         expectedHeroSuggestions
       );
 
       await request(app).post('/api/suggestions/configurations').send([]).expect(200);
       superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject([]);
-      enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      enemySugg = await IXSuggestionsModel.get({ extractorId: factory.id('enemy_extractor') });
       expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([]);
     });
 
@@ -449,18 +452,18 @@ describe('suggestions routes', () => {
         .send([superPowerPayload])
         .expect(200);
       let superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
-      let enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      let enemySugg = await IXSuggestionsModel.get({ extractorId: factory.id('enemy_extractor') });
       expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject([]);
 
       await request(app).post('/api/suggestions/configurations').send([heroPayload]).expect(200);
       superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject([]);
-      enemySugg = await IXSuggestionsModel.get({ propertyName: 'enemy' });
+      enemySugg = await IXSuggestionsModel.get({ extractorId: factory.id('enemy_extractor') });
       expect(advancedSort(enemySugg, { property: 'entityId' })).toMatchObject(
         expectedHeroSuggestions
       );
@@ -472,11 +475,11 @@ describe('suggestions routes', () => {
         .send([superPowerPayload])
         .expect(200);
       let superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
       let ageSugg = await IXSuggestionsModel.get(
-        { propertyName: 'age' },
+        { extractorId: factory.id('age_extractor') },
         {},
         { sort: { language: 1 } }
       );
@@ -484,11 +487,11 @@ describe('suggestions routes', () => {
 
       await request(app).post('/api/suggestions/configurations').send([agePayload]).expect(200);
       superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject([]);
       ageSugg = await IXSuggestionsModel.get(
-        { propertyName: 'age' },
+        { extractorId: factory.id('age_extractor') },
         {},
         { sort: { language: 1 } }
       );
@@ -501,11 +504,11 @@ describe('suggestions routes', () => {
         .send([superPowerPayload])
         .expect(200);
       let superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
       let ageSugg = await IXSuggestionsModel.get(
-        { propertyName: 'age' },
+        { extractorId: factory.id('age_extractor') },
         {},
         { sort: { language: 1 } }
       );
@@ -521,11 +524,11 @@ describe('suggestions routes', () => {
         ])
         .expect(200);
       superPowerSugg = await IXSuggestionsModel.get({
-        propertyName: 'super_powers',
+        extractorId: factory.id('super_powers_extractor'),
       });
       expect(superPowerSugg).toMatchObject(expectedSuperPowerSuggestion);
       ageSugg = await IXSuggestionsModel.get(
-        { propertyName: 'age' },
+        { extractorId: factory.id('age_extractor') },
         {},
         { sort: { language: 1 } }
       );

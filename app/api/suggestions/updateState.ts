@@ -71,6 +71,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
           error: 1,
           date: 1,
           propertyName: 1,
+          extractorId: 1,
         },
       },
     ])

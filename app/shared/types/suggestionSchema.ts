@@ -29,6 +29,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    extractorId: objectIdSchema,
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
     suggestedValue: propertyValueSchema,
@@ -42,7 +43,7 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'suggestedValue', 'segment', 'language'],
+  required: ['propertyName', 'entityId', 'extractorId', 'suggestedValue', 'segment', 'language'],
 };
 
 export const EntitySuggestionSchema = {
@@ -53,6 +54,7 @@ export const EntitySuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    extractorId: { type: 'string', minLength: 1 },
     sharedId: { type: 'string', minLength: 1 },
     fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
@@ -72,6 +74,7 @@ export const EntitySuggestionSchema = {
     'propertyName',
     'entityTitle',
     'entityId',
+    'extractorId',
     'sharedId',
     'fileId',
     'suggestedValue',
@@ -88,7 +91,7 @@ export const SuggestionsQueryFilterSchema = {
   additionalProperties: false,
   properties: {
     language: { type: 'string' },
-    propertyName: { type: 'string' },
+    extractorId: { type: 'string' },
     state: { type: 'string', enum: Object.values(SuggestionState) },
   },
   required: ['propertyName'],
@@ -117,7 +120,7 @@ export const IXSuggestionsStatsQuerySchema = {
   additionalProperties: false,
   definitions: { SuggestionsQueryFilterSchema },
   properties: {
-    propertyName: { type: 'string' },
+    extractorId: { type: 'string' },
   },
-  required: ['propertyName'],
+  required: ['extractorId'],
 };

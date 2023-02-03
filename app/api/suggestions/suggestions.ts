@@ -110,6 +110,7 @@ const Suggestions = {
           entityId: '$entity._id',
           sharedId: '$entity.sharedId',
           entityTitle: '$entity.title',
+          extractorId: 1,
           fileId: 1,
           language: 1,
           propertyName: 1,

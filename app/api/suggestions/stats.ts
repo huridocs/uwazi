@@ -1,3 +1,4 @@
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
@@ -19,10 +20,10 @@ const addCountsOf = (groups: Groups, _states: SuggestionState[]) => {
   return groups.buckets.filter(g => states.has(g._id)).reduce(addCount, 0);
 };
 
-const getGroups = async (propertyName: string): Promise<Groups> =>
+const getGroups = async (extractorId: ObjectIdSchema): Promise<Groups> =>
   IXSuggestionsModel.db
     .aggregate([
-      { $match: { propertyName } },
+      { $match: { extractorId } },
       {
         $facet: {
           buckets: [

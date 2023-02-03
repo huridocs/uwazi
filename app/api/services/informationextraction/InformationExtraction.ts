@@ -5,7 +5,6 @@
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
-import { ObjectId } from 'mongodb';
 import { storage } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -40,7 +39,7 @@ import ixextractors from './ixextractors';
 
 type RawSuggestion = {
   tenant: string;
-  property_name: string;
+  id: string;
   xml_file_name: string;
   text: string;
   segment_text: string;
@@ -181,6 +180,7 @@ class InformationExtraction {
   saveSuggestions = async (message: ResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
+    const [extractor] = await ixextractors.get({ _id: message.params?.id });
 
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
@@ -199,7 +199,7 @@ class InformationExtraction {
 
         const [currentSuggestion] = await IXSuggestionsModel.get({
           entityId: entity.sharedId,
-          propertyName: rawSuggestion.property_name,
+          extractorId: rawSuggestion.id,
           fileId: segmentation.fileID,
         });
 
@@ -210,7 +210,7 @@ class InformationExtraction {
           templates,
           template => template.properties || []
         );
-        const property = allProps.find(p => p.name === rawSuggestion.property_name);
+        const property = allProps.find(p => p.name === extractor.property);
 
         const suggestedValue = stringToTypeOfProperty(
           rawSuggestion.text,
@@ -248,11 +248,11 @@ class InformationExtraction {
     );
   };
 
-  saveSuggestionProcess = async (file: FileWithAggregation, propertyName: string) => {
+  saveSuggestionProcess = async (file: FileWithAggregation, extractor: IXExtractorType) => {
     const entity = await this._getEntityFromFile(file);
     const [existingSuggestions] = await IXSuggestionsModel.get({
       entityId: entity.sharedId,
-      propertyName,
+      extractorId: extractor._id,
       fileId: file._id,
     });
     const suggestion: IXSuggestionType = {
@@ -260,7 +260,8 @@ class InformationExtraction {
       entityId: entity.sharedId!,
       fileId: file._id,
       language: languages.get(file.language, 'ISO639_1') || 'other',
-      propertyName,
+      extractorId: extractor._id,
+      propertyName: extractor.property,
       status: 'processing',
       date: new Date().getTime(),
     };

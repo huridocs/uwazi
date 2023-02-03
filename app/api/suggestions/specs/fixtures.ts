@@ -618,6 +618,7 @@ const fixtures: DBFixture = {
 };
 
 export {
+  factory,
   file2Id,
   file3Id,
   fixtures,

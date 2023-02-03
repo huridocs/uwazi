@@ -353,7 +353,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
       });
 
       expect(suggestions.length).toBe(2);
@@ -419,7 +419,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
       });
 
       expect(suggestions.length).toBe(2);
@@ -464,7 +464,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'failed',
-        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
       });
 
       expect(suggestions.length).toBe(1);
@@ -506,7 +506,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property2',
+        extractorId: factory.id('prop2extractor'),
       });
       expect(suggestions.length).toBe(4);
     });
@@ -544,7 +544,7 @@ describe('InformationExtraction', () => {
 
       const suggestionsText = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
       });
       expect(suggestionsText.length).toBe(1);
 
@@ -577,7 +577,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property2',
+        extractorId: factory.id('prop2extractor'),
         entityId: 'A3',
       });
 
@@ -606,7 +606,7 @@ describe('InformationExtraction', () => {
 
       const suggestions = await IXSuggestionsModel.get({
         status: 'ready',
-        propertyName: 'property1',
+        extractorId: factory.id('prop1extractor'),
       });
       expect(suggestions.length).toBe(1);
       expect(suggestions[0].language).toBe('en');

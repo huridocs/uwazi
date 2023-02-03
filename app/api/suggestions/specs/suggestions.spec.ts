@@ -5,6 +5,7 @@ import { EntitySuggestionType, IXSuggestionType } from 'shared/types/suggestionT
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
 import {
+  factory,
   file2Id,
   file3Id,
   fixtures,
@@ -15,8 +16,8 @@ import {
   shared2AgeSuggestionId,
 } from './fixtures';
 
-const getSuggestions = async (propertyName: string, size = 5) =>
-  Suggestions.get({ propertyName }, { page: { size, number: 1 } });
+const getSuggestions = async (extractorId: string, size = 5) =>
+  Suggestions.get({ extractorId }, { page: { size, number: 1 } });
 
 const findOneSuggestion = async (query: any): Promise<IXSuggestionType> =>
   db.mongodb
@@ -163,11 +164,15 @@ describe('suggestions', () => {
 
   describe('deleteByProperty()', () => {
     it('should delete all suggestions of a given property', async () => {
-      const suggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('title_extractor'),
+      });
       expect(suggestions.length).toBe(6);
 
       await Suggestions.deleteByProperty('title', personTemplateId.toString());
-      const newSuggestions = await IXSuggestionsModel.get({ propertyName: 'title' });
+      const newSuggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('title_extractor'),
+      });
       expect(newSuggestions.length).toBe(2);
     });
   });

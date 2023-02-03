@@ -126,7 +126,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   const [currentModel] = await ixmodels.get({ extractorId });
 
   const suggestions = await IXSuggestionsModel.get(
-    { propertyName: property, date: { $lt: currentModel.creationDate } },
+    { extractorId, date: { $lt: currentModel.creationDate } },
     'fileId',
     { limit: BATCH_SIZE }
   );
