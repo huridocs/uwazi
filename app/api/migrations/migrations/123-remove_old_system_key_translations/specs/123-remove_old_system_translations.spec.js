@@ -13,7 +13,7 @@ describe('remove old system translation migration', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(122);
+    expect(migration.delta).toBe(123);
   });
 
   it('should remove the keys that have been deleted', async () => {

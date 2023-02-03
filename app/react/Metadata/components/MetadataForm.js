@@ -238,6 +238,11 @@ function mapDispatchToProps(dispatch) {
 export const mapStateToProps = (state, ownProps) => {
   const entityModel = ownProps.model.split('.').reduce((o, i) => o[i], state);
   const { attachments, sharedId } = entityModel;
+  let progress = state.attachments.progress.get('NEW_ENTITY');
+  if (sharedId) {
+    const storeProgress = state.attachments.progress.get(sharedId);
+    progress = storeProgress < 100 ? storeProgress : undefined;
+  }
   return {
     thesauris: ownProps.thesauris ? ownProps.thesauris : state.thesauris || Immutable.fromJS([]),
     template: ownProps.template
@@ -247,9 +252,7 @@ export const mapStateToProps = (state, ownProps) => {
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,
-    progress: sharedId
-      ? state.attachments.progress.get(sharedId)
-      : state.attachments.progress.get('NEW_ENTITY'),
+    progress,
   };
 };
 
