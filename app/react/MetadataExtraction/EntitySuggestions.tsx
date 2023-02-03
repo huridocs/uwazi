@@ -31,11 +31,13 @@ import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
+  languages: any[];
 }
 
 export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
+  languages,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
@@ -393,6 +395,7 @@ export const EntitySuggestions = ({
         <SuggestionAcceptanceModal
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
+          languages={languages}
           onClose={() => setAcceptingSuggestion(false)}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
