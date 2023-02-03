@@ -13403,10 +13403,10 @@ stdout-stream@^1.4.0:
   dependencies:
     readable-stream "^2.0.1"
 
-stopword@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/stopword/-/stopword-2.0.5.tgz#8f3a657480f084c9f3a84132f14b05b2d29e8842"
-  integrity sha512-MgmxgmVs0Uo9G4mMqRc/QBXdPePZUnVNYqnNiv8QdCXTqHmGRw36mrjToCeNxhu/7Ifa7RxAtd/KR/GLZdnN9g==
+stopword@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/stopword/-/stopword-2.0.6.tgz#976c4d03329ed9a1b24e762d6d2cad905f895f24"
+  integrity sha512-clZFHO0RruykROEweuDenBGNNsuQaQiU0edrXJxmZW4WmAOVjs0mp4B4MHQpYywvHOZnettQs2zWXB6t/nx6sw==
 
 stream-browserify@^3.0.0:
   version "3.0.0"
