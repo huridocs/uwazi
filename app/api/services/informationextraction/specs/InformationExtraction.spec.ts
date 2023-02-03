@@ -198,7 +198,7 @@ describe('InformationExtraction', () => {
     });
 
     it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
-      const result = await informationExtraction.trainModel('property3');
+      const result = await informationExtraction.trainModel(factory.id('prop3extractor'));
 
       expect(result).toMatchObject({ status: 'error', message: 'No labeled data' });
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
@@ -213,12 +213,14 @@ describe('InformationExtraction', () => {
         .mockImplementation(async () => Promise.resolve());
 
       await informationExtraction.processResults({
-        params: { extractorId: factory.id('prop1extractor') },
+        params: { id: factory.id('prop1extractor') },
         tenant: 'tenant1',
         task: 'create_model',
         success: true,
       });
-      expect(informationExtraction.getSuggestions).toHaveBeenCalledWith(factory.id('prop1extractor'));
+      expect(informationExtraction.getSuggestions).toHaveBeenCalledWith(
+        factory.id('prop1extractor')
+      );
       jest.clearAllMocks();
     });
   });
@@ -275,7 +277,9 @@ describe('InformationExtraction', () => {
 
     it('should create the suggestions placeholder with status processing', async () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
-      const suggestions = await IXSuggestionsModel.get({ extractorId: factory.id('prop1extractor') });
+      const suggestions = await IXSuggestionsModel.get({
+        extractorId: factory.id('prop1extractor'),
+      });
       expect(suggestions.length).toBe(2);
       expect(suggestions.find(s => s.entityId === 'A1')).toEqual(
         expect.objectContaining({
@@ -287,8 +291,8 @@ describe('InformationExtraction', () => {
     });
 
     it('should stop the model when when the all the suggestions are done', async () => {
-      await informationExtraction.getSuggestions('property1');
-      await informationExtraction.getSuggestions('property1');
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
+      await informationExtraction.getSuggestions(factory.id('prop1extractor'));
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
       expect(model.findingSuggestions).toBe(false);
     });
@@ -305,7 +309,7 @@ describe('InformationExtraction', () => {
         data_url: 'some/url',
         error_message: '',
         params: {
-          extractorId: factory.id('prop2extractor'),
+          id: factory.id('prop2extractor'),
         },
         tenant: 'tenant1',
         file_url: '',
@@ -316,7 +320,7 @@ describe('InformationExtraction', () => {
       expect(setupSockets.emitToTenant).toHaveBeenCalledWith(
         message.tenant,
         'ix_model_status',
-        message.params!.extractorId,
+        message.params!.id,
         'ready',
         'Canceled'
       );
@@ -340,7 +344,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F3', 'A3', 'eng', 'property1');
       await saveSuggestionProcess('F1', 'A1', 'eng', 'property1');
       await informationExtraction.processResults({
-        params: { property_name: 'property1' },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -406,7 +410,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F4', 'A1', 'eng', 'property1');
 
       await informationExtraction.processResults({
-        params: { property_name: 'property1' },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -450,7 +454,7 @@ describe('InformationExtraction', () => {
       ]);
 
       await informationExtraction.processResults({
-        params: { property_name: 'property1' },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: false,
@@ -481,11 +485,11 @@ describe('InformationExtraction', () => {
     it('should not store invalid suggestions for the field as ready', async () => {
       setIXServiceResults([
         {
-          property_name: 'property2',
+          id: factory.id('prop2extractor').toString(),
           text: '',
         },
         {
-          property_name: 'property2',
+          id: factory.id('prop2extractor').toString(),
           xml_file_name: 'documentC.xml',
           text: 'Not a valid date',
           segment_text: 'segment_text_2',
@@ -493,7 +497,7 @@ describe('InformationExtraction', () => {
       ]);
 
       await informationExtraction.processResults({
-        params: { property_name: 'property2' },
+        params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -523,7 +527,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F1', 'A1', 'eng', 'property4');
 
       await informationExtraction.processResults({
-        params: { property_name: 'property1' },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -531,7 +535,7 @@ describe('InformationExtraction', () => {
       });
 
       await informationExtraction.processResults({
-        params: { property_name: 'property4' },
+        params: { id: factory.id('prop4extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -564,7 +568,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F3', 'A3', 'eng', 'property2');
 
       await informationExtraction.processResults({
-        params: { property_name: 'property2' },
+        params: { id: factory.id('prop2extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,
@@ -593,7 +597,7 @@ describe('InformationExtraction', () => {
       await saveSuggestionProcess('F5', 'A5', 'eng', 'property1');
 
       await informationExtraction.processResults({
-        params: { property_name: 'property1' },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
         success: true,

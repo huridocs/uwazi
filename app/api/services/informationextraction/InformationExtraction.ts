@@ -31,10 +31,12 @@ import {
   getFilesForSuggestions,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
 import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
+import ixextractors from './ixextractors';
 
 type RawSuggestion = {
   tenant: string;
@@ -78,7 +80,7 @@ class InformationExtraction {
   static sendXmlToService = async (
     serviceUrl: string,
     xmlName: string,
-    property: string,
+    extractorId: ObjectIdSchema,
     type: string
   ) => {
     const fileContent = await storage.fileContents(
@@ -86,13 +88,13 @@ class InformationExtraction {
       'document'
     );
     const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
-    const url = urljoin(serviceUrl, endpoint, tenants.current().name, property);
+    const url = urljoin(serviceUrl, endpoint, tenants.current().name, extractorId.toString());
     return request.uploadFile(url, xmlName, fileContent);
   };
 
   sendMaterials = async (
     files: FileWithAggregation[],
-    property: string,
+    extractor: IXExtractorType,
     serviceUrl: string,
     type = 'labeled_data'
   ) => {
@@ -105,18 +107,18 @@ class InformationExtraction {
         );
 
         const propertyLabeledData = file.extractedMetadata?.find(
-          labeledData => labeledData.name === property
+          labeledData => labeledData.name === extractor.property
         );
 
         if (!xmlExists || (type === 'labeled_data' && !propertyLabeledData)) {
           return;
         }
 
-        await InformationExtraction.sendXmlToService(serviceUrl, xmlName, property, type);
+        await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
 
         let data: any = {
           xml_file_name: xmlName,
-          property_name: property,
+          id: extractor._id.toString(),
           tenant: tenants.current().name,
           xml_segments_boxes: file.segmentation.segmentation?.paragraphs,
           page_width: file.segmentation.segmentation?.page_width,
@@ -137,7 +139,7 @@ class InformationExtraction {
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
-          await this.saveSuggestionProcess(file, property);
+          await this.saveSuggestionProcess(file, extractor._id);
         }
       })
     );
@@ -276,26 +278,27 @@ class InformationExtraction {
     return serviceUrl;
   };
 
-  getSuggestions = async (property: string) => {
-    const files = await getFilesForSuggestions(property);
+  getSuggestions = async (extractorId: ObjectIdSchema) => {
+    const files = await getFilesForSuggestions(extractorId);
+    const [extractor] = await ixextractors.get({ _id: extractorId });
     if (files.length === 0) {
-      await this.stopModel(property);
-      emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
+      await this.stopModel(extractorId);
+      emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
       return;
     }
 
-    await this.materialsForSuggestions(files, property);
+    await this.materialsForSuggestions(files, extractor);
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
-      params: { property_name: property },
+      params: { id: extractorId },
     });
   };
 
-  materialsForSuggestions = async (files: FileWithAggregation[], property: string) => {
+  materialsForSuggestions = async (files: FileWithAggregation[], extractor: IXExtractorType) => {
     const serviceUrl = await this.serviceUrl();
 
-    await this.sendMaterials(files, property, serviceUrl, 'prediction_data');
+    await this.sendMaterials(files, extractor, serviceUrl, 'prediction_data');
   };
 
   trainModel = async (extractorId: ObjectIdSchema) => {
@@ -305,9 +308,9 @@ class InformationExtraction {
       await IXModelsModel.save(model);
     }
 
-    const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(extractorId);
+    const [extractor] = await ixextractors.get({ _id: extractorId });
     const serviceUrl = await this.serviceUrl();
-    const materialsSent = await this.materialsForModel(templates, extractorId, serviceUrl);
+    const materialsSent = await this.materialsForModel(extractor, serviceUrl);
     if (!materialsSent) {
       if (model) {
         model.findingSuggestions = false;
@@ -366,12 +369,12 @@ class InformationExtraction {
     return { status: 'error', message: '' };
   };
 
-  materialsForModel = async (templates: ObjectIdSchema[], property: string, serviceUrl: string) => {
-    const files = await getFilesForTraining(templates, property);
+  materialsForModel = async (extractor: IXExtractorType, serviceUrl: string) => {
+    const files = await getFilesForTraining(extractor.templates, extractor.property);
     if (!files.length) {
       return false;
     }
-    await this.sendMaterials(files, property, serviceUrl);
+    await this.sendMaterials(files, extractor, serviceUrl);
     return true;
   };
 
@@ -389,14 +392,6 @@ class InformationExtraction {
       extractorId,
       findingSuggestions,
     });
-  };
-
-  getTemplatesWithProperty = async (property: string) => {
-    const settingsValues = await settings.get();
-    const metadataExtractionSettings = settingsValues.features?.metadataExtraction?.templates || [];
-    return metadataExtractionSettings
-      .filter(t => t.properties.includes(property) && t.template)
-      .map(t => new ObjectId(t.template));
   };
 
   processResults = async (message: ResultsMessage): Promise<void> => {
@@ -424,10 +419,10 @@ class InformationExtraction {
     }, message.tenant);
   };
 
-  getSuggestionsStatus = async (propertyName: string, modelCreationDate: number) => {
-    const totalSuggestions = await IXSuggestionsModel.count({ propertyName });
+  getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
+    const totalSuggestions = await IXSuggestionsModel.count({ extractorId });
     const processedSuggestions = await IXSuggestionsModel.count({
-      propertyName,
+      extractorId,
       date: { $gt: modelCreationDate },
     });
     return {
@@ -438,13 +433,13 @@ class InformationExtraction {
 
   updateSuggestionStatus = async (message: ResultsMessage, currentModel: IXModelType) => {
     const suggestionsStatus = await this.getSuggestionsStatus(
-      message.params!.property_name,
+      message.params!.id,
       currentModel.creationDate
     );
     emitToTenant(
       message.tenant,
       'ix_model_status',
-      message.params!.property_name,
+      message.params!.id,
       'processing_suggestions',
       '',
       suggestionsStatus
