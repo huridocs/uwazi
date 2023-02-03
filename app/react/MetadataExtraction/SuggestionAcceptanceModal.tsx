@@ -5,7 +5,7 @@ import { Translate } from 'app/I18N';
 export interface SuggestionAcceptanceModalProps {
   isOpen: boolean;
   propertyType: string;
-  languages: any[];
+  languages: any[] | undefined;
   onClose: () => void;
   onAccept: (allLanguages: boolean) => void;
 }
@@ -13,7 +13,7 @@ export interface SuggestionAcceptanceModalProps {
 export const SuggestionAcceptanceModal = ({
   isOpen,
   propertyType,
-  languages,
+  languages = [],
   onClose,
   onAccept,
 }: SuggestionAcceptanceModalProps) => {
