@@ -12,6 +12,7 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 const SuggestionComponent = ({
   templates,
   acceptSuggestion: acceptIXSuggestion,
+  languages,
 }: ComponentProps) => {
   const { propertyName } = useParams();
   console.log(propertyName);
@@ -30,6 +31,7 @@ const SuggestionComponent = ({
         <EntitySuggestions
           property={property.get(0)!.toJS()}
           acceptIXSuggestion={acceptIXSuggestion}
+          languages={languages}
         />
       </div>
     );
@@ -43,6 +45,7 @@ const SuggestionComponent = ({
 
 const mapStateToProps = (state: IStore) => ({
   templates: state.templates,
+  languages: state.settings.collection.get('languages')?.toArray() || [],
 });
 
 const mapDispatchToProps = {
