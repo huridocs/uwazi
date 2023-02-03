@@ -1,89 +1,65 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getStats } from '../stats';
 
+const fixturesFactory = getFixturesFactory();
+
+const suggestionBase = {
+  entityId: '',
+  propertyName: 'age',
+  extractorId: fixturesFactory.id('age_extractor'),
+  suggestedValue: '',
+  segment: '',
+  language: '',
+};
+
 const fixtures: DBFixture = {
   ixsuggestions: [
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelEmpty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelMatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelMismatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueEmpty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueMatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueMismatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.obsolete,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.empty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.emptyMismatch,
     },
   ],
@@ -169,11 +145,7 @@ describe('when the property exists', () => {
   ])('$state state should $action in accuracy', async ({ state, result }) => {
     const input = {
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state,
     };
     await testingEnvironment.setUp({ ixsuggestions: [input] });
@@ -205,11 +177,7 @@ describe('when the property exists', () => {
   ])('should return accuracy correctly', async ({ states }) => {
     const inputs = states.map(state => ({
       _id: testingDB.id(),
-      entityId: '',
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state,
     }));
     await testingEnvironment.setUp({ ixsuggestions: inputs });

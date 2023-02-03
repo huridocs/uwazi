@@ -51,17 +51,15 @@ const fixtures = {
       features: {
         metadataExtraction: {
           url: 'service-url',
-          templates: [
-            {
-              template: fixturesFactory.id(extractedTemplateName).toString(),
-              properties: ['extracted_property_1', 'extracted_property_2', 'title'],
-            },
-          ],
         },
       },
     },
   ],
   ixextractors: [
+    fixturesFactory.ixExtractor('title_extractor', 'title', [
+      extractedTemplateName,
+      otherExtractedTemplateName,
+    ]),
     fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
       extractedTemplateName,
       otherExtractedTemplateName,
@@ -244,6 +242,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         fileId: fixturesFactory.id('new file'),
         language: 'en',
         propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
         segment: '',
         status: 'ready',
         suggestedValue: '',
@@ -255,6 +254,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         fileId: fixturesFactory.id('new file'),
         language: 'en',
         propertyName: 'extracted_property_2',
+        extractorId: fixturesFactory.id('extractor2'),
         segment: '',
         status: 'ready',
         suggestedValue: '',
@@ -266,6 +266,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         fileId: fixturesFactory.id('new file'),
         language: 'en',
         propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
         segment: '',
         status: 'ready',
         suggestedValue: '',

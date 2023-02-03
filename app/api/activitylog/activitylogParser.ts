@@ -183,25 +183,13 @@ const entryValues: { [key: string]: EntryValue } = {
     related: helpers.loadSuggestionData,
     nameField: 'entityId',
     extra: data =>
-      ` updated property: ${data.propertyName}, with value: ${data.suggestedValue} . All languages: ${data.allLanguages}`,
+      // eslint-disable-next-line max-len
+      ` updated property: ${data.propertyName} on extractor ${data.extractorId}, with value: ${data.suggestedValue} . All languages: ${data.allLanguages}`,
   },
   'POST/api/suggestions/train': {
     desc: 'Information extraction training',
     method: Methods.Create,
-    extra: data => ` property ${data.property} `,
-  },
-  'POST/api/suggestions/configurations': {
-    desc: 'Saved template configurations for suggestions',
-    method: Methods.Update,
-    extra: data => {
-      const configs = Object.values(data);
-      const props = configs.reduce((acc: string[], curr: any) => {
-        const currProps = curr.properties;
-        return [...acc, ...currProps];
-      }, []);
-      const uniqueProps = Array.from(new Set(props));
-      return ` Properties changed: ${uniqueProps}`;
-    },
+    extra: data => ` property ${data.property} on extractor ${data.extractorId} `,
   },
   'POST/api/translations/populate': {
     desc: 'Reset default translation',
