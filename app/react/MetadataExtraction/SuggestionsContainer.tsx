@@ -31,7 +31,7 @@ const SuggestionComponent = ({
         <EntitySuggestions
           property={property.get(0)!.toJS()}
           acceptIXSuggestion={acceptIXSuggestion}
-          languages={languages}
+          languages={languages?.toArray()}
         />
       </div>
     );
@@ -45,7 +45,7 @@ const SuggestionComponent = ({
 
 const mapStateToProps = (state: IStore) => ({
   templates: state.templates,
-  languages: state.settings.collection.get('languages')?.toArray() || [],
+  languages: state.settings.collection.get('languages'),
 });
 
 const mapDispatchToProps = {

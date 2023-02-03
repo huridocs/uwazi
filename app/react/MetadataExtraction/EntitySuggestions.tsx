@@ -31,7 +31,7 @@ import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
-  languages: any[];
+  languages: any[] | undefined;
 }
 
 export const EntitySuggestions = ({
