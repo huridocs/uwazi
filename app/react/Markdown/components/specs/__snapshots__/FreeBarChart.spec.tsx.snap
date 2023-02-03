@@ -108,8 +108,10 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
       Button 2 label
     </button>
   </div>
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -142,7 +144,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -213,12 +214,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         content={
@@ -237,17 +232,11 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -271,6 +260,8 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -287,7 +278,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -315,8 +306,10 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
       Button 2 label
     </button>
   </div>
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -349,7 +342,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -420,12 +412,6 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         content={
@@ -444,17 +430,11 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -478,6 +458,8 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -494,7 +476,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -502,8 +484,10 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -536,7 +520,6 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -607,12 +590,6 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         content={
@@ -631,17 +608,11 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -665,6 +636,8 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -681,7 +654,7 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -689,8 +662,10 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
 <div
   className="BarChart "
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -723,7 +698,6 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -794,12 +768,6 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         content={
@@ -818,17 +786,11 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -852,6 +814,8 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -868,6 +832,6 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;

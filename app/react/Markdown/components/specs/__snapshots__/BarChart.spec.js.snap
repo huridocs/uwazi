@@ -12,8 +12,10 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -54,7 +56,6 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -125,12 +126,6 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -145,17 +140,11 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         filterNull={true}
         formatter={[Function]}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -179,6 +168,8 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -205,7 +196,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -213,8 +204,10 @@ exports[`BarChart Markdown component when excludeZero should render without zero
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -250,7 +243,6 @@ exports[`BarChart Markdown component when excludeZero should render without zero
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -321,12 +313,6 @@ exports[`BarChart Markdown component when excludeZero should render without zero
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -341,17 +327,11 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         filterNull={true}
         formatter={[Function]}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -375,6 +355,8 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -396,7 +378,7 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -466,8 +448,10 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -498,7 +482,6 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -569,12 +552,6 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -589,17 +566,11 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         filterNull={true}
         formatter={[Function]}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -623,6 +594,8 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -639,7 +612,7 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -647,8 +620,10 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -680,7 +655,6 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -751,12 +725,6 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -771,17 +739,11 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         filterNull={true}
         formatter={[Function]}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -805,6 +767,8 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -821,7 +785,7 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -829,8 +793,10 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
 <div
   className="BarChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={320}
+    width="100%"
   >
     <BarChart
       barCategoryGap="10%"
@@ -881,7 +847,6 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
       }
       reverseStackOrder={false}
       stackOffset="none"
-      syncMethod="index"
     >
       <XAxis
         allowDataOverflow={false}
@@ -952,12 +917,6 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
       />
       <Tooltip
         active={false}
-        allowEscapeViewBox={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -972,17 +931,11 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         filterNull={true}
         formatter={[Function]}
         isAnimationActive={true}
+        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
-        reverseDirection={
-          Object {
-            "x": false,
-            "y": false,
-          }
-        }
         separator=" : "
-        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -1006,6 +959,8 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         layout="vertical"
         legendType="rect"
         minPointSize={0}
+        onAnimationEnd={[Function]}
+        onAnimationStart={[Function]}
         stackId="unique"
         xAxisId={0}
         yAxisId={0}
@@ -1037,6 +992,6 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         />
       </Bar>
     </BarChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;

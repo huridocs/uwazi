@@ -4,7 +4,8 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
 <div
   className="GaugeChart custom-class"
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={300}
     width="100%"
   >
@@ -29,7 +30,6 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
-      syncMethod="index"
       width={600}
     >
       <Pie
@@ -98,7 +98,7 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
         </text>
       </g>
     </PieChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
 
@@ -114,7 +114,8 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
 <div
   className="GaugeChart "
 >
-  <ForwardRef
+  <ResponsiveContainer
+    debounce={0}
     height={110}
     width="100%"
   >
@@ -139,7 +140,6 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
-      syncMethod="index"
       width={220}
     >
       <Pie
@@ -200,6 +200,6 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
         />
       </g>
     </PieChart>
-  </ForwardRef>
+  </ResponsiveContainer>
 </div>
 `;
