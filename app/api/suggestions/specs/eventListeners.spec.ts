@@ -632,6 +632,10 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
     const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
 
     expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -641,9 +645,26 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       ]),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
     ]);
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toMatchObject([
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+      },
+    ]);
   });
 
-  it('should delete the template from the extractor if the property changed names', async () => {
+  it('should remove the template from the extractor if the property changed names', async () => {
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
         before: {
@@ -672,6 +693,10 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
     const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
 
     expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
         extractedTemplateName,
         otherExtractedTemplateName,
@@ -680,6 +705,23 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         otherExtractedTemplateName,
       ]),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    ]);
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toMatchObject([
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+      },
     ]);
   });
 });
@@ -695,6 +737,7 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
     const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
 
     expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [otherExtractedTemplateName]),
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
         otherExtractedTemplateName,
       ]),
@@ -703,5 +746,17 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
       ]),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
     ]);
+  });
+
+  it('should delete the suggestions related to the template', async () => {
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toEqual([]);
   });
 });

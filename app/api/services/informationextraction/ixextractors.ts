@@ -1,6 +1,7 @@
 import templates from 'api/templates';
 import { ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
 const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
@@ -64,12 +65,15 @@ export default {
     templateId: string,
     propertyNamesToKeep: string[]
   ) => {
-    await model.updateMany(
-      {
-        templates: templateId,
-        property: { $nin: propertyNamesToKeep },
-      },
-      { $pull: { templates: templateId } }
-    );
+    const extractorsToUpdate = await model.get({
+      templates: templateId,
+      property: { $nin: propertyNamesToKeep },
+    });
+
+    const extractorIds = extractorsToUpdate.map(extractor => extractor._id);
+
+    await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });
+
+    await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
   },
 };

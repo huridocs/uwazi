@@ -109,11 +109,11 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   });
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {
-    const templatePropertyNames = after.properties?.map(p => p.name) || [];
-    await ixextractors.cleanupTemplateFromPropertyExtractors(
-      after._id!.toString(),
-      templatePropertyNames
-    );
+    const templatePropertyNames = after.properties?.map(p => p.name) || ['title'];
+    await ixextractors.cleanupTemplateFromPropertyExtractors(after._id!.toString(), [
+      ...templatePropertyNames,
+      'title',
+    ]);
   });
 
   eventsBus.on(TemplateDeletedEvent, async ({ templateId }) => {
