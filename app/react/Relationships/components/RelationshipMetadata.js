@@ -14,6 +14,8 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { api as entitiesAPI } from 'app/Entities';
 import { RequestParams } from 'app/utils/RequestParams';
 import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
+import { AttachmentsList } from 'app/Attachments';
+import { FileList } from 'app/Attachments/components/FileList';
 import {
   unselectConnection,
   updateRelationshipEntityData,
@@ -111,7 +113,23 @@ class RelationshipMetadata extends Component {
     return this.props.entityBeingEdited ? (
       this.renderForm()
     ) : (
-      <ShowMetadata entity={this.props.entity} showTitle showType />
+      <>
+        <ShowMetadata entity={this.props.entity} showTitle showType />
+        <FileList
+          entity={this.props.entity}
+          files={this.props.entity.documents}
+          // storeKey={'documentView'}
+        />
+        <AttachmentsList
+          entity={this.props.entity}
+          attachments={this.props.entity.attachments}
+          // isTargetDoc={false}
+          // isDocumentAttachments={Boolean(doc.get('file'))}
+          // parentId={doc.get('_id')}
+          // parentSharedId={doc.get('sharedId')}
+          // storeKey={'documentView'}
+        />
+      </>
     );
   }
 
