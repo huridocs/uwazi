@@ -182,6 +182,7 @@ export const EntitySuggestions = ({
   };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
+    console.log(selectedFlatRows.length);
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
@@ -411,7 +412,10 @@ export const EntitySuggestions = ({
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
           languages={languages}
-          onClose={() => setAcceptingSuggestion(false)}
+          onClose={() => {
+            toggleAllRowsSelected(false);
+            setAcceptingSuggestion(false);
+          }}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
         <CancelFindingSuggestionModal
