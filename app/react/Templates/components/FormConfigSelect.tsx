@@ -108,8 +108,8 @@ const FormConfigSelectComponent = ({
         {warning && (
           <Warning inline>
             <Translate translationKey="Impact of property change warning">
-              All entities and documents that have already this property assigned will loose its
-              current value
+              By making this change, any values from the previous thesaurus already assigned to
+              entities will be lost.
             </Translate>
           </Warning>
         )}

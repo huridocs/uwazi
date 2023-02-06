@@ -19,11 +19,25 @@ const getClient = async () => {
 const getTranslationsFromDB = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
-  const collection = db.collection('translations');
-  const [firstTranslation] = await collection.find().toArray();
-  const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
+  const translations = await db.collection('translations').find().toArray();
   client.close();
-  return systemContext.values;
+  const locToSystemContext = {};
+  translations.forEach(tr => {
+    const context = tr.contexts.find(c => c.id === 'System');
+    const [keys, values, keyValues] = context.values.reduce(
+      (newValues, currentTranslation) => {
+        newValues[0].push(currentTranslation.key);
+        newValues[1].push(currentTranslation.value);
+        // eslint-disable-next-line no-param-reassign
+        newValues[2] = { ...newValues[2], [currentTranslation.key]: currentTranslation.value };
+        return newValues;
+      },
+      [[], [], {}]
+    );
+    locToSystemContext[tr.locale] = { keys, values, keyValues };
+  });
+
+  return locToSystemContext;
 };
 
 const getAvaiableLanguages = async () => {
@@ -32,6 +46,7 @@ const getAvaiableLanguages = async () => {
   const response = await fetch(url, {
     headers: {
       accept: 'application/json',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
     },
   });
   const languages = await response.json();
@@ -44,6 +59,7 @@ const getKeysFromRepository = async locale => {
   const response = await fetch(url, {
     headers: {
       accept: 'application/vnd.github.v4.raw',
+      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
     },
   });
   const fileContent = await response.text();
@@ -57,28 +73,34 @@ const getKeysFromRepository = async locale => {
 };
 
 const reportResult = (keys, message) => {
+  if (keys.length === 0) {
+    return;
+  }
+  process.stdout.write(`\x1b[0m\x1b[31m    ...   ${keys.length}\x1b[31m ${message}   ...\x1b[0m\n`);
   keys.forEach(text => {
-    process.stdout.write(`\x1b[36m ${text} \n`);
+    process.stdout.write(`\x1b[0m        .  ${text}     \n`);
   });
-
-  process.stdout.write(` === Found \x1b[31m ${keys.length} \x1b[0m ${message} === \n`);
 };
 
 const reportUntraslated = translations => {
-  translations.forEach(({ key, value }) => {
-    process.stdout.write(`\x1b[36m ${key}\x1b[37m ${value} \n`);
-  });
+  if (translations.length === 0) {
+    return;
+  }
 
   process.stdout.write(
-    ` === Found \x1b[31m ${translations.length} \x1b[0m possible untranslated === \n`
+    `\x1b[0m\x1b[31m    ...   ${translations.length} possible untranslated   ...\x1b[0m\n`
   );
+  translations.forEach(({ key, value }) => {
+    process.stdout.write(`\x1b[0m        .  ${key}\x1b[37m ${value}    \n`);
+  });
 };
 
-async function updatedTranslations(dbKeyValues, language) {
+async function updateTranslations(dbKeyValues, language, outdir) {
   // eslint-disable-next-line max-statements
   return new Promise(resolve => {
     const { locale, repositoryTranslations, obsoleteTranslations, missingTranslations } = language;
-    const fileName = path.resolve(__dirname, `${locale}-${new Date().toISOString()}.csv`);
+    const dirname = outdir || __dirname;
+    const fileName = path.resolve(dirname, `${locale}-${new Date().toISOString()}.csv`);
     const csvFile = fs.createWriteStream(fileName);
     const csvStream = csv.format({ headers: true });
     csvStream.pipe(csvFile).on('finish', csvFile.end);
@@ -106,7 +128,6 @@ async function processLanguage(keysFromDB, valuesFromDB, locale) {
   const unTranslated = repositoryTranslations.filter(translation =>
     unTranslatedValues.includes(translation.value)
   );
-
   const obsoleteTranslations = _.difference(keysInRepository, keysFromDB);
   const missingTranslations = _.difference(keysFromDB, keysInRepository);
   return {
@@ -117,19 +138,33 @@ async function processLanguage(keysFromDB, valuesFromDB, locale) {
     unTranslated,
   };
 }
+
+const reportByLanguage = language => {
+  const { obsoleteTranslations, missingTranslations, unTranslated: unTranslatedKeys } = language;
+  if (
+    obsoleteTranslations.length > 0 ||
+    missingTranslations.length > 0 ||
+    unTranslatedKeys.length > 0
+  ) {
+    process.stdout.write(`\x1b[7m ===  ${language.locale} === \x1b[0m\x1b[37m\n`);
+  }
+  reportResult(missingTranslations, 'missing keys ');
+  reportResult(obsoleteTranslations, 'possible obsolete translations ');
+  if (unTranslatedKeys.length > 0) {
+    process.stdout.write(
+      `\x1b[0m\x1b[31m    ...   ${unTranslatedKeys.length} untranslated    ...\x1b[0m\n`
+    );
+  }
+  return { obsolete: obsoleteTranslations.length, missing: missingTranslations.length };
+};
+
 // eslint-disable-next-line max-statements
-async function compareTranslations(locale, update) {
+async function compareTranslations(locale, update, outdir) {
   try {
     const dbTranslations = await getTranslationsFromDB();
-    const dbKeyValues = dbTranslations.reduce(
-      (accum, translation) => ({
-        ...accum,
-        [translation.key]: translation.value,
-      }),
-      {}
-    );
-    const keysFromDB = Object.keys(dbKeyValues);
-    const valuesFromDB = Object.values(dbKeyValues);
+    const keysFromDB = dbTranslations.en.keys;
+    const valuesFromDB = dbTranslations.en.values;
+    const dbKeyValues = dbTranslations.en.keyValues;
 
     const languages = locale ? [locale] : await getAvaiableLanguages();
     const result = await Promise.all(
@@ -139,46 +174,35 @@ async function compareTranslations(locale, update) {
     if (result.length) {
       if (locale) {
         const [{ obsoleteTranslations, missingTranslations, unTranslated }] = result;
-        reportResult(obsoleteTranslations, 'possible obsolete translations in the repository');
-        reportResult(missingTranslations, 'missing keys in the repository');
+        reportResult(obsoleteTranslations, 'possible obsolete translations ');
+        reportResult(missingTranslations, 'missing keys ');
         reportUntraslated(unTranslated);
+      } else {
+        const report = { obsolete: 0, missing: 0 };
+        await Promise.all(
+          result.map(async language => {
+            if (update) {
+              await updateTranslations(dbKeyValues, language, outdir);
+            }
+            const { obsolete, missing } = reportByLanguage(language);
+            report.obsolete += obsolete;
+            report.missing += missing;
+          })
+        );
+        if (report.obsolete > 0 || report.missing > 0) {
+          process.stdout.write(
+            // eslint-disable-next-line max-len
+            '\x1b[0m Run \x1b[7m sudo node ./scripts/compareTranslations.js --update --outdir=PATH \x1b[0m to generate files with updates for missing and obsolete keys. \n'
+          );
+          process.exit(1);
+        } else {
+          process.stdout.write('\x1b[32m All good! \x1b[0m\n');
+          process.exit(0);
+        }
       }
     }
-
-    const report = { obsolete: 0, missing: 0 };
-
-    await Promise.all(
-      result.map(async language => {
-        const {
-          obsoleteTranslations,
-          missingTranslations,
-          unTranslated: unTranslatedKeys,
-        } = language;
-        const obsolete = obsoleteTranslations.length;
-        const missing = missingTranslations.length;
-        const unTranslated = unTranslatedKeys.length;
-        if (update) {
-          await updatedTranslations(dbKeyValues, language);
-        }
-        if (!locale) {
-          process.stdout.write(
-            `\x1b[36m ===  ${language.locale} === 
-     \x1b[37m Obsolete: ${obsolete} \x1b[31m Missing ${missing}  \x1b[34m Untranslated ${unTranslated} \n`
-          );
-        }
-        report.obsolete += obsolete;
-        report.missing += missing;
-      })
-    );
-
-    if (report.obsolete > 0 || report.missing > 0) {
-      process.exit(1);
-    } else {
-      process.stdout.write('\x1b[32m All good! \x1b[0m\n');
-      process.exit(0);
-    }
   } catch (e) {
-    process.stdout.write(' === An error occurred === \n');
+    process.stdout.write(` === An error occurred === \n ${e}\n`);
   }
 }
 
@@ -190,18 +214,22 @@ yargs.command(
   'compare translation between DB and Github Repository',
   {
     locale: {
-      alias: 't',
+      alias: 'l',
       type: 'string',
     },
     update: {
-      alias: 't',
+      alias: 'u',
       type: 'boolean',
+    },
+    outdir: {
+      alias: 'o',
+      type: 'string',
     },
   },
   () =>
     new Promise(resolve => {
       setTimeout(async () => {
-        await compareTranslations(argv.locale, argv.update);
+        await compareTranslations(argv.locale, argv.update, argv.outdir);
         resolve();
       }, 3000);
     })

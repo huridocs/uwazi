@@ -115,7 +115,10 @@ describe('FormConfigSelect', () => {
         </Provider>
       );
 
-      const warning = screen.queryByText('All entities and documents that have', { exact: false });
+      const warning = screen.queryByText(
+        'By making this change, any values from the previous thesaurus',
+        { exact: false }
+      );
 
       expect(warning).toBeInTheDocument();
     });
