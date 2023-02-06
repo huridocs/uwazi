@@ -182,7 +182,6 @@ export const EntitySuggestions = ({
   };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
-    console.log(selectedFlatRows.length);
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
