@@ -30,27 +30,10 @@ Before anything else you will need to install the application dependencies:
 - **Yarn** https://yarnpkg.com/en/docs/install.
 - **pdftotext (Poppler)** tested to work on version 0.86 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
-and change some global settings:
-
-```
-$ npm config set scripts-prepend-node-path auto
-```
-
 # Production
 
-### Install/upgrade procedure
+[Install/upgrade procedure](./SELF_HOSTED_INSTRUCTIONS.md)
 
-1. Download and unpack the [latest stable](https://github.com/huridocs/uwazi/releases) code for production installs.
-2. Shutdown Uwazi if it is already running.
-3. `$ cd uwazi`.
-4. `$ yarn install` will download all node modules, it may take a while.
-5. `$ yarn blank-state` **important note**: the first time you run Uwazi, you will need to initialize the database with its default blank values. Do not run this command if you are upgrading existing projects as it will erase the entire database. Note that from this point on you need ElasticSearch and MongoDB running.
-6. `$ ./install.sh [destination_path]` if no `destination_path` is provided it will default to `./prod`.
-7. Start the server with `$ node [destination_path]/server.js`.
-
-By default, Uwazi runs on localhost on the port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
-
-It is advisable to create your own system service configuration. Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
 
 # Development
 

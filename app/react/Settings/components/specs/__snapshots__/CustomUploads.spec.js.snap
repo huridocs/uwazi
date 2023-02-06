@@ -268,6 +268,18 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                     </FontAwesomeIcon>
                   </Icon>
                 </Connect(Icon)>
+                <input
+                  multiple={true}
+                  onChange={[Function]}
+                  onClick={[Function]}
+                  style={
+                    Object {
+                      "display": "none",
+                    }
+                  }
+                  tabIndex={-1}
+                  type="file"
+                />
                 <button
                   className="upload-box_link"
                   type="button"
@@ -676,6 +688,18 @@ exports[`CustomUploads when upload on progress should render on progress feedbac
                     </FontAwesomeIcon>
                   </Icon>
                 </Connect(Icon)>
+                <input
+                  multiple={true}
+                  onChange={[Function]}
+                  onClick={[Function]}
+                  style={
+                    Object {
+                      "display": "none",
+                    }
+                  }
+                  tabIndex={-1}
+                  type="file"
+                />
                 <button
                   className="upload-box_link"
                   type="button"
