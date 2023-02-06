@@ -15,52 +15,6 @@ interface ISettingsTemplate {
   properties: string[];
 }
 
-const deleteSuggestionsNotConfigured = async (
-  currentSettingsTemplates: any[],
-  settingsTemplates: any[]
-) => {
-  const deletedTemplates = currentSettingsTemplates.filter(
-    set => !settingsTemplates.find((st: any) => st.template === set.template)
-  );
-
-  const deletedTemplateProps = currentSettingsTemplates
-    .map(currentTemplate => {
-      const currentTemplateId = currentTemplate.template;
-      const property: any = {};
-      const template = settingsTemplates.find((st: any) => st.template === currentTemplateId);
-      if (template) {
-        property.template = currentTemplateId;
-        property.properties = [];
-        currentTemplate.properties.forEach((prop: string) => {
-          if (!template.properties.includes(prop)) {
-            property.properties.push(prop);
-          }
-        });
-      }
-      return property;
-    })
-    .filter(prop => prop.template && prop.properties.length);
-
-  const deletedTemplatesAndDeletedTemplateProps = deletedTemplates.concat(deletedTemplateProps);
-
-  if (deletedTemplatesAndDeletedTemplateProps.length > 0) {
-    const deletedTemplateIds = deletedTemplatesAndDeletedTemplateProps.map(temps => temps.template);
-
-    const entitiesDoc = await entities.get({ template: { $in: deletedTemplateIds } }, 'sharedId');
-
-    const entitiesSharedIds = entitiesDoc.map((entity: any) => entity.sharedId);
-    const propNames: string[] = deletedTemplatesAndDeletedTemplateProps.reduce(
-      (acc, curr) => [...acc, ...curr.properties],
-      []
-    );
-    const uniquePropNames: string[] = [...new Set<string>(propNames)];
-
-    await IXSuggestionsModel.db.deleteMany({
-      $and: [{ entityId: { $in: entitiesSharedIds } }, { propertyName: { $in: uniquePropNames } }],
-    });
-  }
-};
-
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
 

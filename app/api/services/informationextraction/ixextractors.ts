@@ -1,8 +1,17 @@
-import templates from 'api/templates';
 import { ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
+
+import entitiesModel from 'api/entities/entitiesModel';
+import { files } from 'api/files/files';
+import settings from 'api/settings';
 import { Suggestions } from 'api/suggestions/suggestions';
+import templates from 'api/templates';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { FileType } from 'shared/types/fileType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { IXExtractorModel as model } from './IXExtractorModel';
+import languages from 'shared/languages';
 
 const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
   const usedTemplates = objectIndex(
@@ -29,6 +38,77 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
   });
 };
 
+const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
+
+const fetchEntitiesSharedIds = async (
+  template: ObjectIdSchema,
+  defaultLanguage: string,
+  batchSize = 2000
+) => {
+  const BATCH_SIZE = batchSize;
+  let query: any = {
+    template,
+    language: defaultLanguage,
+  };
+
+  const sharedIdLists: string[][] = [];
+
+  let fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
+  while (fetchedEntities.length) {
+    sharedIdLists.push(fetchedEntities.map(e => e.sharedId!));
+    query = {
+      ...query,
+      _id: { $gt: fetchedEntities[fetchedEntities.length - 1]._id },
+    };
+    // eslint-disable-next-line no-await-in-loop
+    fetchedEntities = await fetchEntitiesBatch(query, BATCH_SIZE);
+  }
+
+  return sharedIdLists.flat();
+};
+
+const createBlankSuggestionsForExtractor = async (
+  extractor: IXExtractorType,
+  batchSize?: number
+) => {
+  const { templates: extractorTemplates } = extractor;
+  const defaultLanguage = (await settings.getDefaultLanguage()).key;
+
+  const templatesPromises = extractorTemplates.map(async template => {
+    const entitiesSharedIds = await fetchEntitiesSharedIds(template, defaultLanguage, batchSize);
+
+    const fetchedFiles = await files.get(
+      { entity: { $in: entitiesSharedIds }, type: 'document' },
+      '_id entity language extractedMetadata'
+    );
+
+    const suggestionsToSave: IXSuggestionType[] = fetchedFiles
+      .filter(file => file.entity)
+      .map(file => {
+        const language = file.language
+          ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+          : defaultLanguage;
+        return {
+          language,
+          fileId: file._id,
+          entityId: file.entity!,
+          entityTemplate: typeof template === 'string' ? template : template.toString(),
+          extractorId: extractor._id,
+          propertyName: extractor.property,
+          status: 'ready',
+          error: '',
+          segment: '',
+          suggestedValue: '',
+          date: new Date().getTime(),
+        };
+      });
+    await Suggestions.saveMultiple(suggestionsToSave);
+  });
+
+  await Promise.all(templatesPromises);
+};
+
 export default {
   get: model.get.bind(model),
   get_all: async () => model.get({}),
@@ -45,6 +125,7 @@ export default {
       property,
       templates: templateIds,
     });
+    await createBlankSuggestionsForExtractor(saved);
     return saved;
   },
   update: async (id: string, name: string, property: string, templateIds: string[]) => {
