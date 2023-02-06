@@ -1,6 +1,4 @@
 /* eslint-disable max-lines */
-import { ObjectId } from 'mongodb';
-
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -13,6 +11,7 @@ import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
+import ixextractors from '../ixextractors';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -76,8 +75,10 @@ describe('InformationExtraction', () => {
     id: string,
     entity: string,
     language: string,
-    extractorId: ObjectId
+    extractorName: string
   ) => {
+    const extractorId = factory.id(extractorName);
+    const [extractor] = await ixextractors.get({ _id: extractorId });
     await informationExtraction.saveSuggestionProcess(
       {
         _id: factory.id(id),
@@ -86,7 +87,7 @@ describe('InformationExtraction', () => {
         segmentation: {},
         extractedMetadata: [],
       },
-      extractorId
+      extractor
     );
   };
 
@@ -341,8 +342,8 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await saveSuggestionProcess('F3', 'A3', 'eng', 'property1');
-      await saveSuggestionProcess('F1', 'A1', 'eng', 'property1');
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'prop1extractor');
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
       await informationExtraction.processResults({
         params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
@@ -406,8 +407,8 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await saveSuggestionProcess('F1', 'A1', 'other', 'property1');
-      await saveSuggestionProcess('F4', 'A1', 'eng', 'property1');
+      await saveSuggestionProcess('F1', 'A1', 'other', 'prop1extractor');
+      await saveSuggestionProcess('F4', 'A1', 'eng', 'prop1extractor');
 
       await informationExtraction.processResults({
         params: { id: factory.id('prop1extractor').toString() },
@@ -524,7 +525,7 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await saveSuggestionProcess('F1', 'A1', 'eng', 'property4');
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop4extractor');
 
       await informationExtraction.processResults({
         params: { id: factory.id('prop1extractor').toString() },
@@ -565,7 +566,7 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await saveSuggestionProcess('F3', 'A3', 'eng', 'property2');
+      await saveSuggestionProcess('F3', 'A3', 'eng', 'prop2extractor');
 
       await informationExtraction.processResults({
         params: { id: factory.id('prop2extractor').toString() },
@@ -594,7 +595,7 @@ describe('InformationExtraction', () => {
         },
       ]);
 
-      await saveSuggestionProcess('F5', 'A5', 'eng', 'property1');
+      await saveSuggestionProcess('F5', 'A5', 'eng', 'prop1extractor');
 
       await informationExtraction.processResults({
         params: { id: factory.id('prop1extractor').toString() },

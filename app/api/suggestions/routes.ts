@@ -101,7 +101,7 @@ export const suggestionsRoutes = (app: Application) => {
       },
     }),
     async (req: Request<{}, {}, {}, { propertyName: string }>, res, _next) => {
-      const stats = await Suggestions.getStats(req.query.propertyName);
+      const stats = await Suggestions.getStats(req.query.extractorId);
       res.json(stats);
     }
   );

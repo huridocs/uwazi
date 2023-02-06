@@ -58,8 +58,8 @@ const calcAccuracy = (groups: Groups) => {
   return total ? correct / total : 0;
 };
 
-const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
-  const groups = await getGroups(propertyName);
+const getStats = async (extractorId: string): Promise<SuggestionsStats> => {
+  const groups = await getGroups(extractorId);
 
   const labeled = addCountsOf(groups, [
     SuggestionState.labelMatch,

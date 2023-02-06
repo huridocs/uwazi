@@ -138,7 +138,7 @@ class InformationExtraction {
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
-          await this.saveSuggestionProcess(file, extractor._id);
+          await this.saveSuggestionProcess(file, extractor);
         }
       })
     );
