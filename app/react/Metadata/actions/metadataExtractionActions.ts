@@ -8,6 +8,17 @@ import { t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientFile } from 'app/istore';
 
+const getAndUpdateCoercedValue = async (params: RequestParams, model: string) => {
+  const { value: coercedValue, success } = await entitiesAPI.coerceValue(params);
+  if (!success) {
+    return notificationActions.notify(
+      t('System', 'Value cannot be transformed to the correct type', null, false),
+      'danger'
+    );
+  }
+  return formActions.change(model, coercedValue);
+};
+
 const updateSelection = (
   selection: { text: string; selectionRectangles: any[] },
   fieldName: string,
@@ -68,21 +79,24 @@ const updateFormField = async (
       value,
       type: 'date',
     });
-    const { value: coercedValue, success } = await entitiesAPI.coerceValue(requestParams);
-    if (!success) {
-      return notificationActions.notify(
-        t('System', 'Value cannot be transformed to date', null, false),
-        'danger'
-      );
-    }
-    return formActions.change(model, coercedValue);
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
-  if (fieldType === 'numeric' && Number.isNaN(Number.parseInt(value, 10))) {
-    return formActions.change(model, '0');
+  if (fieldType === 'numeric') {
+    const requestParams = new RequestParams({
+      locale,
+      value: value.trim(),
+      type: 'numeric',
+    });
+    return getAndUpdateCoercedValue(requestParams, model);
   }
 
-  return formActions.change(model, value);
+  const requestParams = new RequestParams({
+    locale,
+    value,
+    type: 'text',
+  });
+  return getAndUpdateCoercedValue(requestParams, model);
 };
 
 export { updateSelection, updateFormField, deleteSelection };
