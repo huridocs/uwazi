@@ -262,6 +262,8 @@
   margin: 0;
   padding: 15px;
   color: $c-grey-dark;
+  display: flex;
+  flex-direction: column;
 
   &:not(:last-child),
   .form-group:not(:last-child) & {
