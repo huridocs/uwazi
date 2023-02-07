@@ -1,9 +1,10 @@
+/* eslint-disable jest/no-focused-tests */
 import _ from 'lodash';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db from 'api/utils/testing_db';
+import db, { testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import ixextractors from '../ixextractors';
 
@@ -45,12 +46,15 @@ const fixtures = {
       fixtureFactory.property('enemy', 'text'),
     ]),
     fixtureFactory.template('animalTemplate', [fixtureFactory.property('kind', 'text')]),
+    fixtureFactory.template('plantTemplate', [fixtureFactory.property('kind', 'text')]),
   ],
   entities: [
     fixtureFactory.entity('shared1', 'animalTemplate', {}, { language: 'es' }),
     fixtureFactory.entity('shared1', 'animalTemplate', {}, { language: 'en' }),
     fixtureFactory.entity('shared2', 'personTemplate', {}, { language: 'es' }),
     fixtureFactory.entity('shared2', 'personTemplate', {}, { language: 'en' }),
+    fixtureFactory.entity('shared3', 'plantTemplate', {}, { language: 'es' }),
+    fixtureFactory.entity('shared3', 'plantTemplate', {}, { language: 'en' }),
   ],
   files: [
     fixtureFactory.file('F1', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
@@ -73,6 +77,55 @@ const fixtures = {
     ]),
     fixtureFactory.file('F3', 'shared1', 'document', 'documentA.pdf', 'eng'),
     fixtureFactory.file('F4', 'shared1', 'document', 'documentD.pdf', 'spa'),
+    fixtureFactory.file('F5', 'shared3', 'document', 'documentE.pdf', 'eng'),
+    fixtureFactory.file('F6', 'shared3', 'document', 'documentF.pdf', 'spa'),
+  ],
+  ixextractors: [
+    fixtureFactory.ixExtractor('existingExtractor', 'kind', ['animalTemplate', 'plantTemplate']),
+  ],
+  ixsuggestions: [
+    {
+      status: 'ready' as const,
+      entityId: 'shared1',
+      entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+      language: 'en',
+      fileId: fixtureFactory.id('F3'),
+      propertyName: 'kind',
+      extractorId: fixtureFactory.id('existingExtractor'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value' as const,
+    },
+    {
+      status: 'ready' as const,
+      entityId: 'shared1',
+      entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+      language: 'es',
+      fileId: fixtureFactory.id('F3'),
+      propertyName: 'kind',
+      extractorId: fixtureFactory.id('existingExtractor'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value' as const,
+    },
+    {
+      status: 'ready' as const,
+      entityId: 'shared3',
+      entityTemplate: fixtureFactory.id('plantTemplate').toString(),
+      language: 'en',
+      fileId: fixtureFactory.id('F5'),
+      propertyName: 'kind',
+      extractorId: fixtureFactory.id('existingExtractor'),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1675070647850,
+      state: 'Empty / Value' as const,
+    },
   ],
 };
 
@@ -202,5 +255,74 @@ describe('ixextractors', () => {
         expect(suggestions).toMatchObject(expectedSuggestions);
       }
     );
+  });
+
+  describe('update()', () => {
+    it('should delete the existing suggestions when removing a template and add an empty suggestion when adding a template', async () => {
+      await ixextractors.update(
+        fixtureFactory.id('existingExtractor').toString(),
+        'existingExtractor',
+        'kind',
+        [fixtureFactory.id('animalTemplate').toString()]
+      );
+
+      const [extractor] = await ixextractors.get({ name: 'existingExtractor' });
+      expect(extractor.templates).toEqual([fixtureFactory.id('animalTemplate')]);
+
+      let suggestions = await testingDB.mongodb
+        ?.collection('ixsuggestions')
+        .find({ extractorId: fixtureFactory.id('existingExtractor') }, { sort: { _id: 1 } })
+        .toArray();
+
+      expect(suggestions).toEqual([
+        expect.objectContaining({
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'en',
+        }),
+        expect.objectContaining({
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'es',
+        }),
+      ]);
+
+      await ixextractors.update(
+        fixtureFactory.id('existingExtractor').toString(),
+        'existingExtractor',
+        'kind',
+        [
+          fixtureFactory.id('animalTemplate').toString(),
+          fixtureFactory.id('plantTemplate').toString(),
+        ]
+      );
+
+      suggestions = await testingDB.mongodb
+        ?.collection('ixsuggestions')
+        .find({ extractorId: fixtureFactory.id('existingExtractor') }, { sort: { _id: 1 } })
+        .toArray();
+      expect(suggestions).toEqual([
+        expect.objectContaining({
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'en',
+        }),
+        expect.objectContaining({
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'es',
+        }),
+        expect.objectContaining({
+          entityId: 'shared3',
+          entityTemplate: fixtureFactory.id('plantTemplate').toString(),
+          language: 'en',
+        }),
+        expect.objectContaining({
+          entityId: 'shared3',
+          entityTemplate: fixtureFactory.id('plantTemplate').toString(),
+          language: 'es',
+        }),
+      ]);
+    });
   });
 });

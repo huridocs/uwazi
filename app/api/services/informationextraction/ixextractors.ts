@@ -8,10 +8,9 @@ import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
-import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
-import { IXExtractorModel as model } from './IXExtractorModel';
 import languages from 'shared/languages';
+import { IXExtractorModel as model } from './IXExtractorModel';
 
 const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
   const usedTemplates = objectIndex(
@@ -109,7 +108,7 @@ const createBlankSuggestionsForExtractor = async (
   await Promise.all(templatesPromises);
 };
 
-export default {
+const Extractors = {
   get: model.get.bind(model),
   get_all: async () => model.get({}),
   delete: async (_ids: string[]) => {
@@ -140,6 +139,25 @@ export default {
       property,
       templates: templateIds,
     });
+
+    const templatesRemoved = extractor.templates
+      .filter(templateId => !templateIds.includes(templateId.toString()))
+      .map(templateId => templateId.toString());
+
+    const templatesAdded = templateIds.filter(
+      templateId => !extractor.templates.find(template => template.toString() === templateId)
+    );
+
+    await Suggestions.delete({
+      entityTemplate: { $in: templatesRemoved },
+      extractorId: extractor._id,
+    });
+
+    if (templatesAdded.length) {
+      // This is not nice... need to find a clearer way
+      await createBlankSuggestionsForExtractor({ ...extractor, templates: templatesAdded });
+    }
+
     return updated;
   },
   cleanupTemplateFromPropertyExtractors: async (
@@ -158,3 +176,5 @@ export default {
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
   },
 };
+
+export default Extractors;
