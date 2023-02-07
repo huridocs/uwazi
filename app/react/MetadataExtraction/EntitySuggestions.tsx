@@ -411,7 +411,10 @@ export const EntitySuggestions = ({
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
           languages={languages}
-          onClose={() => setAcceptingSuggestion(false)}
+          onClose={() => {
+            toggleAllRowsSelected(false);
+            setAcceptingSuggestion(false);
+          }}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
         <CancelFindingSuggestionModal
