@@ -152,7 +152,7 @@
     "mime-types": "^2.1.35",
     "moment": "^2.29.4",
     "moment-timezone": "0.5.40",
-    "mongodb": "4.9.1",
+    "mongodb": "4.13.0",
     "mongoose": "6.6.5",
     "multer": "^1.4.5-lts.1",
     "node-uuid": "^1.4.7",
