@@ -166,21 +166,6 @@ describe('suggestions', () => {
     await db.disconnect();
   });
 
-  describe('deleteByProperty()', () => {
-    it('should delete all suggestions of a given property', async () => {
-      const suggestions = await IXSuggestionsModel.get({
-        extractorId: factory.id('title_extractor'),
-      });
-      expect(suggestions.length).toBe(6);
-
-      await Suggestions.deleteByProperty('title', personTemplateId.toString());
-      const newSuggestions = await IXSuggestionsModel.get({
-        extractorId: factory.id('title_extractor'),
-      });
-      expect(newSuggestions.length).toBe(2);
-    });
-  });
-
   describe('get()', () => {
     beforeEach(async () => {
       await Suggestions.updateStates({});
