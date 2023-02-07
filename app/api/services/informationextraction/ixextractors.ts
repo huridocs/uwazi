@@ -2,12 +2,14 @@ import { ObjectId } from 'mongodb';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files/files';
+import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
 import { Suggestions } from 'api/suggestions/suggestions';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import languages from 'shared/languages';
 import { IXExtractorModel as model } from './IXExtractorModel';
@@ -67,50 +69,56 @@ const fetchEntitiesSharedIds = async (
   return sharedIdLists.flat();
 };
 
-const createBlankSuggestions = async (
-  extractorId: ObjectIdSchema,
-  property: string,
-  extractorTemplates: ObjectIdSchema[],
+const getBlankSuggestion = (
+  file: EnforcedWithId<FileType>,
+  extractor: IXExtractorType,
+  template: ObjectIdSchema,
+  defaultLanguage: string
+) => ({
+  language: file.language
+    ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+    : defaultLanguage,
+  fileId: file._id,
+  entityId: file.entity!,
+  entityTemplate: typeof template === 'string' ? template : template.toString(),
+  extractorId: extractor._id,
+  propertyName: extractor.property,
+  status: 'ready' as 'ready',
+  error: '',
+  segment: '',
+  suggestedValue: '',
+  date: new Date().getTime(),
+});
+
+const createBlankSuggestionsForPartialExtractor = async (
+  extractor: IXExtractorType,
+  selectedTemplates: ObjectIdSchema[],
   batchSize?: number
 ) => {
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
+  const extractorTemplates = new Set(extractor.templates.map(t => t.toString()));
 
-  const templatesPromises = extractorTemplates.map(async template => {
-    const entitiesSharedIds = await fetchEntitiesSharedIds(template, defaultLanguage, batchSize);
+  const templatesPromises = selectedTemplates
+    .filter(template => extractorTemplates.has(template.toString()))
+    .map(async template => {
+      const entitiesSharedIds = await fetchEntitiesSharedIds(template, defaultLanguage, batchSize);
 
-    const fetchedFiles = await files.get(
-      { entity: { $in: entitiesSharedIds }, type: 'document' },
-      '_id entity language extractedMetadata'
-    );
+      const fetchedFiles = await files.get(
+        { entity: { $in: entitiesSharedIds }, type: 'document' },
+        '_id entity language extractedMetadata'
+      );
 
-    const suggestionsToSave: IXSuggestionType[] = fetchedFiles
-      .filter(file => file.entity)
-      .map(file => {
-        const language = file.language
-          ? languages.get(file.language, 'ISO639_1') || defaultLanguage
-          : defaultLanguage;
-        return {
-          language,
-          fileId: file._id,
-          entityId: file.entity!,
-          entityTemplate: typeof template === 'string' ? template : template.toString(),
-          extractorId,
-          propertyName: property,
-          status: 'ready',
-          error: '',
-          segment: '',
-          suggestedValue: '',
-          date: new Date().getTime(),
-        };
-      });
-    await Suggestions.saveMultiple(suggestionsToSave);
-  });
+      const suggestionsToSave: IXSuggestionType[] = fetchedFiles
+        .filter(file => file.entity)
+        .map(file => getBlankSuggestion(file, extractor, template, defaultLanguage));
+      await Suggestions.saveMultiple(suggestionsToSave);
+    });
 
   await Promise.all(templatesPromises);
 };
 
 const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType, batchSize?: number) =>
-  createBlankSuggestions(extractor._id, extractor.property, extractor.templates, batchSize);
+  createBlankSuggestionsForPartialExtractor(extractor, extractor.templates, batchSize);
 
 const Extractors = {
   get: model.get.bind(model),
@@ -159,7 +167,7 @@ const Extractors = {
     });
 
     if (templatesAdded.length) {
-      await createBlankSuggestions(extractor._id, extractor.property, templatesAdded);
+      await createBlankSuggestionsForPartialExtractor(updated, templatesAdded);
     }
 
     return updated;

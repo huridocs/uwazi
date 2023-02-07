@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-focused-tests */
 import _ from 'lodash';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -7,15 +6,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import ixextractors from '../ixextractors';
-
-/*
-config management flows:
-create: create empty suggestions  -- DONE
-update:
-  - add template: create empty suggestions
-  - remove template: delete related suggestions
-delete: delete related suggestions
-*/
 
 const fixtureFactory = getFixturesFactory();
 

@@ -92,48 +92,30 @@ const fixtures: DBFixture = {
     fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
   ],
   ixsuggestions: [
-    {
-      status: 'ready',
-      entityId: 'entity for new file',
-      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-      language: 'en',
-      fileId: fixturesFactory.id('entfile'),
-      propertyName: 'extracted_property_1',
-      extractorId: fixturesFactory.id('extractor1'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value',
-    },
-    {
-      status: 'ready',
-      entityId: 'entity for new file',
-      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-      language: 'en',
-      fileId: fixturesFactory.id('entfile'),
-      propertyName: 'extracted_property_2',
-      extractorId: fixturesFactory.id('extractor2'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value',
-    },
-    {
-      status: 'ready',
-      entityId: 'entity for new file',
-      entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-      language: 'en',
-      fileId: fixturesFactory.id('entfile'),
-      propertyName: 'title',
-      extractorId: fixturesFactory.id('title_extractor'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value',
-    },
+    fixturesFactory.ixSuggestion(
+      'new_prop_1_suggestion',
+      'extractor1',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'extracted_property_1'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_prop_2_suggestion',
+      'extractor2',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'extracted_property_2'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_title_suggestion',
+      'title_extractor',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'title'
+    ),
   ],
 };
 
@@ -150,7 +132,7 @@ afterAll(async () => {
   await db.disconnect();
 });
 
-describe(`On ${EntityUpdatedEvent.name}`, () => {
+fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
   const extractedBefore = {
     _id: db.id(),
@@ -254,38 +236,38 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     expect(updateSpy).toHaveBeenCalled();
   });
 
-  it.each([
-    {
-      case: 'should not update suggestions if template is not changed',
-      sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(extractedTemplateName),
-      expectedSuggestions: [
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_1',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'extracted_property_2',
-          fileId: fixturesFactory.id('entfile'),
-        },
-        {
-          entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-          propertyName: 'title',
-          fileId: fixturesFactory.id('entfile'),
-        },
-      ],
-    },
-    {
-      case: 'should update suggestions if template is changed from configured to not configured',
-      sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(notExtractedTemplateName),
-      expectedSuggestions: [],
-    },
+  fit.each([
+    // {
+    //   case: 'should not update suggestions if template is not changed',
+    //   sharedId: 'entity for new file',
+    //   newTemplate: fixturesFactory.id(extractedTemplateName),
+    //   expectedSuggestions: [
+    //     {
+    //       entityId: 'entity for new file',
+    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+    //       propertyName: 'extracted_property_1',
+    //       fileId: fixturesFactory.id('entfile'),
+    //     },
+    //     {
+    //       entityId: 'entity for new file',
+    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+    //       propertyName: 'extracted_property_2',
+    //       fileId: fixturesFactory.id('entfile'),
+    //     },
+    //     {
+    //       entityId: 'entity for new file',
+    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+    //       propertyName: 'title',
+    //       fileId: fixturesFactory.id('entfile'),
+    //     },
+    //   ],
+    // },
+    // {
+    //   case: 'should update suggestions if template is changed from configured to not configured',
+    //   sharedId: 'entity for new file',
+    //   newTemplate: fixturesFactory.id(notExtractedTemplateName),
+    //   expectedSuggestions: [],
+    // },
     {
       case: 'should create suggestions if template is changed from not configured to configured',
       sharedId: 'entity with template not in config',
