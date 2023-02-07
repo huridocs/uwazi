@@ -1,13 +1,14 @@
 import bodyParser from 'body-parser';
-import express, { Application, Request, Response, NextFunction, RequestHandler } from 'express';
-import { Response as SuperTestResponse } from 'supertest';
+import express, { Application, NextFunction, Request, RequestHandler, Response } from 'express';
 import * as OpenApiValidator from 'express-openapi-validator';
+import { Response as SuperTestResponse } from 'supertest';
 
+import { config } from 'api/config';
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
-import { config } from 'api/config';
+import { swaggerDocument } from '../../swagger';
 
 extendSupertest();
 
@@ -30,7 +31,7 @@ const setUpApp = (
 
   app.use(
     OpenApiValidator.middleware({
-      apiSpec: `${config.rootPath}/swagger.json`,
+      apiSpec: swaggerDocument,
       validateApiSpec: false,
       ignoreUndocumented: true,
       validateRequests: {

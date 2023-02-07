@@ -1,8 +1,9 @@
 /* eslint-disable global-require */
+import * as OpenApiValidator from 'express-openapi-validator';
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import CSRFMiddleware from './auth/CSRFMiddleware';
+import { swaggerDocument } from '../swagger';
 import languageMiddleware from './utils/languageMiddleware';
-import * as OpenApiValidator from 'express-openapi-validator';
 
 export default (app, server) => {
   //common middlewares
@@ -46,7 +47,7 @@ export default (app, server) => {
   app.use(
     '/api',
     OpenApiValidator.middleware({
-      apiSpec: './swagger.json',
+      apiSpec: swaggerDocument,
       // validateRequests: true, // (default)
       // coerceTypes: 'array',
       validateApiSpec: false,

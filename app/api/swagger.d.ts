@@ -4,11 +4,6 @@
  */
 
 
-/** Type helpers */
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
-type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
-
 export interface paths {
   "/api/v2/search": {
     /**
@@ -213,135 +208,8 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    entity: {
-      _id?: string | Record<string, never>;
-      sharedId?: string;
-      language?: string;
-      mongoLanguage?: string;
-      title?: string;
-      template?: string | Record<string, never>;
-      published?: boolean;
-      generatedToc?: boolean;
-      icon?: {
-        _id?: string | null;
-        label?: string;
-        type?: string;
-      };
-      creationDate?: number;
-      user?: string | Record<string, never>;
-      metadata?: {
-        [key: string]: (({
-            value: OneOf<[null, string, number, boolean, {
-              label?: string | null;
-              url?: string | null;
-            }, {
-              from?: number | null;
-              to?: number | null;
-            }, {
-              label?: string;
-              lat: number;
-              lon: number;
-            }, ({
-                label?: string;
-                lat: number;
-                lon: number;
-              })[]]>;
-            attachment?: number;
-            label?: string;
-            suggestion_confidence?: number;
-            suggestion_model?: string;
-            /** @enum {string} */
-            provenance?: "" | "BULK_ACCEPT";
-            inheritedValue?: ({
-                value: OneOf<[null, string, number, boolean, {
-                  label?: string | null;
-                  url?: string | null;
-                }, {
-                  from?: number | null;
-                  to?: number | null;
-                }, {
-                  label?: string;
-                  lat: number;
-                  lon: number;
-                }, ({
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  })[]]>;
-                label?: string;
-              })[];
-            inheritedType?: string;
-          })[]) | undefined;
-      };
-      obsoleteMetadata?: (string)[];
-      suggestedMetadata?: {
-        [key: string]: (({
-            value: OneOf<[null, string, number, boolean, {
-              label?: string | null;
-              url?: string | null;
-            }, {
-              from?: number | null;
-              to?: number | null;
-            }, {
-              label?: string;
-              lat: number;
-              lon: number;
-            }, ({
-                label?: string;
-                lat: number;
-                lon: number;
-              })[]]>;
-            attachment?: number;
-            label?: string;
-            suggestion_confidence?: number;
-            suggestion_model?: string;
-            /** @enum {string} */
-            provenance?: "" | "BULK_ACCEPT";
-            inheritedValue?: ({
-                value: OneOf<[null, string, number, boolean, {
-                  label?: string | null;
-                  url?: string | null;
-                }, {
-                  from?: number | null;
-                  to?: number | null;
-                }, {
-                  label?: string;
-                  lat: number;
-                  lon: number;
-                }, ({
-                    label?: string;
-                    lat: number;
-                    lon: number;
-                  })[]]>;
-                label?: string;
-              })[];
-            inheritedType?: string;
-          })[]) | undefined;
-      };
-      permissions?: ({
-          refId: string | Record<string, never>;
-          /** @enum {string} */
-          type: "user" | "group" | "public";
-          /** @enum {string} */
-          level: "read" | "write" | "mixed";
-        })[];
-    };
-    /** PageType */
-    page: {
-      _id?: string;
-      title: string;
-      language?: string;
-      sharedId?: string;
-      creationDate?: number;
-      metadata?: {
-        _id?: string;
-        content?: string;
-        script?: string;
-      };
-      user?: string;
-      entityView?: boolean;
-      __v?: number;
-    };
+    entity: Record<string, never>;
+    page: Record<string, never>;
   };
   responses: never;
   parameters: never;

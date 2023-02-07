@@ -1,8 +1,7 @@
 /* eslint-disable max-lines */
-import { entitySchema } from 'shared/types/entitySchema';
-import { PageSchema } from 'shared/types/pageSchema';
+import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
 
-const swaggerDocument = {
+const swaggerDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
     title: 'Uwazi API',
@@ -11,23 +10,8 @@ const swaggerDocument = {
   },
   components: {
     schemas: {
-      entity: entitySchema,
-      page: {
-        ...PageSchema,
-        properties: {
-          ...PageSchema.properties,
-          _id: { type: 'string' },
-          user: { type: 'string' },
-          metadata: {
-            ...PageSchema.properties.metadata,
-            properties: {
-              ...PageSchema.properties.metadata.properties,
-              _id: { type: 'string' },
-            },
-          },
-        },
-        $async: false,
-      },
+      entity: {},
+      page: {},
     },
   },
   paths: {
@@ -44,7 +28,6 @@ const swaggerDocument = {
               title: 'Page',
               type: 'object',
               additionalProperties: false,
-              required: [],
               properties: {
                 limit: { type: 'number' },
                 offset: { type: 'number' },
@@ -57,14 +40,12 @@ const swaggerDocument = {
             name: 'filter',
             schema: {
               type: 'object',
-              required: [],
               additionalProperties: {
                 anyOf: [
                   {
                     title: 'RangeFilter',
                     type: 'object',
                     additionalProperties: false,
-                    required: [],
                     properties: {
                       from: { type: 'number' },
                       to: { type: 'number' },
@@ -74,7 +55,6 @@ const swaggerDocument = {
                     title: 'CompoundFilter',
                     type: 'object',
                     additionalProperties: false,
-                    required: [],
                     properties: {
                       values: { type: 'array', items: { type: 'string' } },
                       operator: { type: 'string', enum: ['AND', 'OR'] },

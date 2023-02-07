@@ -1,6 +1,10 @@
 {
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "require": ["tsconfig-paths/register"],
+    "compilerOptions": {
+      "module": "node16",
+      "moduleResolution": "node16",
+    },
   },
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
