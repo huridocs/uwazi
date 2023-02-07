@@ -47,6 +47,7 @@ const fixtures = {
     ]),
     fixtureFactory.template('animalTemplate', [fixtureFactory.property('kind', 'text')]),
     fixtureFactory.template('plantTemplate', [fixtureFactory.property('kind', 'text')]),
+    fixtureFactory.template('fungusTemplate', [fixtureFactory.property('kind', 'text')]),
   ],
   entities: [
     fixtureFactory.entity('shared1', 'animalTemplate', {}, { language: 'es' }),
@@ -55,6 +56,8 @@ const fixtures = {
     fixtureFactory.entity('shared2', 'personTemplate', {}, { language: 'en' }),
     fixtureFactory.entity('shared3', 'plantTemplate', {}, { language: 'es' }),
     fixtureFactory.entity('shared3', 'plantTemplate', {}, { language: 'en' }),
+    fixtureFactory.entity('shared4', 'fungusTemplate', {}, { language: 'es' }),
+    fixtureFactory.entity('shared4', 'fungusTemplate', {}, { language: 'en' }),
   ],
   files: [
     fixtureFactory.file('F1', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
@@ -79,58 +82,61 @@ const fixtures = {
     fixtureFactory.file('F4', 'shared1', 'document', 'documentD.pdf', 'spa'),
     fixtureFactory.file('F5', 'shared3', 'document', 'documentE.pdf', 'eng'),
     fixtureFactory.file('F6', 'shared3', 'document', 'documentF.pdf', 'spa'),
+    fixtureFactory.file('F7', 'shared4', 'document', 'documentG.pdf', 'eng'),
+    fixtureFactory.file('F8', 'shared4', 'document', 'documentH.pdf', 'spa'),
   ],
   ixextractors: [
     fixtureFactory.ixExtractor('existingExtractor', 'kind', ['animalTemplate', 'plantTemplate']),
+    fixtureFactory.ixExtractor('fungusKindExtractor', 'kind', ['fungusTemplate']),
   ],
   ixsuggestions: [
-    {
-      status: 'ready' as const,
-      entityId: 'shared1',
-      entityTemplate: fixtureFactory.id('animalTemplate').toString(),
-      language: 'en',
-      fileId: fixtureFactory.id('F3'),
-      propertyName: 'kind',
-      extractorId: fixtureFactory.id('existingExtractor'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value' as const,
-    },
-    {
-      status: 'ready' as const,
-      entityId: 'shared1',
-      entityTemplate: fixtureFactory.id('animalTemplate').toString(),
-      language: 'es',
-      fileId: fixtureFactory.id('F3'),
-      propertyName: 'kind',
-      extractorId: fixtureFactory.id('existingExtractor'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value' as const,
-    },
-    {
-      status: 'ready' as const,
-      entityId: 'shared3',
-      entityTemplate: fixtureFactory.id('plantTemplate').toString(),
-      language: 'en',
-      fileId: fixtureFactory.id('F5'),
-      propertyName: 'kind',
-      extractorId: fixtureFactory.id('existingExtractor'),
-      error: '',
-      segment: '',
-      suggestedValue: '',
-      date: 1675070647850,
-      state: 'Empty / Value' as const,
-    },
+    fixtureFactory.ixSuggestion(
+      'sh1_en',
+      'existingExtractor',
+      'shared1',
+      'animalTemplate',
+      'F3',
+      'kind'
+    ),
+    fixtureFactory.ixSuggestion(
+      'sh1_es',
+      'existingExtractor',
+      'shared1',
+      'animalTemplate',
+      'F4',
+      'kind',
+      { language: 'es' }
+    ),
+    fixtureFactory.ixSuggestion(
+      'sh3_en',
+      'existingExtractor',
+      'shared3',
+      'plantTemplate',
+      'F5',
+      'kind'
+    ),
+    fixtureFactory.ixSuggestion(
+      'sh4_en',
+      'fungusKindExtractor',
+      'shared4',
+      'fungusTemplate',
+      'F7',
+      'kind'
+    ),
+    fixtureFactory.ixSuggestion(
+      'sh4_es',
+      'fungusKindExtractor',
+      'shared4',
+      'fungusTemplate',
+      'F8',
+      'kind',
+      { language: 'es' }
+    ),
   ],
 };
 
 describe('ixextractors', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
   });
 
@@ -323,6 +329,19 @@ describe('ixextractors', () => {
           language: 'es',
         }),
       ]);
+    });
+  });
+
+  describe('delete()', () => {
+    it('should delete the extractors and their suggestions', async () => {
+      await ixextractors.delete([
+        fixtureFactory.id('existingExtractor').toString(),
+        fixtureFactory.id('fungusKindExtractor').toString(),
+      ]);
+      const extractors = await ixextractors.get();
+      expect(extractors).toEqual([]);
+      const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find().toArray();
+      expect(suggestions).toEqual([]);
     });
   });
 });

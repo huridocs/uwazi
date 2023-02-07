@@ -120,6 +120,7 @@ const Extractors = {
     const extractors = await model.get({ _id: { $in: ids } });
     if (extractors.length !== ids.length) throw new Error('Missing extractor.');
     await model.delete({ _id: { $in: ids } });
+    await Suggestions.delete({ extractorId: { $in: ids } });
   },
   create: async (name: string, property: string, templateIds: string[]) => {
     await templatePropertyExistenceCheck(property, templateIds);
