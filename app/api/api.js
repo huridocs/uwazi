@@ -2,7 +2,7 @@
 import * as OpenApiValidator from 'express-openapi-validator';
 import activitylogMiddleware from './activitylog/activitylogMiddleware';
 import CSRFMiddleware from './auth/CSRFMiddleware';
-import { swaggerDocument } from '../swagger';
+import { uwaziOpenAPIDocument } from './uwaziOpenAPIDocument';
 import languageMiddleware from './utils/languageMiddleware';
 
 export default (app, server) => {
@@ -47,7 +47,7 @@ export default (app, server) => {
   app.use(
     '/api',
     OpenApiValidator.middleware({
-      apiSpec: swaggerDocument,
+      apiSpec: uwaziOpenAPIDocument,
       // validateRequests: true, // (default)
       // coerceTypes: 'array',
       validateApiSpec: false,

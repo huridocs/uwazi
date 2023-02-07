@@ -4,24 +4,9 @@ import { elastic } from 'api/search/elastic';
 import { Page } from 'shared/types/SearchQueryType';
 
 import { mapResults } from 'api/search.v2/searchResponse';
-import { paths } from 'api/swagger';
+import { paths } from 'api/uwaziOpenAPIDocumentTypes';
 import qs from 'qs';
 import { buildQuery } from './buildQuery';
-
-interface UwaziResponse {
-  data: any;
-  links?: {
-    self: string;
-    first?: string | null;
-    last?: string | null;
-    next?: string | null;
-    prev?: string | null;
-  };
-}
-
-type UwaziReq = Request & { query: paths['/api/v2/search']['get']['parameters']['query'] };
-
-type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
 
 const link = (limit: number, offset: number) =>
   `/api/v2/search?${qs.stringify({
@@ -51,8 +36,25 @@ const pagination = (currentUrl: string, totalResults: number, page?: Page) => {
   };
 };
 
+type SearchQuery = {
+  query: NonNullable<paths['/api/v2/search']['get']['parameters']>['query'];
+};
+
+interface UwaziResponse {
+  data: any;
+  links?: {
+    self: string;
+    first?: string | null;
+    last?: string | null;
+    next?: string | null;
+    prev?: string | null;
+  };
+}
+
+type UwaziRes = Omit<Response, 'json'> & { json(data: UwaziResponse): Response };
+
 const searchRoutes = (app: Application) => {
-  app.get('/api/v2/search', async (req: UwaziReq, res: UwaziRes) => {
+  app.get('/api/v2/search', async (req: Request & SearchQuery, res: UwaziRes) => {
     const { query, language, url } = req;
 
     const response = await elastic.search({ body: await buildQuery(query, language) });

@@ -4,6 +4,11 @@
  */
 
 
+/** Type helpers */
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
+
 export interface paths {
   "/api/v2/search": {
     /**
@@ -44,6 +49,13 @@ export interface paths {
           content: {
             "application/json": {
               data?: (components["schemas"]["entity"])[];
+              links?: {
+                self?: string;
+                first?: string | null;
+                last?: string | null;
+                next?: string | null;
+                prev?: string | null;
+              };
             };
           };
         };
@@ -208,8 +220,114 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    entity: Record<string, never>;
-    page: Record<string, never>;
+    file: {
+      _id?: string;
+      entity?: string;
+      originalname?: string;
+      filename?: string;
+      mimetype?: string;
+      size?: number;
+      creationDate?: number;
+      language?: string;
+      /** @enum {string} */
+      type?: "custom" | "document" | "thumbnail" | "attachment";
+      url?: string;
+      /** @enum {string} */
+      status?: "processing" | "failed" | "ready";
+      totalPages?: number;
+      generatedToc?: boolean;
+      uploaded?: boolean;
+      toc?: ({
+          selectionRectangles?: ({
+              top?: number;
+              left?: number;
+              width?: number;
+              height?: number;
+              page?: string;
+            })[];
+          label?: string;
+          indentation?: number;
+        })[];
+      extractedMetadata?: ({
+          propertyID?: string;
+          name?: string;
+          timestamp?: string;
+          deleteSelection?: boolean;
+          selection?: {
+            text?: string;
+            selectionRectangles?: ({
+                top?: number;
+                left?: number;
+                width?: number;
+                height?: number;
+                page?: string;
+              })[];
+          };
+        })[];
+    };
+    entityMetadataValue: OneOf<[string | null, number | null, boolean | null, ({
+      label?: string | null;
+      url?: string | null;
+    }) | null, ({
+      from?: number | null;
+      to?: number | null;
+    }) | null, {
+      label?: string;
+      lat: number;
+      lon: number;
+    } | null, ({
+        label?: string;
+        lat: number;
+        lon: number;
+      })[] | null]>;
+    entityMetadata: {
+      [key: string]: (({
+          value: components["schemas"]["entityMetadataValue"];
+          attachment?: number;
+          label?: string;
+          suggestion_confidence?: number;
+          suggestion_model?: string;
+          /** @enum {string} */
+          provenance?: "" | "BULK_ACCEPT";
+          inheritedValue?: components["schemas"]["entityMetadataValue"];
+          inheritedType?: string;
+        })[]) | undefined;
+    };
+    entity: {
+      _id?: string;
+      sharedId?: string;
+      language?: string;
+      title?: string;
+      template?: string;
+      published?: boolean;
+      generatedToc?: boolean;
+      icon?: {
+        _id?: string;
+        label?: string;
+        type?: string;
+      };
+      creationDate?: number;
+      user?: string;
+      metadata?: components["schemas"]["entityMetadata"];
+      suggestedMetadata?: components["schemas"]["entityMetadata"];
+      obsoleteMetadata?: (string)[];
+      attachments?: (components["schemas"]["fileSchema"])[];
+      documents?: (components["schemas"]["fileSchema"])[];
+    };
+    page: {
+      _id?: string;
+      title: string;
+      language?: string;
+      sharedId?: string;
+      creationDate?: number;
+      metadata?: {
+        _id?: string;
+        content?: string;
+        script?: string;
+      };
+      user?: string;
+      entityView?: boolean;
+    };
   };
   responses: never;
   parameters: never;

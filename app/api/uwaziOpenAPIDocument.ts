@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { OpenAPIV3 } from 'express-openapi-validator/dist/framework/types';
 
-const swaggerDocument: OpenAPIV3.Document = {
+export const uwaziOpenAPIDocument: OpenAPIV3.Document = {
   openapi: '3.0.0',
   info: {
     title: 'Uwazi API',
@@ -10,8 +10,215 @@ const swaggerDocument: OpenAPIV3.Document = {
   },
   components: {
     schemas: {
-      entity: {},
-      page: {},
+      file: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          _id: { type: 'string' },
+          entity: { type: 'string', minLength: 1 },
+          originalname: { type: 'string', minLength: 1 },
+          filename: { type: 'string', minLength: 1 },
+          mimetype: { type: 'string', minLength: 1 },
+          size: { type: 'number' },
+          creationDate: { type: 'number' },
+          language: { type: 'string', minLength: 1 },
+          type: { type: 'string', enum: ['custom', 'document', 'thumbnail', 'attachment'] },
+          url: { type: 'string', pattern: '^https://' },
+          status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
+          totalPages: { type: 'number' },
+          generatedToc: { type: 'boolean' },
+          uploaded: { type: 'boolean' },
+          toc: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                selectionRectangles: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    properties: {
+                      top: { type: 'number' },
+                      left: { type: 'number' },
+                      width: { type: 'number' },
+                      height: { type: 'number' },
+                      page: { type: 'string' },
+                    },
+                  },
+                },
+                label: { type: 'string' },
+                indentation: { type: 'number' },
+              },
+            },
+          },
+          extractedMetadata: {
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                propertyID: { type: 'string' },
+                name: { type: 'string' },
+                timestamp: { type: 'string' },
+                deleteSelection: { type: 'boolean' },
+                selection: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    text: { type: 'string' },
+                    selectionRectangles: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                          top: { type: 'number' },
+                          left: { type: 'number' },
+                          width: { type: 'number' },
+                          height: { type: 'number' },
+                          page: { type: 'string' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      entityMetadataValue: {
+        oneOf: [
+          { type: 'string', nullable: true },
+          { type: 'number', nullable: true },
+          { type: 'boolean', nullable: true },
+          {
+            type: 'object',
+            nullable: true,
+            additionalProperties: false,
+            properties: {
+              label: { nullable: true, type: 'string' },
+              url: { nullable: true, type: 'string' },
+            },
+          },
+          {
+            type: 'object',
+            nullable: true,
+            additionalProperties: false,
+            properties: {
+              from: { nullable: true, type: 'number' },
+              to: { nullable: true, type: 'number' },
+            },
+          },
+          {
+            type: 'object',
+            nullable: true,
+            required: ['lon', 'lat'],
+            additionalProperties: false,
+            properties: {
+              label: { type: 'string' },
+              lat: { type: 'number', minimum: -90, maximum: 90 },
+              lon: { type: 'number', minimum: -180, maximum: 180 },
+            },
+          },
+          {
+            type: 'array',
+            nullable: true,
+            items: {
+              type: 'object',
+              required: ['lon', 'lat'],
+              additionalProperties: false,
+              properties: {
+                label: { type: 'string' },
+                lat: { type: 'number', minimum: -90, maximum: 90 },
+                lon: { type: 'number', minimum: -180, maximum: 180 },
+              },
+            },
+          },
+        ],
+      },
+      entityMetadata: {
+        type: 'object',
+        additionalProperties: {
+          anyOf: [
+            {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['value'],
+                properties: {
+                  value: { $ref: '#/components/schemas/entityMetadataValue' },
+                  attachment: { type: 'number' },
+                  label: { type: 'string' },
+                  suggestion_confidence: { type: 'number' },
+                  suggestion_model: { type: 'string' },
+                  provenance: { type: 'string', enum: ['', 'BULK_ACCEPT'] },
+                  inheritedValue: { $ref: '#/components/schemas/entityMetadataValue' },
+                  inheritedType: { type: 'string' },
+                },
+              },
+            },
+          ],
+        },
+      },
+      entity: {
+        type: 'object',
+        properties: {
+          _id: { type: 'string' },
+          sharedId: { type: 'string', minLength: 1 },
+          language: { type: 'string', minLength: 1 },
+          title: { type: 'string', minLength: 1 },
+          template: { type: 'string' },
+          published: { type: 'boolean' },
+          generatedToc: { type: 'boolean' },
+          icon: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              _id: { type: 'string' },
+              label: { type: 'string' },
+              type: { type: 'string' },
+            },
+          },
+          creationDate: { type: 'number' },
+          user: { type: 'string' },
+          metadata: { $ref: '#/components/schemas/entityMetadata' },
+          suggestedMetadata: { $ref: '#/components/schemas/entityMetadata' },
+          obsoleteMetadata: { type: 'array', items: { type: 'string' } },
+          attachments: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/file' },
+          },
+          documents: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/file' },
+          },
+        },
+      },
+      page: {
+        type: 'object',
+        properties: {
+          _id: { type: 'string' },
+          title: { type: 'string' },
+          language: { type: 'string' },
+          sharedId: { type: 'string' },
+          creationDate: { type: 'number' },
+          metadata: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              _id: { type: 'string' },
+              content: { type: 'string' },
+              script: { type: 'string' },
+            },
+          },
+          user: { type: 'string' },
+          entityView: { type: 'boolean' },
+        },
+        required: ['title'],
+      },
     },
   },
   paths: {
@@ -97,6 +304,16 @@ const swaggerDocument: OpenAPIV3.Document = {
                     data: {
                       type: 'array',
                       items: { $ref: '#/components/schemas/entity' },
+                    },
+                    links: {
+                      type: 'object',
+                      properties: {
+                        self: { type: 'string' },
+                        first: { nullable: true, type: 'string' },
+                        last: { nullable: true, type: 'string' },
+                        next: { nullable: true, type: 'string' },
+                        prev: { nullable: true, type: 'string' },
+                      },
                     },
                   },
                 },
@@ -310,5 +527,3 @@ const swaggerDocument: OpenAPIV3.Document = {
     },
   },
 };
-
-export { swaggerDocument };

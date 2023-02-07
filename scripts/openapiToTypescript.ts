@@ -1,23 +1,23 @@
 /* eslint-disable no-console */
-import { OpenAPISchemaValidator } from 'express-openapi-validator/dist/framework/openapi.schema.validator';
 // eslint-disable-next-line node/no-restricted-import
 import { writeFile } from 'fs/promises';
-import { swaggerDocument } from '../app/swagger';
+import { OpenAPISchemaValidator } from 'express-openapi-validator/dist/framework/openapi.schema.validator';
+import { uwaziOpenAPIDocument } from '../app/api/uwaziOpenAPIDocument';
 
 (async () => {
   const validation = new OpenAPISchemaValidator({
-    version: swaggerDocument.openapi,
+    version: uwaziOpenAPIDocument.openapi,
     validateApiSpec: true,
-  }).validate(swaggerDocument);
+  }).validate(uwaziOpenAPIDocument);
 
   if (validation.errors?.length) {
-    console.log(validation.errors);
+    console.log(JSON.stringify(validation.errors, null, ' '))
     throw new Error('openapi schema is invalid !!');
   }
 
   import('openapi-typescript')
-    .then(openapiTS => openapiTS.default(swaggerDocument))
-    .then(output => writeFile(`${__dirname}/../app/api/swagger.d.ts`, output, 'utf-8'))
+    .then(openapiTS => openapiTS.default(uwaziOpenAPIDocument))
+    .then(output => writeFile(`${__dirname}/../app/api/uwaziOpenAPIDocumentTypes.d.ts`, output, 'utf-8'))
     .then(() => {
       console.log('');
       console.log('TS Types for openapi specification generated successfully !!');

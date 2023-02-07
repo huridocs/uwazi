@@ -1,5 +1,5 @@
+import { components, paths } from 'api/uwaziOpenAPIDocumentTypes';
 import { Application, Request } from 'express';
-import { components, paths } from 'api/swagger';
 import needsAuthorization from '../auth/authMiddleware';
 import pages from './pages';
 

@@ -8,7 +8,7 @@ import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
-import { swaggerDocument } from '../../swagger';
+import { uwaziOpenAPIDocument } from '../uwaziOpenAPIDocument';
 
 extendSupertest();
 
@@ -31,7 +31,7 @@ const setUpApp = (
 
   app.use(
     OpenApiValidator.middleware({
-      apiSpec: swaggerDocument,
+      apiSpec: uwaziOpenAPIDocument,
       validateApiSpec: false,
       ignoreUndocumented: true,
       validateRequests: {
