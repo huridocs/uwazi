@@ -85,10 +85,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result.code = 400;
   }
 
-  // if (error instanceof HttpError) {
-  //   result = { code: error.status || 500, message: error.message, validations: error.errors };
-  // }
-  //
+  if (error instanceof HttpError) {
+    result = { code: error.status || 500, message: error.message, validations: error.errors };
+  }
+
   if (uncaught) {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }

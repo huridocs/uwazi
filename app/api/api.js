@@ -48,14 +48,7 @@ export default (app, server) => {
     '/api',
     OpenApiValidator.middleware({
       apiSpec: uwaziOpenAPIDocument,
-      // validateRequests: true, // (default)
-      // coerceTypes: 'array',
-      validateApiSpec: false,
-      // validateRequests: {
-      //   // allowUnknownQueryParameters: false,
-      //   // removeAdditional: true
-      // },
-      // validateResponses: true, // false by default
+      validateResponses: false,
     })
   );
 
