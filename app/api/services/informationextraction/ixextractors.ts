@@ -67,11 +67,12 @@ const fetchEntitiesSharedIds = async (
   return sharedIdLists.flat();
 };
 
-const createBlankSuggestionsForExtractor = async (
-  extractor: IXExtractorType,
+const createBlankSuggestions = async (
+  extractorId: ObjectIdSchema,
+  property: string,
+  extractorTemplates: ObjectIdSchema[],
   batchSize?: number
 ) => {
-  const { templates: extractorTemplates } = extractor;
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
 
   const templatesPromises = extractorTemplates.map(async template => {
@@ -93,8 +94,8 @@ const createBlankSuggestionsForExtractor = async (
           fileId: file._id,
           entityId: file.entity!,
           entityTemplate: typeof template === 'string' ? template : template.toString(),
-          extractorId: extractor._id,
-          propertyName: extractor.property,
+          extractorId,
+          propertyName: property,
           status: 'ready',
           error: '',
           segment: '',
@@ -107,6 +108,9 @@ const createBlankSuggestionsForExtractor = async (
 
   await Promise.all(templatesPromises);
 };
+
+const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType, batchSize?: number) =>
+  createBlankSuggestions(extractor._id, extractor.property, extractor.templates, batchSize);
 
 const Extractors = {
   get: model.get.bind(model),
@@ -154,12 +158,12 @@ const Extractors = {
     });
 
     if (templatesAdded.length) {
-      // This is not nice... need to find a clearer way
-      await createBlankSuggestionsForExtractor({ ...extractor, templates: templatesAdded });
+      await createBlankSuggestions(extractor._id, extractor.property, templatesAdded);
     }
 
     return updated;
   },
+
   cleanupTemplateFromPropertyExtractors: async (
     templateId: string,
     propertyNamesToKeep: string[]
