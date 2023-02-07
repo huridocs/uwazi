@@ -31,6 +31,16 @@ const optionUrl = (value, name, query) => {
 
   return `/library/?q=${q}`;
 };
+const labelForOption = (filteredProperty, option) => {
+  switch (true) {
+    case option.id === 'missing':
+      return t('System', 'No Label', undefined, false);
+    case filteredProperty.type === 'relationship':
+      return option.label;
+    default:
+      return t(filteredProperty.content, option.label, undefined, false);
+  }
+};
 
 const prepareOptions = (property, location) => {
   const query = searchParamsFromLocationSearch(location, 'q') || {};
@@ -41,10 +51,7 @@ const prepareOptions = (property, location) => {
   return filteredProperty.options.map(option => {
     const finalTranslatedOption = {
       ...option,
-      label:
-        option.id === 'missing'
-          ? t('System', 'No Label', undefined, false)
-          : t(filteredProperty.content, option.label, undefined, false),
+      label: labelForOption(filteredProperty, option),
       url: optionUrl(option.value, property.name, query),
     };
 
