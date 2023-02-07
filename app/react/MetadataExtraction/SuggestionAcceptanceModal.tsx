@@ -5,6 +5,7 @@ import { Translate } from 'app/I18N';
 export interface SuggestionAcceptanceModalProps {
   isOpen: boolean;
   propertyType: string;
+  languages: any[] | undefined;
   onClose: () => void;
   onAccept: (allLanguages: boolean) => void;
 }
@@ -12,6 +13,7 @@ export interface SuggestionAcceptanceModalProps {
 export const SuggestionAcceptanceModal = ({
   isOpen,
   propertyType,
+  languages = [],
   onClose,
   onAccept,
 }: SuggestionAcceptanceModalProps) => {
@@ -25,7 +27,7 @@ export const SuggestionAcceptanceModal = ({
       </Modal.Header>
       <Modal.Body>
         <label className="language-checkbox">
-          {!['date', 'numeric'].includes(propertyType) ? (
+          {!['date', 'numeric'].includes(propertyType) && languages.length > 1 ? (
             <>
               <input
                 type="checkbox"

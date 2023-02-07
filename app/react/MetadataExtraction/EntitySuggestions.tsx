@@ -38,6 +38,7 @@ interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
   templates: IImmutable<TemplateSchema[]>;
+  languages: any[] | undefined;
 }
 
 interface AggregategationsType {
@@ -65,6 +66,7 @@ const EntitySuggestionsComponent = ({
   property: reviewedProperty,
   acceptIXSuggestion,
   templates,
+  languages,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
@@ -219,11 +221,12 @@ const EntitySuggestionsComponent = ({
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
     newCurrentValue: string | number | null
-  ) =>
-    getSuggestionState(
+  ) => {
+    return getSuggestionState(
       { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
       reviewedProperty.type
     );
+  };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
@@ -257,18 +260,32 @@ const EntitySuggestionsComponent = ({
 
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    const changedPropertyValue = (entity[reviewedProperty.name] ||
-      entity.metadata?.[reviewedProperty.name]) as string;
+    const propertyName = reviewedProperty.name;
+    const changedPropertyValue = (entity[propertyName] ||
+      entity.metadata?.[propertyName]) as string;
+
     selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
       ? changedPropertyValue[0].value || '-'
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
     const acceptedSuggestion = selectedFlatRows[0].original;
-    selectedFlatRows[0].values.state = getWrappedSuggestionState(
-      acceptedSuggestion,
-      entity.title as string
-    );
+
+    // @ts-ignore
+    const selection = entity.__extractedMetadata?.selections[0];
+    if (selection && selection.selection && selection.selection.text !== '') {
+      // There was a label
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
+        changedPropertyValue
+      );
+    } else {
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue: '' },
+        changedPropertyValue
+      );
+    }
+
     selectedFlatRows[0].setState({});
     updateError(changedPropertyValue);
     retriveStats();
@@ -481,7 +498,11 @@ const EntitySuggestionsComponent = ({
         <SuggestionAcceptanceModal
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
-          onClose={() => setAcceptingSuggestion(false)}
+          languages={languages}
+          onClose={() => {
+            toggleAllRowsSelected(false);
+            setAcceptingSuggestion(false);
+          }}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
         <CancelFindingSuggestionModal

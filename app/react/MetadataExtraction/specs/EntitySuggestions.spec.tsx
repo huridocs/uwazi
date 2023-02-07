@@ -47,7 +47,11 @@ describe('EntitySuggestions', () => {
 
   const renderComponent = (property = reviewedProperty) => {
     ({ renderResult } = renderConnectedContainer(
-      <EntitySuggestions property={property} acceptIXSuggestion={acceptIXSuggestion} />,
+      <EntitySuggestions
+        property={property}
+        acceptIXSuggestion={acceptIXSuggestion}
+        languages={[{}, {}]}
+      />,
       () => ({
         ...defaultState,
         templates: Immutable.fromJS([]),

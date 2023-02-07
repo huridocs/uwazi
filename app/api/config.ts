@@ -15,9 +15,11 @@ const {
   SENTRY_API_DSN,
   MONGO_CONNECTION_POOL_SIZE,
   ENVIRONMENT,
+  FILES_ROOT_PATH,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
+const filesRootPath = FILES_ROOT_PATH || rootPath;
 
 // this needs to be true in order for uwazi to work properly
 // when using multiple node processes
@@ -53,11 +55,11 @@ export const config = {
     name: 'default',
     dbName: process.env.DATABASE_NAME || 'uwazi_development',
     indexName: process.env.INDEX_NAME || 'uwazi_development',
-    uploadedDocuments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
-    attachments: UPLOADS_FOLDER || `${rootPath}/uploaded_documents/`,
-    customUploads: CUSTOM_UPLOADS_FOLDER || `${rootPath}/custom_uploads/`,
-    temporalFiles: TEMPORAL_FILES_FOLDER || `${rootPath}/temporal_files/`,
-    activityLogs: ACTIVITY_LOGS_FOLDER || `${rootPath}/log/`,
+    uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
+    customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
+    temporalFiles: TEMPORAL_FILES_FOLDER || `${filesRootPath}/temporal_files/`,
+    activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
     featureFlags: {
       s3Storage: false,
     },
