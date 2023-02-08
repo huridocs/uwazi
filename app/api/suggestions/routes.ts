@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Application, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
@@ -12,9 +12,8 @@ import {
   SuggestionsQueryFilterSchema,
 } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { IXSuggestionsFilter, IXSuggestionsStatsQuery } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
-import { saveConfigurations } from './configurationManager';
 
 const IX = new InformationExtraction();
 
@@ -50,6 +49,7 @@ function propertyRequestValidation(root = 'body') {
   });
 }
 
+// eslint-disable-next-line max-statements
 export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
@@ -79,8 +79,8 @@ export const suggestionsRoutes = (app: Application) => {
       req: Request & {
         query: { filter: IXSuggestionsFilter; page: { number: number; size: number } };
       },
-      res,
-      _next
+      res: Response,
+      _next: NextFunction
     ) => {
       const suggestionsList = await Suggestions.get(
         { language: req.language, ...req.query.filter },
@@ -100,7 +100,11 @@ export const suggestionsRoutes = (app: Application) => {
         query: IXSuggestionsStatsQuerySchema,
       },
     }),
-    async (req: Request<{}, {}, {}, { propertyName: string }>, res, _next) => {
+    async (
+      req: Request & { query: IXSuggestionsStatsQuery },
+      res: Response,
+      _next: NextFunction
+    ) => {
       const stats = await Suggestions.getStats(req.query.extractorId);
       res.json(stats);
     }
@@ -123,34 +127,6 @@ export const suggestionsRoutes = (app: Application) => {
     propertyRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.trainModel, req, res);
-    }
-  );
-
-  app.post(
-    '/api/suggestions/configurations',
-    needsAuthorization(['admin']),
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              template: { type: 'string' },
-              properties: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    }),
-    (req, res, next) => {
-      saveConfigurations(req.body)
-        .then(response => res.json(response))
-        .catch(next);
     }
   );
 
