@@ -21,7 +21,6 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
-const extractedTemplate2Name = 'extracted_template2';
 
 const otherExtractedTemplateName = 'other_extracted_template';
 
@@ -136,7 +135,7 @@ afterAll(async () => {
   await db.disconnect();
 });
 
-fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
+describe(`On ${EntityUpdatedEvent.name}`, () => {
   let updateSpy: jest.SpyInstance;
   const extractedBefore = {
     _id: db.id(),
@@ -240,7 +239,7 @@ fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
     expect(updateSpy).toHaveBeenCalled();
   });
 
-  fit.each([
+  it.each([
     {
       case: 'should not update suggestions if template is not changed',
       sharedId: 'entity for new file',
@@ -413,6 +412,19 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
         propertyName: 'extracted_property_1',
         extractorId: fixturesFactory.id('extractor1'),
         segment: '',
@@ -428,19 +440,6 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         language: 'en',
         propertyName: 'extracted_property_2',
         extractorId: fixturesFactory.id('extractor2'),
-        segment: '',
-        status: 'ready',
-        suggestedValue: '',
-      },
-      {
-        date: expect.any(Number),
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        error: '',
-        fileId: fixturesFactory.id('new file'),
-        language: 'en',
-        propertyName: 'title',
-        extractorId: fixturesFactory.id('title_extractor'),
         segment: '',
         status: 'ready',
         suggestedValue: '',

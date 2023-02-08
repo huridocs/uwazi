@@ -16,6 +16,7 @@ import { UpdateLog } from 'api/updatelogs';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
+import { WithId } from 'api/odm/model';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -106,7 +107,7 @@ function getFixturesFactory() {
       language: string = 'en',
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
-    ): FileType => ({
+    ): WithId<FileType> => ({
       _id: idMapper(`${id}`),
       entity,
       language,

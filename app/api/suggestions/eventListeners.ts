@@ -14,7 +14,6 @@ import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent'
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
-import { ensure } from 'shared/tsUtils';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -23,13 +22,6 @@ import languages from 'shared/languages';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
-
-type extractionTemplateType =
-  | {
-      template: ObjectIdSchema;
-      properties: string[];
-    }[]
-  | undefined;
 
 const extractedMetadataChanged = async (
   existingEntity: EntitySchema,
@@ -142,16 +134,25 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
     if (newFile.entity && newFile.type === 'document') {
-      const { languages, features } = await settings.get({}, 'languages features');
       const entityTemplateId = (
         await entities.get({ sharedId: newFile.entity }, 'template')
       )[0].template.toString();
-      const settingsTemplate = features?.metadataExtraction?.templates?.find(
-        t => t.template === entityTemplateId
+      // const settingsTemplate = features?.metadataExtraction?.templates?.find(
+      //   t => t.template === entityTemplateId
+      // );
+      const extractors = await ixextractors.get();
+      const extractorsForEntity = extractors.filter(extractor =>
+        extractor.templates.map(templateId => templateId.toString()).includes(entityTemplateId)
       );
-      if (settingsTemplate) {
-        const defaultLanguage = ensure<string>(languages?.find(lang => lang.default)?.key);
-        await createDefaultSuggestionsForFiles([newFile], settingsTemplate, defaultLanguage);
+
+      if (extractorsForEntity.length) {
+        const defaultLanguage = await settings.getDefaultLanguage();
+        await createDefaultSuggestionsForFiles(
+          [newFile],
+          entityTemplateId,
+          extractorsForEntity,
+          defaultLanguage.key
+        );
       }
     }
   });
