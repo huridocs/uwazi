@@ -21,7 +21,6 @@ import {
   entity5es,
   fixturesTitleSearch,
 } from './fixturesTitleSearch';
-import { config } from 'api/config';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -33,13 +32,13 @@ describe('entities get searchString', () => {
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET', () => {
-    // it('should have a validation', async () => {
-    //   const { body } = await request(app)
-    //     .get('/api/v2/search')
-    //     .query({ page: { invalid_key: 'value' } });
-    //
-    //   expect(body.error).toBe('validation failed');
-    // });
+    it('should have a validation', async () => {
+      const { body } = await request(app)
+        .get('/api/v2/search')
+        .query({ page: { invalid_key: 'value' } });
+
+      expect(body.error).toBe('validation failed');
+    });
 
     it('should return all entities for the default language and required links', async () => {
       const { body } = await request(app).get('/api/v2/search').expect(200);

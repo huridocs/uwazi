@@ -3,21 +3,24 @@
  * Do not make direct changes to the file.
  */
 
-
 /** Type helpers */
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
-type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
+type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+type OneOf<T extends any[]> = T extends [infer Only]
+  ? Only
+  : T extends [infer A, infer B, ...infer Rest]
+  ? OneOf<[XOR<A, B>, ...Rest]>
+  : never;
 
 export interface paths {
-  "/api/v2/search": {
+  '/api/v2/search': {
     /**
-     * Search entities 
+     * Search entities
      * @description Search entities
      */
     get: {
       /**
-       * Search entities 
+       * Search entities
        * @description Search entities
        */
       parameters?: {
@@ -30,25 +33,33 @@ export interface paths {
             searchString?: string;
             sharedId?: string;
             published?: boolean;
-            [key: string]: ({
-              from?: number;
-              to?: number;
-            } | ({
-              values?: (string)[];
-              /** @enum {string} */
-              operator?: "AND" | "OR";
-            }) | string | number | boolean) | undefined;
+            [key: string]:
+              | (
+                  | {
+                      from?: number;
+                      to?: number;
+                    }
+                  | {
+                      values?: string[];
+                      /** @enum {string} */
+                      operator?: 'AND' | 'OR';
+                    }
+                  | string
+                  | number
+                  | boolean
+                )
+              | undefined;
           };
           sort?: string;
-          fields?: (string)[];
+          fields?: string[];
         };
       };
       responses: {
         /** @description A JSON array of entities */
         200: {
           content: {
-            "application/json": {
-              data?: (components["schemas"]["entity"])[];
+            'application/json': {
+              data?: components['schemas']['entity'][];
               links?: {
                 self?: string;
                 first?: string | null;
@@ -62,38 +73,38 @@ export interface paths {
       };
     };
   };
-  "/api/pages": {
+  '/api/pages': {
     /**
-     * Get pages 
+     * Get pages
      * @description Get pages
      */
     get: {
       /**
-       * Get pages 
+       * Get pages
        * @description Get pages
        */
       parameters?: {
         query?: {
           sharedId?: string;
         };
-          /** @example en */
-          /**
-           * @description The natural language and locale that the client prefers,
-           *             will be used if no content-language is provided, in case none are provided.
-           *             (api will asume default language configured) 
-           * @example en
-           */
+        /** @example en */
+        /**
+         * @description The natural language and locale that the client prefers,
+         *             will be used if no content-language is provided, in case none are provided.
+         *             (api will asume default language configured)
+         * @example en
+         */
         header?: {
-          "Content-Language"?: string;
-          "Accept-Language"?: string;
+          'Content-Language'?: string;
+          'Accept-Language'?: string;
         };
       };
       responses: {
         /** @description Get an array of pages */
         200: {
           content: {
-            "application/json": {
-              data?: (components["schemas"]["page"])[];
+            'application/json': {
+              data?: components['schemas']['page'][];
             };
           };
         };
@@ -103,18 +114,18 @@ export interface paths {
     post: {
       /** Create or update a page */
       parameters?: {
-          /** @example XMLHttpRequest */
-          /** @example en */
-          /**
-           * @description The natural language and locale that the client prefers,
-           *             will be used if no content-language is provided, in case none are provided.
-           *             (api will asume default language configured) 
-           * @example en
-           */
+        /** @example XMLHttpRequest */
+        /** @example en */
+        /**
+         * @description The natural language and locale that the client prefers,
+         *             will be used if no content-language is provided, in case none are provided.
+         *             (api will asume default language configured)
+         * @example en
+         */
         header?: {
-          "X-Requested-With"?: string;
-          "Content-Language"?: string;
-          "Accept-Language"?: string;
+          'X-Requested-With'?: string;
+          'Content-Language'?: string;
+          'Accept-Language'?: string;
         };
       };
       requestBody: {
@@ -127,15 +138,15 @@ export interface paths {
            *   }
            * }
            */
-          "application/json": components["schemas"]["page"];
+          'application/json': components['schemas']['page'];
         };
       };
       responses: {
         /** @description Will return the page created / updated */
         200: {
           content: {
-            "application/json": {
-              data?: components["schemas"]["page"];
+            'application/json': {
+              data?: components['schemas']['page'];
             };
           };
         };
@@ -148,25 +159,25 @@ export interface paths {
         query: {
           sharedId: string;
         };
-          /** @example XMLHttpRequest */
-          /** @example en */
-          /**
-           * @description The natural language and locale that the client prefers,
-           *             will be used if no content-language is provided, in case none are provided.
-           *             (api will asume default language configured) 
-           * @example en
-           */
+        /** @example XMLHttpRequest */
+        /** @example en */
+        /**
+         * @description The natural language and locale that the client prefers,
+         *             will be used if no content-language is provided, in case none are provided.
+         *             (api will asume default language configured)
+         * @example en
+         */
         header?: {
-          "X-Requested-With"?: string;
-          "Content-Language"?: string;
-          "Accept-Language"?: string;
+          'X-Requested-With'?: string;
+          'Content-Language'?: string;
+          'Accept-Language'?: string;
         };
       };
       responses: {
         /** @description will return acknowledged deletion */
         200: {
           content: {
-            "application/json": {
+            'application/json': {
               acknowledged?: boolean;
               deletedCount?: number;
             };
@@ -175,14 +186,14 @@ export interface paths {
       };
     };
   };
-  "/api/page": {
+  '/api/page': {
     /**
-     * Get a single page 
+     * Get a single page
      * @description Get a single page
      */
     get: {
       /**
-       * Get a single page 
+       * Get a single page
        * @description Get a single page
        */
       parameters: {
@@ -190,24 +201,24 @@ export interface paths {
           sharedId: string;
           slug?: string;
         };
-          /** @example en */
-          /**
-           * @description The natural language and locale that the client prefers,
-           *             will be used if no content-language is provided, in case none are provided.
-           *             (api will asume default language configured) 
-           * @example en
-           */
+        /** @example en */
+        /**
+         * @description The natural language and locale that the client prefers,
+         *             will be used if no content-language is provided, in case none are provided.
+         *             (api will asume default language configured)
+         * @example en
+         */
         header?: {
-          "Content-Language"?: string;
-          "Accept-Language"?: string;
+          'Content-Language'?: string;
+          'Accept-Language'?: string;
         };
       };
       responses: {
         /** @description Get an array of pages */
         200: {
           content: {
-            "application/json": {
-              data?: components["schemas"]["page"];
+            'application/json': {
+              data?: components['schemas']['page'];
             };
           };
         };
@@ -230,68 +241,83 @@ export interface components {
       creationDate?: number;
       language?: string;
       /** @enum {string} */
-      type?: "custom" | "document" | "thumbnail" | "attachment";
+      type?: 'custom' | 'document' | 'thumbnail' | 'attachment';
       url?: string;
       /** @enum {string} */
-      status?: "processing" | "failed" | "ready";
+      status?: 'processing' | 'failed' | 'ready';
       totalPages?: number;
       generatedToc?: boolean;
       uploaded?: boolean;
-      toc?: ({
-          selectionRectangles?: ({
-              top?: number;
-              left?: number;
-              width?: number;
-              height?: number;
-              page?: string;
-            })[];
-          label?: string;
-          indentation?: number;
-        })[];
-      extractedMetadata?: ({
-          propertyID?: string;
-          name?: string;
-          timestamp?: string;
-          deleteSelection?: boolean;
-          selection?: {
-            text?: string;
-            selectionRectangles?: ({
-                top?: number;
-                left?: number;
-                width?: number;
-                height?: number;
-                page?: string;
-              })[];
-          };
-        })[];
-    };
-    entityMetadataValue: OneOf<[string | null, number | null, boolean | null, ({
-      label?: string | null;
-      url?: string | null;
-    }) | null, ({
-      from?: number | null;
-      to?: number | null;
-    }) | null, {
-      label?: string;
-      lat: number;
-      lon: number;
-    } | null, ({
+      toc?: {
+        selectionRectangles?: {
+          top?: number;
+          left?: number;
+          width?: number;
+          height?: number;
+          page?: string;
+        }[];
         label?: string;
-        lat: number;
-        lon: number;
-      })[] | null]>;
-    entityMetadata: {
-      [key: string]: (({
-          value: components["schemas"]["entityMetadataValue"];
-          attachment?: number;
+        indentation?: number;
+      }[];
+      extractedMetadata?: {
+        propertyID?: string;
+        name?: string;
+        timestamp?: string;
+        deleteSelection?: boolean;
+        selection?: {
+          text?: string;
+          selectionRectangles?: {
+            top?: number;
+            left?: number;
+            width?: number;
+            height?: number;
+            page?: string;
+          }[];
+        };
+      }[];
+    };
+    entityMetadataValue: OneOf<
+      [
+        string | null,
+        number | null,
+        boolean | null,
+        {
+          label?: string | null;
+          url?: string | null;
+        } | null,
+        {
+          from?: number | null;
+          to?: number | null;
+        } | null,
+        {
           label?: string;
-          suggestion_confidence?: number;
-          suggestion_model?: string;
-          /** @enum {string} */
-          provenance?: "" | "BULK_ACCEPT";
-          inheritedValue?: components["schemas"]["entityMetadataValue"];
-          inheritedType?: string;
-        })[]) | undefined;
+          lat: number;
+          lon: number;
+        } | null,
+        (
+          | {
+              label?: string;
+              lat: number;
+              lon: number;
+            }[]
+          | null
+        )
+      ]
+    >;
+    entityMetadata: {
+      [key: string]:
+        | {
+            value: components['schemas']['entityMetadataValue'];
+            attachment?: number;
+            label?: string;
+            suggestion_confidence?: number;
+            suggestion_model?: string;
+            /** @enum {string} */
+            provenance?: '' | 'BULK_ACCEPT';
+            inheritedValue?: components['schemas']['entityMetadataValue'];
+            inheritedType?: string;
+          }[]
+        | undefined;
     };
     entity: {
       _id?: string;
@@ -308,11 +334,11 @@ export interface components {
       };
       creationDate?: number;
       user?: string;
-      metadata?: components["schemas"]["entityMetadata"];
-      suggestedMetadata?: components["schemas"]["entityMetadata"];
-      obsoleteMetadata?: (string)[];
-      attachments?: (components["schemas"]["fileSchema"])[];
-      documents?: (components["schemas"]["fileSchema"])[];
+      metadata?: components['schemas']['entityMetadata'];
+      suggestedMetadata?: components['schemas']['entityMetadata'];
+      obsoleteMetadata?: string[];
+      attachments?: components['schemas']['file'][];
+      documents?: components['schemas']['file'][];
     };
     page: {
       _id?: string;

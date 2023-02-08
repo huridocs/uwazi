@@ -3,12 +3,11 @@ import express, { Application, NextFunction, Request, RequestHandler, Response }
 import * as OpenApiValidator from 'express-openapi-validator';
 import { Response as SuperTestResponse } from 'supertest';
 
-import { config } from 'api/config';
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
-import { extendSupertest } from './supertestExtensions';
 import { uwaziOpenAPIDocument } from '../uwaziOpenAPIDocument';
+import { extendSupertest } from './supertestExtensions';
 
 extendSupertest();
 
@@ -32,7 +31,7 @@ const setUpApp = (
   app.use(
     OpenApiValidator.middleware({
       apiSpec: uwaziOpenAPIDocument,
-      validateApiSpec: false,
+      validateApiSpec: true,
       ignoreUndocumented: true,
       validateRequests: {
         coerceTypes: 'array',

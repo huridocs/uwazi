@@ -19,7 +19,7 @@
   "scripts": {
     "check-types": "tsc --noEmit --pretty",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
-    "emit-types": "node scripts/emitSchemaTypes.js && ts-node -T ./scripts/openapiToTypescript.ts",
+    "emit-types": "node scripts/emitSchemaTypes.js && ts-node -T ./scripts/openapiToTypescript.ts && prettier --write ./app/api/uwaziOpenAPIDocumentTypes.d.ts",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
     "production-build": "./webpack/build.sh",
     "run-production": "NODE_ENV=production node server.js",
