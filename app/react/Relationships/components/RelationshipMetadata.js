@@ -119,11 +119,7 @@ class RelationshipMetadata extends Component {
         <AttachmentsList
           entity={this.props.entity}
           attachments={this.props.entity.attachments}
-          // isTargetDoc={false}
-          // isDocumentAttachments={Boolean(doc.get('file'))}
-          // parentId={doc.get('_id')}
-          // parentSharedId={doc.get('sharedId')}
-          // storeKey={'documentView'}
+          readOnly
         />
       </>
     );
