@@ -24,7 +24,7 @@ export type FileListProps = {
   files: Array<FileType>;
   entity: EntitySchema;
   storeKey: string;
-  readonly: boolean;
+  readonly?: boolean;
 };
 
 export class FileList extends Component<FileListProps> {
