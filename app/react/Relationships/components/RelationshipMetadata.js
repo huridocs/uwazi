@@ -115,11 +115,7 @@ class RelationshipMetadata extends Component {
     ) : (
       <>
         <ShowMetadata entity={this.props.entity} showTitle showType />
-        <FileList
-          entity={this.props.entity}
-          files={this.props.entity.documents}
-          // storeKey={'documentView'}
-        />
+        <FileList entity={this.props.entity} files={this.props.entity.documents} readonly />
         <AttachmentsList
           entity={this.props.entity}
           attachments={this.props.entity.attachments}

@@ -45,6 +45,13 @@ describe('file', () => {
     expect(language).toBe('english');
   });
 
+  describe('read only', () => {
+    it('should render the edit button by default', () => {
+      render();
+      expect(component.exists('.file-edit')).toBe(true);
+    });
+  });
+
   describe('editing the file', () => {
     it('should render a form with the file', () => {
       render();
