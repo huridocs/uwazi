@@ -71,7 +71,7 @@ const fetchEntitiesSharedIds = async (
 
 const getBlankSuggestion = (
   file: EnforcedWithId<FileType>,
-  extractor: IXExtractorType,
+  { _id: extractorId, property: propertyName }: { _id: ObjectIdSchema; property: string },
   template: ObjectIdSchema,
   defaultLanguage: string
 ) => ({
@@ -81,8 +81,8 @@ const getBlankSuggestion = (
   fileId: file._id,
   entityId: file.entity!,
   entityTemplate: typeof template === 'string' ? template : template.toString(),
-  extractorId: extractor._id,
-  propertyName: extractor.property,
+  extractorId,
+  propertyName,
   status: 'ready' as 'ready',
   error: '',
   segment: '',
@@ -119,6 +119,8 @@ const createBlankSuggestionsForPartialExtractor = async (
 
 const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType, batchSize?: number) =>
   createBlankSuggestionsForPartialExtractor(extractor, extractor.templates, batchSize);
+
+
 
 const Extractors = {
   get: model.get.bind(model),

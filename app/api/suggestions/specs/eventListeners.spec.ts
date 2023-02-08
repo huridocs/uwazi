@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-focused-tests */
 import entities from 'api/entities';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
@@ -85,11 +86,14 @@ const fixtures: DBFixture = {
       extractedTemplateName,
       otherExtractedTemplateName,
     ]),
-    fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
-      extractedTemplateName,
+    fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [extractedTemplateName]),
+    fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
       otherExtractedTemplateName,
     ]),
-    fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+      otherExtractedTemplateName,
+    ]),
   ],
   ixsuggestions: [
     fixturesFactory.ixSuggestion(
@@ -237,37 +241,37 @@ fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
   });
 
   fit.each([
-    // {
-    //   case: 'should not update suggestions if template is not changed',
-    //   sharedId: 'entity for new file',
-    //   newTemplate: fixturesFactory.id(extractedTemplateName),
-    //   expectedSuggestions: [
-    //     {
-    //       entityId: 'entity for new file',
-    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-    //       propertyName: 'extracted_property_1',
-    //       fileId: fixturesFactory.id('entfile'),
-    //     },
-    //     {
-    //       entityId: 'entity for new file',
-    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-    //       propertyName: 'extracted_property_2',
-    //       fileId: fixturesFactory.id('entfile'),
-    //     },
-    //     {
-    //       entityId: 'entity for new file',
-    //       entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-    //       propertyName: 'title',
-    //       fileId: fixturesFactory.id('entfile'),
-    //     },
-    //   ],
-    // },
-    // {
-    //   case: 'should update suggestions if template is changed from configured to not configured',
-    //   sharedId: 'entity for new file',
-    //   newTemplate: fixturesFactory.id(notExtractedTemplateName),
-    //   expectedSuggestions: [],
-    // },
+    {
+      case: 'should not update suggestions if template is not changed',
+      sharedId: 'entity for new file',
+      newTemplate: fixturesFactory.id(extractedTemplateName),
+      expectedSuggestions: [
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'extracted_property_2',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'title',
+          fileId: fixturesFactory.id('entfile'),
+        },
+      ],
+    },
+    {
+      case: 'should update suggestions if template is changed from configured to not configured',
+      sharedId: 'entity for new file',
+      newTemplate: fixturesFactory.id(notExtractedTemplateName),
+      expectedSuggestions: [],
+    },
     {
       case: 'should create suggestions if template is changed from not configured to configured',
       sharedId: 'entity with template not in config',
@@ -314,23 +318,29 @@ fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
     {
       case: 'should update suggestions if template is changed from configured to another configured',
       sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(extractedTemplate2Name),
+      newTemplate: fixturesFactory.id(otherExtractedTemplateName),
       expectedSuggestions: [
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'extracted_property_2_1',
           fileId: fixturesFactory.id('entfile'),
         },
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'extracted_property_2_2',
           fileId: fixturesFactory.id('entfile'),
         },
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'title',
           fileId: fixturesFactory.id('entfile'),
         },
@@ -340,6 +350,7 @@ fdescribe(`On ${EntityUpdatedEvent.name}`, () => {
     const current = await entities.getById(sharedId, 'en');
     const toSave = { ...current, template: newTemplate };
     await entities.save(toSave, { user: adminUser, language: 'en' });
+
     const allSuggestions =
       (await db.mongodb
         ?.collection('ixsuggestions')

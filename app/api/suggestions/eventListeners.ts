@@ -18,6 +18,10 @@ import { ensure } from 'shared/tsUtils';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXExtractorType } from 'shared/types/extractorType';
+import { EnforcedWithId } from 'api/odm';
+import languages from 'shared/languages';
+import { FileType } from 'shared/types/fileType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
 
 type extractionTemplateType =
@@ -53,22 +57,73 @@ const extractedMetadataChanged = async (
   return false;
 };
 
+const getBlankSuggestion = (
+  file: EnforcedWithId<FileType>,
+  { _id: extractorId, property: propertyName }: { _id: ObjectIdSchema; property: string },
+  template: ObjectIdSchema,
+  defaultLanguage: string
+) => ({
+  language: file.language
+    ? languages.get(file.language, 'ISO639_1') || defaultLanguage
+    : defaultLanguage,
+  fileId: file._id,
+  entityId: file.entity!,
+  entityTemplate: typeof template === 'string' ? template : template.toString(),
+  extractorId,
+  propertyName,
+  status: 'ready' as 'ready',
+  error: '',
+  segment: '',
+  suggestedValue: '',
+  date: new Date().getTime(),
+});
+
+const createDefaultSuggestionsForFiles = async (
+  fileList: EnforcedWithId<FileType>[],
+  entityTemplateId: ObjectIdSchema,
+  extractorsInvolved: IXExtractorType[],
+  defaultLanguage: string
+) => {
+  const blankSuggestions: IXSuggestionType[] = [];
+
+  fileList.forEach(file => {
+    extractorsInvolved.forEach(extractor => {
+      if (file.entity) {
+        blankSuggestions.push(
+          getBlankSuggestion(file, extractor, entityTemplateId, defaultLanguage)
+        );
+      }
+    });
+  });
+
+  await Suggestions.saveMultiple(blankSuggestions);
+};
+
 const handleTemplateChange = async (
   originalDoc: EntitySchema,
   modifiedDoc: EntitySchema,
   extractors: IXExtractorType[]
 ) => {
-  const originalTemplateId = originalDoc.template?.toString();
-  const modifiedTemplateId = modifiedDoc.template?.toString();
+  const originalTemplateId = originalDoc.template!.toString();
+  const modifiedTemplateId = modifiedDoc.template!.toString();
+
   if (originalTemplateId === modifiedTemplateId) return;
-  const allExtractedTemplates = new Set(
-    extractors.map(e => e.templates.map(t => t.toString())).flat()
-  );
+
   await Suggestions.delete({ entityId: modifiedDoc.sharedId });
-  if (allExtractedTemplates.has(modifiedTemplateId!)) {
+
+  const extractorsForEntity = extractors.filter(extractor =>
+    extractor.templates.map(templateId => templateId.toString()).includes(modifiedTemplateId)
+  );
+
+  if (extractorsForEntity.length) {
     const docFiles = await files.get({ entity: modifiedDoc.sharedId, type: 'document' });
     const defaultLanguage = (await settings.getDefaultLanguage()).key;
-    await createDefaultSuggestionsForFiles(docFiles, modifiedTemplateId!, defaultLanguage);
+    await createDefaultSuggestionsForFiles(
+      docFiles,
+      modifiedTemplateId,
+      extractorsForEntity,
+      defaultLanguage
+    );
   }
 };
 
