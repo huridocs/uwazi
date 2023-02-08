@@ -38,7 +38,7 @@ export class FileList extends Component<FileListProps> {
     const { storeKey, entity } = this.props;
     return (
       <li key={index}>
-        <File file={file} storeKey={storeKey} entity={entity} readonly />
+        <File file={file} storeKey={storeKey} entity={entity} readonly={this.props.readonly} />
       </li>
     );
   }
