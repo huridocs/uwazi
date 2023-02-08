@@ -98,13 +98,14 @@ export const SuggestionsQueryFilterSchema = {
   type: 'object',
   title: 'IXSuggestionsFilter',
   additionalProperties: false,
+  definitions: { objectIdSchema },
   properties: {
     language: { type: 'string' },
-    extractorId: { type: 'string' },
+    extractorId: objectIdSchema,
     states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
     entityTemplates: { type: 'array', items: { type: 'string' } },
   },
-  required: ['propertyName'],
+  required: ['extractorId'],
 };
 
 export const IXSuggestionsQuerySchema = {

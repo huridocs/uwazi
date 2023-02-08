@@ -5,8 +5,6 @@ import { Application, NextFunction, Request, Response } from 'express';
 import entities from 'api/entities';
 import { WithId } from 'api/odm';
 import { search } from 'api/search';
-import settings from 'api/settings/settings';
-import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import {
   factory,
   fixtures,
@@ -18,7 +16,6 @@ import {
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
-import { advancedSort } from 'app/utils/advancedSort';
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
@@ -72,7 +69,11 @@ describe('suggestions routes', () => {
     it('should return the suggestions filtered by the request language and the property name', async () => {
       const response = await request(app)
         .get('/api/suggestions')
-        .query({ filter: { propertyName: 'super_powers' } })
+        .query({
+          filter: {
+            extractorId: factory.id('super_powers_extractor').toString(),
+          },
+        })
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
         {
@@ -111,7 +112,11 @@ describe('suggestions routes', () => {
     it('should include failed suggestions but not processing ones', async () => {
       const response = await request(app)
         .get('/api/suggestions')
-        .query({ filter: { propertyName: 'age' } })
+        .query({
+          filter: {
+            extractorId: factory.id('age_extractor').toString(),
+          },
+        })
         .expect(200);
       expect(response.body.suggestions).toMatchObject(
         expect.arrayContaining([
@@ -143,7 +148,12 @@ describe('suggestions routes', () => {
       it('should return the requested page sorted by date by default', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title' }, page: { number: 2, size: 2 } })
+          .query({
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+            },
+            page: { number: 2, size: 2 },
+          })
           .expect(200);
         expect(response.body.suggestions).toMatchObject([
           { entityTitle: 'Alfred' },
@@ -159,7 +169,12 @@ describe('suggestions routes', () => {
       ])('should handle invalid pagination params', async page => {
         await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title' }, page })
+          .query({
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+            },
+            page,
+          })
           .expect(400);
       });
     });
@@ -168,7 +183,12 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'enemy', states: [SuggestionState.empty] } })
+          .query({
+            filter: {
+              extractorId: factory.id('enemy_extractor').toString(),
+              states: [SuggestionState.empty],
+            },
+          })
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
@@ -184,7 +204,10 @@ describe('suggestions routes', () => {
         const response = await request(app)
           .get('/api/suggestions/')
           .query({
-            filter: { propertyName: 'title', entityTemplates: [personTemplateId.toString()] },
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+              entityTemplates: [personTemplateId.toString()],
+            },
           })
           .expect(200);
         expect(response.body.suggestions).toMatchObject([
@@ -220,7 +243,11 @@ describe('suggestions routes', () => {
       it('should return aggregations', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title' } })
+          .query({
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+            },
+          })
           .expect(200);
         expect(response.body.aggregations).toMatchObject({
           template: sortAggregateById([
@@ -238,7 +265,10 @@ describe('suggestions routes', () => {
         const response = await request(app)
           .get('/api/suggestions/')
           .query({
-            filter: { propertyName: 'title', entityTemplates: [heroTemplateId.toString()] },
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+              entityTemplates: [heroTemplateId.toString()],
+            },
           })
           .expect(200);
         expect(response.body.aggregations).toMatchObject({
@@ -256,7 +286,12 @@ describe('suggestions routes', () => {
       it('should return aggregations for a specific state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'title', states: [SuggestionState.valueMatch] } })
+          .query({
+            filter: {
+              extractorId: factory.id('title_extractor').toString(),
+              states: [SuggestionState.valueMatch],
+            },
+          })
           .expect(200);
         expect(response.body.aggregations).toMatchObject({
           template: sortAggregateById([
@@ -275,7 +310,7 @@ describe('suggestions routes', () => {
           .get('/api/suggestions/')
           .query({
             filter: {
-              propertyName: 'title',
+              extractorId: factory.id('title_extractor').toString(),
               entityTemplates: [heroTemplateId.toString()],
               states: [SuggestionState.valueMatch],
             },
@@ -303,7 +338,7 @@ describe('suggestions routes', () => {
     });
 
     describe('authentication', () => {
-      it('should reject with unauthorized when user has not admin role', async () => {
+      it('should reject with unauthorized when the user does not have the admin role', async () => {
         user = { username: 'user 1', role: 'editor' };
         const response = await request(app).get('/api/suggestions/').query({}).expect(401);
         expect(response.unauthorized).toBe(true);
@@ -315,7 +350,9 @@ describe('suggestions routes', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
         .post('/api/suggestions/status')
-        .send({ property: 'super_powers' })
+        .send({
+          extractorId: factory.id('super_powers_extractor').toString(),
+        })
         .expect(200);
 
       expect(response.body).toMatchObject({ status: 'ready' });
@@ -324,7 +361,7 @@ describe('suggestions routes', () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/status')
-        .send({ property: 'super_powers' })
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(401);
       expect(response.unauthorized).toBe(true);
     });
@@ -334,7 +371,7 @@ describe('suggestions routes', () => {
     it('should return the status of the IX process', async () => {
       const response = await request(app)
         .post('/api/suggestions/train')
-        .send({ property: 'super_powers' })
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(200);
 
       expect(response.body).toMatchObject({ status: 'processing' });
@@ -343,7 +380,7 @@ describe('suggestions routes', () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
         .post('/api/suggestions/train')
-        .send({ property: 'super_powers' })
+        .send({ extractorId: factory.id('super_powers_extractor').toString() })
         .expect(401);
       expect(response.unauthorized).toBe(true);
     });

@@ -15,8 +15,9 @@ import languages from 'shared/languages';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
 const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
+  const tArray = await templates.get({ _id: { $in: templateIds } });
   const usedTemplates = objectIndex(
-    await templates.get({ _id: { $in: templateIds } }),
+    tArray,
     t => t._id.toString(),
     t => t
   );

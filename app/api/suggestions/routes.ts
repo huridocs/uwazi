@@ -33,16 +33,16 @@ async function processTrainFunction(
   res.json(status);
 }
 
-function propertyRequestValidation(root = 'body') {
+function extractorIdRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
     type: 'object',
     properties: {
       [root]: {
         type: 'object',
         additionalProperties: false,
-        required: ['property'],
+        required: ['extractorId'],
         properties: {
-          property: { type: 'string' },
+          extractorId: { type: 'string' },
         },
       },
     },
@@ -114,7 +114,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/stop',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.stopModel, req, res);
     }
@@ -124,7 +124,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.trainModel, req, res);
     }
@@ -134,7 +134,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
     }
@@ -254,6 +254,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/ixextractors/all',
     serviceMiddleware,
     needsAuthorization(['admin']),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req, res, _next) => {
       const extractors = await ixextractors.get_all();
       res.json(extractors);

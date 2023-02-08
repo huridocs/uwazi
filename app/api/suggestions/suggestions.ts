@@ -24,6 +24,7 @@ import {
 } from './pipelineStages';
 import { getStats } from './stats';
 import { updateStates } from './updateState';
+import { ObjectId } from 'mongodb';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -153,7 +154,7 @@ const fetchAndAggregateSuggestions = async (
   }: {
     states?: string[];
     entityTemplates?: string[];
-    extractorId?: string;
+    extractorId?: ObjectIdSchema;
     state?: { $in: string[] };
     entityTemplate?: { $in: string[] };
   } = _filters;
@@ -194,6 +195,7 @@ const Suggestions = {
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
     const { language, ...filters } = filter;
+    filters.extractorId = new ObjectId(filter.extractorId);
 
     return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
   },

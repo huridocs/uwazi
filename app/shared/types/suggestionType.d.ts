@@ -94,7 +94,7 @@ export interface IXSuggestionsStatsQuery {
 
 export interface IXSuggestionsFilter {
   language?: string;
-  extractorId?: string;
+  extractorId: ObjectIdSchema;
   states?: (
     | 'Match / Label'
     | 'Mismatch / Label'
