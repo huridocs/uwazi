@@ -320,6 +320,46 @@ describe('ixextractors', () => {
         }),
       ]);
     });
+
+    it('should delete existing suggestions when the property is changed, and create new blank suggestions', async () => {
+      const [existing] = await ixextractors.get({ name: 'existingExtractor' });
+      await ixextractors.update(
+        existing._id.toString(),
+        'existingExtractor',
+        'title',
+        existing.templates.map(t => t.toString())
+      );
+      const suggestions = _.orderBy(await Suggestions.getByExtractor(existing._id), [
+        'entityId',
+        'language',
+      ]);
+      expect(suggestions).toMatchObject([
+        {
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'en',
+          propertyName: 'title',
+        },
+        {
+          entityId: 'shared1',
+          entityTemplate: fixtureFactory.id('animalTemplate').toString(),
+          language: 'es',
+          propertyName: 'title',
+        },
+        {
+          entityId: 'shared3',
+          entityTemplate: fixtureFactory.id('plantTemplate').toString(),
+          language: 'en',
+          propertyName: 'title',
+        },
+        {
+          entityId: 'shared3',
+          entityTemplate: fixtureFactory.id('plantTemplate').toString(),
+          language: 'es',
+          propertyName: 'title',
+        },
+      ]);
+    });
   });
 
   describe('delete()', () => {

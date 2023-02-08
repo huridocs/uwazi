@@ -120,7 +120,32 @@ const createBlankSuggestionsForPartialExtractor = async (
 const createBlankSuggestionsForExtractor = async (extractor: IXExtractorType, batchSize?: number) =>
   createBlankSuggestionsForPartialExtractor(extractor, extractor.templates, batchSize);
 
+const handlePropertyUpdate = async (updatedExtractor: IXExtractorType) => {
+  await Suggestions.delete({ extractorId: updatedExtractor._id });
+  await createBlankSuggestionsForExtractor(updatedExtractor);
+};
 
+const handleTemplateUpdate = async (
+  oldExtractor: IXExtractorType,
+  newExtractor: IXExtractorType
+) => {
+  const templatesRemoved = oldExtractor.templates
+    .filter(templateId => !newExtractor.templates.includes(templateId.toString()))
+    .map(templateId => templateId.toString());
+
+  const templatesAdded = newExtractor.templates.filter(
+    templateId => !oldExtractor.templates.find(template => template.toString() === templateId)
+  );
+
+  await Suggestions.delete({
+    entityTemplate: { $in: templatesRemoved },
+    extractorId: oldExtractor._id,
+  });
+
+  if (templatesAdded.length) {
+    await createBlankSuggestionsForPartialExtractor(newExtractor, templatesAdded);
+  }
+};
 
 const Extractors = {
   get: model.get.bind(model),
@@ -145,7 +170,6 @@ const Extractors = {
   update: async (id: string, name: string, property: string, templateIds: string[]) => {
     const [extractor] = await model.get({ _id: new ObjectId(id) });
     if (!extractor) throw Error('Missing extractor.');
-
     await templatePropertyExistenceCheck(property, templateIds);
 
     const updated = await model.save({
@@ -155,21 +179,10 @@ const Extractors = {
       templates: templateIds,
     });
 
-    const templatesRemoved = extractor.templates
-      .filter(templateId => !templateIds.includes(templateId.toString()))
-      .map(templateId => templateId.toString());
-
-    const templatesAdded = templateIds.filter(
-      templateId => !extractor.templates.find(template => template.toString() === templateId)
-    );
-
-    await Suggestions.delete({
-      entityTemplate: { $in: templatesRemoved },
-      extractorId: extractor._id,
-    });
-
-    if (templatesAdded.length) {
-      await createBlankSuggestionsForPartialExtractor(updated, templatesAdded);
+    if (property !== extractor.property) {
+      await handlePropertyUpdate(updated);
+    } else {
+      await handleTemplateUpdate(extractor, updated);
     }
 
     return updated;
