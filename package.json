@@ -161,7 +161,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "2.15.349",
+    "pdfjs-dist": "3.3.122",
     "prom-client": "^14.1.1",
     "prop-types": "^15.8.1",
     "qrcode.react": "^3.1.0",
