@@ -52,7 +52,7 @@ describe('Homepage entities', () => {
     await testSelectorShot('div.app-content', { threshold: 0.08 });
   });
 
-  it('should display the related entity on the sidepanel with supporting files', async () => {
+  it('should display the related entity on the sidepanel', async () => {
     await page.goto(`${host}/entity/7ycel666l65vobt9`);
     await expect(page).toClick('div[aria-label="Relationships"]');
     await page.waitForSelector('.relationships-graph');
@@ -61,6 +61,9 @@ describe('Homepage entities', () => {
     });
     await page.waitForSelector('aside.side-panel > .sidepanel-body > .view > .item-info');
     await testSelectorShot('div.app-content', { threshold: 0.08 });
+  });
+
+  it('should display the supporting files of the related entity on the sidepanel', async () => {
     await scrollTo('aside.side-panel > .sidepanel-body > .attachments-list-parent');
     await testSelectorShot('aside.side-panel > .sidepanel-body', { threshold: 0.08 });
   });
