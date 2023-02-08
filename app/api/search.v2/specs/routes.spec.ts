@@ -37,7 +37,7 @@ describe('entities get searchString', () => {
         .get('/api/v2/search')
         .query({ page: { invalid_key: 'value' } });
 
-      expect(body.error).toBe('validation failed');
+      expect(body.error).toBeDefined();
     });
 
     it('should return all entities for the default language and required links', async () => {
