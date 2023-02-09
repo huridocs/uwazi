@@ -267,7 +267,10 @@ describe('ixextractors', () => {
 
       let suggestions = await testingDB.mongodb
         ?.collection('ixsuggestions')
-        .find({ extractorId: fixtureFactory.id('existingExtractor') }, { sort: { _id: 1 } })
+        .find(
+          { extractorId: fixtureFactory.id('existingExtractor') },
+          { sort: { entityId: 1, language: 1 } }
+        )
         .toArray();
 
       expect(suggestions).toEqual([
