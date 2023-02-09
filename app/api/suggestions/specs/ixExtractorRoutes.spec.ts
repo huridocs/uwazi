@@ -7,7 +7,7 @@ import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
-import { suggestionsRoutes } from '../routes';
+import { extractorsRoutes } from '../extractorsRoutes';
 
 const adminUser = {
   username: 'User 1',
@@ -15,7 +15,7 @@ const adminUser = {
   email: 'user@test.com',
 };
 
-const app: Application = setUpApp(suggestionsRoutes, (req, _res, next) => {
+const app: Application = setUpApp(extractorsRoutes, (req, _res, next) => {
   req.user = adminUser;
   next();
 });
