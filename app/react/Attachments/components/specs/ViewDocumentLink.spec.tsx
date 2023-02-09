@@ -54,7 +54,7 @@ describe('ViewDocumentLink', () => {
       });
     });
 
-    it('should like to the specific file if its on the relationships view', () => {
+    it('should link to the specific file if its on the relationships view', () => {
       const component = renderComponent(entity, '/entity/entitySharedId/relationships');
       expect(component.find(Link).props().to).toEqual('/entity/sharedId?file=file.pdf');
     });
