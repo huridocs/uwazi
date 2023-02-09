@@ -76,7 +76,7 @@ afterAll(async () => {
 
 describe('when the property exists', () => {
   it('should return the training counts', async () => {
-    expect(await getStats(fixturesFactory.id('age_extractor'))).toMatchObject({
+    expect(await getStats(fixturesFactory.id('age_extractor').toString())).toMatchObject({
       counts: {
         labeled: 3,
         nonLabeledMatching: 1,
@@ -150,7 +150,7 @@ describe('when the property exists', () => {
       state,
     };
     await testingEnvironment.setUp({ ixsuggestions: [input] });
-    const stats = await getStats(fixturesFactory.id('age_extractor'));
+    const stats = await getStats(fixturesFactory.id('age_extractor').toString());
     expect(stats.accuracy).toEqual(result);
   });
 
@@ -182,13 +182,13 @@ describe('when the property exists', () => {
       state,
     }));
     await testingEnvironment.setUp({ ixsuggestions: inputs });
-    const stats = await getStats(fixturesFactory.id('age_extractor'));
+    const stats = await getStats(fixturesFactory.id('age_extractor').toString());
     expect(stats.accuracy).toEqual(0.5);
   });
 });
 
 describe('when the property does not exists', () => {
   it('should not fail', async () => {
-    await getStats(fixturesFactory.id('non_existing_extractor'));
+    await getStats(fixturesFactory.id('non_existing_extractor').toString());
   });
 });
