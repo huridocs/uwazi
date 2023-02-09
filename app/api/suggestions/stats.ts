@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
@@ -58,7 +59,8 @@ const calcAccuracy = (groups: Groups) => {
   return total ? correct / total : 0;
 };
 
-const getStats = async (extractorId: string): Promise<SuggestionsStats> => {
+const getStats = async (_extractorId: string): Promise<SuggestionsStats> => {
+  const extractorId = new ObjectId(_extractorId);
   const groups = await getGroups(extractorId);
 
   const labeled = addCountsOf(groups, [
