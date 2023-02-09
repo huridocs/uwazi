@@ -99,9 +99,36 @@ describe('FiltersFromProperties', () => {
       const _text = undefined;
       const returnComponent = false;
       expect(t).toHaveBeenCalledWith('thesaurus1', 'option1', _text, returnComponent);
-      expect(t).toHaveBeenCalledWith('thesaurus2', 'option2', _text, returnComponent);
+      expect(t).not.toHaveBeenCalledWith('thesaurus2', 'option2', _text, returnComponent);
       expect(selectFilter.get(0).props.options[0].label).toBe('translatedOption');
-      expect(selectFilter.get(1).props.options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(1).props.options[0].label).toBe('option2');
+    });
+
+    it('should not translate the options for relationships', () => {
+      props.properties = [
+        {
+          content: '',
+          name: 'selectFilter',
+          label: 'selectLabel',
+          type: 'select',
+          options: [{ label: 'option1' }],
+        },
+        {
+          content: '',
+          name: 'relationshipFilter',
+          label: 'relationshipLabel',
+          type: 'relationship',
+          options: [{ label: 'option2' }],
+        },
+      ];
+
+      t.mockImplementation(() => 'translatedOption');
+
+      render();
+
+      const selectFilter = component.find(SelectFilter);
+      expect(selectFilter.get(0).props.options[0].label).toBe('translatedOption');
+      expect(selectFilter.get(1).props.options[0].label).toBe('option2');
     });
 
     it('should translate the options of filter with nested thesauris', () => {

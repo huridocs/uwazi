@@ -340,8 +340,12 @@ class InformationExtraction {
       return { status: 'ready', message: 'Ready' };
     }
 
-    if (currentModel.status === ModelStatus.processing) {
+    if (currentModel.status === ModelStatus.processing && currentModel.findingSuggestions) {
       return { status: 'processing_model', message: 'Training model' };
+    }
+
+    if (currentModel.status === ModelStatus.processing && !currentModel.findingSuggestions) {
+      return { status: 'cancel', message: 'Canceling...' };
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
@@ -349,6 +353,11 @@ class InformationExtraction {
         extractorId,
         currentModel.creationDate
       );
+
+      if (suggestionStatus.processed === suggestionStatus.total) {
+        return { status: 'ready', message: 'Ready' };
+      }
+
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',

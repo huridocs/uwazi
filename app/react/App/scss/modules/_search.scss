@@ -262,6 +262,8 @@
   margin: 0;
   padding: 15px;
   color: $c-grey-dark;
+  display: flex;
+  flex-direction: column;
 
   &:not(:last-child),
   .form-group:not(:last-child) & {
@@ -731,6 +733,7 @@
 .multiselectItem {
   line-height: 1.2em;
   padding: 5px 0;
+  width: 100%;
 
   &.no-top-level-select {
     .multiselectItem-icon,
