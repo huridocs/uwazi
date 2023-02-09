@@ -127,7 +127,7 @@ describe('InformationExtraction', () => {
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
-        extractorId: factory.id('prop1extractor'),
+        id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
 
@@ -192,7 +192,7 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { extractorId: factory.id('prop1extractor') },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'create_model',
       });
@@ -236,7 +236,7 @@ describe('InformationExtraction', () => {
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('prop1extractor')}`,
-        extractorId: factory.id('prop1extractor'),
+        id: factory.id('prop1extractor').toString(),
         tenant: 'tenant1',
       });
 
@@ -270,7 +270,7 @@ describe('InformationExtraction', () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { extractorId: factory.id('prop1extractor') },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'suggestions',
       });
@@ -328,8 +328,6 @@ describe('InformationExtraction', () => {
       expect(informationExtraction.taskManager?.startTask).not.toHaveBeenCalled();
     });
   });
-
-  // TODO - continue rewriting this test from here
 
   describe('when suggestions are ready', () => {
     it('should request and store the suggestions', async () => {

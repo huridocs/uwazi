@@ -5,6 +5,8 @@
 import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
+import { ObjectId } from 'mongodb';
+
 import { storage } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -199,7 +201,7 @@ class InformationExtraction {
 
         const [currentSuggestion] = await IXSuggestionsModel.get({
           entityId: entity.sharedId,
-          extractorId: rawSuggestion.id,
+          extractorId: extractor._id,
           fileId: segmentation.fileID,
         });
 
@@ -292,7 +294,7 @@ class InformationExtraction {
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
-      params: { id: extractorId },
+      params: { id: extractorId.toString() },
     });
   };
 
@@ -323,7 +325,7 @@ class InformationExtraction {
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
-      params: { id: extractorId },
+      params: { id: extractorId.toString() },
     });
 
     await this.saveModelProcess(extractorId);
@@ -395,8 +397,12 @@ class InformationExtraction {
     });
   };
 
-  processResults = async (message: ResultsMessage): Promise<void> => {
+  processResults = async (_message: ResultsMessage): Promise<void> => {
     await tenants.run(async () => {
+      const message = {
+        ..._message,
+        params: { ..._message.params, id: new ObjectId(_message.params!.id) },
+      };
       const [currentModel] = await IXModelsModel.get({
         extractorId: message.params!.id,
       });
@@ -412,12 +418,12 @@ class InformationExtraction {
       }
 
       if (!currentModel.findingSuggestions) {
-        emitToTenant(message.tenant, 'ix_model_status', message.params!.id, 'ready', 'Canceled');
+        emitToTenant(message.tenant, 'ix_model_status', _message.params!.id, 'ready', 'Canceled');
         return;
       }
 
       await this.getSuggestions(message.params!.id);
-    }, message.tenant);
+    }, _message.tenant);
   };
 
   getSuggestionsStatus = async (extractorId: ObjectIdSchema, modelCreationDate: number) => {
