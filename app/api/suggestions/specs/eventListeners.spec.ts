@@ -632,10 +632,14 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         extractedTemplateName,
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
     ]);
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
@@ -693,10 +697,14 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         extractedTemplateName,
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
     ]);
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
@@ -733,10 +741,14 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
     ]);
   });
 
