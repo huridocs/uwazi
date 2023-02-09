@@ -184,12 +184,13 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'entityId',
     extra: data =>
       // eslint-disable-next-line max-len
-      ` updated property: ${data.propertyName} on extractor ${data.extractorId}, with value: ${data.suggestedValue} . All languages: ${data.allLanguages}`,
+      ` updated property: ${data.propertyName} on extractor ${data.extractorName}, with value: ${data.suggestedValue} . All languages: ${data.allLanguages}`,
   },
   'POST/api/suggestions/train': {
     desc: 'Information extraction training',
     method: Methods.Create,
-    extra: data => ` property ${data.property} on extractor ${data.extractorId} `,
+    related: helpers.loadExtractorData,
+    extra: data => ` extractor ${data.name} `,
   },
   'POST/api/translations/populate': {
     desc: 'Reset default translation',

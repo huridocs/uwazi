@@ -148,7 +148,7 @@ const handleTemplateUpdate = async (
   }
 };
 
-const Extractors = {
+export const Extractors = {
   get: model.get.bind(model),
   get_all: async () => model.get({}),
   delete: async (_ids: string[]) => {
