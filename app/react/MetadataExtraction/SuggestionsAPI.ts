@@ -38,17 +38,17 @@ const acceptEntitySuggestion = async (requestParams: RequestParams) => {
 };
 
 const getAllExtractors = async (requestParams: RequestParams) => {
-  const { json: response } = await api.get('ixextractors/all', requestParams);
+  const { json: response } = await api.get('ixextractors', requestParams);
   return response;
 };
 
 const createExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
-  const { json: response } = await api.post('ixextractors/create', requestParams);
+  const { json: response } = await api.post('ixextractors', requestParams);
   return response;
 };
 
 const deleteExtractors = async (requestParams: RequestParams<string[]>) => {
-  const { json: response } = await api.post('ixextractors/delete', requestParams);
+  const { json: response } = await api.delete('ixextractors', requestParams);
   return response;
 };
 

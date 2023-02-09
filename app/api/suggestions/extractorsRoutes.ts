@@ -6,7 +6,7 @@ import { serviceMiddleware } from './serviceMiddleware';
 
 export const extractorsRoutes = (app: Application) => {
   app.post(
-    '/api/ixextractors/create',
+    '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
@@ -34,8 +34,8 @@ export const extractorsRoutes = (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/ixextractors/update',
+  app.put(
+    '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
@@ -65,8 +65,8 @@ export const extractorsRoutes = (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/ixextractors/delete',
+  app.delete(
+    '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
     validateAndCoerceRequest({
@@ -82,7 +82,7 @@ export const extractorsRoutes = (app: Application) => {
   );
 
   app.get(
-    '/api/ixextractors/all',
+    '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

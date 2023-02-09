@@ -92,7 +92,7 @@ describe('extractor routes', () => {
     await testingEnvironment.tearDown();
   });
 
-  describe('POST /api/ixextractors/create', () => {
+  describe('POST /api/ixextractors', () => {
     it.each([
       {
         reason: 'non existing template',
@@ -119,7 +119,7 @@ describe('extractor routes', () => {
         },
       },
     ])('should reject $reason', async ({ input, expectedMessage }) => {
-      const response = await request(app).post('/api/ixextractors/create').send(input).expect(500);
+      const response = await request(app).post('/api/ixextractors').send(input).expect(500);
       expect(response.body.error).toBe(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(3);
@@ -154,7 +154,7 @@ describe('extractor routes', () => {
         },
       },
     ])('should create and return extractor', async ({ input, expectedInDb }) => {
-      const response = await request(app).post('/api/ixextractors/create').send(input).expect(200);
+      const response = await request(app).post('/api/ixextractors').send(input).expect(200);
 
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.[3]).toMatchObject(expectedInDb);
@@ -163,7 +163,7 @@ describe('extractor routes', () => {
     });
   });
 
-  describe('POST /api/ixextractors/update', () => {
+  describe('PUT /api/ixextractors', () => {
     it.each([
       {
         reason: 'non existing _id',
@@ -191,7 +191,7 @@ describe('extractor routes', () => {
       },
     ])('should reject $reason', async ({ change, expectedMessage }) => {
       const input: any = { ...extractorToUpdate, ...change };
-      const response = await request(app).post('/api/ixextractors/update').send(input).expect(500);
+      const response = await request(app).put('/api/ixextractors').send(input).expect(500);
       expect(response.body.error).toBe(expectedMessage);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.[0]).toMatchObject(extractorToUpdate);
@@ -232,20 +232,20 @@ describe('extractor routes', () => {
       },
     ])('should update $updateTarget', async ({ change }) => {
       const input: any = { ...extractorToUpdate, ...change };
-      const response = await request(app).post('/api/ixextractors/update').send(input).expect(200);
+      const response = await request(app).put('/api/ixextractors').send(input).expect(200);
       expect(response.body).toMatchObject(input);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.[0]).toMatchObject(input);
     });
   });
 
-  describe('POST /api/ixextractors/delete', () => {
+  describe('DELETE /api/ixextractors', () => {
     it('should reject non existing _id', async () => {
       const input = [
         fixturesFactory.id('extractor1'),
         fixturesFactory.id('non-existing-extractor'),
       ];
-      const response = await request(app).post('/api/ixextractors/delete').send(input).expect(500);
+      const response = await request(app).delete('/api/ixextractors').send(input).expect(500);
       expect(response.body.error).toBe('Missing extractor.');
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(3);
@@ -253,15 +253,15 @@ describe('extractor routes', () => {
 
     it('should delete extractor', async () => {
       const input = [fixturesFactory.id('extractor1'), fixturesFactory.id('extractor2')];
-      await request(app).post('/api/ixextractors/delete').send(input).expect(200);
+      await request(app).delete('/api/ixextractors').send(input).expect(200);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(1);
     });
   });
 
-  describe('GET /api/ixextractors/all', () => {
+  describe('GET /api/ixextractors', () => {
     it('should return all extractors', async () => {
-      const response = await request(app).get('/api/ixextractors/all').expect(200);
+      const response = await request(app).get('/api/ixextractors').expect(200);
       expect(response.body).toMatchObject([
         { ...existingExtractors[0], _id: existingExtractors[0]._id.toString() },
         { ...existingExtractors[1], _id: existingExtractors[1]._id.toString() },
