@@ -47,6 +47,14 @@ describe('AttachmentsList', () => {
     });
   });
 
+  describe('when it is read only', () => {
+    it('should not display the upload button', () => {
+      props.readOnly = true;
+      render();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
   describe('when files is empty', () => {
     it('should render nothing if user not logged in', () => {
       props.files = Immutable([]);
