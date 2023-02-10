@@ -12,7 +12,8 @@ type ViewDocumentLinkProps = {
 export const ViewDocumentLink = ({ filename, entity, children }: ViewDocumentLinkProps) => {
   const location = useLocation();
   const onViewer = location.pathname.match(/entity/);
-  return onViewer ? (
+  const onRelationshipsViewer = location.pathname.match(/relationships/);
+  return onViewer && !onRelationshipsViewer ? (
     <CurrentLocationLink
       className="btn btn-default"
       location={location}

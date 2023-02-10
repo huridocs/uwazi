@@ -22,8 +22,12 @@ import { ViewDocumentLink } from './ViewDocumentLink';
 type FileOwnProps = {
   file: FileType | ClientBlobFile;
   entity: EntitySchema;
+  updateFile: (file: FileType, entity: Object) => any | void;
+  deleteFile: (file: FileType, entity: Object) => any | void;
+  readonly?: boolean;
   mainContext: { confirm: Function };
 };
+
 type FileState = {
   editing: boolean;
 };
@@ -32,8 +36,10 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
   bindActionCreators({ updateFile, deleteFile }, wrapDispatch(dispatch, 'library'));
 const connector = connect(null, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector> & FileOwnProps;
-class File extends Component<mappedProps, FileState> {
-  constructor(props: mappedProps) {
+class File extends Component<FileOwnProps, FileState> {
+  static defaultProps = { updateFile: () => {}, deleteFile: () => {}, readonly: false };
+
+  constructor(props: FileOwnProps) {
     super(props);
     this.state = {
       editing: false,
@@ -93,6 +99,7 @@ class File extends Component<mappedProps, FileState> {
 
   renderReady() {
     const { language, filename = '' } = this.props.file;
+    const { readonly } = this.props;
     return (
       <div>
         <div>
@@ -114,13 +121,19 @@ class File extends Component<mappedProps, FileState> {
             &nbsp;
             <Translate>Download</Translate>
           </a>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
-            <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
-              <Icon icon="pencil-alt" />
-              &nbsp;
-              <Translate>Edit</Translate>
-            </button>
-          </NeedAuthorization>
+          {!readonly && (
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
+              <button
+                type="button"
+                className="file-edit btn btn-outline-success"
+                onClick={this.edit}
+              >
+                <Icon icon="pencil-alt" />
+                &nbsp;
+                <Translate>Edit</Translate>
+              </button>
+            </NeedAuthorization>
+          )}
           <ViewDocumentLink filename={filename} entity={this.props.entity}>
             <Translate>View</Translate>
           </ViewDocumentLink>
@@ -133,6 +146,7 @@ class File extends Component<mappedProps, FileState> {
     const { originalname, status } = !isBlobFile(this.props.file)
       ? this.props.file
       : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
+
     return (
       <div className="file">
         <div className="file-originalname">{originalname}</div>
