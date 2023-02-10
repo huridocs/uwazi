@@ -32,7 +32,7 @@ describe('ViewDocumentLink', () => {
   beforeEach(() => {
     pathname = 'entity/';
   });
-  
+
   describe('when on viewer', () => {
     it('should change file name and set page 1 if its in document view', () => {
       const component = renderComponent(entity);
