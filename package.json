@@ -320,7 +320,7 @@
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "node-sass": "7.0.0",
-    "nodemon": "^2.0.19",
+    "nodemon": "^2.0.20",
     "plop": "^3.0.6",
     "prettier": "2.7.1",
     "puppeteer": "^13.5.2",

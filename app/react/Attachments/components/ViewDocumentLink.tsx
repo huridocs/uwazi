@@ -14,7 +14,8 @@ export class ViewDocumentLinkBase extends Component<Props & WithRouterProps, Sta
   render() {
     const { filename, location, children, entity } = this.props;
     const onViewer = location.pathname.match(/entity/);
-    return onViewer ? (
+    const onRelationshipsViewer = location.pathname.match(/relationships/);
+    return onViewer && !onRelationshipsViewer ? (
       <CurrentLocationLink
         className="btn btn-default"
         location={location}
