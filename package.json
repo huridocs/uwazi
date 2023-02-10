@@ -175,7 +175,7 @@
     "react-dom": "16.13.1",
     "react-dropzone": "14.2.3",
     "react-helmet": "^6.1.0",
-    "react-hook-form": "^7.38.0",
+    "react-hook-form": "^7.43.1",
     "react-hot-loader": "^4.13.1",
     "react-image-gallery": "^1.2.11",
     "react-modal": "3.14.4",
