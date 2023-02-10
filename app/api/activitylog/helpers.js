@@ -7,7 +7,7 @@ import userGroups from 'api/usergroups/userGroups';
 import { files } from 'api/files';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { Suggestions } from 'api/suggestions/suggestions';
-import Extractors from 'api/services/informationextraction/ixextractors';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 
 const formatLanguage = langKey => {
   const lang = availableLanguages.find(({ key }) => key === langKey);
