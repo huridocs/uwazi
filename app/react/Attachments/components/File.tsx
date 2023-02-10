@@ -23,13 +23,15 @@ type FileProps = {
   entity: EntitySchema;
   updateFile: (file: FileType, entity: Object) => any | void;
   deleteFile: (file: FileType, entity: Object) => any | void;
+  readonly?: boolean;
 };
+
 type FileState = {
   editing: boolean;
 };
 
 class File extends Component<FileProps, FileState> {
-  static defaultProps = { updateFile: () => {}, deleteFile: () => {} };
+  static defaultProps = { updateFile: () => {}, deleteFile: () => {}, readonly: false };
 
   static contextTypes = {
     confirm: PropTypes.func,
@@ -95,6 +97,7 @@ class File extends Component<FileProps, FileState> {
 
   renderReady() {
     const { language, filename = '' } = this.props.file;
+    const { readonly } = this.props;
     return (
       <div>
         <div>
@@ -116,13 +119,19 @@ class File extends Component<FileProps, FileState> {
             &nbsp;
             <Translate>Download</Translate>
           </a>
-          <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
-            <button type="button" className="file-edit btn btn-outline-success" onClick={this.edit}>
-              <Icon icon="pencil-alt" />
-              &nbsp;
-              <Translate>Edit</Translate>
-            </button>
-          </NeedAuthorization>
+          {!readonly && (
+            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[this.props.entity]}>
+              <button
+                type="button"
+                className="file-edit btn btn-outline-success"
+                onClick={this.edit}
+              >
+                <Icon icon="pencil-alt" />
+                &nbsp;
+                <Translate>Edit</Translate>
+              </button>
+            </NeedAuthorization>
+          )}
           <ViewDocumentLink filename={filename} entity={this.props.entity}>
             <Translate>View</Translate>
           </ViewDocumentLink>
@@ -135,6 +144,7 @@ class File extends Component<FileProps, FileState> {
     const { originalname, status } = !isBlobFile(this.props.file)
       ? this.props.file
       : { originalname: (this.props.file as ClientBlobFile).originalFile.name, status: 'ready' };
+
     return (
       <div className="file">
         <div className="file-originalname">{originalname}</div>

@@ -48,6 +48,37 @@ describe('Attachment', () => {
     expect(component.find('.attachment-name').text()).toContain('Human name 1');
   });
 
+  it('should hold a thumbnail for PDFs and valid images', () => {
+    props.file.filename = 'document.pdf';
+    render();
+    expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
+    expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
+
+    props.file.filename = 'image.jpg';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.jpg');
+
+    props.file.filename = 'image.JPG';
+    render();
+    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.JPG');
+
+    props.file.filename = 'image.doc';
+    render();
+    expect(component.find('.attachment-thumbnail').children().length).toBe(0);
+  });
+
+  it('should allow downloading the attachment', () => {
+    render();
+    expect(component.find('.attachment-link').props().href).toBe('/api/files/filename.ext');
+  });
+
+  it('should check authorization roles to listed attachment', () => {
+    render();
+    const authorizationProps = component.find('.attachment').children().at(1).props();
+    expect(authorizationProps.roles).toEqual(['admin', 'editor']);
+    expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
+  });
+
   describe('when its being edited (and not readOnly)', () => {
     beforeEach(() => {
       props.beingEdited = true;
@@ -118,28 +149,13 @@ describe('Attachment', () => {
     });
   });
 
-  it('should hold a thumbnail for PDFs and valid images', () => {
-    props.file.filename = 'document.pdf';
-    render();
-    expect(component.find('.attachment-thumbnail').find(Icon).props().icon).toContain('file-pdf');
-    expect(component.find('.attachment-thumbnail > span').text()).toContain(' pdf');
-
-    props.file.filename = 'image.jpg';
-    render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.jpg');
-
-    props.file.filename = 'image.JPG';
-    render();
-    expect(component.find('.attachment-thumbnail img').props().src).toBe('/api/files/image.JPG');
-
-    props.file.filename = 'image.doc';
-    render();
-    expect(component.find('.attachment-thumbnail').children().length).toBe(0);
-  });
-
-  it('should allow downloading the attachment', () => {
-    render();
-    expect(component.find('.attachment-link').props().href).toBe('/api/files/filename.ext');
+  describe('read only', () => {
+    it('should not display the delete or rename buttons', () => {
+      props.readOnly = true;
+      render();
+      expect(component.exists({ children: 'Rename' })).toBe(false);
+      expect(component.exists({ children: 'Delete' })).toBe(false);
+    });
   });
 
   describe('mapStateToProps', () => {
@@ -151,12 +167,5 @@ describe('Attachment', () => {
       ownProps = { file: { _id: 'otherId' } };
       expect(mapStateToProps(state, ownProps).beingEdited).toEqual(false);
     });
-  });
-
-  it('should check authorization roles to listed attachment', () => {
-    render();
-    const authorizationProps = component.find('.attachment').children().at(1).props();
-    expect(authorizationProps.roles).toEqual(['admin', 'editor']);
-    expect(authorizationProps.orWriteAccessTo).toEqual([props.entity]);
   });
 });
