@@ -32,13 +32,20 @@ describe('ViewDocumentLink', () => {
   beforeEach(() => {
     pathname = 'entity/';
   });
-  describe('when on viewer route', () => {
-    it('should change file name and set page 1', () => {
+  
+  describe('when on viewer', () => {
+    it('should change file name and set page 1 if its in document view', () => {
       const component = renderComponent(entity);
       expect(component.find(CurrentLocationLink).props().queryParams).toEqual({
         file: 'file.pdf',
         page: 1,
       });
+    });
+
+    it('should link to the specific file if its on the relationships view', () => {
+      pathname = '/entity/entitySharedId/relationships';
+      const component = renderComponent(entity);
+      expect(component.find(Link).props().to).toEqual('/entity/sharedId?file=file.pdf');
     });
   });
 

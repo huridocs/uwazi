@@ -225,20 +225,24 @@ class Attachment extends Component {
                   <Icon icon="cloud-download-alt" /> <Translate>Download</Translate>
                 </a>
               </li>
-              <li>
-                <button type="button" onClick={this.toggleRename}>
-                  <Icon icon="font" /> <Translate>Rename</Translate>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={this.deleteAttachment.bind(this, file)}
-                  className="is--delete"
-                >
-                  <Icon icon="trash-alt" /> <Translate>Delete</Translate>
-                </button>
-              </li>
+              {!this.props.readOnly && (
+                <>
+                  <li>
+                    <button type="button" onClick={this.toggleRename}>
+                      <Icon icon="font" /> <Translate>Rename</Translate>
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      onClick={this.deleteAttachment.bind(this, file)}
+                      className="is--delete"
+                    >
+                      <Icon icon="trash-alt" /> <Translate>Delete</Translate>
+                    </button>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </NeedAuthorization>
