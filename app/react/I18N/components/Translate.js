@@ -20,7 +20,7 @@ const parseMarkdownMarker = (line, regexp, groupName, wrapper) => {
 };
 
 const parseMarkdownBoldMarker = line =>
-  parseMarkdownMarker(line, /\*\*(?<bold>.*)\*\*/, 'bold', text => <strong>{text}</strong>);
+  parseMarkdownMarker(line, /\*{2}(?<bold>.*)\*{2}/, 'bold', text => <strong>{text}</strong>);
 
 const parseMarkdownItalicMarker = line =>
   parseMarkdownMarker(line, /\*(?<italic>.*)\*/, 'italic', text => <i>{text}</i>);
@@ -54,7 +54,7 @@ class Translate extends Component {
           const boldMatches = parseMarkdownBoldMarker(line);
           const italicMatches = parseMarkdownItalicMarker(line);
           return (
-            <Fragment key={line}>
+            <Fragment key={`${line}-${index.toString()}`}>
               {boldMatches ||
                 italicMatches || ( // eslint-disable-next-line react/jsx-no-useless-fragment
                   <>{line}</>
