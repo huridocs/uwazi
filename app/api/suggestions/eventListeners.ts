@@ -103,7 +103,6 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
     const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
 
-    // const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
     const extractors = await Extractors.get();
     if (await extractedMetadataChanged(originalDoc, modifiedDoc, extractors)) {
       await Suggestions.updateStates({ entityId: originalDoc.sharedId });
@@ -116,9 +115,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
       const entityTemplateId = (
         await entities.get({ sharedId: newFile.entity }, 'template')
       )[0].template.toString();
-      // const settingsTemplate = features?.metadataExtraction?.templates?.find(
-      //   t => t.template === entityTemplateId
-      // );
+
       const extractors = await Extractors.get();
       const extractorsForEntity = extractors.filter(extractor =>
         extractor.templates.map(templateId => templateId.toString()).includes(entityTemplateId)
