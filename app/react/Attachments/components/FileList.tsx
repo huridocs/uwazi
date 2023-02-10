@@ -14,6 +14,7 @@ const defaultProps = {
   files: [],
   storeKey: '',
   entity: {},
+  readonly: false,
 };
 
 export type FileListProps = {
@@ -21,6 +22,7 @@ export type FileListProps = {
   storeKey: string;
   mainContext: { confirm: Function };
   entity?: EntitySchema;
+  readonly?: boolean;
 };
 
 const orderFilesByLanguage = (files: FileType[], systemLanguage: string) => {
@@ -48,7 +50,12 @@ export class FileList extends Component<FileListProps> {
     const { entity = {} } = this.props;
     return (
       <li key={index}>
-        <File file={file} entity={entity} mainContext={this.props.mainContext} />
+        <File
+          file={file}
+          entity={entity}
+          readonly={this.props.readonly}
+          mainContext={this.props.mainContext}
+        />
       </li>
     );
   }
@@ -60,7 +67,7 @@ export class FileList extends Component<FileListProps> {
       </h2>
     );
 
-    const { files, storeKey, entity = {} } = this.props;
+    const { files, storeKey, readonly, entity = {} } = this.props;
     const orderedFiles = orderFilesByLanguage(files, entity.language as string);
     return (
       <div className="filelist">
@@ -72,11 +79,13 @@ export class FileList extends Component<FileListProps> {
           ) : (
             <>{label}</>
           )}
-          <div>
-            <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
-              <UploadButton entitySharedId={entity.sharedId} storeKey={storeKey} />
-            </NeedAuthorization>
-          </div>
+          {!readonly && (
+            <div>
+              <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
+                <UploadButton entitySharedId={entity.sharedId} storeKey={storeKey} />
+              </NeedAuthorization>
+            </div>
+          )}
         </div>
         <ul>{orderedFiles.map((file, index) => this.renderFile(file, index))}</ul>
       </div>

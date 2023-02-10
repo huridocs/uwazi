@@ -7,7 +7,7 @@ import Attachment from 'app/Attachments/components/Attachment';
 
 import UploadSupportingFile from './UploadSupportingFile';
 
-export default class AttachmentsList extends Component {
+class AttachmentsList extends Component {
   static arrangeFiles(files = []) {
     return advancedSort(files, { property: 'originalname' });
   }
@@ -23,7 +23,8 @@ export default class AttachmentsList extends Component {
     const forcedReadOnly = readOnly || Boolean(this.props.isTargetDoc);
 
     let uploadAttachmentButton = null;
-    if (!this.props.isTargetDoc) {
+
+    if (!forcedReadOnly) {
       uploadAttachmentButton = (
         <NeedAuthorization roles={['admin', 'editor']} orWriteAccessTo={[entity]}>
           <div className="attachment-add">
@@ -84,3 +85,9 @@ AttachmentsList.propTypes = {
   storeKey: PropTypes.string,
   entity: PropTypes.object,
 };
+
+AttachmentsList.contextTypes = {
+  confirm: PropTypes.func,
+};
+
+export default AttachmentsList;
