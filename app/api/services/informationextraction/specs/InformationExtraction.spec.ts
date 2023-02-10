@@ -11,7 +11,7 @@ import { factory, fixtures } from './fixtures';
 import { InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
-import ixextractors from '../ixextractors';
+import { Extractors } from '../ixextractors';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -78,7 +78,7 @@ describe('InformationExtraction', () => {
     extractorName: string
   ) => {
     const extractorId = factory.id(extractorName);
-    const [extractor] = await ixextractors.get({ _id: extractorId });
+    const [extractor] = await Extractors.get({ _id: extractorId });
     await informationExtraction.saveSuggestionProcess(
       {
         _id: factory.id(id),

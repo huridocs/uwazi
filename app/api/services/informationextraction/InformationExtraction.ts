@@ -37,7 +37,7 @@ import { IXModelType } from 'shared/types/IXModelType';
 import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
-import ixextractors from './ixextractors';
+import { Extractors } from './ixextractors';
 
 type RawSuggestion = {
   tenant: string;
@@ -182,7 +182,7 @@ class InformationExtraction {
   saveSuggestions = async (message: ResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
-    const [extractor] = await ixextractors.get({ _id: message.params?.id });
+    const [extractor] = await Extractors.get({ _id: message.params?.id });
 
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
@@ -283,7 +283,7 @@ class InformationExtraction {
 
   getSuggestions = async (extractorId: ObjectIdSchema) => {
     const files = await getFilesForSuggestions(extractorId);
-    const [extractor] = await ixextractors.get({ _id: extractorId });
+    const [extractor] = await Extractors.get({ _id: extractorId });
     if (files.length === 0) {
       await this.stopModel(extractorId);
       emitToTenant(tenants.current().name, 'ix_model_status', extractorId, 'ready', 'Completed');
@@ -311,7 +311,7 @@ class InformationExtraction {
       await IXModelsModel.save(model);
     }
 
-    const [extractor] = await ixextractors.get({ _id: extractorId });
+    const [extractor] = await Extractors.get({ _id: extractorId });
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(extractor, serviceUrl);
     if (!materialsSent) {

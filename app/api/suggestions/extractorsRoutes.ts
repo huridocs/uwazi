@@ -1,5 +1,5 @@
 import { needsAuthorization } from 'api/auth';
-import ixextractors from 'api/services/informationextraction/ixextractors';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { Application } from 'express';
 import { serviceMiddleware } from './serviceMiddleware';
@@ -25,11 +25,7 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      const created = await ixextractors.create(
-        req.body.name,
-        req.body.property,
-        req.body.templates
-      );
+      const created = await Extractors.create(req.body.name, req.body.property, req.body.templates);
       res.json(created);
     }
   );
@@ -55,7 +51,7 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      const updated = await ixextractors.update(
+      const updated = await Extractors.update(
         req.body._id,
         req.body.name,
         req.body.property,
@@ -76,7 +72,7 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
-      await ixextractors.delete(req.body);
+      await Extractors.delete(req.body);
       res.sendStatus(200);
     }
   );
@@ -87,7 +83,7 @@ export const extractorsRoutes = (app: Application) => {
     needsAuthorization(['admin']),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req, res, _next) => {
-      const extractors = await ixextractors.get_all();
+      const extractors = await Extractors.get_all();
       res.json(extractors);
     }
   );

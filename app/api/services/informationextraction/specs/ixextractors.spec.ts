@@ -5,7 +5,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import ixextractors from '../ixextractors';
+import { Extractors } from '../ixextractors';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -136,10 +136,8 @@ describe('ixextractors', () => {
 
   describe('create()', () => {
     it('should create a new ixextractor', async () => {
-      await ixextractors.create('age_test', 'age', [
-        fixtureFactory.id('personTemplate').toString(),
-      ]);
-      const [ixextractor] = await ixextractors.get({ name: 'age_test' });
+      await Extractors.create('age_test', 'age', [fixtureFactory.id('personTemplate').toString()]);
+      const [ixextractor] = await Extractors.get({ name: 'age_test' });
       expect(ixextractor).toMatchObject({
         name: 'age_test',
         property: 'age',
@@ -242,8 +240,8 @@ describe('ixextractors', () => {
     ])(
       'it should create empty suggestions for $case',
       async ({ name, property, templates, expectedSuggestions }) => {
-        await ixextractors.create(name, property, templates);
-        const [extractor] = await ixextractors.get({ name });
+        await Extractors.create(name, property, templates);
+        const [extractor] = await Extractors.get({ name });
         const suggestions = _.orderBy(await Suggestions.getByExtractor(extractor._id), [
           'entityId',
           'language',
@@ -255,14 +253,14 @@ describe('ixextractors', () => {
 
   describe('update()', () => {
     it('should delete the existing suggestions when removing a template and add an empty suggestion when adding a template', async () => {
-      await ixextractors.update(
+      await Extractors.update(
         fixtureFactory.id('existingExtractor').toString(),
         'existingExtractor',
         'kind',
         [fixtureFactory.id('animalTemplate').toString()]
       );
 
-      const [extractor] = await ixextractors.get({ name: 'existingExtractor' });
+      const [extractor] = await Extractors.get({ name: 'existingExtractor' });
       expect(extractor.templates).toEqual([fixtureFactory.id('animalTemplate')]);
 
       let suggestions = await testingDB.mongodb
@@ -286,7 +284,7 @@ describe('ixextractors', () => {
         }),
       ]);
 
-      await ixextractors.update(
+      await Extractors.update(
         fixtureFactory.id('existingExtractor').toString(),
         'existingExtractor',
         'kind',
@@ -328,8 +326,8 @@ describe('ixextractors', () => {
     });
 
     it('should delete existing suggestions when the property is changed, and create new blank suggestions', async () => {
-      const [existing] = await ixextractors.get({ name: 'existingExtractor' });
-      await ixextractors.update(
+      const [existing] = await Extractors.get({ name: 'existingExtractor' });
+      await Extractors.update(
         existing._id.toString(),
         'existingExtractor',
         'title',
@@ -370,11 +368,11 @@ describe('ixextractors', () => {
 
   describe('delete()', () => {
     it('should delete the extractors and their suggestions', async () => {
-      await ixextractors.delete([
+      await Extractors.delete([
         fixtureFactory.id('existingExtractor').toString(),
         fixtureFactory.id('fungusKindExtractor').toString(),
       ]);
-      const extractors = await ixextractors.get();
+      const extractors = await Extractors.get();
       expect(extractors).toEqual([]);
       const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find().toArray();
       expect(suggestions).toEqual([]);

@@ -8,7 +8,7 @@ import { files } from 'api/files';
 import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
-import ixextractors from 'api/services/informationextraction/ixextractors';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
 import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
@@ -18,10 +18,10 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { EnforcedWithId } from 'api/odm';
-import languages from 'shared/languages';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
+import { getBlankSuggestion } from './blankSuggestions';
 
 const extractedMetadataChanged = async (
   existingEntity: EntitySchema,
@@ -48,27 +48,6 @@ const extractedMetadataChanged = async (
   }
   return false;
 };
-
-const getBlankSuggestion = (
-  file: EnforcedWithId<FileType>,
-  { _id: extractorId, property: propertyName }: { _id: ObjectIdSchema; property: string },
-  template: ObjectIdSchema,
-  defaultLanguage: string
-) => ({
-  language: file.language
-    ? languages.get(file.language, 'ISO639_1') || defaultLanguage
-    : defaultLanguage,
-  fileId: file._id,
-  entityId: file.entity!,
-  entityTemplate: typeof template === 'string' ? template : template.toString(),
-  extractorId,
-  propertyName,
-  status: 'ready' as 'ready',
-  error: '',
-  segment: '',
-  suggestedValue: '',
-  date: new Date().getTime(),
-});
 
 const createDefaultSuggestionsForFiles = async (
   fileList: EnforcedWithId<FileType>[],
@@ -125,7 +104,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
 
     // const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
-    const extractors = await ixextractors.get();
+    const extractors = await Extractors.get();
     if (await extractedMetadataChanged(originalDoc, modifiedDoc, extractors)) {
       await Suggestions.updateStates({ entityId: originalDoc.sharedId });
     }
@@ -140,7 +119,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
       // const settingsTemplate = features?.metadataExtraction?.templates?.find(
       //   t => t.template === entityTemplateId
       // );
-      const extractors = await ixextractors.get();
+      const extractors = await Extractors.get();
       const extractorsForEntity = extractors.filter(extractor =>
         extractor.templates.map(templateId => templateId.toString()).includes(entityTemplateId)
       );
@@ -173,14 +152,14 @@ const registerEventListeners = (eventsBus: EventsBus) => {
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {
     const templatePropertyNames = after.properties?.map(p => p.name) || ['title'];
-    await ixextractors.cleanupTemplateFromPropertyExtractors(after._id!.toString(), [
+    await Extractors.cleanupTemplateFromPropertyExtractors(after._id!.toString(), [
       ...templatePropertyNames,
       'title',
     ]);
   });
 
   eventsBus.on(TemplateDeletedEvent, async ({ templateId }) => {
-    await ixextractors.cleanupTemplateFromPropertyExtractors(templateId, []);
+    await Extractors.cleanupTemplateFromPropertyExtractors(templateId, []);
   });
 };
 
