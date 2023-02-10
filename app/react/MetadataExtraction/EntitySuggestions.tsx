@@ -339,6 +339,12 @@ const EntitySuggestionsComponent = ({
     retrieveSuggestions(pageIndex + 1, sueggestionStateSelection, values);
   };
 
+  const resetStateAndTemplateSelections = () => {
+    setTemplateSelection([]);
+    setSuggestionStateSelection([]);
+    retrieveSuggestions(pageIndex + 1, [], []);
+  };
+
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
   useEffect(() => {
     if (isMounted.current) {
@@ -399,7 +405,9 @@ const EntitySuggestionsComponent = ({
       <div className="panel entity-suggestions">
         <FiltersSidePanel
           open={filtersOpen}
-          reset={() => {}}
+          reset={() => {
+            resetStateAndTemplateSelections();
+          }}
           hideFilters={() => {
             setFiltersOpen(false);
           }}
@@ -430,26 +438,36 @@ const EntitySuggestionsComponent = ({
         </div>
         <div className="panel-subheading">
           <div className="property-info-container">
-            <div>
+            <div className="property-info-heading">
               <span className="suggestion-header">
                 <Translate>Reviewing</Translate>:&nbsp;
               </span>
               <span className="suggestion-property">
                 <Translate>{reviewedProperty.label}</Translate>
               </span>
+              <span className="suggestion-for-label">&nbsp; for &nbsp;</span>
+              <span className="suggestion-templates">
+                {aggregations.template.map(({ _id }) => (
+                  <span color="segment-pdf" key={_id}>
+                    {templateNamesById[_id]}
+                  </span>
+                ))}
+              </span>
             </div>
-            <div>
+            <div className="property-info-buttons">
               <button
                 type="button"
                 title={status.key !== 'ready' ? 'Cancel' : 'Train'}
-                className={`btn service-request-button ${status.key}`}
+                className={`btn service-request-button find-suggestions ${status.key}`}
                 onClick={onFindSuggestionButtonClicked}
               >
                 <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
               </button>
-            </div>
-            <div>
-              <button onClick={() => setFiltersOpen(true)}>
+              <button
+                type="button"
+                className="btn suggestion-filters"
+                onClick={() => setFiltersOpen(true)}
+              >
                 <Icon icon="filter" />
                 <Translate>Show Filters</Translate>
               </button>

@@ -31,7 +31,7 @@ export const FiltersSidePanel = ({
   states,
   templates,
 }: FiltersSidePanelProps) => (
-  <SidePanel className="metadata-sidepanel" open={open}>
+  <SidePanel className="suggestions-filter-sidepanel" open={open}>
     <div className="sidepanel-body">
       <div className="sidepanel-title">
         <div>{t('System', 'Filters configuration')}</div>
@@ -46,34 +46,37 @@ export const FiltersSidePanel = ({
           </button>
         </div>
       </div>
-      <div>
-        <MultiSelect
-          options={states.options}
-          value={states.selected}
-          optionsLabel="label"
-          optionsValue="key"
-          optionsToShow={20}
-          onChange={states.setSelection}
-          hideSearch
-          showAll
-        />
-      </div>
-      <div>
-        <MultiSelect
-          options={templates.options}
-          value={templates.selected}
-          optionsLabel="label"
-          optionsValue="key"
-          optionsToShow={20}
-          onChange={templates.setSelection}
-          hideSearch
-          showAll
-        />
+      <div className="suggestion-filter-options">
+        <div>
+          <Translate>Status</Translate>
+          <MultiSelect
+            options={states.options}
+            value={states.selected}
+            optionsLabel="label"
+            optionsValue="key"
+            optionsToShow={20}
+            onChange={states.setSelection}
+            hideSearch
+            showAll
+          />
+        </div>
+        <div>
+          <Translate>Templates</Translate>
+          <MultiSelect
+            options={templates.options}
+            value={templates.selected}
+            optionsLabel="label"
+            optionsValue="key"
+            optionsToShow={20}
+            onChange={templates.setSelection}
+            hideSearch
+            showAll
+          />
+        </div>
       </div>
     </div>
     <div className="sidepanel-footer">
-      <button type="button" className="btn btn-default" onClick={reset}>
-        <Icon icon="times" />
+      <button type="button" className="btn btn-default clear-suggestions-filters" onClick={reset}>
         <span className="btn-label">
           <Translate>Clear Filters</Translate>
         </span>
