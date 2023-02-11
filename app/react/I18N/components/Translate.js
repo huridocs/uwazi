@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions } from 'app/I18N';
 
-const parseMarkdownMarker = (line, regexp, groupName, wrapper) => {
+const parseMarkdownMarker = (line, regexp, wrapper) => {
   const matches = line.match(regexp);
   if (matches == null) {
     return matches;
@@ -13,17 +13,17 @@ const parseMarkdownMarker = (line, regexp, groupName, wrapper) => {
   return (
     <>
       {parts[0]}
-      {wrapper(matches.groups[groupName])}
+      {wrapper(matches[1])}
       {parts[1]}
     </>
   );
 };
 
 const parseMarkdownBoldMarker = line =>
-  parseMarkdownMarker(line, /\*{2}(?<bold>.*)\*{2}/, 'bold', text => <strong>{text}</strong>);
+  parseMarkdownMarker(line, /\*{2}(.*)\*{2}/, text => <strong>{text}</strong>);
 
 const parseMarkdownItalicMarker = line =>
-  parseMarkdownMarker(line, /\*(?<italic>.*)\*/, 'italic', text => <i>{text}</i>);
+  parseMarkdownMarker(line, /\*(.*)\*/, text => <i>{text}</i>);
 
 class Translate extends Component {
   static resetCachedTranslation() {
