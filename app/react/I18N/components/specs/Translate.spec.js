@@ -69,17 +69,21 @@ describe('Translate', () => {
       );
     });
 
-    it('should parse italic text in translation value', () => {
+    it('should parse a italic and a highlighted text in translation value by line', () => {
       component = shallow(
         <Translate edit={props.edit}>
           {`this
       is
       *an italic*
-      text`}
+      text and 
+      this is **a highlighted** text. *discarted*
+      *Markdown*
+      `}
         </Translate>
       );
       expect(component.find('span').html()).toBe(
-        '<span class="translation">this<br/>      is<br/>      <i>an italic</i><br/>      text</span>'
+        // eslint-disable-next-line max-len
+        '<span class="translation">this<br/>      is<br/>      <i>an italic</i><br/>      text and <br/>      this is <strong>a highlighted</strong> text. *discarted*<br/>      <i>Markdown</i><br/>      </span>'
       );
     });
   });
