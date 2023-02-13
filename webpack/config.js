@@ -88,6 +88,14 @@ module.exports = production => {
           use: ['postcss-loader'],
         },
         {
+          test: /.mdx?$/,
+          use: ['babel-loader', '@mdx-js/loader'],
+        },
+        {
+          test: /\.svg$/,
+          loader: 'svg-inline-loader',
+        },
+        {
           test: /world-countries/,
           loader: 'country-loader',
         },

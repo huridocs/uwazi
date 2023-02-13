@@ -1,3 +1,6 @@
+const custom = require('../webpack.config.js');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   "stories": [
     "../app/react/stories/**/*.stories.mdx",
@@ -11,5 +14,17 @@ module.exports = {
   "framework": "@storybook/react",
   "core": {
     "builder": "@storybook/builder-webpack5"
-  }
+  },
+  "previewHead": (head) => (`
+    ${head}
+    <style>
+      html, body {
+        background: #fcfcfc;
+      }
+    </style>
+  `),
+  webpackFinal: async (config) => {
+    config.plugins.push(new MiniCssExtractPlugin({}));
+    return { ...config,  module: { ...config.module, rules: custom.module.rules } };
+  },
 }
