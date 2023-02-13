@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { eq } from 'lodash';
 import { login } from './helpers';
 
 function labelEntityTitle(
@@ -37,6 +38,7 @@ describe('Information Extraction', () => {
     cy.get('a[aria-label="Library"]').click();
     labelEntityTitle(1, 'Uwazi Heroes Investigation');
   });
+
   it('Should configure properties', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Metadata Extraction').click();
@@ -45,5 +47,18 @@ describe('Information Extraction', () => {
     cy.contains('span.multiselectItem-name', 'Ordenes de la corte').click();
     cy.get('button.btn-success').click();
     cy.get('.table tbody tr').should('have.length', 2);
+    const text = 'Ordenes del presidente,Ordenes de la corte';
+    cy.get('td.templateNameViewer').eq(0).should('contain.text', text);
+    cy.get('td.templateNameViewer').eq(1).should('contain.text', text);
+  });
+
+  it('should show title initial suggestion states as Empty / Label', () => {
+    cy.visit('http://localhost:3000');
+    changeLanguage();
+    login('admin', 'admin');
+    cy.get('.only-desktop a[aria-label="Settings"]').click();
+    cy.contains('span', 'Metadata Extraction').click();
+
+    cy.get('a.btn-success.btn-xs').eq(1).click();
   });
 });

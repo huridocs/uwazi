@@ -20,7 +20,6 @@ import { IImmutable } from 'shared/types/Immutable';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import {
   getStats,
@@ -218,31 +217,11 @@ const EntitySuggestionsComponent = ({
       .catch(() => {});
   };
 
-  const getWrappedSuggestionState = (
-    acceptedSuggestion: any,
-    newCurrentValue: string | number | null
-  ) => {
-    return getSuggestionState(
-      { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
-      reviewedProperty.type
-    );
-  };
-
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
-      let { labeledValue } = acceptedSuggestion;
-      if (!labeledValue && acceptedSuggestion.selectionRectangles?.length) {
-        labeledValue = acceptedSuggestion.suggestedValue;
-      }
-      selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue },
-        acceptedSuggestion.suggestedValue as string
-      );
-      selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
-      selectedFlatRows[0].setState({});
+      await retrieveSuggestions();
     }
 
     setAcceptingSuggestion(false);
@@ -258,33 +237,12 @@ const EntitySuggestionsComponent = ({
     }
   };
 
-  const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
+  const handlePDFSidePanelSave = async (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const propertyName = reviewedProperty.name;
     const changedPropertyValue = (entity[propertyName] ||
       entity.metadata?.[propertyName]) as string;
-
-    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
-      ? changedPropertyValue[0].value || '-'
-      : changedPropertyValue;
-    selectedFlatRows[0].setState({});
-    selectedFlatRows[0].toggleRowSelected();
-    const acceptedSuggestion = selectedFlatRows[0].original;
-
-    // @ts-ignore
-    const selection = entity.__extractedMetadata?.selections[0];
-    if (selection && selection.selection && selection.selection.text !== '') {
-      // There was a label
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
-        changedPropertyValue
-      );
-    } else {
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: '' },
-        changedPropertyValue
-      );
-    }
+    await retrieveSuggestions();
 
     selectedFlatRows[0].setState({});
     updateError(changedPropertyValue);
