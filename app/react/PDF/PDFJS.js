@@ -8,7 +8,13 @@ let pdfjsLib = {};
 if (isClient) {
   require('../../../node_modules/pdfjs-dist/web/pdf_viewer.css');
   PDFJS = require('../../../node_modules/pdfjs-dist/web/pdf_viewer.js');
-  pdfjsLib = require('pdfjs-dist');
+
+  if (process.env.HOT || process.env.NODE_ENV === 'test') {
+    pdfjsLib = require('pdfjs-dist');
+  } else {
+    pdfjsLib = require('pdfjs-dist/webpack');
+  }
+
   pdfjsLib.GlobalWorkerOptions.workerSrc = require('pdfjs-dist/build/pdf.worker.entry');
 }
 
