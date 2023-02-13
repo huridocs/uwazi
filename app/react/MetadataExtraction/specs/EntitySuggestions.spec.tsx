@@ -257,7 +257,7 @@ describe('EntitySuggestions', () => {
           fireEvent.click(confirmButton);
         });
         expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
-        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
       it('should accept a suggestion for only the current language of an entity', async () => {
         const pendingRow = within(screen.getAllByRole('row')[1])
@@ -274,10 +274,7 @@ describe('EntitySuggestions', () => {
         });
         expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
 
-        const selectedRow = within(screen.getAllByRole('row')[1])
-          .getAllByRole('cell')
-          .map(cell => cell.textContent);
-        expect(selectedRow[6]).toEqual(SuggestionState.valueMatch);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
       it('should not accept a suggestion in confirmation is cancelled', async () => {
         const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
@@ -335,7 +332,7 @@ describe('EntitySuggestions', () => {
           fireEvent.click(confirmButton);
         });
         expect(acceptIXSuggestion).toBeCalledWith(dateSuggestion, true);
-        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
     });
   });
@@ -361,7 +358,8 @@ describe('EntitySuggestions', () => {
       const updatedRow = within(screen.getAllByRole('row')[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(updatedRow[3]).toEqual(filledPropertyValue);
+      expect(updatedRow[3]).toEqual('-');
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
     });
   });
 
