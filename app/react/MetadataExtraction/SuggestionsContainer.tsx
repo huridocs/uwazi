@@ -15,7 +15,6 @@ const SuggestionComponent = ({
   languages,
 }: ComponentProps) => {
   const { propertyName } = useParams();
-  console.log(propertyName);
   const propertiesKey = propertyName === 'title' ? 'commonProperties' : 'properties';
 
   const property = templates

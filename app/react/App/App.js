@@ -32,22 +32,6 @@ const App = () => {
 
   const appContext = useMemo(() => ({ confirm }));
 
-  // const renderTools = () => {
-  //   if (route.type.renderTools) {
-  //     return route.type.renderTools();
-  //   }
-
-  //   return undefined;
-  // };
-  // React.Children.map(this.props.children, child => {
-  //   //condition not tested
-  //   if (child.type.renderTools) {
-  //     return child.type.renderTools();
-  //   }
-
-  //   return undefined;
-  // });
-
   let MenuButtonIcon = 'bars';
   let navClass = 'menuNav';
 
@@ -80,7 +64,6 @@ const App = () => {
           <h1 className="logotype">
             <SiteName />
           </h1>
-          {/* {renderTools()} */}
           <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
         </header>
         <div className="app-content container-fluid">

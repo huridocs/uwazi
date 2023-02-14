@@ -1,8 +1,6 @@
 import React from 'react';
 import { actions } from 'app/BasicReducer';
 import RouteHandler from 'app/App/RouteHandler';
-import SearchButton from 'app/Library/components/SearchButton';
-import { trackPage } from 'app/App/GoogleAnalytics';
 import ResultsViewer from './components/SemanticSearchResults';
 import semanticSearchAPI from './SemanticSearchAPI';
 
@@ -14,15 +12,6 @@ export default class SemanticSearchResultsView extends RouteHandler {
     const args = requestParams.add(filters);
     const search = await semanticSearchAPI.getSearch(args);
     return [actions.set('semanticSearch/search', search)];
-  }
-
-  static renderTools() {
-    trackPage();
-    return (
-      <div className="searchBox">
-        <SearchButton storeKey="library" />
-      </div>
-    );
   }
 
   render() {
