@@ -22,8 +22,6 @@ class Library extends RouteHandler {
     this.state = { scrollCount: 0 };
   }
 
-  static renderTools() {}
-
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources);
   }

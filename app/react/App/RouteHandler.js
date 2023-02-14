@@ -25,8 +25,6 @@ class RouteHandler extends Component {
 
   emptyState() {} //eslint-disable-line
 
-  static renderTools() {}
-
   //eslint-disable-next-line
   isRenderedFromServer() {
     const result = RouteHandler.renderedFromServer;
