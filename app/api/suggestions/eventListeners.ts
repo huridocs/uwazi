@@ -23,6 +23,11 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
 import { getBlankSuggestion } from './blankSuggestions';
 
+const featureIsEnabled = async () => {
+  const configuration = await settings.get();
+  return !!configuration.features?.metadataExtraction;
+};
+
 const extractedMetadataChanged = async (
   existingEntity: EntitySchema,
   newEntity: EntitySchema,
@@ -100,6 +105,8 @@ const handleTemplateChange = async (
 
 const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityUpdatedEvent, async ({ before, after, targetLanguageKey }) => {
+    if (!(await featureIsEnabled())) return;
+
     const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
     const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
 
@@ -111,6 +118,8 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   });
 
   eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
+    if (!(await featureIsEnabled())) return;
+
     if (newFile.entity && newFile.type === 'document') {
       const entityTemplateId = (
         await entities.get({ sharedId: newFile.entity }, 'template')
@@ -134,20 +143,24 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   });
 
   eventsBus.on(EntityDeletedEvent, async ({ entity }) => {
+    if (!(await featureIsEnabled())) return;
     await Suggestions.deleteByEntityId(entity[0].sharedId!);
   });
 
   eventsBus.on(FileUpdatedEvent, async ({ before, after }) => {
+    if (!(await featureIsEnabled())) return;
     if (!_.isEqual(before.extractedMetadata, after.extractedMetadata)) {
       await Suggestions.updateStates({ fileId: after._id });
     }
   });
 
   eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {
+    if (!(await featureIsEnabled())) return;
     await Suggestions.delete({ fileId: { $in: _files.map(f => f._id) } });
   });
 
   eventsBus.on(TemplateUpdatedEvent, async ({ after }) => {
+    if (!(await featureIsEnabled())) return;
     const templatePropertyNames = after.properties?.map(p => p.name) || ['title'];
     await Extractors.cleanupTemplateFromPropertyExtractors(after._id!.toString(), [
       ...templatePropertyNames,
@@ -156,6 +169,7 @@ const registerEventListeners = (eventsBus: EventsBus) => {
   });
 
   eventsBus.on(TemplateDeletedEvent, async ({ templateId }) => {
+    if (!(await featureIsEnabled())) return;
     await Extractors.cleanupTemplateFromPropertyExtractors(templateId, []);
   });
 };

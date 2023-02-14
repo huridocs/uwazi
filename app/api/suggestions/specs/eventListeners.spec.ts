@@ -122,6 +122,9 @@ const fixtures: DBFixture = {
   ],
 };
 
+const disableFeatures = () =>
+  testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
+
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
 });
@@ -161,6 +164,25 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
   afterAll(() => {
     updateSpy.mockRestore();
+  });
+
+  it('should not act if the feature is not configured', async () => {
+    await disableFeatures();
+
+    await applicationEventsBus.emit(
+      new EntityUpdatedEvent({
+        before: [extractedBefore],
+        after: [
+          {
+            ...extractedBefore.metadata,
+            extracted_property_1: [{ value: 'new text' }],
+          },
+        ],
+        targetLanguageKey: 'en',
+      })
+    );
+
+    expect(updateSpy).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -361,7 +383,21 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${EntityDeletedEvent.name}`, () => {
-  it('should delete all suggestions related to entities that triggered the event', async () => {
+  it.each([
+    {
+      message: 'should not act if the feature is not enabled',
+      featureEnabled: false,
+    },
+    {
+      message: 'should delete all suggestions related to entities that triggered the event',
+      featureEnabled: true,
+      calledWith: 'shared',
+    },
+  ])('$message', async ({ featureEnabled, calledWith }) => {
+    if (!featureEnabled) {
+      await disableFeatures();
+    }
+
     const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
 
     const doc1Id = db.id();
@@ -382,12 +418,37 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
       })
     );
 
-    expect(deleteSpy).toHaveBeenCalledWith('shared');
+    if (calledWith) {
+      expect(deleteSpy).toHaveBeenCalledWith(calledWith);
+    } else {
+      expect(deleteSpy).not.toHaveBeenCalled();
+    }
     deleteSpy.mockRestore();
   });
 });
 
 describe(`On ${FileCreatedEvent.name}`, () => {
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+    const fileInfo = fixturesFactory.file(
+      'new file',
+      'entity for new file',
+      'document',
+      'new_file.pdf'
+    );
+
+    await applicationEventsBus.emit(
+      new FileCreatedEvent({
+        newFile: fileInfo,
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
+
   it('should create blank suggestions, if the new file is an entity document', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
@@ -516,6 +577,17 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     updateSpy.mockRestore();
   });
 
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+
+    await applicationEventsBus.emit(
+      new FileUpdatedEvent({ before: original, after: { ...original, ...extractedMetadata } })
+    );
+
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
   it('should update ix suggestions if extractedMetada changes', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
@@ -559,7 +631,19 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${FilesDeletedEvent.name}`, () => {
-  it('should delete all suggestions related to files that triggered the event', async () => {
+  it.each([
+    {
+      message: 'should delete all suggestions related to files that triggered the event',
+      enabled: true,
+    },
+    {
+      message: 'should not act if the feature is not enabled',
+      enabled: false,
+    },
+  ])('$message', async ({ enabled }) => {
+    if (!enabled) {
+      await disableFeatures();
+    }
     const deleteSpy = jest.spyOn(Suggestions, 'delete');
 
     const file1Id = db.id();
@@ -590,12 +674,55 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
       })
     );
 
-    expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    if (enabled) {
+      expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    } else {
+      expect(deleteSpy).not.toHaveBeenCalled();
+    }
+
     deleteSpy.mockRestore();
   });
 });
 
 describe(`On ${TemplateUpdatedEvent.name}`, () => {
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+          ],
+        },
+      })
+    );
+
+    expect(extractors).toEqual(
+      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
+    );
+    expect(suggestions).toEqual(
+      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
+    );
+  });
+
   it('should delete the template from the extractor if the property not longer exists', async () => {
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
@@ -762,5 +889,25 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
 
     expect(suggestions).toEqual([]);
+  });
+
+  it('should not act if the feature is not enabld', async () => {
+    await disableFeatures();
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    expect(suggestions).toEqual(
+      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
+    );
+    expect(extractors).toEqual(
+      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
+    );
   });
 });
