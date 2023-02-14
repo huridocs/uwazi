@@ -6,7 +6,6 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { I18NLink } from 'app/I18N';
-import { browserHistory } from 'react-router';
 import { DocumentContentSnippets } from '../SnippetList';
 
 describe('SnippetList', () => {
@@ -18,10 +17,6 @@ describe('SnippetList', () => {
   };
 
   beforeEach(() => {
-    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
-      pathname: 'path',
-      query: { page: 1 },
-    });
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       searchTerm: 'snippet',
@@ -44,7 +39,6 @@ describe('SnippetList', () => {
 
   it('should selectSnippet when click on a snippet link', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
-    props.selectSnippet = jest.fn();
     render();
     component.find(I18NLink).at(1).simulate('click');
     expect(props.selectSnippet).toHaveBeenCalledWith(

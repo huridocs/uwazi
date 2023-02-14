@@ -34,6 +34,7 @@ describe('FileList', () => {
       files: [file, file2],
       storeKey: 'library',
       entity,
+      mainContext: { confirm: jest.fn },
     };
   });
 
@@ -73,7 +74,7 @@ describe('FileList', () => {
   it('should render an upload button by default', () => {
     render();
     const button = component.find(UploadButton);
-    expect(button.props().entitySharedId).toBe(props.entity.sharedId);
+    expect(button.props().entitySharedId).toBe(props.entity!.sharedId);
   });
 
   it('should check authorization roles to upload files', () => {

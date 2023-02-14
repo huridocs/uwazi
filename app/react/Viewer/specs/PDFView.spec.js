@@ -1,35 +1,99 @@
 /**
  * @jest-environment jsdom
  */
-
+/* eslint-disable max-statements */
+/* eslint-disable react/no-multi-comp */
+import React from 'react';
 import { fromJS } from 'immutable';
+import { shallow } from 'enzyme';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
-import { browserHistory } from 'react-router';
-import PDFView from 'app/Viewer/PDFView';
+import { PDFView, PDFViewComponent } from 'app/Viewer/PDFView';
 import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import RouteHandler from 'app/App/RouteHandler';
 import * as utils from 'app/utils';
 import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnected } from 'app/utils/test/renderConnected';
+import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import * as documentActions from 'app/Viewer/actions/documentActions';
 import * as routeActions from '../actions/routeActions';
 import * as uiActions from '../actions/uiActions';
 
+let page = 0;
+let raw = 'abc';
+let pathname = '';
+let ref = '';
+let anotherProp = '';
+
+const mockUseLocation = jest.fn().mockImplementation(() => ({
+  search: `?raw=${raw},page=${page}`,
+  pathname,
+}));
+
+const mapProperties = props => {
+  const map = new Map();
+  Object.entries(props).forEach(([key, value]) => {
+    map.set(key, value);
+  });
+  return map;
+};
+const mockUseSearchParams = jest.fn().mockImplementation(() => {
+  const params = mapProperties({ raw, page });
+  if (ref) {
+    params.set('ref', ref);
+  }
+  if (anotherProp) {
+    params.set('anotherProp', anotherProp);
+  }
+
+  return [params];
+});
+const mockNavigate = jest.fn().mockImplementation(path => path);
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useSearchParams: () => mockUseSearchParams(),
+  useLocation: () => mockUseLocation(),
+  useNavigate: () => path => mockNavigate(path),
+  useMatches: () => {},
+}));
+jest.mock('app/ContextMenu', () => () => <div>ContextMenu</div>);
+jest.mock('app/App/Footer', () => () => <div>Footer</div>);
+jest.mock('app/Viewer/components/ViewMetadataPanel', () => () => <div>ViewMetadataPanel</div>);
+jest.mock('app/Connections', () => ({
+  CreateConnectionPanel: () => <div>CreateConnectionPanel</div>,
+}));
+
 describe('PDFView', () => {
   let component;
-  let instance;
   let context;
   let props;
 
+  const state = {
+    documentViewer: {
+      uiState: fromJS({ reference: { targetRange: [] } }),
+      targetDoc: fromJS({ _id: 'document1' }),
+      sidepanel: { tab: '1', metadata: { _id: 'prop1' } },
+      targetDocReferences: [],
+    },
+    connections: { connection: fromJS({}) },
+    user: fromJS({ _id: 'user1' }),
+    settings: { collection: fromJS({}) },
+    modals: fromJS({ ConfirmCloseForm: fromJS({ _id: 'document1' }) }),
+    semanticSearch: { selectedDocument: fromJS({}) },
+  };
+
   const render = () => {
     RouteHandler.renderedFromServer = true;
-    component = renderConnected(PDFView, props, context.store);
-    component.setContext({ ...component.context(), ...context });
-    instance = component.instance();
+    component = renderConnectedMount(PDFView, state, props, true);
+    component.instance().getChildContext().store.dispatch = context.store.dispatch;
   };
 
   beforeEach(() => {
+    page = 1;
+    raw = '';
+    pathname = '';
+    ref = '';
+    anotherProp = '';
+
     const dispatch = jasmine.createSpy('dispatch');
     context = {
       store: {
@@ -43,26 +107,23 @@ describe('PDFView', () => {
 
     props = {
       entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
-      location: { query: {} },
       routes: [],
     };
-
-    render();
-
     spyOn(routeActions, 'requestViewerState');
 
     spyOn(routeActions, 'setViewerState').and.returnValue({ type: 'setViewerState' });
   });
 
   it('should pass down raw property', () => {
-    props.location = { query: { raw: 'true', page: 2 } };
+    raw = 'true';
+    page = 2;
     render();
     expect(component.find(Viewer).props().raw).toEqual(true);
   });
 
   describe('when on server', () => {
     it('should always pass raw true', () => {
-      props.location = { query: { raw: 'false' } };
+      raw = 'false';
       // eslint-disable-next-line no-import-assign
       utils.isClient = false;
       render();
@@ -73,25 +134,32 @@ describe('PDFView', () => {
   });
 
   it('should render the Viewer', () => {
+    render();
     expect(component.find(Viewer).length).toBe(1);
   });
 
   describe('when raw', () => {
     it('should render link canonical to the not raw version', () => {
-      props.location = { query: { raw: 'true', page: 1 }, pathname: 'pathname' };
+      raw = 'true';
+      page = 1;
+      pathname = 'pathname';
       render();
-      expect(component.find('link')).toMatchSnapshot();
+      expect(
+        component.find({ link: [{ href: 'pathname?page=1', rel: 'canonical' }] })
+      ).toMatchSnapshot();
     });
   });
-
   describe('when not raw', () => {
     it('should not render link canonical', () => {
-      props.location = { query: { raw: 'false', page: 1 }, pathname: 'pathname' };
+      raw = 'false';
+      page = 1;
+      pathname = 'pathname';
       render();
-      expect(component.find('link').length).toBe(0);
+      expect(component.find({ link: [{ href: 'pathname?page=1', rel: 'canonical' }] }).length).toBe(
+        0
+      );
     });
   });
-
   describe('static requestState', () => {
     it('should call on requestViewerState', () => {
       const requestParams = new RequestParams({
@@ -126,28 +194,30 @@ describe('PDFView', () => {
   describe('onDocumentReady', () => {
     it('should scrollToPage on the query when not on raw mode', () => {
       spyOn(uiActions, 'scrollToPage');
-      props.location = { query: { raw: 'false', page: 15 }, pathname: 'pathname' };
+      raw = 'false';
+      page = 15;
       render();
-
-      instance.onDocumentReady();
+      component.find({ page: 15 }).at(0).props().onDocumentReady();
       expect(uiActions.scrollToPage).toHaveBeenCalledWith(15, 0);
 
-      props.location = { query: { raw: 'true', page: 15 }, pathname: 'pathname' };
+      raw = 'true';
       render();
       uiActions.scrollToPage.calls.reset();
-      instance.onDocumentReady();
+      component.find({ page: 15 }).at(0).props().onDocumentReady();
       expect(uiActions.scrollToPage).not.toHaveBeenCalled();
     });
 
     it('should activate text reference if query parameters have reference id', () => {
-      spyOn(uiActions, 'activateReference');
-      props.location = { query: { raw: 'false', ref: 'refId' }, pathname: 'pathname' };
+      spyOn(uiActions, 'activateReference').and.returnValue({ type: 'ABC' });
+      raw = 'false';
+      ref = 'refId';
+      pathname = 'pathname';
       const reference = { _id: 'refId', range: { start: 200, end: 300 }, text: 'test' };
       const doc = fromJS({
         relations: [{ _id: 'otherRef' }, reference],
       });
       render();
-      instance.onDocumentReady(doc);
+      component.find({ page: 1 }).at(0).props().onDocumentReady(doc);
       expect(uiActions.activateReference).toHaveBeenCalledWith(reference);
     });
 
@@ -156,7 +226,7 @@ describe('PDFView', () => {
       spyOn(utils.events, 'emit');
       render();
 
-      instance.onDocumentReady();
+      component.find({ page: 1 }).at(0).props().onDocumentReady();
       expect(utils.events.emit).toHaveBeenCalledWith('documentLoaded');
     });
   });
@@ -164,67 +234,68 @@ describe('PDFView', () => {
   describe('changePage', () => {
     describe('when raw', () => {
       it('should changeBrowserHistoryPage', () => {
-        props.location = {
-          query: { raw: true, anotherProp: 'test', page: 15 },
-          pathname: 'pathname',
-        };
+        raw = 'true';
+        page = 15;
+        anotherProp = 'test';
+        pathname = 'pathname';
         spyOn(uiActions, 'scrollToPage');
         render();
-        spyOn(instance, 'changeBrowserHistoryPage');
 
-        instance.changePage(16);
-        expect(instance.changeBrowserHistoryPage).toHaveBeenCalledWith(16);
+        component.find({ page: 15 }).at(0).props().changePage(16);
+        expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
         expect(uiActions.scrollToPage).not.toHaveBeenCalled();
       });
     });
 
     describe('when not raw', () => {
       it('should scrollToPage', () => {
-        props.location = {
-          query: { raw: false, anotherProp: 'test', page: 15 },
-          pathname: 'pathname',
-        };
+        raw = 'false';
+        page = 15;
+        anotherProp = 'test';
+        pathname = 'pathname';
         spyOn(uiActions, 'scrollToPage');
-        render();
-        spyOn(instance, 'changeBrowserHistoryPage');
+        mockNavigate.mockClear();
 
-        instance.changePage(16);
-        expect(instance.changeBrowserHistoryPage).not.toHaveBeenCalled();
+        render();
+        component.find({ page: 15 }).at(0).props().changePage(16);
+        expect(mockNavigate).not.toHaveBeenCalled();
         expect(uiActions.scrollToPage).toHaveBeenCalledWith(16);
       });
     });
   });
 
+  const shallowComponent = searchParams =>
+    shallow(
+      <PDFViewComponent
+        searchParams={searchParams}
+        location={{ pathname: 'pathname' }}
+        entity={fromJS({})}
+        navigate={mockNavigate}
+      />
+    );
+
   describe('componentWillReceiveProps', () => {
-    const setProps = newProps => {
-      entitiesAPI.getRawPage.calls.reset();
-      component.setProps(newProps);
-      component.update();
-    };
-
-    beforeEach(() => {
-      props.location = {
-        query: { raw: 'true', anotherProp: 'test', page: 15 },
-        pathname: 'pathname',
-      };
-      props.params = { sharedId: 'entityId' };
-      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
-      render();
-    });
-
     it('should load raw page when page/raw changes and raw is true', async () => {
-      setProps({ location: { query: { page: 15, raw: 'true' } } });
+      spyOn(entitiesAPI, 'getRawPage').and.returnValue(Promise.resolve('raw text'));
+      const searchParams = mapProperties({ raw: 'true', page: 15 });
+      const wrapper = shallowComponent(searchParams);
       expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-
-      setProps({ location: { query: { page: 16, raw: 'false' } } });
-      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
-
+      wrapper.instance().context = context;
+      mockNavigate.mockClear();
       entitiesAPI.getRawPage.calls.reset();
-      await instance.componentWillReceiveProps({
-        params: { sharedId: 'entityId' },
-        location: { query: { page: 17, raw: 'true' } },
+      searchParams.set('page', 16);
+      searchParams.set('raw', 'false');
+      wrapper.setProps({ searchParams });
+      wrapper.update();
+      expect(entitiesAPI.getRawPage).not.toHaveBeenCalled();
+      entitiesAPI.getRawPage.calls.reset();
+      const newSearchParams = mapProperties({ raw: 'true', page: 17 });
+
+      wrapper.setProps({
+        searchParams: newSearchParams,
         entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
       });
+      await wrapper.update();
       expect(context.store.dispatch).toHaveBeenCalledWith(
         actions.set('viewer/rawText', 'raw text')
       );
@@ -236,22 +307,18 @@ describe('PDFView', () => {
 
   describe('changeBrowserHistoryPage', () => {
     it('should push new browserHistory with new page', () => {
-      props.location = {
-        query: { raw: true, anotherProp: 'test', page: 15 },
-        pathname: 'pathname',
-      };
-      spyOn(browserHistory, 'push');
-      render();
+      const searchParams = mapProperties({ raw: 'true', page: 15, anotherProp: 'test' });
+      const wrapper = shallowComponent(searchParams);
+      wrapper.instance().changeBrowserHistoryPage(16);
+      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
 
-      instance.changeBrowserHistoryPage(16);
-      expect(browserHistory.push).toHaveBeenCalledWith(
-        'pathname?raw=true&anotherProp=test&page=16'
-      );
-
-      component.setProps({ location: { query: { raw: false, page: 15 }, pathname: 'pathname' } });
-      component.update();
-      instance.changeBrowserHistoryPage(16);
-      expect(browserHistory.push).toHaveBeenCalledWith('pathname?page=16');
+      mockNavigate.mockClear();
+      searchParams.set('raw', 'false');
+      searchParams.delete('anotherProp');
+      wrapper.setProps({ searchParams });
+      wrapper.update();
+      wrapper.instance().changeBrowserHistoryPage(16);
+      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=false&page=16');
     });
   });
 

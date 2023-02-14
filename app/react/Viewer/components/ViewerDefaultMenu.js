@@ -38,10 +38,6 @@ ViewerDefaultMenu.propTypes = {
   doc: PropTypes.object,
 };
 
-ViewerDefaultMenu.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ openPanel }, dispatch);
 }

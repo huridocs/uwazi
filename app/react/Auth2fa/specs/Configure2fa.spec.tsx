@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import * as redux from 'redux';
-import { LocalForm } from 'react-redux-form';
+import { LocalForm } from 'app/Forms/Form';
 import { Map } from 'immutable';
 
 import { RequestParams } from 'app/utils/RequestParams';

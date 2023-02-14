@@ -4,7 +4,7 @@ exports[`SearchList should render list of SearchItem with specified searches 1`]
 <div
   className="semantic-search-list"
 >
-  <Connect(SearchItem)
+  <Connect(Component)
     key="id1"
     search={
       Object {
@@ -15,7 +15,7 @@ exports[`SearchList should render list of SearchItem with specified searches 1`]
       }
     }
   />
-  <Connect(SearchItem)
+  <Connect(Component)
     key="id2"
     search={
       Object {

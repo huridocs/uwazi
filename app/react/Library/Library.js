@@ -1,3 +1,4 @@
+import React from 'react';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { enterLibrary, unsetDocuments, zoomIn, zoomOut } from 'app/Library/actions/libraryActions';
@@ -5,9 +6,10 @@ import DocumentsList from 'app/Library/components/DocumentsList';
 import { requestState } from 'app/Library/helpers/requestState';
 import LibraryLayout from 'app/Library/LibraryLayout';
 import { wrapDispatch } from 'app/Multireducer';
-import React from 'react';
+import { withRouter } from 'app/componentWrappers';
+import { trackPage } from 'app/App/GoogleAnalytics';
 
-export default class Library extends RouteHandler {
+class Library extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.superComponentWillReceiveProps = super.componentWillReceiveProps;
@@ -20,14 +22,14 @@ export default class Library extends RouteHandler {
     this.state = { scrollCount: 0 };
   }
 
-  static renderTools() {}
-
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources);
   }
 
   urlHasChanged(nextProps) {
-    return nextProps.location.query.q !== this.props.location.query.q;
+    const nextSearchParams = new URLSearchParams(nextProps.location.search);
+    const currentSearchParams = new URLSearchParams(this.props.location.search);
+    return nextSearchParams.get('q') !== currentSearchParams.get('q');
   }
 
   componentWillUnmount() {
@@ -54,6 +56,7 @@ export default class Library extends RouteHandler {
   }
 
   render() {
+    trackPage();
     return (
       <LibraryLayout
         sidePanelMode={this.props.sidePanelMode}
@@ -71,3 +74,8 @@ export default class Library extends RouteHandler {
     );
   }
 }
+
+const SSRLibrary = withRouter(Library);
+
+export const LibraryCards = Object.assign(SSRLibrary, { requestState: Library.requestState });
+export default Library;

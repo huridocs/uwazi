@@ -1,6 +1,6 @@
 import loadable from '@loadable/component';
 
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Icon } from 'UI';
 import Counter from './Counter';
 import ContactForm from './ContactForm';
@@ -10,7 +10,6 @@ import EntityLink from './EntityLink';
 import ItemList from './ItemList';
 import Repeat from './Repeat';
 import Context from './Context';
-import Connect from './Connect';
 import Map from './Map';
 import MarkdownLink from './MarkdownLink';
 import MarkdownMedia from './MarkdownMedia';
@@ -46,7 +45,6 @@ export {
   MarkdownMedia,
   ContactForm,
   Context,
-  Connect,
   EntityData,
   EntityLink,
   ItemList,

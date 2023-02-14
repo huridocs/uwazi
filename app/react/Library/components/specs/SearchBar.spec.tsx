@@ -52,7 +52,11 @@ describe('SearchBar', () => {
       },
       settings: { collection: Immutable.fromJS({}) },
     };
-    ({ renderResult, store } = renderConnectedContainer(<SearchBar />, () => state));
+    ({ renderResult, store } = renderConnectedContainer(
+      <SearchBar />,
+      () => state,
+      'BrowserRouter'
+    ));
   });
 
   describe('form on submit', () => {
@@ -68,16 +72,16 @@ describe('SearchBar', () => {
           <SearchBar />
         </Provider>
       );
+
       fireEvent.click(screen.getByRole('button'));
 
       expect(libraryActions.searchDocuments).toHaveBeenCalledWith(
-        {
+        expect.objectContaining({
           search: {
             searchTerm: 'SEARCH MODEL VALUES',
             sort: 'title',
           },
-        },
-        'library'
+        })
       );
     });
   });
@@ -87,14 +91,13 @@ describe('SearchBar', () => {
       fireEvent.click(screen.getByLabelText('Reset Search input'));
       expect(formActions.change).toHaveBeenCalledWith('library.search.searchTerm', '');
       expect(libraryActions.searchDocuments).toHaveBeenCalledWith(
-        {
+        expect.objectContaining({
           search: {
             searchTerm: '',
             filters: {},
             sort: 'title',
           },
-        },
-        'library'
+        })
       );
     });
   });

@@ -11,7 +11,7 @@ describe('Render', () => {
   it('should render empty if no stats yet', async () => {
     let component: RenderResult;
 
-    act(() => {
+    await act(() => {
       component = render(<TrainingHealthDashboard />);
     });
     const list = component!.queryByRole('list');
@@ -41,7 +41,7 @@ describe('Render', () => {
 
     let component: RenderResult;
 
-    act(() => {
+    await act(() => {
       ({ renderResult: component } = renderConnectedContainer(
         <TrainingHealthDashboard stats={stats} />,
         () => defaultState

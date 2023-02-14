@@ -7,16 +7,14 @@ import backend from 'fetch-mock';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
 import moment from 'moment';
-
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { I18NUtils } from 'app/I18N';
-
 import RouteHandler from '../RouteHandler';
 import { APIURL } from '../../config.js';
 
 class TestController extends RouteHandler {
-  static requestState() {
+  static requestState(_requestParams, _state) {
     return Promise.resolve([
       { type: 'action1', value: 'value1' },
       { type: 'action2', value: 'value2' },
@@ -33,7 +31,7 @@ describe('RouteHandler', () => {
   let instance;
   const routeParams = { id: '123' };
   const headers = {};
-  const location = { pathname: '/en', query: { key: 'value' } };
+  const location = { pathname: '/en', search: { q: 'value' } };
   const languages = [
     { key: 'en', label: 'English', default: true },
     { key: 'es', label: 'Español' },
@@ -61,10 +59,12 @@ describe('RouteHandler', () => {
     spyOn(TestController, 'requestState').and.callThrough();
 
     RouteHandler.renderedFromServer = false;
+
     component = shallow(
-      <TestController params={routeParams} location={location} routes={[{ path: '' }]} />,
+      <TestController params={routeParams} location={location} matches={[{ path: '' }]} />,
       { context }
     );
+
     instance = component.instance();
     instance.constructor = TestController;
   });
@@ -84,10 +84,8 @@ describe('RouteHandler', () => {
 
   describe('on instance', () => {
     it('should request for initialState and dispatch actions returned', () => {
-      expect(TestController.requestState).toHaveBeenCalledWith(
-        new RequestParams({ ...location.query, ...routeParams }, headers),
-        state
-      );
+      const params = new RequestParams({ ...location.search, ...routeParams }, headers);
+      expect(TestController.requestState).toHaveBeenCalledWith(params, state);
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'action1', value: 'value1' });
       expect(context.store.dispatch).toHaveBeenCalledWith({ type: 'action2', value: 'value2' });
     });
@@ -101,11 +99,12 @@ describe('RouteHandler', () => {
 
   describe('componentDidUpdate', () => {
     let props;
+
     beforeEach(() => {
       props = {
         params: { id: '456' },
-        location: { pathname: '/es', query: '' },
-        routes: [{ path: '' }],
+        location: { pathname: '/es', search: '' },
+        matches: [{ path: '' }],
       };
     });
 
@@ -129,7 +128,7 @@ describe('RouteHandler', () => {
         props = {
           params: { ...routeParams },
           location,
-          routes: [{ path: '' }, { path: 'subpath' }],
+          matches: [{ path: '' }, { path: 'subpath' }],
         };
         component.setProps(props);
         expect(instance.getClientState).toHaveBeenCalledWith(props);

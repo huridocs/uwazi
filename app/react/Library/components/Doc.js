@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { is, Map } from 'immutable';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
@@ -9,7 +10,6 @@ import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { Icon } from 'UI';
 
 import { Item } from 'app/Layout';
-import { is, Map } from 'immutable';
 import helpers from 'app/Documents/helpers';
 
 export class Doc extends Component {
@@ -122,10 +122,6 @@ Doc.propTypes = {
   additionalText: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   storeKey: PropTypes.string,
   targetReference: PropTypes.instanceOf(Map),
-};
-
-Doc.contextTypes = {
-  confirm: PropTypes.func,
 };
 
 export function mapStateToProps(state, ownProps) {

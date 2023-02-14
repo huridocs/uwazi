@@ -23,7 +23,7 @@ exports[`TemplateCreator Property Options should include document specific optio
         <main
           className="col-xs-12 col-sm-9"
         >
-          <Connect(DropTarget(MetadataTemplate))
+          <Connect(Component)
             backUrl="/settings/templates"
             relationType={false}
             saveTemplate={[Function]}
@@ -135,7 +135,7 @@ exports[`TemplateCreator Property Options should include most common options by 
         <main
           className="col-xs-12 col-sm-9"
         >
-          <Connect(DropTarget(MetadataTemplate))
+          <Connect(Component)
             backUrl="/settings/templates"
             relationType={false}
             saveTemplate={[Function]}
@@ -247,7 +247,7 @@ exports[`TemplateCreator Property Options should remove all options for relation
         <main
           className="col-xs-12 col-sm-9"
         >
-          <Connect(DropTarget(MetadataTemplate))
+          <Connect(Component)
             backUrl="/settings/connections"
             relationType={true}
             saveTemplate={[Function]}

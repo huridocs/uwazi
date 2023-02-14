@@ -4,7 +4,7 @@ import Dropzone from 'react-dropzone';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import { withRouter } from 'app/componentWrappers';
 import { Thumbnail, ConfirmButton } from 'app/Layout';
 import { actions } from 'app/BasicReducer';
 import { Translate } from 'app/I18N';
@@ -14,7 +14,7 @@ import { Icon } from 'UI';
 import { SettingsHeader } from './SettingsHeader';
 import { uploadCustom, deleteCustomUpload } from '../../Uploads/actions/uploadsActions';
 
-class CustomUploads extends RouteHandler {
+class CustomUploadsComponent extends RouteHandler {
   static async requestState(requestParams) {
     const customUploads = await api.get('files', requestParams.add({ type: 'custom' }));
     return [actions.set('customUploads', customUploads.json)];
@@ -84,25 +84,27 @@ class CustomUploads extends RouteHandler {
   }
 }
 
-CustomUploads.defaultProps = {
+CustomUploadsComponent.defaultProps = {
   progress: false,
 };
 
-CustomUploads.propTypes = {
+CustomUploadsComponent.propTypes = {
   progress: PropTypes.bool,
   customUploads: PropTypes.instanceOf(Immutable.List).isRequired,
   upload: PropTypes.func.isRequired,
   deleteCustomUpload: PropTypes.func.isRequired,
 };
 
-export const mapStateToProps = ({ customUploads, progress }) => ({
+const mapStateToProps = ({ customUploads, progress }) => ({
   customUploads,
   progress: !!progress.filter((_v, key) => key.match(/customUpload/)).size,
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ upload: uploadCustom, deleteCustomUpload }, dispatch);
+const CustomUploads = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(CustomUploadsComponent));
 
-export { CustomUploads };
-
-export default connect(mapStateToProps, mapDispatchToProps)(CustomUploads);
+export { CustomUploads, CustomUploadsComponent, mapStateToProps };

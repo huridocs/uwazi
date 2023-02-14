@@ -74,11 +74,7 @@ describe('SearchDescription', () => {
     beforeEach(() => {});
     it('should get properties from templates, thesauri and relation types', () => {
       const props = mapStateToProps(state, { query });
-      expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(
-        query,
-        ['templates'],
-        ['relationTypes']
-      );
+      expect(libraryHelpers.URLQueryToState).toHaveBeenCalledWith(query, ['templates']);
       expect(props.properties).toEqual(properties);
     });
     it('should not get properties if query is not provided', () => {

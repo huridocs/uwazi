@@ -2,7 +2,6 @@
 import qs from 'qs';
 import rison from 'rison-node';
 import { actions as formActions } from 'react-redux-form';
-import { browserHistory } from 'react-router';
 import { t } from 'app/I18N';
 import { store } from 'app/store';
 import * as types from 'app/Library/actions/actionTypes';
@@ -13,6 +12,7 @@ import { notificationActions } from 'app/Notifications';
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import referencesAPI from 'app/Viewer/referencesAPI';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
 import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
@@ -223,45 +223,47 @@ function encodeSearch(_search, appendQ = true) {
   return appendQ ? `?q=${encodedSearch}` : encodedSearch;
 }
 
-function setSearchInUrl(searchParams) {
-  const { pathname } = browserHistory.getCurrentLocation();
+function setSearchInUrl(searchParams, location, navigate) {
+  const { pathname } = location;
   const path = `${pathname}/`.replace(/\/\//g, '/');
-  const query = browserHistory.getCurrentLocation().query || {};
+  const query = new URLSearchParams(location.search);
 
   query.q = encodeSearch(searchParams, false);
 
-  browserHistory.push(path + toUrlParams(query));
+  return navigate(path + toUrlParams(query));
 }
 
 function searchDocuments(
-  { search = undefined, filters = undefined },
-  storeKey,
+  { search = undefined, location, navigate, filters = undefined },
   limit = 30,
   from = 0
 ) {
   return (dispatch, getState) => {
-    const state = getState()[storeKey];
+    const state = getState().library;
     const currentSearch = search || state.search;
-    let currentFilters = filters || state.filters;
-    currentFilters = currentFilters.toJS ? currentFilters.toJS() : currentFilters;
+    const currentFilters = filters || state.filters;
+    const currentSearchParams = searchParamsFromLocationSearch(location);
 
-    const searchParams = processFilters(currentSearch, currentFilters, limit, from);
-    searchParams.searchTerm = state.search.searchTerm;
-
-    const { query } = browserHistory.getCurrentLocation();
-    const currentSearchParams = rison.decode(decodeURIComponent(query.q || '()'));
+    const searchParams = {
+      ...processFilters(
+        currentSearch,
+        currentFilters.toJS ? currentFilters.toJS() : currentFilters,
+        limit,
+        from
+      ),
+      searchTerm: state.search.searchTerm,
+      customFilters: currentSearch.customFilters,
+    };
 
     if (searchParams.searchTerm && searchParams.searchTerm !== currentSearchParams.searchTerm) {
       searchParams.sort = '_score';
     }
 
     if (currentSearch.userSelectedSorting) {
-      dispatch(actions.set(`${storeKey}.selectedSorting`, currentSearch));
+      dispatch(actions.set('library.selectedSorting', currentSearch));
     }
 
-    searchParams.customFilters = currentSearch.customFilters;
-
-    setSearchInUrl(searchParams);
+    return setSearchInUrl(searchParams, location, navigate);
   };
 }
 
@@ -367,10 +369,10 @@ function deleteEntity(entity) {
   };
 }
 
-function loadMoreDocuments(storeKey, amount, from) {
+function loadMoreDocuments(amount, from, location, navigate) {
   return (dispatch, getState) => {
-    const { search } = getState()[storeKey];
-    searchDocuments({ search }, storeKey, amount, from)(dispatch, getState);
+    const { search } = getState().library;
+    searchDocuments({ search, location, navigate }, amount, from)(dispatch, getState);
   };
 }
 

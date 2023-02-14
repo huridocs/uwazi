@@ -12,6 +12,10 @@ import SelectFilter from '../SelectFilter';
 import TextFilter from '../TextFilter';
 import { defaultProperties } from './fixtures/FiltersFromPropertiesFixtures';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => jest.fn(),
+}));
 jest.mock('app/I18N', () => ({
   __esModule: true,
   t: jest.fn(),
@@ -38,7 +42,6 @@ beforeEach(() => {
   };
   props = mapStateToProps(state, { storeKey: 'library' });
   props.translationContext = 'oneContext';
-  props.location = { query: {} };
 });
 
 const render = () => {

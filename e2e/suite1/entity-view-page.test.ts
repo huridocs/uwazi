@@ -43,7 +43,7 @@ describe('Entity Page view', () => {
   describe('display the entity in custom page', () => {
     beforeAll(async () => {
       await page.goto(`${host}`);
-      await page.reload();
+      await disableTransitions();
       await expect(page).toClick(
         'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
       );

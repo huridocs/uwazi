@@ -43,10 +43,10 @@ describe('UserGroupSidePanel', () => {
       expect(screen.queryByText('Name of the group')).toBeInTheDocument();
     });
 
-    it('should call the closePanel method on Cancel button click', () => {
+    it('should call the closePanel method on Cancel button click', async () => {
       render();
       const cancelButton = screen.getByText('Cancel').parentElement!;
-      act(() => {
+      await act(() => {
         fireEvent.click(cancelButton);
       });
       expect(defaultProps.closePanel).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('UserGroupSidePanel', () => {
       const newGroup = { name: 'NEW GROUP', members: [] };
       props.userGroup = { ...newGroup, [field]: value };
       render(props);
-      act(() => {
+      await act(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
       });
 
@@ -148,31 +148,31 @@ describe('UserGroupSidePanel', () => {
         render();
         const nameInput = screen.getByRole('textbox') as HTMLInputElement;
         expect(nameInput.value).toEqual(userGroup.name);
-        act(() => {
+        await act(() => {
           fireEvent.change(nameInput, {
             target: { value: 'GROUP 1' },
           });
         });
         await waitFor(() => {
           fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-        });
-        expect(defaultProps.onSave).toHaveBeenCalledWith({
-          _id: 'group1Id',
-          name: 'GROUP 1',
-          members: [{ refId: 'user2' }, { refId: 'user1' }],
+          expect(defaultProps.onSave).toHaveBeenCalledWith({
+            _id: 'group1Id',
+            name: 'GROUP 1',
+            members: [{ refId: 'user2' }, { refId: 'user1' }],
+          });
         });
       });
     });
   });
 
   describe('Adding users to the group', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const props = { ...defaultProps };
       // @ts-ignore
       props.users[2].using2fa = false;
       render(props);
       const [, , userToCheck] = screen.getAllByRole('checkbox') as HTMLInputElement[];
-      act(() => {
+      await act(() => {
         fireEvent.click(userToCheck);
       });
     });
@@ -189,40 +189,29 @@ describe('UserGroupSidePanel', () => {
     it('should save the group with its members', async () => {
       await waitFor(() => {
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
-      });
-      expect(defaultProps.onSave).toHaveBeenCalledWith({
-        _id: 'group1Id',
-        name: 'Group 1',
-        members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
+        expect(defaultProps.onSave).toHaveBeenCalledWith({
+          _id: 'group1Id',
+          name: 'Group 1',
+          members: [{ refId: 'user2' }, { refId: 'user4' }, { refId: 'user1' }],
+        });
       });
     });
   });
 
   describe('Deleting user group', () => {
-    it('should not call the delete callback when cancel deletion', done => {
+    it('should not call the delete callback when cancel deletion', async () => {
       render();
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
-      setTimeout(() => {
-        act(() => {
-          fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-        });
-        expect(defaultProps.onDelete).not.toHaveBeenCalled();
-        done();
-      }, 0);
+      expect(defaultProps.onDelete).not.toHaveBeenCalled();
     });
 
     it('should call the delete callback when confirm deletion', async () => {
       render();
-      await waitFor(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
 
-      act(() => {
-        fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
-      });
       expect(defaultProps.onDelete).toHaveBeenCalledWith(defaultProps.userGroup);
     });
   });

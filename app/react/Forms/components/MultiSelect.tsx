@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
 import { t, Translate } from 'app/I18N';
