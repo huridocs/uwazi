@@ -1,13 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
 import { EntityTypesList } from '../EntityTypesList';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
+  Link: props => <a {...props} href={props.to} />,
+}));
 describe('EntityTypesList', () => {
   let component;
   let props;
-  let context;
 
   beforeEach(() => {
     props = {
@@ -24,20 +27,17 @@ describe('EntityTypesList', () => {
       checkTemplateCanBeDeleted: jasmine
         .createSpy('checkTemplateCanBeDeleted')
         .and.callFake(async () => Promise.resolve()),
-    };
-
-    context = {
-      confirm: jasmine.createSpy('confirm'),
+      mainContext: { confirm: jest.fn() },
     };
   });
 
   const render = () => {
-    component = shallow(<EntityTypesList {...props} />, { context });
+    component = shallow(<EntityTypesList {...props} />);
   };
 
   it('should sort templates alphabetically', () => {
     render();
-    const templatesList = component.find('.list-group-item');
+    const templatesList = component.find('li');
     expect(templatesList.at(0).find('Link').at(0).props().children).toEqual('Decision');
     expect(templatesList.at(1).find('Link').at(0).props().children).toEqual('Judge');
     expect(templatesList.at(2).find('Link').at(0).props().children).toEqual('Ruling');
@@ -61,7 +61,7 @@ describe('EntityTypesList', () => {
         .instance()
         .deleteTemplate({ _id: 3, name: 'Judge' })
         .then(() => {
-          expect(context.confirm).toHaveBeenCalled();
+          expect(props.mainContext.confirm).toHaveBeenCalled();
           done();
         });
     });

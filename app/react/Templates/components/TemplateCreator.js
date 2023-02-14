@@ -20,7 +20,6 @@ class TemplateCreator extends Component {
     let save = this.props.saveTemplate;
     let backUrl = '/settings/templates';
     let environment = 'document';
-
     if (this.props.relationType) {
       save = this.props.saveRelationType;
       backUrl = '/settings/connections';

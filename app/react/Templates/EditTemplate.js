@@ -1,6 +1,6 @@
 import React from 'react';
 import { actions as formActions } from 'react-redux-form';
-
+import { withRouter } from 'app/componentWrappers';
 import templatesAPI from 'app/Templates/TemplatesAPI';
 import thesauriAPI from 'app/Thesauri/ThesauriAPI';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
@@ -10,7 +10,7 @@ import RouteHandler from 'app/App/RouteHandler';
 import { OnTemplateLoaded } from './components/OnTemplateLoaded';
 import { prepareTemplate } from './actions/templateActions';
 
-export default class EditTemplate extends RouteHandler {
+class EditTemplateComponent extends RouteHandler {
   static async requestState(requestParams) {
     const { templateId } = requestParams.data;
     const [templates, thesauris, relationTypes] = await Promise.all([
@@ -43,3 +43,6 @@ export default class EditTemplate extends RouteHandler {
     );
   }
 }
+
+const EditTemplate = withRouter(EditTemplateComponent);
+export { EditTemplate, EditTemplateComponent };

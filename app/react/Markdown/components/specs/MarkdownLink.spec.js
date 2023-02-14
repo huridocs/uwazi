@@ -2,11 +2,17 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import MarkdownLink from '../MarkdownLink.js';
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
+  Link: props => <a {...props} href={props.to} />,
+}));
+
 describe('Link', () => {
   beforeEach(() => {
     spyOn(console, 'warn');
   });
-  it('should render a react-router Link', () => {
+  it('should render a react-router-dom Link', () => {
     const component = shallow(<MarkdownLink url="url">label</MarkdownLink>);
     expect(component).toMatchSnapshot();
   });

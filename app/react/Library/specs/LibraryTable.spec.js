@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import LibraryTable from 'app/Library/Library';
+import { LibraryTableComponent } from 'app/Library/LibraryTable';
 import RouteHandler from 'app/App/RouteHandler';
 import DocumentsList from 'app/Library/components/DocumentsList';
 
@@ -21,7 +21,7 @@ describe('LibraryTable', () => {
       },
     };
 
-    component = shallow(<LibraryTable {...props} />, { context });
+    component = shallow(<LibraryTableComponent {...props} />, { context });
   });
 
   it('should render the DocumentsList (by default)', () => {

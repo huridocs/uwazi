@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 
 import { isClient } from 'app/utils';
 
-export function trackPage() {
+function trackPage() {
   if (isClient && window.gtag) {
     window.gtag('send', 'pageview');
   }
@@ -17,7 +17,7 @@ export function trackPage() {
   }
 }
 
-export class GoogleAnalytics extends Component {
+class GoogleAnalytics extends Component {
   constructor(props) {
     super(props);
     if (!props.analyticsTrackingId || !isClient) {
@@ -55,10 +55,11 @@ GoogleAnalytics.propTypes = {
   analyticsTrackingId: PropTypes.string,
 };
 
-export function mapStateToProps({ settings }) {
+function mapStateToProps({ settings }) {
   return {
     analyticsTrackingId: settings.collection.get('analyticsTrackingId'),
   };
 }
 
+export { GoogleAnalytics, trackPage, mapStateToProps };
 export default connect(mapStateToProps)(GoogleAnalytics);

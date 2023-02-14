@@ -1,9 +1,10 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
 import React from 'react';
-
+import { useSearchParams } from 'react-router-dom';
 import { Translate } from 'app/I18N';
-import { withRouter } from 'react-router';
 import { CurrentLocationLink } from 'app/Layout';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 
 const disableButton = (page, pageToDisable) => ({
   className: page === pageToDisable ? 'btn disabled' : 'btn',
@@ -52,11 +53,12 @@ Paginator.propTypes = {
   onPageChange: PropTypes.func,
 };
 
-export default Paginator;
-
-const PaginatorWithPage = withRouter(props => {
-  const { location, ...restProps } = props;
-  return <Paginator {...restProps} page={Number(location.query.page || 1)} />;
-});
+// eslint-disable-next-line react/no-multi-comp
+const PaginatorWithPage = props => {
+  const [searchParams] = useSearchParams();
+  const query = searchParamsFromSearchParams(searchParams);
+  const { ...restProps } = props;
+  return <Paginator {...restProps} page={Number(query.page || 1)} />;
+};
 
 export { PaginatorWithPage };

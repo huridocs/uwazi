@@ -6,4 +6,10 @@ declare global {
       toNeedAuthorization(): R;
     }
   }
+
+  interface Window {
+    UWAZI_VERSION: string;
+    UWAZI_ENVIRONMENT: string;
+    SENTRY_APP_DSN: string;
+  }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/no-danger */
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
@@ -8,7 +9,7 @@ import SafeHTML from 'app/utils/SafeHTML';
 import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 import Immutable from 'immutable';
 
-export const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
+const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
   <>
     <li className="snippet-list-item-header metadata-snippet-header">
       <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
@@ -42,7 +43,7 @@ MetadataFieldSnippets.defaultProps = {
   template: undefined,
 };
 
-export const DocumentContentSnippets = ({
+const DocumentContentSnippets = ({
   selectSnippet,
   documentSnippets,
   documentViewUrl,
@@ -84,7 +85,7 @@ DocumentContentSnippets.propTypes = {
   searchTerm: PropTypes.string.isRequired,
 };
 
-export const SnippetList = ({
+const SnippetList = ({
   snippets,
   documentViewUrl,
   searchTerm,
@@ -135,9 +136,10 @@ SnippetList.defaultProps = {
   template: undefined,
 };
 
-export const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state, ownProps) => ({
   template: state.templates.find(tmpl => tmpl.get('_id') === ownProps.doc.get('template')),
   selectedSnippet: state.documentViewer.uiState.get('snippet'),
 });
 
+export { DocumentContentSnippets, MetadataFieldSnippets, SnippetList, mapStateToProps };
 export default connect(mapStateToProps)(SnippetList);

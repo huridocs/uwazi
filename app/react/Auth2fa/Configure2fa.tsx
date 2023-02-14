@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { Dispatch, bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
-import { LocalForm, Control } from 'react-redux-form';
+import { Control } from 'react-redux-form';
 import loadable from '@loadable/component';
 
 import { Icon } from 'UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t, I18NLink, Translate } from 'app/I18N';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
+import { LocalForm } from 'app/Forms/Form';
 import { enable2fa as enable2faAction, enable2faType } from './actions/actions';
 import Auth2faAPI from './Auth2faAPI';
 

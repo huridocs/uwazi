@@ -7,7 +7,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import api from 'app/Search/SearchAPI';
 import SettingsAPI from '../SettingsAPI';
-import { Settings } from '../Settings';
+import { SettingsComponent as Settings } from '../Settings';
 
 describe('Settings', () => {
   let user;

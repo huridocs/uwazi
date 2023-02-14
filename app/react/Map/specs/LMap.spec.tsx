@@ -12,6 +12,11 @@ jest.mock('app/Map/GoogleMapLayer', () => ({
   getGoogleLayer: jest.fn(),
 }));
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useRouteError: () => () => undefined,
+}));
+
 describe('Map', () => {
   let renderResult: RenderResult;
   const storeState = {
@@ -83,22 +88,23 @@ describe('Map', () => {
 
   describe('default values map library', () => {
     beforeEach(async () => {
-      await waitFor(() => {
-        const renderPopupInfo = true;
-        render(clusterMarkers, renderPopupInfo);
+      await waitFor(async () => {
+        await render(clusterMarkers, true);
       });
     });
 
     it('should set the streets mapbox tile by default', async () => {
-      const presentation = await screen.getByRole('presentation');
-      // @ts-ignore
-      expect(presentation.src).toEqual(
-        'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/1/1/0?access_token=abd'
-      );
-      // @ts-ignore
-      expect(presentation._leaflet_pos).toEqual({
-        x: -81,
-        y: -303,
+      await waitFor(async () => {
+        const presentation = await screen.getByRole('presentation');
+        // @ts-ignore
+        expect(presentation.src).toEqual(
+          'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/1/1/0?access_token=abd'
+        );
+        // @ts-ignore
+        expect(presentation._leaflet_pos).toEqual({
+          x: -81,
+          y: -303,
+        });
       });
     });
 
@@ -118,26 +124,30 @@ describe('Map', () => {
     });
 
     it('should call clickOnCluster when clicking on a cluster', async () => {
-      const cluster = await screen.getByText('3');
-      jest.spyOn(MapHelper, 'preventDefaultEvent').mockImplementation();
-      fireEvent.click(cluster);
-      expect(clickOnCluster).toHaveBeenCalled();
+      await waitFor(async () => {
+        const cluster = await screen.getByText('3');
+        jest.spyOn(MapHelper, 'preventDefaultEvent').mockImplementation();
+        fireEvent.click(cluster);
+        expect(clickOnCluster).toHaveBeenCalled();
+      });
     });
 
     it('should call onClick when clicking somewhere on the map', async () => {
-      const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
-      fireEvent.click(data);
-      expect(onClick).toHaveBeenCalled();
+      await waitFor(async () => {
+        const data = renderResult.container.getElementsByClassName('leaflet-pane')[0];
+        fireEvent.click(data);
+        expect(onClick).toHaveBeenCalled();
+      });
     });
   });
 
   describe('render options', () => {
     it('should render controls if showControls is false', async () => {
-      await waitFor(() => {
+      await waitFor(async () => {
         render([singleMarker], undefined, false);
+        expect((await screen.queryAllByRole('radio')).length).toBe(0);
+        expect((await screen.queryAllByRole('button')).length).toBe(0);
       });
-      expect((await screen.queryAllByRole('radio')).length).toBe(0);
-      expect((await screen.queryAllByRole('button')).length).toBe(0);
     });
   });
 });

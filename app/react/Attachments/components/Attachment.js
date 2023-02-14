@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { filesize } from 'filesize';
-
+import { Icon } from 'UI';
+import { withContext } from 'app/componentWrappers';
 import { NeedAuthorization } from 'app/Auth';
 import ShowIf from 'app/App/ShowIf';
 import { Translate, t } from 'app/I18N';
 import AttachmentForm from 'app/Attachments/components/AttachmentForm';
 import { wrapDispatch } from 'app/Multireducer';
-import { Icon } from 'UI';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { getFileExtension } from 'app/utils/getFileExtension';
@@ -102,7 +102,7 @@ class Attachment extends Component {
   }
 
   deleteAttachment(attachment) {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteAttachment(this.props.parentSharedId, attachment, this.props.storeKey);
       },
@@ -270,10 +270,9 @@ Attachment.propTypes = {
   submitForm: PropTypes.func,
   resetForm: PropTypes.func,
   entity: PropTypes.object,
-};
-
-Attachment.contextTypes = {
-  confirm: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 function mapDispatchToProps(dispatch, props) {
@@ -291,4 +290,4 @@ export function mapStateToProps({ attachments }, ownProps) {
 }
 
 export { Attachment };
-export default connect(mapStateToProps, mapDispatchToProps)(Attachment);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(Attachment));

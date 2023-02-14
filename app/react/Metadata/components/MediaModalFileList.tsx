@@ -42,7 +42,7 @@ export const MediaModalFileList = ({
               >
                 <div className="media-grid-card-header">
                   <h5>{attachment.originalname}</h5>
-                  <span style={!fileSize ? { color: '#FFFFFF' } : {}}>{sizeLabel}</span>
+                  <span style={!fileSize ? { color: '#FFFFFF' } : {}}>{sizeLabel.toString()}</span>
                 </div>
                 <div className="media-grid-card-content">
                   <div className="media">

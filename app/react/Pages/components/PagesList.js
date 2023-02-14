@@ -1,16 +1,16 @@
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
-import { I18NLink, t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { withContext } from 'app/componentWrappers';
+import { I18NLink, t, Translate } from 'app/I18N';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
 import { deletePage } from 'app/Pages/actions/pageActions';
 
 class PagesList extends Component {
   deletePage(page) {
-    return this.context.confirm({
+    return this.props.mainContext.confirm({
       accept: () => {
         this.props.deletePage(page.toJS());
       },
@@ -70,10 +70,9 @@ class PagesList extends Component {
 PagesList.propTypes = {
   pages: PropTypes.object,
   deletePage: PropTypes.func,
-};
-
-PagesList.contextTypes = {
-  confirm: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 export function mapStateToProps({ pages }) {
@@ -85,4 +84,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export { PagesList };
-export default connect(mapStateToProps, mapDispatchToProps)(PagesList);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(PagesList));

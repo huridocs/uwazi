@@ -30,8 +30,14 @@ export class StateSelectorBase extends Component {
   }
 }
 
+StateSelectorBase.defaultProps = {
+  isPristine: undefined,
+};
+
 StateSelectorBase.propTypes = {
   children: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
+  isPristine: PropTypes.bool,
 };
 
 export const StateSelector = connect((state, ownProps) =>

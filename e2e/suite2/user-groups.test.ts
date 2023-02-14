@@ -9,7 +9,7 @@ describe('User groups', () => {
     await proxyMock();
     await adminLogin();
     await page.goto(`${host}/settings/users`);
-    await expect(page).toClick('.tab-link', { text: 'Groups' });
+    await expect(page).toClick('.react-tabs__tab:nth-child(2) > span', { text: 'Groups' });
   });
 
   afterAll(async () => {
@@ -17,7 +17,7 @@ describe('User groups', () => {
   });
 
   it('Should show a list of existing groups with the count of their members', async () => {
-    await expect(page).toClick('.tab-link', { text: 'Groups' });
+    await expect(page).toClick('.react-tabs__tab:nth-child(2) > span', { text: 'Groups' });
     const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
     expect(groupRows).toEqual(['Activistas 2', 'Asesores legales 1']);
   });

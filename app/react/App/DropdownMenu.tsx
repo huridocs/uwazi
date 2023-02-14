@@ -37,6 +37,33 @@ export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
 
   useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
 
+  const menuOptions = () =>
+    link
+      .get('sublinks')
+      .map((sublink?: IImmutable<ISublink>, index?: number) => {
+        const url = sublink?.get('url') || '/';
+        return url.startsWith('http') ? (
+          <li key={index}>
+            <a
+              href={url}
+              className="btn dropdown-item"
+              target="_blank"
+              rel="noreferrer"
+              onClick={toggleShowing}
+            >
+              <Translate context="Menu">{sublink?.get('title') as string}</Translate>
+            </a>
+          </li>
+        ) : (
+          <li key={index}>
+            <I18NLink to={url} className="btn dropdown-item" onClick={toggleShowing}>
+              <Translate context="Menu">{sublink?.get('title') as string}</Translate>
+            </I18NLink>
+          </li>
+        );
+      })
+      .toArray();
+
   return (
     <li className="menuNav-item" key={position} ref={dropdownRef}>
       <button
@@ -48,33 +75,7 @@ export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
         <Translate context="Menu">{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
       </button>
-      <ul className={`dropdown-menu ${showing ? 'expanded' : ''} `}>
-        {link.get('sublinks').map((sublink?: IImmutable<ISublink>, index?: number) => {
-          const url = sublink?.get('url') || '/';
-          if (url.startsWith('http')) {
-            return (
-              <li key={index}>
-                <a
-                  href={url}
-                  className="btn dropdown-item"
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={toggleShowing}
-                >
-                  <Translate context="Menu">{sublink?.get('title') as string}</Translate>
-                </a>
-              </li>
-            );
-          }
-          return (
-            <li key={index}>
-              <I18NLink to={url} className="btn dropdown-item" onClick={toggleShowing}>
-                <Translate context="Menu">{sublink?.get('title') as string}</Translate>
-              </I18NLink>
-            </li>
-          );
-        })}
-      </ul>
+      <ul className={`dropdown-menu ${showing ? 'expanded' : ''} `}>{menuOptions()}</ul>
     </li>
   );
 };

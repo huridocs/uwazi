@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import Modal from 'app/Layout/Modal';
 import Immutable from 'immutable';
-import { LocalForm } from 'react-redux-form';
+import { LocalForm } from 'app/Forms/Form';
 import * as actions from '../../actions/exportActions';
 
 describe('ExportButton', () => {

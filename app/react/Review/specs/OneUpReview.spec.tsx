@@ -39,7 +39,12 @@ describe('Library', () => {
 
   beforeEach(() => {
     RouteHandler.renderedFromServer = true;
-    props = { entity, oneUpState, location: { query: { q: '(a:1)' } } };
+    props = {
+      entity,
+      oneUpState,
+      location: { query: { q: '(a:1)' } },
+      mainContext: { confirm: jest.fn },
+    };
     dispatchCallsOrder = [];
     context = {
       store: {

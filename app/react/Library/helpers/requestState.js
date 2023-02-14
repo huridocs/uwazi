@@ -31,7 +31,7 @@ const processQuery = (params, globalResources, key) => {
     view: params.view,
   });
 
-  const noDocuments = !globalResources[key] || !globalResources[key].documents.get('rows').size;
+  const noDocuments = !globalResources[key] || !globalResources[key].documents?.get('rows').size;
 
   if (noDocuments && query.limit) {
     query = Object.assign(query, { limit: query.limit + (query.from || 0), from: 0 });
@@ -51,19 +51,19 @@ const processQuery = (params, globalResources, key) => {
 };
 
 const requestState = (
-  request,
+  requestParams,
   globalResources,
   options = { calculateTableColumns: false, geolocation: false }
 ) => {
-  const docsQuery = processQuery(request.data, globalResources, 'library');
+  const docsQuery = processQuery(requestParams.data, globalResources, 'library');
 
-  const documentsRequest = request.set(
+  const documentsRequest = requestParams.set(
     tocGenerationUtils.aggregations(docsQuery, globalResources.settings.collection.toJS())
   );
 
   const markersRequest = options.geolocation
     ? api.search(
-        request.set({
+        requestParams.set({
           ...docsQuery,
           geolocation: true,
         })
@@ -72,14 +72,17 @@ const requestState = (
 
   return Promise.all([api.search(documentsRequest), markersRequest]).then(
     ([documents, markers]) => {
+      const useDefaultPublishedStatus =
+        !documentsRequest.data.includeUnpublished && !documentsRequest.data.unpublished;
       const templates = globalResources.templates.toJS();
       const filterState = libraryHelpers.URLQueryToState(
-        documentsRequest.data,
+        {
+          ...documentsRequest.data,
+          ...(useDefaultPublishedStatus && { includeUnpublished: false, unpublished: false }),
+        },
         templates,
-        globalResources.thesauris.toJS(),
-        globalResources.relationTypes.toJS(),
-        request.data.quickLabelThesaurus
-          ? getThesaurusPropertyNames(request.data.quickLabelThesaurus, templates)
+        requestParams.data.quickLabelThesaurus
+          ? getThesaurusPropertyNames(requestParams.data.quickLabelThesaurus, templates)
           : []
       );
 
@@ -101,7 +104,7 @@ const requestState = (
       const dispatchedActions = [
         setReduxState(state, 'library', addinsteadOfSet),
         actions.set('library.sidepanel.quickLabelState', {
-          thesaurus: request.data.quickLabelThesaurus,
+          thesaurus: requestParams.data.quickLabelThesaurus,
           autoSave: false,
         }),
       ];
