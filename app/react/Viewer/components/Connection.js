@@ -3,10 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fromJS as Immutable } from 'immutable';
+import { createSelector } from 'reselect';
+import { Icon } from 'UI';
 import { I18NLink } from 'app/I18N';
 import { NeedAuthorization } from 'app/Auth';
-import { Icon } from 'UI';
-
+import { withContext } from 'app/componentWrappers';
 import ShowIf from 'app/App/ShowIf';
 import { deleteReference } from 'app/Viewer/actions/referencesActions';
 import {
@@ -15,7 +16,6 @@ import {
   selectReference,
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
-import { createSelector } from 'reselect';
 import helpers from 'app/Documents/helpers';
 
 const selectDoc = createSelector(
@@ -42,7 +42,7 @@ export class Connection extends Component {
   }
 
   deleteReference(reference) {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteReference(reference);
       },
@@ -129,10 +129,6 @@ export class Connection extends Component {
   }
 }
 
-Connection.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 Connection.defaultProps = {
   targetDoc: false,
 };
@@ -150,6 +146,9 @@ Connection.propTypes = {
   activateReference: PropTypes.func,
   selectReference: PropTypes.func,
   referencesSection: PropTypes.string,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -176,4 +175,4 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Connection);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(Connection));

@@ -5,6 +5,7 @@ import { actions } from 'app/BasicReducer';
 import { Loader } from 'app/components/Elements/Loader';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { IStore, ThesaurusSuggestions, TasksState } from 'app/istore';
+import { store } from 'app/store';
 import { resolveTemplateProp } from 'app/Settings/utils/resolveProperty';
 import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
@@ -242,9 +243,9 @@ class ThesaurusCockpitBase extends RouteHandler {
   }
 
   emptyState() {
-    this.context.store.dispatch(actions.unset('thesauri.suggestInfo'));
-    this.context.store.dispatch(actions.unset('thesauri.thesaurus'));
-    this.context.store.dispatch(actions.unset('thesauri.tasksState'));
+    store?.dispatch(actions.unset('thesauri.suggestInfo'));
+    store?.dispatch(actions.unset('thesauri.thesaurus'));
+    store?.dispatch(actions.unset('thesauri.tasksState'));
   }
 
   renderEnableSuggestionsToggle() {

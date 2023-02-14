@@ -55,7 +55,8 @@ describe('EntitySuggestions', () => {
       () => ({
         ...defaultState,
         templates: Immutable.fromJS([]),
-      })
+      }),
+      'BrowserRouter'
     ));
   };
 
@@ -114,14 +115,12 @@ describe('EntitySuggestions', () => {
           type: 'text',
           label: 'Title',
         };
-        await act(async () => {
-          renderComponent(titleProperty);
-          const suggestionHeaders = screen
-            .getAllByRole('columnheader')
-            .map(header => header.textContent);
-          expect(suggestionHeaders).toContain('Suggestion');
-          expect(suggestionHeaders).not.toContain('Title');
-        });
+        await act(async () => renderComponent(titleProperty));
+        const suggestionHeaders = screen
+          .getAllByRole('columnheader')
+          .map(header => header.textContent);
+        expect(suggestionHeaders).toContain('Suggestion');
+        expect(suggestionHeaders).not.toContain('Title');
       });
     });
   });
@@ -159,7 +158,6 @@ describe('EntitySuggestions', () => {
       });
     });
   });
-
   describe('date property', () => {
     const dateProperty: PropertySchema = {
       name: 'fecha',

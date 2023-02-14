@@ -101,7 +101,11 @@ describe('LibraryHeader', () => {
   };
 
   const render = () => {
-    ({ renderResult, store } = renderConnectedContainer(<LibraryHeader {...props} />, () => state));
+    ({ renderResult, store } = renderConnectedContainer(
+      <LibraryHeader {...props} />,
+      () => state,
+      'BrowserRouter'
+    ));
   };
 
   it('should display the sort dropdown component', () => {

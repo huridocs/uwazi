@@ -78,6 +78,9 @@ describe('UserSidePanel', () => {
     });
   });
 
+  // eslint-disable-next-line no-promise-executor-return
+  const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
   describe('Edition of user', () => {
     it.each<any>([
       { field: 'username', value: existingUser.username, message: 'Duplicated username' },
@@ -86,27 +89,18 @@ describe('UserSidePanel', () => {
       { field: 'username', value: 'a', message: 'Username is too short' },
       { field: 'email', value: existingUser.email, message: 'Duplicated email' },
       { field: 'email', value: '', message: 'Email is required' },
-    ])(
-      'should not save if there is an invalid value %s',
-      ({ field, value, message }, done: jest.DoneCallback) => {
-        const props = { ...defaultProps };
-        props.user = { ...newUser, [field]: value };
-        const wrapper = render(props);
-        wrapper.find('form').simulate('submit');
-
-        setTimeout(() => {
-          wrapper.update();
-          const error = wrapper
-            .find({ id: `${field}_field` })
-            .children()
-            .find('div')
-            .at(0);
-          expect(defaultProps.onSave).not.toBeCalled();
-          expect(error.text()).toEqual(message);
-          done();
-        }, 0);
-      }
-    );
+    ])('should not save if there is an invalid value %s', async ({ field, value, message }) => {
+      await sleep(20);
+      const props = { ...defaultProps };
+      props.user = { ...newUser, [field]: value };
+      const wrapper = render(props);
+      wrapper.find('form').simulate('submit');
+      await sleep(20);
+      wrapper.update();
+      const error = wrapper.find('.validation-error').at(0).find('div').at(0);
+      expect(defaultProps.onSave).not.toBeCalled();
+      expect(error.text()).toEqual(message);
+    });
 
     it('should save the changes over the user', done => {
       const emailInput = component.find({ id: 'email_field' }).find('input').at(0);

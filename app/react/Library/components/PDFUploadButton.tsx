@@ -29,11 +29,7 @@ interface PDFUploadActions {
   unselectAllDocuments: () => void;
 }
 
-interface PDFUploadButtonOwnProps {
-  storeKey: string;
-}
-
-type PDFUploadButtonProps = PDFUploadActions & PDFUploadButtonOwnProps;
+type PDFUploadButtonProps = PDFUploadActions;
 
 const onChangePDFs =
   ({ createDocument, uploadDocument, unselectAllDocuments }: PDFUploadActions) =>
@@ -88,18 +84,18 @@ const PDFUploadButtonComponent = ({
   );
 };
 
-function mapDispatchToProps(dispatch: Dispatch<any>, props: PDFUploadButtonOwnProps) {
+function mapDispatchToProps(dispatch: Dispatch<any>) {
   return bindActionCreators(
     {
       uploadDocument: uploadDocumentAction,
       unselectAllDocuments: unselectAllDocumentsAction,
       createDocument: createDocumentAction,
     },
-    wrapDispatch(dispatch, props.storeKey)
+    wrapDispatch(dispatch, 'library')
   );
 }
 
-export const PDFUploadButton = connect<{}, PDFUploadActions, PDFUploadButtonOwnProps>(
+export const PDFUploadButton = connect<{}, PDFUploadActions>(
   null,
   mapDispatchToProps
 )(PDFUploadButtonComponent);

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FiltersForm render() should render diferent type fileds 1`] = `
-<Connect(withRouter(FiltersFromProperties))
+<Connect(FiltersFromProperties)
   onChange={[Function]}
   properties={
     Array [

@@ -35,7 +35,7 @@ describe('Render', () => {
 
     let component: RenderResult;
 
-    act(() => {
+    await act(() => {
       component = render(<GridChart data={noOverlayData} />);
     });
 
@@ -67,7 +67,7 @@ describe('Render', () => {
 
     let component: RenderResult;
 
-    act(() => {
+    await act(() => {
       component = render(<GridChart data={dataWithOverlay} />);
     });
 

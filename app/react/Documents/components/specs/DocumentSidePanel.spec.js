@@ -17,12 +17,10 @@ jest.mock('shared/entityDefaultDocument');
 describe('DocumentSidePanel', () => {
   let component;
   let props;
-  const context = {
-    confirm: jasmine.createSpy('confirm'),
-  };
 
   beforeEach(() => {
     props = {
+      mainContext: { confirm: jasmine.createSpy('confirm') },
       doc: Immutable.fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
       rawDoc: fromJS({}),
       templates: Immutable.fromJS([]),
@@ -56,7 +54,7 @@ describe('DocumentSidePanel', () => {
   });
 
   const render = () => {
-    component = shallow(<DocumentSidePanel {...props} />, { context });
+    component = shallow(<DocumentSidePanel {...props} />);
   };
 
   it('should have default props values assigned', () => {
@@ -184,7 +182,7 @@ describe('DocumentSidePanel', () => {
         props.formDirty = true;
         render();
         component.find('.close-modal').simulate('click');
-        expect(context.confirm).toHaveBeenCalled();
+        expect(props.mainContext.confirm).toHaveBeenCalled();
       });
     });
 

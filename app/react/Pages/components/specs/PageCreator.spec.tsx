@@ -2,9 +2,10 @@ import React from 'react';
 import Immutable from 'immutable';
 import { shallow, ShallowWrapper } from 'enzyme';
 
-import { Form, Field, Control } from 'react-redux-form';
+import { Field, Control } from 'react-redux-form';
+import { Form } from 'app/Forms/Form';
 import { MarkDown } from 'app/ReactReduxForms';
-import { PageCreator, mappedProps } from '../PageCreator';
+import { PageCreatorComponent as PageCreator, mappedProps } from '../PageCreator';
 
 describe('PageCreator', () => {
   let component: ShallowWrapper<typeof PageCreator>;
@@ -31,18 +32,20 @@ describe('PageCreator', () => {
       resetPage: jasmine.createSpy('deletePage'),
       updateValue: jasmine.createSpy('updateValue'),
       savingPage: false,
+      navigate: jasmine.createSpy('navigate'),
     };
   });
 
   const render = () => {
     // eslint-disable-next-line react/jsx-props-no-spreading
-    component = shallow(<PageCreator.WrappedComponent {...props} />);
+    component = shallow(<PageCreator {...props} />);
   };
 
   describe('render', () => {
     it('should render the creator form which saves on submit', () => {
       render();
-      expect(component.find(Form).props().onSubmit).toBe(props.savePage);
+      component.find(Form).props().onSubmit!({ name: 'page1' });
+      expect(props.savePage).toHaveBeenCalledWith({ name: 'page1' }, props.navigate);
     });
 
     it('should disable saving while savingPage', () => {

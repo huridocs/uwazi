@@ -119,7 +119,7 @@ class AccountSettings extends Component {
                   <div>
                     <Translate>Groups</Translate>:&nbsp;&nbsp;
                     {groups.map(g => (
-                      <Pill>{g.name}</Pill>
+                      <Pill key={g._id?.toString()}>{g.name}</Pill>
                     ))}
                   </div>
                 )}

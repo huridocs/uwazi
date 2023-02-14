@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
 import { SearchBar } from 'app/Library/components/SearchBar';
@@ -12,6 +12,7 @@ import { NeedAuthorization } from 'app/Auth';
 import { t, Translate } from 'app/I18N';
 import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
+import { withRouter } from 'app/componentWrappers';
 import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
@@ -48,7 +49,7 @@ class DocumentsList extends Component {
 
   loadMoreDocuments(amount, from) {
     this.setState({ loading: true });
-    this.props.loadMoreDocuments(this.props.storeKey, amount, from);
+    this.props.loadMoreDocuments(amount, from, this.props.location, this.props.navigate);
   }
 
   selectAllDocuments() {
@@ -303,12 +304,14 @@ DocumentsList.propTypes = {
   view: PropTypes.string,
   location: PropTypes.shape({
     pathname: PropTypes.string,
-    query: PropTypes.object,
-  }),
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
   CollectionViewer: PropTypes.func,
   tableViewMode: PropTypes.bool,
   scrollCount: PropTypes.number,
 };
 
 export { DocumentsList };
+
 export default withRouter(DocumentsList);

@@ -1,14 +1,15 @@
+import React from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import rison from 'rison-node';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React from 'react';
-
 import { t } from 'app/I18N';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { getAggregationSuggestions } from 'app/Library/actions/libraryActions';
 import { selectTemplates } from 'app/utils/coreSelectors';
-import { withRouter } from 'react-router';
-import rison from 'rison-node';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
+
 import DateFilter from './DateFilter';
 import NestedFilter from './NestedFilter';
 import NumberRangeFilter from './NumberRangeFilter';
@@ -42,9 +43,7 @@ const labelForOption = (filteredProperty, option) => {
 };
 
 const prepareOptions = (property, location) => {
-  const { q = '(filters:())' } = location.query;
-
-  const query = rison.decode(q);
+  const query = searchParamsFromLocationSearch(location, 'q') || {};
   const filteredProperty = {
     ...property,
     options: property.options.filter(option => option.id !== 'any'),
@@ -77,64 +76,71 @@ const FiltersFromProperties = ({
   storeKey,
   templates,
   ...props
-}) => (
-  <>
-    {properties.map(property => {
-      const { type } = property.inherit?.property ? property.inherit : property;
+}) => {
+  const location = useLocation();
+  return (
+    <>
+      {properties.map(property => {
+        const { type } = property.inherit?.property ? property.inherit : property;
 
-      const commonProps = {
-        model: `.filters${modelPrefix}.${property.name}`,
-        label: t(translationContext, property.label),
-        onChange,
-      };
+        const commonProps = {
+          model: `.filters${modelPrefix}.${property.name}`,
+          label: t(translationContext, property.label),
+          onChange,
+        };
 
-      const propertyOptions = property.options ? prepareOptions(property, props.location) : [];
+        const propertyOptions = property.options ? prepareOptions(property, location) : [];
 
-      let filter = <TextFilter {...commonProps} />;
+        let filter = <TextFilter {...commonProps} />;
 
-      switch (type) {
-        case 'numeric':
-          filter = <NumberRangeFilter {...commonProps} />;
-          break;
+        switch (type) {
+          case 'numeric':
+            filter = <NumberRangeFilter {...commonProps} />;
+            break;
 
-        case 'select':
-        case 'multiselect':
-        case 'relationship':
-          filter = (
-            <SelectFilter
-              {...commonProps}
-              lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
-              options={propertyOptions}
-              prefix={property.name}
-              showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
-              sort={property.type === 'relationship'}
-              totalPossibleOptions={propertyOptions.length}
-              allowSelectGroup
-            />
-          );
-          break;
+          case 'select':
+          case 'multiselect':
+          case 'relationship':
+            filter = (
+              <SelectFilter
+                {...commonProps}
+                lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+                options={propertyOptions}
+                prefix={property.name}
+                showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+                sort={property.type === 'relationship'}
+                totalPossibleOptions={propertyOptions.length}
+                allowSelectGroup
+              />
+            );
+            break;
 
-        case 'nested':
-          filter = (
-            <NestedFilter {...commonProps} property={property} aggregations={props.aggregations} />
-          );
-          break;
+          case 'nested':
+            filter = (
+              <NestedFilter
+                {...commonProps}
+                property={property}
+                aggregations={props.aggregations}
+              />
+            );
+            break;
 
-        case 'date':
-        case 'multidate':
-        case 'multidaterange':
-        case 'daterange':
-          filter = <DateFilter {...commonProps} format={props.dateFormat} />;
-          break;
+          case 'date':
+          case 'multidate':
+          case 'multidaterange':
+          case 'daterange':
+            filter = <DateFilter {...commonProps} format={props.dateFormat} />;
+            break;
 
-        default:
-          break;
-      }
+          default:
+            break;
+        }
 
-      return <FormGroup key={property.name}>{filter}</FormGroup>;
-    })}
-  </>
-);
+        return <FormGroup key={property.name}>{filter}</FormGroup>;
+      })}
+    </>
+  );
+};
 
 FiltersFromProperties.defaultProps = {
   onChange: () => {},
@@ -152,7 +158,6 @@ FiltersFromProperties.propTypes = {
   storeKey: PropTypes.string.isRequired,
   aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
   properties: PropTypes.array.isRequired,
-  location: PropTypes.object.isRequired,
 };
 
 export function mapStateToProps(state, props) {
@@ -165,4 +170,4 @@ export function mapStateToProps(state, props) {
 }
 
 export { FiltersFromProperties };
-export default connect(mapStateToProps)(withRouter(FiltersFromProperties));
+export default connect(mapStateToProps)(FiltersFromProperties);

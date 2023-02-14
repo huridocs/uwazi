@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { withRouter, WithRouterProps } from 'react-router';
 import { IImmutable } from 'shared/types/Immutable';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { Icon } from 'UI';
@@ -9,8 +8,9 @@ import { actions, Translate, t } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { NeedAuthorization } from 'app/Auth';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+import { Location, useLocation } from 'react-router-dom';
 
-const locationSearch = (location: WithRouterProps['location']) => {
+const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
   return cleanSearch === '?' ? '' : cleanSearch;
 };
@@ -18,14 +18,14 @@ const locationSearch = (location: WithRouterProps['location']) => {
 const prepareValues = (
   languageMap: IImmutable<LanguagesListSchema>,
   locale: string,
-  location: WithRouterProps['location']
+  location: Location
 ) => {
   const languages: LanguagesListSchema = languageMap.toJS();
 
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
-  const urlLocation = location;
+  const urlLocation = { ...location };
 
   const path = urlLocation.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '/');
 
@@ -48,10 +48,9 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type mappedProps = ConnectedProps<typeof connector> & WithRouterProps;
+type mappedProps = ConnectedProps<typeof connector>;
 
 const i18NMenuComponent = ({
-  location,
   languages: languageMap,
   i18nmode,
   user,
@@ -61,6 +60,8 @@ const i18NMenuComponent = ({
   if (!languageMap || languageMap.size < 1 || (languageMap!.size <= 1 && !user.get('_id'))) {
     return <div className="no-i18nmenu" />;
   }
+
+  const location = useLocation();
 
   const menuRef = useRef(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -161,6 +162,6 @@ const i18NMenuComponent = ({
   );
 };
 
-const container = withRouter(connector(i18NMenuComponent));
+const container = connector(i18NMenuComponent);
 
 export { container as i18NMenuComponent };

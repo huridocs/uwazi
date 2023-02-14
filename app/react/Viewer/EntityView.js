@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import { actions } from 'app/BasicReducer';
-import SearchButton from 'app/Entities/components/SearchButton';
 import relationTypesAPI from 'app/RelationTypes/RelationTypesAPI';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 
@@ -68,14 +67,6 @@ class Entity extends Component {
     this.context.store.dispatch(actions.unset('page/pageView'));
     this.context.store.dispatch(actions.unset('page/itemLists'));
     this.context.store.dispatch(actions.unset('page/datasets'));
-  }
-
-  static renderTools() {
-    return (
-      <div className="searchBox">
-        <SearchButton storeKey="library" />
-      </div>
-    );
   }
 
   render() {

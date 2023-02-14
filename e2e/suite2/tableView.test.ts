@@ -61,9 +61,9 @@ describe('Table view', () => {
     });
 
     it('Should show new selected properties', async () => {
-      await page.click('.hidden-columns-dropdown');
-      await expect(page).toClick('.rw-list-option', { text: 'Mecanismo' });
-      await expect(page).toClick('.rw-list-option', { text: 'Firmantes' });
+      await page.click('.rw-select');
+      await expect(page).toClick('.rw-list-option>span', { text: 'Mecanismo' });
+      await expect(page).toClick('.rw-list-option>span', { text: 'Firmantes' });
       await page.click('.tableview-wrapper');
       await expect(page).toMatchElement('.tableview-wrapper th:last-child', { text: 'Firmantes' });
       await expect(page).toMatchElement('.tableview-wrapper th:nth-last-child(3)', {

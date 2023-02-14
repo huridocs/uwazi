@@ -43,7 +43,7 @@ export class LibraryModeToggleButtons extends Component {
           <I18NLink
             to={`library${searchUrl}`}
             className="btn btn-default"
-            activeClassName="is-active"
+            activeclassname="is-active"
             aria-label={t('System', 'library list view', null, false)}
           >
             <Icon icon="th" />
@@ -52,7 +52,7 @@ export class LibraryModeToggleButtons extends Component {
           <I18NLink
             to={`library/table${searchUrl}`}
             className="btn btn-default"
-            activeClassName="is-active"
+            activeclassname="is-active"
             aria-label={t('System', 'library table view', null, false)}
           >
             <Icon icon="align-justify" />
@@ -62,7 +62,7 @@ export class LibraryModeToggleButtons extends Component {
             <I18NLink
               to={`library/map${searchUrl}`}
               className="btn btn-default"
-              activeClassName="is-active"
+              activeclassname="is-active"
               aria-label={t('System', 'library map view', null, false)}
             >
               <Icon icon="map-marker" />

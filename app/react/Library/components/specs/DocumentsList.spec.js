@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import Immutable, { fromJS } from 'immutable';
 
 import { clickOnDocument, selectAllDocuments, mapStateToProps } from '../DocumentsList';
-import DocumentsList from '../../../Layout/DocumentsList';
+import { DocumentsList } from '../../../Layout/DocumentsList';
 
 describe('Library DocumentsList container', () => {
   let component;
@@ -31,6 +31,8 @@ describe('Library DocumentsList container', () => {
       selectDocuments: jasmine.createSpy('selectDocuments'),
       unselectDocument: jasmine.createSpy('unselectDocument'),
       storeKey: 'library',
+      location: {},
+      navigate: () => {},
     };
   });
 

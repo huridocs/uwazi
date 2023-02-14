@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { browserHistory } from 'react-router';
 import RouteHandler from 'app/App/RouteHandler';
 import qs from 'qs';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import { withRouter } from 'app/componentWrappers';
 
 import auth from 'app/Auth';
 
-class ResetPassword extends RouteHandler {
+class ResetPasswordComponent extends RouteHandler {
   constructor(props, context) {
     super(props, context);
     this.state = { error: false, password: '', repeatPassword: '' };
@@ -39,7 +39,7 @@ class ResetPassword extends RouteHandler {
     }
 
     this.props.resetPassword(this.state.password, this.props.params.key).then(() => {
-      browserHistory.push('/login');
+      this.props.navigate('/login');
     });
 
     this.setState({ password: '', repeatPassword: '' });
@@ -50,8 +50,8 @@ class ResetPassword extends RouteHandler {
       <div className="content login-content">
         <div className="row">
           <div className="col-xs-12 col-sm-4 col-sm-offset-4">
-            {qs.parse(this.context.router.location.search, { ignoreQueryPrefix: true })
-              .createAccount === 'true' && (
+            {qs.parse(this.props.location.search, { ignoreQueryPrefix: true }).createAccount ===
+              'true' && (
               <div className="alert alert-info">
                 <Icon icon="info-circle" />
                 <div>
@@ -107,7 +107,7 @@ class ResetPassword extends RouteHandler {
   }
 }
 
-ResetPassword.propTypes = {
+ResetPasswordComponent.propTypes = {
   resetPassword: PropTypes.func,
   params: PropTypes.shape({
     key: PropTypes.string,
@@ -118,4 +118,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ resetPassword: auth.actions.resetPassword }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(ResetPassword);
+export { ResetPasswordComponent };
+export default connect(null, mapDispatchToProps)(withRouter(ResetPasswordComponent));

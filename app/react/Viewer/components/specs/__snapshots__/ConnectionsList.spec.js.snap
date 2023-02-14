@@ -4,7 +4,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
 <div
   className="item-group"
 >
-  <Connect(Connection)
+  <Connect(Component)
     key="ref4"
     reference={
       Object {
@@ -30,7 +30,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
       }
     }
   />
-  <Connect(Connection)
+  <Connect(Component)
     key="ref2"
     reference={
       Object {
@@ -56,7 +56,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
       }
     }
   />
-  <Connect(Connection)
+  <Connect(Component)
     key="ref3"
     reference={
       Object {
@@ -82,7 +82,7 @@ exports[`ConnectionsList should merge and render references in order with the pr
       }
     }
   />
-  <Connect(Connection)
+  <Connect(Component)
     key="ref1"
     reference={
       Object {

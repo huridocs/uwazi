@@ -146,138 +146,7 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
             >
               <Suspense
                 fallback={null}
-              >
-                <Player
-                  activePlayer={
-                    Object {
-                      "$$typeof": Symbol(react.lazy),
-                      "_ctor": [Function],
-                      "_result": Promise {},
-                      "_status": 0,
-                    }
-                  }
-                  className="react-player"
-                  config={
-                    Object {
-                      "dailymotion": Object {
-                        "params": Object {
-                          "api": 1,
-                          "endscreen-enable": false,
-                        },
-                      },
-                      "facebook": Object {
-                        "appId": "1309697205772819",
-                        "attributes": Object {},
-                        "playerId": null,
-                        "version": "v3.3",
-                      },
-                      "file": Object {
-                        "attributes": Object {},
-                        "dashVersion": "3.1.3",
-                        "flvVersion": "1.5.0",
-                        "forceAudio": false,
-                        "forceDASH": false,
-                        "forceFLV": false,
-                        "forceHLS": false,
-                        "forceVideo": false,
-                        "hlsOptions": Object {},
-                        "hlsVersion": "1.1.4",
-                        "tracks": Array [],
-                      },
-                      "mixcloud": Object {
-                        "options": Object {
-                          "hide_cover": 1,
-                        },
-                      },
-                      "playerOptions": Object {
-                        "autopause": false,
-                        "byline": false,
-                        "portrait": false,
-                        "title": false,
-                      },
-                      "soundcloud": Object {
-                        "options": Object {
-                          "buying": false,
-                          "download": false,
-                          "liking": false,
-                          "sharing": false,
-                          "show_comments": false,
-                          "show_playcount": false,
-                          "visual": true,
-                        },
-                      },
-                      "title": null,
-                      "twitch": Object {
-                        "options": Object {},
-                        "playerId": null,
-                      },
-                      "vidyard": Object {
-                        "options": Object {},
-                      },
-                      "vimeo": Object {
-                        "playerOptions": Object {
-                          "autopause": false,
-                          "byline": false,
-                          "portrait": false,
-                          "title": false,
-                        },
-                        "title": null,
-                      },
-                      "wistia": Object {
-                        "customControls": null,
-                        "options": Object {},
-                        "playerId": null,
-                      },
-                      "youtube": Object {
-                        "embedOptions": Object {},
-                        "onUnstarted": [Function],
-                        "playerVars": Object {
-                          "iv_load_policy": 3,
-                          "modestbranding": 1,
-                          "playsinline": 1,
-                          "rel": 0,
-                          "showinfo": 0,
-                        },
-                      },
-                    }
-                  }
-                  controls={true}
-                  fallback={null}
-                  height="360px"
-                  key="vimeo"
-                  light={false}
-                  loop={false}
-                  muted={false}
-                  oEmbedUrl="https://noembed.com/embed?url={url}"
-                  onBuffer={[Function]}
-                  onBufferEnd={[Function]}
-                  onClickPreview={[Function]}
-                  onDisablePIP={[Function]}
-                  onDuration={[Function]}
-                  onEnablePIP={[Function]}
-                  onEnded={[Function]}
-                  onError={[Function]}
-                  onPause={[Function]}
-                  onPlay={[Function]}
-                  onPlaybackRateChange={[Function]}
-                  onProgress={[Function]}
-                  onReady={[Function]}
-                  onSeek={[Function]}
-                  onStart={[Function]}
-                  pip={false}
-                  playbackRate={1}
-                  playing={false}
-                  playsinline={false}
-                  previewTabIndex={0}
-                  progressInterval={1000}
-                  stopOnUnmount={true}
-                  style={Object {}}
-                  url="https://www.vimeo.com/253530307"
-                  volume={null}
-                  width="100%"
-                  wrapper="div"
-                />
-              </Suspense>
+              />
             </div>
           </ReactPlayer>
         </div>
@@ -602,9 +471,13 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
                   activePlayer={
                     Object {
                       "$$typeof": Symbol(react.lazy),
-                      "_ctor": [Function],
-                      "_result": [Function],
-                      "_status": 1,
+                      "_init": [Function],
+                      "_payload": Object {
+                        "_result": Object {
+                          "default": [Function],
+                        },
+                        "_status": 1,
+                      },
                     }
                   }
                   className="react-player"
@@ -732,9 +605,13 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
                     activePlayer={
                       Object {
                         "$$typeof": Symbol(react.lazy),
-                        "_ctor": [Function],
-                        "_result": [Function],
-                        "_status": 1,
+                        "_init": [Function],
+                        "_payload": Object {
+                          "_result": Object {
+                            "default": [Function],
+                          },
+                          "_status": 1,
+                        },
                       }
                     }
                     className="react-player"

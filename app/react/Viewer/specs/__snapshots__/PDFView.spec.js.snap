@@ -1,8 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PDFView when raw should render link canonical to the not raw version 1`] = `
-<link
-  href="pathname?page=1"
-  rel="canonical"
-/>
+Array [
+  <SideEffect(NullComponent)
+    defer={true}
+    encodeSpecialCharacters={true}
+    link={
+      Array [
+        Object {
+          "href": "pathname?page=1",
+          "rel": "canonical",
+        },
+      ]
+    }
+  >
+    <NullComponent
+      defer={true}
+      encodeSpecialCharacters={true}
+      link={
+        Array [
+          Object {
+            "href": "pathname?page=1",
+            "rel": "canonical",
+          },
+        ]
+      }
+    />
+  </SideEffect(NullComponent)>,
+  <NullComponent
+    defer={true}
+    encodeSpecialCharacters={true}
+    link={
+      Array [
+        Object {
+          "href": "pathname?page=1",
+          "rel": "canonical",
+        },
+      ]
+    }
+  />,
+]
 `;
