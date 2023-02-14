@@ -3,34 +3,39 @@ import './button.css';
 
 import { Table } from 'flowbite-react';
 
+interface Column {
+  accesor?: string;
+  header: React.ReactElement | string;
+  className?: string;
+  cell?: (item?: { [key: string]: any }) => React.ReactElement;
+}
+
 interface LocalTableProps {
   /**
-   * Labels for the header
+   * Column definition
    */
-  header: string[];
+  columns: Column[];
   /**
    * Data content
    */
-  rows: (string | number)[][];
+  data: { [key: string]: any }[];
 }
 
-/**
- * Primary UI component for user interaction
- */
-export const LocalTable = ({ header, rows }: LocalTableProps) => (
+export const LocalTable = ({ columns, data }: LocalTableProps) => (
   <div className="tw-content">
     <Table>
       <Table.Head>
-        {header.map(columnName => (
-          <Table.HeadCell>{columnName}</Table.HeadCell>
+        {columns.map(column => (
+          <Table.HeadCell>{column.header}</Table.HeadCell>
         ))}
       </Table.Head>
       <Table.Body className="divide-y">
-        {rows.map(row => (
+        {data.map(item => (
           <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            {row.map(cell => (
+            {columns.map(column => (
               <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                {cell}
+                {column.cell && column.cell(item)}
+                {column.accesor && item[column.accesor]}
               </Table.Cell>
             ))}
           </Table.Row>
