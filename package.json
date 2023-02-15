@@ -211,7 +211,7 @@
     "socket.io": "4.6.0",
     "socket.io-client": "4.6.0",
     "socket.io-parser": "4.2.1",
-    "stopword": "^2.0.6",
+    "stopword": "^2.0.7",
     "superagent": "8.0.8",
     "svg-captcha": "^1.4.0",
     "tiny-cookie": "^2.3.2",

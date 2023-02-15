@@ -12897,10 +12897,10 @@ statuses@2.0.1:
   resolved "https://registry.npmjs.org/statuses/-/statuses-1.5.0.tgz"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
 
-stopword@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/stopword/-/stopword-2.0.6.tgz#976c4d03329ed9a1b24e762d6d2cad905f895f24"
-  integrity sha512-clZFHO0RruykROEweuDenBGNNsuQaQiU0edrXJxmZW4WmAOVjs0mp4B4MHQpYywvHOZnettQs2zWXB6t/nx6sw==
+stopword@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/stopword/-/stopword-2.0.7.tgz#8bd333a05e69cd6009f803f95dab4ce47da95ff3"
+  integrity sha512-s+uLKAxrproCLrq0Wcd3JAIjlJLx6l80b2Rzt0u8+ra5SzGkHnNG8PS3DfGmYk2TrKePDVLL4SdKYwKpgSLc+w==
 
 stream-browserify@^3.0.0:
   version "3.0.0"
