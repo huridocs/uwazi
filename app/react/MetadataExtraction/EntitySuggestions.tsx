@@ -403,7 +403,9 @@ const EntitySuggestionsComponent = ({
               <span className="suggestion-property">
                 <Translate>{reviewedProperty.label}</Translate>
               </span>
-              <span className="suggestion-for-label">&nbsp; for &nbsp;</span>
+              <span className="suggestion-for-label">
+                &nbsp; <Translate>for</Translate> &nbsp;
+              </span>
               <span className="suggestion-templates">
                 {aggregations.template.map(({ _id }) => (
                   <span color="segment-pdf" key={_id}>
