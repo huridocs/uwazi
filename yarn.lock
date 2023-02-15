@@ -2871,14 +2871,14 @@
     socket.io-adapter "^2.4.0"
     uid2 "0.0.3"
 
-"@socket.io/redis-emitter@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@socket.io/redis-emitter/-/redis-emitter-5.0.0.tgz#ffe2debb21202834163ae988f37560e7b137c67b"
-  integrity sha512-95OSnwxZ5Ix0fQaf/Na4tR8Ub5Z3n1LLDS1vWifSlWYip0PlUV1/VMvDVlLtFVZ07DLalEBIsKGKTJM1urAeTg==
+"@socket.io/redis-emitter@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@socket.io/redis-emitter/-/redis-emitter-5.1.0.tgz#faab6dc363135e44a5a37b5ef5d4f723c80e0db1"
+  integrity sha512-QQUFPBq6JX7JIuM/X1811ymKlAfwufnQ8w6G2/59Jaqp09hdF1GJ/+e8eo/XdcmT0TqkvcSa2TT98ggTXa5QYw==
   dependencies:
     debug "~4.3.1"
     notepack.io "~3.0.1"
-    socket.io-parser "~4.0.4"
+    socket.io-parser "~4.2.1"
 
 "@supercharge/promise-pool@^2.1.0":
   version "2.1.0"
@@ -13257,7 +13257,7 @@ socket.io-client@4.6.0:
     engine.io-client "~6.4.0"
     socket.io-parser "~4.2.1"
 
-socket.io-parser@4.2.1, socket.io-parser@~4.0.4, socket.io-parser@~4.2.1:
+socket.io-parser@4.2.1, socket.io-parser@~4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-4.2.1.tgz#01c96efa11ded938dcb21cbe590c26af5eff65e5"
   integrity sha512-V4GrkLy+HeF1F/en3SpUaM+7XxYXpuMUWLGde1kSSh5nQMN4hLrbPIkD+otwh6q9R6NOQBN4AMaOZ2zVjui82g==
