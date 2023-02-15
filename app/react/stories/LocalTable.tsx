@@ -1,46 +1,82 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import './button.css';
+import {
+  Column,
+  HeaderGroup,
+  Row,
+  useFilters,
+  useRowSelect,
+  useRowState,
+  usePagination,
+  useTable,
+  useSortBy,
+  UseSortByOptions,
+} from 'react-table';
 
 import { Table } from 'flowbite-react';
-
-interface Column {
-  accesor?: string;
-  header: React.ReactElement | string;
-  className?: string;
-  cell?: (item?: { [key: string]: any }) => React.ReactElement;
-}
 
 interface LocalTableProps {
   /**
    * Column definition
    */
-  columns: Column[];
+  columns: ReadonlyArray<Column<any> & UseSortByOptions<any>>;
   /**
    * Data content
    */
   data: { [key: string]: any }[];
 }
 
-export const LocalTable = ({ columns, data }: LocalTableProps) => (
-  <div className="tw-content">
-    <Table>
-      <Table.Head>
-        {columns.map(column => (
-          <Table.HeadCell>{column.header}</Table.HeadCell>
-        ))}
-      </Table.Head>
-      <Table.Body className="divide-y">
-        {data.map(item => (
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-            {columns.map(column => (
-              <Table.Cell className="font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                {column.cell && column.cell(item)}
-                {column.accesor && item[column.accesor]}
-              </Table.Cell>
-            ))}
-          </Table.Row>
-        ))}
-      </Table.Body>
-    </Table>
-  </div>
-);
+export const LocalTable = ({ columns, data }: LocalTableProps) => {
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+    {
+      columns,
+      data,
+      initialState: {
+        sortBy: [
+          {
+            id: 'title',
+            desc: false,
+          },
+        ],
+      },
+    },
+    useFilters,
+    useSortBy,
+    usePagination,
+    useRowSelect,
+    useRowState
+  );
+
+  return (
+    <div className="tw-content">
+      <Table {...getTableProps()}>
+        <Table.Head>
+          {headerGroups.map((headerGroup: HeaderGroup<any>) =>
+            headerGroup.headers.map((column: any) => (
+              <Table.HeadCell
+                {...column.getHeaderProps(column.getSortByToggleProps())}
+                className={column.isSorted ? (column.isSortedDesc ? 'desc' : 'asc') : ''}
+              >
+                {column.render('Header')}
+              </Table.HeadCell>
+            ))
+          )}
+        </Table.Head>
+        <Table.Body {...getTableBodyProps()}>
+          {rows.map((row: Row<any>) => {
+            prepareRow(row);
+            return (
+              <Table.Row {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <Table.Cell {...cell.getCellProps({ className: cell.column.className })}>
+                    {cell.render('Cell')}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            );
+          })}
+        </Table.Body>
+      </Table>
+    </div>
+  );
+};
