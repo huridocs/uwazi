@@ -30,7 +30,7 @@ module.exports = production => {
     devtool: 'eval-source-map',
     mode: 'development',
     entry: {
-      main: path.join(rootPath, 'app/react/index.js'),
+      main: path.join(rootPath, 'app/react/entry-client'),
       nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {
@@ -76,12 +76,16 @@ module.exports = production => {
           ],
         },
         {
-          test: /\.s?[ac]ss$/,
+          test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
+        },
+        {
+          test: /(main\.css|globals\.css)$/,
+          use: ['postcss-loader'],
         },
         {
           test: /world-countries/,
@@ -114,6 +118,7 @@ module.exports = production => {
         ],
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
+      new webpack.HotModuleReplacementPlugin(),
     ],
   };
 };

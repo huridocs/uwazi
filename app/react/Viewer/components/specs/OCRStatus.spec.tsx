@@ -168,7 +168,7 @@ describe('OCRStatus', () => {
 
     it('should change to display that the ocr is done when the service reports ready, and call to replace the file', async () => {
       await renderAndSubmit();
-      act(() => {
+      await act(() => {
         mockSocketOn['ocr:ready']('file_id');
       });
       expect(await screen.findByText('OCR completed')).not.toBeNull();
@@ -177,7 +177,7 @@ describe('OCRStatus', () => {
 
     it('should change to display that the ocr has failed when the service reports error', async () => {
       await renderAndSubmit();
-      act(() => {
+      await act(() => {
         mockSocketOn['ocr:error']('file_id');
       });
       expect(await screen.findByText('Could not be processed')).not.toBeNull();
@@ -191,7 +191,7 @@ describe('OCRStatus', () => {
 
     it('should ignore service reports for other files', async () => {
       await renderAndSubmit();
-      act(() => {
+      await act(() => {
         mockSocketOn['ocr:ready']('another_file_id');
       });
       expect(await screen.findByText('In OCR queue')).not.toBeNull();

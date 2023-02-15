@@ -37,7 +37,7 @@ describe('migration remove-obsolete-translation-keys', () => {
     hu: 'Ismétlődő címke',
   };
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     migration.reindex = false;
   });
 

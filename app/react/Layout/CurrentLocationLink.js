@@ -1,7 +1,6 @@
-import { Link, withRouter } from 'react-router';
-import PropTypes from 'prop-types';
 import React from 'react';
-
+import PropTypes from 'prop-types';
+import { Link, useLocation } from 'react-router-dom';
 import { toUrlParams } from 'shared/JSONRequest';
 
 const newParams = (oldQuery, newQuery) => {
@@ -19,15 +18,17 @@ const validProps = props => {
   return valid;
 };
 
-const CurrentLocationLink = ({ children, location, queryParams, ...otherProps }) => (
-  // eslint-disable-next-line jsx-a11y/anchor-is-valid
-  <Link
-    to={`${location.pathname}${toUrlParams(newParams(location.query, queryParams))}`}
-    {...validProps(otherProps)}
-  >
-    {children}
-  </Link>
-);
+const CurrentLocationLink = ({ children, queryParams, ...otherProps }) => {
+  const location = useLocation();
+  return (
+    <Link
+      to={`${location.pathname}${toUrlParams(newParams(location.query, queryParams))}`}
+      {...validProps(otherProps)}
+    >
+      {children}
+    </Link>
+  );
+};
 
 CurrentLocationLink.defaultProps = {
   children: '',
@@ -37,12 +38,8 @@ CurrentLocationLink.defaultProps = {
 CurrentLocationLink.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   queryParams: PropTypes.object, // eslint-disable-line react/forbid-prop-types
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    query: PropTypes.object,
-  }).isRequired,
 };
 
 export { CurrentLocationLink };
 
-export default withRouter(CurrentLocationLink);
+export default CurrentLocationLink;

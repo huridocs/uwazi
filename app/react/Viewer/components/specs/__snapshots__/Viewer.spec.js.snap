@@ -1,0 +1,94 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Viewer relationships should display the document relationships 1`] = `
+<div
+  className="row"
+>
+  <HelmetWrapper
+    defer={true}
+    encodeSpecialCharacters={true}
+  >
+    <title>
+       • Page 1
+    </title>
+  </HelmetWrapper>
+  <ShowIf
+    if={true}
+  >
+    <div
+      className="content-header content-header-document"
+    >
+      <div
+        className="content-header-title"
+      />
+    </div>
+  </ShowIf>
+  <main
+    className="document-viewer with-header"
+  >
+    <div
+      className="main-wrapper"
+    >
+      <ShowIf
+        if={false}
+      >
+        <div
+          className="force-ltr raw-text"
+        />
+      </ShowIf>
+      <ShowIf
+        if={true}
+      >
+        <Connect(Component)
+          hideFooter={true}
+          searchCentered={true}
+        />
+      </ShowIf>
+      <Connect(Document) />
+      <Connect(Footer) />
+    </div>
+  </main>
+  <Connect(ConfirmCloseForm) />
+  <Connect(Connect(Component))
+    file={
+      Object {
+        "language": "eng",
+      }
+    }
+    raw={true}
+    searchTerm=""
+    storeKey="documentViewer"
+  />
+  <Connect(CreateConnectionPanel)
+    containerId="sharedId"
+    file={
+      Object {
+        "language": "eng",
+      }
+    }
+    onCreate={[Function]}
+    onRangedConnect={[Function]}
+  />
+  <Connect(Component) />
+  <Connect(AddEntities) />
+  <Connect(ContextMenu)
+    align="bottom"
+    overrideShow={true}
+    show={true}
+  >
+    <Connect(ViewerDefaultMenu) />
+  </Connect(ContextMenu)>
+  <Connect(ContextMenu)
+    align="center"
+    overrideShow={true}
+  >
+    <Connect(ViewerTextSelectedMenu)
+      file={
+        Object {
+          "language": "eng",
+        }
+      }
+    />
+  </Connect(ContextMenu)>
+</div>
+`;

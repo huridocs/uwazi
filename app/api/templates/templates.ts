@@ -232,6 +232,16 @@ export default {
     return model.get(query);
   },
 
+  async getPropertyByName(propertyName: string): Promise<PropertySchema | undefined> {
+    const templates = await this.get({
+      $or: [{ 'properties.name': propertyName }, { 'commonProperties.name': propertyName }],
+    });
+    if (!templates.length) {
+      throw createError('No template with the given property name');
+    }
+    return templates[0].properties?.find(property => property.name === propertyName);
+  },
+
   async setAsDefault(_id: string) {
     const [templateToBeDefault] = await this.get({ _id });
     const [currentDefault] = await this.get({ _id: { $nin: [_id] }, default: true });

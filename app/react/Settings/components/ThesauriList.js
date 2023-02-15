@@ -1,14 +1,23 @@
-import { I18NLink, t, Translate } from 'app/I18N';
-import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
+import React from 'react';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withContext, withRouter } from 'app/componentWrappers';
+import RouteHandler from 'app/App/RouteHandler';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+import { I18NLink, t, Translate } from 'app/I18N';
+import { checkThesaurusCanBeDeleted, deleteThesaurus } from 'app/Thesauri/actions/thesaurisActions';
 import { Icon } from 'UI';
+import { actions } from 'app/BasicReducer';
 import { SettingsHeader } from './SettingsHeader';
 import sortThesauri from '../utils/sortThesauri';
 
-class ThesauriList extends Component {
+class ThesauriList extends RouteHandler {
+  static async requestState(requestParams) {
+    const thesauri = await ThesauriAPI.getThesauri(requestParams);
+    return [actions.set('dictionaries', thesauri)];
+  }
+
   getThesaurusSuggestionActions(thesaurus) {
     const showSuggestions =
       this.props.topicClassificationEnabled || thesaurus.enable_classification;
@@ -70,7 +79,7 @@ class ThesauriList extends Component {
     return this.props
       .checkThesaurusCanBeDeleted(thesaurus)
       .then(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {
             this.props.deleteThesaurus(thesaurus);
           },
@@ -83,7 +92,7 @@ class ThesauriList extends Component {
         });
       })
       .catch(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {},
           noCancel: true,
           title: (
@@ -146,13 +155,12 @@ ThesauriList.propTypes = {
   topicClassificationEnabled: PropTypes.bool,
   deleteThesaurus: PropTypes.func.isRequired,
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
-ThesauriList.contextTypes = {
-  confirm: PropTypes.func,
-};
-
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     dictionaries: state.dictionaries,
     topicClassificationEnabled: (state.settings.collection.toJS().features || {})
@@ -170,5 +178,5 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export { ThesauriList };
-export default connect(mapStateToProps, mapDispatchToProps)(ThesauriList);
+export { ThesauriList, mapStateToProps };
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withContext(ThesauriList)));

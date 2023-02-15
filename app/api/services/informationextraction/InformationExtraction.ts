@@ -279,6 +279,7 @@ class InformationExtraction {
   getSuggestions = async (property: string) => {
     const files = await getFilesForSuggestions(property);
     if (files.length === 0) {
+      await this.stopModel(property);
       emitToTenant(tenants.current().name, 'ix_model_status', property, 'ready', 'Completed');
       return;
     }
@@ -303,10 +304,15 @@ class InformationExtraction {
       model.findingSuggestions = true;
       await IXModelsModel.save(model);
     }
+
     const templates: ObjectIdSchema[] = await this.getTemplatesWithProperty(property);
     const serviceUrl = await this.serviceUrl();
     const materialsSent = await this.materialsForModel(templates, property, serviceUrl);
     if (!materialsSent) {
+      if (model) {
+        model.findingSuggestions = false;
+        await IXModelsModel.save(model);
+      }
       return { status: 'error', message: 'No labeled data' };
     }
 
@@ -330,12 +336,21 @@ class InformationExtraction {
       return { status: 'ready', message: 'Ready' };
     }
 
-    if (currentModel.status === ModelStatus.processing) {
+    if (currentModel.status === ModelStatus.processing && currentModel.findingSuggestions) {
       return { status: 'processing_model', message: 'Training model' };
+    }
+
+    if (currentModel.status === ModelStatus.processing && !currentModel.findingSuggestions) {
+      return { status: 'cancel', message: 'Canceling...' };
     }
 
     if (currentModel.status === ModelStatus.ready && currentModel.findingSuggestions) {
       const suggestionStatus = await this.getSuggestionsStatus(property, currentModel.creationDate);
+
+      if (suggestionStatus.processed === suggestionStatus.total) {
+        return { status: 'ready', message: 'Ready' };
+      }
+
       return {
         status: 'processing_suggestions',
         message: 'Finding suggestions',
@@ -368,16 +383,21 @@ class InformationExtraction {
     return true;
   };
 
-  saveModelProcess = async (property: string) => {
+  saveModelProcess = async (
+    property: string,
+    status: ModelStatus = ModelStatus.processing,
+    findingSuggestions = true
+  ) => {
     const [currentModel] = await ixmodels.get({
       propertyName: property,
     });
 
     await ixmodels.save({
       ...currentModel,
-      status: ModelStatus.processing,
+      status,
       creationDate: new Date().getTime(),
       propertyName: property,
+      findingSuggestions,
     });
   };
 
@@ -396,11 +416,7 @@ class InformationExtraction {
       });
 
       if (message.task === 'create_model' && message.success) {
-        await ixmodels.save({
-          ...currentModel,
-          status: ModelStatus.ready,
-          creationDate: new Date().getTime(),
-        });
+        await this.saveModelProcess(message.params!.property_name, ModelStatus.ready);
         await this.updateSuggestionStatus(message, currentModel);
       }
 

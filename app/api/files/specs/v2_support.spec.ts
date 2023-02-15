@@ -123,7 +123,7 @@ describe('when the feature flag is not enabled', () => {
 
 describe('when deleting a file', () => {
   beforeEach(async () => {
-    spyOn(search, 'indexEntities').and.callFake(async () => Promise.resolve());
+    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await files.delete({ _id: factory.id('file1') });
   });
 

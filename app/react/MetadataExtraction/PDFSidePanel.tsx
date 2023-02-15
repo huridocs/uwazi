@@ -8,7 +8,9 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientEntitySchema } from 'app/istore';
 import SourceDocument from 'app/Viewer/components/SourceDocument';
 import { DocumentForm } from 'app/Viewer/containers/DocumentForm';
-import { loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
+import { clearMetadataSelections, loadFetchedInReduxForm } from 'app/Metadata/actions/actions';
+import { actions } from 'app/BasicReducer';
+import { unsetSelection } from 'app/Viewer/actions/selectionActions';
 import { fetchEntity, fetchFile, scrollToPage } from './actions/actions';
 
 interface PDFSidePanelProps {
@@ -45,9 +47,28 @@ const PDFSidePanel = ({
     if (entitySuggestion.fileId) {
       fetchFile(entitySuggestion.fileId)
         .then(response => {
-          setFile(response.json[0]);
+          const responseFile = response.json[0];
+          setFile(responseFile);
+
+          // Load selections to the store
+          const defaultDoc = {
+            ...responseFile,
+            extractedMetadata: responseFile.extractedMetadata
+              ? responseFile.extractedMetadata.filter(
+                  (metadata: any) => metadata.name === entitySuggestion.propertyName
+                )
+              : [],
+          };
+
+          store?.dispatch(actions.update('viewer/doc', { ...entity, defaultDoc }));
         })
         .catch(e => e);
+
+      return () => {
+        store?.dispatch(unsetSelection());
+        store?.dispatch(actions.update('viewer/doc', entity));
+        store?.dispatch(clearMetadataSelections());
+      };
     }
   }, [entitySuggestion]);
 

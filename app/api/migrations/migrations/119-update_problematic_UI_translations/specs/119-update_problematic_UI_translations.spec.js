@@ -4,7 +4,7 @@ import fixtures, { templateContext } from './fixtures.js';
 
 describe('migration update translations of settings tooltips', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
   });
 

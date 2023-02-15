@@ -666,12 +666,20 @@ export default {
   },
 
   async deleteMultiple(sharedIds) {
-    return this.deleteIndexes(sharedIds).then(() =>
-      sharedIds.reduce(
-        (previousPromise, sharedId) => previousPromise.then(() => this.delete(sharedId, false)),
-        Promise.resolve()
-      )
-    );
+    let entitiesDeleted = [];
+
+    try {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const sharedId of sharedIds) {
+        // eslint-disable-next-line no-await-in-loop
+        entitiesDeleted = entitiesDeleted.concat(await this.delete(sharedId, false));
+      }
+    } catch (e) {
+      await search.bulkDelete(entitiesDeleted);
+      throw e;
+    }
+
+    await search.bulkDelete(entitiesDeleted);
   },
 
   async delete(sharedId, deleteIndex = true) {

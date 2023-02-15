@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
 import { t, Translate } from 'app/I18N';
@@ -380,7 +380,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { prefix } = this.props;
     const state = this.checked(group);
     return (
-      <li key={index} className="multiselect-group">
+      <li key={index} className="multiselect-group" aria-label="group">
         <div className="multiselectItem">
           <input
             type="checkbox"

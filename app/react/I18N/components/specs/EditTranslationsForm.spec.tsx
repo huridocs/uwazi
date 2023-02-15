@@ -11,6 +11,14 @@ import { ClientTranslationSchema } from 'app/istore';
 import { actions } from 'app/I18N';
 import { EditTranslationsForm } from '../EditTranslationsForm';
 
+const mockNavigate = jest.fn().mockImplementation(path => path);
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => (path: string) => mockNavigate(path),
+  // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
+  NavLink: (props: any) => <a {...props} href={props.to} />,
+}));
+
 describe('EditTranslationForm', () => {
   let translations: IImmutable<ClientTranslationSchema[]>;
 

@@ -31,17 +31,19 @@ import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
+  languages: any[] | undefined;
 }
 
 export const EntitySuggestions = ({
   property: reviewedProperty,
   acceptIXSuggestion,
+  languages,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [resetActivePage, setResetActivePage] = useState(false);
-  const [status, setStatus] = useState<{ key: string; data?: undefined }>({
+  const [status, setStatus] = useState<{ key: string; data?: undefined; message?: string }>({
     key: 'ready',
   });
   const [acceptingSuggestion, setAcceptingSuggestion] = useState(false);
@@ -172,11 +174,12 @@ export const EntitySuggestions = ({
   const getWrappedSuggestionState = (
     acceptedSuggestion: any,
     newCurrentValue: string | number | null
-  ) =>
-    getSuggestionState(
+  ) => {
+    return getSuggestionState(
       { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
       reviewedProperty.type
     );
+  };
 
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
@@ -200,21 +203,44 @@ export const EntitySuggestions = ({
     retriveStats();
   };
 
+  const errorIsNoLabeledData = () => status.key === 'error' && status.message === 'No labeled data';
+
+  const updateError = (changedPropertyValue: string) => {
+    if (errorIsNoLabeledData() && changedPropertyValue && changedPropertyValue.length > 0) {
+      setStatus({ key: 'ready' });
+    }
+  };
+
   const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
-    const changedPropertyValue = (entity[reviewedProperty.name] ||
-      entity.metadata?.[reviewedProperty.name]) as string;
+    const propertyName = reviewedProperty.name;
+    const changedPropertyValue = (entity[propertyName] ||
+      entity.metadata?.[propertyName]) as string;
+
     selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
       ? changedPropertyValue[0].value || '-'
       : changedPropertyValue;
     selectedFlatRows[0].setState({});
     selectedFlatRows[0].toggleRowSelected();
     const acceptedSuggestion = selectedFlatRows[0].original;
-    selectedFlatRows[0].values.state = getWrappedSuggestionState(
-      acceptedSuggestion,
-      entity.title as string
-    );
+
+    // @ts-ignore
+    const selection = entity.__extractedMetadata?.selections[0];
+    if (selection && selection.selection && selection.selection.text !== '') {
+      // There was a label
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
+        changedPropertyValue
+      );
+    } else {
+      selectedFlatRows[0].values.state = getWrappedSuggestionState(
+        { ...acceptedSuggestion, labeledValue: '' },
+        changedPropertyValue
+      );
+    }
+
     selectedFlatRows[0].setState({});
+    updateError(changedPropertyValue);
     retriveStats();
   };
 
@@ -226,7 +252,7 @@ export const EntitySuggestions = ({
 
     const response = await trainModel(params);
     const type = response.status === 'error' ? 'danger' : 'success';
-    setStatus({ key: response.status, data: response.data });
+    setStatus({ key: response.status, data: response.data, message: response.message });
     store?.dispatch(notify(response.message, type));
     if (status.key === 'ready') {
       await retrieveSuggestions();
@@ -249,6 +275,8 @@ export const EntitySuggestions = ({
     if (status.key === 'ready') {
       setStatus({ key: 'sending_labeled_data' });
       await _trainModel();
+    } else if (errorIsNoLabeledData()) {
+      setStatus({ key: 'ready' });
     } else {
       setOpenCancelFindingSuggestions(true);
     }
@@ -270,7 +298,7 @@ export const EntitySuggestions = ({
     });
     ixStatus(params)
       .then((response: any) => {
-        setStatus({ key: response.status, data: response.data });
+        setStatus({ key: response.status, data: response.data, message: response.message });
       })
       .catch(() => {
         setStatus({ key: 'error' });
@@ -382,7 +410,11 @@ export const EntitySuggestions = ({
         <SuggestionAcceptanceModal
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
-          onClose={() => setAcceptingSuggestion(false)}
+          languages={languages}
+          onClose={() => {
+            toggleAllRowsSelected(false);
+            setAcceptingSuggestion(false);
+          }}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
         <CancelFindingSuggestionModal

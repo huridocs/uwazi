@@ -1,19 +1,21 @@
+import { Application, NextFunction, Request, Response } from 'express';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { Application, Request, Response, NextFunction } from 'express';
 
-import db from 'api/utils/testing_db';
 import { setUpApp } from 'api/utils/testingRoutes';
+import db from 'api/utils/testing_db';
 
-import routes from 'api/entities/routes';
-import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
-import path from 'path';
 import * as entitySavingManager from 'api/entities/entitySavingManager';
+import routes from 'api/entities/routes';
+import { errorLog } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import path from 'path';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
 import fixtures, { permissions } from './fixtures';
-import { errorLog } from 'api/log';
+import { ObjectId } from 'mongodb';
+import { Logger } from 'winston';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -61,6 +63,80 @@ describe('entities routes', () => {
       new UserInContextMockFactory().mock(user);
     });
 
+    describe('coerce_values', () => {
+      describe('happy path', () => {
+        it('should coerce numbers from strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: '12' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 12,
+          });
+        });
+
+        it('should coerce dates from strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'November 2001', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 1004572800,
+          });
+        });
+
+        it('should coerce strings by removing new lines and breaks', async () => {
+          const valuesToCoerce = {
+            type: 'text',
+            value: `this is
+            a text`,
+            locale: 'en',
+          };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: true,
+            value: 'this is a text',
+          });
+        });
+      });
+
+      describe('sad path', () => {
+        it('should fail coercing numbers from invalid strings', async () => {
+          const valuesToCoerce = { type: 'numeric', value: 'error' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: false,
+          });
+        });
+
+        it('should fail coercing dates from invalid strings', async () => {
+          const valuesToCoerce = { type: 'date', value: 'whatever date', locale: 'en' };
+          new UserInContextMockFactory().mock(user);
+          const response: SuperTestResponse = await request(app)
+            .post('/api/entities/coerce_value')
+            .send(valuesToCoerce);
+
+          expect(response.body).toMatchObject({
+            success: false,
+          });
+        });
+      });
+    });
+
     it('should return saved entity when passed as data (`legacy`) with its permissions', async () => {
       new UserInContextMockFactory().mock(user);
       const response: SuperTestResponse = await request(app)
@@ -99,11 +175,13 @@ describe('entities routes', () => {
     });
 
     it('should call the saving manager with the correct filenames', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
-        Promise.resolve({ entity: {} })
-      );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
+      jest
+        .spyOn(entitySavingManager, 'saveEntity')
+        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+      jest.spyOn(templates, 'getById').mockImplementation(async () => Promise.resolve(null));
+      jest
+        .spyOn(thesauri, 'templateToThesauri')
+        .mockImplementation(async () => Promise.resolve({}));
 
       await request(app)
         .post('/api/entities')
@@ -131,12 +209,16 @@ describe('entities routes', () => {
     });
 
     it('should log a deprecation notice if no original name provided in body', async () => {
-      spyOn(entitySavingManager, 'saveEntity').and.callFake(async () =>
-        Promise.resolve({ entity: {} })
-      );
-      spyOn(templates, 'getById').and.callFake(async () => Promise.resolve({}));
-      spyOn(thesauri, 'templateToThesauri').and.callFake(async () => Promise.resolve({}));
-      spyOn(errorLog, 'debug');
+      jest
+        .spyOn(entitySavingManager, 'saveEntity')
+        .mockImplementation(async () => Promise.resolve({ entity: {}, errors: [] }));
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async () => Promise.resolve({ _id: new ObjectId(), name: 'template' }));
+      jest
+        .spyOn(thesauri, 'templateToThesauri')
+        .mockImplementation(async () => Promise.resolve({}));
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
 
       await request(app)
         .post('/api/entities')

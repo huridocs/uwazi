@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-pascal-case */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { LocalForm, actions, Control } from 'react-redux-form';
+import { actions, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { BrowserView, MobileView } from 'react-device-detect';
 import Immutable from 'immutable';
 import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
+import { LocalForm } from 'app/Forms/Form';
 import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
@@ -17,7 +18,7 @@ import { Loader } from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import { generateID } from 'shared/IDGenerator';
 
-class PublicForm extends Component {
+class PublicFormComponent extends Component {
   static renderTitle(template) {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
     const useGeneratedId = Boolean(titleProperty.get('generatedId'));
@@ -97,7 +98,7 @@ class PublicForm extends Component {
       files: prevState.files.filter(file => file !== removedFile),
     }));
     if (!this.state.files.length) {
-      const input = document.querySelector('input[name="publicform.file"]');
+      const input = document.querySelector('#upload-button');
       input.value = '';
     }
   }
@@ -109,10 +110,13 @@ class PublicForm extends Component {
     }
   }
 
-  fileDropped(files) {
+  async fileDropped(files) {
     const uploadedFiles = files;
     this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState({ files: uploadedFiles });
+    this.setState(prevState => ({
+      ...prevState,
+      files: uploadedFiles,
+    }));
   }
 
   renderFileField(id, options) {
@@ -135,24 +139,26 @@ class PublicForm extends Component {
                     : undefined
                 }
               >
-                {({ getRootProps }) => (
+                {({ getRootProps, getInputProps }) => (
                   // eslint-disable-next-line react/jsx-props-no-spreading
                   <div {...getRootProps()}>
-                    <label>
-                      <div className="text-content">
-                        <div id="icon">
-                          <Icon icon="cloud-upload-alt" />
-                        </div>
-                        <div id="upload-text">
-                          <Translate>Drop your files here to upload or</Translate>
-                        </div>
-                        <div id="upload-button">
-                          <div id="button">
-                            <Translate>Select files on your device</Translate>
+                    <div className="drop-zone">
+                      <label>
+                        <div className="text-content">
+                          <div id="icon">
+                            <Icon icon="cloud-upload-alt" />
+                          </div>
+                          <div id="upload-text">
+                            <Translate>Drop your files here to upload or</Translate>
                           </div>
                         </div>
-                      </div>
-                    </label>
+                      </label>
+                      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+                      <input id="upload-button" {...getInputProps()} />
+                      <button id="button" type="button">
+                        <Translate>Select files on your device</Translate>
+                      </button>
+                    </div>
                   </div>
                 )}
               </Dropzone>
@@ -219,10 +225,10 @@ class PublicForm extends Component {
         getDispatch={dispatch => this.attachDispatch(dispatch)}
         onSubmit={this.handleSubmit}
       >
-        {submiting && PublicForm.renderSubmitState()}
+        {submiting && PublicFormComponent.renderSubmitState()}
         {!submiting && (
           <div className="public-form">
-            {PublicForm.renderTitle(template)}
+            {PublicFormComponent.renderTitle(template)}
             <MetadataFormFields
               thesauris={thesauris}
               model="publicform"
@@ -243,7 +249,7 @@ class PublicForm extends Component {
     );
   }
 }
-PublicForm.propTypes = {
+PublicFormComponent.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
   remote: PropTypes.bool.isRequired,
@@ -261,4 +267,5 @@ export const mapStateToProps = (state, props) => ({
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);
+export { PublicFormComponent };
+export default connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);

@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import db from 'api/utils/testing_db';
 
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -13,6 +12,7 @@ import {
   shared2enId,
   shared2esId,
   suggestionId,
+  shared2AgeSuggestionId,
 } from './fixtures';
 
 const getSuggestions = async (propertyName: string, size = 5) =>
@@ -153,8 +153,8 @@ const newErroringSuggestion: IXSuggestionType = {
 };
 
 describe('suggestions', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -275,7 +275,7 @@ describe('suggestions', () => {
 
       const { suggestions: ageSuggestions } = await getSuggestions('age');
 
-      expect(ageSuggestions.length).toBe(3);
+      expect(ageSuggestions.length).toBe(4);
       expect(ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state).toBe(
         SuggestionState.obsolete
       );
@@ -356,6 +356,30 @@ describe('suggestions', () => {
       } catch (e: any) {
         expect(e?.message).toBe('Suggestion has an error');
       }
+    });
+    it('should update entities of all languages if property name is numeric or date', async () => {
+      const { suggestions } = await getSuggestions('age');
+      const shared2Suggestion = suggestions.find(sug => sug.sharedId === 'shared2');
+      await Suggestions.accept(
+        {
+          _id: shared2AgeSuggestionId,
+          sharedId: shared2Suggestion.sharedId,
+          entityId: shared2Suggestion.entityId,
+        },
+        false
+      );
+
+      const entities = await db.mongodb
+        ?.collection('entities')
+        .find({ sharedId: shared2Suggestion.sharedId })
+        .toArray();
+
+      const propertyValues = entities?.map(entity => entity.metadata.age);
+      expect(propertyValues).not.toBe(undefined);
+      const ages = propertyValues?.map(value => value[0].value) as string[];
+      expect(ages[0]).toEqual('20');
+      expect(ages[1]).toEqual('20');
+      expect(ages[2]).toEqual('20');
     });
   });
 

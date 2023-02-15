@@ -7,9 +7,9 @@ import { bindActionCreators } from 'redux';
 import EntityView from 'app/Viewer/EntityView';
 import { Loader } from 'app/components/Elements/Loader';
 import { actions } from 'app/BasicReducer';
-import PDFView from '../PDFView';
+import { PDFView } from '../PDFView';
 
-export class ViewerComponent extends Component {
+class EntityViewerComponent extends Component {
   constructor(props, context) {
     super(props, context);
     props.setSidepanelTrigger();
@@ -26,7 +26,7 @@ export class ViewerComponent extends Component {
   }
 }
 
-ViewerComponent.propTypes = {
+EntityViewerComponent.propTypes = {
   entity: PropTypes.instanceOf(Map).isRequired,
   setSidepanelTrigger: PropTypes.func.isRequired,
 };
@@ -52,4 +52,6 @@ function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ViewerComponent);
+const ViewerComponent = connect(mapStateToProps, mapDispatchToProps)(EntityViewerComponent);
+
+export { ViewerComponent };

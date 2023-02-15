@@ -10,319 +10,273 @@ Array [
 `;
 
 exports[`CustomUploads should render CustomUploads component with uploaded files 1`] = `
-<Provider
-  store={
-    Object {
-      "clearActions": [Function],
-      "dispatch": [Function],
-      "getActions": [Function],
-      "getState": [Function],
-      "replaceReducer": [Function],
-      "subscribe": [Function],
-    }
-  }
->
-  <CustomUploads
-    customUploads={
-      Immutable.List [
-        Immutable.Map {
-          "filename": "file1",
-        },
-        Immutable.Map {
-          "filename": "file2",
-        },
-      ]
-    }
-    deleteCustomUpload={[Function]}
-    params={
-      Object {
-        "lang": "es",
-      }
-    }
-    progress={false}
-    upload={[Function]}
-  >
-    <div
-      className="settings-content without-footer"
-    >
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
       <div
-        className="panel panel-default"
+        class="settings-content without-footer"
       >
-        <SettingsHeader>
+        <div
+          class="panel panel-default"
+        >
           <div
-            className="panel-heading"
+            class="panel-heading"
           >
-            <Connect(I18NLink)
-              className="only-mobile"
-              to="settings/"
+            <a
+              class="only-mobile"
+              href="/en/settings/"
             >
-              <I18NLink
-                className="only-mobile"
-                confirmMessage=""
-                confirmTitle=""
-                disabled={false}
-                dispatch={[Function]}
-                onClick={[Function]}
-                to="/en/settings/"
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-arrow-left fa-w-14 "
+                data-icon="arrow-left"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <Link
-                  className="only-mobile"
-                  disabled={false}
-                  onClick={[Function]}
-                  onlyActiveOnIndex={false}
-                  style={Object {}}
-                  to="/en/settings/"
-                >
-                  <a
-                    className="only-mobile"
-                    disabled={false}
-                    onClick={[Function]}
-                    style={Object {}}
-                  >
-                    <Connect(Icon)
-                      directionAware={true}
-                      icon="arrow-left"
-                    >
-                      <Icon
-                        directionAware={true}
-                        icon="arrow-left"
-                        locale="en"
-                      >
-                        <FontAwesomeIcon
-                          beat={false}
-                          beatFade={false}
-                          border={false}
-                          bounce={false}
-                          className=""
-                          fade={false}
-                          fixedWidth={false}
-                          flip={null}
-                          icon="arrow-left"
-                          inverse={false}
-                          listItem={false}
-                          mask={null}
-                          maskId={null}
-                          pull={null}
-                          pulse={false}
-                          rotation={null}
-                          shake={false}
-                          size={null}
-                          spin={false}
-                          spinPulse={false}
-                          spinReverse={false}
-                          swapOpacity={false}
-                          symbol={false}
-                          title=""
-                          titleId={null}
-                          transform={null}
-                        >
-                          <svg
-                            aria-hidden="true"
-                            className="svg-inline--fa fa-arrow-left fa-w-14 "
-                            data-icon="arrow-left"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            style={Object {}}
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
-                              fill="currentColor"
-                              style={Object {}}
-                            />
-                          </svg>
-                        </FontAwesomeIcon>
-                      </Icon>
-                    </Connect(Icon)>
-                    <span
-                      className="btn-label"
-                    >
-                      <Connect(Translate)>
-                        <Translate
-                          context="System"
-                          edit={[Function]}
-                          i18nmode={true}
-                          translationKey="Back"
-                        >
-                          <span
-                            className="translation active"
-                            onClick={[Function]}
-                          >
-                            Back
-                          </span>
-                        </Translate>
-                      </Connect(Translate)>
-                    </span>
-                  </a>
-                </Link>
-              </I18NLink>
-            </Connect(I18NLink)>
-            <Connect(Translate)>
-              <Translate
-                context="System"
-                edit={[Function]}
-                i18nmode={true}
-                translationKey="Custom Uploads"
+                <path
+                  d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span
+                class="btn-label"
               >
                 <span
-                  className="translation active"
-                  onClick={[Function]}
+                  class="translation active"
                 >
-                  Custom Uploads
+                  Back
                 </span>
-              </Translate>
-            </Connect(Translate)>
+              </span>
+            </a>
+            <span
+              class="translation active"
+            >
+              Custom Uploads
+            </span>
           </div>
-        </SettingsHeader>
-        <div
-          className="panel-body custom-uploads"
-        >
-          <Dropzone
-            autoFocus={false}
-            className="upload-box"
-            disabled={false}
-            getFilesFromEvent={[Function]}
-            maxFiles={0}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            noClick={false}
-            noDrag={false}
-            noDragEventsBubbling={false}
-            noKeyboard={false}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
-            useFsAccessApi={true}
-            validator={null}
+          <div
+            class="panel-body custom-uploads"
           >
             <div
-              onBlur={[Function]}
-              onClick={[Function]}
-              onDragEnter={[Function]}
-              onDragLeave={[Function]}
-              onDragOver={[Function]}
-              onDrop={[Function]}
-              onFocus={[Function]}
-              onKeyDown={[Function]}
               role="presentation"
-              tabIndex={0}
+              tabindex="0"
             >
               <div
-                className="upload-box_wrapper"
+                class="upload-box_wrapper"
               >
-                <Connect(Icon)
-                  icon="upload"
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-upload fa-w-16 "
+                  data-icon="upload"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <Icon
-                    directionAware={false}
-                    icon="upload"
-                    locale="en"
-                  >
-                    <FontAwesomeIcon
-                      beat={false}
-                      beatFade={false}
-                      border={false}
-                      bounce={false}
-                      className=""
-                      fade={false}
-                      fixedWidth={false}
-                      flip={null}
-                      icon="upload"
-                      inverse={false}
-                      listItem={false}
-                      mask={null}
-                      maskId={null}
-                      pull={null}
-                      pulse={false}
-                      rotation={null}
-                      shake={false}
-                      size={null}
-                      spin={false}
-                      spinPulse={false}
-                      spinReverse={false}
-                      swapOpacity={false}
-                      symbol={false}
-                      title=""
-                      titleId={null}
-                      transform={null}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        className="svg-inline--fa fa-upload fa-w-16 "
-                        data-icon="upload"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        style={Object {}}
-                        viewBox="0 0 512 512"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
-                          fill="currentColor"
-                          style={Object {}}
-                        />
-                      </svg>
-                    </FontAwesomeIcon>
-                  </Icon>
-                </Connect(Icon)>
+                  <path
+                    d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <input
+                  multiple=""
+                  style="display: none;"
+                  tabindex="-1"
+                  type="file"
+                />
                 <button
-                  className="upload-box_link"
+                  class="upload-box_link"
                   type="button"
                 >
-                  <Connect(Translate)>
-                    <Translate
-                      context="System"
-                      edit={[Function]}
-                      i18nmode={true}
-                      translationKey="Browse files to upload"
-                    >
-                      <span
-                        className="translation active"
-                        onClick={[Function]}
-                      >
-                        Browse files to upload
-                      </span>
-                    </Translate>
-                  </Connect(Translate)>
+                  <span
+                    class="translation active"
+                  >
+                    Browse files to upload
+                  </span>
                 </button>
                 <span>
                    
-                  <Connect(Translate)>
-                    <Translate
-                      context="System"
-                      edit={[Function]}
-                      i18nmode={true}
-                      translationKey="or drop your files here."
-                    >
-                      <span
-                        className="translation active"
-                        onClick={[Function]}
-                      >
-                        or drop your files here.
-                      </span>
-                    </Translate>
-                  </Connect(Translate)>
+                  <span
+                    class="translation active"
+                  >
+                    or drop your files here.
+                  </span>
                 </span>
               </div>
             </div>
-          </Dropzone>
-          <ul>
-            <li
-              key="file1"
-            >
-              <Thumbnail
-                alt=""
-                file="/assets/file1"
-              >
+            <ul>
+              <li>
                 <div
-                  className="thumbnail"
+                  class="thumbnail"
                 />
-              </Thumbnail>
+                <div
+                  class="info"
+                >
+                  <span
+                    no-translate="true"
+                  >
+                    URL:
+                  </span>
+                  <span
+                    class="thumbnail-url"
+                  >
+                    /assets/file1
+                  </span>
+                  <button
+                    class=""
+                    type="button"
+                  >
+                    <span
+                      class="translation active"
+                    >
+                      Delete
+                    </span>
+                  </button>
+                </div>
+              </li>
+              <li>
+                <div
+                  class="thumbnail"
+                />
+                <div
+                  class="info"
+                >
+                  <span
+                    no-translate="true"
+                  >
+                    URL:
+                  </span>
+                  <span
+                    class="thumbnail-url"
+                  >
+                    /assets/file2
+                  </span>
+                  <button
+                    class=""
+                    type="button"
+                  >
+                    <span
+                      class="translation active"
+                    >
+                      Delete
+                    </span>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="settings-content without-footer"
+    >
+      <div
+        class="panel panel-default"
+      >
+        <div
+          class="panel-heading"
+        >
+          <a
+            class="only-mobile"
+            href="/en/settings/"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-left fa-w-14 "
+              data-icon="arrow-left"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
+                fill="currentColor"
+              />
+            </svg>
+            <span
+              class="btn-label"
+            >
+              <span
+                class="translation active"
+              >
+                Back
+              </span>
+            </span>
+          </a>
+          <span
+            class="translation active"
+          >
+            Custom Uploads
+          </span>
+        </div>
+        <div
+          class="panel-body custom-uploads"
+        >
+          <div
+            role="presentation"
+            tabindex="0"
+          >
+            <div
+              class="upload-box_wrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-upload fa-w-16 "
+                data-icon="upload"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                  fill="currentColor"
+                />
+              </svg>
+              <input
+                multiple=""
+                style="display: none;"
+                tabindex="-1"
+                type="file"
+              />
+              <button
+                class="upload-box_link"
+                type="button"
+              >
+                <span
+                  class="translation active"
+                >
+                  Browse files to upload
+                </span>
+              </button>
+              <span>
+                 
+                <span
+                  class="translation active"
+                >
+                  or drop your files here.
+                </span>
+              </span>
+            </div>
+          </div>
+          <ul>
+            <li>
               <div
-                className="info"
+                class="thumbnail"
+              />
+              <div
+                class="info"
               >
                 <span
                   no-translate="true"
@@ -330,53 +284,28 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                   URL:
                 </span>
                 <span
-                  className="thumbnail-url"
+                  class="thumbnail-url"
                 >
                   /assets/file1
                 </span>
-                <ConfirmButton
-                  action={[Function]}
-                  className=""
-                  message="Are you sure you want to continue?"
-                  title="Confirm action"
+                <button
+                  class=""
+                  type="button"
                 >
-                  <button
-                    className=""
-                    onClick={[Function]}
-                    type="button"
+                  <span
+                    class="translation active"
                   >
-                    <Connect(Translate)>
-                      <Translate
-                        context="System"
-                        edit={[Function]}
-                        i18nmode={true}
-                        translationKey="Delete"
-                      >
-                        <span
-                          className="translation active"
-                          onClick={[Function]}
-                        >
-                          Delete
-                        </span>
-                      </Translate>
-                    </Connect(Translate)>
-                  </button>
-                </ConfirmButton>
+                    Delete
+                  </span>
+                </button>
               </div>
             </li>
-            <li
-              key="file2"
-            >
-              <Thumbnail
-                alt=""
-                file="/assets/file2"
-              >
-                <div
-                  className="thumbnail"
-                />
-              </Thumbnail>
+            <li>
               <div
-                className="info"
+                class="thumbnail"
+              />
+              <div
+                class="info"
               >
                 <span
                   no-translate="true"
@@ -384,422 +313,386 @@ exports[`CustomUploads should render CustomUploads component with uploaded files
                   URL:
                 </span>
                 <span
-                  className="thumbnail-url"
+                  class="thumbnail-url"
                 >
                   /assets/file2
                 </span>
-                <ConfirmButton
-                  action={[Function]}
-                  className=""
-                  message="Are you sure you want to continue?"
-                  title="Confirm action"
+                <button
+                  class=""
+                  type="button"
                 >
-                  <button
-                    className=""
-                    onClick={[Function]}
-                    type="button"
+                  <span
+                    class="translation active"
                   >
-                    <Connect(Translate)>
-                      <Translate
-                        context="System"
-                        edit={[Function]}
-                        i18nmode={true}
-                        translationKey="Delete"
-                      >
-                        <span
-                          className="translation active"
-                          onClick={[Function]}
-                        >
-                          Delete
-                        </span>
-                      </Translate>
-                    </Connect(Translate)>
-                  </button>
-                </ConfirmButton>
+                    Delete
+                  </span>
+                </button>
               </div>
             </li>
           </ul>
         </div>
       </div>
     </div>
-  </CustomUploads>
-</Provider>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;
 
 exports[`CustomUploads when upload on progress should render on progress feedback 1`] = `
-<Provider
-  store={
-    Object {
-      "clearActions": [Function],
-      "dispatch": [Function],
-      "getActions": [Function],
-      "getState": [Function],
-      "replaceReducer": [Function],
-      "subscribe": [Function],
-    }
-  }
->
-  <CustomUploads
-    customUploads={Immutable.List []}
-    deleteCustomUpload={[Function]}
-    params={
-      Object {
-        "lang": "es",
-      }
-    }
-    progress={true}
-    upload={[Function]}
-  >
-    <div
-      className="settings-content without-footer"
-    >
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
       <div
-        className="panel panel-default"
+        class="settings-content without-footer"
       >
-        <SettingsHeader>
+        <div
+          class="panel panel-default"
+        >
           <div
-            className="panel-heading"
+            class="panel-heading"
           >
-            <Connect(I18NLink)
-              className="only-mobile"
-              to="settings/"
+            <a
+              class="only-mobile"
+              href="/en/settings/"
             >
-              <I18NLink
-                className="only-mobile"
-                confirmMessage=""
-                confirmTitle=""
-                disabled={false}
-                dispatch={[Function]}
-                onClick={[Function]}
-                to="/en/settings/"
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-arrow-left fa-w-14 "
+                data-icon="arrow-left"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <Link
-                  className="only-mobile"
-                  disabled={false}
-                  onClick={[Function]}
-                  onlyActiveOnIndex={false}
-                  style={Object {}}
-                  to="/en/settings/"
-                >
-                  <a
-                    className="only-mobile"
-                    disabled={false}
-                    onClick={[Function]}
-                    style={Object {}}
-                  >
-                    <Connect(Icon)
-                      directionAware={true}
-                      icon="arrow-left"
-                    >
-                      <Icon
-                        directionAware={true}
-                        icon="arrow-left"
-                        locale="en"
-                      >
-                        <FontAwesomeIcon
-                          beat={false}
-                          beatFade={false}
-                          border={false}
-                          bounce={false}
-                          className=""
-                          fade={false}
-                          fixedWidth={false}
-                          flip={null}
-                          icon="arrow-left"
-                          inverse={false}
-                          listItem={false}
-                          mask={null}
-                          maskId={null}
-                          pull={null}
-                          pulse={false}
-                          rotation={null}
-                          shake={false}
-                          size={null}
-                          spin={false}
-                          spinPulse={false}
-                          spinReverse={false}
-                          swapOpacity={false}
-                          symbol={false}
-                          title=""
-                          titleId={null}
-                          transform={null}
-                        >
-                          <svg
-                            aria-hidden="true"
-                            className="svg-inline--fa fa-arrow-left fa-w-14 "
-                            data-icon="arrow-left"
-                            data-prefix="fas"
-                            focusable="false"
-                            role="img"
-                            style={Object {}}
-                            viewBox="0 0 448 512"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
-                              fill="currentColor"
-                              style={Object {}}
-                            />
-                          </svg>
-                        </FontAwesomeIcon>
-                      </Icon>
-                    </Connect(Icon)>
-                    <span
-                      className="btn-label"
-                    >
-                      <Connect(Translate)>
-                        <Translate
-                          context="System"
-                          edit={[Function]}
-                          i18nmode={true}
-                          translationKey="Back"
-                        >
-                          <span
-                            className="translation active"
-                            onClick={[Function]}
-                          >
-                            Back
-                          </span>
-                        </Translate>
-                      </Connect(Translate)>
-                    </span>
-                  </a>
-                </Link>
-              </I18NLink>
-            </Connect(I18NLink)>
-            <Connect(Translate)>
-              <Translate
-                context="System"
-                edit={[Function]}
-                i18nmode={true}
-                translationKey="Custom Uploads"
+                <path
+                  d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span
+                class="btn-label"
               >
                 <span
-                  className="translation active"
-                  onClick={[Function]}
+                  class="translation active"
                 >
-                  Custom Uploads
+                  Back
                 </span>
-              </Translate>
-            </Connect(Translate)>
+              </span>
+            </a>
+            <span
+              class="translation active"
+            >
+              Custom Uploads
+            </span>
           </div>
-        </SettingsHeader>
-        <div
-          className="panel-body custom-uploads"
-        >
-          <Dropzone
-            autoFocus={false}
-            className="upload-box"
-            disabled={false}
-            getFilesFromEvent={[Function]}
-            maxFiles={0}
-            maxSize={Infinity}
-            minSize={0}
-            multiple={true}
-            noClick={false}
-            noDrag={false}
-            noDragEventsBubbling={false}
-            noKeyboard={false}
-            onDrop={[Function]}
-            preventDropOnDocument={true}
-            useFsAccessApi={true}
-            validator={null}
+          <div
+            class="panel-body custom-uploads"
           >
             <div
-              onBlur={[Function]}
-              onClick={[Function]}
-              onDragEnter={[Function]}
-              onDragLeave={[Function]}
-              onDragOver={[Function]}
-              onDrop={[Function]}
-              onFocus={[Function]}
-              onKeyDown={[Function]}
               role="presentation"
-              tabIndex={0}
+              tabindex="0"
             >
               <div
-                className="upload-box_wrapper"
+                class="upload-box_wrapper"
               >
-                <Connect(Icon)
-                  icon="upload"
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-upload fa-w-16 "
+                  data-icon="upload"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <Icon
-                    directionAware={false}
-                    icon="upload"
-                    locale="en"
-                  >
-                    <FontAwesomeIcon
-                      beat={false}
-                      beatFade={false}
-                      border={false}
-                      bounce={false}
-                      className=""
-                      fade={false}
-                      fixedWidth={false}
-                      flip={null}
-                      icon="upload"
-                      inverse={false}
-                      listItem={false}
-                      mask={null}
-                      maskId={null}
-                      pull={null}
-                      pulse={false}
-                      rotation={null}
-                      shake={false}
-                      size={null}
-                      spin={false}
-                      spinPulse={false}
-                      spinReverse={false}
-                      swapOpacity={false}
-                      symbol={false}
-                      title=""
-                      titleId={null}
-                      transform={null}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        className="svg-inline--fa fa-upload fa-w-16 "
-                        data-icon="upload"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        style={Object {}}
-                        viewBox="0 0 512 512"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
-                          fill="currentColor"
-                          style={Object {}}
-                        />
-                      </svg>
-                    </FontAwesomeIcon>
-                  </Icon>
-                </Connect(Icon)>
+                  <path
+                    d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <input
+                  multiple=""
+                  style="display: none;"
+                  tabindex="-1"
+                  type="file"
+                />
                 <button
-                  className="upload-box_link"
+                  class="upload-box_link"
                   type="button"
                 >
-                  <Connect(Translate)>
-                    <Translate
-                      context="System"
-                      edit={[Function]}
-                      i18nmode={true}
-                      translationKey="Browse files to upload"
-                    >
-                      <span
-                        className="translation active"
-                        onClick={[Function]}
-                      >
-                        Browse files to upload
-                      </span>
-                    </Translate>
-                  </Connect(Translate)>
+                  <span
+                    class="translation active"
+                  >
+                    Browse files to upload
+                  </span>
                 </button>
                 <span>
                    
-                  <Connect(Translate)>
-                    <Translate
-                      context="System"
-                      edit={[Function]}
-                      i18nmode={true}
-                      translationKey="or drop your files here."
-                    >
-                      <span
-                        className="translation active"
-                        onClick={[Function]}
-                      >
-                        or drop your files here.
-                      </span>
-                    </Translate>
-                  </Connect(Translate)>
+                  <span
+                    class="translation active"
+                  >
+                    or drop your files here.
+                  </span>
                 </span>
               </div>
               <div
-                className="uploading"
+                class="uploading"
               >
-                <Connect(Icon)
-                  icon="spinner"
-                  spin={true}
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-spinner fa-w-16 fa-spin "
+                  data-icon="spinner"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <Icon
-                    directionAware={false}
-                    icon="spinner"
-                    locale="en"
-                    spin={true}
-                  >
-                    <FontAwesomeIcon
-                      beat={false}
-                      beatFade={false}
-                      border={false}
-                      bounce={false}
-                      className=""
-                      fade={false}
-                      fixedWidth={false}
-                      flip={null}
-                      icon="spinner"
-                      inverse={false}
-                      listItem={false}
-                      mask={null}
-                      maskId={null}
-                      pull={null}
-                      pulse={false}
-                      rotation={null}
-                      shake={false}
-                      size={null}
-                      spin={true}
-                      spinPulse={false}
-                      spinReverse={false}
-                      swapOpacity={false}
-                      symbol={false}
-                      title=""
-                      titleId={null}
-                      transform={null}
-                    >
-                      <svg
-                        aria-hidden="true"
-                        className="svg-inline--fa fa-spinner fa-w-16 fa-spin "
-                        data-icon="spinner"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        style={Object {}}
-                        viewBox="0 0 512 512"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z"
-                          fill="currentColor"
-                          style={Object {}}
-                        />
-                      </svg>
-                    </FontAwesomeIcon>
-                  </Icon>
-                </Connect(Icon)>
-                <Connect(Translate)>
-                  <Translate
-                    context="System"
-                    edit={[Function]}
-                    i18nmode={true}
-                    translationKey="Uploading ..."
-                  >
-                    <span
-                      className="translation active"
-                      onClick={[Function]}
-                    >
-                      Uploading ...
-                    </span>
-                  </Translate>
-                </Connect(Translate)>
+                  <path
+                    d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span
+                  class="translation active"
+                >
+                  Uploading ...
+                </span>
               </div>
             </div>
-          </Dropzone>
-          <ul>
-            <Component />
-          </ul>
+            <ul />
+          </div>
         </div>
       </div>
     </div>
-  </CustomUploads>
-</Provider>
+  </body>,
+  "container": <div>
+    <div
+      class="settings-content without-footer"
+    >
+      <div
+        class="panel panel-default"
+      >
+        <div
+          class="panel-heading"
+        >
+          <a
+            class="only-mobile"
+            href="/en/settings/"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-arrow-left fa-w-14 "
+              data-icon="arrow-left"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 448 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"
+                fill="currentColor"
+              />
+            </svg>
+            <span
+              class="btn-label"
+            >
+              <span
+                class="translation active"
+              >
+                Back
+              </span>
+            </span>
+          </a>
+          <span
+            class="translation active"
+          >
+            Custom Uploads
+          </span>
+        </div>
+        <div
+          class="panel-body custom-uploads"
+        >
+          <div
+            role="presentation"
+            tabindex="0"
+          >
+            <div
+              class="upload-box_wrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-upload fa-w-16 "
+                data-icon="upload"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M296 384h-80c-13.3 0-24-10.7-24-24V192h-87.7c-17.8 0-26.7-21.5-14.1-34.1L242.3 5.7c7.5-7.5 19.8-7.5 27.3 0l152.2 152.2c12.6 12.6 3.7 34.1-14.1 34.1H320v168c0 13.3-10.7 24-24 24zm216-8v112c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V376c0-13.3 10.7-24 24-24h136v8c0 30.9 25.1 56 56 56h80c30.9 0 56-25.1 56-56v-8h136c13.3 0 24 10.7 24 24zm-124 88c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20zm64 0c0-11-9-20-20-20s-20 9-20 20 9 20 20 20 20-9 20-20z"
+                  fill="currentColor"
+                />
+              </svg>
+              <input
+                multiple=""
+                style="display: none;"
+                tabindex="-1"
+                type="file"
+              />
+              <button
+                class="upload-box_link"
+                type="button"
+              >
+                <span
+                  class="translation active"
+                >
+                  Browse files to upload
+                </span>
+              </button>
+              <span>
+                 
+                <span
+                  class="translation active"
+                >
+                  or drop your files here.
+                </span>
+              </span>
+            </div>
+            <div
+              class="uploading"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-spinner fa-w-16 fa-spin "
+                data-icon="spinner"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span
+                class="translation active"
+              >
+                Uploading ...
+              </span>
+            </div>
+          </div>
+          <ul />
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

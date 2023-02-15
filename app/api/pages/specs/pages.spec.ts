@@ -1,4 +1,3 @@
-import { catchErrors } from 'api/utils/jasmineHelpers';
 import { mockID } from 'shared/uniqueID';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
@@ -7,8 +6,8 @@ import { fixtures, pageToUpdate } from './fixtures';
 import pages from '../pages';
 
 describe('pages', () => {
-  beforeEach(done => {
-    db.clearAllAndLoad(fixtures).then(done).catch(catchErrors(done));
+  beforeEach(async () => {
+    await db.setupFixturesAndContext(fixtures);
   });
 
   afterAll(async () => {
@@ -17,7 +16,7 @@ describe('pages', () => {
 
   describe('save', () => {
     it('should create a new page with logged user id and UTC date for each language', async () => {
-      spyOn(date, 'currentUTC').and.returnValue(1);
+      jest.spyOn(date, 'currentUTC').mockReturnValue(1);
       mockID('sharedid');
 
       const page = { title: 'Batman begins' };
@@ -64,7 +63,7 @@ describe('pages', () => {
 
     describe('when updating', () => {
       it('should not assign again user and creation date and partial update data', async () => {
-        spyOn(date, 'currentUTC').and.returnValue(10);
+        jest.spyOn(date, 'currentUTC').mockReturnValue(10);
 
         const modifiedDoc = await pages.save(
           { _id: pageToUpdate, sharedId: '1', title: 'Edited title', entityView: true },

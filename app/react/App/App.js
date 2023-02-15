@@ -1,136 +1,85 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
+import React, { useState, useMemo } from 'react';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
+import Notifications from 'app/Notifications';
+import Cookiepopup from 'app/App/Cookiepopup';
+import { TranslateForm, t } from 'app/I18N';
+import { Icon } from 'UI';
+import Confirm from './Confirm';
+import { Menu } from './Menu';
+import { AppMainContext } from './AppMainContext';
+import SiteName from './SiteName';
+import GoogleAnalytics from './GoogleAnalytics';
+import Matomo from './Matomo';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icons.scss';
-import Notifications from 'app/Notifications';
-import Cookiepopup from 'app/App/Cookiepopup';
-import { TranslateForm, t } from 'app/I18N';
-
-import { Icon } from 'UI';
-
 import './scss/styles.scss';
+import './styles/globals.css';
+import 'flowbite';
 
-import Menu from './Menu';
-import SiteName from './SiteName';
-import Confirm from './Confirm';
-import GoogleAnalytics from './GoogleAnalytics';
-import Matomo from './Matomo';
+const App = () => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [confirmOptions, setConfirmOptions] = useState({});
+  const location = useLocation();
+  const params = useParams();
 
-class App extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = { showmenu: false, confirmOptions: {} };
+  const toggleMobileMenu = visible => {
+    setShowMenu(visible);
+  };
 
-    this.toggleMenu = this.toggleMenu.bind(this);
+  const confirm = options => {
+    setConfirmOptions(options);
+  };
+
+  const appContext = useMemo(() => ({ confirm }));
+
+  let MenuButtonIcon = 'bars';
+  let navClass = 'menuNav';
+
+  if (showMenu) {
+    MenuButtonIcon = 'times';
+    navClass += ' is-active';
   }
 
-  getChildContext() {
-    return {
-      confirm: this.confirm.bind(this),
-    };
-  }
+  const appClassName = params.sharedId ? `pageId_${params.sharedId}` : '';
 
-  toggleMenu() {
-    this.setState({ showmenu: !this.state.showmenu });
-  }
-
-  confirm(options) {
-    this.setState({ confirmOptions: options });
-  }
-
-  renderTools() {
-    return React.Children.map(this.props.children, child => {
-      //condition not tested
-      if (child.type.renderTools) {
-        return child.type.renderTools();
-      }
-
-      return undefined;
-    });
-  }
-
-  render() {
-    const { routes, location, params } = this.props;
-    let MenuButtonIcon = 'bars';
-    let navClass = 'menuNav';
-
-    if (this.state.showmenu) {
-      MenuButtonIcon = 'times';
-      navClass += ' is-active';
-    }
-
-    const customHomePageId = routes.reduce((memo, route) => {
-      if (Object.keys(route).includes('customHomePageId')) {
-        return route.customHomePageId;
-      }
-      return memo;
-    }, '');
-
-    const pageId = location.pathname.match('page/') && params.sharedId ? params.sharedId : '';
-
-    const appClassName = customHomePageId || pageId ? `pageId_${customHomePageId || pageId}` : '';
-
-    return (
-      <div id="app" className={appClassName}>
-        <Notifications />
-        <Cookiepopup />
-        <div className="content">
-          <nav>
-            <h1>
-              <SiteName />
-            </h1>
-          </nav>
-          <header>
-            <button
-              className="menu-button"
-              onClick={this.toggleMenu}
-              aria-label={t('System', 'Menu', null, false)}
-            >
-              <Icon icon={MenuButtonIcon} />
-            </button>
-            <h1 className="logotype">
-              <SiteName />
-            </h1>
-            {this.renderTools()}
-            <Menu location={location} onClick={this.toggleMenu} className={navClass} />
-          </header>
-          <div className="app-content container-fluid">
-            <Confirm {...this.state.confirmOptions} />
+  return (
+    <div id="app" className={appClassName}>
+      <Notifications />
+      <Cookiepopup />
+      <div className="content">
+        <nav>
+          <h1>
+            <SiteName />
+          </h1>
+        </nav>
+        <header>
+          <button
+            className="menu-button"
+            onClick={() => toggleMobileMenu(MenuButtonIcon === 'bars')}
+            type="button"
+            aria-label={t('System', 'Menu', null, false)}
+          >
+            <Icon icon={MenuButtonIcon} />
+          </button>
+          <h1 className="logotype">
+            <SiteName />
+          </h1>
+          <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
+        </header>
+        <div className="app-content container-fluid">
+          <AppMainContext.Provider value={appContext}>
+            <Confirm {...confirmOptions} />
             <TranslateForm />
-            {this.props.children}
+            <Outlet />
             <GoogleAnalytics />
             <Matomo />
-          </div>
+          </AppMainContext.Provider>
         </div>
       </div>
-    );
-  }
-}
-
-App.defaultProps = {
-  params: {},
-  routes: [],
+    </div>
+  );
 };
 
-App.propTypes = {
-  fetch: PropTypes.func,
-  children: PropTypes.object,
-  location: PropTypes.object,
-  params: PropTypes.object,
-  routes: PropTypes.array,
-};
-
-App.childContextTypes = {
-  confirm: PropTypes.func,
-  locale: PropTypes.string,
-};
-
-App.contextTypes = {
-  getUser: PropTypes.func,
-  router: PropTypes.object,
-};
-
-export default App;
+export { App };

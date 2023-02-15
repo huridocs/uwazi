@@ -3,8 +3,6 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router';
-
 import { UnlockAccount } from '../UnlockAccount';
 
 describe('UnlockAccount', () => {
@@ -12,13 +10,13 @@ describe('UnlockAccount', () => {
   let context;
 
   beforeEach(() => {
-    spyOn(browserHistory, 'push');
     props = {
       unlockAccount: jest.fn().mockResolvedValue(),
       params: { username: 'username', code: 'code' },
+      navigate: jest.fn(),
     };
 
-    context = { store: { getState: () => ({}) }, router: { location: '' } };
+    context = { store: { getState: () => ({}) } };
   });
 
   const renderComponent = () => shallow(<UnlockAccount {...props} />, { context });
@@ -27,6 +25,7 @@ describe('UnlockAccount', () => {
     renderComponent();
     setTimeout(() => {
       expect(props.unlockAccount).toHaveBeenCalledWith(props.params);
+      expect(props.navigate).toHaveBeenCalledWith('/login');
       done();
     }, 0);
   });
@@ -34,7 +33,7 @@ describe('UnlockAccount', () => {
   it('should redirect to login on success', done => {
     renderComponent();
     setTimeout(() => {
-      expect(browserHistory.push).toHaveBeenCalledWith('/login');
+      expect(props.navigate).toHaveBeenCalledWith('/login');
       done();
     }, 0);
   });
@@ -43,7 +42,7 @@ describe('UnlockAccount', () => {
     props.resetPassword = jest.fn().mockRejectedValue('error');
     renderComponent();
     setTimeout(() => {
-      expect(browserHistory.push).toHaveBeenCalledWith('/login');
+      expect(props.navigate).toHaveBeenCalledWith('/login');
       done();
     }, 0);
   });

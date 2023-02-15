@@ -342,12 +342,12 @@ export class TimelineViewer extends Component {
         const track = this.state.tracks[trackName];
         tracks[trackName] = Object.keys(track.years).map(year => {
           const nth5 = year % 5 === 0 ? 'nth5' : '';
-          const activeClassName = `timeline-year-active ${track.className.replace(
+          const activeclassname = `timeline-year-active ${track.className.replace(
             'timeline-item-',
             ''
           )}`;
           const active =
-            year >= track.active.start && year <= track.active.end ? activeClassName : '';
+            year >= track.active.start && year <= track.active.end ? activeclassname : '';
           return (
             <div key={year} className={`timeline-year ${nth5} ${active}`}>
               <ShowIf if={year === track.active.start}>

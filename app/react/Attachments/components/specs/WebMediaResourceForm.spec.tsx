@@ -1,5 +1,4 @@
 import React from 'react';
-import { LocalForm } from 'react-redux-form';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { WebMediaResourceForm } from '../WebMediaResourceForm';
 
@@ -23,6 +22,6 @@ it('should also display a name field when hasName is true', () => {
 
 it('should call the handleSubmit function on submit', () => {
   render(true);
-  component.find(LocalForm).simulate('submit');
+  component.find('LocalForm').simulate('submit');
   expect(submitSpy).toHaveBeenCalled();
 });

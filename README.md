@@ -23,34 +23,17 @@ Read the [user guide](https://uwazi.readthedocs.io/en/latest/)
 Before anything else you will need to install the application dependencies:
 
 - **NodeJs >= 16.17.0** For ease of update, use nvm: https://github.com/creationix/nvm.
-- **ElasticSearch 7.11.2** https://www.elastic.co/downloads/past-releases/elasticsearch-7-11-2 Please note that ElasticSearch requires java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
+- **ElasticSearch 7.17.6** https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6 Please note that ElasticSearch requires java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
 - **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
 - **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ . If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/).
 - **Yarn** https://yarnpkg.com/en/docs/install.
 - **pdftotext (Poppler)** tested to work on version 0.86 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
-and change some global settings:
-
-```
-$ npm config set scripts-prepend-node-path auto
-```
-
 # Production
 
-### Install/upgrade procedure
+[Install/upgrade procedure](./SELF_HOSTED_INSTRUCTIONS.md)
 
-1. Download and unpack the [latest stable](https://github.com/huridocs/uwazi/releases) code for production installs.
-2. Shutdown Uwazi if it is already running.
-3. `$ cd uwazi`.
-4. `$ yarn install` will download all node modules, it may take a while.
-5. `$ yarn blank-state` **important note**: the first time you run Uwazi, you will need to initialize the database with its default blank values. Do not run this command if you are upgrading existing projects as it will erase the entire database. Note that from this point on you need ElasticSearch and MongoDB running.
-6. `$ ./install.sh [destination_path]` if no `destination_path` is provided it will default to `./prod`.
-7. Start the server with `$ node [destination_path]/server.js`.
-
-By default, Uwazi runs on localhost on the port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
-
-It is advisable to create your own system service configuration. Check out the user guide for [more configuration options](https://github.com/huridocs/uwazi/wiki/Install-Uwazi-on-your-server).
 
 # Development
 
@@ -121,10 +104,7 @@ $ yarn test
 
 This will run the entire test suite, both on server and client apps.
 
-If the API tests timeout, the issue might be with mongodb-memory-server. See https://github.com/nodkz/mongodb-memory-server/issues/204. Memory server explicitly depends on a version of MongoDB that depends on libcurl3, but Debian 10 and other OS's come with libcurl4 installed instead.
-
-To fix this, update node_modules/mongodb-memory-server-core/lib/util/MongoBinary.js#70.
-Set `exports.LATEST_VERSION = '4.3.3'` or a similar new version.
+Some suites need MongoDB configured in Replica Set mode to run properly. The provided Docker Compose file runs MongoDB in Replica Set mode and initializes the cluster automatically, if you are using your own mongo installation Refer to [MongoDB's documentation](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/#initiate-the-replica-set) for more information.
 
 #### End to End (e2e)
 

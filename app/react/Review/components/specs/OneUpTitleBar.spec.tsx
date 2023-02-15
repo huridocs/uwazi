@@ -6,10 +6,8 @@ import { OneUpTitleBarBase, OneUpTitleBarProps } from '../OneUpTitleBar';
 describe('EntityViewer', () => {
   let component: ShallowWrapper<OneUpTitleBarProps, {}, OneUpTitleBarBase>;
   let props: OneUpTitleBarProps;
-  let context: any;
 
   beforeEach(() => {
-    context = { confirm: jasmine.createSpy('confirm') };
     props = {
       isPristine: true,
       oneUpState: {
@@ -21,11 +19,12 @@ describe('EntityViewer', () => {
         maxTotalDocs: 40,
       } as OneUpState,
       switchOneUpEntity: jasmine.createSpy('switchOneUpEntity'),
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
   });
 
   const render = () => {
-    component = shallow(<OneUpTitleBarBase {...props} />, { context });
+    component = shallow(<OneUpTitleBarBase {...props} />);
   };
 
   // This component mainly composes spans, so full snapshot is the best way to get it right.
@@ -33,7 +32,7 @@ describe('EntityViewer', () => {
     render();
     expect(component).toMatchSnapshot();
     component.find('div.content-header-title > span > .btn-default').at(0).simulate('click');
-    expect(context.confirm).toHaveBeenCalledTimes(0);
+    expect(props.mainContext.confirm).toHaveBeenCalledTimes(0);
   });
 
   // This component mainly composes spans, so full snapshot is the best way to get it right.
@@ -49,6 +48,6 @@ describe('EntityViewer', () => {
     render();
     expect(component).toMatchSnapshot();
     component.find('.btn-default').at(1).simulate('click');
-    expect(context.confirm).toHaveBeenCalled();
+    expect(props.mainContext.confirm).toHaveBeenCalled();
   });
 });

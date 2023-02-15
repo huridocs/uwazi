@@ -28,6 +28,6 @@ describe('Login', () => {
   it('Should logout', async () => {
     await logout();
     await page.goto(`${host}/settings/account`);
-    await expect(page.content()).resolves.toMatch('Unauthorized');
+    await expect(page).toMatchElement('button', { text: 'Login' });
   });
 });

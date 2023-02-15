@@ -4,7 +4,7 @@ import fixtures from './fixtures.js';
 
 describe('migration remove_wrong_text_references', () => {
   beforeEach(async () => {
-    spyOn(process.stdout, 'write');
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.clearAllAndLoad(fixtures);
     await migration.up(testingDB.mongodb);
   });

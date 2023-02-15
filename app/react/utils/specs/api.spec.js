@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { browserHistory } from 'react-router';
 import backend from 'fetch-mock';
 import { APIURL } from 'app/config';
 import { store } from 'app/store';
@@ -9,6 +8,13 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import loadingBar from 'app/App/LoadingProgressBar';
 import * as notifyActions from 'app/Notifications/actions/notificationsActions';
+
+const mockRedirect = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  redirect: jest.fn().mockImplementation(path => mockRedirect(path)),
+}));
 
 describe('api', () => {
   const validationErrorResponse = {
@@ -33,7 +39,6 @@ describe('api', () => {
     spyOn(loadingBar, 'done');
     spyOn(store, 'dispatch');
     spyOn(notifyActions, 'notify').and.returnValue('notify action');
-    spyOn(browserHistory, 'replace');
     backend.restore();
     backend
       .get(`${APIURL}test_get`, JSON.stringify({ method: 'GET' }))
@@ -41,7 +46,7 @@ describe('api', () => {
       .post(`${APIURL}test_post`, JSON.stringify({ method: 'POST' }))
       .delete(`${APIURL}test_delete?data=delete`, JSON.stringify({ method: 'DELETE' }))
       .get(`${APIURL}badrequest`, { status: 400, body: { error: 'cannot process' } })
-      .get(`${APIURL}unauthorised`, { status: 401, body: {} })
+      .get(`${APIURL}unauthorized`, { status: 401, body: {} })
       .get(`${APIURL}notfound`, { status: 404, body: {} })
       .get(`${APIURL}conflict`, { status: 409, body: { error: 'conflict error' } })
       .get(`${APIURL}error_url`, { status: 500, body: { requestId: '1234' } })
@@ -64,7 +69,10 @@ describe('api', () => {
       });
   });
 
-  afterEach(() => backend.restore());
+  afterEach(() => {
+    backend.restore();
+    jest.clearAllMocks();
+  });
 
   describe('GET', () => {
     it('should prefix url with config api url', async () => {
@@ -164,8 +172,8 @@ describe('api', () => {
 
     describe('401', () => {
       it('should redirect to login', async () => {
-        await testErrorHandling('unauthorised', () => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('/login');
+        await testErrorHandling('unauthorized', () => {
+          expect(mockRedirect).toHaveBeenCalledWith('/login');
         });
       });
     });
@@ -173,7 +181,7 @@ describe('api', () => {
     describe('404', () => {
       it('should redirect to login', async () => {
         await testErrorHandling('notfound', () => {
-          expect(browserHistory.replace).toHaveBeenCalledWith('/404');
+          expect(mockRedirect).toHaveBeenCalledWith('/404');
         });
       });
     });
