@@ -3,10 +3,7 @@
     "types": ["cypress", "node"],
     "module": "commonjs",
     "target": "es2020",
-    "jsx": "react",
+    "jsx": "react"
   },
-  "include": [
-    "node_modules/cypress",
-    "cypress/**/*.ts"
-  ],
+  "include": ["node_modules/cypress", "cypress/**/*.ts"]
 }
