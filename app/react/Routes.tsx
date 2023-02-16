@@ -4,7 +4,6 @@ import { createRoutesFromElements, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
-import { EditTranslations } from 'app/I18N/EditTranslations';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
@@ -26,7 +25,6 @@ import {
   RelationTypesList,
   Settings,
   ThesauriList,
-  TranslationsList,
   Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
@@ -48,6 +46,9 @@ import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
+import { Translations } from './V2/Routes/Translations';
+import * as translationsAPI from './V2/api/translations';
+import { TranslationsList } from './V2/Components/Translations/TranslationsList';
 
 const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
   <Route errorElement={<RouteErrorBoundary />}>
@@ -104,9 +105,16 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
         <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
       </Route>
       <Route path="languages" element={adminsOnlyRoute(<LanguageList />)} />
-      <Route path="translations">
+      {/* <Route path="translations">
         <Route index element={adminsOnlyRoute(<TranslationsList />)} />
         <Route path="edit/:context" element={adminsOnlyRoute(<EditTranslations />)} />
+      </Route> */}
+      <Route
+        path="translations"
+        element={<Translations />}
+        loader={({ request }) => translationsAPI.get(request)}
+      >
+        <Route index element={adminsOnlyRoute(<TranslationsList />)} />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
       <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
