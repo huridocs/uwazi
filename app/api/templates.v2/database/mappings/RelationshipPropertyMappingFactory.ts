@@ -1,12 +1,9 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { PropertySchema } from 'shared/types/commonTypes';
+import { PropertyTypes } from 'api/templates.v2/model/Property';
 
-type PropertyMappings = Omit<
-  {
-    [key in PropertySchema['type']]: () => unknown;
-  },
-  'preview'
->;
+type MappedPropertyTypes = Exclude<PropertyTypes, 'preview'>;
+
+type PropertyMappings = { [key in MappedPropertyTypes]: () => unknown };
 
 export class RelationshipPropertyMappingFactory {
   private templateDS: TemplatesDataSource;
@@ -25,7 +22,7 @@ export class RelationshipPropertyMappingFactory {
 
     const denormalizedProperty = await this.templateDS.getPropertyByName(denormalizedPropertyName);
 
-    return denormalizedProperty.type as keyof PropertyMappings;
+    return denormalizedProperty.type as MappedPropertyTypes;
   }
 
   async create(denormalizedPropertyName?: string) {
