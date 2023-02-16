@@ -54,7 +54,7 @@ module.exports = production => {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendor',
             chunks(chunk) {
-              return !chunk.name.match(/LazyLoad/);
+              return chunk.name && !chunk.name.match(/LazyLoad/);
             },
           },
         },
