@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 import { PageReferences } from 'app/Viewer/components/PageReferences';
 import { PageSelections } from 'app/Viewer/components/PageSelections';
-import PDFJS, { textLayerFactory, EventBus } from '../PDFJS';
+import PDFJS, { EventBus } from '../PDFJS';
 
 class PDFPage extends Component {
   constructor(props) {
@@ -119,8 +119,7 @@ class PDFPage extends Component {
           id: this.props.page,
           scale,
           defaultViewport: page.getViewport({ scale }),
-          textLayerMode: 2,
-          textLayerFactory,
+          textLayerMode: 1,
           eventBus: new EventBus(),
         });
 
