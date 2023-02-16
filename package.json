@@ -254,7 +254,7 @@
     "@babel/register": "^7.18.9",
     "@babel/traverse": "^7.20.0",
     "@cfaester/enzyme-adapter-react-18": "^0.6.0",
-    "@cypress/react": "^7.0.2",
+    "@cypress/react18": "^2.0.0",
     "@cypress/webpack-dev-server": "^3.2.3",
     "@cypress/webpack-preprocessor": "^5.17.0",
     "@mdx-js/loader": "^2.3.0",

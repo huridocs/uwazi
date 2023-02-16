@@ -1,10 +1,7 @@
-module.exports = (on, config) => {
-  if (config.testingType === 'component') {
-    const { startDevServer } = require('@cypress/webpack-dev-server');
+import '../plugins/tailwind';
 
-    // path to your webpack.cypress config
-    const webpackConfig = require('../webpack.cypress.config');
+const cypressTypeScriptPreprocessor = require('./cy-ts-preprocessor');
 
-    on('dev-server:start', options => startDevServer({ options, webpackConfig }));
-  }
+module.exports = on => {
+  on('file:preprocessor', cypressTypeScriptPreprocessor);
 };

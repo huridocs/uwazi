@@ -38,17 +38,6 @@
 
 export {};
 
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      selection(subject: string, fn: any): Chainable;
-      setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
-      // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-      // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-      // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-    }
-  }
-}
 
 Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   cy.wrap(subject).trigger('mousedown').then(fn).trigger('mouseup');
