@@ -17,7 +17,6 @@
     "resolveJsonModule": true,
     "strict": true,
     "baseUrl": ".",
-    "types": ["cypress"],
     "paths": {
       // must match .bablerc
       "api/*": ["./app/api/*"],
