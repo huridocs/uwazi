@@ -11,34 +11,38 @@ export class RelationshipPropertyMappingFactory {
 
   private propertyMappings: PropertyMappings;
 
-  private _propertiesByName?: Record<string, Property>;
+  private propertiesCache?: Record<string, Property>;
 
   constructor(templateDS: TemplatesDataSource, propertyMappings: PropertyMappings) {
     this.templateDS = templateDS;
     this.propertyMappings = propertyMappings;
-    this._propertiesByName = {};
   }
 
-  async init() {
-    const properties = await this.templateDS.getAllProperties().all();
-    this._propertiesByName = objectIndex(
-      properties,
-      p => p.name,
-      p => p
-    );
+  private async getCachedProperty(name: string) {
+    if (!this.propertiesCache) {
+      const properties = await this.templateDS.getAllProperties().all();
+      this.propertiesCache = objectIndex(
+        properties,
+        p => p.name,
+        p => p
+      );
+    }
+
+    return this.propertiesCache[name];
   }
 
-  private getDenormalizedType(denormalizedPropertyName?: string) {
+  private async getDenormalizedType(denormalizedPropertyName?: string) {
     if (!denormalizedPropertyName) {
       return 'text'; //Title
     }
 
-    const denormalizedProperty = this._propertiesByName![denormalizedPropertyName];
+    const denormalizedProperty = await this.getCachedProperty(denormalizedPropertyName);
 
     return denormalizedProperty.type as MappedPropertyTypes;
   }
 
-  async create(denormalizedPropertyName?: string) {
-    return this.propertyMappings[this.getDenormalizedType(denormalizedPropertyName)]();
+  async create(property: { denormalizedProperty?: string }) {
+    const denormalizedPropertyType = await this.getDenormalizedType(property.denormalizedProperty);
+    return this.propertyMappings[denormalizedPropertyType]();
   }
 }

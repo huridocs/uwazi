@@ -5,17 +5,13 @@ import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplat
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyMappings } from './mappings';
 
-const initV2Mapping = async () => {
+const createNewRelationshipMappingFactory = () => {
   const db = getConnection();
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
   const templateDataSource = new MongoTemplatesDataSource(db, transactionManager);
-  const mappingFactory = new RelationshipPropertyMappingFactory(
-    templateDataSource,
-    propertyMappings
-  );
-  await mappingFactory.init();
-  return mappingFactory;
+
+  return new RelationshipPropertyMappingFactory(templateDataSource, propertyMappings);
 };
 
 export default {
@@ -23,52 +19,55 @@ export default {
     const baseMappingObject = {
       properties: {
         metadata: {
-          properties: {},
+          properties: {} as any,
         },
         suggestedMetadata: {
-          properties: {},
+          properties: {} as any,
         },
       },
     };
 
-    const v2MappingFactory = await initV2Mapping();
+    const newRelationshipMappingFactory = createNewRelationshipMappingFactory();
 
-    return templates.reduce(
-      (baseMapping: any, template: TemplateSchema) =>
-        // eslint-disable-next-line max-statements
-        template.properties?.reduce((_map: any, property) => {
-          const map = { ..._map };
-          if (!property.name || !property.type || property.type === 'preview') {
-            return map;
-          }
+    await Promise.all(
+      templates.map(async template =>
+        Promise.all(
+          (template.properties || []).map(async property => {
+            if (!property.name || !property.type || property.type === 'preview') {
+              return;
+            }
 
-          map.properties.metadata.properties[property.name] = {
-            properties:
-              property.type === 'newRelationship'
-                ? v2MappingFactory.create(property.denormalizedProperty)
-                : propertyMappings[property.type](),
-          };
-          if (
-            topicClassification &&
-            (property.type === 'select' || property.type === 'multiselect')
-          ) {
-            map.properties.suggestedMetadata.properties[property.name] = {
-              properties: {
-                ...propertyMappings[property.type](),
-                suggestion_confidence: {
-                  type: 'float',
+            baseMappingObject.properties.metadata.properties[property.name] = {
+              properties:
+                property.type === 'newRelationship'
+                  ? await newRelationshipMappingFactory.create(property)
+                  : propertyMappings[property.type](),
+            };
+            if (
+              topicClassification &&
+              (property.type === 'select' || property.type === 'multiselect')
+            ) {
+              baseMappingObject.properties.suggestedMetadata.properties[property.name] = {
+                properties: {
+                  ...propertyMappings[property.type](),
+                  suggestion_confidence: {
+                    type: 'float',
+                  },
                 },
-              },
-            };
-          }
-          if (property.inherit?.type && property.inherit.type !== 'preview') {
-            map.properties.metadata.properties[property.name].properties.inheritedValue = {
-              properties: propertyMappings[property.inherit.type](),
-            };
-          }
-          return map;
-        }, baseMapping),
-      baseMappingObject
+              };
+            }
+            if (property.inherit?.type && property.inherit.type !== 'preview') {
+              baseMappingObject.properties.metadata.properties[
+                property.name
+              ].properties.inheritedValue = {
+                properties: propertyMappings[property.inherit.type](),
+              };
+            }
+          })
+        )
+      )
     );
+
+    return baseMappingObject;
   },
 };
