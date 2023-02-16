@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "baseUrl": ".",
+    "types": ["cypress"],
     "paths": {
       // must match .bablerc
       "api/*": ["./app/api/*"],
@@ -28,6 +29,6 @@
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e"],
+  "include": ["app", "external_modules", "database", "e2e", "cypress"],
   "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist", "prod"]
 }
