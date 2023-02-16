@@ -1,5 +1,5 @@
 {
-  "extends": ["airbnb"],
+  "extends": ["airbnb", "plugin:cypress/recommended"],
   "env": {
     "browser": true,
     "node": true,
@@ -168,11 +168,11 @@
     //react-hooks && recoil
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": [
-      "warn", {
+      "warn",
+      {
         "additionalHooks": "(useRecoilCallback|useRecoilTransaction_UNSTABLE)"
       }
     ]
-
   },
   "overrides": [
     {
@@ -244,7 +244,7 @@
           }
         ],
         "@typescript-eslint/promise-function-async": "error",
-        
+
         "no-dupe-class-members": "off",
         "@typescript-eslint/no-dupe-class-members": ["error"]
       }
