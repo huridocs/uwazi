@@ -72,4 +72,33 @@ export class MongoTemplatesDataSource
     }
     return this._nameToPropertyMap[name];
   }
+
+  getAllProperties() {
+    const cursor = this.getCollection().aggregate(
+      [
+        {
+          $match: {},
+        },
+        { $unwind: '$properties' },
+        {
+          $project: {
+            _id: 1,
+            properties: 1,
+          },
+        },
+      ],
+      { session: this.getSession() }
+    );
+
+    return new MongoResultSet(
+      cursor,
+      template =>
+        new Property(
+          template.properties.type,
+          template.properties.name,
+          template.properties.label,
+          MongoIdHandler.mapToApp(template._id)
+        )
+    );
+  }
 }

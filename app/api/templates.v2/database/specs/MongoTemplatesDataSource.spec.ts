@@ -62,6 +62,34 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+describe('getAllProperties()', () => {
+  it('should return all the properties', async () => {
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      new MongoTransactionManager(getClient())
+    );
+    const result = await dataSource.getAllProperties().all();
+    expect(result.length).toBe(3);
+    result.forEach(property => {
+      expect(property).toBeInstanceOf(Property);
+    });
+    expect(result).toMatchObject([
+      {
+        name: 'relationshipProp1',
+        template: factory.id('template1').toHexString(),
+      },
+      {
+        name: 'relationshipProp2',
+        template: factory.id('template2').toHexString(),
+      },
+      {
+        name: 'relationshipProp3',
+        template: factory.id('template3').toHexString(),
+      },
+    ]);
+  });
+});
+
 describe('when requesting the relationship properties configured in the system', () => {
   it('should return all the relationship properties', async () => {
     const dataSource = new MongoTemplatesDataSource(

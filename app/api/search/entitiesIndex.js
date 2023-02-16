@@ -153,7 +153,7 @@ const indexEntities = async ({
 };
 
 const updateMapping = async tmpls => {
-  const mapping = elasticMapFactory.mapping(tmpls);
+  const mapping = await elasticMapFactory.mapping(tmpls);
   await elastic.indices.putMapping({ body: mapping });
 };
 

@@ -4,5 +4,6 @@ import { RelationshipProperty } from '../model/RelationshipProperty';
 
 export interface TemplatesDataSource {
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
+  getAllProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
 }

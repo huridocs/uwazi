@@ -2,11 +2,10 @@ import { getConnection, getClient } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { RelationshipPropertyMappingFactory } from 'api/templates.v2/database/mappings/RelationshipPropertyMappingFactory';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyMappings } from './mappings';
 
-const relationshipV2Mapping = async (propertyDBO: PropertySchema) => {
+const initV2Mapping = async () => {
   const db = getConnection();
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
@@ -15,12 +14,12 @@ const relationshipV2Mapping = async (propertyDBO: PropertySchema) => {
     templateDataSource,
     propertyMappings
   );
-
-  return mappingFactory.create(propertyDBO.denormalizedProperty);
+  await mappingFactory.init();
+  return mappingFactory;
 };
 
 export default {
-  mapping: (templates: TemplateSchema[], topicClassification: boolean) => {
+  mapping: async (templates: TemplateSchema[], topicClassification: boolean) => {
     const baseMappingObject = {
       properties: {
         metadata: {
@@ -31,6 +30,8 @@ export default {
         },
       },
     };
+
+    const v2MappingFactory = await initV2Mapping();
 
     return templates.reduce(
       (baseMapping: any, template: TemplateSchema) =>
@@ -44,7 +45,7 @@ export default {
           map.properties.metadata.properties[property.name] = {
             properties:
               property.type === 'newRelationship'
-                ? relationshipV2Mapping(property) //this needs to be awaited
+                ? v2MappingFactory.create(property.denormalizedProperty)
                 : propertyMappings[property.type](),
           };
           if (
