@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 /* eslint-disable max-lines */
+import Immutable from 'immutable';
 import 'mutationobserver-shim';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -51,7 +52,10 @@ describe('EntitySuggestions', () => {
         acceptIXSuggestion={acceptIXSuggestion}
         languages={[{}, {}]}
       />,
-      () => defaultState,
+      () => ({
+        ...defaultState,
+        templates: Immutable.fromJS([]),
+      }),
       'BrowserRouter'
     ));
   };
@@ -154,31 +158,6 @@ describe('EntitySuggestions', () => {
       });
     });
   });
-
-  describe('State filter', () => {
-    beforeEach(async () => {
-      spyOn(SuggestionsAPI, 'getSuggestions').and.callFake(async () =>
-        Promise.resolve(suggestionsData)
-      );
-    });
-    it('should retrieve suggestions data when state filter changed', async () => {
-      await act(async () => renderComponent());
-      await act(async () => {
-        const header = screen.getAllByRole('columnheader', { name: 'State All' })[0];
-        fireEvent.change(within(header).getByRole('combobox'), {
-          target: { value: SuggestionState.empty },
-        });
-      });
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: {
-          filter: { state: SuggestionState.empty, propertyName: 'other_title' },
-          page: { size: 100, number: 1 },
-        },
-        headers: {},
-      });
-    });
-  });
-
   describe('date property', () => {
     const dateProperty: PropertySchema = {
       name: 'fecha',
@@ -191,7 +170,14 @@ describe('EntitySuggestions', () => {
       expectedSuggestionCell: string
     ) => {
       spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
-        Promise.resolve({ suggestions: [suggestion], totalPages: 1 })
+        Promise.resolve({
+          suggestions: [suggestion],
+          totalPages: 1,
+          aggregations: {
+            template: [],
+            state: [],
+          },
+        })
       );
       await act(async () => {
         await renderComponent(dateProperty);
@@ -269,7 +255,7 @@ describe('EntitySuggestions', () => {
           fireEvent.click(confirmButton);
         });
         expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], true);
-        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
       it('should accept a suggestion for only the current language of an entity', async () => {
         const pendingRow = within(screen.getAllByRole('row')[1])
@@ -286,10 +272,7 @@ describe('EntitySuggestions', () => {
         });
         expect(acceptIXSuggestion).toBeCalledWith(suggestionsData.suggestions[0], false);
 
-        const selectedRow = within(screen.getAllByRole('row')[1])
-          .getAllByRole('cell')
-          .map(cell => cell.textContent);
-        expect(selectedRow[6]).toEqual(SuggestionState.valueMatch);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
       it('should not accept a suggestion in confirmation is cancelled', async () => {
         const cancelButton = screen.getByLabelText('Close acceptance modal').parentElement!;
@@ -316,7 +299,14 @@ describe('EntitySuggestions', () => {
       beforeEach(async () => {
         jest.resetAllMocks();
         spyOn(SuggestionsAPI, 'getSuggestions').and.returnValue(
-          Promise.resolve({ suggestions: [{ ...dateSuggestion }], totalPages: 1 })
+          Promise.resolve({
+            suggestions: [{ ...dateSuggestion }],
+            totalPages: 1,
+            aggregations: {
+              template: [],
+              state: [],
+            },
+          })
         );
         await act(async () =>
           renderComponent({
@@ -340,7 +330,7 @@ describe('EntitySuggestions', () => {
           fireEvent.click(confirmButton);
         });
         expect(acceptIXSuggestion).toBeCalledWith(dateSuggestion, true);
-        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(1);
+        expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
       });
     });
   });
@@ -366,7 +356,8 @@ describe('EntitySuggestions', () => {
       const updatedRow = within(screen.getAllByRole('row')[2])
         .getAllByRole('cell')
         .map(cell => cell.textContent);
-      expect(updatedRow[3]).toEqual(filledPropertyValue);
+      expect(updatedRow[3]).toEqual('-');
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenCalledTimes(2);
     });
   });
 

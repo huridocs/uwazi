@@ -1,9 +1,15 @@
+import { FilterQuery } from 'mongoose';
+
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
-import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import {
+  ExtractedMetadataSchema,
+  LanguagesListSchema,
+  ObjectIdSchema,
+} from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
@@ -13,6 +19,8 @@ import {
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
+  getMatchStage,
+  groupByAndSort,
 } from './pipelineStages';
 import { getStats } from './stats';
 import { updateStates } from './updateState';
@@ -80,6 +88,100 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
   return files.save(file);
 };
 
+const buildListQuery = (
+  filters: FilterQuery<IXSuggestionType>,
+  setLanguages: LanguagesListSchema | undefined,
+  offset: number,
+  limit: number
+) => {
+  const pipeline = [
+    ...getMatchStage(filters),
+    { $sort: { date: 1, state: -1 } },
+    { $skip: offset },
+    { $limit: limit },
+    ...getEntityStage(setLanguages!),
+    ...getCurrentValueStage(),
+    ...getFileStage(),
+    ...getLabeledValueStage(),
+    {
+      $project: {
+        entityId: '$entity._id',
+        entityTemplateId: '$entity.template',
+        sharedId: '$entity.sharedId',
+        entityTitle: '$entity.title',
+        fileId: 1,
+        language: 1,
+        propertyName: 1,
+        suggestedValue: 1,
+        segment: 1,
+        currentValue: 1,
+        state: 1,
+        page: 1,
+        date: 1,
+        error: 1,
+        labeledValue: 1,
+        selectionRectangles: 1,
+      },
+    },
+  ];
+  return pipeline;
+};
+
+const buildTemplateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
+  const { entityTemplate, ...filters } = _filters;
+  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$entityTemplate')];
+  return pipeline;
+};
+
+const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
+  const { state, ...filters } = _filters;
+  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$state')];
+  return pipeline;
+};
+
+const fetchAndAggregateSuggestions = async (
+  _filters: Omit<IXSuggestionsFilter, 'language'>,
+  setLanguages: LanguagesListSchema | undefined,
+  offset: number,
+  limit: number
+) => {
+  const {
+    states,
+    entityTemplates,
+    ...filters
+  }: {
+    states?: string[];
+    entityTemplates?: string[];
+    propertyName: string;
+    state?: { $in: string[] };
+    entityTemplate?: { $in: string[] };
+  } = _filters;
+  if (states) filters.state = { $in: _filters.states || [] };
+  if (entityTemplates) filters.entityTemplate = { $in: _filters.entityTemplates || [] };
+
+  const count = await IXSuggestionsModel.db
+    .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+    .then(result => (result?.length ? result[0].count : 0));
+
+  const suggestions = await IXSuggestionsModel.db.aggregate(
+    buildListQuery(filters, setLanguages, offset, limit)
+  );
+
+  const templateAggregations = await IXSuggestionsModel.db.aggregate(
+    buildTemplateAggregationsQuery(filters)
+  );
+
+  const stateAggregations = await IXSuggestionsModel.db.aggregate(
+    buildStateAggregationsQuery(filters)
+  );
+
+  return {
+    suggestions,
+    aggregations: { template: templateAggregations, state: stateAggregations },
+    totalPages: Math.ceil(count / limit),
+  };
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -89,45 +191,9 @@ const Suggestions = {
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-
     const { language, ...filters } = filter;
 
-    const count = await IXSuggestionsModel.db
-      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
-      .then(result => (result?.length ? result[0].count : 0));
-
-    const suggestions = await IXSuggestionsModel.db.aggregate([
-      { $match: { ...filters, status: { $ne: 'processing' } } },
-      { $sort: { date: 1, state: -1 } },
-      { $skip: offset },
-      { $limit: limit },
-      ...getEntityStage(setLanguages!),
-      ...getCurrentValueStage(),
-      ...getFileStage(),
-      ...getLabeledValueStage(),
-      {
-        $project: {
-          entityId: '$entity._id',
-          sharedId: '$entity.sharedId',
-          entityTitle: '$entity.title',
-          fileId: 1,
-          language: 1,
-          propertyName: 1,
-          suggestedValue: 1,
-          segment: 1,
-          currentValue: 1,
-          state: 1,
-          page: 1,
-          date: 1,
-          error: 1,
-          labeledValue: 1,
-          selectionRectangles: 1,
-        },
-      },
-    ]);
-
-    const totalPages = Math.ceil(count / limit);
-    return { suggestions, totalPages };
+    return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
   },
 
   getStats,
