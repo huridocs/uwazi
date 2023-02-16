@@ -4,6 +4,7 @@ import { Request as ExpressRequest, Response } from 'express';
 import fs from 'fs';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
+import { RecoilRoot } from 'recoil';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import { matchRoutes, RouteObject } from 'react-router-dom';
@@ -247,13 +248,15 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <React.StrictMode>
-          <StaticRouterProvider
-            router={router}
-            context={staticHandleContext as any}
-            nonce="the-nonce"
-          />
-        </React.StrictMode>
+        <RecoilRoot>
+          <React.StrictMode>
+            <StaticRouterProvider
+              router={router}
+              context={staticHandleContext as any}
+              nonce="the-nonce"
+            />
+          </React.StrictMode>
+        </RecoilRoot>
       </CustomProvider>
     </Provider>
   );
