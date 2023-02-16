@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
@@ -39,6 +40,9 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
     trainModel = jest.fn().mockResolvedValue({ status: 'processing' });
   },
 }));
+
+const sortAggregateById = (array: { _id: string; count: number }[]) =>
+  array.sort((a, b) => a._id.localeCompare(b._id));
 
 describe('suggestions routes', () => {
   let user: { username: string; role: string } | undefined;
@@ -94,6 +98,13 @@ describe('suggestions routes', () => {
         },
       ]);
       expect(response.body.totalPages).toBe(1);
+      expect(response.body.aggregations).toMatchObject({
+        template: [{ _id: personTemplateId.toString(), count: 2 }],
+        state: [
+          { _id: 'Match / Label', count: 1 },
+          { _id: 'Mismatch / Label', count: 1 },
+        ],
+      });
     });
 
     it('should include failed suggestions but not processing ones', async () => {
@@ -156,7 +167,7 @@ describe('suggestions routes', () => {
       it('should filter by state', async () => {
         const response = await request(app)
           .get('/api/suggestions/')
-          .query({ filter: { propertyName: 'enemy', state: SuggestionState.empty } })
+          .query({ filter: { propertyName: 'enemy', states: [SuggestionState.empty] } })
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
@@ -166,6 +177,119 @@ describe('suggestions routes', () => {
             currentValue: '',
           }),
         ]);
+      });
+
+      it('should filter by entity template', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({
+            filter: { propertyName: 'title', entityTemplates: [personTemplateId.toString()] },
+          })
+          .expect(200);
+        expect(response.body.suggestions).toMatchObject([
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared4',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared3',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared1',
+            language: 'en',
+          },
+          {
+            propertyName: 'title',
+            entityTemplateId: personTemplateId.toString(),
+            sharedId: 'shared1',
+            language: 'es',
+          },
+        ]);
+      });
+    });
+
+    describe('aggregations', () => {
+      it('should return aggregations', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({ filter: { propertyName: 'title' } })
+          .expect(200);
+        expect(response.body.aggregations).toMatchObject({
+          template: sortAggregateById([
+            { _id: heroTemplateId.toString(), count: 2 },
+            { _id: personTemplateId.toString(), count: 4 },
+          ]),
+          state: [
+            { _id: SuggestionState.valueMatch, count: 2 },
+            { _id: SuggestionState.valueMismatch, count: 4 },
+          ],
+        });
+      });
+
+      it('should return aggregations for a specific template', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({
+            filter: { propertyName: 'title', entityTemplates: [heroTemplateId.toString()] },
+          })
+          .expect(200);
+        expect(response.body.aggregations).toMatchObject({
+          template: sortAggregateById([
+            { _id: heroTemplateId.toString(), count: 2 },
+            { _id: personTemplateId.toString(), count: 4 },
+          ]),
+          state: [
+            { _id: SuggestionState.valueMatch, count: 1 },
+            { _id: SuggestionState.valueMismatch, count: 1 },
+          ],
+        });
+      });
+
+      it('should return aggregations for a specific state', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({ filter: { propertyName: 'title', states: [SuggestionState.valueMatch] } })
+          .expect(200);
+        expect(response.body.aggregations).toMatchObject({
+          template: sortAggregateById([
+            { _id: heroTemplateId.toString(), count: 1 },
+            { _id: personTemplateId.toString(), count: 1 },
+          ]),
+          state: [
+            { _id: SuggestionState.valueMatch, count: 2 },
+            { _id: SuggestionState.valueMismatch, count: 4 },
+          ],
+        });
+      });
+
+      it('should return aggregations for a specific template and state', async () => {
+        const response = await request(app)
+          .get('/api/suggestions/')
+          .query({
+            filter: {
+              propertyName: 'title',
+              entityTemplates: [heroTemplateId.toString()],
+              states: [SuggestionState.valueMatch],
+            },
+          })
+          .expect(200);
+        expect(response.body.aggregations).toMatchObject({
+          template: sortAggregateById([
+            { _id: heroTemplateId.toString(), count: 1 },
+            { _id: personTemplateId.toString(), count: 1 },
+          ]),
+          state: [
+            { _id: SuggestionState.valueMatch, count: 1 },
+            { _id: SuggestionState.valueMismatch, count: 1 },
+          ],
+        });
       });
     });
 
