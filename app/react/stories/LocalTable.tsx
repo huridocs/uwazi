@@ -14,6 +14,7 @@ import {
 } from 'react-table';
 
 import { Table } from 'flowbite-react';
+import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 interface LocalTableProps {
   /**
@@ -49,20 +50,22 @@ export const LocalTable = ({ columns, data }: LocalTableProps) => {
 
   return (
     <div className="tw-content">
-      <Table {...getTableProps()}>
-        <Table.Head>
+      <Table {...getTableProps()} className="font-sans table-auto">
+        <Table.Head className="text-xs !text-gray-500 !font-medium ">
           {headerGroups.map((headerGroup: HeaderGroup<any>) =>
             headerGroup.headers.map((column: any) => (
-              <Table.HeadCell
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-                className={column.isSorted ? (column.isSortedDesc ? 'desc' : 'asc') : ''}
-              >
-                {column.render('Header')}
+              <Table.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+                <div className="flex flex-row">
+                  {column.render('Header')}
+                  {Boolean(column.Header && !column.disableSortBy) && (
+                    <ChevronUpDownIcon className="w-4" />
+                  )}
+                </div>
               </Table.HeadCell>
             ))
           )}
         </Table.Head>
-        <Table.Body {...getTableBodyProps()}>
+        <Table.Body {...getTableBodyProps()} className="text-sm !text-gray-900  !font-semibold">
           {rows.map((row: Row<any>) => {
             prepareRow(row);
             return (

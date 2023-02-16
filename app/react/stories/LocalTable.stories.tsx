@@ -25,7 +25,7 @@ Basic.args = {
     { id: 'select', Header: '', Cell: () => <Checkbox /> },
     { Header: 'Icon', accessor: 'icon', disableSortBy: true },
     { Header: 'Title', accessor: 'title', id: 'title' },
-    { Header: 'Date added', accessor: 'created', disableSortBy: true },
+    { Header: 'Date added', accessor: 'created', disableSortBy: true, className: 'italic' },
   ],
   data: [
     { title: 'Entity 1', created: 1676306456, icon: 'check' },
