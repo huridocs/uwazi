@@ -1,5 +1,6 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 import { Provider } from 'react-redux';
 import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
@@ -14,7 +15,9 @@ const router = createBrowserRouter(
 const App = () => (
   <Provider store={store as any}>
     <CustomProvider>
-      <RouterProvider router={router} fallbackElement={null} />
+      <RecoilRoot>
+        <RouterProvider router={router} fallbackElement={null} />
+      </RecoilRoot>
     </CustomProvider>
   </Provider>
 );

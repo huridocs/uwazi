@@ -10,7 +10,7 @@
   "parserOptions": {
     "ecmaVersion": 2020
   },
-  "plugins": ["react", "jest", "@typescript-eslint", "prettier", "node"],
+  "plugins": ["react", "jest", "@typescript-eslint", "prettier", "node", "react-hooks"],
   "rules": {
     "prettier/prettier": ["error", { "requirePragma": false }],
     "node/no-restricted-import": [
@@ -163,7 +163,16 @@
     "jsx-a11y/no-static-element-interactions": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/mouse-events-have-key-events": "off",
-    "jsx-a11y/label-has-associated-control": "off"
+    "jsx-a11y/label-has-associated-control": "off",
+
+    //react-hooks && recoil
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": [
+      "warn", {
+        "additionalHooks": "(useRecoilCallback|useRecoilTransaction_UNSTABLE)"
+      }
+    ]
+
   },
   "overrides": [
     {
