@@ -130,6 +130,7 @@ const stateUpdateCases = [
 
 const newProcessingSuggestion: IXSuggestionType = {
   entityId: 'new_processing_suggestion',
+  entityTemplate: personTemplateId.toString(),
   propertyName: 'new',
   suggestedValue: 'new',
   segment: 'Some new segment',
@@ -142,6 +143,7 @@ const newProcessingSuggestion: IXSuggestionType = {
 
 const newErroringSuggestion: IXSuggestionType = {
   entityId: 'new_erroring_suggestion',
+  entityTemplate: personTemplateId.toString(),
   propertyName: 'new',
   suggestedValue: 'new',
   segment: 'Some new segment',

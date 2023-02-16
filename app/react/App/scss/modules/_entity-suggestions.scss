@@ -49,6 +49,30 @@
     margin-bottom: 10px;
   }
 
+  .suggestions-filter-sidepanel {
+    .sidepanel-body {
+      .suggestion-filter-options {
+        padding-left: 15px;
+        &:first-child {
+          border-bottom: 1px black solid;
+        }
+      }
+    }
+    .sidepanel-footer {
+      .clear-suggestions-filters {
+        display: flex;
+        align-items: center;
+        text-align: right;
+        background-color: #eceff1;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 19px;
+        color: #202426;
+      }
+    }
+  }
+
   .panel-subheading {
     display: block;
     position: relative;
@@ -63,9 +87,40 @@
         display: flex;
         flex-direction: row;
         font-size: $f-size-xl;
+        align-items: center;
 
         div {
           width: 50%;
+        }
+
+        .suggestion-for-label {
+          color: #e8e7ec;
+        }
+        .property-info-heading {
+          .suggestion-templates {
+            span {
+              margin-right: 10px;
+              padding: 3px 10px;
+              background: #e8e7ec;
+              border-radius: 6px;
+              font-size: 14px;
+              line-height: 19px;
+              color: #263238;
+            }
+          }
+        }
+        .property-info-buttons {
+          display: flex;
+          justify-content: flex-end;
+
+          .find-suggestions {
+            margin-right: 10px;
+          }
+
+          .suggestion-filters {
+            border: 1px solid #d9d9d9;
+            background: white;
+          }
         }
       }
 
