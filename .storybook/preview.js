@@ -9,12 +9,3 @@ export const parameters = {
     },
   },
 }
-
-export const decorators = [
-  (StoryFn, { globals: { locale = "en" } }) => (
-    <>
-      <div>{locale}</div>
-      <StoryFn />
-    </>
-  ),
-];
