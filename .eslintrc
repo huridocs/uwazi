@@ -189,7 +189,7 @@
       }
     },
     {
-      "files": ["app/**/*.ts*", "database/**/*.ts", "e2e/**/*.ts"],
+      "files": ["app/**/*.ts*", "database/**/*.ts", "e2e/**/*.ts", "cypress/**/*.ts"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "project": "./tsconfig.json"

@@ -1,4 +1,3 @@
-import { eq } from 'lodash';
 import { login } from './helpers';
 
 const labelEntityTitle = (
