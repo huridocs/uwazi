@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -36,8 +35,6 @@
 //   }
 // }
 
-export {};
-
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -57,8 +54,8 @@ Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   return cy.wrap(subject);
 });
 
-Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, endQuery) => {
-  return cy.wrap(subject).selection($el => {
+Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, endQuery) =>
+  cy.wrap(subject).selection($el => {
     if (typeof query === 'string') {
       const anchorNode = getTextNode($el[0], query);
       const focusNode = endQuery ? getTextNode($el[0], endQuery) : anchorNode;
@@ -77,8 +74,8 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
       const focusOffset = query.focusOffset || 0;
       setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
     }
-  });
-});
+  })
+);
 
 // Low level command reused by `setCursorBefore` and `setCursorAfter`, equal to `setCursorAfter`
 // Cypress.Commands.add('setCursor', { prevSubject: true }, (subject, query, atStart) => {
@@ -108,7 +105,6 @@ function getTextNode(el, match) {
     return walk.nextNode();
   }
 
-  const nodes = [];
   let node;
   while ((node = walk.nextNode())) {
     if (node.wholeText.includes(match)) {

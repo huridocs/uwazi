@@ -17,7 +17,7 @@
   "author": "huridocs.org",
   "main": "server.js",
   "scripts": {
-    "check-types": "tsc --noEmit --pretty",
+    "check-types": "concurrently \"tsc --noEmit --pretty\" \"tsc --noEmit --pretty --project cypress\"",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "emit-types": "node scripts/emitSchemaTypes.js",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
@@ -303,6 +303,7 @@
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "canvas": "^2.11.0",
     "clean-webpack-plugin": "4.0.0",
+    "concurrently": "^7.6.0",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.2.2",

@@ -6,8 +6,7 @@ const labelEntityTitle = (
   selector: string = 'span[role="presentation"]'
 ) => {
   cy.get('.view-doc').eq(entityPos).click();
-  const pdfElementToSelect = cy.contains(selector, selectValue);
-  pdfElementToSelect.setSelection(selectValue);
+  cy.contains(selector, selectValue).setSelection(selectValue);
   cy.get('button.edit-metadata').click();
   cy.get('button.extraction-button').first().click();
   cy.get('textarea[name="documentViewer.sidepanel.metadata.title"]')
