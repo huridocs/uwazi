@@ -1,4 +1,3 @@
-/// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -36,18 +35,40 @@
 //   }
 // }
 
-export {};
+// @ts-nocheck
 
 declare global {
   namespace Cypress {
     interface Chainable {
-      selection(subject: string, fn: any): Chainable;
-      setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      selection(fn: any): Chainable;
+      setSelection(subject: string, query?: string | object, endQuery?: any[]): Chainable;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
     }
   }
+}
+
+// eslint-disable-next-line consistent-return
+function getTextNode(el: Node, match?: string | object) {
+  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  if (!match) {
+    return walk.nextNode();
+  }
+
+  let node;
+  // eslint-disable-next-line no-cond-assign
+  while ((node = walk.nextNode())) {
+    if (node.wholeText.includes(match)) {
+      return node;
+    }
+  }
+}
+
+function setBaseAndExtent(...args: (Node | null | undefined)[]) {
+  const document = args[0] && args[0].ownerDocument;
+  document.getSelection().removeAllRanges();
+  document.getSelection().setBaseAndExtent(...args);
 }
 
 Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
@@ -57,8 +78,9 @@ Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   return cy.wrap(subject);
 });
 
-Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, endQuery) => {
-  return cy.wrap(subject).selection($el => {
+Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, endQuery) =>
+  // eslint-disable-next-line max-statements
+  cy.wrap(subject).selection(($el: any[]) => {
     if (typeof query === 'string') {
       const anchorNode = getTextNode($el[0], query);
       const focusNode = endQuery ? getTextNode($el[0], endQuery) : anchorNode;
@@ -69,6 +91,7 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
       setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
     } else if (typeof query === 'object') {
       const el = $el[0];
+
       const anchorNode = getTextNode(el.querySelector(query.anchorQuery));
       const anchorOffset = query.anchorOffset || 0;
       const focusNode = query.focusQuery
@@ -77,8 +100,8 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
       const focusOffset = query.focusOffset || 0;
       setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
     }
-  });
-});
+  })
+);
 
 // Low level command reused by `setCursorBefore` and `setCursorAfter`, equal to `setCursorAfter`
 // Cypress.Commands.add('setCursor', { prevSubject: true }, (subject, query, atStart) => {
@@ -101,24 +124,4 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
 //   cy.wrap(subject).setCursor(query);
 // });
 
-// Helper functions
-function getTextNode(el, match) {
-  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-  if (!match) {
-    return walk.nextNode();
-  }
-
-  const nodes = [];
-  let node;
-  while ((node = walk.nextNode())) {
-    if (node.wholeText.includes(match)) {
-      return node;
-    }
-  }
-}
-
-function setBaseAndExtent(...args) {
-  const document = args[0].ownerDocument;
-  document.getSelection().removeAllRanges();
-  document.getSelection().setBaseAndExtent(...args);
-}
+export {};

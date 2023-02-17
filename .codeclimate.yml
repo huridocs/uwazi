@@ -27,7 +27,7 @@ plugins:
     enabled: true
     channel: 'eslint-7'
     config:
-      config: .eslintrc
+      config: .eslintrc.js
     checks:
       prettier/prettier:
         enabled: false
