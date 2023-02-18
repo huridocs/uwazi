@@ -7,8 +7,14 @@ import PromisePool from '@supercharge/promise-pool';
 import { elastic } from './elastic';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
+import { inspect } from 'util';
 
 export class IndexError extends Error {}
+
+const preprocessEntitiesToIndex = entitiesToIndex => {
+  // TODO: map newRelationship properties values into the values of the inherited property.
+  return entitiesToIndex;
+};
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
@@ -114,7 +120,8 @@ const indexBatch = async (totalRows, options) => {
     .for(steps)
     .withConcurrency(10)
     .process(async stepBatch => {
-      const entitiesToIndex = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
+      const entitiesToPreprocess = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
+      const entitiesToIndex = await preprocessEntitiesToIndex(entitiesToPreprocess);
       if (entitiesToIndex.length > 0) {
         await bulkIndexAndCallback({
           searchInstance,
