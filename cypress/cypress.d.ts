@@ -1,4 +1,4 @@
-import { mount } from 'cypress/react'
+import { mount } from 'cypress/react';
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -7,15 +7,15 @@ import { mount } from 'cypress/react'
 declare global {
   namespace Cypress {
     interface Chainable {
-      mount: typeof mount
+      mount: typeof mount;
     }
 
     interface Chainable {
-        selection(subject: string, fn: any): Chainable;
-        setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
-        // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-        // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-        // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
-      }
+      selection(subject: string, fn: any): Chainable;
+      setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
+      // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
+      // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
+    }
   }
 }

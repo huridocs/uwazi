@@ -7,7 +7,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts$|tsx/,
+        test: /\.ts$|tsx|.d.ts/,
         exclude: [/node_modules/],
         use: [
           {

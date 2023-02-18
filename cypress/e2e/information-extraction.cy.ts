@@ -1,15 +1,13 @@
-/// <reference types="cypress" />
-import { eq } from 'lodash';
 import { login } from './helpers';
 
-function labelEntityTitle(
+const labelEntityTitle = (
   entityPos: number,
   selectValue: string,
   selector: string = 'span[role="presentation"]'
-) {
+) => {
   cy.get('.view-doc').eq(entityPos).click();
-  const pdfElementToSelect = cy.contains(selector, selectValue);
-  pdfElementToSelect.setSelection(selectValue);
+  //@ts-ignore
+  cy.contains(selector, selectValue).setSelection(selectValue);
   cy.get('button.edit-metadata').click();
   cy.get('button.extraction-button').first().click();
   cy.get('textarea[name="documentViewer.sidepanel.metadata.title"]')
@@ -17,7 +15,7 @@ function labelEntityTitle(
     .should('eq', selectValue);
   cy.get('button[type="submit"]').click();
   cy.get('div.alert-success').click();
-}
+};
 
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
