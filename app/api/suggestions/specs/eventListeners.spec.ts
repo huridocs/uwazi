@@ -20,7 +20,6 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
-const extractedTemplate2Name = 'extracted_template2';
 const otherExtractedTemplateName = 'other_extracted_template';
 
 const adminUser = {
