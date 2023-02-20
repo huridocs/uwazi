@@ -5,12 +5,12 @@ import { print } from './log';
 
 const batchsize = 1000;
 
-const getClientAndDB = async () => {
+const getClientAndDB = async (databaseName?: string) => {
     const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
     const client = new MongoClient(url);
     await client.connect();
   
-    const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
+    const db = client.db(databaseName || process.env.DATABASE_NAME || 'uwazi_development');
   
     return {client, db};
 };
