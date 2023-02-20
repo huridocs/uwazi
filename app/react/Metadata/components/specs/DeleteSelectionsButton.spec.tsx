@@ -101,11 +101,11 @@ describe('Delete selections button', () => {
     expect(renderResult.queryByText('Clear PDF selection')).not.toBeInTheDocument();
   });
 
-  it('should call the delete selection action on click', () => {
+  it('should call the delete selection action on click', async () => {
     jest.spyOn(actions, 'deleteSelection');
     render();
     const button = renderResult.getByText('Clear PDF selection').parentElement!;
-    act(() => {
+    await act(() => {
       fireEvent.click(button);
     });
     expect(actions.deleteSelection).toHaveBeenCalledWith(

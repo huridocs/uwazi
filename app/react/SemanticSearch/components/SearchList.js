@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import SearchItem from './SearchItem';
+import { SearchItem } from './SearchItem';
 
-const SearchList = ({ searches }) => (
+const SearchListComponent = ({ searches }) => (
   <div className="semantic-search-list">
     {searches.map(search => (
       <SearchItem search={search} key={search._id} />
@@ -12,11 +12,11 @@ const SearchList = ({ searches }) => (
   </div>
 );
 
-SearchList.defaultProps = {
+SearchListComponent.defaultProps = {
   searches: [],
 };
 
-SearchList.propTypes = {
+SearchListComponent.propTypes = {
   searches: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string,
@@ -27,5 +27,5 @@ SearchList.propTypes = {
   ),
 };
 
-export { SearchList };
-export default connect()(SearchList);
+export { SearchListComponent };
+export default connect()(SearchListComponent);

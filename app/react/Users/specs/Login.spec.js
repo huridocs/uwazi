@@ -1,23 +1,22 @@
 /**
  * @jest-environment jsdom
  */
-
 import React from 'react';
 import { shallow } from 'enzyme';
-import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 
-import { Login } from '../Login.js';
+import { LoginComponent } from '../Login.js';
 
 describe('Login', () => {
   let component;
   let instance;
   let props;
   let formDispatch;
+  const { location } = window;
 
   const render = () => {
     const context = { store: { getState: () => ({}) } };
-    component = shallow(<Login {...props} />, { context });
+    component = shallow(<LoginComponent {...props} />, { context });
     instance = component.instance();
     instance.attachDispatch(formDispatch);
   };
@@ -25,6 +24,11 @@ describe('Login', () => {
   const expectState = (state, expected) => {
     expect(state).toEqual(expect.objectContaining(expected));
   };
+
+  beforeAll(() => {
+    delete window.location;
+    window.location = { ...location, assign: jest.fn() };
+  });
 
   beforeEach(() => {
     formDispatch = jasmine.createSpy('formDispatch');
@@ -36,10 +40,14 @@ describe('Login', () => {
       notify: jasmine.createSpy('notify'),
       reloadThesauris: jasmine.createSpy('reloadThesauris'),
       change: jasmine.createSpy('change'),
-      routes: [],
+      matches: [],
     };
     spyOn(formActions, 'reset').and.callFake(formName => formName);
     render();
+  });
+
+  afterAll(() => {
+    window.location = location;
   });
 
   describe('on instance', () => {
@@ -49,6 +57,7 @@ describe('Login', () => {
         error2fa: false,
         recoverPassword: false,
         tokenRequired: false,
+        render: true,
       });
     });
 
@@ -85,7 +94,6 @@ describe('Login', () => {
 
     describe('on response success', () => {
       it('should reload thesauris, set filters to include "restricted", and go to home', async () => {
-        spyOn(browserHistory, 'push');
         expect(props.reloadThesauris).not.toHaveBeenCalled();
         expect(props.change).not.toHaveBeenCalled();
         await instance.submit('credentials');
@@ -95,7 +103,7 @@ describe('Login', () => {
           'published',
           'restricted',
         ]);
-        expect(browserHistory.push).toHaveBeenCalledWith('/');
+        expect(window.location.assign).toHaveBeenCalledWith('/');
       });
 
       describe('when the instance is private', () => {

@@ -24,6 +24,7 @@ describe('DocumentTypesList', () => {
       ],
     },
   ];
+
   beforeEach(() => {
     filters = [
       { id: 1, name: 'Judge' },
@@ -58,7 +59,8 @@ describe('DocumentTypesList', () => {
       storeKey: 'library',
       templates: Immutable.fromJS(allTemplates),
       selectedTemplates: [2, 5],
-      location: { query: {} },
+      location: { search: '?q=(searchTerm:%27asd%27)' },
+      navigate: jest.fn(),
     };
   });
 
@@ -114,7 +116,11 @@ describe('DocumentTypesList', () => {
       render();
       const liElements = component.find('li');
       liElements.at(0).find('input').simulate('change');
-      expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 1]);
+      expect(props.filterDocumentTypes).toHaveBeenCalledWith(
+        [2, 5, 1],
+        props.location,
+        props.navigate
+      );
     });
 
     describe('when is a group', () => {
@@ -126,14 +132,18 @@ describe('DocumentTypesList', () => {
           .find('input')
           .first()
           .simulate('change', { target: { checked: true } });
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2, 5, 4]);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith(
+          [2, 5, 4],
+          props.location,
+          props.navigate
+        );
 
         liElements
           .at(2)
           .find('input')
           .first()
           .simulate('change', { target: { checked: false } });
-        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2]);
+        expect(props.filterDocumentTypes).toHaveBeenCalledWith([2], props.location, props.navigate);
       });
     });
   });

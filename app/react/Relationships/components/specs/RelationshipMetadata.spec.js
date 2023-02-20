@@ -13,7 +13,6 @@ describe('RelationshipMetadata', () => {
   let component;
   let props;
   let instance;
-  let confirm;
   let storeState;
 
   const testingEntity = {
@@ -65,11 +64,10 @@ describe('RelationshipMetadata', () => {
       setAddToData: jasmine.createSpy('setAddToData'),
       resetForm: jasmine.createSpy('resetForm'),
       reloadRelationships: jasmine.createSpy('reloadRelationships'),
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
 
-    confirm = jasmine.createSpy('confirm');
-    const context = { confirm };
-    component = shallow(<RelationshipMetadata {...mappedProps} {...props} />, { context });
+    component = shallow(<RelationshipMetadata {...mappedProps} {...props} />);
 
     instance = component.instance();
     spyOn(actions, 'addEntity');
@@ -141,7 +139,7 @@ describe('RelationshipMetadata', () => {
       renderComponent();
       spyOn(routeUtils, 'requestState').and.callFake(async () => Promise.resolve([{}, {}]));
       instance.deleteDocument();
-      await confirm.calls.allArgs()[0][0].accept();
+      await props.mainContext.confirm.calls.allArgs()[0][0].accept();
       expect(entitiesAPI.delete).toHaveBeenCalledWith({
         data: { sharedId: 'ab146' },
         headers: {},

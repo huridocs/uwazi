@@ -1,147 +1,451 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Paginator should render a previous button and next button based on the current page and total pages 1`] = `
-<div
-  className="paginator"
+<Provider
+  store={
+    Object {
+      "clearActions": [Function],
+      "dispatch": [Function],
+      "getActions": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+    }
+  }
 >
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 4,
-      }
-    }
+  <PaginatorWithPage
+    baseUrl="url"
+    totalPages={25}
   >
-    <Connect(Translate)>
-      Previous
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-  <span>
-     5 / 25 
-  </span>
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 6,
-      }
-    }
-  >
-    <Connect(Translate)>
-      Next
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-</div>
+    <Paginator
+      baseUrl="url"
+      onPageChange={[Function]}
+      page={5}
+      totalPages={25}
+    >
+      <div
+        className="paginator"
+      >
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 4,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=4"
+          >
+            <a
+              className="btn"
+              href="undefined?page=4"
+              onClick={[Function]}
+              to="undefined?page=4"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Previous"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Previous
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+        <span>
+           5 / 25 
+        </span>
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 6,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=6"
+          >
+            <a
+              className="btn"
+              href="undefined?page=6"
+              onClick={[Function]}
+              to="undefined?page=6"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Next"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Next
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+      </div>
+    </Paginator>
+  </PaginatorWithPage>
+</Provider>
 `;
 
 exports[`Paginator when base Url already has the query string "?" should add the page number properly to the query string 1`] = `
-<div
-  className="paginator"
+<Provider
+  store={
+    Object {
+      "clearActions": [Function],
+      "dispatch": [Function],
+      "getActions": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+    }
+  }
 >
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 2,
-      }
-    }
+  <PaginatorWithPage
+    baseUrl="url?param=value"
+    totalPages={25}
   >
-    <Connect(Translate)>
-      Previous
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-  <span>
-     3 / 25 
-  </span>
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 4,
-      }
-    }
-  >
-    <Connect(Translate)>
-      Next
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-</div>
+    <Paginator
+      baseUrl="url?param=value"
+      onPageChange={[Function]}
+      page={3}
+      totalPages={25}
+    >
+      <div
+        className="paginator"
+      >
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 2,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=2"
+          >
+            <a
+              className="btn"
+              href="undefined?page=2"
+              onClick={[Function]}
+              to="undefined?page=2"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Previous"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Previous
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+        <span>
+           3 / 25 
+        </span>
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 4,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=4"
+          >
+            <a
+              className="btn"
+              href="undefined?page=4"
+              onClick={[Function]}
+              to="undefined?page=4"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Next"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Next
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+      </div>
+    </Paginator>
+  </PaginatorWithPage>
+</Provider>
 `;
 
 exports[`Paginator when on first page should disable the prev link 1`] = `
-<div
-  className="paginator"
+<Provider
+  store={
+    Object {
+      "clearActions": [Function],
+      "dispatch": [Function],
+      "getActions": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+    }
+  }
 >
-  <withRouter(CurrentLocationLink)
-    className="btn disabled"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 1,
-      }
-    }
-    rel="nofollow"
+  <PaginatorWithPage
+    baseUrl="url"
+    totalPages={25}
   >
-    <Connect(Translate)>
-      Previous
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-  <span>
-     1 / 25 
-  </span>
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 2,
-      }
-    }
-  >
-    <Connect(Translate)>
-      Next
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-</div>
+    <Paginator
+      baseUrl="url"
+      onPageChange={[Function]}
+      page={1}
+      totalPages={25}
+    >
+      <div
+        className="paginator"
+      >
+        <CurrentLocationLink
+          className="btn disabled"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 1,
+            }
+          }
+          rel="nofollow"
+        >
+          <Link
+            className="btn disabled"
+            onClick={[Function]}
+            rel="nofollow"
+            to="undefined?page=1"
+          >
+            <a
+              className="btn disabled"
+              href="undefined?page=1"
+              onClick={[Function]}
+              rel="nofollow"
+              to="undefined?page=1"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Previous"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Previous
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+        <span>
+           1 / 25 
+        </span>
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 2,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=2"
+          >
+            <a
+              className="btn"
+              href="undefined?page=2"
+              onClick={[Function]}
+              to="undefined?page=2"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Next"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Next
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+      </div>
+    </Paginator>
+  </PaginatorWithPage>
+</Provider>
 `;
 
 exports[`Paginator when on last page should disable the next link 1`] = `
-<div
-  className="paginator"
+<Provider
+  store={
+    Object {
+      "clearActions": [Function],
+      "dispatch": [Function],
+      "getActions": [Function],
+      "getState": [Function],
+      "replaceReducer": [Function],
+      "subscribe": [Function],
+    }
+  }
 >
-  <withRouter(CurrentLocationLink)
-    className="btn"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 24,
-      }
-    }
+  <PaginatorWithPage
+    baseUrl="url"
+    totalPages={25}
   >
-    <Connect(Translate)>
-      Previous
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-  <span>
-     25 / 25 
-  </span>
-  <withRouter(CurrentLocationLink)
-    className="btn disabled"
-    onClick={[Function]}
-    queryParams={
-      Object {
-        "page": 25,
-      }
-    }
-    rel="nofollow"
-  >
-    <Connect(Translate)>
-      Next
-    </Connect(Translate)>
-  </withRouter(CurrentLocationLink)>
-</div>
+    <Paginator
+      baseUrl="url"
+      onPageChange={[Function]}
+      page={25}
+      totalPages={25}
+    >
+      <div
+        className="paginator"
+      >
+        <CurrentLocationLink
+          className="btn"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 24,
+            }
+          }
+        >
+          <Link
+            className="btn"
+            onClick={[Function]}
+            to="undefined?page=24"
+          >
+            <a
+              className="btn"
+              href="undefined?page=24"
+              onClick={[Function]}
+              to="undefined?page=24"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Previous"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Previous
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+        <span>
+           25 / 25 
+        </span>
+        <CurrentLocationLink
+          className="btn disabled"
+          onClick={[Function]}
+          queryParams={
+            Object {
+              "page": 25,
+            }
+          }
+          rel="nofollow"
+        >
+          <Link
+            className="btn disabled"
+            onClick={[Function]}
+            rel="nofollow"
+            to="undefined?page=25"
+          >
+            <a
+              className="btn disabled"
+              href="undefined?page=25"
+              onClick={[Function]}
+              rel="nofollow"
+              to="undefined?page=25"
+            >
+              <Connect(Translate)>
+                <Translate
+                  context="System"
+                  edit={[Function]}
+                  i18nmode={true}
+                  translationKey="Next"
+                >
+                  <span
+                    className="translation active"
+                    onClick={[Function]}
+                  >
+                    Next
+                  </span>
+                </Translate>
+              </Connect(Translate)>
+            </a>
+          </Link>
+        </CurrentLocationLink>
+      </div>
+    </Paginator>
+  </PaginatorWithPage>
+</Provider>
 `;

@@ -23,6 +23,7 @@ import {
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
 import * as templateActions from '../../actions/templateActions';
+import { BrowserRouter } from 'react-router-dom';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(
@@ -100,9 +101,11 @@ describe('MetadataTemplate', () => {
     );
 
     TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <ComponentToRender ref={ref => (result = ref)} {...props} index={1} />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={store}>
+          <ComponentToRender ref={ref => (result = ref)} {...props} index={1} />
+        </Provider>
+      </BrowserRouter>
     );
     return result;
   }
@@ -121,6 +124,7 @@ describe('MetadataTemplate', () => {
       defaultColor: '#112233',
       entityViewPage: 'aPageSharedId',
       environment: 'template',
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
     spyOn(pagesApi, 'get').and.callFake(async () => Promise.resolve({}));
   });
@@ -230,9 +234,6 @@ describe('MetadataTemplate', () => {
       };
 
       async function submitTemplate(templateToSubmit, entityCount = 100) {
-        context = {
-          confirm: jasmine.createSpy('confirm'),
-        };
         spyOn(entitiesApi, 'countByTemplate').and.returnValue(entityCount);
         const component = shallow(<MetadataTemplate {...props} />, { context });
         await component.instance().onSubmit(templateToSubmit);
@@ -244,7 +245,7 @@ describe('MetadataTemplate', () => {
             .spyOn(templateActions, 'saveTemplate')
             .mockRejectedValueOnce({ status: 409 });
           await submitTemplate(templateWithId);
-          context.confirm.calls.mostRecent().args[0].accept();
+          props.mainContext.confirm.calls.mostRecent().args[0].accept();
           expect(props.saveTemplate).toHaveBeenCalledWith({
             ...templateWithId,
             reindex: true,
@@ -254,7 +255,7 @@ describe('MetadataTemplate', () => {
         describe('when there is a quite amount of entities from the template', () => {
           it('should alert the user of the large amount of entities', async () => {
             await submitTemplate(templateWithId, 50000);
-            context.confirm.calls.mostRecent().args[0].accept();
+            props.mainContext.confirm.calls.mostRecent().args[0].accept();
             expect(props.saveTemplate).toHaveBeenCalledWith({
               _id: templateWithId._id,
               commonProperties: templateWithId.commonProperties,

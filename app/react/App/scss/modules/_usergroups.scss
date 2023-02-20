@@ -5,24 +5,28 @@
 .userManagementTabs {
   position: relative;
   margin-top: 15px;
-  .nav {
+
+  .react-tabs__tab-list {
     display: flex;
     list-style: none;
     border-bottom: 1px solid $c-grey-light;
     height: 28px;
+    padding-left: 0px;
   }
-  .tab-link {
+  .react-tabs__tab {
     display: inline-block;
     padding: 5px 12px 0;
     font-size: $f-size;
     cursor: pointer;
     border-bottom: 1px;
     color: black;
+    height: 28px;
+
     &:hover {
       color: $c-black;
       border-bottom: 1px dotted $c-black;
     }
-    &.tab-link-active {
+    &.react-tabs__tab--selected {
       color: $c-primary;
       border-top-left-radius: 0.25rem;
       border-top-right-radius: 0.25rem;
@@ -34,7 +38,7 @@
       outline: none;
     }
   }
-  .tab-content {
+  .react-tabs__tab-panel {
     margin-top: 15px;
   }
 }

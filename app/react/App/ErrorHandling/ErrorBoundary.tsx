@@ -1,10 +1,10 @@
-import React, { ErrorInfo, ReactElement } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 
 interface ErrorBoundaryProps {
   error?: Error;
   errorInfo?: ErrorInfo;
-  children?: ReactElement | Element | string;
+  children?: ReactNode;
 }
 
 const defaultProps = {

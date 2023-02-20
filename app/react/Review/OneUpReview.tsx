@@ -1,8 +1,13 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { actions as formActions } from 'react-redux-form';
+import { withContext } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { Loader } from 'app/components/Elements/Loader';
 import * as uiActions from 'app/Entities/actions/uiActions';
 import { OneUpState } from 'app/istore';
+import { store } from 'app/store';
 import { setDocuments, unsetDocuments } from 'app/Library/actions/libraryActions';
 import { processQuery } from 'app/Library/helpers/requestState';
 import { wrapDispatch } from 'app/Multireducer';
@@ -15,9 +20,6 @@ import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { setReferences } from 'app/Viewer/actions/referencesActions';
-import React from 'react';
-import { connect } from 'react-redux';
-import { actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IImmutable } from 'shared/types/Immutable';
@@ -28,6 +30,7 @@ export type OneUpReviewProps = {
   entity?: IImmutable<EntitySchema>;
   oneUpState?: IImmutable<OneUpState>;
   location?: { query: { q?: string } };
+  mainContext: { confirm: Function };
 };
 
 function buildInitialOneUpState(
@@ -135,15 +138,15 @@ export class OneUpReviewBase extends RouteHandler {
   }
 
   componentDidMount() {
-    this.context.store.dispatch(uiActions.showTab('info'));
+    store?.dispatch(uiActions.showTab('info'));
   }
 
   emptyState() {
-    wrapDispatch(this.context.store.dispatch, 'library')(unsetDocuments());
-    this.context.store.dispatch(setReferences([]));
-    this.context.store.dispatch(actions.unset('entityView/entity'));
-    this.context.store.dispatch(formActions.reset('entityView.entityForm'));
-    this.context.store.dispatch(relationships.emptyState());
+    wrapDispatch(store?.dispatch, 'library')(unsetDocuments());
+    store?.dispatch(setReferences([]));
+    store?.dispatch(actions.unset('entityView/entity'));
+    store?.dispatch(formActions.reset('entityView.entityForm'));
+    store?.dispatch(relationships.emptyState());
     actions.set('oneUpReview.state', {});
   }
 
@@ -156,7 +159,7 @@ export class OneUpReviewBase extends RouteHandler {
     ) {
       return <Loader />;
     }
-    return <OneUpEntityViewer />;
+    return <OneUpEntityViewer mainContext={this.props.mainContext} />;
   }
 }
 
@@ -175,4 +178,4 @@ export default connect(
       entity: state.entityView.entity,
       oneUpState: state.oneUpReview.state,
     } as OneUpReviewProps)
-)(OneUpReviewBase);
+)(withContext(OneUpReviewBase));

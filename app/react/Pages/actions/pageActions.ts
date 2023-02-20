@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router';
 import { Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 
@@ -31,12 +30,12 @@ export function updateValue(model: string, value: any) {
   };
 }
 
-export function savePage(data: PageType) {
+export function savePage(data: PageType, navigate: Function) {
   return (dispatch: Dispatch<{}>) => {
     dispatch({ type: types.SAVING_PAGE });
     return api
       .save(new RequestParams(data))
-      .then((response: PageType & { _rev: any }) => {
+      .then(async (response: PageType & { _rev: any }) => {
         dispatch(
           notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
         );
@@ -48,7 +47,7 @@ export function savePage(data: PageType) {
           })
         );
         dispatch({ type: types.PAGE_SAVED, data: response });
-        browserHistory.push(`/settings/pages/edit/${response.sharedId}`);
+        navigate(`/settings/pages/edit/${response.sharedId}`);
       })
       .catch(() => {
         dispatch({ type: types.PAGE_SAVED, data: {} });

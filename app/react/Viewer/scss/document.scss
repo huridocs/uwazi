@@ -186,6 +186,7 @@
 .page .textLayer {
   opacity: 1;
   mix-blend-mode: darken;
+  z-index: 0;
 }
 .page .textLayer ::selection {
   background: #acd8ff;

@@ -20,7 +20,6 @@ import { IImmutable } from 'shared/types/Immutable';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { TemplateSchema } from 'shared/types/templateType';
-import { getSuggestionState } from 'shared/getIXSuggestionState';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import {
   getStats,
@@ -218,31 +217,11 @@ const EntitySuggestionsComponent = ({
       .catch(() => {});
   };
 
-  const getWrappedSuggestionState = (
-    acceptedSuggestion: any,
-    newCurrentValue: string | number | null
-  ) => {
-    return getSuggestionState(
-      { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
-      reviewedProperty.type
-    );
-  };
-
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
-      let { labeledValue } = acceptedSuggestion;
-      if (!labeledValue && acceptedSuggestion.selectionRectangles?.length) {
-        labeledValue = acceptedSuggestion.suggestedValue;
-      }
-      selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue },
-        acceptedSuggestion.suggestedValue as string
-      );
-      selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
-      selectedFlatRows[0].setState({});
+      await retrieveSuggestions();
     }
 
     setAcceptingSuggestion(false);
@@ -258,33 +237,12 @@ const EntitySuggestionsComponent = ({
     }
   };
 
-  const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
+  const handlePDFSidePanelSave = async (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const propertyName = reviewedProperty.name;
     const changedPropertyValue = (entity[propertyName] ||
       entity.metadata?.[propertyName]) as string;
-
-    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
-      ? changedPropertyValue[0].value || '-'
-      : changedPropertyValue;
-    selectedFlatRows[0].setState({});
-    selectedFlatRows[0].toggleRowSelected();
-    const acceptedSuggestion = selectedFlatRows[0].original;
-
-    // @ts-ignore
-    const selection = entity.__extractedMetadata?.selections[0];
-    if (selection && selection.selection && selection.selection.text !== '') {
-      // There was a label
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
-        changedPropertyValue
-      );
-    } else {
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: '' },
-        changedPropertyValue
-      );
-    }
+    await retrieveSuggestions();
 
     selectedFlatRows[0].setState({});
     updateError(changedPropertyValue);
@@ -337,6 +295,12 @@ const EntitySuggestionsComponent = ({
   const onTemplateSelectionChange = (values: string[]) => {
     setTemplateSelection(values);
     retrieveSuggestions(pageIndex + 1, sueggestionStateSelection, values);
+  };
+
+  const resetStateAndTemplateSelections = () => {
+    setTemplateSelection([]);
+    setSuggestionStateSelection([]);
+    retrieveSuggestions(pageIndex + 1, [], []);
   };
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
@@ -399,7 +363,9 @@ const EntitySuggestionsComponent = ({
       <div className="panel entity-suggestions">
         <FiltersSidePanel
           open={filtersOpen}
-          reset={() => {}}
+          reset={() => {
+            resetStateAndTemplateSelections();
+          }}
           hideFilters={() => {
             setFiltersOpen(false);
           }}
@@ -430,22 +396,40 @@ const EntitySuggestionsComponent = ({
         </div>
         <div className="panel-subheading">
           <div className="property-info-container">
-            <div>
+            <div className="property-info-heading">
               <span className="suggestion-header">
                 <Translate>Reviewing</Translate>:&nbsp;
               </span>
               <span className="suggestion-property">
                 <Translate>{reviewedProperty.label}</Translate>
               </span>
+              <span className="suggestion-for-label">
+                &nbsp; <Translate>for</Translate> &nbsp;
+              </span>
+              <span className="suggestion-templates">
+                {aggregations.template.map(({ _id }) => (
+                  <span color="segment-pdf" key={_id}>
+                    {templateNamesById[_id]}
+                  </span>
+                ))}
+              </span>
             </div>
-            <div>
+            <div className="property-info-buttons">
               <button
                 type="button"
                 title={status.key !== 'ready' ? 'Cancel' : 'Train'}
-                className={`btn service-request-button ${status.key}`}
+                className={`btn service-request-button find-suggestions ${status.key}`}
                 onClick={onFindSuggestionButtonClicked}
               >
                 <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+              <button
+                type="button"
+                className="btn suggestion-filters"
+                onClick={() => setFiltersOpen(true)}
+              >
+                <Icon icon="filter" />
+                <Translate>Show Filters</Translate>
               </button>
             </div>
             <div>

@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
@@ -16,6 +15,8 @@ describe('filterActions', () => {
   const templates = ['templates'];
   const thesauris = ['thesauris'];
   const documentTypes = ['a', 'b'];
+  const navigate = jest.fn();
+  const location = { search: '?q=(searchTerm:%27asd%27)' };
   let libraryFilters;
   let dispatch;
   let getState;
@@ -73,7 +74,7 @@ describe('filterActions', () => {
       ]);
 
       spyOn(libraryActions, 'searchDocuments');
-      actions.filterDocumentTypes(['a'], 'library')(dispatch, getState);
+      actions.filterDocumentTypes(['a'], location, navigate)(dispatch, getState);
 
       expect(prioritySortingCriteria.get).toHaveBeenCalledWith({
         currentCriteria: { sort: 'metadata.date', order: 'desc' },
@@ -92,8 +93,7 @@ describe('filterActions', () => {
 
   describe('resetFilters', () => {
     it('should deactivate all the properties, documentTypes and searchTerm', () => {
-      spyOn(browserHistory, 'push');
-      actions.resetFilters('library')(dispatch, getState);
+      actions.resetFilters(navigate, location)(dispatch, getState);
       expect(dispatch).toHaveBeenCalledWith({
         type: types.SET_LIBRARY_FILTERS,
         libraryFilters: [],
@@ -111,11 +111,11 @@ describe('filterActions', () => {
 
     it('should perform a search with the filters reset', () => {
       const searchDocumentsCallback = jasmine.createSpy('searchDocumentsCallback');
-      const storeKey = 'library';
-      spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
-      actions.resetFilters(storeKey)(dispatch, getState);
 
-      expect(libraryActions.searchDocuments).toHaveBeenCalledWith({ search }, storeKey);
+      spyOn(libraryActions, 'searchDocuments').and.returnValue(searchDocumentsCallback);
+      actions.resetFilters(navigate, location)(dispatch, getState);
+
+      expect(libraryActions.searchDocuments).toHaveBeenCalledWith({ location, navigate });
       expect(searchDocumentsCallback).toHaveBeenCalledWith(dispatch, getState);
     });
   });

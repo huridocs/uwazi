@@ -18,12 +18,11 @@ const getAllEntitiesTitles = async (number: number) => {
   );
 };
 
-const getSearchFilters = async () => {
-  return page.$$eval(
+const getSearchFilters = async () =>
+  page.$$eval(
     '#filtersForm > div:nth-child(5) > ul > li.wide > ul > li.multiselectItem',
     filterElems => filterElems.map(filter => filter?.getAttribute('title'))
   );
-};
 
 const waitForEvent = async (eventName: string, seconds: number = 2) =>
   Promise.race([
@@ -188,7 +187,10 @@ describe('search filters path', () => {
   });
 
   describe('default filters', () => {
+    // eslint-disable-next-line max-statements
     it('should define Fecha and País as default filters', async () => {
+      await page.goto(host);
+      await disableTransitions();
       await expect(page).toClick('a', { text: 'Settings' });
       await expect(page).toClick('a', { text: 'Templates' });
       await expect(page).toClick('a', { text: 'Informe de admisibilidad' });

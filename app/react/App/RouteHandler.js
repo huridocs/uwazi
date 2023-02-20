@@ -7,7 +7,6 @@ import { RequestParams } from 'app/utils/RequestParams';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import JSONUtils from 'shared/JSONUtils';
 
 const getLocale = ({ store }) => store.getState().locale;
 
@@ -26,8 +25,6 @@ class RouteHandler extends Component {
 
   emptyState() {} //eslint-disable-line
 
-  static renderTools() {}
-
   //eslint-disable-next-line
   isRenderedFromServer() {
     const result = RouteHandler.renderedFromServer;
@@ -38,7 +35,7 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
     setLocale(getLocale(context));
-    if (!this.isRenderedFromServer() && isClient) {
+    if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
       this.getClientState(this.props);
     }
   }
@@ -52,15 +49,16 @@ class RouteHandler extends Component {
 
   async getClientState(props) {
     let query;
+    const { lang, ...routeParams } = props.params;
     if (props.location) {
-      query = JSONUtils.parseNested(props.location.query);
+      const params = new URLSearchParams(props.location.search);
+      query = Object.fromEntries(params.entries());
     }
 
     const { store = { getState: () => {} } } = this.context;
 
     const headers = {};
-    const { lang, ...params } = props.params;
-    const requestParams = new RequestParams({ ...query, ...params }, headers);
+    const requestParams = new RequestParams({ ...query, ...routeParams }, headers);
     const actions = await this.constructor.requestState(requestParams, store.getState());
 
     actions.forEach(action => {
@@ -69,8 +67,8 @@ class RouteHandler extends Component {
   }
 
   urlHasChanged(prevProps) {
-    const { params: nextParams = {}, routes: nextRoutes = [] } = prevProps;
-    const { params, routes } = this.props;
+    const { params: nextParams = {}, matches: nextRoutes = [] } = prevProps;
+    const { params, matches: routes } = this.props;
 
     const sameParams = Object.keys(nextParams).reduce(
       (memo, key) => memo && prevProps.params[key] === params[key],
@@ -105,6 +103,7 @@ RouteHandler.propTypes = {
   params: PropTypes.object,
   routes: PropTypes.array,
   location: PropTypes.object,
+  matches: PropTypes.array,
 };
 
 export default RouteHandler;

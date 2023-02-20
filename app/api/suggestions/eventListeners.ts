@@ -14,6 +14,7 @@ import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent'
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
+import { ensure } from 'shared/tsUtils';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { IXExtractorType } from 'shared/types/extractorType';

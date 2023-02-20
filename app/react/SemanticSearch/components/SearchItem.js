@@ -5,27 +5,17 @@ import { bindActionCreators } from 'redux';
 
 import { I18NLink } from 'app/I18N';
 import SearchDescription from 'app/Library/components/SearchDescription';
+import { withContext } from 'app/componentWrappers';
 import { Icon, ProgressBar } from 'UI';
 
 import { deleteSearch, resumeSearch, stopSearch } from '../actions/actions';
 
-export class SearchItem extends Component {
+class SearchItemComponent extends Component {
   constructor(props) {
     super(props);
     this.delete = this.delete.bind(this);
     this.handleResumeClicked = this.handleResumeClicked.bind(this);
     this.handleStopClicked = this.handleStopClicked.bind(this);
-  }
-
-  delete(e) {
-    const { confirm } = this.context;
-    const { onDeleteClicked, search } = this.props;
-    e.preventDefault();
-    confirm({
-      accept: onDeleteClicked.bind(this, search._id),
-      title: 'Confirm delete',
-      message: 'Are you sure you want to delete this search?',
-    });
   }
 
   handleStopClicked(e) {
@@ -38,6 +28,16 @@ export class SearchItem extends Component {
     const { search, onResumeClicked } = this.props;
     onResumeClicked(search._id);
     e.preventDefault();
+  }
+
+  delete(e) {
+    const { onDeleteClicked, search } = this.props;
+    e.preventDefault();
+    this.props.mainContext.confirm({
+      accept: onDeleteClicked.bind(this, search._id),
+      title: 'Confirm delete',
+      message: 'Are you sure you want to delete this search?',
+    });
   }
 
   renderButtons() {
@@ -89,11 +89,7 @@ export class SearchItem extends Component {
   }
 }
 
-SearchItem.contextTypes = {
-  confirm: PropTypes.func,
-};
-
-SearchItem.propTypes = {
+SearchItemComponent.propTypes = {
   search: PropTypes.shape({
     _id: PropTypes.string,
     searchTerm: PropTypes.string,
@@ -104,9 +100,12 @@ SearchItem.propTypes = {
   onDeleteClicked: PropTypes.func.isRequired,
   onStopClicked: PropTypes.func.isRequired,
   onResumeClicked: PropTypes.func.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
-export function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       onDeleteClicked: deleteSearch,
@@ -117,4 +116,5 @@ export function mapDispatchToProps(dispatch) {
   );
 }
 
-export default connect(null, mapDispatchToProps)(SearchItem);
+const SearchItem = connect(null, mapDispatchToProps)(withContext(SearchItemComponent));
+export { SearchItemComponent, mapDispatchToProps, SearchItem };

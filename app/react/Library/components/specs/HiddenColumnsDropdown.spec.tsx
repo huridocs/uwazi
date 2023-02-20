@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import Immutable from 'immutable';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import * as actions from 'app/Library/actions/libraryActions';
@@ -61,8 +61,11 @@ describe('HiddenColumnsDropdown', () => {
         render();
       });
 
-      it('should display only expected options', () => {
-        fireEvent.click(screen.getByTitle('open dropdown'));
+      it('should display only expected options', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTitle('open dropdown'));
+        });
+
         const options = screen.getAllByRole('option');
         expect(options.map(option => option.textContent)).toEqual([
           'Show all',
@@ -72,21 +75,39 @@ describe('HiddenColumnsDropdown', () => {
       });
 
       it('should call action to hide all properties when selected is Show all and indeterminate', async () => {
-        fireEvent.click(screen.getByTitle('open dropdown'));
+        await act(() => {
+          fireEvent.click(screen.getByTitle('open dropdown'));
+        });
+
         const options = screen.getAllByRole('option');
         expect(options[0].textContent).toEqual('Show all');
-        options[0].click();
+
+        await act(() => {
+          options[0].click();
+        });
+
         expect(actions.setTableViewAllColumnsHidden).toHaveBeenCalledWith(false);
       });
 
-      it('should call action update hidden property when a column is selected', () => {
-        fireEvent.click(screen.getByTitle('open dropdown'));
+      it('should call action update hidden property when a column is selected', async () => {
+        await act(() => {
+          fireEvent.click(screen.getByTitle('open dropdown'));
+        });
+
         const options = screen.getAllByRole('option');
         expect(options[1].textContent).toEqual('Text');
-        options[1].click();
+
+        await act(() => {
+          options[1].click();
+        });
+
         expect(actions.setTableViewColumnHidden).toHaveBeenCalledWith('text', true);
         expect(options[2].textContent).toEqual('Rich text');
-        options[2].click();
+
+        await act(() => {
+          options[2].click();
+        });
+
         expect(actions.setTableViewColumnHidden).toHaveBeenCalledWith('rich_text', false);
       });
     });

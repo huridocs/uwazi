@@ -129,10 +129,6 @@ class MetadataFormButtons extends Component {
   }
 }
 
-MetadataFormButtons.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 MetadataFormButtons.defaultProps = {
   entityBeingEdited: false,
   includeViewButton: true,

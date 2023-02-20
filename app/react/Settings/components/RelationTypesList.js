@@ -1,7 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter, withContext } from 'app/componentWrappers';
 import { I18NLink, t, Translate } from 'app/I18N';
 import {
   deleteRelationType,
@@ -14,7 +15,7 @@ import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { SettingsHeader } from './SettingsHeader';
 
-class RelationTypesList extends RouteHandler {
+class RelationTypesListComponent extends RouteHandler {
   static async requestState(requestParams) {
     const relationTypes = await relationTypesAPI.get(requestParams.onlyHeaders());
     return [actions.set('relationTypes', relationTypes)];
@@ -24,7 +25,7 @@ class RelationTypesList extends RouteHandler {
     return this.props
       .checkRelationTypeCanBeDeleted(relationType)
       .then(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {
             this.props.deleteRelationType(relationType);
           },
@@ -37,7 +38,7 @@ class RelationTypesList extends RouteHandler {
         });
       })
       .catch(() => {
-        this.context.confirm({
+        this.props.mainContext.confirm({
           accept: () => {},
           noCancel: true,
           title: (
@@ -96,15 +97,17 @@ class RelationTypesList extends RouteHandler {
   }
 }
 
-RelationTypesList.propTypes = {
+RelationTypesListComponent.propTypes = {
   relationTypes: PropTypes.object,
   deleteRelationType: PropTypes.func,
   notify: PropTypes.func,
   checkRelationTypeCanBeDeleted: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
 
-RelationTypesList.contextTypes = {
-  confirm: PropTypes.func,
+RelationTypesListComponent.contextTypes = {
   store: PropTypes.object,
 };
 
@@ -118,7 +121,9 @@ function mapDispatchToProps(dispatch) {
     dispatch
   );
 }
+const RelationTypesList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(withContext(RelationTypesListComponent)));
 
-export { RelationTypesList, mapStateToProps };
-
-export default connect(mapStateToProps, mapDispatchToProps)(RelationTypesList);
+export { RelationTypesList, mapStateToProps, RelationTypesListComponent };

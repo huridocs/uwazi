@@ -1,9 +1,11 @@
 import React from 'react';
-import RouteHandler from 'app/App/RouteHandler';
 import { Helmet } from 'react-helmet';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { has } from 'lodash';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
 import Footer from 'app/App/Footer';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { t } from 'app/I18N';
 
 const handledErrors: { [k: string]: RequestError } = {
@@ -30,24 +32,26 @@ const handledErrors: { [k: string]: RequestError } = {
   },
 };
 
-class GeneralError extends RouteHandler {
-  render() {
-    const code: string = handledErrors[this.props.params.errorCode]?.code || '404';
-    const { requestId } = this.props.location.query;
-    const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
-    const error = handledErrors[code];
-    error.requestId = safeRequestId ? safeRequestId[0] : undefined;
-    const errorTitle = t('System', error.title, null, false);
-    return (
-      <div>
-        <Helmet>
-          <title>{errorTitle}</title>
-        </Helmet>
-        <ErrorFallback error={error} />
-        <Footer />
-      </div>
-    );
-  }
-}
+const GeneralError = () => {
+  const { errorCode } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const { requestId } = searchParamsFromSearchParams(searchParams);
+  const { code } =
+    errorCode && has(handledErrors, errorCode) ? handledErrors[errorCode] : handledErrors[404];
+  const safeRequestId = /^[0-9-]{4}$/.exec(requestId);
+  const error = handledErrors[code!];
+  error.requestId = safeRequestId ? safeRequestId[0] : undefined;
+  const errorTitle = t('System', error.title, null, false);
+  return (
+    <div>
+      <Helmet>
+        <title>{errorTitle}</title>
+      </Helmet>
+      <ErrorFallback error={error} />
+      <Footer />
+    </div>
+  );
+};
 
 export default GeneralError;

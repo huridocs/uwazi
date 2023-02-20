@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
+import React, { Component } from 'react';
 import { Tabs, TabLink, TabContent } from 'react-tabs-redux';
-import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import './scss/toc.scss';
 
+import { Icon } from 'UI';
+import { withContext, withRouter } from 'app/componentWrappers';
 import { MetadataFormButtons, ShowMetadata } from 'app/Metadata';
 import { NeedAuthorization } from 'app/Auth';
 import { I18NLink, t, Translate } from 'app/I18N';
@@ -19,19 +19,18 @@ import SidePanel from 'app/Layout/SidePanel';
 import DocumentSemanticSearchResults from 'app/SemanticSearch/components/DocumentResults';
 import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGeneration';
-import { Icon } from 'UI';
-
-import { store } from '../../store';
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
+import { store } from '../../store';
 import SearchText from './SearchText';
 import ShowToc from './ShowToc';
 import SnippetsTab from './SnippetsTab';
 import helpers from '../helpers';
+import './scss/toc.scss';
 
 class DocumentSidePanel extends Component {
   constructor(props) {
@@ -76,13 +75,13 @@ class DocumentSidePanel extends Component {
   }
 
   deleteDocument() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteDocument(this.props.doc.toJS()).then(() => {
-          const currentPath = browserHistory.getCurrentLocation().pathname;
-          const isLibraryorUploads = /library|uploads|^\/$|^\/..\/$/;
-          if (!currentPath.match(isLibraryorUploads)) {
-            browserHistory.goBack();
+          const currentPath = this.props.location.pathname;
+          const isLibrary = /library|^\/$|^\/..\/$/;
+          if (!currentPath.match(isLibrary)) {
+            this.props.navigate(-1);
           }
         });
       },
@@ -103,7 +102,7 @@ class DocumentSidePanel extends Component {
 
   close() {
     if (this.props.formDirty) {
-      this.context.confirm({
+      this.props.mainContext.confirm({
         accept: () => {
           this._close();
         },
@@ -736,10 +735,15 @@ DocumentSidePanel.propTypes = {
   defaultLanguage: PropTypes.string.isRequired,
   templates: PropTypes.instanceOf(Immutable.List).isRequired,
   currentSidepanelView: PropTypes.string.isRequired,
-};
-
-DocumentSidePanel.contextTypes = {
-  confirm: PropTypes.func,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
+    search: PropTypes.string,
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -769,4 +773,4 @@ const mapStateToProps = (state, ownProps) => {
 
 export { DocumentSidePanel, mapStateToProps };
 
-export default connect(mapStateToProps)(DocumentSidePanel);
+export default connect(mapStateToProps)(withContext(withRouter(DocumentSidePanel)));

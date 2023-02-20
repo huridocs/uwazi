@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-focused-tests */
 import entities from 'api/entities';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
@@ -21,7 +20,7 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
-
+const extractedTemplate2Name = 'extracted_template2';
 const otherExtractedTemplateName = 'other_extracted_template';
 
 const adminUser = {
@@ -371,7 +370,6 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     const current = await entities.getById(sharedId, 'en');
     const toSave = { ...current, template: newTemplate };
     await entities.save(toSave, { user: adminUser, language: 'en' });
-
     const allSuggestions =
       (await db.mongodb
         ?.collection('ixsuggestions')

@@ -36,63 +36,72 @@ exports[`Sort dropdown when there is an active search term should display sort b
       >
         <li>
           <a
-            href="library/?q=(order:asc,searchTerm:'my search',sort:title)"
+            aria-current="page"
+            href="/en/library/?q=(order:asc,searchTerm:'my search',sort:title)"
           >
             Title
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:creationDate)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:creationDate)"
           >
             Date added
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:editDate)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:editDate)"
           >
             Date modified
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:_score)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:_score)"
           >
             Search relevance
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.date)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:metadata.date)"
           >
             Date
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.number)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:metadata.number)"
           >
             Number
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:asc,searchTerm:'my search',sort:metadata.my_select)"
+            aria-current="page"
+            href="/en/library/?q=(order:asc,searchTerm:'my search',sort:metadata.my_select)"
           >
             My select
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:asc,searchTerm:'my search',sort:metadata.sortable_name)"
+            aria-current="page"
+            href="/en/library/?q=(order:asc,searchTerm:'my search',sort:metadata.sortable_name)"
           >
             Sortable name
           </a>
         </li>
         <li>
           <a
-            href="library/?q=(order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue)"
+            aria-current="page"
+            href="/en/library/?q=(order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue)"
           >
             Inherited 1
           </a>
@@ -100,8 +109,9 @@ exports[`Sort dropdown when there is an active search term should display sort b
       </ul>
     </div>
     <a
+      aria-current="page"
       disable="true"
-      href="library/?q=(order:asc,searchTerm:'my search',sort:_score)"
+      href="/en/library/?q=(order:asc,searchTerm:'my search',sort:_score)"
     >
       <button
         class="sorting-toggle"

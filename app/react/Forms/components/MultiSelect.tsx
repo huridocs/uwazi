@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this,max-lines */
 
-// eslint-disable-next-line max-classes-per-file
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import ShowIf from 'app/App/ShowIf';
 import { filterOptions } from 'shared/optionsUtils';
 import { t, Translate } from 'app/I18N';
