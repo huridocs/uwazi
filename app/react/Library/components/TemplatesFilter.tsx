@@ -5,10 +5,11 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { Switcher } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
+import { NeedAuthorization } from 'app/Auth';
+import { withRouter } from 'app/componentWrappers';
+import { SettingsFilterSchema } from 'shared/types/settingsType';
 import { filterDocumentTypes } from '../actions/filterActions';
 import DocumentTypesList from './DocumentTypesList';
-import { NeedAuthorization } from 'app/Auth';
-import { SettingsFilterSchema } from 'shared/types/settingsType';
 
 interface TemplatesFilterState {
   documentTypeFromFilters: boolean;
@@ -16,6 +17,10 @@ interface TemplatesFilterState {
   configuredFilters: string[];
 }
 
+interface TemplatesFiltersProps {
+  location: {};
+  navigate: Function;
+}
 const mapStateToProps = (state: IStore) => ({
   collection: state.settings.collection,
   libraryFilters: state.library.filters,
@@ -27,7 +32,7 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type ComponentProps = ConnectedProps<typeof connector>;
+type ComponentProps = ConnectedProps<typeof connector> & TemplatesFiltersProps;
 
 const filterValidSelectedTemplates = (configuredFilters: string[], selectedTemplates: string[]) =>
   configuredFilters.length
@@ -44,10 +49,7 @@ const flattenConfiguredFilters = (configuredFilters: SettingsFilterSchema[]) =>
     return result;
   }, []);
 
-export class TemplatesFilterComponent extends React.Component<
-  ComponentProps,
-  TemplatesFilterState
-> {
+class TemplatesFilterComponent extends React.Component<ComponentProps, TemplatesFilterState> {
   constructor(props: ComponentProps) {
     super(props);
     const configuredFilters: string[] = flattenConfiguredFilters(
@@ -80,7 +82,7 @@ export class TemplatesFilterComponent extends React.Component<
     if (checked) {
       const newSelectedItems = filterValidSelectedTemplates(configuredFilters, selectedTemplates);
       this.setState({ selectedTemplates: newSelectedItems });
-      this.props.filterDocumentTypes(newSelectedItems);
+      this.props.filterDocumentTypes(newSelectedItems, this.props.location, this.props.navigate);
     }
     this.setState({ documentTypeFromFilters: checked });
   }
@@ -124,4 +126,6 @@ export class TemplatesFilterComponent extends React.Component<
   }
 }
 
-export const TemplatesFilter = connector(TemplatesFilterComponent);
+export const ConnectedComponent = connector(TemplatesFilterComponent);
+
+export const TemplatesFilter = connector(withRouter(TemplatesFilterComponent));

@@ -2,16 +2,17 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Immutable from 'immutable';
+import { createSelector } from 'reselect';
+import { withContext } from 'app/componentWrappers';
 import { t, Translate } from 'app/I18N';
 import { deleteEntities } from 'app/Entities/actions/actions';
 import * as metadataActions from 'app/Metadata/actions/actions';
-import { createSelector } from 'reselect';
 import { wrapDispatch } from 'app/Multireducer';
 import { advancedSort } from 'app/utils/advancedSort';
 import { ShareButton } from 'app/Permissions/components/ShareButton';
 import TemplateLabel from 'app/Layout/TemplateLabel';
 import SidePanel from 'app/Layout/SidePanel';
-import Immutable from 'immutable';
 import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import MetadataForm from './MetadataForm';
@@ -44,7 +45,7 @@ class SelectMultiplePanel extends Component {
   }
 
   delete() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.deleteEntities(this.props.entitiesSelected.toJS());
       },
@@ -95,7 +96,7 @@ class SelectMultiplePanel extends Component {
   }
 
   cancel() {
-    this.context.confirm({
+    this.props.mainContext.confirm({
       accept: () => {
         this.props.resetForm(this.props.formKey);
       },
@@ -252,12 +253,10 @@ SelectMultiplePanel.propTypes = {
   formState: PropTypes.instanceOf(Object).isRequired,
   formKey: PropTypes.string.isRequired,
   storeKey: PropTypes.string.isRequired,
+  mainContext: PropTypes.shape({
+    confirm: PropTypes.func,
+  }).isRequired,
 };
-
-SelectMultiplePanel.contextTypes = {
-  confirm: PropTypes.func,
-};
-
 const mapStateToProps = (_state, props) => ({
   template: commonTemplate(props),
   open: props.entitiesSelected.size > 1,
@@ -278,4 +277,4 @@ function mapDispatchToProps(dispatch, props) {
 
 export { SelectMultiplePanel, mapStateToProps };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SelectMultiplePanel);
+export default connect(mapStateToProps, mapDispatchToProps)(withContext(SelectMultiplePanel));

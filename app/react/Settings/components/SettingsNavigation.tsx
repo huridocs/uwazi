@@ -13,46 +13,46 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
         <Translate>Settings</Translate>
       </div>
       <div className="list-group">
-        <I18NLink to="settings/account" activeClassName="active" className="list-group-item">
+        <I18NLink to="settings/account" activeclassname="active" className="list-group-item">
           <Translate>Account</Translate>
         </I18NLink>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/dashboard" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/dashboard" activeclassname="active" className="list-group-item">
             <Translate>Dashboard</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/users" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/users" activeclassname="active" className="list-group-item">
             <Translate>Users</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/collection" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/collection" activeclassname="active" className="list-group-item">
             <Translate>Collection</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/navlinks" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/navlinks" activeclassname="active" className="list-group-item">
             <Translate>Menu</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/pages" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/pages" activeclassname="active" className="list-group-item">
             <Translate>Pages</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/languages" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/languages" activeclassname="active" className="list-group-item">
             <Translate>Languages</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/translations" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/translations" activeclassname="active" className="list-group-item">
             <Translate>Translations</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/filters" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/filters" activeclassname="active" className="list-group-item">
             <Translate>Filters configuration</Translate>
           </I18NLink>
         </NeedAuthorization>
@@ -66,7 +66,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
       </NeedAuthorization>
       <div className="list-group">
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/templates" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/templates" activeclassname="active" className="list-group-item">
             <Translate>Templates</Translate>
           </I18NLink>
         </NeedAuthorization>
@@ -74,7 +74,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           <NeedAuthorization roles={['admin']}>
             <I18NLink
               to="settings/metadata_extraction"
-              activeClassName="active"
+              activeclassname="active"
               className="list-group-item"
             >
               <Translate>Metadata Extraction</Translate>
@@ -82,12 +82,12 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           </NeedAuthorization>
         </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/dictionaries" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/dictionaries" activeclassname="active" className="list-group-item">
             <Translate>Thesauri</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/connections" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/connections" activeclassname="active" className="list-group-item">
             <Translate>Relationship types</Translate>
           </I18NLink>
         </NeedAuthorization>
@@ -99,19 +99,19 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
       <div className="list-group">
         <FeatureToggle feature="preserve.host">
           <NeedAuthorization roles={['admin']}>
-            <I18NLink to="/settings/preserve" activeClassName="active" className="list-group-item">
+            <I18NLink to="/settings/preserve" activeclassname="active" className="list-group-item">
               <Translate>Preserve</Translate>
               <PreserveIcon />
             </I18NLink>
           </NeedAuthorization>
         </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/activitylog" activeClassName="active" className="list-group-item">
+          <I18NLink to="settings/activitylog" activeclassname="active" className="list-group-item">
             <Translate>Activity log</Translate>
           </I18NLink>
           <I18NLink
             to="/settings/customisation"
-            activeClassName="active"
+            activeclassname="active"
             className="list-group-item"
           >
             {allowcustomJS ? (
@@ -122,7 +122,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           </I18NLink>
           <I18NLink
             to="/settings/custom-uploads"
-            activeClassName="active"
+            activeclassname="active"
             className="list-group-item"
           >
             <Translate>Uploads</Translate>

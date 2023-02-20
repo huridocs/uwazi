@@ -2,18 +2,19 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'app/componentWrappers';
 import { t } from 'app/I18N';
 import { actions as formActions, Field, LocalForm } from 'react-redux-form';
 import { searchSnippets } from 'app/Library/actions/libraryActions';
 import { selectSnippet } from 'app/Viewer/actions/uiActions';
-import { browserHistory } from 'react-router';
 import { Icon } from 'UI';
 import ModalTips from 'app/App/ModalTips';
 import { toUrlParams } from 'shared/JSONRequest';
 import { SearchTipsContent } from 'app/App/SearchTipsContent';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import SnippetList from './SnippetList';
 
-export class SearchText extends Component {
+class SearchText extends Component {
   constructor(props) {
     super(props);
     this.submit = this.submit.bind(this);
@@ -51,11 +52,12 @@ export class SearchText extends Component {
   }
 
   submit(value) {
-    const path = browserHistory.getCurrentLocation().pathname;
-    const { query } = browserHistory.getCurrentLocation();
+    const path = this.props.location.pathname;
+
+    const query = searchParamsFromSearchParams(this.props.searchParams);
     query.searchTerm = value.searchTerm;
 
-    browserHistory.push(path + toUrlParams(query));
+    this.props.navigate(path + toUrlParams(query));
 
     return this.props.searchSnippets(
       value.searchTerm,
@@ -140,6 +142,13 @@ SearchText.propTypes = {
   doc: PropTypes.object,
   searchSnippets: PropTypes.func,
   selectSnippet: PropTypes.func.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
+    search: PropTypes.string,
+  }).isRequired,
+  searchParams: PropTypes.instanceOf(Object).isRequired,
+  navigate: PropTypes.func,
 };
 
 SearchText.defaultProps = {
@@ -161,4 +170,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ searchSnippets, selectSnippet }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchText);
+export { SearchText };
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(SearchText));

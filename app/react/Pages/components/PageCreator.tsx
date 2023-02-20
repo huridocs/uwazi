@@ -1,10 +1,11 @@
-import { Form, Field, Control } from 'react-redux-form';
+import React, { Component } from 'react';
+import { Field, Control } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import React, { Component } from 'react';
 import _ from 'lodash';
 
 import { Icon, ToggleButton } from 'UI';
+import { withRouter } from 'app/componentWrappers';
 import { MarkDown } from 'app/ReactReduxForms';
 import {
   resetPage as resetPageAction,
@@ -16,7 +17,13 @@ import { BackButton } from 'app/Layout';
 import { Translate, I18NLink, t } from 'app/I18N';
 
 import { IStore } from 'app/istore';
+import { Form } from 'app/Forms/Form';
+import { PageType } from 'shared/types/pageType';
 import validator from './ValidatePage';
+
+type PageCreatorOwnProps = {
+  navigate: Function;
+};
 
 const mapStateToProps = ({ page }: IStore) => ({
   page,
@@ -32,16 +39,20 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
-type mappedProps = ConnectedProps<typeof connector>;
+type mappedProps = ConnectedProps<typeof connector> & PageCreatorOwnProps;
 
-class PageCreator extends Component<mappedProps> {
+class PageCreatorComponent extends Component<mappedProps> {
   componentWillUnmount() {
     const { resetPage } = this.props;
     resetPage();
   }
 
+  save = async (formModelData: PageType) => {
+    this.props.savePage(formModelData, this.props.navigate);
+  };
+
   render() {
-    const { formState, page, savePage, updateValue, savingPage } = this.props;
+    const { formState, page, updateValue, savingPage } = this.props;
     const backUrl = '/settings/pages';
     const pageUrl = `/page/${page.data.sharedId}/${_.kebabCase(page.data.title)}`;
 
@@ -56,7 +67,7 @@ class PageCreator extends Component<mappedProps> {
 
     return (
       <div className="page-creator">
-        <Form model="page.data" onSubmit={savePage} validators={validator()}>
+        <Form model="page.data" onSubmit={this.save} validators={validator()}>
           <div className="panel panel-default">
             <div className="metadataTemplate-heading panel-heading">
               <div className={nameGroupClass}>
@@ -193,7 +204,7 @@ class PageCreator extends Component<mappedProps> {
   }
 }
 
-const container = connector(PageCreator);
+const container = connector(withRouter(PageCreatorComponent));
 
 export type { mappedProps };
-export { container as PageCreator };
+export { container as PageCreator, PageCreatorComponent };

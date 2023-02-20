@@ -12,7 +12,7 @@ import {
 import { loadUsers } from 'app/Users/actions/actions';
 import { UserGroupSidePanel } from './UserGroupSidePanel';
 
-export interface UserGroupProps {
+interface UserGroupProps {
   userGroups: IImmutable<ClientUserGroupSchema[]>;
   users: IImmutable<GroupMemberSchema[]>;
   loadUserGroups: () => any;
@@ -105,4 +105,5 @@ const mapDispatchToProps = {
   deleteUserGroup,
 };
 
+export type { UserGroupProps };
 export const UserGroups = connect(mapStateToProps, mapDispatchToProps)(UserGroupsComponent);

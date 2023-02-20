@@ -3,11 +3,17 @@
  */
 import Immutable from 'immutable';
 import React from 'react';
-import { fireEvent, screen, RenderResult, within, waitFor } from '@testing-library/react';
+import { fireEvent, screen, RenderResult, within, waitFor, act } from '@testing-library/react';
 
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { actions, I18NApi } from 'app/I18N';
 import LanguageList from '../LanguageList';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useLocation: () => jest.fn(),
+}));
 
 describe('Languages', () => {
   let renderResult: RenderResult;
@@ -84,9 +90,18 @@ describe('Languages', () => {
         collection: Immutable.fromJS({ languages: Immutable.fromJS(currentLanguages) }),
       },
     };
-    await waitFor(() => {
-      ({ renderResult } = renderConnectedContainer(<LanguageList />, () => reduxStore));
-    });
+    await waitFor(async () =>
+      act(async () => {
+        ({ renderResult } = renderConnectedContainer(
+          <LanguageList />,
+          () => ({
+            ...reduxStore,
+          }),
+          'MemoryRouter',
+          ['']
+        ));
+      })
+    );
   });
 
   const getLanguageRow = (section: string, languageLabel: string) => {

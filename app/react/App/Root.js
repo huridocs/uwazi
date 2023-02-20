@@ -39,7 +39,7 @@ const getFaviconURL = reduxData => {
   return favicon;
 };
 
-export const headTag = (head, CSS, reduxData) => (
+const headTag = (head, CSS, reduxData) => (
   <head>
     {head.title.toComponent()}
     {head.meta.toComponent()}
@@ -127,4 +127,5 @@ Root.propTypes = {
   assets: PropTypes.object,
 };
 
+export { headTag };
 export default Root;

@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React, { Component, ReactElement } from 'react';
+import React, { Component } from 'react';
 
 interface NoticeState {
   isHidden: boolean;
@@ -8,7 +8,7 @@ interface NoticeState {
 type NoticeProps = {
   title: String;
   allowClose?: boolean;
-  children?: string | ReactElement | JSX.Element | Element | JSX.Element[];
+  children?: any;
 };
 
 const defaultProps = {

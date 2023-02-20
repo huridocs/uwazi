@@ -50,7 +50,7 @@ describe('MetadataExtractor', () => {
     render();
 
     const button = screen.queryByText('Click to fill')?.parentElement!;
-    act(() => {
+    await act(() => {
       fireEvent.click(button);
     });
 
@@ -70,7 +70,7 @@ describe('MetadataExtractor', () => {
     );
   });
 
-  it('should notify the user if the selection rectangle is empty', () => {
+  it('should notify the user if the selection rectangle is empty', async () => {
     selected = {
       text: 'a text that failed to get the rectangles',
       selectionRectangles: [],
@@ -79,7 +79,7 @@ describe('MetadataExtractor', () => {
     render();
 
     const button = screen.queryByText('Click to fill')?.parentElement!;
-    act(() => {
+    await act(() => {
       fireEvent.click(button);
     });
 

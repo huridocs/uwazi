@@ -5,7 +5,7 @@ import * as libraryActions from 'app/Library/actions/libraryActions';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { actions as formActions } from 'react-redux-form';
 
-export function filterDocumentTypes(documentTypes, storeKey = 'library') {
+export function filterDocumentTypes(documentTypes, location, navigate) {
   return (dispatch, getState) => {
     const state = getState();
 
@@ -22,39 +22,36 @@ export function filterDocumentTypes(documentTypes, storeKey = 'library') {
       : templates;
 
     const { sort, order } = prioritySortingCriteria.get({
-      currentCriteria: { sort: state[storeKey].search.sort, order: state[storeKey].search.order },
+      currentCriteria: { sort: state.library.search.sort, order: state.library.search.order },
       filteredTemplates: usefulTemplates.map(t => t._id),
       templates: state.templates,
-      selectedSorting: state[storeKey].selectedSorting,
+      selectedSorting: state.library.selectedSorting,
     });
 
     const search = {
       types: documentTypes,
-      ...state[storeKey].search,
+      ...state.library.search,
       sort,
       order,
     };
 
     const filters = { documentTypes, properties: libraryFilters };
-    dispatch(libraryActions.searchDocuments({ filters, search }, storeKey));
+    dispatch(libraryActions.searchDocuments({ filters, search, location, navigate }));
   };
 }
 
-export function resetFilters(storeKey) {
+export function resetFilters(navigate, location) {
   return (dispatch, getState) => {
     dispatch({ type: types.SET_LIBRARY_FILTERS, documentTypes: [], libraryFilters: [] });
     dispatch(
-      formActions.load(`${storeKey}.search`, {
+      formActions.load('library.search', {
         searchTerm: '',
         filters: {},
         order: 'desc',
         sort: 'creationDate',
       })
     );
-    libraryActions.searchDocuments({ search: getState()[storeKey].search }, storeKey)(
-      dispatch,
-      getState
-    );
+    libraryActions.searchDocuments({ navigate, location })(dispatch, getState);
   };
 }
 

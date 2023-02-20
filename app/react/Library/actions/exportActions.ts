@@ -73,7 +73,7 @@ const requestHandler = (params: any, dispatch: Dispatch<any>, captcha?: CaptchaV
 
 export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
   return async (dispatch: Dispatch<any>, getState: any) => {
-    const state = getState()[storeKey];
+    const state = getState().library;
     const { search, filters } = state;
     const exportFilters = filters.toJS();
 

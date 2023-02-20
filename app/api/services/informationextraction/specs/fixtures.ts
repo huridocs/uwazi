@@ -188,6 +188,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F1'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
       suggestedValue: 'suggestion_text_1',
@@ -199,6 +200,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F3'),
       entityId: 'A3',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
       suggestedValue: 'suggestion_text_3',
@@ -210,6 +212,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_1',
@@ -221,6 +224,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_1',
@@ -232,6 +236,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_1',
@@ -243,6 +248,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_2',
@@ -254,6 +260,7 @@ const fixtures: DBFixture = {
     {
       fileId: factory.id('F4'),
       entityId: 'A1',
+      entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_3',

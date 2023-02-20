@@ -1,11 +1,11 @@
 import React from 'react';
-
+import { withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { EditTranslationsForm } from 'app/I18N/components/EditTranslationsForm';
 import { actions } from 'app/I18N/';
 import { I18NApi } from 'app/I18N';
 
-export default class EditTranslations extends RouteHandler {
+class EditTranslationsComponent extends RouteHandler {
   static async requestState(requestParams) {
     const translations = await I18NApi.get(requestParams);
     return [actions.editTranslations(translations)];
@@ -19,3 +19,6 @@ export default class EditTranslations extends RouteHandler {
     );
   }
 }
+
+const EditTranslations = withRouter(EditTranslationsComponent);
+export { EditTranslations };

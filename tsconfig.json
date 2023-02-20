@@ -24,7 +24,9 @@
       "shared/*": ["./app/shared/*"],
       "UI": ["./app/react/UI"],
       "UI/*": ["./app/react/UI/*"]
-    }
+    },
+    //TODO: solve conflict between @types from react dependencies
+    "skipLibCheck": true
   },
   "include": ["app", "external_modules", "database", "e2e"],
   "exclude": ["node_modules", "**/node_modules/*", "fixtures", "dist", "prod"]

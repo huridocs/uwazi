@@ -4,6 +4,7 @@ import entities from 'api/entities';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { EventsBus } from 'api/eventsbus';
+import { files } from 'api/files';
 import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
@@ -11,12 +12,23 @@ import settings from 'api/settings';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { shallowObjectDiff } from 'shared/data_utils/shallowObjectDiff';
 import { ensure } from 'shared/tsUtils';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { createDefaultSuggestionsForFiles } from './configurationManager';
 import { Suggestions } from './suggestions';
 
-const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity: EntitySchema) => {
-  const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
+type extractionTemplateType =
+  | {
+      template: ObjectIdSchema;
+      properties: string[];
+    }[]
+  | undefined;
+
+const extractedMetadataChanged = async (
+  existingEntity: EntitySchema,
+  newEntity: EntitySchema,
+  extractionTemplates: extractionTemplateType
+) => {
   if (!extractionTemplates || !newEntity.metadata) return false;
   const extractionTemplatesIndexed = objectIndex(
     extractionTemplates,
@@ -32,14 +44,35 @@ const extractedMetadataChanged = async (existingEntity: EntitySchema, newEntity:
   return changedMetadata.some(m => extractedProperties.has(m));
 };
 
+const handleTemplateChange = async (
+  originalDoc: EntitySchema,
+  modifiedDoc: EntitySchema,
+  extractionTemplates: extractionTemplateType
+) => {
+  const originalTemplateId = originalDoc.template?.toString();
+  const modifiedTemplateId = modifiedDoc.template?.toString();
+  if (originalTemplateId === modifiedTemplateId) return;
+  const modifiedTemplateInSettings = extractionTemplates?.find(
+    t => t.template === modifiedTemplateId
+  );
+  await Suggestions.delete({ entityId: modifiedDoc.sharedId });
+  if (modifiedTemplateInSettings) {
+    const docFiles = await files.get({ entity: modifiedDoc.sharedId, type: 'document' });
+    const defaultLanguage = (await settings.getDefaultLanguage()).key;
+    await createDefaultSuggestionsForFiles(docFiles, modifiedTemplateInSettings, defaultLanguage);
+  }
+};
+
 const registerEventListeners = (eventsBus: EventsBus) => {
   eventsBus.on(EntityUpdatedEvent, async ({ before, after, targetLanguageKey }) => {
     const originalDoc = before.find(doc => doc.language === targetLanguageKey)!;
     const modifiedDoc = after.find(doc => doc.language === targetLanguageKey)!;
 
-    if (await extractedMetadataChanged(originalDoc, modifiedDoc)) {
+    const extractionTemplates = (await settings.get({})).features?.metadataExtraction?.templates;
+    if (await extractedMetadataChanged(originalDoc, modifiedDoc, extractionTemplates)) {
       await Suggestions.updateStates({ entityId: originalDoc.sharedId });
     }
+    await handleTemplateChange(originalDoc, modifiedDoc, extractionTemplates);
   });
 
   eventsBus.on(FileCreatedEvent, async ({ newFile }) => {
@@ -68,8 +101,8 @@ const registerEventListeners = (eventsBus: EventsBus) => {
     }
   });
 
-  eventsBus.on(FilesDeletedEvent, async ({ files }) => {
-    await Suggestions.delete({ fileId: { $in: files.map(f => f._id) } });
+  eventsBus.on(FilesDeletedEvent, async ({ files: _files }) => {
+    await Suggestions.delete({ fileId: { $in: _files.map(f => f._id) } });
   });
 };
 

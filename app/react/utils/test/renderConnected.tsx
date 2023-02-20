@@ -1,10 +1,12 @@
 import React from 'react';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
+import { InitialEntry } from '@remix-run/router';
 import { ConnectedComponent, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 import { render } from '@testing-library/react';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 
 const middlewares = [thunk];
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>(middlewares);
@@ -21,7 +23,7 @@ const defaultState = {
 };
 
 const renderConnected = (
-  Component: React.ReactType,
+  Component: React.ComponentClass<any> | React.FC<any>,
   props: object,
   storeData: object = {
     template: {
@@ -50,21 +52,59 @@ const renderConnectedMount = (
   Component: ConnectedComponent<any, any> | ((props: any) => any),
   state: any = {},
   props: any = {},
-  useDefaultTranslationState = false
+  useDefaultTranslationState = false,
+  useBrowserRouter = false
 ): ReactWrapper<React.Component['props'], React.Component['state'], React.Component> => {
   const reduxStore = { ...defaultState, ...state };
   const store = mockStoreCreator(useDefaultTranslationState ? reduxStore : state);
-  return mount(
+
+  const WrappedComponent = useBrowserRouter ? (
+    <BrowserRouter>
+      <Provider store={store}>
+        <Component {...props} />
+      </Provider>
+    </BrowserRouter>
+  ) : (
     <Provider store={store}>
       <Component {...props} />
     </Provider>
   );
+
+  return mount(WrappedComponent);
 };
 
-const renderConnectedContainer = (children: JSX.Element, stateFunc: () => {}) => {
+const renderConnectedContainer = (
+  children: JSX.Element,
+  stateFunc: () => {},
+  routerWrapper?: 'BrowserRouter' | 'MemoryRouter',
+  memoryRouterLocation: InitialEntry[] | undefined = undefined
+) => {
   const store = configureStore<object>(middlewares)(stateFunc);
+
+  let renderResult;
+
+  switch (routerWrapper) {
+    case 'BrowserRouter':
+      renderResult = render(<Provider store={store}>{children}</Provider>, {
+        wrapper: BrowserRouter,
+      });
+      break;
+
+    case 'MemoryRouter':
+      renderResult = render(
+        <MemoryRouter initialEntries={memoryRouterLocation}>
+          <Provider store={store}>{children}</Provider>
+        </MemoryRouter>
+      );
+      break;
+
+    default:
+      renderResult = render(<Provider store={store}>{children}</Provider>);
+      break;
+  }
+
   return {
-    renderResult: render(<Provider store={store}>{children}</Provider>),
+    renderResult,
     store,
   };
 };

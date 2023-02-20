@@ -1,27 +1,24 @@
-import { I18NLink, t } from 'app/I18N';
-import { IStore, OneUpState } from 'app/istore';
-import { switchOneUpEntity, toggleOneUpFullEdit } from 'app/Review/actions/actions';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
+import { withContext } from 'app/componentWrappers';
+import { I18NLink, t } from 'app/I18N';
+import { IStore, OneUpState } from 'app/istore';
+import { switchOneUpEntity, toggleOneUpFullEdit } from 'app/Review/actions/actions';
 import { selectIsPristine, selectOneUpState } from '../common';
 
 const defaultProps = {
   isPristine: true,
   oneUpState: {} as OneUpState,
   switchOneUpEntity: (_delta: number, _save: boolean) => {},
+  mainContext: { confirm: (_props: {}) => {} },
 };
 
-export type OneUpTitleBarProps = typeof defaultProps;
+type OneUpTitleBarProps = typeof defaultProps;
 
-export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
+class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
   static defaultProps = defaultProps;
-
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
 
   backToThesaurus() {
     const { oneUpState, isPristine } = this.props;
@@ -54,7 +51,7 @@ export class OneUpTitleBarBase extends Component<OneUpTitleBarProps> {
     const navAction = isPristine
       ? (delta: number) => () => this.props.switchOneUpEntity(delta, false)
       : (delta: number) => () =>
-          this.context.confirm({
+          this.props.mainContext.confirm({
             accept: () => this.props.switchOneUpEntity(delta, false),
             title: 'Confirm discard changes',
             message:
@@ -126,4 +123,9 @@ function mapDispatchToProps(dispatch: Dispatch<IStore>) {
   );
 }
 
-export const OneUpTitleBar = connect(mapStateToProps, mapDispatchToProps)(OneUpTitleBarBase);
+export { OneUpTitleBarBase };
+export type { OneUpTitleBarProps };
+export const OneUpTitleBar = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withContext(OneUpTitleBarBase));

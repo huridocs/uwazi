@@ -24,6 +24,8 @@ describe('DocumentsList', () => {
     totalRows: 10,
   });
 
+  const mockNavigate = jest.fn();
+
   beforeEach(() => {
     props = {
       documents,
@@ -35,12 +37,13 @@ describe('DocumentsList', () => {
       storeKey: 'library',
       searchDocuments: jest.fn(),
       deleteConnection: () => {},
-      location: { query: { q: '', pathname: 'library/' } },
       selectedDocuments: {},
       selectAllDocuments: jest.fn(),
       searchCentered: false,
       sortButtonsStateProperty: '',
       scrollCount: 4,
+      location: { search: '?q=(searchTerm:%27asd%27)', pathname: 'library/' },
+      navigate: mockNavigate,
     };
   });
 
@@ -129,7 +132,7 @@ describe('DocumentsList', () => {
         .find('.btn-load-more')
         .at(0)
         .simulate('click', { preventDefault: () => {} });
-      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 2);
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith(30, 2, props.location, props.navigate);
     });
 
     it('should render a custom passed load more', () => {
@@ -172,7 +175,7 @@ describe('DocumentsList', () => {
       render();
       const data = component.find(TableViewer).props();
       data.loadNextGroupOfEntities();
-      expect(props.loadMoreDocuments).toHaveBeenCalledWith('library', 30, 2);
+      expect(props.loadMoreDocuments).toHaveBeenCalledWith(30, 2, props.location, props.navigate);
     });
   });
 });

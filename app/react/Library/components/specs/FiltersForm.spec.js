@@ -12,6 +12,8 @@ describe('FiltersForm', () => {
 
   beforeEach(() => {
     props = {
+      location: { myfilter: 'true' },
+      navigate: jest.fn(),
       searchDocuments: jasmine.createSpy('searchDocuments'),
       fields: Immutable([
         { _id: '1', name: 'name' },
@@ -100,7 +102,10 @@ describe('FiltersForm', () => {
     it('should call searchDocuments, with the searchTerm', () => {
       render();
       component.find(Form).simulate('submit', { myfilter: true });
-      expect(props.searchDocuments).toHaveBeenCalledWith({ search: { myfilter: true } }, 'library');
+      expect(props.searchDocuments).toHaveBeenCalledWith({
+        location: props.location,
+        navigate: props.navigate,
+      });
     });
   });
 

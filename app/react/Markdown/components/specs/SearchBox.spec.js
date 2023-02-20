@@ -1,13 +1,17 @@
 /**
  * @jest-environment jsdom
  */
-import { Form } from 'react-redux-form';
-import { browserHistory } from 'react-router';
 import React from 'react';
-
+import { Form } from 'react-redux-form';
 import { shallow } from 'enzyme';
-
 import SearchBox from '../SearchBox';
+
+const mockUseNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockUseNavigate,
+}));
 
 describe('SearchBox', () => {
   let component;
@@ -21,8 +25,7 @@ describe('SearchBox', () => {
   });
 
   it('should call the search action on submit', () => {
-    spyOn(browserHistory, 'push');
     component.find(Form).props().onSubmit({ searchTerm: 'text with spaces' });
-    expect(browserHistory.push).toHaveBeenCalledWith("/library/?q=(searchTerm:'text with spaces')");
+    expect(mockUseNavigate).toHaveBeenCalledWith("/library/?q=(searchTerm:'text with spaces')");
   });
 });

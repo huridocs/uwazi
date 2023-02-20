@@ -7,10 +7,10 @@ import { wrapDispatch } from 'app/Multireducer';
 import { exportDocuments } from 'app/Library/actions/exportActions';
 import { User } from 'api/users/usersModel';
 import Modal from 'app/Layout/Modal';
-import { LocalForm } from 'react-redux-form';
 import { CaptchaValue } from 'shared/types/Captcha';
 import { Captcha, FormGroup } from 'app/ReactReduxForms';
 import { IImmutable } from 'shared/types/Immutable';
+import { LocalForm } from 'app/Forms/Form';
 import { ExportStore } from '../reducers/ExportStoreType';
 
 type ExportButtonProps = {

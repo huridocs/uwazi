@@ -7,7 +7,7 @@ function getOptions(property, thesauris) {
   return matchingTHesauri ? matchingTHesauri.values : null;
 }
 
-export function populateOptions(filters, thesauris) {
+function populateOptions(filters, thesauris) {
   return filters.map(property => {
     if (property.content) {
       return Object.assign(property, { options: getOptions(property, thesauris) });
@@ -25,21 +25,22 @@ export function populateOptions(filters, thesauris) {
   });
 }
 
-function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedProps = []) {
+function URLQueryToState(query, templates, forcedProps = []) {
   let properties = comonProperties.comonFilters(templates, query.types, forcedProps);
   if (!query.types || !query.types.length) {
     properties = comonProperties.defaultFilters(templates, forcedProps);
   }
 
+  let { sort, order } = prioritySortingCriteria.get();
+  ({ sort = sort, order = order } = query);
   const {
     searchTerm = '',
     filters = {},
-    sort = prioritySortingCriteria.get().sort,
-    order = prioritySortingCriteria.get().order,
     userSelectedSorting,
-    includeUnpublished = false,
+    includeUnpublished = true,
     unpublished = false,
-    allAggregations = false,
+    allAggregations = true,
+    treatAs = 'number',
   } = query;
 
   return {
@@ -51,6 +52,7 @@ function URLQueryToState(query, templates, _thesauris, _relationTypes, forcedPro
       sort,
       order,
       userSelectedSorting,
+      treatAs,
       publishedStatus: queryToFilter(unpublished, includeUnpublished),
       allAggregations,
     },
@@ -107,3 +109,5 @@ export default {
   populateOptions,
   parseWithAggregations,
 };
+
+export { populateOptions };

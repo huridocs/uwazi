@@ -34,6 +34,7 @@ interface EntityDisplayState {
   };
   search: any;
   filters: IImmutable<{ documentTypes: [] }>;
+  selectedSorting: string;
 }
 
 interface RelationshipTypesType {

@@ -1,4 +1,16 @@
+import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { IXSuggestionType } from 'shared/types/suggestionType';
+
+export const getMatchStage = (filters: FilterQuery<IXSuggestionType>) => [
+  {
+    $match: {
+      ...filters,
+      status: { $ne: 'processing' },
+    },
+  },
+];
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
   const defaultLanguage = languages.find(l => l.default)?.key;
@@ -127,4 +139,25 @@ export const getLabeledValueStage = () => [
       labeledValue: '$labeledValue.selection.text',
     },
   },
+];
+
+export const getEntityTemplateFilterStage = (entityTemplates: string[] | undefined) =>
+  entityTemplates
+    ? [
+        {
+          $match: {
+            entityTemplateId: { $in: (entityTemplates || []).map(id => new ObjectId(id)) },
+          },
+        },
+      ]
+    : [];
+
+export const groupByAndSort = (field: string) => [
+  {
+    $group: {
+      _id: field,
+      count: { $sum: 1 },
+    },
+  },
+  { $sort: { _id: 1 } },
 ];

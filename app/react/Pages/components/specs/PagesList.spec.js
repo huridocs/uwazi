@@ -9,7 +9,6 @@ import { PagesList } from '../PagesList';
 describe('PagesList', () => {
   let component;
   let props;
-  let context;
 
   beforeEach(() => {
     props = {
@@ -19,15 +18,12 @@ describe('PagesList', () => {
         { _id: 3, title: 'Page 3', sharedId: 'a3' },
       ]),
       deletePage: jasmine.createSpy('deletePage').and.callFake(async () => Promise.resolve()),
-    };
-
-    context = {
-      confirm: jasmine.createSpy('confirm'),
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
   });
 
   const render = () => {
-    component = shallow(<PagesList {...props} />, { context });
+    component = shallow(<PagesList {...props} />);
   };
 
   describe('render', () => {
@@ -53,11 +49,11 @@ describe('PagesList', () => {
     });
 
     it('should confirm the action', () => {
-      expect(context.confirm).toHaveBeenCalled();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
     });
 
     it('should call on props.deletePage if confirmed', () => {
-      context.confirm.calls.argsFor(0)[0].accept();
+      props.mainContext.confirm.calls.argsFor(0)[0].accept();
       expect(props.deletePage).toHaveBeenCalledWith(page.toJS());
     });
   });

@@ -64,7 +64,7 @@ const LibraryFooterComponent = ({
             </button>
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
-            <PDFUploadButton storeKey={storeKey} />
+            <PDFUploadButton />
           </NeedAuthorization>
           <NeedAuthorization roles={['admin', 'editor']}>
             <button className="btn btn-default sm-order-1" type="button" onClick={showImportPanel}>

@@ -13,11 +13,11 @@ exports[`Settings render should add the only-desktop class when recieving childr
     </title>
   </HelmetWrapper>
   <div
-    className="settings-navigation only-desktop"
+    className="settings-navigation "
   >
     <Connect(SettingsNavigationComponent) />
   </div>
-  Account settings
+  <Outlet />
 </div>
 `;
 
@@ -38,6 +38,7 @@ exports[`Settings render should add the only-desktop class when recieving childr
   >
     <Connect(SettingsNavigationComponent) />
   </div>
+  <Outlet />
 </div>
 `;
 

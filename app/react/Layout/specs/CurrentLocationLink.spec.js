@@ -1,18 +1,15 @@
 import React from 'react';
-
 import { shallow } from 'enzyme';
-
 import { CurrentLocationLink } from '../CurrentLocationLink';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useLocation: () => ({ pathname: 'pathanem', query: { param: 'value', param2: 'value2' } }),
+}));
 
 describe('Link', () => {
   let component;
-  let props;
-
-  beforeEach(() => {
-    props = {
-      location: { pathname: 'pathanem', query: { param: 'value', param2: 'value2' } },
-    };
-  });
+  const props = { queryParams: {}, to: '', className: '', prop: '' };
 
   const render = () => {
     component = shallow(<CurrentLocationLink {...props}>text</CurrentLocationLink>);
@@ -43,6 +40,6 @@ describe('Link', () => {
     props.queryParams = { param2: 'new value', test: 'test' };
     render();
     expect(component).toMatchSnapshot();
-    expect(props.location.query).toEqual({ param: 'value', param2: 'value2' });
+    expect(component.props().to).toEqual('pathanem?param=value&param2=new%20value&test=test');
   });
 });
