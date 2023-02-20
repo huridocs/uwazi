@@ -28,10 +28,22 @@ function coerceValues(value, type, locale) {
   switch (type) {
     case 'date':
       dateSeconds = date.dateToSeconds(value, locale);
-      if (Number.isNaN(dateSeconds)) {
+      return Number.isNaN(dateSeconds) ? { success: false } : { success: true, value: dateSeconds };
+    case 'numeric':
+      try {
+        const numeric = Number.parseFloat(value);
+        return !numeric ? { success: false } : { success: true, value: numeric };
+      } catch (e) {
         return { success: false };
       }
-      return { success: true, value: dateSeconds };
+    case 'text':
+      return {
+        success: true,
+        value: value
+          .replace(/(\n|\r)/g, ' ')
+          .replace(/ +/g, ' ')
+          .trim(),
+      };
     default:
       throw Error('Unsupported type');
   }
