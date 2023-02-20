@@ -175,14 +175,18 @@ const partialMatch = (matcher: ConnectionMatcherType, from: string, through: str
 const partialBackMatch = (from: string, through: string): boolean =>
     partialMatch(PARTIAL_BACK_MATCHER, from, through)
 
+const pairMatches = (first: ConnectionWithEntityInfoType, second: ConnectionWithEntityInfoType): boolean => {
+    return !!second.template && fullForwardMatch(
+        first.entityTemplateId.toString(),
+        second.template.toString(),
+        second.entityTemplateId.toString()
+    );
+};
+
 const matchPairs = (sources: ConnectionWithEntityInfoType[], targets: ConnectionWithEntityInfoType[]) => {
     sources.forEach(first => {
         targets.forEach(second => {
-            const transformable = !!second.template && fullForwardMatch(
-                first.entityTemplateId.toString(),
-                second.template.toString(),
-                second.entityTemplateId.toString()
-            );
+            const transformable = pairMatches(first, second);
             first.transformable = first.transformable || transformable;
             second.transformable = second.transformable || transformable;
         });
@@ -202,7 +206,7 @@ const fullCrossCheck = (connections: ConnectionWithEntityInfoType[]) => {
 };
 
 const classifyHub = (hub: HubType, connections: ConnectionWithEntityInfoType[], ) => {
-    if(CHECK_TYPE) return fullCrossCheck(connections);
+    if(USE_FULL_CROSSCHECK) return fullCrossCheck(connections);
     const classes: string[] = [];
     const untyped_count = connections.filter(c => !c.template).length;
     const { groups, groupCounts } = countRelTypeGroups(connections);
@@ -321,24 +325,24 @@ const transformThroughUntypedOutlier = (connections: ConnectionType[]) => {
     const untyped = connections.find(c => !c.template);
     const typed = connections.filter(c => c.template);
     if(!untyped) return [];
-    const from = untyped.entity;        
-    return typed.map(c => ({ from, to: c.entity, type: c.template }))
+    const from = {entity: untyped.entity};        
+    return typed.map(c => ({ from, to: {entity: c.entity}, type: c.template }))
 };
 
 const transformMatchingPairs = (sources: ConnectionWithEntityInfoType[], targets: ConnectionWithEntityInfoType[]) => {
     const transformed: Omit<RelationshipDBOType, '_id'>[] = [];
     sources.forEach(first => {
         targets.forEach(second => {
-            const transformable = fullForwardMatch(
-                first.entityTemplateId.toString(),
-                second.template.toString(),
-                second.entityTemplateId.toString()
-            );
-            if(transformable) transformed.push({ from: first.entity, to: second.entity, type: second.template});
+            const transformable = pairMatches(first, second);
+            if(transformable) transformed.push({ from: {entity: first.entity}, to: {entity: second.entity}, type: second.template});
         });
     });
     return transformed;
 }
+
+const fullCrossTransform = (connections: ConnectionWithEntityInfoType[]) => {
+    return transformMatchingPairs(connections, connections);
+};
 
 const transformThroughTypedOutlier = (connections: ConnectionWithEntityInfoType[]) => {
     const { groupCounts } = countRelTypeGroups(connections);
@@ -363,13 +367,14 @@ const transformOneToOne = (connections: ConnectionWithEntityInfoType[]) => {
 
 type HubTransformerType = (connections: ConnectionWithEntityInfoType[]) => Omit<RelationshipDBOType, '_id'>[];
 const HUBTRANSFORMERS: Record<string, HubTransformerType> = {
-    [`${HubClasses.ONE_UNTYPED_EDGE}`]: transformThroughUntypedOutlier,
-    [`${HubClasses['2+UNTYPED_EDGES']}`]: transformBySeparatingUntyped,
-    [`${HubClasses['2+UNTYPED_EDGES']} ${HubClasses['EXACT_UNTYPED_COPIES']}`]: transformThroughUntypedOutlier,
+    // [`${HubClasses.ONE_UNTYPED_EDGE}`]: transformThroughUntypedOutlier,
+    // [`${HubClasses['2+UNTYPED_EDGES']}`]: transformBySeparatingUntyped,
+    // [`${HubClasses['2+UNTYPED_EDGES']} ${HubClasses['EXACT_UNTYPED_COPIES']}`]: transformThroughUntypedOutlier,
     // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ALL_SAME_TYPE}`]: ...
-    [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ALL_SAME_TYPE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
-    [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_OUTLIER}`]: transformThroughTypedOutlier,
-    [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ALL_SAME_TYPE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_OUTLIER}`]: transformThroughTypedOutlier,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
+    [`${NO_CLASS_MARKER}`]: fullCrossTransform,
 };
 
 const transformHub = (hubclass: string, connections: ConnectionWithEntityInfoType[]): Omit<RelationshipDBOType, '_id'>[] => {
@@ -384,6 +389,10 @@ const transformConnections = async (
     connectionsCollection: Collection<RawConnectionType>,
     relationshipsCollection: Collection<RelationshipDBOType>,
 ) => {
+    if (!(CHECK_TYPE === CheckTypes.full && DEFINITION_SOURCE === DefinitionSources.fields)) {
+        println('Transformations only supported for full check from relationships fields.');
+        return;
+    }
     const stringanswer = await prompt('Perform transformations? (y/n)');
     const perform = stringanswer === 'y';
     if(!perform) return;

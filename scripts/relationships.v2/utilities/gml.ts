@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { objectIndex } from '../../../app/shared/data_utils/objectIndex';
 import { ConnectionDescriptor } from './connection_descriptors';
 
 const OPENER = `
