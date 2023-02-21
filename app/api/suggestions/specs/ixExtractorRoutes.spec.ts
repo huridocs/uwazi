@@ -241,19 +241,26 @@ describe('extractor routes', () => {
 
   describe('DELETE /api/ixextractors', () => {
     it('should reject non existing _id', async () => {
-      const input = [
-        fixturesFactory.id('extractor1'),
-        fixturesFactory.id('non-existing-extractor'),
-      ];
-      const response = await request(app).delete('/api/ixextractors').send(input).expect(500);
+      const input = {
+        ids: [
+          fixturesFactory.id('extractor1').toString(),
+          fixturesFactory.id('non-existing-extractor').toString(),
+        ],
+      };
+      const response = await request(app).delete('/api/ixextractors').query(input).expect(500);
       expect(response.body.error).toBe('Missing extractor.');
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(3);
     });
 
     it('should delete extractor', async () => {
-      const input = [fixturesFactory.id('extractor1'), fixturesFactory.id('extractor2')];
-      await request(app).delete('/api/ixextractors').send(input).expect(200);
+      const input = {
+        ids: [
+          fixturesFactory.id('extractor1').toString(),
+          fixturesFactory.id('extractor2').toString(),
+        ],
+      };
+      await request(app).delete('/api/ixextractors').query(input).expect(200);
       const extractors = await db?.collection('ixextractors').find().toArray();
       expect(extractors?.length).toBe(1);
     });

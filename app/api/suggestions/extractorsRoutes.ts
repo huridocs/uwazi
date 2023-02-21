@@ -2,6 +2,7 @@ import { needsAuthorization } from 'api/auth';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { Application } from 'express';
+import { ensure } from 'shared/tsUtils';
 import { serviceMiddleware } from './serviceMiddleware';
 
 export const extractorsRoutes = (app: Application) => {
@@ -68,11 +69,17 @@ export const extractorsRoutes = (app: Application) => {
     validateAndCoerceRequest({
       type: 'object',
       properties: {
-        body: { type: 'array', items: { type: 'string' } },
+        query: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['ids'],
+          properties: { ids: { type: 'array', items: { type: 'string' } } },
+        },
       },
     }),
     async (req, res, _next) => {
-      await Extractors.delete(req.body);
+      const extractorIds: string[] = ensure<string[]>(req.query.ids);
+      await Extractors.delete(extractorIds);
       res.sendStatus(200);
     }
   );
