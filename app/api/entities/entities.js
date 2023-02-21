@@ -182,7 +182,6 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     })
   );
 
-  // await denormalizeAfterEntityCreation(result);
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;
 }

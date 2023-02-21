@@ -227,8 +227,7 @@ describe('entities.get()', () => {
 });
 
 describe('entities.save()', () => {
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('when creating an entity', () => {
+  describe('when creating an entity', () => {
     it('should mark newRelationship metadata as obsolete on the created entity', async () => {
       const performSpy = jest
         .spyOn(v2Support, 'assignNewRelationshipFieldsValues')
