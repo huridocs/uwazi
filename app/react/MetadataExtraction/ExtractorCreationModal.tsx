@@ -82,15 +82,19 @@ export const ExtractorCreationModal = ({
   return (
     <Modal isOpen={isOpen} type="content" className="extractor-creation-modal">
       <Modal.Header>
-        <h1>
+        <div className="extractor-label">
           <Translate>Add property</Translate>
-        </h1>
+        </div>
+        <div className="all-templates-checkbox">
+          <input type="checkbox" />
+          <span>From all templates</span>
+        </div>
       </Modal.Header>
       <Modal.Body>
         <input
           value={name}
           type="text"
-          className="form-control"
+          className="form-control extractor-name-input"
           onChange={event => setName(event.target.value)}
           placeholder="Extractor name"
         />
@@ -108,20 +112,22 @@ export const ExtractorCreationModal = ({
         </span>
       </Modal.Body>
       <Modal.Footer>
-        <button
-          type="button"
-          className="btn btn-default btn-extra-padding cancel-button"
-          onClick={handleClose}
-        >
-          <Translate>Cancel</Translate>
-        </button>
-        <button
-          type="button"
-          className="btn confirm-button btn-extra-padding btn-success"
-          onClick={() => handleSubmit(name, values)}
-        >
-          <Translate>Add</Translate>
-        </button>
+        <div className="extractor-footer">
+          <button
+            type="button"
+            className="btn btn-default btn-extra-padding action-button"
+            onClick={handleClose}
+          >
+            <Translate>Cancel</Translate>
+          </button>
+          <button
+            type="button"
+            className="btn btn-default action-button btn-extra-padding"
+            onClick={() => handleSubmit(name, values)}
+          >
+            <Translate>Add</Translate>
+          </button>
+        </div>
       </Modal.Footer>
     </Modal>
   );

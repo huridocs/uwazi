@@ -206,20 +206,29 @@ class MetadataExtractionComponent extends React.Component<
             </table>
           </div>
           <div className="settings-footer">
-            <button
-              className="btn btn-default"
-              type="button"
-              onClick={() => {
-                this.setState({ creationModelIsOpen: true });
-              }}
-            >
-              <Translate>Create Extractor</Translate>
-            </button>
-            {!!this.state.selectedExtractorIds.size && (
-              <button className="btn btn-danger" type="button" onClick={this.deleteExtractors}>
-                <Translate>Delete</Translate>
-              </button>
-            )}
+            <div className="btn-cluster">
+              {this.state.selectedExtractorIds.size > 0 ? (
+                <button className="btn btn-default" type="button">
+                  <Translate>Edit Extractor</Translate>
+                </button>
+              ) : (
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={() => {
+                    this.setState({ creationModelIsOpen: true });
+                  }}
+                >
+                  <Translate>Create Extractor</Translate>
+                </button>
+              )}
+
+              {!!this.state.selectedExtractorIds.size && (
+                <button className="btn btn-danger" type="button" onClick={this.deleteExtractors}>
+                  <Translate>Delete</Translate>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
