@@ -11,7 +11,9 @@ describe('LocalTable.cy.tsx', () => {
     mount(<Basic />);
     const toStrings = (cells: JQuery<HTMLElement>) => _.map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['', 'Icon', 'Title', 'Date added']);
-    const firstRow = cy.get('tbody>tr').get('td');
-    firstRow.eq(0).get('[type="checkbox"]');
+    cy.get('tbody>tr td').get('[type="checkbox"]');
+    cy.get('tbody>tr:first-child td:nth-child(3)').debug();
+    cy.get('tbody>tr:first-child td:nth-child(3)').contains('Entity 1');
+    cy.get('tbody>tr:first-child td:nth-child(4)').contains('1676306456');
   });
 });
