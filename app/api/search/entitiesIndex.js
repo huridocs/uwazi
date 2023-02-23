@@ -4,7 +4,7 @@ import entities from 'api/entities';
 import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { ElasticEntityTransformer } from 'api/entities.v2/database/elastic/ElasticEntityTransformer';
+import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -19,8 +19,8 @@ const preprocessEntitiesToIndex = entitiesToIndex => {
     getConnection(),
     new MongoTransactionManager(getClient())
   );
-  const transformer = new ElasticEntityTransformer(templateDS);
-  return Promise.all(entitiesToIndex.map(e => transformer.transform(e)));
+  const transformer = new ElasticEntityMapper(templateDS);
+  return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
 };
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {

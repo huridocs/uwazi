@@ -1,6 +1,7 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elastic } from '../elastic';
+import { search } from '../search';
 import { fixturesTimeOut } from './fixtures_elastic';
 
 const fixturesFactory = getFixturesFactory();
@@ -22,30 +23,45 @@ beforeEach(async () => {
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
       ],
       entities: [
-        fixturesFactory.entity('entity1', 'template1', {
-          relProp1: [
-            {
-              value: 'entity2',
-              label: 'entity2-es',
-              inheritedValue: [{ value: 'text content' }],
-              inheritedType: 'text',
-            },
-          ],
-          relProp2: [
-            {
-              value: 'entity3',
-              label: 'entity3-es',
-              inheritedValue: [{ value: 1676688700080 }],
-              inheritedType: 'date',
-            },
-          ],
-        }),
-        fixturesFactory.entity('entity2', 'template2', {
-          textProp1: [fixturesFactory.metadataValue('text content')],
-        }),
-        fixturesFactory.entity('entity3', 'template3', {
-          dateProp1: [fixturesFactory.metadataValue(1676688700080)],
-        }),
+        fixturesFactory.entity(
+          'entity1',
+          'template1',
+          {
+            relProp1: [
+              {
+                value: 'entity2',
+                label: 'entity2-en',
+                inheritedValue: [{ value: 'text_content' }],
+                inheritedType: 'text',
+              },
+            ],
+            relProp2: [
+              {
+                value: 'entity3',
+                label: 'entity3-en',
+                inheritedValue: [{ value: 1676688700080 }],
+                inheritedType: 'date',
+              },
+            ],
+          },
+          { published: true }
+        ),
+        fixturesFactory.entity(
+          'entity2',
+          'template2',
+          {
+            textProp1: [fixturesFactory.metadataValue('text_content')],
+          },
+          { published: true }
+        ),
+        fixturesFactory.entity(
+          'entity3',
+          'template3',
+          {
+            dateProp1: [fixturesFactory.metadataValue(1676688700080)],
+          },
+          { published: true }
+        ),
       ],
     },
     elasticIndex
@@ -67,13 +83,23 @@ describe('mapping', () => {
 });
 
 describe('indexing', () => {
-  it('should index the relationshp metadata property using as contents the denormalized values', async () => {
+  it('should index the relationship metadata property using as contents the denormalized values', async () => {
     const body = await elastic.search({});
     const entityWithRelationships = body.body.hits.hits.find(
       e => e._source.sharedId === 'entity1'
     )!._source;
 
-    expect(entityWithRelationships.metadata!.relProp1).toEqual([{ value: 'text content' }]);
+    expect(entityWithRelationships.metadata!.relProp1).toEqual([{ value: 'text_content' }]);
     expect(entityWithRelationships.metadata!.relProp2).toEqual([{ value: 1676688700080 }]);
+  });
+});
+
+describe('searching', () => {
+  it('should filter the relationship metadata as the type of the denormalized values', async () => {
+    let results = await search.search({ filters: { relProp2: { from: 1676688700080 } } }, 'en');
+    expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
+
+    results = await search.search({ filters: { relProp1: 'text_content' } }, 'en');
+    expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
   });
 });

@@ -61,6 +61,10 @@ function processFilters(filters, properties, dictionaries) {
       ({ type } = propertiesHelper.getInheritedProperty(property, properties));
     }
 
+    if (property.type === 'newRelationship') {
+      type = properties.find(p => p.name === property.denormalizedProperty).type;
+    }
+
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
       value.from = date.descriptionToTimestamp(value.from);
       value.to = date.descriptionToTimestamp(value.to);
