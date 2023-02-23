@@ -31,11 +31,11 @@ interface TableProps {
 
 const getIcon = (column: any) => {
   switch (true) {
-    case Boolean(column.isSorted && !column.isSortedDesc):
+    case column.isSorted && !column.isSortedDesc:
       return <ChevronUpIcon className="w-4" />;
-    case Boolean(column.isSortedDesc):
+    case column.isSortedDesc:
       return <ChevronDownIcon className="w-4" />;
-    case Boolean(!column.isSorted):
+    case !column.isSorted:
       return <ChevronUpDownIcon className="w-4" />;
     default:
       return <ChevronUpDownIcon className="w-4" />;
