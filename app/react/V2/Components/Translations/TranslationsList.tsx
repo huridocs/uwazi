@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { Checkbox } from 'flowbite-react';
 import { Translate } from 'app/I18N';
 import { translationsAtom } from './atoms';
-import { LocalTable } from '../Table/PlaceholderLocalTable';
+import { Table } from '../Table/Table';
 
 const renderCheckbox = data => <Checkbox />;
 
@@ -14,7 +14,7 @@ const TranslationsList = () => {
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
         <h1 className="text-2xl">Translations</h1>
-        <LocalTable
+        <Table
           columns={[
             { id: 'select', Header: '', Cell: renderCheckbox },
             { Header: 'Icon', accessor: 'icon', disableSortBy: true },
