@@ -149,9 +149,9 @@ class MetadataExtractionComponent extends React.Component<
               <thead>
                 <tr>
                   <th>
-                    <Icon icon={['far', 'square']} className="checkbox-empty" />
-                  </th>
-                  <th>
+                    <span className="extractor-checkbox">
+                      <Icon icon={['far', 'square']} className="checkbox-empty" />
+                    </span>
                     <Translate>Extractor Name</Translate>
                   </th>
                   <th>
@@ -160,34 +160,39 @@ class MetadataExtractionComponent extends React.Component<
                   <th>
                     <Translate>Template(s)</Translate>
                   </th>
+                  <th>
+                    <Translate>Action</Translate>
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {shownExtractors.map(extractor => (
                   <tr key={extractor.name + extractor._id}>
                     <td>
-                      {' '}
-                      <input
-                        type="checkbox"
-                        value={extractor._id}
-                        onChange={event => {
-                          if (extractor._id) {
-                            this.handleExtractorSelection(event.target.value, event.target.checked);
-                          }
-                        }}
-                      />
+                      <span className="extractor-checkbox">
+                        <input
+                          type="checkbox"
+                          value={extractor._id}
+                          onChange={event => {
+                            if (extractor._id) {
+                              this.handleExtractorSelection(
+                                event.target.value,
+                                event.target.checked
+                              );
+                            }
+                          }}
+                        />
+                      </span>
+                      {extractor.name}{' '}
                     </td>
-                    <td> {extractor.name} </td>
                     <td>
                       <Icon icon={Icons[extractor.type || 'text']} fixedWidth />
                       {extractor.label || extractor.property}
                     </td>
+
                     <td className="templateNameViewer">
                       {extractor.templates.map((template, index) => (
-                        <div key={template}>
-                          {templateInfo[template].name}
-                          {index !== extractor.templates.length - 1 ? ',' : ''}
-                        </div>
+                        <span key={template}>{templateInfo[template].name}</span>
                       ))}
                     </td>
                     <td>
@@ -195,8 +200,6 @@ class MetadataExtractionComponent extends React.Component<
                         to={`settings/metadata_extraction/suggestions/${extractor._id}`}
                         className="btn btn-success btn-xs"
                       >
-                        <Icon icon="bars" />
-                        &nbsp;
                         <Translate>Review</Translate>
                       </I18NLink>
                     </td>

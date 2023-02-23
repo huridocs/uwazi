@@ -32,6 +32,7 @@ type MultiSelectProps<ValueType> = {
   sortbyLabel: boolean;
   forceHoist: boolean;
   placeholder: string;
+  className?: string;
   onChange: (_v: any) => void;
   onFilter: (_searchTerm: string) => void;
   totalPossibleOptions: number;
@@ -44,6 +45,7 @@ const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
   prefix: '',
+  className: '',
   options: [] as Option[],
   filter: '',
   optionsToShow: 5,
@@ -500,7 +502,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   render() {
-    const { optionsLabel } = this.props;
+    const { optionsLabel, className } = this.props;
 
     let totalOptions = this.props.options.filter(option => {
       let notDefined;
@@ -567,7 +569,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     }) as Option[];
 
     return (
-      <ul className="multiselect is-active">
+      <ul className={`multiselect is-active ${className}`}>
         {this.renderSearch()}
         {!renderingOptions.length && (
           <span className="no-options-message">{t('System', 'No options found')}</span>

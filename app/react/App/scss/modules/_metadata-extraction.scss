@@ -1,6 +1,21 @@
 .metadata-extraction-table {
   .table tr th {
-    border-bottom: 0;
+    border: 1px solid #f5f5f5;
+    background: #f5f5f5;
+    border-radius: 6px 6px 0px 0px;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    color: #272727;
+
+    &:first-of-type {
+      padding-left: 17px;
+    }
+
+    span.extractor-checkbox {
+      margin-right: 20px;
+    }
   }
   .table tr:first-of-type td {
     border-top: 0;
@@ -8,7 +23,24 @@
   .table > tbody > tr > td {
     vertical-align: middle;
     text-align: left;
-    padding: 10px 0px;
+    padding: 8px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+
+    &.templateNameViewer > span {
+      padding-right: 10px;
+    }
+
+    span.extractor-checkbox {
+      margin-right: 10px;
+    }
+
+    &:last-of-type {
+      width: 90px;
+    }
   }
 }
 
@@ -32,6 +64,7 @@
   min-height: 100px;
   min-width: 400px;
   padding: 16px 20px 20px;
+  border-radius: 6px;
 
   .modal-header {
     border-bottom: none;
@@ -54,6 +87,7 @@
       span {
         margin-left: 5px;
         font-style: normal;
+        font-weight: 400;
       }
     }
   }
@@ -79,6 +113,19 @@
       font-weight: 400;
       font-size: 12px;
       line-height: 14px;
+    }
+
+    .ix-extraction-multiselect {
+      .multiselect-group {
+        margin-bottom: 8px;
+
+        .multiselectItem-name {
+          font-style: normal;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 19px;
+        }
+      }
     }
   }
 

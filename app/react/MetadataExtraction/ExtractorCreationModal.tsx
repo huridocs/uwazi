@@ -100,6 +100,7 @@ export const ExtractorCreationModal = ({
         />
         <div className="property-selection">
           <MultiSelect
+            className="ix-extraction-multiselect"
             value={values}
             onChange={setValues}
             options={options}
