@@ -163,14 +163,16 @@ class DocumentSidePanel extends Component {
     } = this.props;
 
     const summary = connectionsGroups.reduce(
-      (summaryData, g) => {
-        g.get('templates').forEach(template => {
-          summaryData.totalConnections += template.get('count');
+      (summaryData, group) => {
+        const summarizedData = { ...summaryData };
+        group.get('templates').forEach(template => {
+          summarizedData.totalConnections += template.get('count');
         });
-        return summaryData;
+        return summarizedData;
       },
       { totalConnections: 0 }
     );
+
     return (
       <>
         <div className="sidepanel-header">
