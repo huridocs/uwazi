@@ -4,12 +4,14 @@ import { Checkbox } from 'flowbite-react';
 import { Table } from './Table';
 
 const TableStory = {
-  title: 'Components/LocalTable',
+  title: 'Components/Table',
   component: Table,
 };
 
 const Template: ComponentStory<typeof Table> = args => (
-  <Table columns={args.columns} data={args.data} />
+  <div className="tw-content">
+    <Table columns={args.columns} data={args.data} />
+  </div>
 );
 
 const Basic = Template.bind({});
