@@ -2,12 +2,12 @@ const wp = require('@cypress/webpack-preprocessor');
 
 const webpackOptions = {
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.tsx', '.js'],
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.ts$|\.tsx/,
         exclude: [/node_modules/],
         use: [
           {

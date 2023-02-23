@@ -20,7 +20,7 @@ module.exports = {
     <style>
       html {
         /* This shold match the application globals */
-        font-family: sans;
+        font-family: sans-serif;
         font-size: 16px;
       }
     </style>
