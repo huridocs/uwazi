@@ -1,5 +1,3 @@
-import '@testing-library/cypress/add-commands';
-
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -39,7 +37,6 @@ import '@testing-library/cypress/add-commands';
 Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   //@ts-ignore
   cy.wrap(subject).trigger('mousedown').then(fn).trigger('mouseup');
-
   cy.document().trigger('selectionchange');
   return cy.wrap(subject);
 });

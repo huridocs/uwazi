@@ -6,5 +6,3 @@ import './commands';
 import './component';
 
 setGlobalConfig(sbPreview);
-
-cy.configureCypressTestingLibrary();
