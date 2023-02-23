@@ -62,7 +62,9 @@
     "prestorybook": "yarn tailwind",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "cy-components": "cypress run --component --config video=false",
+    "cy-e2e": "cypress run"
   },
   "jest": {
     "projects": [
