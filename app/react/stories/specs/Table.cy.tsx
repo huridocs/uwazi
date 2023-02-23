@@ -1,12 +1,12 @@
 import React from 'react';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/testing-react';
-import _ from 'lodash';
-import * as stories from '../LocalTable.stories';
+import { map } from 'lodash';
+import * as stories from '../Table.stories';
 
 const { Basic } = composeStories(stories);
 
-describe('LocalTable.cy.tsx', () => {
+describe('Table', () => {
   beforeEach(() => {
     mount(<Basic />);
   });
@@ -18,7 +18,7 @@ describe('LocalTable.cy.tsx', () => {
   };
 
   it('Should return a table with the columns and row specified', () => {
-    const toStrings = (cells: JQuery<HTMLElement>) => _.map(cells, 'textContent');
+    const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['', 'Icon', 'Title', 'Date added']);
     cy.get('tbody>tr td').get('[type="checkbox"]');
 

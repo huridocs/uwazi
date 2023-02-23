@@ -13,7 +13,7 @@ import {
   UseSortByOptions,
 } from 'react-table';
 
-import { Table } from 'flowbite-react';
+import { Table as FlowbiteTable } from 'flowbite-react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 type TableColumn = ReadonlyArray<
@@ -23,12 +23,12 @@ type TableColumn = ReadonlyArray<
     }
 >;
 
-interface LocalTableProps {
+interface TableProps {
   columns: TableColumn;
   data: { [key: string]: any }[];
 }
 
-export const LocalTable = ({ columns, data }: LocalTableProps) => {
+const Table = ({ columns, data }: TableProps) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
       columns,
@@ -43,36 +43,41 @@ export const LocalTable = ({ columns, data }: LocalTableProps) => {
 
   return (
     <div className="tw-content">
-      <Table {...getTableProps()} className="font-sans table-auto">
-        <Table.Head className="text-xs !text-gray-500 !font-medium ">
+      <FlowbiteTable {...getTableProps()} className="font-sans table-auto">
+        <FlowbiteTable.Head className="text-xs !text-gray-500 !font-medium ">
           {headerGroups.map((headerGroup: HeaderGroup<any>) =>
             headerGroup.headers.map((column: any) => (
-              <Table.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+              <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
                 <div className="flex flex-row">
                   {column.render('Header')}
                   {Boolean(column.Header && !column.disableSortBy) && (
                     <ChevronUpDownIcon className="w-4" />
                   )}
                 </div>
-              </Table.HeadCell>
+              </FlowbiteTable.HeadCell>
             ))
           )}
-        </Table.Head>
-        <Table.Body {...getTableBodyProps()} className="text-sm !text-gray-900  !font-semibold">
+        </FlowbiteTable.Head>
+        <FlowbiteTable.Body
+          {...getTableBodyProps()}
+          className="text-sm !text-gray-900  !font-semibold"
+        >
           {rows.map((row: Row<any>) => {
             prepareRow(row);
             return (
-              <Table.Row {...row.getRowProps()}>
+              <FlowbiteTable.Row {...row.getRowProps()}>
                 {row.cells.map(cell => (
-                  <Table.Cell {...cell.getCellProps({ className: cell.column.className })}>
+                  <FlowbiteTable.Cell {...cell.getCellProps({ className: cell.column.className })}>
                     {cell.render('Cell')}
-                  </Table.Cell>
+                  </FlowbiteTable.Cell>
                 ))}
-              </Table.Row>
+              </FlowbiteTable.Row>
             );
           })}
-        </Table.Body>
-      </Table>
+        </FlowbiteTable.Body>
+      </FlowbiteTable>
     </div>
   );
 };
+
+export { Table };

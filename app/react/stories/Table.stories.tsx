@@ -1,28 +1,24 @@
-/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-
 import { Checkbox } from 'flowbite-react';
-import { LocalTable } from './LocalTable';
+import { Table } from './Table';
 
-const LocalTableStory = {
+const TableStory = {
   title: 'Components/LocalTable',
-  component: LocalTable,
-
-  argTypes: {
-    columns: {
-      label: 'columns',
-    },
-  },
+  component: Table,
 };
 
-const Template: ComponentStory<typeof LocalTable> = args => <LocalTable {...args} />;
+const Template: ComponentStory<typeof Table> = args => (
+  <Table columns={args.columns} data={args.data} />
+);
 
 const Basic = Template.bind({});
 
+const checkboxCell = () => <Checkbox />;
+
 Basic.args = {
   columns: [
-    { id: 'select', Header: '', Cell: () => <Checkbox /> },
+    { id: 'select', Header: '', Cell: checkboxCell },
     { Header: 'Icon', accessor: 'icon', disableSortBy: true },
     { Header: 'Title', accessor: 'title', id: 'title' },
     { Header: 'Date added', accessor: 'created', disableSortBy: true, className: 'italic' },
@@ -34,4 +30,5 @@ Basic.args = {
 };
 
 export { Basic };
-export default LocalTableStory as ComponentMeta<typeof LocalTable>;
+
+export default TableStory as ComponentMeta<typeof Table>;
