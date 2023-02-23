@@ -2191,6 +2191,13 @@
   dependencies:
     regenerator-runtime "^0.13.11"
 
+"@babel/runtime@^7.14.6":
+  version "7.21.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.21.0.tgz#5b55c9d394e5fcf304909a8b00c07dc217b56673"
+  integrity sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/runtime@~7.5.4":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.5.5.tgz#74fba56d35efbeca444091c7850ccd494fd2f132"
@@ -4321,7 +4328,15 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@testing-library/dom@^8.3.0":
+"@testing-library/cypress@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-9.0.0.tgz#3facad49c4654a99bbd138f83f33b415d2d6f097"
+  integrity sha512-c1XiCGeHGGTWn0LAU12sFUfoX3qfId5gcSE2yHode+vsyHDWraxDPALjVnHd4/Fa3j4KBcc5k++Ccy6A9qnkMA==
+  dependencies:
+    "@babel/runtime" "^7.14.6"
+    "@testing-library/dom" "^8.1.0"
+
+"@testing-library/dom@^8.1.0", "@testing-library/dom@^8.3.0":
   version "8.20.0"
   resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-8.20.0.tgz#914aa862cef0f5e89b98cc48e3445c4c921010f6"
   integrity sha512-d9ULIT+a4EXLX3UU8FBjauG9NnsZHkHztXoIcTsOKoOw030fyjheN9svkTULjJxtYag9DZz5Jz5qkWZDPxTFwA==
@@ -5126,10 +5141,10 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
-"@types/react-table@^7.7.6":
-  version "7.7.7"
-  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.7.7.tgz#503be1ce2e06857c11b281629f539358d32671f9"
-  integrity sha512-3l2TP4detx9n5Jt44XhdH7Ku6PYwz6kB83P8W+YcBMUkIHtiw2gsCCcq9c4wyCIcdSwcTlWZ9WqH4PF7Yfbprg==
+"@types/react-table@^7.7.14":
+  version "7.7.14"
+  resolved "https://registry.yarnpkg.com/@types/react-table/-/react-table-7.7.14.tgz#b880f1ae140ed065bca2e21b3008ca1ebe71595a"
+  integrity sha512-TYrv7onCiakaG1uAu/UpQ9FojNEt/4/ht87EgJQaEGFoWV606ZLWUZAcUHzMxgc3v1mywP1cDyz3qB4ho3hWOw==
   dependencies:
     "@types/react" "*"
 
@@ -17766,10 +17781,10 @@ react-table-sticky@^1.1.3:
   resolved "https://registry.yarnpkg.com/react-table-sticky/-/react-table-sticky-1.1.3.tgz#af27c0afb2c4a32c292d486b21d9a896d354ba70"
   integrity sha512-9hyjbveY1aDyo9wkyMOsmKIpQdFUaw2yG6/f8c5SPE4pOTuKm7L2zLnDa+AxpG+3315USulViaO4XSOkX1KdVA==
 
-react-table@^7.7.0:
-  version "7.7.0"
-  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.7.0.tgz#e2ce14d7fe3a559f7444e9ecfe8231ea8373f912"
-  integrity sha512-jBlj70iBwOTvvImsU9t01LjFjy4sXEtclBovl3mTiqjz23Reu0DKnRza4zlLtOPACx6j2/7MrQIthIK1Wi+LIA==
+react-table@^7.8.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.8.0.tgz#07858c01c1718c09f7f1aed7034fcfd7bda907d2"
+  integrity sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==
 
 react-tabs-redux@4.0.0:
   version "4.0.0"

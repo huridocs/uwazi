@@ -16,11 +16,18 @@ import {
 import { Table } from 'flowbite-react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
+type TableColumn = ReadonlyArray<
+  Column<any> &
+    UseSortByOptions<any> & {
+      className?: string;
+    }
+>;
+
 interface LocalTableProps {
   /**
    * Column definition
    */
-  columns: ReadonlyArray<Column<any> & UseSortByOptions<any>>;
+  columns: TableColumn;
   /**
    * Data content
    */
@@ -32,14 +39,6 @@ export const LocalTable = ({ columns, data }: LocalTableProps) => {
     {
       columns,
       data,
-      initialState: {
-        sortBy: [
-          {
-            id: 'title',
-            desc: false,
-          },
-        ],
-      },
     },
     useFilters,
     useSortBy,

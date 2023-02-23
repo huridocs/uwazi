@@ -21,12 +21,13 @@ describe('LocalTable.cy.tsx', () => {
     const toStrings = (cells: JQuery<HTMLElement>) => _.map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['', 'Icon', 'Title', 'Date added']);
     cy.get('tbody>tr td').get('[type="checkbox"]');
+
     checkRowContent(1, ['check', 'Entity 1', '1676306456']);
     checkRowContent(2, ['plus', 'Entity 2', '1676425085']);
   });
 
   it('Should be sortable by title', () => {
-    cy.get('tr th').contains('Title').click();
+    cy.findAllByText('Title').click();
     checkRowContent(1, ['plus', 'Entity 2', '1676425085']);
     checkRowContent(2, ['check', 'Entity 1', '1676306456']);
   });

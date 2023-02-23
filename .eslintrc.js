@@ -8,11 +8,20 @@ module.exports = {
     jest: true,
     jasmine: true,
     es6: true,
+    'cypress/globals': true,
   },
   parserOptions: {
     ecmaVersion: 2020,
   },
-  plugins: ['react', 'jest', '@typescript-eslint', 'prettier', 'node', 'react-hooks'],
+  plugins: [
+    'react',
+    'jest',
+    '@typescript-eslint',
+    'prettier',
+    'node',
+    'react-hooks',
+    'eslint-plugin-cypress',
+  ],
   rules: {
     'prettier/prettier': ['error', { requirePragma: false }],
     'node/no-restricted-import': [
@@ -185,6 +194,7 @@ module.exports = {
     },
     {
       files: ['app/**/specs/*'],
+      excludedFiles: './**/*.cy.tsx',
       rules: {
         'max-lines-per-function': 'off',
         'max-lines': 'off',
@@ -192,6 +202,7 @@ module.exports = {
     },
     {
       files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
+      excludedFiles: './**/*.cy.tsx',
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: './tsconfig.json',
@@ -199,7 +210,7 @@ module.exports = {
       rules: { ...rules },
     },
     {
-      files: ['cypress/**/*.ts', 'cypress/**/*.d.ts'],
+      files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
         project: './cypress/tsconfig.json',
