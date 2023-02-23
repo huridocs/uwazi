@@ -10,7 +10,7 @@ const TableStory = {
 
 const Template: ComponentStory<typeof Table> = args => (
   <div className="tw-content">
-    <Table columns={args.columns} data={args.data} />
+    <Table columns={args.columns} data={args.data} title={args.title} />
   </div>
 );
 
@@ -29,6 +29,7 @@ Basic.args = {
     { title: 'Entity 1', created: 1676306456, icon: 'check' },
     { title: 'Entity 2', created: 1676425085, icon: 'plus' },
   ],
+  title: 'Table name',
 };
 
 export { Basic };

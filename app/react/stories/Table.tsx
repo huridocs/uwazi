@@ -26,9 +26,10 @@ type TableColumn = ReadonlyArray<
 interface TableProps {
   columns: TableColumn;
   data: { [key: string]: any }[];
+  title?: string;
 }
 
-const Table = ({ columns, data }: TableProps) => {
+const Table = ({ columns, data, title }: TableProps) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
       columns,
@@ -43,6 +44,11 @@ const Table = ({ columns, data }: TableProps) => {
 
   return (
     <FlowbiteTable {...getTableProps()}>
+      {title && (
+        <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
+          {title}
+        </caption>
+      )}
       <FlowbiteTable.Head>
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
           headerGroup.headers.map((column: any) => (
