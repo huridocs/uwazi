@@ -26,8 +26,9 @@ Basic.args = {
     { Header: 'Date added', accessor: 'created', disableSortBy: true, className: 'italic' },
   ],
   data: [
-    { title: 'Entity 1', created: 1676306456, icon: 'check' },
-    { title: 'Entity 2', created: 1676425085, icon: 'plus' },
+    { title: 'Entity 2', created: 2, icon: 'plus' },
+    { title: 'Entity 1', created: 1, icon: 'check' },
+    { title: 'Entity 3', created: 3, icon: 'flag' },
   ],
   title: 'Table name',
 };

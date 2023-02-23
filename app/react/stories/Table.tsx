@@ -14,7 +14,7 @@ import {
 } from 'react-table';
 
 import { Table as FlowbiteTable } from 'flowbite-react';
-import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 type TableColumn = ReadonlyArray<
   Column<any> &
@@ -28,6 +28,19 @@ interface TableProps {
   data: { [key: string]: any }[];
   title?: string;
 }
+
+const getIcon = (column: any) => {
+  switch (true) {
+    case Boolean(column.isSorted && !column.isSortedDesc):
+      return <ChevronUpIcon className="w-4" />;
+    case Boolean(column.isSortedDesc):
+      return <ChevronDownIcon className="w-4" />;
+    case Boolean(!column.isSorted):
+      return <ChevronUpDownIcon className="w-4" />;
+    default:
+      return <ChevronUpDownIcon className="w-4" />;
+  }
+};
 
 const Table = ({ columns, data, title }: TableProps) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
@@ -55,9 +68,7 @@ const Table = ({ columns, data, title }: TableProps) => {
             <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
               <div className="flex flex-row">
                 {column.render('Header')}
-                {Boolean(column.Header && !column.disableSortBy) && (
-                  <ChevronUpDownIcon className="w-4" />
-                )}
+                {column.Header && !column.disableSortBy && getIcon(column)}
               </div>
             </FlowbiteTable.HeadCell>
           ))

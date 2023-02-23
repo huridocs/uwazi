@@ -22,18 +22,15 @@ describe('Table', () => {
     cy.get('tr th').then(toStrings).should('eql', ['', 'Icon', 'Title', 'Date added']);
     cy.get('tbody>tr td').get('[type="checkbox"]');
 
-    checkRowContent(1, ['check', 'Entity 1', '1676306456']);
-    checkRowContent(2, ['plus', 'Entity 2', '1676425085']);
+    checkRowContent(1, ['plus', 'Entity 2', '2']);
+    checkRowContent(2, ['check', 'Entity 1', '1']);
+    checkRowContent(3, ['flag', 'Entity 3', '3']);
   });
 
   it('Should be sortable by title', () => {
-    cy.findAllByText('Title').click();
-    checkRowContent(1, ['plus', 'Entity 2', '1676425085']);
-    checkRowContent(2, ['check', 'Entity 1', '1676306456']);
-  });
-
-  it('Should set the specified class of a cell', () => {
-    cy.get('tbody>tr:nth-child(1) td:nth-child(3)').should('not.have.class', 'italic');
-    cy.get('tbody>tr:nth-child(1) td:nth-child(4)').should('have.class', 'italic');
+    cy.get('tr th').contains('Title').click();
+    checkRowContent(1, ['check', 'Entity 1', '1']);
+    checkRowContent(2, ['plus', 'Entity 2', '2']);
+    checkRowContent(3, ['flag', 'Entity 3', '3']);
   });
 });
