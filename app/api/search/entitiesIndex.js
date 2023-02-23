@@ -4,16 +4,23 @@ import entities from 'api/entities';
 import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { elastic } from './elastic';
-import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import { ElasticEntityTransformer } from 'api/entities.v2/database/elastic/ElasticEntityTransformer';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
-import { inspect } from 'util';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import { elastic } from './elastic';
 
 export class IndexError extends Error {}
 
 const preprocessEntitiesToIndex = entitiesToIndex => {
-  // TODO: map newRelationship properties values into the values of the inherited property.
-  return entitiesToIndex;
+  const templateDS = new MongoTemplatesDataSource(
+    getConnection(),
+    new MongoTransactionManager(getClient())
+  );
+  const transformer = new ElasticEntityTransformer(templateDS);
+  return Promise.all(entitiesToIndex.map(e => transformer.transform(e)));
 };
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
