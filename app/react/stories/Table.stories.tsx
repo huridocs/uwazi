@@ -23,7 +23,7 @@ Basic.args = {
     { id: 'select', Header: '', Cell: checkboxCell },
     { Header: 'Icon', accessor: 'icon', disableSortBy: true },
     { Header: 'Title', accessor: 'title', id: 'title' },
-    { Header: 'Date added', accessor: 'created', disableSortBy: true, className: 'italic' },
+    { Header: 'Date added', accessor: 'created', disableSortBy: true },
   ],
   data: [
     { title: 'Entity 2', created: 2, icon: 'plus' },

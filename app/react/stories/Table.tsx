@@ -11,34 +11,31 @@ import {
   useTable,
   useSortBy,
   UseSortByOptions,
+  UseSortByColumnProps,
 } from 'react-table';
 
 import { Table as FlowbiteTable } from 'flowbite-react';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
-type TableColumn = ReadonlyArray<
-  Column<any> &
-    UseSortByOptions<any> & {
-      className?: string;
-    }
->;
+type TableColumn<T extends object> = Column<T> &
+  UseSortByOptions<any> &
+  Partial<UseSortByColumnProps<T>>;
 
 interface TableProps {
-  columns: TableColumn;
+  columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string;
 }
 
-const getIcon = (column: any) => {
+const getIcon = (column: TableColumn<any>) => {
   switch (true) {
-    case column.isSorted && !column.isSortedDesc:
-      return <ChevronUpIcon className="w-4" />;
-    case column.isSortedDesc:
-      return <ChevronDownIcon className="w-4" />;
     case !column.isSorted:
       return <ChevronUpDownIcon className="w-4" />;
+    case !column.isSortedDesc:
+      return <ChevronUpIcon className="w-4" />;
+    case column.isSortedDesc:
     default:
-      return <ChevronUpDownIcon className="w-4" />;
+      return <ChevronDownIcon className="w-4" />;
   }
 };
 
