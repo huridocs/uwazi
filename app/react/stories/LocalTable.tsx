@@ -24,13 +24,7 @@ type TableColumn = ReadonlyArray<
 >;
 
 interface LocalTableProps {
-  /**
-   * Column definition
-   */
   columns: TableColumn;
-  /**
-   * Data content
-   */
   data: { [key: string]: any }[];
 }
 

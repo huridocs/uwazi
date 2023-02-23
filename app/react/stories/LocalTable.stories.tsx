@@ -6,7 +6,7 @@ import { Checkbox } from 'flowbite-react';
 import { LocalTable } from './LocalTable';
 
 const LocalTableStory = {
-  title: 'Example/LocalTable',
+  title: 'Components/LocalTable',
   component: LocalTable,
 
   argTypes: {
