@@ -1,7 +1,7 @@
 import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/utils/api';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { IXExtractorInfo } from './ExtractorCreationModal';
+import { IXExtractorInfo } from './ExtractorModal';
 
 const getSuggestions = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('suggestions', requestParams);
@@ -52,6 +52,11 @@ const deleteExtractors = async (requestParams: RequestParams<string[]>) => {
   return response;
 };
 
+const updateExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
+  const { json: response } = await api.put('ixextractors', requestParams);
+  return response;
+};
+
 export {
   getSuggestions,
   getStats,
@@ -62,4 +67,5 @@ export {
   getAllExtractors,
   createExtractor,
   deleteExtractors,
+  updateExtractor,
 };

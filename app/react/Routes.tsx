@@ -89,7 +89,7 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
         element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
       />
       <Route
-        path="metadata_extraction/suggestions/:propertyName"
+        path="metadata_extraction/suggestions/:extractorId"
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">

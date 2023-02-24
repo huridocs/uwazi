@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
-
+import { RequestParams } from 'app/utils/RequestParams';
 import { Translate, I18NLink } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
@@ -12,8 +12,12 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
-import { loadExtractors, createExtractor, deleteExtractors } from './actions/actions';
-import { IXExtractorInfo, ExtractorCreationModal } from './ExtractorCreationModal';
+import { loadExtractors, deleteExtractors } from './actions/actions';
+import { IXExtractorInfo, ExtractorModal } from './ExtractorModal';
+import {
+  createExtractor as createExtractorAPICall,
+  updateExtractor as updateExtractorAPICall,
+} from './SuggestionsAPI';
 
 type indexedTemplates = {
   [k: string]: {
@@ -42,11 +46,12 @@ class MetadataExtractionComponent extends React.Component<
 > {
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
-    this.createExtractor = this.createExtractor.bind(this);
+    this.saveExtractor = this.saveExtractor.bind(this);
     this.deleteExtractors = this.deleteExtractors.bind(this);
     this.state = {
-      creationModelIsOpen: false,
+      extractorModelIsOpen: false,
       selectedExtractorIds: new Set<string>(),
+      extractorToEdit: undefined,
     };
   }
 
@@ -64,9 +69,17 @@ class MetadataExtractionComponent extends React.Component<
     this.setState({ selectedExtractorIds });
   }
 
-  async createExtractor(extractorInfo: IXExtractorInfo) {
-    await this.props.createExtractor(extractorInfo);
-    this.setState({ creationModelIsOpen: false });
+  async saveExtractor(extractorInfo: IXExtractorInfo) {
+    const params = new RequestParams(extractorInfo);
+    if (extractorInfo._id) {
+      await updateExtractorAPICall(params);
+      this.setState({ selectedExtractorIds: new Set<string>() });
+    } else {
+      await createExtractorAPICall(params);
+    }
+
+    this.props.loadExtractors();
+    this.setState({ extractorModelIsOpen: false });
   }
 
   async deleteExtractors() {
@@ -138,11 +151,12 @@ class MetadataExtractionComponent extends React.Component<
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>
-          <ExtractorCreationModal
-            isOpen={this.state.creationModelIsOpen}
-            onClose={() => this.setState({ creationModelIsOpen: false })}
-            onAccept={this.createExtractor}
+          <ExtractorModal
+            isOpen={this.state.extractorModelIsOpen}
+            onClose={() => this.setState({ extractorModelIsOpen: false })}
+            onAccept={this.saveExtractor}
             templates={this.props.templates.toJS()}
+            extractor={this.state.extractorToEdit}
           />
           <div className="metadata-extraction-table">
             <table className="table">
@@ -211,7 +225,18 @@ class MetadataExtractionComponent extends React.Component<
           <div className="settings-footer">
             <div className="btn-cluster">
               {this.state.selectedExtractorIds.size > 0 ? (
-                <button className="btn btn-default" type="button">
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={() => {
+                    const selectedExtractorId = Array.from(this.state.selectedExtractorIds)[0];
+                    const extractorToEdit = this.props.ixExtractors
+                      .toJS()
+                      .find((extractor: IXExtractorInfo) => extractor._id === selectedExtractorId);
+                    this.setState({ extractorToEdit });
+                    this.setState({ extractorModelIsOpen: true });
+                  }}
+                >
                   <Translate>Edit Extractor</Translate>
                 </button>
               ) : (
@@ -219,7 +244,7 @@ class MetadataExtractionComponent extends React.Component<
                   className="btn btn-default"
                   type="button"
                   onClick={() => {
-                    this.setState({ creationModelIsOpen: true });
+                    this.setState({ extractorModelIsOpen: true });
                   }}
                 >
                   <Translate>Create Extractor</Translate>
@@ -243,7 +268,6 @@ export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
   settings: IImmutable<ClientSettings>;
   ixExtractors: IImmutable<IXExtractorInfo[]>;
-  createExtractor: (extractorInfo: IXExtractorInfo) => void;
   deleteExtractors: (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => void;
   loadExtractors: () => void;
 }
@@ -256,12 +280,13 @@ export interface FormattedSettingsData {
 }
 
 export interface MetadataExtractionDashboardStateTypes {
-  creationModelIsOpen: boolean;
+  extractorModelIsOpen: boolean;
   selectedExtractorIds: Set<string>;
+  extractorToEdit?: IXExtractorInfo;
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ createExtractor, deleteExtractors, loadExtractors }, dispatch);
+  bindActionCreators({ deleteExtractors, loadExtractors }, dispatch);
 
 export const MetadataExtractionDashboard = connect(
   mapStateToProps,

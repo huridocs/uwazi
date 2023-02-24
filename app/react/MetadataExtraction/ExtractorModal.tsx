@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'app/Layout/Modal';
 import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
@@ -14,21 +14,37 @@ export interface IXExtractorInfo {
   templates: string[];
 }
 
-export interface ExtractorCreationModalProps {
+export interface ExtractorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (extractorInfo: IXExtractorInfo) => void;
   templates: TemplateSchema[];
+  extractor?: IXExtractorInfo;
 }
 
-export const ExtractorCreationModal = ({
+export const ExtractorModal = ({
   isOpen,
   onClose,
   onAccept,
   templates,
-}: ExtractorCreationModalProps) => {
+  extractor,
+}: ExtractorModalProps) => {
   const [name, setName] = useState('');
   const [values, setValues] = useState<string[]>([]);
+  const [isEditing, setEditing] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (extractor) {
+      setEditing(true);
+      setName(extractor.name);
+      const initialValues = extractor.templates.map(
+        template => template + '-' + extractor.property
+      );
+      setValues(initialValues);
+    } else {
+      setEditing(false);
+    }
+  }, [extractor]);
 
   const filter = values.length ? values[0].split('-', 2)[1] : null;
   const options = templates.map(template => ({
@@ -59,13 +75,20 @@ export const ExtractorCreationModal = ({
   }));
 
   const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+    setEditing(false);
     const result: null | IXExtractorInfo = submitedValues.length
       ? {
+          _id: undefined,
           name: submittedName,
           property: submitedValues[0].split('-', 2)[1],
           templates: submitedValues.map(value => value.split('-', 2)[0]),
         }
       : null;
+
+    if (isEditing && result && extractor) {
+      result._id = extractor._id;
+    }
+
     if (result === null) {
       onClose();
     } else {
@@ -74,6 +97,7 @@ export const ExtractorCreationModal = ({
   };
 
   const handleClose = () => {
+    setEditing(false);
     setName('');
     setValues([]);
     onClose();
@@ -83,7 +107,11 @@ export const ExtractorCreationModal = ({
     <Modal isOpen={isOpen} type="content" className="extractor-creation-modal">
       <Modal.Header>
         <div className="extractor-label">
-          <Translate>Add property</Translate>
+          {isEditing ? (
+            <Translate>Edit extractor</Translate>
+          ) : (
+            <Translate>Create extractor</Translate>
+          )}
         </div>
         <div className="all-templates-checkbox">
           <input type="checkbox" />
@@ -126,7 +154,7 @@ export const ExtractorCreationModal = ({
             className="btn btn-default action-button btn-extra-padding"
             onClick={() => handleSubmit(name, values)}
           >
-            <Translate>Add</Translate>
+            {isEditing ? <Translate>Save</Translate> : <Translate>Add</Translate>}
           </button>
         </div>
       </Modal.Footer>
@@ -134,7 +162,7 @@ export const ExtractorCreationModal = ({
   );
 };
 
-export interface ExtractorCreationModalStateType {
+export interface ExtractorModalStateType {
   configurationModalIsOpen: boolean;
-  creationModelIsOpen: boolean;
+  extractorModelIsOpen: boolean;
 }
