@@ -18,6 +18,22 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
+function processRelationshipsV2InMetadata(hit) {
+  const mappedMetadata = {};
+  Object.keys(hit._source.metadata).forEach(propertyName => {
+    mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
+      ({ originalValue, ...inheritedValue }) => {
+        if (originalValue) {
+          return { ...originalValue, inheritedValue: [inheritedValue] };
+        }
+        return hit._source.metadata[propertyName];
+      }
+    );
+  });
+
+  return mappedMetadata;
+}
+
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
     return values;
@@ -481,6 +497,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
     result.permissions = permissionsInformation(hit, user);
+    result.metadata = processRelationshipsV2InMetadata(hit);
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(

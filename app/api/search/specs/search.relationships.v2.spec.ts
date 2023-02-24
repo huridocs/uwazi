@@ -77,8 +77,8 @@ describe('mapping', () => {
     const mapping = await elastic.indices.getMapping();
     const mappedProps = mapping.body[elasticIndex].mappings.properties.metadata.properties;
 
-    expect(mappedProps.relProp1).toEqual(mappedProps.textProp1);
-    expect(mappedProps.relProp2).toEqual(mappedProps.dateProp1);
+    expect(mappedProps.relProp1).toMatchObject(mappedProps.textProp1);
+    expect(mappedProps.relProp2).toMatchObject(mappedProps.dateProp1);
   });
 });
 
@@ -89,8 +89,8 @@ describe('indexing', () => {
       e => e._source.sharedId === 'entity1'
     )!._source;
 
-    expect(entityWithRelationships.metadata!.relProp1).toEqual([{ value: 'text_content' }]);
-    expect(entityWithRelationships.metadata!.relProp2).toEqual([{ value: 1676688700080 }]);
+    expect(entityWithRelationships.metadata!.relProp1).toMatchObject([{ value: 'text_content' }]);
+    expect(entityWithRelationships.metadata!.relProp2).toMatchObject([{ value: 1676688700080 }]);
   });
 });
 
@@ -101,5 +101,22 @@ describe('searching', () => {
 
     results = await search.search({ filters: { relProp1: 'text_content' } }, 'en');
     expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
+  });
+
+  it('should transform the relationship properties back to the shape of the database for compatibility', async () => {
+    const results = await search.search({ ids: 'entity1' }, 'en');
+    expect(results.rows).toMatchObject([
+      {
+        sharedId: 'entity1',
+        metadata: {
+          relProp1: [
+            { value: 'entity2', label: 'entity2-en', inheritedValue: [{ value: 'text_content' }] },
+          ],
+          relProp2: [
+            { value: 'entity3', label: 'entity3-en', inheritedValue: [{ value: 1676688700080 }] },
+          ],
+        },
+      },
+    ]);
   });
 });

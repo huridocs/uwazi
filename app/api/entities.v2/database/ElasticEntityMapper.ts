@@ -16,7 +16,12 @@ export class ElasticEntityMapper {
       const property = properties.find(p => p.name === propertyName);
       if (property?.type === 'newRelationship') {
         metadata[propertyName] = (entity.metadata?.[propertyName] || [])
-          .map(value => value.inheritedValue)
+          .map(({ inheritedValue, ...originalValue }) =>
+            inheritedValue!.map(denormalized => ({
+              ...denormalized,
+              originalValue,
+            }))
+          )
           .flat();
       } else {
         metadata[propertyName] = values;
