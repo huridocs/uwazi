@@ -97,31 +97,37 @@ describe('createBlankStates()', () => {
           state: SuggestionState.empty,
           propertyName: 'kind',
           entityId: 'shared1',
+          entityTemplate: factory.id('animalTemplate').toString(),
         }),
         expect.objectContaining({
           state: SuggestionState.empty,
           propertyName: 'kind',
           entityId: 'shared1',
+          entityTemplate: factory.id('animalTemplate').toString(),
         }),
         expect.objectContaining({
           state: SuggestionState.valueEmpty,
           propertyName: 'title',
           entityId: 'shared2',
+          entityTemplate: factory.id('personTemplate').toString(),
         }),
         expect.objectContaining({
           state: SuggestionState.valueEmpty,
           propertyName: 'title',
           entityId: 'shared2',
+          entityTemplate: factory.id('personTemplate').toString(),
         }),
         expect.objectContaining({
           state: SuggestionState.labelEmpty,
           propertyName: 'age',
           entityId: 'shared2',
+          entityTemplate: factory.id('personTemplate').toString(),
         }),
         expect.objectContaining({
           state: SuggestionState.labelEmpty,
           propertyName: 'age',
           entityId: 'shared2',
+          entityTemplate: factory.id('personTemplate').toString(),
         }),
       ])
     );
