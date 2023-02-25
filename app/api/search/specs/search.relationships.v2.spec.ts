@@ -119,4 +119,23 @@ describe('searching', () => {
       },
     ]);
   });
+
+  it('should not transform fields that are not new relationships', async () => {
+    const results = await search.search({}, 'en');
+    expect(results.rows).toMatchObject([
+      { sharedId: 'entity1' },
+      {
+        sharedId: 'entity2',
+        metadata: {
+          textProp1: [{ value: 'text_content' }],
+        },
+      },
+      {
+        sharedId: 'entity3',
+        metadata: {
+          dateProp1: [{ value: 1676688700080 }],
+        },
+      },
+    ]);
+  });
 });

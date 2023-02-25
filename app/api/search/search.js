@@ -22,11 +22,11 @@ function processRelationshipsV2InMetadata(hit) {
   const mappedMetadata = {};
   Object.keys(hit._source.metadata).forEach(propertyName => {
     mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
-      ({ originalValue, ...inheritedValue }) => {
+      ({ originalValue, ...rest }) => {
         if (originalValue) {
-          return { ...originalValue, inheritedValue: [inheritedValue] };
+          return { ...originalValue, inheritedValue: [rest] };
         }
-        return hit._source.metadata[propertyName];
+        return rest;
       }
     );
   });
