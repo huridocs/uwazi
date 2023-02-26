@@ -18,6 +18,7 @@ beforeEach(async () => {
           fixturesFactory.property('relProp2', 'newRelationship', {
             denormalizedProperty: 'dateProp1',
           }),
+          fixturesFactory.property('relProp3', 'newRelationship'),
         ]),
         fixturesFactory.template('template2', [fixturesFactory.property('textProp1', 'text', {})]),
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
@@ -41,6 +42,14 @@ beforeEach(async () => {
                 label: 'entity3-en',
                 inheritedValue: [{ value: 1676688700080 }],
                 inheritedType: 'date',
+              },
+            ],
+            relProp3: [
+              {
+                value: 'entity3',
+                label: 'entity3-en',
+                inheritedValue: [{ value: 'entity3-en' }],
+                inheritedType: 'text',
               },
             ],
           },
@@ -91,6 +100,7 @@ describe('indexing', () => {
 
     expect(entityWithRelationships.metadata!.relProp1).toMatchObject([{ value: 'text_content' }]);
     expect(entityWithRelationships.metadata!.relProp2).toMatchObject([{ value: 1676688700080 }]);
+    expect(entityWithRelationships.metadata!.relProp3).toMatchObject([{ value: 'entity3-en' }]);
   });
 });
 
@@ -114,6 +124,9 @@ describe('searching', () => {
           ],
           relProp2: [
             { value: 'entity3', label: 'entity3-en', inheritedValue: [{ value: 1676688700080 }] },
+          ],
+          relProp3: [
+            { value: 'entity3', label: 'entity3-en', inheritedValue: [{ value: 'entity3-en' }] },
           ],
         },
       },

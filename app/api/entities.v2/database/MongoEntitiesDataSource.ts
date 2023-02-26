@@ -14,17 +14,15 @@ import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 async function defineGraphView(
-  mongoDS: MongoEntitiesDataSource,
+  templatesDS: MongoTemplatesDataSource,
   property: EntityJoinTemplate['joinedTemplate'][0]['properties'][0]
 ) {
-  // eslint-disable-next-line dot-notation
-  const templateDataSource = mongoDS['templatesDS'];
-  const denormalizedProperty = property.denormalizedProperty
-    ? await templateDataSource.getPropertyByName(property.denormalizedProperty)
-    : undefined;
-  return denormalizedProperty
-    ? new GraphQueryResultView(denormalizedProperty)
-    : new GraphQueryResultView();
+  if (property.denormalizedProperty) {
+    const denormalizedProperty = await templatesDS.getPropertyByName(property.denormalizedProperty);
+    return new GraphQueryResultView(denormalizedProperty);
+  }
+
+  return new GraphQueryResultView();
 }
 
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
@@ -39,7 +37,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
         (entity.obsoleteMetadata || []).includes(property.name)
       ) {
         const configuredQuery = mapPropertyQuery(property.query);
-        const configuredView = await defineGraphView(this, property);
+        const configuredView = await defineGraphView(this.templatesDS, property);
         const results = await this.relationshipsDS
           .getByQuery(
             new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
@@ -47,6 +45,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
           )
           .all();
         mappedMetadata[property.name] = configuredView.map(results);
+
         await stream.updateOne(
           { sharedId: entity.sharedId, language: entity.language },
           // @ts-ignore
@@ -76,7 +75,7 @@ export class MongoEntitiesDataSource
 
   protected relationshipsDS: MongoRelationshipsDataSource;
 
-  private templatesDS: MongoTemplatesDataSource;
+  protected templatesDS: MongoTemplatesDataSource;
 
   constructor(
     db: Db,

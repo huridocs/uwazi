@@ -2,42 +2,41 @@ import { Entity, MetadataValue } from 'api/entities.v2/model/Entity';
 
 type GraphQueryResult = Entity[];
 
-enum ResultViewTypes {
-  leaf = 'leaf',
-}
-
 type MappedResultValue = {
   value: string;
   label: string;
-  inheritedValue?: MetadataValue[];
-  inheritedType?: string;
+  inheritedValue: MetadataValue[];
+  inheritedType: string;
 };
 
 class GraphQueryResultView {
-  type: ResultViewTypes = ResultViewTypes.leaf;
-
   inheritedProperty?: { name: string; type: string };
 
   constructor(inheritedProperty?: { name: string; type: string }) {
     this.inheritedProperty = inheritedProperty;
   }
 
-  map(queryResult: GraphQueryResult): MappedResultValue[] {
+  private buildInheritedInformation(entity: Entity) {
     if (this.inheritedProperty) {
-      const { name, type } = this.inheritedProperty;
-      return queryResult.map(entity => ({
-        value: entity.sharedId,
-        label: entity.title,
-        inheritedValue: entity.metadata[name],
-        inheritedType: type,
-      }));
+      return {
+        inheritedValue: entity.metadata[this.inheritedProperty.name],
+        inheritedType: this.inheritedProperty.type,
+      };
     }
+
+    return {
+      inheritedValue: [{ value: entity.title }],
+      inheritedType: 'text',
+    };
+  }
+
+  map(queryResult: GraphQueryResult): MappedResultValue[] {
     return queryResult.map(entity => ({
       value: entity.sharedId,
       label: entity.title,
+      ...this.buildInheritedInformation(entity),
     }));
   }
 }
 
-export type { GraphQueryResult, ResultViewTypes };
 export { GraphQueryResultView };
