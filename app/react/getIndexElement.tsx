@@ -9,6 +9,21 @@ import { LibraryCards } from './Library/Library';
 import { Login } from './Users/Login';
 import { ViewerRoute } from './Viewer/ViewerRoute';
 
+const getCustomLibraryPage = (customHomePage: string[]) => {
+  const [query] = customHomePage.filter(path => path.startsWith('?'));
+  const queryString = `(${query.substring(1)})`;
+
+  if (customHomePage.includes('map')) {
+    return <LibraryMap params={{ q: queryString }} />;
+  }
+
+  if (customHomePage.includes('table')) {
+    return <LibraryTable params={{ q: queryString }} />;
+  }
+
+  return <LibraryCards params={{ q: queryString }} />;
+};
+
 const getLibraryDefault = (
   userId: string | undefined,
   defaultLibraryView: string | undefined,
@@ -60,6 +75,10 @@ const getIndexElement = (settings: Settings | undefined, userId: string | undefi
         const pageId = customHomePage[customHomePage.indexOf('entity') + 1];
         element = <ViewerRoute params={{ sharedId: pageId }} />;
       }
+      break;
+
+    case isValidHomePage && customHomePage.includes('library'):
+      element = getCustomLibraryPage(customHomePage);
       break;
 
     default:

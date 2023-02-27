@@ -8,6 +8,7 @@ import { Login } from 'app/Users/Login';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { PageView } from 'app/Pages/PageView';
 import { ViewerRoute } from 'app/Viewer/ViewerRoute';
+import { LibraryMap } from 'app/Library/LibraryMap';
 
 let settings: Settings;
 let userId: string;
@@ -27,7 +28,7 @@ describe('Routes', () => {
     });
 
     describe('custom home page', () => {
-      it('should return the sharedId for the page', () => {
+      it('should return the sharedId when its a custom page', () => {
         settings.home_page = '/page/bnrkwvu2zlb/custom-home-page';
         const { element, parameters } = getIndexElement(settings, userId);
         expect(element).toMatchObject(<PageView params={{ sharedId: 'bnrkwvu2zlb' }} />);
@@ -48,7 +49,16 @@ describe('Routes', () => {
         expect(element).toMatchObject(<ViewerRoute params={{ sharedId: 'entitySharedId' }} />);
       });
 
-      it('should render a library view with the query', () => {});
+      it('should render a library view with the query', () => {
+        settings.home_page =
+          "/library/map/?searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032')";
+        const { element, parameters } = getIndexElement(settings, undefined);
+        expect(parameters).toBeUndefined();
+        expect(element).toMatchObject(<LibraryMap />);
+        expect(element.props.params).toMatchObject({
+          q: "(searchTerm:'mySearch',types:!('63f64f8bd793c9aae9925032'))",
+        });
+      });
     });
 
     describe('private instance', () => {
