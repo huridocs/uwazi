@@ -35,19 +35,21 @@ const getLibraryDefault = (
 };
 
 const getIndexElement = (settings: Settings | undefined, userId: string | undefined) => {
-  const homePage = settings?.home_page;
-  const customHomePage = homePage ? homePage.split('/').filter(v => v) : [];
+  const customHomePage = settings?.home_page ? settings?.home_page.split('/').filter(v => v) : [];
+  let element = <Navigate to={customHomePage.join('/')} />;
+  let parameters;
 
-  if (!validateHomePageRoute(homePage || '') || customHomePage.length === 0) {
-    return getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
+  if (!validateHomePageRoute(settings?.home_page || '') || customHomePage.length === 0) {
+    element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
   }
 
   if (customHomePage.includes('page')) {
     const pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    return <PageView params={{ sharedId: pageId }} />;
+    element = <PageView params={{ sharedId: pageId }} />;
+    parameters = { sharedId: pageId };
   }
 
-  return <Navigate to={customHomePage.join('/')} />;
+  return { element, parameters };
 };
 
 export { getIndexElement };
