@@ -7,6 +7,7 @@ import { Settings } from 'shared/types/settingsType';
 import { Login } from 'app/Users/Login';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { PageView } from 'app/Pages/PageView';
+import { ViewerRoute } from 'app/Viewer/ViewerRoute';
 
 let settings: Settings;
 let userId: string;
@@ -25,40 +26,48 @@ describe('Routes', () => {
       expect(parameters).toBeUndefined();
     });
 
-    it('should return the custom home page sharedId', () => {
-      settings.home_page = '/page/bnrkwvu2zlb/custom-home-page';
-      const { element, parameters } = getIndexElement(settings, userId);
-      expect(element).toMatchObject(<PageView params={{ sharedId: 'bnrkwvu2zlb' }} />);
-      expect(parameters).toMatchObject({ sharedId: 'bnrkwvu2zlb' });
-    });
-
-    it('should redirect to library if the custom homepage is incorrect', () => {
-      settings.home_page = '/incorrect/page';
-      const { element, parameters } = getIndexElement(settings, userId);
-      expect(parameters).toBeUndefined();
-      expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
-    });
-
-    describe('not logged user', () => {
-      it('should go to login if there is not a user and the instance is private', () => {
-        settings.private = true;
-        const { element, parameters } = getIndexElement(settings, undefined);
-        expect(element).toMatchObject(<Login />);
-        expect(parameters).toBeUndefined();
-      });
-
-      it('should replace the route to the default library if there is no user', () => {
-        const { element, parameters } = getIndexElement(settings, undefined);
-        expect(element).toMatchObject(<LibraryTable />);
-        expect(parameters).toBeUndefined();
-      });
-
-      it('should still redirect to the custom homepage', () => {
-        settings.private = true;
+    describe('custom home page', () => {
+      it('should return the sharedId for the page', () => {
         settings.home_page = '/page/bnrkwvu2zlb/custom-home-page';
         const { element, parameters } = getIndexElement(settings, userId);
         expect(element).toMatchObject(<PageView params={{ sharedId: 'bnrkwvu2zlb' }} />);
         expect(parameters).toMatchObject({ sharedId: 'bnrkwvu2zlb' });
+      });
+
+      it('should redirect to library if the custom homepage is incorrect', () => {
+        settings.home_page = '/incorrect/page';
+        const { element, parameters } = getIndexElement(settings, userId);
+        expect(parameters).toBeUndefined();
+        expect(element.props.to).toBe('/library/?q=(includeUnpublished:!t)');
+      });
+
+      it('should render an entity view page when set', () => {
+        settings.home_page = '/entity/entitySharedId';
+        const { element, parameters } = getIndexElement(settings, undefined);
+        expect(parameters).toBeUndefined();
+        expect(element).toMatchObject(<ViewerRoute params={{ sharedId: 'entitySharedId' }} />);
+      });
+
+      it('should render a library view with the query', () => {});
+    });
+
+    describe('private instance', () => {
+      beforeEach(() => {
+        settings.private = true;
+      });
+
+      it('should go to login if there is not a user', () => {
+        const { element, parameters } = getIndexElement(settings, undefined);
+        expect(element).toMatchObject(<Login />);
+        expect(parameters).toBeUndefined();
+      });
+    });
+
+    describe('no logged in user', () => {
+      it('should render the default library view', () => {
+        const { element, parameters } = getIndexElement(settings, undefined);
+        expect(element).toMatchObject(<LibraryTable />);
+        expect(parameters).toBeUndefined();
       });
     });
   });

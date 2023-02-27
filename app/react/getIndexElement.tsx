@@ -7,6 +7,7 @@ import { LibraryTable } from './Library/LibraryTable';
 import { LibraryMap } from './Library/LibraryMap';
 import { LibraryCards } from './Library/Library';
 import { Login } from './Users/Login';
+import { ViewerRoute } from './Viewer/ViewerRoute';
 
 const getLibraryDefault = (
   userId: string | undefined,
@@ -34,19 +35,35 @@ const getLibraryDefault = (
   }
 };
 
+// eslint-disable-next-line max-statements
 const getIndexElement = (settings: Settings | undefined, userId: string | undefined) => {
   const customHomePage = settings?.home_page ? settings?.home_page.split('/').filter(v => v) : [];
+  const isValidHomePage = validateHomePageRoute(settings?.home_page || '');
   let element = <Navigate to={customHomePage.join('/')} />;
   let parameters;
 
-  if (!validateHomePageRoute(settings?.home_page || '') || customHomePage.length === 0) {
-    element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
-  }
+  switch (true) {
+    case !isValidHomePage || customHomePage.length === 0:
+      element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
+      break;
 
-  if (validateHomePageRoute(settings?.home_page || '') && customHomePage.includes('page')) {
-    const pageId = customHomePage[customHomePage.indexOf('page') + 1];
-    element = <PageView params={{ sharedId: pageId }} />;
-    parameters = { sharedId: pageId };
+    case isValidHomePage && customHomePage.includes('page'):
+      {
+        const pageId = customHomePage[customHomePage.indexOf('page') + 1];
+        element = <PageView params={{ sharedId: pageId }} />;
+        parameters = { sharedId: pageId };
+      }
+      break;
+
+    case isValidHomePage && customHomePage.includes('entity'):
+      {
+        const pageId = customHomePage[customHomePage.indexOf('entity') + 1];
+        element = <ViewerRoute params={{ sharedId: pageId }} />;
+      }
+      break;
+
+    default:
+      break;
   }
 
   return { element, parameters };
