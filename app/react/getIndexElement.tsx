@@ -43,7 +43,7 @@ const getIndexElement = (settings: Settings | undefined, userId: string | undefi
     element = getLibraryDefault(userId, settings?.defaultLibraryView, settings?.private);
   }
 
-  if (customHomePage.includes('page')) {
+  if (validateHomePageRoute(settings?.home_page || '') && customHomePage.includes('page')) {
     const pageId = customHomePage[customHomePage.indexOf('page') + 1];
     element = <PageView params={{ sharedId: pageId }} />;
     parameters = { sharedId: pageId };
