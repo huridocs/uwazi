@@ -94,4 +94,40 @@ describe('Custom home page and styles', () => {
       fontSize: '20px',
     });
   });
+
+  it('should allow settings a public entity as a landing page', async () => {
+    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toFill('input[name="home_page"]', '/entity/7ycel666l65vobt9');
+    await expect(page).toClick('button', { text: 'Save' });
+  });
+
+  it('should check that the landing page is the defined entity', async () => {
+    await page.goto(`${host}`);
+    await page.reload();
+    await disableTransitions();
+    await page.waitForSelector('.content-header-title');
+    await expect(page).toMatchElement('.content-header-title > .item-name', {
+      text: 'Corte Interamericana de Derechos Humanos',
+    });
+  });
+
+  it('should allow using a library query as a landing page', async () => {
+    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toFill(
+      'input[name="home_page"]',
+      "/library/table/?types:!('58ada34c299e82674854504b')"
+    );
+    await expect(page).toClick('button', { text: 'Save' });
+  });
+
+  it('should check that the landing page is the defined library query', async () => {
+    await page.goto(`${host}`);
+    await page.reload();
+    await disableTransitions();
+    await page.waitForSelector('.tableview-wrapper > table > tbody > tr');
+    const rowSelector = '.tableview-wrapper > table > tbody > tr.template-58ada34c299e82674854504b';
+    expect((await page.$$(rowSelector)).length).toBe(2);
+  });
 });
