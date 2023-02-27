@@ -1,13 +1,17 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getStats } from '../stats';
+
+const fixtureFactory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   ixsuggestions: [
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -17,6 +21,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -26,6 +31,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -35,6 +41,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -44,6 +51,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -53,6 +61,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -62,6 +71,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -71,6 +81,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -80,6 +91,7 @@ const fixtures: DBFixture = {
     {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -170,6 +182,7 @@ describe('when the property exists', () => {
     const input = {
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',
@@ -206,6 +219,7 @@ describe('when the property exists', () => {
     const inputs = states.map(state => ({
       _id: testingDB.id(),
       entityId: '',
+      entityTemplate: fixtureFactory.id('template').toString(),
       propertyName: 'age',
       suggestedValue: '',
       segment: '',

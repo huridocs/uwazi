@@ -68,6 +68,25 @@ const prepareOptions = (property, location) => {
   });
 };
 
+const getPropertyType = (property, templates) => {
+  if (property.inherit?.property) return property.inherit.type;
+  //relationships v2
+  if (property.denormalizedProperty) {
+    for (let i = 0; i < templates.length; i += 1) {
+      const template = templates[i];
+      const candidateProperty = template.properties.find(
+        p => p.name === property.denormalizedProperty
+      );
+      if (candidateProperty) {
+        return candidateProperty.type;
+      }
+    }
+    return 'text';
+  }
+  // /v2
+  return property.type;
+};
+
 const FiltersFromProperties = ({
   onChange,
   properties,
@@ -81,7 +100,7 @@ const FiltersFromProperties = ({
   return (
     <>
       {properties.map(property => {
-        const { type } = property.inherit?.property ? property.inherit : property;
+        const type = getPropertyType(property, templates);
 
         const commonProps = {
           model: `.filters${modelPrefix}.${property.name}`,

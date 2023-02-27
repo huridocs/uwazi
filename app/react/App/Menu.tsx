@@ -87,6 +87,7 @@ const MenuComponent = ({
   );
 
   const libraryUrl = () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const location = useLocation();
     const searchParams = searchParamsFromLocationSearch(location, 'q') || {};
     const searchTerm = searchParams.searchTerm || '';

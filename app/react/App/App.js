@@ -32,6 +32,7 @@ const App = () => {
     setConfirmOptions(options);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const appContext = useMemo(() => ({ confirm }));
 
   let MenuButtonIcon = 'bars';
