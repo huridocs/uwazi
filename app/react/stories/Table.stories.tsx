@@ -30,7 +30,7 @@ Basic.args = {
     { title: 'Entity 1', created: 1, icon: 'check' },
     { title: 'Entity 3', created: 3, icon: 'flag' },
   ],
-  title: 'Table name',
+  title: <h3>Table name</h3>,
 };
 
 export { Basic };

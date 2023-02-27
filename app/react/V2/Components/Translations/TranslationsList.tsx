@@ -2,8 +2,8 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { Checkbox } from 'flowbite-react';
 import { Translate } from 'app/I18N';
+import { Table } from 'app/stories/Table';
 import { translationsAtom } from './atoms';
-import { Table } from '../Table/Table';
 
 const renderCheckbox = data => <Checkbox />;
 

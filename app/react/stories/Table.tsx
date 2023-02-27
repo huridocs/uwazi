@@ -24,7 +24,7 @@ type TableColumn<T extends object> = Column<T> &
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
-  title?: string;
+  title?: string | React.ReactNode;
 }
 
 const getIcon = (column: TableColumn<any>) => {
