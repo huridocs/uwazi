@@ -34,7 +34,7 @@ export class FormConfigInput extends Component {
         {type === 'newRelationship' && (
           <>
             <br />
-            <div>
+            <div no-translate>
               <b>This is a new relationship!</b>
               <br />
               {this.props.denormalizedProperty && (
