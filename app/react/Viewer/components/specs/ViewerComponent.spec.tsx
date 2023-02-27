@@ -4,15 +4,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import configureStore, { MockStore, MockStoreCreator } from 'redux-mock-store';
 
-import ViewerComponent from 'app/Viewer/components/ViewerComponent';
-import PDFView from 'app/Viewer/PDFView';
+import { ViewerComponent } from 'app/Viewer/components/ViewerComponent';
+import { PDFView } from 'app/Viewer/PDFView';
 import EntityView from 'app/Viewer/EntityView';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>
   shallow(
     <Provider store={store}>
-      <ViewerComponent location={{}} />
+      <ViewerComponent />
     </Provider>
   )
     .dive({ context: { store } })

@@ -3,9 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
-import { withRouter, Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
+import { withRouter } from 'app/componentWrappers';
+import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 
@@ -22,7 +24,7 @@ const getItemsToShow = (fromFilters, templates, settings) => {
   return items;
 };
 
-export class DocumentTypesList extends Component {
+class DocumentTypesList extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,7 +65,7 @@ export class DocumentTypesList extends Component {
       });
     }
 
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   change(item) {
@@ -76,7 +78,7 @@ export class DocumentTypesList extends Component {
       selectedItems.push(item.id);
     }
 
-    this.props.filterDocumentTypes(selectedItems);
+    this.props.filterDocumentTypes(selectedItems, this.props.location, this.props.navigate);
   }
 
   toggleOptions(item, e) {
@@ -148,8 +150,11 @@ export class DocumentTypesList extends Component {
 
   renderSingleType(item, index) {
     const context = item.id === 'missing' ? 'System' : item.id;
-    const { q = '(filters:())' } = this.props.location.query;
-    const query = rison.decode(q);
+
+    const query = searchParamsFromLocationSearch(this.props.location, 'q') || {
+      filters: [],
+    };
+
     return (
       <li className="multiselectItem" key={index} title={item.name}>
         <input
@@ -250,10 +255,15 @@ DocumentTypesList.propTypes = {
   filterDocumentTypes: PropTypes.func,
   aggregations: PropTypes.instanceOf(Immutable.Map),
   fromFilters: PropTypes.bool,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    query: PropTypes.shape({ page: PropTypes.string, raw: PropTypes.string }),
+    search: PropTypes.string,
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     settings: state.settings,
     templates: state.templates,
@@ -266,4 +276,5 @@ function mapDispatchToProps(dispatch, _ownProps) {
   return bindActionCreators({ filterDocumentTypes }, dispatch);
 }
 
+export { DocumentTypesList, mapStateToProps };
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(DocumentTypesList));

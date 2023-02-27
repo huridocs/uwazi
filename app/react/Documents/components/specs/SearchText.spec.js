@@ -6,7 +6,6 @@ import { shallow } from 'enzyme';
 
 import Immutable from 'immutable';
 import { actions as formActions } from 'react-redux-form';
-import { browserHistory } from 'react-router';
 import { SearchText } from '../SearchText.js';
 import SnippetList from '../SnippetList';
 
@@ -15,16 +14,7 @@ describe('SearchText', () => {
   let instance;
   let props;
 
-  const render = () => {
-    component = shallow(<SearchText {...props} />);
-    instance = component.instance();
-  };
-
   beforeEach(() => {
-    spyOn(browserHistory, 'getCurrentLocation').and.returnValue({
-      pathname: 'path',
-      query: { page: 1 },
-    });
     props = {
       doc: Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' }),
       storeKey: 'storeKey',
@@ -49,8 +39,21 @@ describe('SearchText', () => {
           { text: 'third <b>snippet 3</b> found', page: 3 },
         ],
       }),
+      location: {
+        pathname: 'path',
+      },
+      navigate: jest.fn(),
+      searchParams: new URLSearchParams('?page=1'),
     };
   });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+  const render = () => {
+    component = shallow(<SearchText {...props} />);
+    instance = component.instance();
+  };
 
   it('should render SnippetList and pass down same props to it', () => {
     props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId', type: 'document' });
@@ -155,7 +158,6 @@ describe('SearchText', () => {
   describe('submit', () => {
     it('should searchSnippets with value, doc id and storeKey', done => {
       props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
-      spyOn(browserHistory, 'push');
       render();
 
       instance.submit({ searchTerm: 'value' }).then(() => {
@@ -167,10 +169,9 @@ describe('SearchText', () => {
     it('should add searchTerm into the url query', () => {
       props.doc = Immutable.fromJS({ _id: 'id', sharedId: 'sharedId' });
       render();
-      spyOn(browserHistory, 'push');
 
       instance.submit({ searchTerm: 'value' });
-      expect(browserHistory.push).toHaveBeenCalledWith('path?page=1&searchTerm=value');
+      expect(props.navigate).toHaveBeenCalledWith('path?page=1&searchTerm=value');
     });
   });
 

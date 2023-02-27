@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import LibraryMap from 'app/Library/LibraryMap';
+import { LibraryMapComponent } from 'app/Library/LibraryMap';
 import RouteHandler from 'app/App/RouteHandler';
 import { MapView } from 'app/Library/components/MapView';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
@@ -13,7 +13,7 @@ describe('LibraryMap', () => {
     const props = { location: { query: { q: '(a:1)' } } };
     const context = { store: { getState: () => ({}), dispatch: jasmine.createSpy('dispatch') } };
 
-    component = shallow(<LibraryMap {...props} />, { context });
+    component = shallow(<LibraryMapComponent {...props} />, { context });
   });
 
   it('should render the MapView', () => {

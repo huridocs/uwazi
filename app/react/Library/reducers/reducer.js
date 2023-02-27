@@ -23,6 +23,8 @@ if (isClient) {
 const defaultSearch = prioritySortingCriteria.get({ templates });
 defaultSearch.searchTerm = '';
 defaultSearch.filters = {};
+defaultSearch.allAggregations = true;
+defaultSearch.includeUnpublished = true;
 defaultSearch.publishedStatus = { values: ['published', 'restricted'] };
 
 export default storeKey =>

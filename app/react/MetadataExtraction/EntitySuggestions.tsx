@@ -1,8 +1,10 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Icon } from 'UI';
 import { HeaderGroup, Row } from 'react-table';
+import { connect } from 'react-redux';
 import { I18NLink, Translate } from 'app/I18N';
 import { socket } from 'app/socket';
 import { store } from 'app/store';
@@ -12,10 +14,12 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { SuggestionAcceptanceModal } from 'app/MetadataExtraction/SuggestionAcceptanceModal';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { suggestionsTable } from 'app/MetadataExtraction/SuggestionsTable';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { IImmutable } from 'shared/types/Immutable';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
-import { getSuggestionState } from 'shared/getIXSuggestionState';
+import { TemplateSchema } from 'shared/types/templateType';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import {
   getStats,
@@ -27,20 +31,48 @@ import {
 import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
+import { FiltersSidePanel } from './FilterSidePanel';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
+  templates: IImmutable<TemplateSchema[]>;
   languages: any[] | undefined;
 }
 
-export const EntitySuggestions = ({
+interface AggregategationsType {
+  state: { _id: string; count: number }[];
+  template: { _id: string; count: number }[];
+}
+
+function mapStateToProps({ templates }: any) {
+  return {
+    templates,
+  };
+}
+
+const getTemplateMap = (templates: IImmutable<TemplateSchema[]>) => {
+  const templateNamesById = objectIndex<TemplateSchema, string>(
+    templates.toJS(),
+    t => t._id?.toString() || '',
+    t => t.name
+  );
+  return templateNamesById;
+};
+
+// eslint-disable-next-line max-statements
+const EntitySuggestionsComponent = ({
   property: reviewedProperty,
   acceptIXSuggestion,
+  templates,
   languages,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
+  const [aggregations, setAggregations] = useState<AggregategationsType>({
+    state: [],
+    template: [],
+  });
   const [totalPages, setTotalPages] = useState(0);
   const [resetActivePage, setResetActivePage] = useState(false);
   const [status, setStatus] = useState<{ key: string; data?: undefined; message?: string }>({
@@ -50,6 +82,12 @@ export const EntitySuggestions = ({
   const [openCancelFindingSuggestions, setOpenCancelFindingSuggestions] = useState(false);
   const [sidePanelOpened, setSidePanelOpened] = useState(false);
   const [stats, setStats] = useState<SuggestionsStats | undefined>(undefined);
+
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false);
+
+  const templateNamesById = useMemo(() => getTemplateMap(templates), [templates]);
+  const [templateSelection, setTemplateSelection] = useState<string[]>([]);
+  const [sueggestionStateSelection, setSuggestionStateSelection] = useState<string[]>([]);
 
   const showConfirmationModal = (row: Row<EntitySuggestionType>) => {
     row.toggleRowSelected();
@@ -143,18 +181,26 @@ export const EntitySuggestions = ({
     state: { pageIndex, pageSize, filters },
   } = suggestionsTable(reviewedProperty, suggestions, totalPages, actionsCell, segmentCell);
 
-  const retrieveSuggestions = (pageNumber: number = pageIndex + 1) => {
-    const queryFilter = filters.reduce(
-      (filteredValues, f) => ({ ...filteredValues, [f.id]: f.value }),
-      {}
-    );
+  const retrieveSuggestions = (
+    pageNumber: number = pageIndex + 1,
+    _stateSelection: string[] = [],
+    _templateSelection: string[] = []
+  ) => {
+    const filter: {
+      propertyName?: string;
+      states?: string[];
+      entityTemplates?: string[];
+    } = { propertyName: reviewedProperty.name };
+    if (_stateSelection.length > 0) filter.states = _stateSelection;
+    if (_templateSelection.length > 0) filter.entityTemplates = _templateSelection;
     const params = new RequestParams({
       page: { number: pageNumber, size: pageSize },
-      filter: { ...queryFilter, propertyName: reviewedProperty.name },
+      filter,
     });
     getSuggestions(params)
       .then((response: any) => {
         setSuggestions(response.suggestions);
+        setAggregations(response.aggregations);
         setTotalPages(response.totalPages);
       })
       .catch(() => {});
@@ -171,31 +217,11 @@ export const EntitySuggestions = ({
       .catch(() => {});
   };
 
-  const getWrappedSuggestionState = (
-    acceptedSuggestion: any,
-    newCurrentValue: string | number | null
-  ) => {
-    return getSuggestionState(
-      { ...acceptedSuggestion, currentValue: newCurrentValue, modelCreationDate: 0 },
-      reviewedProperty.type
-    );
-  };
-
   const acceptSuggestion = async (allLanguages: boolean) => {
     if (selectedFlatRows.length > 0) {
       const acceptedSuggestion = selectedFlatRows[0].original;
       await acceptIXSuggestion(acceptedSuggestion, allLanguages);
-      let { labeledValue } = acceptedSuggestion;
-      if (!labeledValue && acceptedSuggestion.selectionRectangles?.length) {
-        labeledValue = acceptedSuggestion.suggestedValue;
-      }
-      selectedFlatRows[0].toggleRowSelected();
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue },
-        acceptedSuggestion.suggestedValue as string
-      );
-      selectedFlatRows[0].values.currentValue = acceptedSuggestion.suggestedValue;
-      selectedFlatRows[0].setState({});
+      await retrieveSuggestions();
     }
 
     setAcceptingSuggestion(false);
@@ -211,33 +237,12 @@ export const EntitySuggestions = ({
     }
   };
 
-  const handlePDFSidePanelSave = (entity: ClientEntitySchema) => {
+  const handlePDFSidePanelSave = async (entity: ClientEntitySchema) => {
     setSidePanelOpened(false);
     const propertyName = reviewedProperty.name;
     const changedPropertyValue = (entity[propertyName] ||
       entity.metadata?.[propertyName]) as string;
-
-    selectedFlatRows[0].values.currentValue = Array.isArray(changedPropertyValue)
-      ? changedPropertyValue[0].value || '-'
-      : changedPropertyValue;
-    selectedFlatRows[0].setState({});
-    selectedFlatRows[0].toggleRowSelected();
-    const acceptedSuggestion = selectedFlatRows[0].original;
-
-    // @ts-ignore
-    const selection = entity.__extractedMetadata?.selections[0];
-    if (selection && selection.selection && selection.selection.text !== '') {
-      // There was a label
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: changedPropertyValue },
-        changedPropertyValue
-      );
-    } else {
-      selectedFlatRows[0].values.state = getWrappedSuggestionState(
-        { ...acceptedSuggestion, labeledValue: '' },
-        changedPropertyValue
-      );
-    }
+    await retrieveSuggestions();
 
     selectedFlatRows[0].setState({});
     updateError(changedPropertyValue);
@@ -280,6 +285,22 @@ export const EntitySuggestions = ({
     } else {
       setOpenCancelFindingSuggestions(true);
     }
+  };
+
+  const onStateSelectionChange = (values: string[]) => {
+    setSuggestionStateSelection(values);
+    retrieveSuggestions(pageIndex + 1, values, templateSelection);
+  };
+
+  const onTemplateSelectionChange = (values: string[]) => {
+    setTemplateSelection(values);
+    retrieveSuggestions(pageIndex + 1, sueggestionStateSelection, values);
+  };
+
+  const resetStateAndTemplateSelections = () => {
+    setTemplateSelection([]);
+    setSuggestionStateSelection([]);
+    retrieveSuggestions(pageIndex + 1, [], []);
   };
 
   useEffect(retrieveSuggestions, [pageIndex, pageSize, filters]);
@@ -340,6 +361,33 @@ export const EntitySuggestions = ({
   return (
     <>
       <div className="panel entity-suggestions">
+        <FiltersSidePanel
+          open={filtersOpen}
+          reset={() => {
+            resetStateAndTemplateSelections();
+          }}
+          hideFilters={() => {
+            setFiltersOpen(false);
+          }}
+          templates={{
+            options: aggregations.template.map(({ _id, count }) => ({
+              key: _id,
+              label: templateNamesById[_id],
+              results: count,
+            })),
+            selected: templateSelection,
+            setSelection: onTemplateSelectionChange,
+          }}
+          states={{
+            options: aggregations.state.map(({ _id, count }) => ({
+              key: _id,
+              label: _id,
+              results: count,
+            })),
+            selected: sueggestionStateSelection,
+            setSelection: onStateSelectionChange,
+          }}
+        />
         <div className="dashboard-link">
           <I18NLink to="settings/metadata_extraction">
             <Icon icon="arrow-left" />
@@ -348,22 +396,40 @@ export const EntitySuggestions = ({
         </div>
         <div className="panel-subheading">
           <div className="property-info-container">
-            <div>
+            <div className="property-info-heading">
               <span className="suggestion-header">
                 <Translate>Reviewing</Translate>:&nbsp;
               </span>
               <span className="suggestion-property">
                 <Translate>{reviewedProperty.label}</Translate>
               </span>
+              <span className="suggestion-for-label">
+                &nbsp; <Translate>for</Translate> &nbsp;
+              </span>
+              <span className="suggestion-templates">
+                {aggregations.template.map(({ _id }) => (
+                  <span color="segment-pdf" key={_id}>
+                    {templateNamesById[_id]}
+                  </span>
+                ))}
+              </span>
             </div>
-            <div>
+            <div className="property-info-buttons">
               <button
                 type="button"
                 title={status.key !== 'ready' ? 'Cancel' : 'Train'}
-                className={`btn service-request-button ${status.key}`}
+                className={`btn service-request-button find-suggestions ${status.key}`}
                 onClick={onFindSuggestionButtonClicked}
               >
                 <Translate>{ixmessages[status.key]}</Translate> {formatData(status.data)}
+              </button>
+              <button
+                type="button"
+                className="btn suggestion-filters"
+                onClick={() => setFiltersOpen(true)}
+              >
+                <Icon icon="filter" />
+                <Translate>Show Filters</Translate>
               </button>
             </div>
           </div>
@@ -411,7 +477,10 @@ export const EntitySuggestions = ({
           isOpen={acceptingSuggestion}
           propertyType={reviewedProperty.type}
           languages={languages}
-          onClose={() => setAcceptingSuggestion(false)}
+          onClose={() => {
+            toggleAllRowsSelected(false);
+            setAcceptingSuggestion(false);
+          }}
           onAccept={async (allLanguages: boolean) => acceptSuggestion(allLanguages)}
         />
         <CancelFindingSuggestionModal
@@ -431,3 +500,5 @@ export const EntitySuggestions = ({
     </>
   );
 };
+
+export const EntitySuggestions = connect(mapStateToProps)(EntitySuggestionsComponent);

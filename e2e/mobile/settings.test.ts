@@ -24,6 +24,7 @@ describe('Settings navigation', () => {
       //Set resolution for Galaxy S20+
       await page.setViewport({ width: 384, height: 854 });
       await disableTransitions();
+      await page.click('.menu-button');
     });
 
     it('should navigate to settings and see only the navigation bar and not the user account screen', async () => {

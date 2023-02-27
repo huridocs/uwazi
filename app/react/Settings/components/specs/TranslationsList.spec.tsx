@@ -6,8 +6,14 @@ import Immutable from 'immutable';
 
 import { fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { I18NLink } from 'app/I18N/components/I18NLink';
 import TranslationsList from '../TranslationsList';
+
+const mockedUseNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({
+  ...(jest.requireActual('react-router-dom') as any),
+  useNavigate: () => mockedUseNavigate,
+}));
 
 describe('TranslationsList', () => {
   const render = () => {
@@ -30,7 +36,7 @@ describe('TranslationsList', () => {
       ]),
       settings: { collection: Immutable.fromJS({ languages: [{ key: 'es', default: true }] }) },
     };
-    renderConnectedContainer(<TranslationsList />, () => state);
+    renderConnectedContainer(<TranslationsList />, () => state, 'BrowserRouter');
   };
 
   describe('render', () => {
@@ -61,11 +67,10 @@ describe('TranslationsList', () => {
       ${0}  | ${'Translate'} | ${'/en/settings/translations/edit/1'}
       ${1}  | ${'System UI'} | ${'/en/settings/translations/edit/3'}
     `('should edit a translation context from $text', async ({ index, text, linkAddress }) => {
-      spyOn(I18NLink, 'navigate');
       render();
       const list = screen.getAllByRole('listitem')[index];
       fireEvent.click(within(list).getByText(text).parentElement!);
-      expect(I18NLink.navigate).toHaveBeenCalledWith(linkAddress);
+      expect(mockedUseNavigate).toHaveBeenCalledWith(linkAddress);
     });
   });
 });

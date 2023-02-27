@@ -65,7 +65,14 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     if (dispatch) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.on('progress', data => {
-        dispatch({
+        if (data.percent && Math.floor(data.percent) === 100) {
+          return dispatch({
+            type: attachmentsTypes.ATTACHMENT_LOCAL_COMPLETE,
+            entity: entity.sharedId || 'NEW_ENTITY',
+          });
+        }
+
+        return dispatch({
           type: attachmentsTypes.ATTACHMENT_PROGRESS,
           entity: entity.sharedId || 'NEW_ENTITY',
           progress: data.percent ? Math.floor(data.percent) : data.percent,

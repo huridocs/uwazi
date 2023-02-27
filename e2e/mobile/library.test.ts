@@ -16,6 +16,7 @@ describe('library toolbar and action buttons', () => {
     await adminLogin();
     await expect(page).toClick('a.public-documents');
   });
+
   afterAll(async () => {
     await logout();
   });
@@ -25,6 +26,7 @@ describe('library toolbar and action buttons', () => {
       visible,
     });
   };
+
   describe('small resolution', () => {
     beforeAll(async () => {
       await page.setViewport({ width: 376, height: 667 });

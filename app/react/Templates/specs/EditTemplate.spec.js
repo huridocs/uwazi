@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import configureStore from 'redux-mock-store';
 
 import { APIURL } from 'app/config.js';
-import EditTemplate from 'app/Templates/EditTemplate';
+import { EditTemplateComponent } from 'app/Templates/EditTemplate';
 import TemplateCreator from 'app/Templates/components/TemplateCreator';
 import RouteHandler from 'app/App/RouteHandler';
 import { mockID } from 'shared/uniqueID';
@@ -37,7 +37,7 @@ describe('EditTemplate', () => {
     };
 
     spyOn(context.store, 'dispatch');
-    component = shallow(<EditTemplate {...props} />, { context });
+    component = shallow(<EditTemplateComponent {...props} />, { context });
 
     mockID();
 
@@ -57,20 +57,20 @@ describe('EditTemplate', () => {
   describe('static requestState()', () => {
     it('should request templates and thesauris, and return templates, thesauris and find the editing template', async () => {
       const request = new RequestParams({ templateId: 'abc2' });
-      const actions = await EditTemplate.requestState(request);
+      const actions = await EditTemplateComponent.requestState(request);
       expect(actions).toMatchSnapshot();
     });
 
     it('should prepare the template properties with unique ids', async () => {
       const request = new RequestParams({ templateId: 'abc2' });
-      const actions = await EditTemplate.requestState(request);
+      const actions = await EditTemplateComponent.requestState(request);
       const template = actions[0].value;
       expect(template.properties[0]).toEqual({ label: 'label3', localID: 'unique_id' });
     });
 
     it('should append new commonProperties if none exist (lazy migration)', async () => {
       const request = new RequestParams({ templateId: 'abc2' });
-      const actions = await EditTemplate.requestState(request);
+      const actions = await EditTemplateComponent.requestState(request);
       const template = actions[0].value;
       expect(template.commonProperties.length).toBe(3);
       expect(template.commonProperties[0].label).toBe('Title');
@@ -78,7 +78,7 @@ describe('EditTemplate', () => {
 
     it('should append new commonProperties if empty', async () => {
       const request = new RequestParams({ templateId: 'abc3' });
-      const actions = await EditTemplate.requestState(request);
+      const actions = await EditTemplateComponent.requestState(request);
       const template = actions[0].value;
       expect(template.commonProperties.length).toBe(3);
       expect(template.commonProperties[0].label).toBe('Title');
@@ -86,7 +86,7 @@ describe('EditTemplate', () => {
 
     it('should keep existing commonProperties if they already have values', async () => {
       const request = new RequestParams({ templateId: 'abc1' });
-      const actions = await EditTemplate.requestState(request);
+      const actions = await EditTemplateComponent.requestState(request);
       const template = actions[0].value;
       expect(template.commonProperties.length).toBe(1);
       expect(template.commonProperties[0].label).toBe('existingProperty');

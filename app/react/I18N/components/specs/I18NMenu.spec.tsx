@@ -5,6 +5,7 @@ import React from 'react';
 import { act, fireEvent, RenderResult, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
+import { Location, MemoryRouter } from 'react-router-dom';
 import Immutable from 'immutable';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { i18NMenuComponent as I18NMenu } from '../I18NMenu';
@@ -13,6 +14,7 @@ describe('I18NMenu', () => {
   let props: any;
   let renderResult: RenderResult;
   let store: MockStoreEnhanced;
+  let location: Partial<Location>;
   const toggleInlineEditMock = jest.fn();
 
   Reflect.deleteProperty(global.window, 'location');
@@ -29,11 +31,12 @@ describe('I18NMenu', () => {
       languages: Immutable.fromJS(languages),
       toggleInlineEdit: toggleInlineEditMock,
       i18nmode: false,
-      location: {
-        pathname: '/templates/2452345',
-        search: '?query=weneedmoreclerics',
-      },
       locale: 'es',
+    };
+
+    location = {
+      pathname: '/templates/2452345',
+      search: '?query=weneedmoreclerics',
     };
   });
 
@@ -51,7 +54,9 @@ describe('I18NMenu', () => {
       () => ({
         ...defaultState,
         user: storeUser,
-      })
+      }),
+      'MemoryRouter',
+      [location]
     ));
   };
 
@@ -67,8 +72,8 @@ describe('I18NMenu', () => {
       'should create the expected links for $pathName',
       async ({ locale, currentPath, search, expectedPath }) => {
         props.locale = locale;
-        props.location.pathname = currentPath;
-        props.location.search = search;
+        location.pathname = currentPath;
+        location.search = search;
         render('admin');
         const links = screen.getAllByRole('link');
         expect(links.map(link => link.getAttribute('href'))).toEqual(
@@ -157,9 +162,11 @@ describe('I18NMenu', () => {
     ]);
 
     renderResult.rerender(
-      <Provider store={store}>
-        <I18NMenu.WrappedComponent {...props} />
-      </Provider>
+      <MemoryRouter initialEntries={[location]}>
+        <Provider store={store}>
+          <I18NMenu.WrappedComponent {...props} />
+        </Provider>
+      </MemoryRouter>
     );
 
     expect(window.location.assign).toHaveBeenCalledTimes(1);

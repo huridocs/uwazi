@@ -1,7 +1,8 @@
-import { Field, Form, actions as formActions } from 'react-redux-form';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
 import React from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { Field, actions as formActions } from 'react-redux-form';
+import { connect, ConnectedProps } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Icon } from 'UI';
 import {
@@ -15,6 +16,7 @@ import { SearchTipsContent } from 'app/App/SearchTipsContent';
 import { submitNewSearch } from 'app/SemanticSearch/actions/actions';
 import { FeatureToggleSemanticSearch } from 'app/SemanticSearch/components/FeatureToggleSemanticSearch';
 import { IStore } from 'app/istore';
+import { Form } from 'app/Forms/Form';
 
 interface SearchBarOwnProps {}
 const mapStateToProps = (state: IStore) => {
@@ -47,12 +49,14 @@ const SearchBarComponent = ({
   change,
   semanticSearch,
 }: mappedProps) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const search = processFilters(initSearch, initFilters.toJS());
   const resetSearch = () => {
     change('library.search.searchTerm', '');
     const newSearch = { ...search };
     newSearch.searchTerm = '';
-    searchDocuments({ search: newSearch }, 'library');
+    searchDocuments({ search: newSearch, location, navigate });
   };
 
   const submitSemanticSearch = () => {
@@ -60,7 +64,7 @@ const SearchBarComponent = ({
   };
 
   const doSearch = (newSearch: any) => {
-    searchDocuments({ search: newSearch }, 'library');
+    searchDocuments({ search: newSearch, location, navigate });
   };
 
   return (

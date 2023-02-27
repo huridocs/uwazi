@@ -22,7 +22,7 @@ function getPropertiesTexts(query, properties) {
   }, []);
 }
 
-export class SearchDescription extends Component {
+class SearchDescription extends Component {
   render() {
     const { searchTerm, query, properties } = this.props;
     const descriptions = query && query.filters ? getPropertiesTexts(query, properties) : [];
@@ -46,14 +46,15 @@ SearchDescription.propTypes = {
   properties: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export function mapStateToProps({ templates, relationTypes }, { query }) {
+function mapStateToProps({ templates }, { query }) {
   const properties =
     query && query.filters
-      ? libraryHelpers.URLQueryToState(query, templates.toJS(), relationTypes.toJS()).properties
+      ? libraryHelpers.URLQueryToState(query, templates.toJS()).properties
       : [];
   return {
     properties,
   };
 }
 
+export { SearchDescription, mapStateToProps };
 export default connect(mapStateToProps)(SearchDescription);

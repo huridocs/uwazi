@@ -1,42 +1,58 @@
 /**
  * @jest-environment jsdom
  */
+import React from 'react';
 import Immutable from 'immutable';
+import { screen, fireEvent } from '@testing-library/react';
+
 import api from 'app/utils/api';
-import { ConfirmButton } from 'app/Layout';
 import { RequestParams } from 'app/utils/RequestParams';
-import { renderConnectedMount } from 'app/utils/test/renderConnected';
-import { CustomUploads, mapStateToProps } from '../CustomUploads';
+import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
+import { CustomUploadsComponent as CustomUploads, mapStateToProps } from '../CustomUploads';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
 
 describe('CustomUploads', () => {
-  let component;
   let props;
+  let renderResult;
 
   beforeEach(() => {
     spyOn(api, 'get').and.callFake(async () => Promise.resolve({ json: 'uploads' }));
     props = {
-      upload: jasmine.createSpy('upload'),
-      deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),
       customUploads: Immutable.fromJS([]),
+      deleteCustomUpload: jasmine.createSpy('deleteCustomUpload'),
+      upload: jasmine.createSpy('upload'),
       params: { lang: 'es' },
     };
   });
 
   const render = () => {
-    component = renderConnectedMount(CustomUploads, {}, props, true);
+    const reduxStore = {
+      ...defaultState,
+    };
+
+    ({ renderResult } = renderConnectedContainer(
+      <CustomUploads {...props} />,
+      () => reduxStore,
+      'MemoryRouter',
+      [{ pathname: '/test' }]
+    ));
   };
 
   it('should render CustomUploads component with uploaded files', () => {
     props.customUploads = Immutable.fromJS([{ filename: 'file1' }, { filename: 'file2' }]);
     render();
-    expect(component).toMatchSnapshot();
+    expect(renderResult).toMatchSnapshot();
   });
 
   describe('when upload on progress', () => {
     it('should render on progress feedback', () => {
       props.progress = true;
       render();
-      expect(component).toMatchSnapshot();
+      expect(renderResult).toMatchSnapshot();
     });
   });
 
@@ -44,9 +60,8 @@ describe('CustomUploads', () => {
     it('should call deleteCustomUpload on click', () => {
       props.customUploads = Immutable.fromJS([{ _id: 'upload', filename: 'name' }]);
       render();
-
-      component.find(ConfirmButton).props().action();
-
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
       expect(props.deleteCustomUpload).toHaveBeenCalledWith('upload');
     });
   });

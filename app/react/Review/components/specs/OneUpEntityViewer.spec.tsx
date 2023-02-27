@@ -16,10 +16,8 @@ describe('EntityViewer', () => {
     OneUpEntityViewerBase
   >;
   let props: OneUpEntityViewerProps;
-  let context: any;
 
   beforeEach(() => {
-    context = { confirm: jasmine.createSpy('confirm') };
     props = {
       entity: { title: 'Title', template: 'template1' },
       templates: Immutable.fromJS([
@@ -41,11 +39,12 @@ describe('EntityViewer', () => {
       connectionsChanged: jasmine.createSpy('connectionsChanged'),
       toggleOneUpFullEdit: jasmine.createSpy('toggleOneUpFullEdit'),
       mlThesauri: [],
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
   });
 
   const render = () => {
-    component = shallow(<OneUpEntityViewerBase {...props} />, { context });
+    component = shallow(<OneUpEntityViewerBase {...props} />);
   };
 
   // Note: this component is mostly tested through nightmare/paths/review.spec.js
@@ -66,7 +65,7 @@ describe('EntityViewer', () => {
     render();
 
     component.find(ConnectionsList).props().deleteConnection({ sourceType: 'not metadata' });
-    expect(context.confirm).toHaveBeenCalled();
+    expect(props.mainContext.confirm).toHaveBeenCalled();
   });
 
   describe('deleteConnection', () => {
@@ -76,21 +75,22 @@ describe('EntityViewer', () => {
 
     it('should confirm deleting a Reference', () => {
       component.instance().deleteConnection({});
-      expect(context.confirm).toHaveBeenCalled();
+      expect(props.mainContext.confirm).toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();
     });
 
     it('should delete the reference upon accepting', () => {
       const ref = { _id: 'r1' };
       component.instance().deleteConnection(ref);
-      context.confirm.calls.argsFor(0)[0].accept();
+      //@ts-ignore
+      props.mainContext.confirm.calls.argsFor(0)[0].accept();
       expect(props.deleteConnection).toHaveBeenCalledWith(ref);
     });
 
     it('should not atempt to delete references whos source is metadata', () => {
       const ref = { _id: 'r1', sourceType: 'metadata' };
       component.instance().deleteConnection(ref);
-      expect(context.confirm).not.toHaveBeenCalled();
+      expect(props.mainContext.confirm).not.toHaveBeenCalled();
       expect(props.deleteConnection).not.toHaveBeenCalled();
     });
   });

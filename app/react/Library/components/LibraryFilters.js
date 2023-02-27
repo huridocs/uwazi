@@ -9,10 +9,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Icon } from 'UI';
 import { hideFilters } from 'app/Entities/actions/uiActions';
+import { withRouter } from 'app/componentWrappers';
 
 class LibraryFilters extends Component {
   reset() {
-    this.props.resetFilters(this.props.storeKey);
+    this.props.resetFilters(this.props.navigate, this.props.location);
   }
 
   render() {
@@ -62,6 +63,8 @@ LibraryFilters.propTypes = {
   storeKey: PropTypes.string,
   sidePanelMode: PropTypes.string,
   hideFilters: PropTypes.func,
+  navigate: PropTypes.func.isRequired,
+  location: PropTypes.object.isRequired,
 };
 
 function mapStateToProps(state, props) {
@@ -78,4 +81,4 @@ function mapDispatchToProps(dispatch, props) {
 
 export { LibraryFilters, mapStateToProps };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryFilters);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(LibraryFilters));

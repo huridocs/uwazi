@@ -20,7 +20,7 @@ describe('Library', () => {
   let component;
   let instance;
   let context;
-  const props = { location: { query: { q: '(a:1)' } } };
+  const props = { location: { search: { q: '(a:1)' } } };
   let dispatchCallsOrder = [];
 
   beforeEach(() => {
@@ -46,12 +46,12 @@ describe('Library', () => {
 
   describe('urlHasChanged', () => {
     it('return true when q has changed', () => {
-      const nextProps = { location: { query: { q: '(a:2)' } } };
+      const nextProps = { location: { search: { q: '(a:2)' } } };
       expect(instance.urlHasChanged(nextProps)).toBe(true);
     });
 
     it('should not update if "q" is the same', () => {
-      const nextProps = { location: { query: { q: '(a:1)' } } };
+      const nextProps = { location: { search: { q: '(a:1)' } } };
       expect(instance.urlHasChanged(nextProps)).toBe(false);
     });
   });
@@ -59,14 +59,14 @@ describe('Library', () => {
   describe('component update', () => {
     it('should request the new state when the url changes', () => {
       spyOn(instance, 'getClientState');
-      const nextProps = { location: { query: { q: '(a:2)' } } };
+      const nextProps = { location: { search: { q: '(a:2)' } } };
       component.setProps(nextProps);
       expect(instance.getClientState).toHaveBeenCalled();
     });
 
     it('should not request the new state when the url hasnt change', () => {
       spyOn(instance, 'getClientState');
-      const nextProps = { location: { query: { q: '(a:1)' } } };
+      const nextProps = { location: { search: { q: '(a:1)' } } };
       component.setProps(nextProps);
       expect(instance.getClientState).not.toHaveBeenCalled();
     });

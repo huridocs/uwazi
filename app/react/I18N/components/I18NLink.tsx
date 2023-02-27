@@ -1,10 +1,7 @@
-/** @format */
-
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { Link, browserHistory } from 'react-router';
-import objectWithoutKeys from 'app/utils/objectWithoutKeys';
+import { useNavigate, NavLink } from 'react-router-dom';
+import { omit } from 'lodash';
 
 const defaultProps = {
   disabled: false,
@@ -13,67 +10,69 @@ const defaultProps = {
   confirmMessage: '',
 };
 
-export type I18NLinkProps = typeof defaultProps & {
+type I18NLinkProps = typeof defaultProps & {
   to: string;
   disabled: boolean;
   onClick: (_e: any) => void;
   confirmTitle: string;
   confirmMessage: string;
+  mainContext: { confirm: Function };
+  activeclassname: string;
 };
 
-export class I18NLink extends Component<I18NLinkProps> {
-  static defaultProps = defaultProps;
+const I18NLink = (props: I18NLinkProps) => {
+  const { to = '/', disabled, confirmTitle, confirmMessage, onClick } = props;
 
-  static contextTypes = {
-    confirm: PropTypes.func,
-  };
+  const navigate = useNavigate();
 
-  static navigate(to: string) {
-    browserHistory.push(to);
-  }
-
-  constructor(props: I18NLinkProps) {
-    super(props);
-    this.onClick = this.onClick.bind(this);
-  }
-
-  onClick(e: { preventDefault: () => void }) {
-    const { to, disabled, onClick, confirmTitle, confirmMessage } = this.props;
+  const onClickHandler = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (disabled) {
-      return;
+
+    if (disabled) return;
+
+    if (onClick && confirmTitle) {
+      props.mainContext.confirm({
+        accept: () => {
+          onClick(e);
+          navigate(to);
+        },
+        title: confirmTitle,
+        message: confirmMessage,
+      });
     }
 
     if (onClick) {
-      if (confirmTitle) {
-        this.context.confirm({
-          accept: () => {
-            onClick(e);
-            I18NLink.navigate(to);
-          },
-          title: confirmTitle,
-          message: confirmMessage,
-        });
-      } else {
-        onClick(e);
-        I18NLink.navigate(to);
-      }
+      onClick(e);
+      navigate(to);
     }
-  }
 
-  render() {
-    const props = objectWithoutKeys(this.props, [
-      'dispatch',
-      'onClick',
-      'confirmTitle',
-      'confirmMessage',
-    ]);
-    return <Link onClick={this.onClick} {...props} />;
-  }
-}
+    navigate(to);
+  };
+
+  const newProps = omit(props, [
+    'dispatch',
+    'onClick',
+    'confirmTitle',
+    'confirmMessage',
+    'to',
+    'activeclassname',
+  ]);
+
+  return (
+    <NavLink
+      end
+      to={props.to}
+      onClick={onClickHandler}
+      className={({ isActive }) => (isActive ? props.activeclassname : undefined)}
+      {...newProps}
+    />
+  );
+};
 
 export function mapStateToProps({ locale }: { locale?: string }, ownProps: any) {
   return { to: `/${locale || ''}/${ownProps.to}`.replace(/\/+/g, '/') };
 }
 
+export type { I18NLinkProps };
+export { I18NLink };
 export default connect(mapStateToProps)(I18NLink);

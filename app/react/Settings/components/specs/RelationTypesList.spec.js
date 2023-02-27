@@ -1,10 +1,7 @@
-/** @format */
-
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
-import { RelationTypesList } from '../RelationTypesList';
+import { RelationTypesListComponent as RelationTypesList } from '../RelationTypesList';
 
 describe('RelationTypesList', () => {
   let component;
@@ -24,10 +21,10 @@ describe('RelationTypesList', () => {
       checkRelationTypeCanBeDeleted: jasmine
         .createSpy('checkRelationTypeCanBeDeleted')
         .and.callFake(async () => Promise.resolve()),
+      mainContext: { confirm: jasmine.createSpy('confirm') },
     };
 
     context = {
-      confirm: jasmine.createSpy('confirm'),
       store: { getState: () => ({}) },
     };
   });
@@ -61,7 +58,7 @@ describe('RelationTypesList', () => {
         .instance()
         .deleteRelationType({ _id: 1, name: 'Decision' })
         .then(() => {
-          expect(context.confirm).toHaveBeenCalled();
+          expect(props.mainContext.confirm).toHaveBeenCalled();
           done();
         });
     });

@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom
  */
-import { browserHistory } from 'react-router';
 import { actions as formActions } from 'react-redux-form';
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -14,6 +13,7 @@ import * as actions from '../pageActions';
 describe('Page actions', () => {
   let dispatch: jasmine.Spy;
   let apiSave: jasmine.Spy;
+  const navigateSpy = jest.fn();
 
   // eslint-disable-next-line max-statements
   beforeEach(() => {
@@ -31,7 +31,6 @@ describe('Page actions', () => {
     spyOn(formActions, 'change').and.returnValue('MODEL VALUE UPDATED');
     spyOn(basicActions, 'remove').and.returnValue('PAGE REMOVED');
     spyOn(notificationActions, 'notify').and.returnValue('NOTIFIED');
-    spyOn(browserHistory, 'push');
   });
 
   describe('resetPage', () => {
@@ -43,20 +42,18 @@ describe('Page actions', () => {
   });
 
   describe('savePage', () => {
-    it('should dispatch a saving page and save the data', () => {
-      actions.savePage({ title: 'A title' })(dispatch);
-      expect(dispatch.calls.count()).toBe(1);
+    it('should dispatch a saving page and save the data', async () => {
+      dispatch.calls.reset();
+      await actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
+      expect(dispatch.calls.count()).toBe(4);
       expect(dispatch).toHaveBeenCalledWith({ type: 'SAVING_PAGE' });
       expect(api.save).toHaveBeenCalledWith(new RequestParams({ title: 'A title' }));
+      expect(navigateSpy).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
     });
 
     describe('upon success', () => {
-      beforeEach(done => {
-        actions
-          .savePage({ title: 'A title' })(dispatch)
-          .then(() => {
-            done();
-          });
+      beforeEach(async () => {
+        await actions.savePage({ title: 'A title' }, navigateSpy)(dispatch);
       });
 
       it('should dispatch a page saved with response', () => {
@@ -81,14 +78,17 @@ describe('Page actions', () => {
       });
 
       it('should navigate to pages edit with the sharedId', () => {
-        expect(browserHistory.push).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
+        expect(navigateSpy).toHaveBeenCalledWith('/settings/pages/edit/newSharedId');
       });
     });
     describe('on error', () => {
       it('should dispatch page saved', done => {
         apiSave.and.callFake(async () => Promise.reject(new Error()));
         actions
-          .savePage({ title: 'A title' })(dispatch)
+          .savePage(
+            { title: 'A title' },
+            navigateSpy
+          )(dispatch)
           .then(() => {
             expect(dispatch).toHaveBeenCalledWith({ type: 'PAGE_SAVED', data: {} });
             done();

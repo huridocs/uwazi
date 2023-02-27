@@ -2,13 +2,12 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { SearchItem, mapDispatchToProps } from '../SearchItem';
+import { SearchItemComponent as SearchItem, mapDispatchToProps } from '../SearchItem';
 import * as actions from '../../actions/actions';
 
 describe('SearchItem', () => {
   let search;
   let dispatch;
-  let context;
   beforeEach(() => {
     search = {
       _id: 'id',
@@ -17,15 +16,17 @@ describe('SearchItem', () => {
       status: 'completed',
     };
     dispatch = jest.fn();
-    context = { confirm: jasmine.createSpy('confirm') };
   });
+
+  const mainContext = { confirm: jasmine.createSpy('confirm') };
 
   const getProps = () => ({
     search,
     ...mapDispatchToProps(dispatch),
+    mainContext,
   });
 
-  const render = () => shallow(<SearchItem {...getProps()} />, { context });
+  const render = () => shallow(<SearchItem {...getProps()} />);
 
   it('should render search details with link to results page ', () => {
     const component = render();
@@ -36,7 +37,7 @@ describe('SearchItem', () => {
     jest.spyOn(actions, 'deleteSearch').mockImplementation(() => {});
     const component = render();
     component.find('.delete-search').simulate('click', { preventDefault: () => {} });
-    const confirmFunction = context.confirm.calls.mostRecent().args[0].accept;
+    const confirmFunction = mainContext.confirm.calls.mostRecent().args[0].accept;
     confirmFunction();
     expect(actions.deleteSearch).toHaveBeenCalledWith(search._id);
   });

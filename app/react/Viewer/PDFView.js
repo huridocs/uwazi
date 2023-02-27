@@ -1,9 +1,9 @@
-import { Helmet } from 'react-helmet';
-import { browserHistory } from 'react-router';
-import { connect } from 'react-redux';
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
-
+import { withRouter } from 'app/componentWrappers';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions } from 'app/BasicReducer';
 import { isClient, events } from 'app/utils';
@@ -11,13 +11,13 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { ConnectedViewer as Viewer } from 'app/Viewer/components/Viewer';
 import entitiesAPI from 'app/Entities/EntitiesAPI';
 import { leaveEditMode } from 'app/Viewer/actions/documentActions';
-import { bindActionCreators } from 'redux';
+import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { scrollToPage, activateReference } from './actions/uiActions';
 import { requestViewerState } from './actions/routeActions';
 
 const defaultDoc = entity => (entity.get('defaultDoc') ? entity.get('defaultDoc').toJS() : {});
 
-class PDFView extends Component {
+class PDFViewComponent extends Component {
   static async requestState(requestParams, globalResources) {
     return requestViewerState(
       requestParams.add({ raw: requestParams.data.raw === 'true' || !isClient }),
@@ -33,19 +33,21 @@ class PDFView extends Component {
   }
 
   componentDidMount() {
-    if (this.props.location.query.searchTerm) {
+    const query = searchParamsFromSearchParams(this.props.searchParams);
+    if (query.searchTerm) {
       this.context.store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'));
     }
   }
 
   componentWillReceiveProps(props) {
-    const { query = {} } = props.location;
-    if (query.page !== this.props.location.query.page && query.raw !== 'true') {
+    const currentQuery = searchParamsFromSearchParams(this.props.searchParams);
+    const query = searchParamsFromSearchParams(props.searchParams);
+
+    if (query.page !== currentQuery.page && query.raw !== 'true') {
       this.changePage(query.page);
     }
     if (
-      (query.page !== this.props.location.query.page ||
-        query.raw !== this.props.location.query.raw) &&
+      (query.page !== currentQuery.page || query.raw !== currentQuery.raw) &&
       query.raw === 'true'
     ) {
       entitiesAPI
@@ -62,13 +64,15 @@ class PDFView extends Component {
 
   onDocumentReady(doc) {
     events.emit('documentLoaded');
-    if (this.props.location.query.raw === 'true') {
+    const query = searchParamsFromSearchParams(this.props.searchParams);
+
+    if (query.raw === 'true') {
       return;
     }
-    if (this.props.location.query.page) {
-      scrollToPage(this.props.location.query.page, 0);
+    if (query.page) {
+      scrollToPage(query.page, 0);
     }
-    const { ref } = this.props.location.query;
+    const { ref } = query;
     if (ref) {
       const reference = doc.get('relations').find(r => r.get('_id') === ref);
       this.context.store.dispatch(activateReference(reference.toJS()));
@@ -76,7 +80,9 @@ class PDFView extends Component {
   }
 
   changePage(nextPage) {
-    if (!this.props.location.query.raw) {
+    const { raw = 'false' } = searchParamsFromSearchParams(this.props.searchParams);
+
+    if (String(raw).toLowerCase() === 'false') {
       return scrollToPage(nextPage);
     }
 
@@ -84,23 +90,22 @@ class PDFView extends Component {
   }
 
   changeBrowserHistoryPage(newPage) {
-    const {
-      query: { page, ...queryWithoutPage },
-    } = this.props.location;
-    queryWithoutPage.raw = queryWithoutPage.raw || undefined;
-    browserHistory.push(
+    const { page, ...queryWithoutPage } = searchParamsFromSearchParams(this.props.searchParams);
+
+    this.props.navigate(
       `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
     );
   }
 
   render() {
-    const { query = {}, pathname } = this.props.location;
-    const raw = query.raw === 'true' || !isClient;
+    const query = searchParamsFromSearchParams(this.props.searchParams);
     const page = Number(query.page || 1);
+    const { pathname } = this.props.location;
+    const raw = query.raw === 'true' || !isClient;
 
     return (
       <>
-        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
+        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${query.page}`} />}</Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}
@@ -115,17 +120,22 @@ class PDFView extends Component {
   }
 }
 
-PDFView.contextTypes = {
+PDFViewComponent.contextTypes = {
   store: PropTypes.instanceOf(Object),
 };
 
-PDFView.propTypes = {
-  location: PropTypes.instanceOf(Object).isRequired,
+PDFViewComponent.propTypes = {
   entity: PropTypes.instanceOf(Object).isRequired,
   leaveEditMode: PropTypes.func,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+    search: PropTypes.string,
+  }).isRequired,
+  navigate: PropTypes.func.isRequired,
+  searchParams: PropTypes.instanceOf(Object).isRequired,
 };
 
-PDFView.defaultProps = {
+PDFViewComponent.defaultProps = {
   leaveEditMode: () => {},
 };
 
@@ -133,4 +143,6 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ leaveEditMode }, dispatch);
 }
 
-export default connect(null, mapDispatchToProps)(PDFView);
+const SSRPDFView = connect(null, mapDispatchToProps)(withRouter(PDFViewComponent));
+const PDFView = Object.assign(SSRPDFView, { requestState: PDFViewComponent.requestState });
+export { PDFView, PDFViewComponent };

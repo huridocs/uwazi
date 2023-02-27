@@ -1,8 +1,6 @@
 import React from 'react';
-
 import { shallow } from 'enzyme';
-
-import { SearchList } from '../SearchList';
+import { SearchListComponent as SearchList } from '../SearchList';
 
 describe('SearchList', () => {
   let searches;

@@ -67,13 +67,14 @@ export const HideColumnsComponent = ({
   const dropdownContainerRef = useRef(null);
   const dropdownRef: RefObject<React.Component & React.ReactElement> = useRef(null);
 
-  const onClickOutside = useCallback(event => {
+  const onClickOutside = useCallback((event: MouseEvent) => {
+    const target = event.target as HTMLElement;
     if (
-      event.target.className !== 'columns-hint' &&
-      (!event.target.parentElement || event.target.parentElement.className !== 'columns-hint')
+      target.className !== 'columns-hint' &&
+      (!target.parentElement || target.parentElement.className !== 'columns-hint')
     ) {
       setClickedOutside(true);
-      dropdownRef.current?.props.onToggle();
+      dropdownRef.current?.props.onToggle(null);
     }
   }, []);
 
@@ -92,8 +93,6 @@ export const HideColumnsComponent = ({
 
   return (
     <div className="hidden-columns-dropdown" ref={dropdownContainerRef}>
-      {/*
-        // @ts-ignore */}
       <DropdownList
         ref={dropdownRef}
         open={open}
@@ -106,8 +105,8 @@ export const HideColumnsComponent = ({
         onSelect={(selected: SelectableColumn) => {
           onSelect(selected);
         }}
-        onToggle={() => {
-          if (clickedOutside) {
+        onToggle={(value: boolean) => {
+          if (value === null || clickedOutside) {
             setOpen(false);
             setClickedOutside(false);
             dropdownRef.current?.forceUpdate();

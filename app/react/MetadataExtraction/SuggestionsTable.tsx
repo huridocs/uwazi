@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import _ from 'lodash';
 import {
   Column,
-  FilterProps,
   Row,
   useFilters,
   usePagination,
@@ -24,31 +24,9 @@ const suggestionsTable = (
   reviewedProperty: PropertySchema,
   suggestions: EntitySuggestionType[],
   totalPages: number,
-  actionsCell: Function,
-  segmentCell: Function
+  actionsCell: (data: { row: Row<EntitySuggestionType> }) => React.ReactElement,
+  segmentCell: (data: { row: Row<EntitySuggestionType> }) => React.ReactElement
 ) => {
-  const stateFilter = ({
-    column: { filterValue, setFilter },
-  }: FilterProps<EntitySuggestionType>) => (
-    <select
-      className={filterValue ? 'filtered' : ''}
-      value={filterValue}
-      onChange={e => {
-        setFilter(e.target.value || undefined);
-      }}
-    >
-      <option value="">{t('System', 'All', 'All', false)}</option>
-      {Object.values(SuggestionState)
-        .filter(state => state !== SuggestionState.processing)
-        .sort()
-        .map(state => (
-          <option key={state} value={state}>
-            {t('System', state, state, false)}
-          </option>
-        ))}
-    </select>
-  );
-
   const formatValue = (value: PropertyValueSchema | undefined) => {
     if (!value) return '-';
     if (reviewedProperty.type === 'date' && _.isNumber(value)) {
@@ -59,7 +37,7 @@ const suggestionsTable = (
 
   const currentValueCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const propertyValue = row.values.currentValue || row.original.currentValue;
-    const currentValue = formatValue(propertyValue);
+    const currentValue: ReactNode = formatValue(propertyValue) as ReactNode;
     return (
       <div>
         <p className="current-value">{currentValue}</p>
@@ -69,7 +47,7 @@ const suggestionsTable = (
 
   const suggestionCell = ({ row }: { row: Row<EntitySuggestionType> }) => {
     const suggestion = row.original;
-    const suggestedValue = formatValue(suggestion.suggestedValue);
+    const suggestedValue: ReactNode = formatValue(suggestion.suggestedValue) as ReactNode;
     return (
       <div>
         <p className="suggested-value">{suggestedValue}</p>
@@ -93,7 +71,7 @@ const suggestionsTable = (
       },
       {
         id: 'action',
-        Header: () => '',
+        Header: () => <div />,
         Cell: actionsCell,
         className: 'action',
       },
@@ -121,6 +99,7 @@ const suggestionsTable = (
         accessor: 'state' as const,
         Header: () => (
           <>
+            <Translate>State</Translate>
             <ModalTips
               label={<Icon icon="question-circle" />}
               title={t('System', 'State Legend', 'State Legend', false)}
@@ -208,7 +187,6 @@ const suggestionsTable = (
                 </Translate>
               </div>
             </ModalTips>
-            <Translate>State</Translate>
           </>
         ),
         Cell: ({ row }: { row: Row<EntitySuggestionType> }) => {
@@ -219,7 +197,6 @@ const suggestionsTable = (
             </div>
           );
         },
-        Filter: stateFilter,
         className: 'state',
       },
     ],
@@ -238,12 +215,10 @@ const suggestionsTable = (
         pageIndex: 0,
         pageSize: 100,
       },
-
       pageCount: totalPages,
       autoResetPage: false,
       autoResetFilters: false,
     },
-
     useFilters,
     usePagination,
     useRowSelect,
