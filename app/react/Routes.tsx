@@ -50,8 +50,13 @@ import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
 import { loadExtractor } from './MetadataExtraction/actions/actions';
 import { json } from 'react-router-dom';
+import { IncomingHttpHeaders } from 'http';
 
-const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
+const getRoutesLayout = (
+  settings: settingsType | undefined,
+  indexElement: React.ReactNode,
+  headers?: IncomingHttpHeaders
+) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route index element={indexElement} />
     <Route path="login" element={<Login />} />
@@ -94,10 +99,17 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
         path="metadata_extraction/suggestions/:extractorId"
         loader={async params => {
           if (params.params.extractorId) {
-            const extractors = await loadExtractor({
-              id: params.params.extractorId,
-            });
-            return extractors[0];
+            try {
+              const extractors = await loadExtractor(
+                {
+                  id: params.params.extractorId,
+                },
+                headers
+              );
+              return extractors[0];
+            } catch (e) {
+              console.error(e);
+            }
           }
           return json({}, { status: 200 });
         }}
@@ -127,9 +139,13 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
   </Route>
 );
 
-const getRoutes = (settings: settingsType | undefined, userId: string | undefined) => {
+const getRoutes = (
+  settings: settingsType | undefined,
+  userId: string | undefined,
+  headers?: IncomingHttpHeaders
+) => {
   const { element, parameters } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element);
+  const layout = getRoutesLayout(settings, element, headers);
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
