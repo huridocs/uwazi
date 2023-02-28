@@ -21,6 +21,11 @@ const loadExtractors = () => async (dispatch: any) => {
   dispatch(actions.set('ixExtractors', extractors));
 };
 
+const loadExtractor = async (query: { id: string }, headers = {}): Promise<IXExtractorInfo[]> => {
+  const extractors = await getAllExtractors(new RequestParams(query, headers));
+  return extractors;
+};
+
 const createExtractor = (newExtractorInfo: IXExtractorInfo) => async (dispatch: any) => {
   const extractor = await createExtractorAPICall(new RequestParams(newExtractorInfo));
   dispatch(actions.push('ixExtractors', extractor));
@@ -75,6 +80,7 @@ const acceptSuggestion =
 export {
   acceptSuggestion,
   loadExtractors,
+  loadExtractor,
   createExtractor,
   deleteExtractors,
   fetchEntity,

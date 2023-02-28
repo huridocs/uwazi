@@ -1,7 +1,7 @@
 import React from 'react';
 import { isUndefined } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { ClientPropertySchema, ClientTemplateSchema, IStore } from 'app/istore';
 import { acceptSuggestion } from 'app/MetadataExtraction/actions/actions';
 import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
@@ -14,19 +14,15 @@ const SuggestionComponent = ({
   templates,
   acceptSuggestion: acceptIXSuggestion,
   languages,
-  extractors,
 }: ComponentProps) => {
-  const { extractorId } = useParams();
-  const extractor = extractors.find(
-    (extractor: IImmutable<IXExtractorInfo>) => extractorId === extractor.get('_id')
-  );
-  const propertiesKey = extractor.get('property') === 'title' ? 'commonProperties' : 'properties';
+  const extractor = useLoaderData() as IXExtractorInfo;
+  const propertiesKey = extractor.property === 'title' ? 'commonProperties' : 'properties';
 
   const property = templates
     .map(template =>
       ensure<IImmutable<ClientTemplateSchema>>(template)
         .get(propertiesKey)
-        ?.find(p => p?.get('name') === extractor.get('property'))
+        ?.find(p => p?.get('name') === extractor.property)
     )
     .filter(v => !isUndefined(v));
 
@@ -37,7 +33,7 @@ const SuggestionComponent = ({
           property={property.get(0)?.toJS() as ClientPropertySchema}
           acceptIXSuggestion={acceptIXSuggestion}
           languages={languages?.toArray()}
-          extractor={extractor.toJS()}
+          extractor={extractor}
         />
       </div>
     );
@@ -52,7 +48,6 @@ const SuggestionComponent = ({
 const mapStateToProps = (state: IStore) => ({
   templates: state.templates,
   languages: state.settings.collection.get('languages'),
-  extractors: state.ixExtractors,
 });
 
 const mapDispatchToProps = {

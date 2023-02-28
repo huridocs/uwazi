@@ -51,6 +51,7 @@ describe('EntitySuggestions', () => {
         property={property}
         acceptIXSuggestion={acceptIXSuggestion}
         languages={[{}, {}]}
+        extractor={{ _id: 'someid', name: 'name', property: 'title', templates: [] }}
       />,
       () => ({
         ...defaultState,
