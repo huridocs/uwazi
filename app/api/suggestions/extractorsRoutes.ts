@@ -2,6 +2,7 @@ import { needsAuthorization } from 'api/auth';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { Application } from 'express';
+import { ObjectId } from 'mongodb';
 import { ensure } from 'shared/tsUtils';
 import { serviceMiddleware } from './serviceMiddleware';
 
@@ -88,10 +89,27 @@ export const extractorsRoutes = (app: Application) => {
     '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    }),
     async (req, res, _next) => {
-      const extractors = await Extractors.get_all();
-      res.json(extractors);
+      if (req.query.id) {
+        const extractor = await Extractors.get({ _id: new ObjectId(req.query.id as string) });
+        res.json(extractor);
+      } else {
+        const extractors = await Extractors.get_all();
+        res.json(extractors);
+      }
     }
   );
 };

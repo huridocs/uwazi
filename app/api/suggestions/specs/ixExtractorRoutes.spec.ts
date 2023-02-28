@@ -275,5 +275,12 @@ describe('extractor routes', () => {
         { ...existingExtractors[2], _id: existingExtractors[2]._id.toString() },
       ]);
     });
+    it('should return an extractor based on a query filter', async () => {
+      const response = await request(app)
+        .get('/api/ixextractors')
+        .query({ id: fixturesFactory.id('extractor1').toString() })
+        .expect(200);
+      expect(response.body).toMatchObject([existingExtractors[0]]);
+    });
   });
 });
