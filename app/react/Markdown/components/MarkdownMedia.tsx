@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
-import React, { createRef, LegacyRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
@@ -63,7 +63,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
-
+  const playerRef = useRef<ReactPlayer>(null);
+  const [url, setURL] = useState('');
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -71,9 +72,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     control,
     name: 'timelines',
   });
-
-  const playerRef: LegacyRef<ReactPlayer> | undefined = createRef();
-
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
     playerRef.current?.seekTo(seconds);
@@ -273,6 +271,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 
   const config = propsToConfig(props);
+  useEffect(() => {
+    fetch(config.url)
+      .then(async res => res.blob())
+      .then(blob => {
+        setURL(URL.createObjectURL(blob));
+      })
+      .catch(_e => {});
+  }, [config.url]);
+
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
   if (compact) {
@@ -286,7 +293,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="react-player"
           playing={isVideoPlaying}
           ref={playerRef}
-          url={config.url}
+          url={url}
           {...dimensions}
           controls
           onPause={() => {
