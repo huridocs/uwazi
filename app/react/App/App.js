@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
@@ -18,11 +19,12 @@ import './scss/styles.scss';
 import './styles/globals.css';
 import 'flowbite';
 
-const App = () => {
+const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
   const location = useLocation();
   const params = useParams();
+  const sharedId = customParams?.sharedId || params.sharedId;
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);
@@ -43,7 +45,7 @@ const App = () => {
     navClass += ' is-active';
   }
 
-  const appClassName = params.sharedId ? `pageId_${params.sharedId}` : '';
+  const appClassName = sharedId ? `pageId_${sharedId}` : '';
 
   return (
     <div id="app" className={appClassName}>
@@ -81,6 +83,12 @@ const App = () => {
       </div>
     </div>
   );
+};
+
+App.propTypes = {
+  customParams: PropTypes.shape({
+    sharedId: PropTypes.string,
+  }),
 };
 
 export { App };
