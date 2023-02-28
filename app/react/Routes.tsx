@@ -51,9 +51,9 @@ import OneUpReview from './Review/OneUpReview';
 import { loadExtractor } from './MetadataExtraction/actions/actions';
 import { json } from 'react-router-dom';
 
-const getRoutesLayout = (settings: settingsType | undefined, userId: string | undefined) => (
+const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
   <Route errorElement={<RouteErrorBoundary />}>
-    <Route index element={getIndexElement(settings, userId)} />
+    <Route index element={indexElement} />
     <Route path="login" element={<Login />} />
     <Route path="library" element={privateRoute(<LibraryCards />, settings)} />
     <Route path="library/map" element={privateRoute(<LibraryMap />, settings)} />
@@ -128,9 +128,10 @@ const getRoutesLayout = (settings: settingsType | undefined, userId: string | un
 );
 
 const getRoutes = (settings: settingsType | undefined, userId: string | undefined) => {
-  const layout = getRoutesLayout(settings, userId);
+  const { element, parameters } = getIndexElement(settings, userId);
+  const layout = getRoutesLayout(settings, element);
   return createRoutesFromElements(
-    <Route path="/" element={<App />}>
+    <Route path="/" element={<App customParams={parameters} />}>
       {layout}
       <Route path=":lang">
         {layout}

@@ -9,6 +9,7 @@ coverage
 /prod
 /build
 /uwazi-production
+/storybook-static
 *.log
 *.tar.gz
 npm-debug

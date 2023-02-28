@@ -43,7 +43,7 @@ html {
   -o-tab-size: 4;
      tab-size: 4;
   /* 3 */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, system-ui, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   /* 4 */
   font-feature-settings: normal;
   /* 5 */
@@ -126,7 +126,7 @@ code,
 kbd,
 samp,
 pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   /* 1 */
   font-size: 1em;
   /* 2 */
@@ -473,8 +473,7 @@ select:not([size]) {
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
-  -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 [multiple] {
@@ -483,8 +482,7 @@ select:not([size]) {
   background-repeat: unset;
   background-size: initial;
   padding-right: 0.75rem;
-  -webkit-print-color-adjust: unset;
-          print-color-adjust: unset;
+  print-color-adjust: unset;
 }
 
 [type='checkbox'],[type='radio'] {
@@ -492,8 +490,7 @@ select:not([size]) {
      -moz-appearance: none;
           appearance: none;
   padding: 0;
-  -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
+  print-color-adjust: exact;
   display: inline-block;
   vertical-align: middle;
   background-origin: border-box;
@@ -862,6 +859,10 @@ input:checked + .toggle-bg {
 
 [role="tooltip"].invisible > [data-popper-arrow]:after {
   visibility: hidden;
+}
+
+.tw-content * {
+  font-family: 'Inter', sans-serif !important;
 }
 
 *, ::before, ::after {
@@ -1288,14 +1289,13 @@ input:checked + .toggle-bg {
 
 .h-3\.5 {
   height: 0.875rem;
-}
 
 .h-36 {
   height: 9rem;
 }
 
-.h-4 {
-  height: 1rem;
+.h-36 {
+  height: 9rem;
 }
 
 .h-5 {
@@ -1314,8 +1314,8 @@ input:checked + .toggle-bg {
   height: 2rem;
 }
 
-.h-96 {
-  height: 24rem;
+.h-6 {
+  height: 1.5rem;
 }
 
 .h-auto {
@@ -1336,8 +1336,8 @@ input:checked + .toggle-bg {
   height: min-content;
 }
 
-.h-modal {
-  height: calc(100% - 2rem);
+.h-auto {
+  height: auto;
 }
 
 .h-px {
@@ -1543,6 +1543,10 @@ input:checked + .toggle-bg {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+.flex-row {
+  flex-direction: row;
 }
 
 .flex-col {
@@ -2490,6 +2494,18 @@ input:checked + .toggle-bg {
   padding-left: 0.625rem;
 }
 
+.pl-10 {
+  padding-left: 2.5rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
+.pl-2\.5 {
+  padding-left: 0.625rem;
+}
+
 .pl-3 {
   padding-left: 0.75rem;
 }
@@ -2750,7 +2766,8 @@ input:checked + .toggle-bg {
 }
 
 .underline {
-  text-decoration-line: underline;
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
 }
 
 .placeholder-blue-700::-moz-placeholder {
@@ -2863,11 +2880,12 @@ input:checked + .toggle-bg {
 .ring-pink-500 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(231 70 148 / var(--tw-ring-opacity));
+
 }
 
-.ring-purple-500 {
+.ring-pink-500 {
   --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(144 97 249 / var(--tw-ring-opacity));
+  --tw-ring-color: rgb(231 70 148 / var(--tw-ring-opacity));
 }
 
 .ring-red-500 {
@@ -2880,9 +2898,17 @@ input:checked + .toggle-bg {
   --tw-ring-color: rgb(255 255 255 / var(--tw-ring-opacity));
 }
 
-.ring-yellow-300 {
+.ring-red-500 {
   --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(250 202 21 / var(--tw-ring-opacity));
+  --tw-ring-color: rgb(240 82 82 / var(--tw-ring-opacity));
+}
+
+.transition {
+  transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .transition {
@@ -2895,12 +2921,6 @@ input:checked + .toggle-bg {
 
 .transition-all {
   transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-opacity {
-  transition-property: opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -3148,7 +3168,8 @@ input:checked + .toggle-bg {
 }
 
 .hover\:underline:hover {
-  text-decoration-line: underline;
+  -webkit-text-decoration-line: underline;
+          text-decoration-line: underline;
 }
 
 .focus\:z-10:focus {
