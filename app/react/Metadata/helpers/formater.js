@@ -354,12 +354,12 @@ export default {
     const denormalizedProperty = property.get('denormalizedProperty');
     const type = getPropertyType(denormalizedProperty, templates);
     const noLabel = property.get('noLabel');
-    const propertyInfo = {
+    const propertyInfo = Immutable.fromJS({
       label,
       name,
       type,
       noLabel,
-    };
+    });
 
     const methodType = this[type] ? type : 'default';
     let value = (propValue || [])
