@@ -111,7 +111,7 @@ class ThesauriList extends RouteHandler {
       <tr key={thesaurus.name}>
         <th scope="row">
           <Link to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</Link>&nbsp;
-          (<Translate context={thesaurus._id}>{thesaurus.name}</Translate>)
+          &#40;<Translate context={thesaurus._id}>{thesaurus.name}</Translate>&#41;
         </th>
         <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
