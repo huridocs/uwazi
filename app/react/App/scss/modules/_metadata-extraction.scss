@@ -74,20 +74,23 @@
     .extractor-label {
       display: flex;
       width: 50%;
-      text-align: left;
+      text-align: center;
       font-weight: 700;
       line-height: 16px;
     }
-    .all-templates-checkbox {
+    .all-templates-button {
       width: 50%;
       text-align: right;
       font-weight: 500;
       line-height: 19px;
 
-      span {
-        margin-left: 5px;
-        font-style: normal;
-        font-weight: 400;
+      .btn {
+        width: 70%;
+        background: #ffffff;
+        box-shadow: 0px 2px 2px rgba(55, 71, 79, 0.4);
+        border-radius: 4px;
+        font-size: 16px;
+        border: none;
       }
     }
   }

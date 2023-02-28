@@ -410,7 +410,7 @@ const EntitySuggestionsComponent = ({
                 &nbsp; <Translate>for</Translate> &nbsp;
               </span>
               <span className="suggestion-templates">
-                {aggregations.template.map(({ _id }) => (
+                {extractor.templates.map(_id => (
                   <span color="segment-pdf" key={_id}>
                     {templateNamesById[_id]}
                   </span>

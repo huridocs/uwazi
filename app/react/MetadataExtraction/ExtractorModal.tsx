@@ -103,6 +103,23 @@ export const ExtractorModal = ({
     onClose();
   };
 
+  const onAllTemplatedCheckboxChanged = () => {
+    const templatesIds = templates.map(template => template._id);
+    const properties = new Set();
+    values.forEach(value => {
+      properties.add(value.split('-')[1]);
+    });
+    const newValues: string[] = [];
+    templatesIds.forEach(template => {
+      const arrProps = Array.from(properties);
+      arrProps.forEach(prop => {
+        newValues.push(template + '-' + prop);
+      });
+    });
+    console.log(newValues);
+    setValues(newValues);
+  };
+
   return (
     <Modal isOpen={isOpen} type="content" className="extractor-creation-modal">
       <Modal.Header>
@@ -113,9 +130,10 @@ export const ExtractorModal = ({
             <Translate>Create extractor</Translate>
           )}
         </div>
-        <div className="all-templates-checkbox">
-          <input type="checkbox" />
-          <span>From all templates</span>
+        <div className="all-templates-button">
+          <button className="btn" onClick={onAllTemplatedCheckboxChanged}>
+            <Translate>From all templates</Translate>
+          </button>
         </div>
       </Modal.Header>
       <Modal.Body>
