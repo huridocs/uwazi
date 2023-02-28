@@ -125,9 +125,9 @@ export const ExtractorModal = ({
       <Modal.Header>
         <div className="extractor-label">
           {isEditing ? (
-            <Translate>Edit extractor</Translate>
+            <Translate>Edit Extractor</Translate>
           ) : (
-            <Translate>Create extractor</Translate>
+            <Translate>Create Extractor</Translate>
           )}
         </div>
         <div className="all-templates-button">
