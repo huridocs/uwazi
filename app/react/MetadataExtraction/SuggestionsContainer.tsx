@@ -1,7 +1,7 @@
 import React from 'react';
 import { isUndefined } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { LoaderFunction, useLoaderData, redirect } from 'react-router-dom';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientPropertySchema, ClientTemplateSchema, IStore } from 'app/istore';
 import { acceptSuggestion, loadExtractor } from 'app/MetadataExtraction/actions/actions';
 import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
@@ -68,11 +68,9 @@ export const IXSuggestions = connect(mapStateToProps, mapDispatchToProps)(Sugges
 
 export const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId }, request }) => {
+  async ({ params: { extractorId } }) => {
     try {
       const extractors = await loadExtractor({ id: extractorId! }, headers);
       return extractors[0];
-    } catch (e) {
-      return;
-    }
+    } catch (e) {}
   };

@@ -205,7 +205,7 @@ class MetadataExtractionComponent extends React.Component<
                     </td>
 
                     <td className="templateNameViewer">
-                      {extractor.templates.map((template, index) => (
+                      {extractor.templates.map(template => (
                         <span key={template}>{templateInfo[template].name}</span>
                       ))}
                     </td>

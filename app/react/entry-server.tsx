@@ -7,7 +7,7 @@ import ReactDOMServer from 'react-dom/server';
 import { RecoilRoot } from 'recoil';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-import { LoaderFunction, matchRoutes, RouteObject } from 'react-router-dom';
+import { matchRoutes, RouteObject } from 'react-router-dom';
 import { omit } from 'lodash';
 import {
   unstable_createStaticRouter as createStaticRouter,
