@@ -46,10 +46,8 @@ import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
-import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
+import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
-import { loadExtractor } from './MetadataExtraction/actions/actions';
-import { json } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 
 const getRoutesLayout = (
@@ -97,22 +95,7 @@ const getRoutesLayout = (
       />
       <Route
         path="metadata_extraction/suggestions/:extractorId"
-        loader={async params => {
-          if (params.params.extractorId) {
-            try {
-              const extractors = await loadExtractor(
-                {
-                  id: params.params.extractorId,
-                },
-                headers
-              );
-              return extractors[0];
-            } catch (e) {
-              console.error(e);
-            }
-          }
-          return json({}, { status: 200 });
-        }}
+        loader={IXSuggestionsLoader(headers)}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">

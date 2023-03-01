@@ -1,14 +1,15 @@
 import React from 'react';
 import { isUndefined } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, redirect } from 'react-router-dom';
 import { ClientPropertySchema, ClientTemplateSchema, IStore } from 'app/istore';
-import { acceptSuggestion } from 'app/MetadataExtraction/actions/actions';
+import { acceptSuggestion, loadExtractor } from 'app/MetadataExtraction/actions/actions';
 import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { IXExtractorInfo } from './ExtractorModal';
+import { IncomingHttpHeaders } from 'http';
 
 const SuggestionComponent = ({
   templates,
@@ -16,15 +17,18 @@ const SuggestionComponent = ({
   languages,
 }: ComponentProps) => {
   const extractor = useLoaderData() as IXExtractorInfo;
-  const propertiesKey = extractor.property === 'title' ? 'commonProperties' : 'properties';
+  let property;
 
-  const property = templates
-    .map(template =>
-      ensure<IImmutable<ClientTemplateSchema>>(template)
-        .get(propertiesKey)
-        ?.find(p => p?.get('name') === extractor.property)
-    )
-    .filter(v => !isUndefined(v));
+  if (extractor) {
+    const propertiesKey = extractor.property === 'title' ? 'commonProperties' : 'properties';
+    property = templates
+      .map(template =>
+        ensure<IImmutable<ClientTemplateSchema>>(template)
+          .get(propertiesKey)
+          ?.find(p => p?.get('name') === extractor.property)
+      )
+      .filter(v => !isUndefined(v));
+  }
 
   if (property && property.size > 0) {
     return (
@@ -61,3 +65,14 @@ type MappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = MappedProps;
 
 export const IXSuggestions = connect(mapStateToProps, mapDispatchToProps)(SuggestionComponent);
+
+export const IXSuggestionsLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params: { extractorId }, request }) => {
+    try {
+      const extractors = await loadExtractor({ id: extractorId! }, headers);
+      return extractors[0];
+    } catch (e) {
+      return;
+    }
+  };
