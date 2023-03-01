@@ -72,16 +72,20 @@ describe('MetadataExtractionDashboard', () => {
       expect(rows.length).toBe(3);
       const info = rows.map(r => r.find('td').map(td => td.text()));
       const names = info.map(i => i[1]);
-      expect(names).toEqual([' AtextExtractor ', ' ABdateExtractor ', ' ABCnumberExtractor ']);
+      expect(names).toEqual([
+        '<Connect(Icon) />AonlyText',
+        '<Connect(Icon) />ABsharedDate',
+        '<Connect(Icon) />ABC shared Number',
+      ]);
       const properties = info.map(i => i[2]);
-      expect(properties[0]).toMatch(/AonlyText/);
-      expect(properties[1]).toMatch(/ABsharedDate/);
-      expect(properties[2]).toMatch(/ABC shared Number/);
+      expect(properties[0]).toMatch('templateA');
+      expect(properties[1]).toMatch('templateAtemplateB');
+      expect(properties[2]).toMatch('templateAtemplateBtemplateC');
       const templateLists = info.map(i => i[3]);
       expect(templateLists).toEqual([
-        'templateA',
-        'templateA,templateB',
-        'templateA,templateB,templateC',
+        '<Connect(I18NLink) />',
+        '<Connect(I18NLink) />',
+        '<Connect(I18NLink) />',
       ]);
     });
 
