@@ -69,8 +69,6 @@ export const IXSuggestions = connect(mapStateToProps, mapDispatchToProps)(Sugges
 export const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId } }) => {
-    try {
-      const extractors = await loadExtractor({ id: extractorId! }, headers);
-      return extractors[0];
-    } catch (e) {}
+    const extractors = await loadExtractor({ id: extractorId! }, headers);
+    return extractors[0];
   };
