@@ -93,6 +93,37 @@ describe('connections', () => {
       );
       expect(title).toEqual('MockPDF - renamed.pdf');
     });
+
+    it('should upload a second main document', async () => {
+      const [fileChooser] = await Promise.all([
+        page.waitForFileChooser(),
+        page.click('label[for="upload-button-input"]'),
+      ]);
+
+      await fileChooser.accept([`${__dirname}/../test_files/anotherPDF.pdf`]);
+      await expect(page).toMatchElement(
+        '.filelist > ul > li:nth-child(2) > .file > .file-originalname',
+        { text: 'anotherPDF.pdf' }
+      );
+    });
+
+    it('should switch between documents', async () => {
+      await expect(page).toClick(
+        '.filelist > ul > li:nth-child(2) > .file > div:nth-child(2) >  div:nth-child(2) > .btn-default',
+        { text: 'View' }
+      );
+      await expect(page).toMatchElement('#page3R_mcid6', {
+        text: 'RESOLUCIÓN DE LA PRESIDENTA DE LA',
+      });
+
+      await expect(page).toClick(
+        '.filelist > ul > li:nth-child(1) > .file > div:nth-child(2) >  div:nth-child(2) > .btn-default',
+        { text: 'View' }
+      );
+      await expect(page).toMatchElement('.textLayer > span:nth-child(1)', {
+        text: 'Research Paper',
+      });
+    });
   });
 
   describe('entity attachment', () => {
