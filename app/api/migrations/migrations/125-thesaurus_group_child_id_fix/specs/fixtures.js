@@ -112,6 +112,20 @@ const fixtures = {
             },
           ],
         },
+        {
+          label: 'B bad_group_2',
+          id: 'B_bad_group_2_id',
+          values: [
+            {
+              label: 'B_bad_group_2_good_child',
+              id: 'B_bad_group_2_good_child_id',
+            },
+            {
+              label: 'B_bad_group_2_bad_child',
+              id: 'B_bad_group_2_id', // same as parent
+            },
+          ],
+        },
       ],
     },
   ],
@@ -128,6 +142,7 @@ const fixtures = {
       commonProperties,
       properties: [
         {
+          _id: db.id(),
           label: 'A Text',
           type: 'text',
           name: 'a_text',
@@ -147,6 +162,7 @@ const fixtures = {
           content: dictAId.toString(),
         },
         {
+          _id: db.id(),
           label: 'Another Text',
           type: 'text',
           name: 'another_text',
@@ -166,6 +182,7 @@ const fixtures = {
           content: dictBId.toString(),
         },
         {
+          _id: db.id(),
           label: 'A Number',
           type: 'numeric',
           name: 'a_number',
@@ -178,6 +195,7 @@ const fixtures = {
       commonProperties,
       properties: [
         {
+          _id: db.id(),
           label: 'inherited select',
           type: 'relationship',
           name: 'inherited_select',
@@ -189,6 +207,7 @@ const fixtures = {
           },
         },
         {
+          _id: db.id(),
           label: 'inherited multiselect',
           type: 'relationship',
           name: 'inherited_multiselect',
@@ -200,6 +219,7 @@ const fixtures = {
           },
         },
         {
+          _id: db.id(),
           label: 'Another Number',
           type: 'numeric',
           name: 'another_number',
@@ -369,6 +389,22 @@ const fixtures = {
             inheritedType: 'multiselect',
             inheritedValue: [
               {
+                label: 'B_bad_group_bad_child',
+                id: 'B_bad_group_id',
+                parent: {
+                  label: 'B bad_group',
+                  id: 'B_bad_group_id',
+                },
+              },
+            ],
+          },
+          {
+            value: 'some_sharedId_D',
+            label: 'some title D',
+            type: 'entity',
+            inheritedType: 'multiselect',
+            inheritedValue: [
+              {
                 label: 'B_root_1',
                 id: 'B_root_1_id',
               },
@@ -389,47 +425,11 @@ const fixtures = {
                 },
               },
               {
-                label: 'B_bad_group_bad_child',
-                id: 'B_bad_group_id',
+                label: 'B_bad_group_2_bad_child',
+                id: 'B_bad_group_2_id',
                 parent: {
-                  label: 'B bad_group',
-                  id: 'B_bad_group_id',
-                },
-              },
-            ],
-          },
-          {
-            value: 'some_sharedId_D',
-            label: 'some title D',
-            type: 'entity',
-            inheritedType: 'multiselect',
-            inheritedValue: [
-              {
-                label: 'A_root_1',
-                id: 'A_root_1_id',
-              },
-              {
-                label: 'A_good_group_child_1',
-                id: 'A_good_group_child_1_id',
-                parent: {
-                  label: 'A good_group',
-                  id: 'A_good_group_id',
-                },
-              },
-              {
-                label: 'A_bad_group_good_child',
-                id: 'A_bad_group_good_child_id',
-                parent: {
-                  label: 'A bad_group',
-                  id: 'A_bad_group_id',
-                },
-              },
-              {
-                label: 'A_bad_group_bad_child',
-                id: 'A_bad_group_id',
-                parent: {
-                  label: 'A bad_group',
-                  id: 'A_bad_group_id',
+                  label: 'B bad_group_2',
+                  id: 'B_bad_group_2_id',
                 },
               },
             ],

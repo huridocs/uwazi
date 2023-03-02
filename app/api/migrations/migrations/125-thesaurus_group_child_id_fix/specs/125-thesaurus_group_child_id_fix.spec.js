@@ -15,6 +15,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
   let dicts;
   let newIdForA;
   let newIdForB;
+  let newIdForB2;
 
   beforeEach(async () => {
     // jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
@@ -26,6 +27,9 @@ describe('migration thesaurus_group_child_id_fix', () => {
     newIdForA = dicts
       .find(d => d._id.toString() === dictAId.toString())
       .values.find(v => v.label === 'A bad_group').id;
+    newIdForB2 = dicts
+      .find(d => d._id.toString() === dictBId.toString())
+      .values.find(v => v.label === 'B bad_group_2').id;
     newIdForB = dicts
       .find(d => d._id.toString() === dictBId.toString())
       .values.find(v => v.label === 'B bad_group').id;
@@ -65,7 +69,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
           },
           {
             label: 'A bad_group',
-            id: expect.any(String),
+            id: expect.not.stringMatching('A_bad_group_id'),
             values: [
               {
                 label: 'A_bad_group_good_child',
@@ -112,6 +116,21 @@ describe('migration thesaurus_group_child_id_fix', () => {
               {
                 label: 'B_bad_group_bad_child',
                 id: 'B_bad_group_id', // same as parent
+              },
+            ],
+          },
+
+          {
+            label: 'B bad_group_2',
+            id: expect.not.stringMatching('B_bad_group_2_id'),
+            values: [
+              {
+                label: 'B_bad_group_2_good_child',
+                id: 'B_bad_group_2_good_child_id',
+              },
+              {
+                label: 'B_bad_group_2_bad_child',
+                id: 'B_bad_group_2_id', // same as parent
               },
             ],
           },
@@ -313,6 +332,22 @@ describe('migration thesaurus_group_child_id_fix', () => {
               inheritedType: 'multiselect',
               inheritedValue: [
                 {
+                  label: 'B_bad_group_bad_child',
+                  id: 'B_bad_group_id',
+                  parent: {
+                    label: 'B bad_group',
+                    id: newIdForB,
+                  },
+                },
+              ],
+            },
+            {
+              value: 'some_sharedId_D',
+              label: 'some title D',
+              type: 'entity',
+              inheritedType: 'multiselect',
+              inheritedValue: [
+                {
                   label: 'B_root_1',
                   id: 'B_root_1_id',
                 },
@@ -333,47 +368,11 @@ describe('migration thesaurus_group_child_id_fix', () => {
                   },
                 },
                 {
-                  label: 'B_bad_group_bad_child',
-                  id: 'B_bad_group_id',
+                  label: 'B_bad_group_2_bad_child',
+                  id: 'B_bad_group_2_id',
                   parent: {
-                    label: 'B bad_group',
-                    id: newIdForB,
-                  },
-                },
-              ],
-            },
-            {
-              value: 'some_sharedId_D',
-              label: 'some title D',
-              type: 'entity',
-              inheritedType: 'multiselect',
-              inheritedValue: [
-                {
-                  label: 'A_root_1',
-                  id: 'A_root_1_id',
-                },
-                {
-                  label: 'A_good_group_child_1',
-                  id: 'A_good_group_child_1_id',
-                  parent: {
-                    label: 'A good_group',
-                    id: 'A_good_group_id',
-                  },
-                },
-                {
-                  label: 'A_bad_group_good_child',
-                  id: 'A_bad_group_good_child_id',
-                  parent: {
-                    label: 'A bad_group',
-                    id: newIdForA,
-                  },
-                },
-                {
-                  label: 'A_bad_group_bad_child',
-                  id: 'A_bad_group_id',
-                  parent: {
-                    label: 'A bad_group',
-                    id: newIdForA,
+                    label: 'B bad_group_2',
+                    id: newIdForB2,
                   },
                 },
               ],

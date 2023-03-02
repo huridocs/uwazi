@@ -45,12 +45,25 @@ const getSelectNamesPerContent = async db => {
   const templates = await db.collection('templates').find({}).toArray();
   const properties = templates.map(t => t.properties || []).flat();
   const selects = properties.filter(p => selectTypes.has(p.type));
+  const inheriting = properties.filter(p => selectTypes.has(p.inherit?.type));
 
-  const contents = Array.from(new Set(selects.map(s => s.content)));
-  const namesPerContent = Object.fromEntries(contents.map(c => [c, new Set()]));
+  const namesPerContent = {};
 
   selects.forEach(s => {
-    namesPerContent[s.content].add(s.name);
+    if (!namesPerContent[s.content]) {
+      namesPerContent[s.content] = new Set();
+    }
+    namesPerContent[s.content].add({ propertyName: s.name, inheriting: false });
+  });
+
+  inheriting.forEach(i => {
+    const inhertiedProperty = properties.find(
+      property => property._id.toString() === i.inherit.property
+    );
+    if (!namesPerContent[inhertiedProperty.content]) {
+      namesPerContent[inhertiedProperty.content] = new Set();
+    }
+    namesPerContent[inhertiedProperty.content].add({ propertyName: i.name, inheriting: true });
   });
 
   return Object.fromEntries(Object.entries(namesPerContent).map(([k, v]) => [k, Array.from(v)]));
@@ -58,24 +71,42 @@ const getSelectNamesPerContent = async db => {
 
 // eslint-disable-next-line max-statements
 const fixSelectsAndMultiSelects = async (db, idMap) => {
-  const namesPerContent = Object.entries(await getSelectNamesPerContent(db));
-  for (let i = 0; i < namesPerContent.length; i += 1) {
-    const [thesaurusId, propertyNames] = namesPerContent[i];
-    const idPairs = Object.entries(idMap[thesaurusId] || {});
-    for (let j = 0; j < propertyNames.length; j += 1) {
-      const propertyName = propertyNames[j];
-      for (let k = 0; k < idPairs.length; k += 1) {
-        const [oldId, newId] = idPairs[k];
-        // eslint-disable-next-line no-await-in-loop
-        await db
-          .collection('entities')
-          .updateMany(
-            { [`metadata.${propertyName}.parent.id`]: oldId },
-            { $set: { [`metadata.${propertyName}.$.parent.id`]: newId } }
+  const thesauriToUpdateIds = Object.keys(idMap);
+  const thesauriToPropertyNameMap = await getSelectNamesPerContent(db);
+  await Promise.all(
+    thesauriToUpdateIds.map(async thesauriId => {
+      await Promise.all(
+        thesauriToPropertyNameMap[thesauriId].map(async ({ propertyName, inheriting }) => {
+          const groupsToUpdateIds = Object.keys(idMap[thesauriId]);
+          await Promise.all(
+            groupsToUpdateIds.map(async oldGroupId => {
+              const newId = idMap[thesauriId][oldGroupId];
+              if (!inheriting) {
+                await db
+                  .collection('entities')
+                  .updateMany(
+                    { [`metadata.${propertyName}.parent.id`]: oldGroupId },
+                    { $set: { [`metadata.${propertyName}.$[valueIndex].parent.id`]: newId } },
+                    { arrayFilters: [{ 'valueIndex.parent.id': oldGroupId }] }
+                  );
+              } else {
+                await db.collection('entities').updateMany(
+                  { [`metadata.${propertyName}.inheritedValue.parent.id`]: oldGroupId },
+                  {
+                    $set: {
+                      [`metadata.${propertyName}.$[].inheritedValue.$[valueIndex].parent.id`]:
+                        newId,
+                    },
+                  },
+                  { arrayFilters: [{ 'valueIndex.parent.id': oldGroupId }] }
+                );
+              }
+            })
           );
-      }
-    }
-  }
+        })
+      );
+    })
+  );
 };
 
 export default {
