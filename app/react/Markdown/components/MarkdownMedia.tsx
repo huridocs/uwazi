@@ -64,7 +64,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const playerRef = useRef<ReactPlayer>(null);
-  const [url, setURL] = useState('');
+  const [mediaURL, setMediaURL] = useState('');
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -72,6 +72,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     control,
     name: 'timelines',
   });
+
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
     playerRef.current?.seekTo(seconds);
@@ -90,6 +91,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const timeLinks = (_timelinks: any) => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
+      const linkIndex = index;
       const seconds = timeKey
         .split(':')
         .reverse()
@@ -106,22 +108,22 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             className="timelink-icon"
             onClick={() => {
               seekTo(seconds);
-              if (index === playingTimelinkIndex) {
+              if (linkIndex === playingTimelinkIndex) {
                 setVideoPlaying(false);
                 setPlayingTimelinkIndex(-1);
               } else {
                 setVideoPlaying(true);
-                setPlayingTimelinkIndex(index);
+                setPlayingTimelinkIndex(linkIndex);
               }
             }}
           >
-            <Icon icon={index === playingTimelinkIndex ? 'pause' : 'play'} />
+            <Icon icon={linkIndex === playingTimelinkIndex ? 'pause' : 'play'} />
           </b>
           <div
             className="timelink-time-label"
             onClick={() => {
               seekTo(seconds);
-              setPlayingTimelinkIndex(index);
+              setPlayingTimelinkIndex(linkIndex);
             }}
           >
             <b>{displayTime}</b>
@@ -275,10 +277,17 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     fetch(config.url)
       .then(async res => res.blob())
       .then(blob => {
-        setURL(URL.createObjectURL(blob));
+        setMediaURL(URL.createObjectURL(blob));
       })
       .catch(_e => {});
   }, [config.url]);
+
+  useEffect(
+    () => () => {
+      URL.revokeObjectURL(mediaURL);
+    },
+    [mediaURL]
+  );
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
@@ -293,7 +302,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="react-player"
           playing={isVideoPlaying}
           ref={playerRef}
-          url={url}
+          url={mediaURL}
           {...dimensions}
           controls
           onPause={() => {
@@ -302,6 +311,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           onPlay={() => {
             setVideoPlaying(true);
           }}
+          playingindex={playingTimelinkIndex}
         />
       </div>
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
