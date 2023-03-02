@@ -44,9 +44,9 @@ class ViewerRouteComponent extends RouteHandler {
   urlHasChanged(nextProps) {
     const { sharedId: oldSharedId, lang: oldLang } = nextProps.params;
     const { sharedId: newSharedId, lang: newLang } = this.props.params;
-    const { search } = this.props.location;
-    const { search: nextSearch } = nextProps.location;
-    const sameQueryFile = search.file === nextSearch.file;
+    const file = new URLSearchParams(this.props.location.search).get('file');
+    const nextFile = new URLSearchParams(nextProps.location.search).get('file');
+    const sameQueryFile = file === nextFile;
 
     if (newSharedId === oldSharedId && newLang === oldLang && sameQueryFile) {
       return false;
