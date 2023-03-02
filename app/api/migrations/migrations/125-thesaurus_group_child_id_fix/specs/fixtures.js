@@ -36,7 +36,7 @@ const commonProperties = [
   },
 ];
 
-export const fixtures = {
+const fixtures = {
   dictionaries: [
     {
       _id: dictAId,
@@ -440,3 +440,5 @@ export const fixtures = {
     },
   ],
 };
+
+export { dictAId, dictBId, fixtures, unrelatedTemplateId };
