@@ -1,6 +1,14 @@
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import { dictAId, dictBId, fixtures, unrelatedTemplateId } from './fixtures.js';
+import {
+  dictAId,
+  dictBId,
+  fixtures,
+  unrelatedTemplateId,
+  selectTemplateId,
+  multiSelectTemplateId,
+  inheritingTemplateId,
+} from './fixtures.js';
 
 describe('migration thesaurus_group_child_id_fix', () => {
   let db;
@@ -146,6 +154,232 @@ describe('migration thesaurus_group_child_id_fix', () => {
         published: false,
         metadata: {
           a_text: [{ value: 'a text value' }],
+        },
+      },
+    ]);
+  });
+
+  it('should fix select metadata', async () => {
+    const entities = await db.collection('entities').find({ template: selectTemplateId }).toArray();
+    expect(entities).toMatchObject([
+      {
+        title: 'select_entity',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'select_entity',
+        template: selectTemplateId,
+        published: false,
+        metadata: {
+          a_select: [
+            {
+              label: 'A_bad_group_bad_child',
+              id: 'A_bad_group_id',
+              parent: {
+                label: 'A bad_group',
+                id: newIdForA,
+              },
+            },
+          ],
+          another_text: [{ value: 'another text value' }],
+        },
+      },
+      {
+        title: 'select_entity_good',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'select_entity_good',
+        template: selectTemplateId,
+        published: false,
+        metadata: {
+          a_select: [
+            {
+              label: 'A_bad_group_good_child',
+              id: 'A_bad_group_good_child_id',
+              parent: {
+                label: 'A bad_group',
+                id: newIdForA,
+              },
+            },
+          ],
+          another_text: [{ value: 'another text value' }],
+        },
+      },
+    ]);
+  });
+
+  it('should fix multiselect metadata', async () => {
+    const entities = await db
+      .collection('entities')
+      .find({ template: multiSelectTemplateId })
+      .toArray();
+    expect(entities).toMatchObject([
+      {
+        title: 'multiselect_entity',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'multiselect_entity',
+        template: multiSelectTemplateId,
+        published: false,
+        metadata: {
+          a_multiselect: [
+            {
+              label: 'B_root_1',
+              id: 'B_root_1_id',
+            },
+            {
+              label: 'B_good_group_child_1',
+              id: 'B_good_group_child_1_id',
+              parent: {
+                label: 'B good_group',
+                id: 'B_good_group_id',
+              },
+            },
+            {
+              label: 'B_bad_group_good_child',
+              id: 'B_bad_group_good_child_id',
+              parent: {
+                label: 'B bad_group',
+                id: newIdForB,
+              },
+            },
+            {
+              label: 'B_bad_group_bad_child',
+              id: 'B_bad_group_id',
+              parent: {
+                label: 'B bad_group',
+                id: newIdForB,
+              },
+            },
+          ],
+          a_number: [{ value: 0 }],
+        },
+      },
+    ]);
+  });
+
+  it('should fix inherited metadata', async () => {
+    const entities = await db
+      .collection('entities')
+      .find({ template: inheritingTemplateId })
+      .toArray();
+    expect(entities).toMatchObject([
+      {
+        title: 'inheriting_entity',
+        language: 'en',
+        mongoLanguage: 'en',
+        sharedId: 'inheriting_entity',
+        template: inheritingTemplateId,
+        published: false,
+        metadata: {
+          inherited_select: [
+            {
+              value: 'some_sharedId_A',
+              label: 'some title A',
+              type: 'entity',
+              inheritedType: 'select',
+              inheritedValue: [
+                {
+                  label: 'A_bad_group_bad_child',
+                  id: 'A_bad_group_id',
+                  parent: {
+                    label: 'A bad_group',
+                    id: newIdForA,
+                  },
+                },
+              ],
+            },
+            {
+              value: 'some_sharedId_B',
+              label: 'some title B',
+              type: 'entity',
+              inheritedType: 'select',
+              inheritedValue: [
+                {
+                  label: 'A_bad_group_good_child',
+                  id: 'A_bad_group_good_child_id',
+                  parent: {
+                    label: 'A bad_group',
+                    id: newIdForA,
+                  },
+                },
+              ],
+            },
+          ],
+          inherited_multiselect: [
+            {
+              value: 'some_sharedId_C',
+              label: 'some title C',
+              type: 'entity',
+              inheritedType: 'multiselect',
+              inheritedValue: [
+                {
+                  label: 'B_root_1',
+                  id: 'B_root_1_id',
+                },
+                {
+                  label: 'B_good_group_child_1',
+                  id: 'B_good_group_child_1_id',
+                  parent: {
+                    label: 'B good_group',
+                    id: 'B_good_group_id',
+                  },
+                },
+                {
+                  label: 'B_bad_group_good_child',
+                  id: 'B_bad_group_good_child_id',
+                  parent: {
+                    label: 'B bad_group',
+                    id: newIdForB,
+                  },
+                },
+                {
+                  label: 'B_bad_group_bad_child',
+                  id: 'B_bad_group_id',
+                  parent: {
+                    label: 'B bad_group',
+                    id: newIdForB,
+                  },
+                },
+              ],
+            },
+            {
+              value: 'some_sharedId_D',
+              label: 'some title D',
+              type: 'entity',
+              inheritedType: 'multiselect',
+              inheritedValue: [
+                {
+                  label: 'A_root_1',
+                  id: 'A_root_1_id',
+                },
+                {
+                  label: 'A_good_group_child_1',
+                  id: 'A_good_group_child_1_id',
+                  parent: {
+                    label: 'A good_group',
+                    id: 'A_good_group_id',
+                  },
+                },
+                {
+                  label: 'A_bad_group_good_child',
+                  id: 'A_bad_group_good_child_id',
+                  parent: {
+                    label: 'A bad_group',
+                    id: newIdForA,
+                  },
+                },
+                {
+                  label: 'A_bad_group_bad_child',
+                  id: 'A_bad_group_id',
+                  parent: {
+                    label: 'A bad_group',
+                    id: newIdForA,
+                  },
+                },
+              ],
+            },
+          ],
+          another_number: [{ value: 0 }],
         },
       },
     ]);

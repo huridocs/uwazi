@@ -441,4 +441,12 @@ const fixtures = {
   ],
 };
 
-export { dictAId, dictBId, fixtures, unrelatedTemplateId };
+export {
+  dictAId,
+  dictBId,
+  fixtures,
+  unrelatedTemplateId,
+  selectTemplateId,
+  multiSelectTemplateId,
+  inheritingTemplateId,
+};
