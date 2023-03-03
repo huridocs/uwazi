@@ -41,9 +41,17 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
         run: yarn install
+      # from here
+      - run: sudo apt-get install gnupg
+      - run: wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+      - run: echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+      # to here
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: sudo apt install git mongodb
+      # from here
+      - run: sudo apt-get install -y mongodb-mongosh
+      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_development --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'
+      # to here
       - run: git clone git@github.com:huridocs/dummy_extractor_services.git
       - run: cd dummy_extractor_services && make run &
       - run: cd ..
@@ -62,7 +70,6 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - run: yarn ix-config
       - run: yarn e2e-puppeteer-fixtures
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
