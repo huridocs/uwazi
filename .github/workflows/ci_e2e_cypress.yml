@@ -42,14 +42,14 @@ jobs:
       - name: install dependencies
         run: yarn install
       # from here
-      - run: sudo apt-get install gnupg
-      - run: wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-      - run: echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+      # - run: sudo apt-get install gnupg
+      # - run: wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+      # - run: echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
       # to here
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       # from here
-      - run: sudo apt-get install -y mongodb-mongosh
+      # - run: sudo apt-get install -y mongodb-mongosh
       # to here
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
       - run: cd dummy_extractor_services && make start &
@@ -70,8 +70,9 @@ jobs:
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
       - run: yarn e2e-puppeteer-fixtures
-      # from here
-      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_e2e --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'''
+      - run: yarn ix-config
+        # from here
+        # - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_e2e --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'''
         # to here
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
