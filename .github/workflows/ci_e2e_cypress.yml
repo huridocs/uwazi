@@ -50,7 +50,7 @@ jobs:
       - run: sudo apt-get install poppler-utils
       # from here
       - run: sudo apt-get install -y mongodb-mongosh
-      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_development --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'
+      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_development --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'''
       # to here
       - run: git clone git@github.com:huridocs/dummy_extractor_services.git
       - run: cd dummy_extractor_services && make run &
