@@ -69,7 +69,6 @@ const getSelectNamesPerContent = async db => {
   return Object.fromEntries(Object.entries(namesPerContent).map(([k, v]) => [k, Array.from(v)]));
 };
 
-// eslint-disable-next-line max-statements
 const fixSelectsAndMultiSelects = async (db, idMap) => {
   const thesauriToUpdateIds = Object.keys(idMap);
   const thesauriToPropertyNameMap = await getSelectNamesPerContent(db);

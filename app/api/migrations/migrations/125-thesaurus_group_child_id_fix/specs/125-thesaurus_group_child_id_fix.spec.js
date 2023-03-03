@@ -18,7 +18,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
   let newIdForB2;
 
   beforeEach(async () => {
-    // jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     db = testingDB.mongodb;
     migration.reindex = false;
@@ -115,7 +115,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
               },
               {
                 label: 'B_bad_group_bad_child',
-                id: 'B_bad_group_id', // same as parent
+                id: 'B_bad_group_id',
               },
             ],
           },
@@ -130,7 +130,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
               },
               {
                 label: 'B_bad_group_2_bad_child',
-                id: 'B_bad_group_2_id', // same as parent
+                id: 'B_bad_group_2_id',
               },
             ],
           },
@@ -139,6 +139,7 @@ describe('migration thesaurus_group_child_id_fix', () => {
     ]);
     expect(newIdForA).not.toBe('A_bad_group_id');
     expect(newIdForB).not.toBe('B_bad_group_id');
+    expect(newIdForB2).not.toBe('B_bad_group_2_id');
   });
 
   it('should not touch unrelated entities', async () => {
