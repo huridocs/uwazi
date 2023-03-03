@@ -24,7 +24,7 @@ const App = ({ customParams }) => {
   const [confirmOptions, setConfirmOptions] = useState({});
   const location = useLocation();
   const params = useParams();
-  const sharedId = customParams?.sharedId || params.sharedId;
+  const sharedId = params.sharedId || customParams?.sharedId;
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);
