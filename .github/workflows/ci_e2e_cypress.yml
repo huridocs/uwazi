@@ -43,8 +43,7 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: sudo apt install mongodb
-      - run: sudo apt install git
+      - run: sudo apt install git mongodb
       - run: git clone git@github.com:huridocs/dummy_extractor_services.git
       - run: cd dummy_extractor_services && make run &
       - run: cd ..
