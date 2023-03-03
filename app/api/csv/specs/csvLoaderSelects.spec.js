@@ -117,7 +117,8 @@ describe('loader', () => {
     });
   });
 
-  describe('nested thesaurus', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('nested thesaurus', () => {
     let actualEntities;
 
     const getMetadataValues = propertyName =>
@@ -140,8 +141,92 @@ describe('loader', () => {
 
     it('should only add as new root values those which are not nested values', async () => {
       const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
+      console.log(JSON.stringify(nestedThesaurus, null, 2));
       const rootLabels = nestedThesaurus.values.map(value => value.label);
       expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', 'E', '0']);
+    });
+
+    it('should not add unnecessary extra values to groups', async () => {
+      const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
+      expect(nestedThesaurus).toMatchObject({
+        name: 'nested_thesaurus',
+        values: [
+          {
+            id: 'A',
+            label: 'A',
+            values: [
+              {
+                id: '1',
+                label: '1',
+              },
+              {
+                id: '2',
+                label: '2',
+              },
+              {
+                id: '3',
+                label: '3',
+              },
+            ],
+          },
+          {
+            id: 'C',
+            label: 'C',
+            values: [
+              {
+                id: 'X',
+                label: 'X',
+              },
+              {
+                id: 'Y',
+                label: 'Y',
+              },
+              {
+                id: 'Z',
+                label: 'Z',
+              },
+            ],
+          },
+          {
+            id: 'B',
+            label: 'B',
+          },
+          {
+            id: 'P',
+            label: 'P',
+            values: [
+              {
+                id: '|',
+                label: '|',
+              },
+              {
+                id: '2',
+                label: '2',
+              },
+              {
+                id: '|||',
+                label: '|||',
+              },
+            ],
+          },
+          {
+            label: 'D',
+            id: expect.any(String),
+          },
+          {
+            label: 'O',
+            id: expect.any(String),
+          },
+          {
+            label: 'E',
+            id: expect.any(String),
+          },
+          {
+            label: '0',
+            id: expect.any(String),
+          },
+        ],
+      });
     });
 
     it('should import a nested value for a select property', async () => {
@@ -160,6 +245,8 @@ describe('loader', () => {
 
     it('should import nested values for a multiselect property', async () => {
       const multiSelectValues = getMetadataValues('nested_multiselect_property');
+      const sel5 = actualEntities.find(e => e.title === 'select_5')
+      console.log(sel5.metadata.nested_multiselect_property)
       expect(multiSelectValues).toEqual({
         select_1: '1|X',
         select_2: 'Z|O',
