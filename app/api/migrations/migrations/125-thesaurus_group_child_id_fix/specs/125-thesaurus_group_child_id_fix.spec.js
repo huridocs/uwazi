@@ -193,10 +193,10 @@ describe('migration thesaurus_group_child_id_fix', () => {
           a_select: [
             {
               label: 'A_bad_group_bad_child',
-              id: 'A_bad_group_id',
+              value: 'A_bad_group_id',
               parent: {
                 label: 'A bad_group',
-                id: newIdForA,
+                value: newIdForA,
               },
             },
           ],
@@ -214,10 +214,10 @@ describe('migration thesaurus_group_child_id_fix', () => {
           a_select: [
             {
               label: 'A_bad_group_good_child',
-              id: 'A_bad_group_good_child_id',
+              value: 'A_bad_group_good_child_id',
               parent: {
                 label: 'A bad_group',
-                id: newIdForA,
+                value: newIdForA,
               },
             },
           ],
@@ -244,30 +244,30 @@ describe('migration thesaurus_group_child_id_fix', () => {
           a_multiselect: [
             {
               label: 'B_root_1',
-              id: 'B_root_1_id',
+              value: 'B_root_1_id',
             },
             {
               label: 'B_good_group_child_1',
-              id: 'B_good_group_child_1_id',
+              value: 'B_good_group_child_1_id',
               parent: {
                 label: 'B good_group',
-                id: 'B_good_group_id',
+                value: 'B_good_group_id',
               },
             },
             {
               label: 'B_bad_group_good_child',
-              id: 'B_bad_group_good_child_id',
+              value: 'B_bad_group_good_child_id',
               parent: {
                 label: 'B bad_group',
-                id: newIdForB,
+                value: newIdForB,
               },
             },
             {
               label: 'B_bad_group_bad_child',
-              id: 'B_bad_group_id',
+              value: 'B_bad_group_id',
               parent: {
                 label: 'B bad_group',
-                id: newIdForB,
+                value: newIdForB,
               },
             },
           ],
@@ -300,10 +300,10 @@ describe('migration thesaurus_group_child_id_fix', () => {
               inheritedValue: [
                 {
                   label: 'A_bad_group_bad_child',
-                  id: 'A_bad_group_id',
+                  value: 'A_bad_group_id',
                   parent: {
                     label: 'A bad_group',
-                    id: newIdForA,
+                    value: newIdForA,
                   },
                 },
               ],
@@ -316,10 +316,10 @@ describe('migration thesaurus_group_child_id_fix', () => {
               inheritedValue: [
                 {
                   label: 'A_bad_group_good_child',
-                  id: 'A_bad_group_good_child_id',
+                  value: 'A_bad_group_good_child_id',
                   parent: {
                     label: 'A bad_group',
-                    id: newIdForA,
+                    value: newIdForA,
                   },
                 },
               ],
@@ -334,10 +334,10 @@ describe('migration thesaurus_group_child_id_fix', () => {
               inheritedValue: [
                 {
                   label: 'B_bad_group_bad_child',
-                  id: 'B_bad_group_id',
+                  value: 'B_bad_group_id',
                   parent: {
                     label: 'B bad_group',
-                    id: newIdForB,
+                    value: newIdForB,
                   },
                 },
               ],
@@ -350,30 +350,30 @@ describe('migration thesaurus_group_child_id_fix', () => {
               inheritedValue: [
                 {
                   label: 'B_root_1',
-                  id: 'B_root_1_id',
+                  value: 'B_root_1_id',
                 },
                 {
                   label: 'B_good_group_child_1',
-                  id: 'B_good_group_child_1_id',
+                  value: 'B_good_group_child_1_id',
                   parent: {
                     label: 'B good_group',
-                    id: 'B_good_group_id',
+                    value: 'B_good_group_id',
                   },
                 },
                 {
                   label: 'B_bad_group_good_child',
-                  id: 'B_bad_group_good_child_id',
+                  value: 'B_bad_group_good_child_id',
                   parent: {
                     label: 'B bad_group',
-                    id: newIdForB,
+                    value: newIdForB,
                   },
                 },
                 {
                   label: 'B_bad_group_2_bad_child',
-                  id: 'B_bad_group_2_id',
+                  value: 'B_bad_group_2_id',
                   parent: {
                     label: 'B bad_group_2',
-                    id: newIdForB2,
+                    value: newIdForB2,
                   },
                 },
               ],

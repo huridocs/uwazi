@@ -75,7 +75,7 @@ const fixSelectsAndMultiSelects = async (db, idMap) => {
   await Promise.all(
     thesauriToUpdateIds.map(async thesauriId => {
       await Promise.all(
-        thesauriToPropertyNameMap[thesauriId].map(async ({ propertyName, inheriting }) => {
+        (thesauriToPropertyNameMap[thesauriId] || []).map(async ({ propertyName, inheriting }) => {
           const groupsToUpdateIds = Object.keys(idMap[thesauriId]);
           await Promise.all(
             groupsToUpdateIds.map(async oldGroupId => {
@@ -84,20 +84,20 @@ const fixSelectsAndMultiSelects = async (db, idMap) => {
                 await db
                   .collection('entities')
                   .updateMany(
-                    { [`metadata.${propertyName}.parent.id`]: oldGroupId },
-                    { $set: { [`metadata.${propertyName}.$[valueIndex].parent.id`]: newId } },
-                    { arrayFilters: [{ 'valueIndex.parent.id': oldGroupId }] }
+                    { [`metadata.${propertyName}.parent.value`]: oldGroupId },
+                    { $set: { [`metadata.${propertyName}.$[valueIndex].parent.value`]: newId } },
+                    { arrayFilters: [{ 'valueIndex.parent.value': oldGroupId }] }
                   );
               } else {
                 await db.collection('entities').updateMany(
-                  { [`metadata.${propertyName}.inheritedValue.parent.id`]: oldGroupId },
+                  { [`metadata.${propertyName}.inheritedValue.parent.value`]: oldGroupId },
                   {
                     $set: {
-                      [`metadata.${propertyName}.$[].inheritedValue.$[valueIndex].parent.id`]:
+                      [`metadata.${propertyName}.$[].inheritedValue.$[valueIndex].parent.value`]:
                         newId,
                     },
                   },
-                  { arrayFilters: [{ 'valueIndex.parent.id': oldGroupId }] }
+                  { arrayFilters: [{ 'valueIndex.parent.value': oldGroupId }] }
                 );
               }
             })
