@@ -15,10 +15,6 @@ concurrency:
 jobs:
   e2e-cypress:
     runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        suite-dir: ['regression_suites', 'suite1', 'suite2', 'mobile']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
