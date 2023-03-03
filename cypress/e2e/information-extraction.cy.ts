@@ -1,3 +1,4 @@
+import { eq } from 'lodash';
 import { login } from './helpers';
 
 const labelEntityTitle = (
@@ -29,6 +30,11 @@ const englishLoggedInUwazi = () => {
   login('admin', 'admin');
 };
 
+const navigateToMetadataExtractionPage = () => {
+  cy.get('.only-desktop a[aria-label="Settings"]').click();
+  cy.contains('span', 'Metadata Extraction').click();
+};
+
 describe('Information Extraction', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -45,8 +51,7 @@ describe('Information Extraction', () => {
   });
 
   it('Should create an extractor', () => {
-    cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Metadata Extraction').click();
+    navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
     cy.contains('span.multiselectItem-name', 'Ordenes del presidente').click();
@@ -59,10 +64,18 @@ describe('Information Extraction', () => {
     cy.get('td.templateNameViewer').eq(0).should('contain.text', text);
   });
 
+  it('should select all templates when from all templates button is clicked', () => {
+    englishLoggedInUwazi();
+    navigateToMetadataExtractionPage();
+    cy.get('.extractor-checkbox > input').click();
+    cy.contains('span', 'Edit Extractor').click();
+    cy.contains('span', 'From all templates').click();
+    cy.get('.multiselectChild .multiselectItem-input').should('have.length', 11);
+  });
+
   it('should edit an extractor', () => {
     englishLoggedInUwazi();
-    cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Metadata Extraction').click();
+    navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
     cy.contains('span', 'Edit Extractor').click();
     cy.get('input.extractor-name-input').type(' edited');
@@ -77,10 +90,10 @@ describe('Information Extraction', () => {
 
   it('should show title initial suggestion states as Empty / Label', () => {
     englishLoggedInUwazi();
-    cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.contains('span', 'Metadata Extraction').click();
-
+    navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
+    cy.get('.suggestion-templates span').eq(0).should('contain.text', 'Ordenes del presidente');
+    cy.get('.suggestion-templates span').eq(1).should('contain.text', 'Ordenes de la corte');
     cy.get('table > tbody > tr:nth-child(1) > td:nth-child(4)').should(
       'contain.text',
       'Lorem Ipsum'
