@@ -43,6 +43,7 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
+      - run: sudo apt install git
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
       - run: cd dummy_extractor_services && make start &
       - run: cd ..
