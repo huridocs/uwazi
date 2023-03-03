@@ -50,10 +50,9 @@ jobs:
       - run: sudo apt-get install poppler-utils
       # from here
       - run: sudo apt-get install -y mongodb-mongosh
-      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_development --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'''
       # to here
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
-      - run: cd dummy_extractor_services && make run &
+      - run: cd dummy_extractor_services && make start &
       - run: cd ..
       - name: Cache build
         id: cache-build
@@ -71,6 +70,9 @@ jobs:
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
       - run: yarn e2e-puppeteer-fixtures
+      # from here
+      - run: 'mongosh -host localhost:${{ job.services.mongodb.ports[27017] }} uwazi_e2e --eval ''db.settings.update({},{$set : {"features":{"metadata-extraction": true,"metadataExtraction" :{"url":"http://localhost:5052"}, "segmentation":{"url":"http://localhost:5051/async_extraction"}}}},{upsert:false,multi:true})'''
+        # to here
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
@@ -87,7 +89,12 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          component: true
+        run: yarn cypress
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
