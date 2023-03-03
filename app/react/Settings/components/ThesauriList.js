@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { Link } from 'react-router-dom';
 import { withContext, withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -108,7 +109,10 @@ class ThesauriList extends RouteHandler {
   thesaurusNode(thesaurus) {
     return (
       <tr key={thesaurus.name}>
-        <th scope="row">{thesaurus.name}</th>
+        <th scope="row">
+          <Link to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</Link>&nbsp;
+          &#40;<Translate context={thesaurus._id}>{thesaurus.name}</Translate>&#41;
+        </th>
         <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
       </tr>
