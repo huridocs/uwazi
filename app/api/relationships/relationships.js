@@ -145,10 +145,14 @@ export default {
     } else {
       ownRelations = await model.get({
         entity,
-        $or: [
-          { $and: [{ file: { $exists: false } }] },
-          file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
-        ],
+        ...(file
+          ? {
+              $or: [
+                { file: { $exists: false } },
+                file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+              ],
+            }
+          : {}),
       });
     }
     const hubsIds = ownRelations.map(relationship => relationship.hub);
