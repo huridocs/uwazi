@@ -7,7 +7,7 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { IImmutable } from 'shared/types/Immutable';
-import { ClientTranslationSchema } from 'app/istore';
+import { ClientTranslationSchema, IStore } from 'app/istore';
 import { actions } from 'app/I18N';
 import { EditTranslationsForm } from '../EditTranslationsForm';
 
@@ -19,18 +19,59 @@ jest.mock('react-router-dom', () => ({
   NavLink: (props: any) => <a {...props} href={props.to} />,
 }));
 
+const systemContext = (...args: string[]) => ({
+  id: 'System',
+  label: 'User Interface',
+  type: 'Uwazi UI',
+  values: {
+    Library: args[0],
+    Search: args[1],
+    Home: args[2],
+    Untranslated: args[3],
+  },
+});
+
+const entityContext = (...args: string[]) => ({
+  label: 'Template name',
+  id: '5bfbb1a0471dd0fc16ada146',
+  type: 'Entity',
+  values: {
+    Title: args[0],
+    'Untranslated entity property': args[1],
+    'Translated entity property': args[2],
+  },
+});
+
+const thesaurusContext = (...args: string[]) => ({
+  label: 'Thesaurus name',
+  id: '62ce63c3d192f51bc4d5e06b',
+  type: 'Thesaurus',
+  values: {
+    Gender: args[0],
+    Female: args[1],
+    Male: args[2],
+  },
+});
+
+const englishSystem = systemContext('Library', 'Search', 'Home', 'Untranslated');
+const englishEntity = entityContext(
+  'Title',
+  'Untranslated entity property',
+  'Translated entity property'
+);
 describe('EditTranslationForm', () => {
   let translations: IImmutable<ClientTranslationSchema[]>;
+  let store: Partial<IStore>;
 
-  const render = (context: string) => {
-    const store = {
+  const render = (context: string, englishDefault = true, spanishDefault = false) => {
+    store = {
       ...defaultState,
       translations,
       settings: {
         collection: Immutable.fromJS({
           languages: [
-            { key: 'en', label: 'English' },
-            { key: 'es', label: 'Spanish', default: true },
+            { key: 'en', label: 'English', default: englishDefault },
+            { key: 'es', label: 'Spanish', default: spanishDefault },
           ],
         }),
       },
@@ -44,49 +85,19 @@ describe('EditTranslationForm', () => {
       {
         locale: 'en',
         contexts: [
+          { ...englishSystem },
           {
-            id: 'System',
-            label: 'User Interface',
-            type: 'Uwazi UI',
-            values: {
-              Library: 'Library',
-              Search: 'Search',
-              Home: 'Home',
-            },
+            ...englishEntity,
           },
-          {
-            label: 'Template name',
-            id: '5bfbb1a0471dd0fc16ada146',
-            type: 'Entity',
-            values: {
-              Title: 'Title',
-              'Untranslated entity property': 'Untranslated entity property',
-            },
-          },
+          { ...thesaurusContext('Gender', 'Female', 'Male') },
         ],
       },
       {
         locale: 'es',
         contexts: [
-          {
-            id: 'System',
-            label: 'User Interface',
-            type: 'Uwazi UI',
-            values: {
-              Library: 'Biblioteca',
-              Search: 'Busqueda',
-              Home: 'Principal',
-            },
-          },
-          {
-            type: 'Entity',
-            label: 'Template name',
-            id: '5bfbb1a0471dd0fc16ada146',
-            values: {
-              Title: 'Título',
-              'Untranslated entity property': 'Untranslated entity property',
-            },
-          },
+          { ...systemContext('Biblioteca', 'Busqueda', 'Principal', 'Untranslated') },
+          { ...entityContext('Título', 'Untranslated entity property', 'Propiedad de la entidad') },
+          { ...thesaurusContext('Genero', 'Femenino', 'Masculino') },
         ],
       },
     ]);
@@ -154,23 +165,13 @@ describe('EditTranslationForm', () => {
       await waitFor(() =>
         expect(actions.saveTranslations).toHaveBeenCalledWith([
           {
-            contexts: [
-              {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: { Home: 'Home', Library: 'Library', Search: 'Search' },
-              },
-            ],
+            contexts: [{ ...englishSystem }],
             locale: 'en',
           },
           {
             contexts: [
               {
-                id: 'System',
-                label: 'User Interface',
-                type: 'Uwazi UI',
-                values: { Home: 'Nueva traducción!', Library: 'Biblioteca', Search: 'Busqueda' },
+                ...systemContext('Biblioteca', 'Busqueda', 'Nueva traducción!', 'Untranslated'),
               },
             ],
             locale: 'es',
@@ -225,8 +226,8 @@ describe('EditTranslationForm', () => {
   });
 
   describe('filtering', () => {
-    const renderAndFilter = (context: string) => {
-      render(context);
+    const renderAndFilter = (context: string, englishDefault = true, spanishDefault = false) => {
+      render(context, englishDefault, spanishDefault);
       const toggleButton = screen.getByRole('checkbox');
       fireEvent.click(toggleButton);
     };
@@ -239,16 +240,58 @@ describe('EditTranslationForm', () => {
       jest.clearAllMocks();
     });
 
-    it('should filter to show only untranslated terms', () => {
+    const checkEntry = (item: HTMLElement, key: string, classNames: string[]) => {
+      expect(item.children[0].textContent).toEqual(key);
+      expect(item.children[1].textContent).toEqual('en');
+      expect(item.children[1].className).toEqual(classNames[0]);
+      expect(item.children[2].textContent).toEqual('es');
+      expect(item.children[2].className).toEqual(classNames[1]);
+    };
+
+    it('should filter to show only untranslated terms and value for default language as reference', () => {
       renderAndFilter('5bfbb1a0471dd0fc16ada146');
-      expect(screen.getByText('Title').parentElement!).toHaveClass('list-group-item hidden');
-      expect(screen.getByText('Untranslated entity property').parentElement!).toHaveClass(
-        'list-group-item'
-      );
+
+      const items = screen.getAllByRole('listitem');
+      checkEntry(items[0], 'Title', ['form-group hidden  default ', 'form-group hidden  ']);
+      checkEntry(items[1], 'Translated entity property', [
+        'form-group hidden  default ',
+        'form-group hidden  ',
+      ]);
+      checkEntry(items[2], 'Untranslated entity property', [
+        'form-group   default ',
+        'form-group    untranslated',
+      ]);
+    });
+
+    it('should filter to show only untranslated terms and value for default language as reference', () => {
+      renderAndFilter('5bfbb1a0471dd0fc16ada146', false, true);
+
+      const items = screen.getAllByRole('listitem');
+      checkEntry(items[0], 'Title', [
+        'form-group hidden   untranslated',
+        'form-group hidden  default ',
+      ]);
+      checkEntry(items[1], 'Translated entity property', [
+        'form-group hidden   untranslated',
+        'form-group hidden  default ',
+      ]);
+      checkEntry(items[2], 'Untranslated entity property', [
+        'form-group    untranslated',
+        'form-group   default ',
+      ]);
+    });
+
+    it('should filter to show only untranslated terms and English System value as reference', () => {
+      renderAndFilter('System', false, true);
+      const items = screen.getAllByRole('listitem');
+      checkEntry(items[0], 'Home', ['form-group hidden  default ', 'form-group hidden  ']);
+      checkEntry(items[1], 'Library', ['form-group hidden  default ', 'form-group hidden  ']);
+      checkEntry(items[2], 'Search', ['form-group hidden  default ', 'form-group hidden  ']);
+      checkEntry(items[3], 'Untranslated', ['form-group   default ', 'form-group    untranslated']);
     });
 
     it('should display a notice and disable saving if there are no untranslated terms', () => {
-      renderAndFilter('System');
+      renderAndFilter('62ce63c3d192f51bc4d5e06b');
       const submitButton = screen.getByText('Save').parentElement!.parentElement!;
       expect(submitButton).toBeDisabled();
       expect(screen.getByText('There are no untranslated terms')).toBeInTheDocument();
@@ -271,13 +314,7 @@ describe('EditTranslationForm', () => {
           {
             contexts: [
               {
-                id: '5bfbb1a0471dd0fc16ada146',
-                label: 'Template name',
-                type: 'Entity',
-                values: {
-                  Title: 'Title',
-                  'Untranslated entity property': 'Untranslated entity property',
-                },
+                ...englishEntity,
               },
             ],
             locale: 'en',
@@ -285,13 +322,11 @@ describe('EditTranslationForm', () => {
           {
             contexts: [
               {
-                id: '5bfbb1a0471dd0fc16ada146',
-                label: 'Template name',
-                type: 'Entity',
-                values: {
-                  Title: 'Título',
-                  'Untranslated entity property': 'Traducción para la propiedad',
-                },
+                ...entityContext(
+                  'Título',
+                  'Traducción para la propiedad',
+                  'Propiedad de la entidad'
+                ),
               },
             ],
             locale: 'es',

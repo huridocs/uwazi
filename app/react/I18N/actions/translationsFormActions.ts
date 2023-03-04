@@ -1,21 +1,24 @@
 import { IImmutable } from 'shared/types/Immutable';
 import { generateID } from 'shared/IDGenerator';
 import { ClientTranslationSchema } from 'app/istore';
-import { intersectionBy } from 'lodash';
+import { filter, find } from 'lodash';
+
+type LocaleTranslation = { locale: string; [key: string]: string };
 
 type formDataType = {
   key: string;
   formID: string;
-  hasUntranslatedValues: boolean;
+  untranslatedValues: LocaleTranslation[];
+  defaultTranslation: string;
   values: {
     locale: string;
     value: string;
   }[];
 };
-
 const prepareFormValues = (
   translations: IImmutable<ClientTranslationSchema[]> | ClientTranslationSchema[],
-  context: string
+  context: string,
+  defaultLocale: string = 'en'
 ) => {
   const contextTranslations = (
     Array.isArray(translations) ? translations : translations.toJS()
@@ -28,18 +31,35 @@ const prepareFormValues = (
 
   const contextTerms = Object.keys(contextTranslations[0].contexts[0].values).sort();
 
-  const contextValues = contextTranslations.map((byLang: ClientTranslationSchema) => ({
-    locale: byLang.locale,
-    ...byLang?.contexts?.[0].values,
-  }));
+  const contextValues: LocaleTranslation[] = contextTranslations.map(
+    (byLang: ClientTranslationSchema) => ({
+      locale: byLang.locale,
+      ...byLang?.contexts?.[0].values,
+    })
+  );
 
   const formData = contextTerms.map(contextTerm => {
-    const hasUntranslatedValues =
-      intersectionBy(contextValues, contextTerm).length < contextValues.length;
+    const defaultTranslation =
+      find(
+        contextValues,
+        contextTrans =>
+          (context === 'System' && contextTrans.locale === 'en') ||
+          contextTrans.locale === defaultLocale
+      )?.[contextTerm] || contextTerm;
+
+    const untranslatedValues = filter(
+      contextValues,
+      contextTrans =>
+        contextTrans[contextTerm] === defaultTranslation &&
+        ((context !== 'System' && contextTrans.locale !== defaultLocale) ||
+          (context === 'System' && contextTrans.locale !== 'en'))
+    ).map(contextTrans => ({ locale: contextTrans.locale, value: contextTrans[contextTerm] }));
+
     return {
       key: contextTerm,
       formID: generateID(6, 6),
-      hasUntranslatedValues,
+      untranslatedValues,
+      defaultTranslation,
       values: contextValues.map((val: { [x: string]: any; locale: any }) => ({
         locale: val.locale,
         value: val[contextTerm],
