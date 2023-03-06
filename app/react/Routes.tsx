@@ -38,6 +38,14 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
+import {
+  TranslationsList,
+  translationsListLoader,
+} from 'V2/Components/Translations/TranslationsList';
+import {
+  EditTranslations,
+  editTranslationsLoader,
+} from 'V2/Components/Translations/EditTranslations';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -46,14 +54,6 @@ import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
-import {
-  TranslationsList,
-  translationsListLoader,
-} from './V2/Components/Translations/TranslationsList';
-import {
-  EditTranslations,
-  editTranslationsLoader,
-} from './V2/Components/Translations/EditTranslations';
 
 const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
   <Route errorElement={<RouteErrorBoundary />}>

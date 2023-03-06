@@ -4,7 +4,7 @@ import { Button } from 'flowbite-react';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import * as translationsAPI from '../../api/translations/index';
+import * as translationsAPI from 'V2/api/translations/index';
 
 const translationsListLoader = ({ request }: { request: Request }) => translationsAPI.get(request);
 
