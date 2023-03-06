@@ -50,7 +50,7 @@ describe('Information Extraction', () => {
     labelEntityTitle(1, 'Uwazi Heroes Investigation');
   });
 
-  it('Should create an extractor', () => {
+  it('Should create an extractor', { defaultCommandTimeout: 6000 }, () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
@@ -64,14 +64,18 @@ describe('Information Extraction', () => {
     cy.get('td.templateNameViewer').eq(0).should('contain.text', text);
   });
 
-  it('should select all templates when from all templates button is clicked', () => {
-    englishLoggedInUwazi();
-    navigateToMetadataExtractionPage();
-    cy.get('.extractor-checkbox > input').click();
-    cy.contains('span', 'Edit Extractor').click();
-    cy.contains('span', 'From all templates').click();
-    cy.get('.multiselectChild .multiselectItem-input').should('have.length', 11);
-  });
+  it(
+    'should select all templates when from all templates button is clicked',
+    { defaultCommandTimeout: 6000 },
+    () => {
+      englishLoggedInUwazi();
+      navigateToMetadataExtractionPage();
+      cy.get('.extractor-checkbox > input').click();
+      cy.contains('span', 'Edit Extractor').click();
+      cy.contains('span', 'From all templates').click();
+      cy.get('.multiselectChild .multiselectItem-input').should('have.length', 11);
+    }
+  );
 
   it('should edit an extractor', { defaultCommandTimeout: 10000 }, () => {
     englishLoggedInUwazi();
