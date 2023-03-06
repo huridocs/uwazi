@@ -17,7 +17,7 @@ describe('LibraryViewRelationships', () => {
     props = {
       expanded: false,
       parentEntity: Immutable({ _id: 'someparentid' }),
-      searchResults: Immutable({}),
+      searchResults: Immutable({ rows: [] }),
       hubs: Immutable([
         {
           hub: 'hubid',
