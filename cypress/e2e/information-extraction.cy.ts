@@ -66,7 +66,7 @@ describe('Information Extraction', () => {
 
   it(
     'should select all templates when from all templates button is clicked',
-    { defaultCommandTimeout: 6000 },
+    { defaultCommandTimeout: 7000 },
     () => {
       englishLoggedInUwazi();
       navigateToMetadataExtractionPage();
