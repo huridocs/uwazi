@@ -50,12 +50,12 @@ jobs:
       - run: sudo apt-get install poppler-utils
       - run: sudo apt install git
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
-        working-directory: ./dummy_extractor_services
       - run: make start &
-        working-directory: ..
+        working-directory: ./dummy_extractor_services
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
+        working-directory: ..
         with:
           path: ./prod
           key: >-
