@@ -34,6 +34,26 @@
 //     }
 //   }
 // }
+
+function getTextNode(el, match) {
+  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+  if (!match) {
+    return walk.nextNode();
+  }
+  let node;
+  while ((node = walk.nextNode())) {
+    if (node.wholeText.includes(match)) {
+      return node;
+    }
+  }
+}
+
+function setBaseAndExtent(...args) {
+  const document = args[0].ownerDocument;
+  document.getSelection().removeAllRanges();
+  document.getSelection().setBaseAndExtent(...args);
+}
+
 Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   cy.wrap(subject).trigger('mousedown').then(fn).trigger('mouseup');
 
@@ -84,25 +104,4 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
 // Cypress.Commands.add('setCursorAfter', { prevSubject: true }, (subject, query) => {
 //   cy.wrap(subject).setCursor(query);
 // });
-
-function getTextNode(el, match) {
-  const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-  if (!match) {
-    return walk.nextNode();
-  }
-
-  const nodes = [];
-  let node;
-  while ((node = walk.nextNode())) {
-    if (node.wholeText.includes(match)) {
-      return node;
-    }
-  }
-}
-
-function setBaseAndExtent(...args) {
-  const document = args[0].ownerDocument;
-  document.getSelection().removeAllRanges();
-  document.getSelection().setBaseAndExtent(...args);
-}
 export {};

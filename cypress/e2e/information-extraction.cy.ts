@@ -1,4 +1,3 @@
-import { eq } from 'lodash';
 import { login } from './helpers';
 
 const labelEntityTitle = (
@@ -7,7 +6,7 @@ const labelEntityTitle = (
   selector: string = 'span[role="presentation"]'
 ) => {
   cy.get('.view-doc').eq(entityPos).click();
-  cy.wait(2000);
+  // cy.wait(2000);
   //@ts-ignore
   cy.contains(selector, selectValue).setSelection(selectValue);
   cy.get('button.edit-metadata').click();
