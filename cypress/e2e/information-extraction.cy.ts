@@ -43,6 +43,9 @@ describe('Information Extraction', () => {
     cy.visit('http://localhost:3000');
     changeLanguage();
     login('admin', 'admin');
+    labelEntityTitle(0, 'Lorem Ipsum');
+    cy.get('a[aria-label="Library"]').click();
+    labelEntityTitle(1, 'Uwazi Heroes Investigation');
   });
 
   it('Should create an extractor', { defaultCommandTimeout: 20000 }, () => {
