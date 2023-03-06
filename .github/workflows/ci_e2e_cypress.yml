@@ -48,9 +48,9 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      # - run: git clone https://github.com/huridocs/dummy_extractor_services.git
-      # - run: make start &
-      #   working-directory: ./dummy_extractor_services
+      - run: git clone https://github.com/huridocs/dummy_extractor_services.git
+      - run: make start &
+        working-directory: ./dummy_extractor_services
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
@@ -73,17 +73,17 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      # - run: yarn ix-config
-      #   env:
-      #     DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
-      #     DATABASE_NAME: uwazi_e2e
+      - run: yarn ix-config
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-          # EXTERNAL_SERVICES: true
+          EXTERNAL_SERVICES: true
         run: yarn run-production &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
