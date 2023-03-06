@@ -85,7 +85,7 @@ jobs:
         with:
           browser: chrome
           component: true
-        run: yarn cypress
+      - run: yarn cypress
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
