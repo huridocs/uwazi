@@ -12,6 +12,7 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
+import { NeedAuthorization } from 'app/Auth';
 import Script from './Script';
 
 const parseSSRError = error => {
@@ -48,14 +49,16 @@ class PageViewer extends Component {
 
   renderErrorWarning() {
     return (
-      <div className="alert alert-danger">
-        <Icon icon="exclamation-triangle" />
-        <Translate translationKey="custom page error warning">
-          There is an unexpected error on this custom page, it may not work properly. Please contact
-          an admin for details.
-        </Translate>
-        <Icon icon="times" onClick={() => this.removeCustomPageError()} />
-      </div>
+      <NeedAuthorization roles={['admin', 'editor', 'collaborator']}>
+        <div className="alert alert-danger">
+          <Icon icon="exclamation-triangle" />
+          <Translate translationKey="custom page error warning">
+            There is an unexpected error on this custom page, it may not work properly. Please
+            contact an admin for details.
+          </Translate>
+          <Icon icon="times" onClick={() => this.removeCustomPageError()} />
+        </div>
+      </NeedAuthorization>
     );
   }
 
