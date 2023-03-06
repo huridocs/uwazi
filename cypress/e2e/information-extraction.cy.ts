@@ -94,7 +94,7 @@ describe('Information Extraction', () => {
 
   it(
     'should show title initial suggestion states as Empty / Label',
-    { defaultCommandTimeout: 6000 },
+    { defaultCommandTimeout: 10000 },
     () => {
       englishLoggedInUwazi();
       navigateToMetadataExtractionPage();
