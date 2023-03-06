@@ -25,6 +25,19 @@ export const templates: any = {
       {
         _id: '61d5894c03be491b8b2c2937',
         relationType: '61d588f4263df5aa829ddb97',
+        id: 'd0ab3a88-2e47-4991-9ac1-1b2273f9b766',
+        name: 'location',
+        content: '61d5891421eaff4de462c8ef',
+        type: 'relationship',
+        label: 'Location',
+        inherit: {
+          property: '5e0fdf2ad6ecbf60be14f095',
+          type: 'geolocation',
+        },
+      },
+      {
+        _id: '61d5894c03be491b8b2c2937',
+        relationType: '61d588f4263df5aa829ddb97',
         id: 'd0ab3a88-2e47-4991-9ac1-1b2273f9b765',
         name: 'country',
         content: '61d5891421eaff4de462c8ee',
@@ -129,6 +142,23 @@ export const searchResults: SearchResults = {
       template: '58ad7d240d44252fee4e61fd',
       metadata: {
         nemesis: [{ icon: null, label: 'Thanos', type: 'entity', value: 'tf4laogfdcf8ncdi' }],
+        location: [
+          {
+            icon: null,
+            label: 'US',
+            type: 'entity',
+            inheritedValue: [
+              {
+                value: {
+                  lat: 0.01,
+                  lon: 37.02,
+                  label: '',
+                },
+              },
+            ],
+            inheritedType: 'geolocation',
+          },
+        ],
         country: [
           {
             icon: null,
@@ -214,6 +244,6 @@ export const searchResults: SearchResults = {
   },
 };
 
-export const csvExample = `Title,Date added,Template,company,Nemesis,Country,Costume,Super powers,Allies,AutoId,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
-Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,ES,,"tricky weapons|fly",,FTF8988-8015,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv,Published
-Scarecrow,2017-01-05,Super Villian,,,,Black,"create chaos|tricky weapons",,,Man-bat,39,1941-09-23,,,https://cejil.uwazi.io/api/files/filename.pdf,Published`;
+export const csvExample = `Title,Date added,Template,company,Nemesis,Location,Country,Costume,Super powers,Allies,AutoId,Sidekick,Planets conquered,DOB,Geolocation,Documents,Attachments,Published
+Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,"0.01|37.02",ES,,"tricky weapons|fly",,FTF8988-8015,,,,"45.974236866039696|2.154785156250431",/files/1483623310306rxeimbblc6u323xr.pdf,https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv,Published
+Scarecrow,2017-01-05,Super Villian,,,,,Black,"create chaos|tricky weapons",,,Man-bat,39,1941-09-23,,,https://cejil.uwazi.io/api/files/filename.pdf,Published`;
