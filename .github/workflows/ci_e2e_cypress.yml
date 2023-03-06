@@ -30,6 +30,11 @@ jobs:
         image: mongo:4.2.6
         ports:
           - 27017/tcp
+      redis:
+        image: redis:5.0.14
+        ports:
+          - 6379:6379
+
     steps:
       - name: Checkout reposistory
         uses: actions/checkout@v3
