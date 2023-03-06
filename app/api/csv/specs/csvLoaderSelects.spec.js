@@ -8,6 +8,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures } from './csvLoaderSelectsFixtures';
 
 import { CSVLoader } from '../csvLoader';
+import { ArrangeThesauriError } from '../arrangeThesauri';
 
 const loader = new CSVLoader();
 
@@ -254,6 +255,23 @@ describe('loader', () => {
         select_7: '1',
         multiselect_7: '0',
       });
+    });
+
+    it('should not allow importing group labels', async () => {
+      try {
+        await loader.load(
+          path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
+          fixtureFactory.id('template')
+        );
+        expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
+      } catch (e) {
+        expect(e).toBeInstanceOf(ArrangeThesauriError);
+        expect(
+          e.message.startsWith(
+            'The label "P" at property "nested_select_property" is a group label in line:'
+          )
+        ).toBe(true);
+      }
     });
   });
 });
