@@ -16,6 +16,11 @@ jobs:
   e2e-cypress:
     runs-on: ubuntu-20.04
     services:
+      # dummyservices:
+      #   image: https://github.com/huridocs/dummy_extractor_services.git
+      #   ports:
+      #     - 5051:5051
+      #     - 5052:5052
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
         ports:
@@ -45,7 +50,9 @@ jobs:
       - run: sudo apt-get install poppler-utils
       - run: sudo apt install git
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
-      - run: cd dummy_extractor_services && make start &
+      - run: cd dummy_extractor_services
+      - run: ls .
+      - run: make start &
       - run: cd ..
       - name: Cache build
         id: cache-build
