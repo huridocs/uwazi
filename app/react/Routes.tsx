@@ -50,6 +50,10 @@ import {
   TranslationsList,
   translationsListLoader,
 } from './V2/Components/Translations/TranslationsList';
+import {
+  EditTranslations,
+  editTranslationsLoader,
+} from './V2/Components/Translations/EditTranslations';
 
 const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
   <Route errorElement={<RouteErrorBoundary />}>
@@ -112,11 +116,11 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
           element={adminsOnlyRoute(<TranslationsList />)}
           loader={translationsListLoader}
         />
-        {/* <Route
+        <Route
           path="edit/:context"
           element={adminsOnlyRoute(<EditTranslations />)}
-          loader={({ request, params }) => translationsAPI.get(request)}
-        /> */}
+          loader={editTranslationsLoader}
+        />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
       <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />

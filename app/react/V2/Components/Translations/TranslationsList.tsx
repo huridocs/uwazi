@@ -4,7 +4,7 @@ import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import * as translationsAPI from '../../api/translations/index';
 
-const translationsListLoader = ({ request }) => translationsAPI.get(request);
+const translationsListLoader = ({ request }: { request: Request }) => translationsAPI.get(request);
 
 const renderButton = data => <Link to={`edit/${data.row.values.id}`}>Translate</Link>;
 
@@ -26,8 +26,8 @@ const TranslationsList = () => {
         <h1 className="text-2xl">Translations</h1>
         <Table
           columns={[
-            { Header: 'View', accessor: 'label', id: 'view' },
-            { Header: 'Type', accessor: 'type', disableSortBy: true },
+            { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
+            { Header: 'Type', accessor: 'type' },
             { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
           ]}
           data={systemContext}
@@ -35,8 +35,8 @@ const TranslationsList = () => {
         />
         <Table
           columns={[
-            { Header: 'View', accessor: 'label', id: 'view' },
-            { Header: 'Type', accessor: 'type', disableSortBy: true },
+            { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
+            { Header: 'Type', accessor: 'type' },
             { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
           ]}
           data={contentContext}
