@@ -120,7 +120,10 @@ class EntityTypesList extends Component {
           <ul className="list-group document-types">
             {this.sortTemplates().map((template, index) => (
               <li key={index} className="list-group-item">
-                <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
+                <span>
+                  <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
+                  &#40;<Translate context={template._id}>{template.name}</Translate>&#41;
+                </span>
                 {template.default ? this.defaultTemplateMessage() : ''}
                 {template.synced ? this.syncedTemplateMessage() : ''}
                 <div className="list-group-item-actions">
