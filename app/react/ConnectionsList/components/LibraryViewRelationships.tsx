@@ -121,12 +121,13 @@ const createLabelGroups = (props: ComponentProps, hub: any, index: number) => {
 
 const LibraryViewRelationshipsComp = (props: ComponentProps) => {
   const { hubs, searchResults, parentEntity, parseResults } = props;
+  const rowsSize = searchResults.get('rows').size;
 
   useEffect(() => {
-    if (parentEntity) {
+    if (parentEntity && rowsSize > 0) {
       parseResults(searchResults, parentEntity, false);
     }
-  }, [searchResults, parentEntity, parseResults]);
+  }, [searchResults, rowsSize, parentEntity, parseResults]);
 
   return (
     <>
