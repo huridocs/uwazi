@@ -63,13 +63,16 @@ jobs:
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
       - run: yarn e2e-puppeteer-fixtures
-      - run: yarn ix-config
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+      - run: yarn ix-config
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
