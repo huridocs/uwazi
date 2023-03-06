@@ -109,15 +109,12 @@ const arrangeThesauri = async (
   const thesauriRelatedProperties = template.properties?.filter(p =>
     ['select', 'multiselect'].includes(p.type)
   );
-
   const nameToThesauriId = createNameToIdMap(thesauriRelatedProperties, languages);
-
   const allRelatedThesauri = await thesauri.get({
     $in: Array.from(
       new Set(thesauriRelatedProperties?.map(p => p.content?.toString()).filter(t => t))
     ),
   });
-
   const thesauriValueData = setupIdValueMaps(allRelatedThesauri);
 
   await csv(await file.readStream(), stopOnError)

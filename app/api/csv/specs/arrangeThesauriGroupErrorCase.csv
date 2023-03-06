@@ -1,0 +1,3 @@
+title, Nested Select Property, nested_multiselect_property
+group_error_multiselect_wrong, 1, A|2
+group_error_select_wrong, P, X
