@@ -55,7 +55,6 @@ jobs:
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
-        working-directory: ..
         with:
           path: ./prod
           key: >-
