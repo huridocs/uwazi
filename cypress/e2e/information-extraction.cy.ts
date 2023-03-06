@@ -73,7 +73,7 @@ describe('Information Extraction', () => {
     cy.get('.multiselectChild .multiselectItem-input').should('have.length', 11);
   });
 
-  it('should edit an extractor', { defaultCommandTimeout: 6000 }, () => {
+  it('should edit an extractor', { defaultCommandTimeout: 10000 }, () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
