@@ -1,45 +1,55 @@
 import React from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
+import { Button } from 'flowbite-react';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
+import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import * as translationsAPI from '../../api/translations/index';
 
 const translationsListLoader = ({ request }: { request: Request }) => translationsAPI.get(request);
 
-const renderButton = data => <Link to={`edit/${data.row.values.id}`}>Translate</Link>;
+const renderButton = data => (
+  <Link to={`edit/${data.row.values.id}`}>
+    <Button outline size="sm">
+      <Translate>Translate</Translate>
+    </Button>
+  </Link>
+);
+
+const columns = [
+  { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
+  { Header: 'Type', accessor: 'type' },
+  { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
+];
 
 const TranslationsList = () => {
-  const translations = useLoaderData();
+  const translations = useLoaderData() as ClientTranslationSchema[];
 
-  const contexts = translations[0].contexts.map(context => ({
-    id: context.id,
-    label: context.label,
-    type: context.type,
-  }));
+  const contexts: {
+    systemContexts: ClientTranslationContextSchema[];
+    contentContexts: ClientTranslationContextSchema[];
+  } = { systemContexts: [], contentContexts: [] };
 
-  const systemContext = contexts.filter(context => context.type === 'Uwazi UI');
-  const contentContext = contexts.filter(context => context.type !== 'Uwazi UI');
+  translations[0]?.contexts?.forEach(context => {
+    delete context.values;
+    if (context.type === 'Uwazi UI') {
+      return contexts.systemContexts.push({ ...context });
+    }
+    return contexts.contentContexts.push({ ...context });
+  });
 
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
         <h1 className="text-2xl">Translations</h1>
         <Table
-          columns={[
-            { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
-            { Header: 'Type', accessor: 'type' },
-            { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
-          ]}
-          data={systemContext}
+          columns={columns}
+          data={contexts.systemContexts}
           title={<Translate>System</Translate>}
         />
         <Table
-          columns={[
-            { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
-            { Header: 'Type', accessor: 'type' },
-            { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
-          ]}
-          data={contentContext}
+          columns={columns}
+          data={contexts.contentContexts}
           title={<Translate>Content</Translate>}
         />
       </div>
