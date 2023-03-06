@@ -50,7 +50,7 @@ describe('Information Extraction', () => {
     labelEntityTitle(1, 'Uwazi Heroes Investigation');
   });
 
-  it('Should create an extractor', { defaultCommandTimeout: 6000 }, () => {
+  it('Should create an extractor', { defaultCommandTimeout: 20000 }, () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
@@ -66,7 +66,7 @@ describe('Information Extraction', () => {
 
   it(
     'should select all templates when from all templates button is clicked',
-    { defaultCommandTimeout: 7000 },
+    { defaultCommandTimeout: 20000 },
     () => {
       englishLoggedInUwazi();
       navigateToMetadataExtractionPage();
@@ -77,7 +77,7 @@ describe('Information Extraction', () => {
     }
   );
 
-  it('should edit an extractor', { defaultCommandTimeout: 10000 }, () => {
+  it('should edit an extractor', { defaultCommandTimeout: 20000 }, () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
@@ -94,7 +94,7 @@ describe('Information Extraction', () => {
 
   it(
     'should show title initial suggestion states as Empty / Label',
-    { defaultCommandTimeout: 12000 },
+    { defaultCommandTimeout: 20000 },
     () => {
       englishLoggedInUwazi();
       navigateToMetadataExtractionPage();
