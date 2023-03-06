@@ -46,9 +46,10 @@ import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
-import { Translations } from './V2/Routes/Translations';
-import * as translationsAPI from './V2/api/translations';
-import { TranslationsList } from './V2/Components/Translations/TranslationsList';
+import {
+  TranslationsList,
+  translationsListLoader,
+} from './V2/Components/Translations/TranslationsList';
 
 const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
   <Route errorElement={<RouteErrorBoundary />}>
@@ -105,16 +106,17 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
         <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
       </Route>
       <Route path="languages" element={adminsOnlyRoute(<LanguageList />)} />
-      {/* <Route path="translations">
-        <Route index element={adminsOnlyRoute(<TranslationsList />)} />
-        <Route path="edit/:context" element={adminsOnlyRoute(<EditTranslations />)} />
-      </Route> */}
-      <Route
-        path="translations"
-        element={<Translations />}
-        loader={({ request }) => translationsAPI.get(request)}
-      >
-        <Route index element={adminsOnlyRoute(<TranslationsList />)} />
+      <Route path="translations">
+        <Route
+          index
+          element={adminsOnlyRoute(<TranslationsList />)}
+          loader={translationsListLoader}
+        />
+        {/* <Route
+          path="edit/:context"
+          element={adminsOnlyRoute(<EditTranslations />)}
+          loader={({ request, params }) => translationsAPI.get(request)}
+        /> */}
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
       <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
