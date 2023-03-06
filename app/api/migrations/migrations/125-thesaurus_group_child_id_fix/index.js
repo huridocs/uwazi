@@ -57,13 +57,15 @@ const getSelectNamesPerContent = async db => {
   });
 
   inheriting.forEach(i => {
-    const inhertiedProperty = properties.find(
+    const inheritedProperty = properties.find(
       property => property._id.toString() === i.inherit.property
     );
-    if (!namesPerContent[inhertiedProperty.content]) {
-      namesPerContent[inhertiedProperty.content] = new Set();
+    if (inheritedProperty) {
+      if (!namesPerContent[inheritedProperty.content]) {
+        namesPerContent[inheritedProperty.content] = new Set();
+      }
+      namesPerContent[inheritedProperty.content].add({ propertyName: i.name, inheriting: true });
     }
-    namesPerContent[inhertiedProperty.content].add({ propertyName: i.name, inheriting: true });
   });
 
   return Object.fromEntries(Object.entries(namesPerContent).map(([k, v]) => [k, Array.from(v)]));
@@ -71,6 +73,7 @@ const getSelectNamesPerContent = async db => {
 
 const fixSelectsAndMultiSelects = async (db, idMap) => {
   const thesauriToUpdateIds = Object.keys(idMap);
+  if (!thesauriToUpdateIds.length) return;
   const thesauriToPropertyNameMap = await getSelectNamesPerContent(db);
   await Promise.all(
     thesauriToUpdateIds.map(async thesauriId => {
