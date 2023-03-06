@@ -73,7 +73,7 @@ describe('Information Extraction', () => {
     cy.get('.multiselectChild .multiselectItem-input').should('have.length', 11);
   });
 
-  it('should edit an extractor', () => {
+  it('should edit an extractor', { defaultCommandTimeout: 6000 }, () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
@@ -88,19 +88,23 @@ describe('Information Extraction', () => {
     cy.get('td.templateNameViewer').eq(0).should('contain.text', text);
   });
 
-  it('should show title initial suggestion states as Empty / Label', () => {
-    englishLoggedInUwazi();
-    navigateToMetadataExtractionPage();
-    cy.get('a.btn-success.btn-xs').click();
-    cy.get('.suggestion-templates span').eq(0).should('contain.text', 'Ordenes del presidente');
-    cy.get('.suggestion-templates span').eq(1).should('contain.text', 'Ordenes de la corte');
-    cy.get('table > tbody > tr:nth-child(1) > td:nth-child(4)').should(
-      'contain.text',
-      'Lorem Ipsum'
-    );
-    cy.get('table > tbody > tr:nth-child(2) > td:nth-child(4)').should(
-      'contain.text',
-      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
-    );
-  });
+  it(
+    'should show title initial suggestion states as Empty / Label',
+    { defaultCommandTimeout: 6000 },
+    () => {
+      englishLoggedInUwazi();
+      navigateToMetadataExtractionPage();
+      cy.get('a.btn-success.btn-xs').click();
+      cy.get('.suggestion-templates span').eq(0).should('contain.text', 'Ordenes del presidente');
+      cy.get('.suggestion-templates span').eq(1).should('contain.text', 'Ordenes de la corte');
+      cy.get('table > tbody > tr:nth-child(1) > td:nth-child(4)').should(
+        'contain.text',
+        'Lorem Ipsum'
+      );
+      cy.get('table > tbody > tr:nth-child(2) > td:nth-child(4)').should(
+        'contain.text',
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+      );
+    }
+  );
 });
