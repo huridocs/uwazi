@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 export default {
   delta: 45,
@@ -20,7 +20,7 @@ export default {
           if (prop.inherit) {
             const [inheritedTemplate] = await db
               .collection('templates')
-              .find({ 'properties._id': new ObjectID(prop.inheritProperty) })
+              .find({ 'properties._id': new ObjectId(prop.inheritProperty) })
               .toArray();
 
             const inheritedProperty = inheritedTemplate.properties.find(

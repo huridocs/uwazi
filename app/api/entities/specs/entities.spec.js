@@ -409,7 +409,6 @@ describe('entities', () => {
         await entities.save(existing, { user, language: 'en' });
 
         const updatedRelationships = await relationships.getByDocument('relSaveTest', 'en');
-        expect(updatedRelationships.length).toBe(7);
         expect(updatedRelationships.map(r => r.entityData.title).sort()).toEqual([
           'Batman still not done',
           'Batman still not done',
@@ -419,6 +418,7 @@ describe('entities', () => {
           'shared2title',
           'shared2title',
         ]);
+        expect(updatedRelationships.length).toBe(7);
       });
 
       it('should delete references on update', async () => {
