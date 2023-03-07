@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors');
+
 module.exports = {
   content: [
     './app/react/V2/**/*.{js,jsx,ts,tsx}',
@@ -51,6 +53,9 @@ module.exports = {
         'Courier New',
         'monospace',
       ],
+    },
+    colors: {
+      primary: colors.indigo,
     },
   },
   plugins: [
