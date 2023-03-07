@@ -73,7 +73,7 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
     const a = flatThesaurusValues(t, true);
     const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
     const thesaurusGroups =
-      t.values?.filter(v => v.values)?.map(v => normalizeThesaurusLabel(v.label)) || [];
+      t.values?.filter(v => v.values).map(v => normalizeThesaurusLabel(v.label)) || [];
     thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());
