@@ -19,7 +19,7 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>>;
+  Partial<UseSortByColumnProps<T>> & { action?: boolean };
 
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
@@ -53,7 +53,7 @@ const Table = ({ columns, data, title }: TableProps) => {
   );
 
   return (
-    <FlowbiteTable {...getTableProps()}>
+    <FlowbiteTable {...getTableProps()} className="table-fixed">
       {title && (
         <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
           {title}
@@ -61,7 +61,7 @@ const Table = ({ columns, data, title }: TableProps) => {
       )}
       <FlowbiteTable.Head>
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
-          headerGroup.headers.map((column: any) => (
+          headerGroup.headers.map((column: any, index: number, headers: HeaderGroup<any>[]) => (
             <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
               <div className="flex flex-row">
                 {column.render('Header')}
@@ -73,6 +73,7 @@ const Table = ({ columns, data, title }: TableProps) => {
       </FlowbiteTable.Head>
       <FlowbiteTable.Body {...getTableBodyProps()}>
         {rows.map((row: Row<any>) => {
+          console.log(row);
           prepareRow(row);
           return (
             <FlowbiteTable.Row {...row.getRowProps()}>

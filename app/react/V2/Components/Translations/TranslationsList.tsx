@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLoaderData } from 'react-router-dom';
-import { Button } from 'flowbite-react';
+import { Button } from 'app/stories/Button';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
@@ -10,7 +10,7 @@ const translationsListLoader = ({ request }: { request: Request }) => translatio
 
 const renderButton = data => (
   <Link to={`edit/${data.row.values.id}`}>
-    <Button outline size="sm">
+    <Button type="secondary">
       <Translate>Translate</Translate>
     </Button>
   </Link>

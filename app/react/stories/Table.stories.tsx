@@ -20,7 +20,7 @@ const checkboxCell = () => <Checkbox />;
 
 Basic.args = {
   columns: [
-    { id: 'select', Header: '', Cell: checkboxCell },
+    { id: 'select', Header: '', Cell: checkboxCell, action: true },
     { Header: 'Icon', accessor: 'icon', disableSortBy: true },
     { Header: 'Title', accessor: 'title', id: 'title' },
     { Header: 'Date added', accessor: 'created', disableSortBy: true },
