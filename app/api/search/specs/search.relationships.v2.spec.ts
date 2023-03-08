@@ -14,11 +14,15 @@ beforeEach(async () => {
         fixturesFactory.template('template1', [
           fixturesFactory.property('relProp1', 'newRelationship', {
             denormalizedProperty: 'textProp1',
+            query: [],
           }),
           fixturesFactory.property('relProp2', 'newRelationship', {
             denormalizedProperty: 'dateProp1',
+            query: [],
           }),
-          fixturesFactory.property('relProp3', 'newRelationship'),
+          fixturesFactory.property('relProp3', 'newRelationship', {
+            query: [],
+          }),
         ]),
         fixturesFactory.template('template2', [fixturesFactory.property('textProp1', 'text', {})]),
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
@@ -116,6 +120,9 @@ describe('searching', () => {
 
     results = await search.search({ filters: { relProp1: 'text_content' } }, 'en');
     expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
+
+    results = await search.search({ filters: { relProp3: { values: ['entity3'] } } }, 'en');
+    expect(results.rows).toEqual([expect.objectContaining({ sharedId: 'entity1' })]);
   });
 
   it('should transform the relationship properties back to the shape of the database for compatibility', async () => {
@@ -130,9 +137,7 @@ describe('searching', () => {
           relProp2: [
             { value: 'entity3', label: 'entity3', inheritedValue: [{ value: 1676688700080 }] },
           ],
-          relProp3: [
-            { value: 'entity3', label: 'entity3', inheritedValue: [{ value: 'entity3' }] },
-          ],
+          relProp3: [{ value: 'entity3', label: 'entity3' }],
         },
       },
     ]);

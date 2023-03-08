@@ -78,7 +78,7 @@ function processFilters(filters, properties, dictionaries) {
     }
 
     if (property.type === 'newRelationship') {
-      type = properties.find(p => p.name === property.denormalizedProperty).type;
+      type = properties.find(p => p.name === property.denormalizedProperty)?.type || 'select';
     }
 
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
