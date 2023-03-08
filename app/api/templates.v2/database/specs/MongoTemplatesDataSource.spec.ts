@@ -51,6 +51,13 @@ const fixtures = {
         query: createDBRelationshipQuery(3),
       },
     ]),
+    factory.template('template4', [
+      {
+        name: 'textprop',
+        type: 'text',
+        label: 'textProp',
+      },
+    ]),
   ],
 };
 
@@ -63,16 +70,17 @@ afterAll(async () => {
 });
 
 describe('getAllProperties()', () => {
-  it('should return all the properties', async () => {
+  it('should return all the properties properly typed', async () => {
     const dataSource = new MongoTemplatesDataSource(
       getConnection(),
       new MongoTransactionManager(getClient())
     );
     const result = await dataSource.getAllProperties().all();
-    expect(result.length).toBe(3);
-    result.forEach(property => {
-      expect(property).toBeInstanceOf(Property);
-    });
+    expect(result.length).toBe(4);
+    expect(result[0]).toBeInstanceOf(RelationshipProperty);
+    expect(result[1]).toBeInstanceOf(RelationshipProperty);
+    expect(result[2]).toBeInstanceOf(RelationshipProperty);
+    expect(result[3]).toBeInstanceOf(Property);
     expect(result).toMatchObject([
       {
         name: 'relationshipProp1',
@@ -85,6 +93,10 @@ describe('getAllProperties()', () => {
       {
         name: 'relationshipProp3',
         template: factory.id('template3').toHexString(),
+      },
+      {
+        name: 'textprop',
+        template: factory.id('template4').toHexString(),
       },
     ]);
   });
@@ -124,18 +136,34 @@ describe('when requesting the relationship properties configured in the system',
 
 describe('when requesting a property by name', () => {
   let tds: MongoTemplatesDataSource;
-  let prop: Property;
+  const props: { [name: string]: Property } = {};
 
   beforeAll(async () => {
     tds = new MongoTemplatesDataSource(getConnection(), new MongoTransactionManager(getClient()));
-    prop = await tds.getPropertyByName('relationshipProp2');
+    props.newRelationship = await tds.getPropertyByName('relationshipProp2');
+    props.text = await tds.getPropertyByName('textprop');
   });
 
-  it('should return one matching property', () => {
-    expect(prop).toBeInstanceOf(Property);
-    expect(prop.name).toEqual('relationshipProp2');
-    expect(prop.type).toEqual('newRelationship');
-  });
+  it.each([
+    {
+      name: 'textprop',
+      type: 'text',
+      expectedClass: Property,
+    },
+    {
+      name: 'relationshipProp2',
+      type: 'newRelationship',
+      expectedClass: RelationshipProperty,
+    },
+  ])(
+    'should return one matching property properly typed: $type',
+    ({ name, type, expectedClass }) => {
+      const prop = props[type];
+      expect(prop).toBeInstanceOf(expectedClass);
+      expect(prop.name).toEqual(name);
+      expect(prop.type).toEqual(type);
+    }
+  );
 
   it('should cache the map', () => {
     // eslint-disable-next-line dot-notation
