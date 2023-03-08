@@ -33,7 +33,7 @@ export class RelationshipPropertyMappingFactory {
 
   private async getDenormalizedType(denormalizedPropertyName?: string) {
     if (!denormalizedPropertyName) {
-      return 'text'; //Title
+      return 'select'; //Title
     }
 
     const denormalizedProperty = await this.getCachedProperty(denormalizedPropertyName);

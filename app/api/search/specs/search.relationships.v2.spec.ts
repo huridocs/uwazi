@@ -31,7 +31,7 @@ beforeEach(async () => {
             relProp1: [
               {
                 value: 'entity2',
-                label: 'entity2-en',
+                label: 'entity2',
                 inheritedValue: [{ value: 'text_content' }],
                 inheritedType: 'text',
               },
@@ -39,7 +39,7 @@ beforeEach(async () => {
             relProp2: [
               {
                 value: 'entity3',
-                label: 'entity3-en',
+                label: 'entity3',
                 inheritedValue: [{ value: 1676688700080 }],
                 inheritedType: 'date',
               },
@@ -47,8 +47,8 @@ beforeEach(async () => {
             relProp3: [
               {
                 value: 'entity3',
-                label: 'entity3-en',
-                inheritedValue: [{ value: 'entity3-en' }],
+                label: 'entity3',
+                inheritedValue: [{ value: 'entity3', label: 'entity3' }],
                 inheritedType: 'text',
               },
             ],
@@ -88,6 +88,9 @@ describe('mapping', () => {
 
     expect(mappedProps.relProp1).toMatchObject(mappedProps.textProp1);
     expect(mappedProps.relProp2).toMatchObject(mappedProps.dateProp1);
+    expect(mappedProps.relProp3).toMatchObject({
+      properties: { value: { type: 'keyword' }, label: { type: 'text' } },
+    });
   });
 });
 
@@ -100,7 +103,9 @@ describe('indexing', () => {
 
     expect(entityWithRelationships.metadata!.relProp1).toMatchObject([{ value: 'text_content' }]);
     expect(entityWithRelationships.metadata!.relProp2).toMatchObject([{ value: 1676688700080 }]);
-    expect(entityWithRelationships.metadata!.relProp3).toMatchObject([{ value: 'entity3-en' }]);
+    expect(entityWithRelationships.metadata!.relProp3).toMatchObject([
+      { label: 'entity3', value: 'entity3' },
+    ]);
   });
 });
 
@@ -120,13 +125,13 @@ describe('searching', () => {
         sharedId: 'entity1',
         metadata: {
           relProp1: [
-            { value: 'entity2', label: 'entity2-en', inheritedValue: [{ value: 'text_content' }] },
+            { value: 'entity2', label: 'entity2', inheritedValue: [{ value: 'text_content' }] },
           ],
           relProp2: [
-            { value: 'entity3', label: 'entity3-en', inheritedValue: [{ value: 1676688700080 }] },
+            { value: 'entity3', label: 'entity3', inheritedValue: [{ value: 1676688700080 }] },
           ],
           relProp3: [
-            { value: 'entity3', label: 'entity3-en', inheritedValue: [{ value: 'entity3-en' }] },
+            { value: 'entity3', label: 'entity3', inheritedValue: [{ value: 'entity3' }] },
           ],
         },
       },

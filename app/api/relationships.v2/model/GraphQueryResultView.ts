@@ -25,8 +25,8 @@ class GraphQueryResultView {
     }
 
     return {
-      inheritedValue: [{ value: entity.title }],
-      inheritedType: 'text',
+      inheritedValue: [{ value: entity.sharedId, label: entity.title }],
+      inheritedType: 'select',
     };
   }
 

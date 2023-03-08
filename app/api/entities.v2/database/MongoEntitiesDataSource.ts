@@ -26,6 +26,7 @@ async function defineGraphView(
 }
 
 async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
+  console.log('mapper')
   const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
   const stream = this.createBulkStream();
 

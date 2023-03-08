@@ -71,17 +71,21 @@ const prepareOptions = (property, location) => {
 const getPropertyType = (property, templates) => {
   if (property.inherit?.property) return property.inherit.type;
   //relationships v2
-  if (property.denormalizedProperty) {
-    for (let i = 0; i < templates.length; i += 1) {
-      const template = templates[i];
-      const candidateProperty = template.properties.find(
-        p => p.name === property.denormalizedProperty
-      );
-      if (candidateProperty) {
-        return candidateProperty.type;
+  if (property.type === 'newRelationship') {
+    if (property.denormalizedProperty) {
+      for (let i = 0; i < templates.length; i += 1) {
+        const template = templates[i];
+        const candidateProperty = template.properties.find(
+          p => p.name === property.denormalizedProperty
+        );
+        if (candidateProperty) {
+          return candidateProperty.type;
+        }
       }
+      return 'text';
     }
-    return 'text';
+
+    return 'select';
   }
   // /v2
   return property.type;

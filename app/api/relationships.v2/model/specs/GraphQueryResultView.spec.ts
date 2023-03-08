@@ -11,20 +11,20 @@ describe('GraphQueryResultView', () => {
       {
         value: 'sharedId_1',
         label: 'title_1',
-        inheritedValue: [{ value: 'title_1' }],
-        inheritedType: 'text',
+        inheritedValue: [{ value: 'sharedId_1', label: 'title_1' }],
+        inheritedType: 'select',
       },
       {
         value: 'sharedId_2',
         label: 'title_2',
-        inheritedValue: [{ value: 'title_2' }],
-        inheritedType: 'text',
+        inheritedValue: [{ value: 'sharedId_2', label: 'title_2' }],
+        inheritedType: 'select',
       },
       {
         value: 'sharedId_3',
         label: 'title_3',
-        inheritedValue: [{ value: 'title_3' }],
-        inheritedType: 'text',
+        inheritedValue: [{ value: 'sharedId_3', label: 'title_3' }],
+        inheritedType: 'select',
       },
     ]);
   });

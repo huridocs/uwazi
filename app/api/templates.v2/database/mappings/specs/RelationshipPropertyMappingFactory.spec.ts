@@ -21,7 +21,7 @@ describe('when creating mappings for denormalied properties', () => {
   const propertiesMappingsMock = partialImplementation<typeof propertyMappings>({
     date: jest.fn().mockImplementation(() => 'date mapping'),
     numeric: jest.fn().mockImplementation(() => 'numeric mapping'),
-    text: jest.fn().mockImplementation(() => 'text mapping'),
+    select: jest.fn().mockImplementation(() => 'select mapping'),
   });
 
   afterEach(() => {
@@ -56,6 +56,6 @@ describe('when creating mappings for denormalied properties', () => {
       propertiesMappingsMock
     );
 
-    expect(await factory.create({})).toBe('text mapping');
+    expect(await factory.create({})).toBe('select mapping');
   });
 });
