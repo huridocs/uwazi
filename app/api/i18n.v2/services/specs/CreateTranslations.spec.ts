@@ -6,7 +6,8 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { CreateTranslations, MongoTranslationsDataSource } from '../CreateTranslations';
+import { CreateTranslations } from '../CreateTranslations';
+import { MongoTranslationsDataSource } from "../../database/MongoTranslationsDataSource";
 
 // const factory = getFixturesFactory();
 
