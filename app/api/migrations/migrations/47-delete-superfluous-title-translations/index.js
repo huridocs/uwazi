@@ -21,7 +21,7 @@ export default {
           if (context.type === 'Entity') {
             const template = await db
               .collection('templates')
-              .findOne({ _id: ObjectId(context.id) });
+              .findOne({ _id: new ObjectId(context.id) });
 
             if (template) {
               const templateLabelSet = new Set([

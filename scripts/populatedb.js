@@ -16,7 +16,7 @@ const files = [];
 for (let i = 0; i < TOTAL_ENTITIES; i += 1) {
   const entity = {
     title: `${TITLE} ${i}`,
-    template: ObjectId(TEMPLATE_ID),
+    template: new ObjectId(TEMPLATE_ID),
     language: DEFAULT_LANGUAGE,
     sharedId: `${SHARED_ID}${i}`,
     creationDate: new Date().getTime(),

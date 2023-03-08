@@ -10,7 +10,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
-  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).lean();
 
 const fetchEntitiesSharedIds = async (
   template: ObjectIdSchema,

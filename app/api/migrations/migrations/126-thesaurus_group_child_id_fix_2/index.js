@@ -112,7 +112,7 @@ const fixSelectsAndMultiSelects = async (db, idMap) => {
 };
 
 export default {
-  delta: 125,
+  delta: 126,
 
   name: 'thesaurus_group_child_id_fix',
 

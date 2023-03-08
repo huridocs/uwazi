@@ -24,8 +24,8 @@ class Translator {
       .collection('dictionaries')
       .find({
         _id: {
-          $in: Array.from(new Set(Object.values(this.propertyNameToContent))).map(id =>
-            ObjectId(id)
+          $in: Array.from(new Set(Object.values(this.propertyNameToContent))).map(
+            id => new ObjectId(id)
           ),
         },
       })
