@@ -62,7 +62,7 @@ const deleteSuggestionsNotConfigured = async (
 };
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
-  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 });
+  entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).lean();
 
 const fetchEntitiesSharedIds = async (
   template: ISettingsTemplate['template'],

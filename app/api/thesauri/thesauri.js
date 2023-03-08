@@ -260,8 +260,9 @@ const flatThesaurusValues = (thesaurus, includeRoots = false) =>
   includeRoots
     ? _.flatMapDeep(thesaurus?.values, tv => {
         const { values = [], ...root } = tv;
-        values.push(root);
-        return values;
+        const valuesCopy = Array.from(values);
+        valuesCopy.push(root);
+        return valuesCopy;
       })
     : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 

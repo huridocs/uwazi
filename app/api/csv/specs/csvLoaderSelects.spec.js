@@ -8,6 +8,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { fixtures } from './csvLoaderSelectsFixtures';
 
 import { CSVLoader } from '../csvLoader';
+import { ArrangeThesauriError } from '../arrangeThesauri';
 
 const loader = new CSVLoader();
 
@@ -141,7 +142,94 @@ describe('loader', () => {
     it('should only add as new root values those which are not nested values', async () => {
       const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
       const rootLabels = nestedThesaurus.values.map(value => value.label);
-      expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', 'E', '0']);
+      expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', '4', 'E', '0']);
+    });
+
+    it('should not add unnecessary extra values to groups', async () => {
+      const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
+      expect(nestedThesaurus).toMatchObject({
+        name: 'nested_thesaurus',
+        values: [
+          {
+            id: 'A',
+            label: 'A',
+            values: [
+              {
+                id: '1',
+                label: '1',
+              },
+              {
+                id: '2',
+                label: '2',
+              },
+              {
+                id: '3',
+                label: '3',
+              },
+            ],
+          },
+          {
+            id: 'C',
+            label: 'C',
+            values: [
+              {
+                id: 'X',
+                label: 'X',
+              },
+              {
+                id: 'Y',
+                label: 'Y',
+              },
+              {
+                id: 'Z',
+                label: 'Z',
+              },
+            ],
+          },
+          {
+            id: 'B',
+            label: 'B',
+          },
+          {
+            id: 'P',
+            label: 'P',
+            values: [
+              {
+                id: '|',
+                label: '|',
+              },
+              {
+                id: '2',
+                label: '2',
+              },
+              {
+                id: '|||',
+                label: '|||',
+              },
+            ],
+          },
+          {
+            label: 'D',
+            id: expect.any(String),
+          },
+          {
+            label: 'O',
+            id: expect.any(String),
+          },
+          {
+            label: '4',
+            id: expect.any(String),
+          },
+          {
+            label: 'E',
+            id: expect.any(String),
+          },
+          {
+            label: '0',
+            id: expect.any(String),
+          },
+        ],
+      });
     });
 
     it('should import a nested value for a select property', async () => {
@@ -163,10 +251,27 @@ describe('loader', () => {
       expect(multiSelectValues).toEqual({
         select_1: '1|X',
         select_2: 'Z|O',
-        select_5: 'A',
+        select_5: '4',
         select_7: '1',
         multiselect_7: '0',
       });
+    });
+
+    it('should not allow importing group labels', async () => {
+      try {
+        await loader.load(
+          path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
+          fixtureFactory.id('template')
+        );
+        expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
+      } catch (e) {
+        expect(e).toBeInstanceOf(ArrangeThesauriError);
+        expect(
+          e.message.startsWith(
+            'The label "P" at property "nested_select_property" is a group label in line:'
+          )
+        ).toBe(true);
+      }
     });
   });
 });
