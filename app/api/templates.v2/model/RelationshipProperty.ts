@@ -34,7 +34,7 @@ class RelationshipProperty extends Property {
   }
 
   static isRelationshipProperty(property: Property | undefined): property is RelationshipProperty {
-    return property !== undefined && property.type === propertyTypes.newRelationship;
+    return property !== undefined && property instanceof RelationshipProperty;
   }
 
   get inherits() {
