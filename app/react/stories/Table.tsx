@@ -73,7 +73,6 @@ const Table = ({ columns, data, title }: TableProps) => {
       </FlowbiteTable.Head>
       <FlowbiteTable.Body {...getTableBodyProps()}>
         {rows.map((row: Row<any>) => {
-          console.log(row);
           prepareRow(row);
           return (
             <FlowbiteTable.Row {...row.getRowProps()}>
