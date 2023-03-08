@@ -33,10 +33,6 @@ class RelationshipProperty extends Property {
     return this.buildQueryRootedInTemplate().invertFromEntity(entity);
   }
 
-  static isRelationshipProperty(property: Property | undefined): property is RelationshipProperty {
-    return property !== undefined && property instanceof RelationshipProperty;
-  }
-
   get inherits() {
     return this.denormalizedProperty !== undefined;
   }
