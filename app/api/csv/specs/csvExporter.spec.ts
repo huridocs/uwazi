@@ -83,6 +83,7 @@ describe('csvExporter', () => {
       expect(headersLabels).toEqual([
         'company',
         'Nemesis',
+        'Location',
         'Country',
         'Costume',
         'Super powers',
