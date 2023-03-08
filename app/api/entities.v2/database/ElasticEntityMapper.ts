@@ -1,4 +1,5 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { EntitySchema } from 'shared/types/entityType';
 
 export class ElasticEntityMapper {
@@ -14,7 +15,7 @@ export class ElasticEntityMapper {
 
     Object.entries(entity.metadata || {}).forEach(([propertyName, values]) => {
       const property = properties.find(p => p.name === propertyName);
-      if (property?.type === 'newRelationship') {
+      if (RelationshipProperty.isRelationshipProperty(property) && property.inherits) {
         metadata[propertyName] = (entity.metadata?.[propertyName] || [])
           .map(({ inheritedValue, ...originalValue }) =>
             inheritedValue!.map(denormalized => ({
