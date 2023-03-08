@@ -45,6 +45,12 @@ describe('i18n translations routes', () => {
               type: 'Uwazi UI',
               values: [{ key: 'Search', value: 'Search' }],
             },
+            {
+              id: 'contextID',
+              label: 'Template',
+              type: 'Entity',
+              values: [{ key: 'title', value: 'Template 1' }],
+            },
           ],
         },
         {
@@ -55,6 +61,12 @@ describe('i18n translations routes', () => {
               label: 'User Interface',
               type: 'Uwazi UI',
               values: [{ key: 'Search', value: 'Buscar' }],
+            },
+            {
+              id: 'contextID',
+              label: 'Template',
+              type: 'Entity',
+              values: [{ key: 'title', value: 'Plantilla 1' }],
             },
           ],
         },
@@ -88,6 +100,12 @@ describe('i18n translations routes', () => {
                     Search: 'Search',
                   },
                 },
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Template 1' },
+                },
               ],
               locale: 'en',
             },
@@ -102,6 +120,56 @@ describe('i18n translations routes', () => {
                   values: {
                     Search: 'Buscar',
                   },
+                },
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
+                },
+              ],
+              locale: 'es',
+            },
+          ],
+        });
+      });
+
+      it('should only return the requested context', async () => {
+        const appWithQuery = setUpApp(i18nRoutes, (req, _res, next) => {
+          req.user = {
+            username: 'admin',
+            role: UserRole.ADMIN,
+            email: 'admin@test.com',
+          };
+          req.query = { context: 'contextID' };
+          next();
+        });
+
+        const response = await request(appWithQuery).get('/api/translations').expect(200);
+
+        expect(response.body).toEqual({
+          rows: [
+            {
+              _id: expect.any(String),
+              contexts: [
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Template 1' },
+                },
+              ],
+              locale: 'en',
+            },
+
+            {
+              _id: expect.any(String),
+              contexts: [
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
                 },
               ],
               locale: 'es',
@@ -267,6 +335,13 @@ describe('i18n translations routes', () => {
                   ],
                   _id: expect.anything(),
                 },
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: [{ key: 'title', value: 'Template 1', _id: expect.anything() }],
+                  _id: expect.anything(),
+                },
               ],
               _id: expect.anything(),
               __v: 0,
@@ -315,6 +390,13 @@ describe('i18n translations routes', () => {
                 values: {
                   Search: 'Buscar traducida',
                 },
+              },
+              {
+                _id: expect.any(String),
+                id: 'contextID',
+                label: 'Template',
+                type: 'Entity',
+                values: { title: 'Plantilla 1' },
               },
             ],
             locale: 'es',
