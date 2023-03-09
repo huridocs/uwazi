@@ -133,7 +133,7 @@ describe('relationtypes', () => {
           await relationtypes.delete(inRelProperty);
           throw new Error('should have thrown error');
         } catch (e) {
-          expect(e.message).toMatch('property');
+          expect(e.message).toMatch('With rel prop');
         }
       });
     });

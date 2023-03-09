@@ -82,6 +82,14 @@ function _update(newTemplate) {
   });
 }
 
+async function validateTypeInTemplates(id) {
+  const templatesUsingType = await templates.findUsingRelationTypeInProp(id);
+  if (templatesUsingType.length > 0) {
+    const templatesNames = templatesUsingType.map(t => t.name).join(', ');
+    throw createError(`Cannot delete type being used in templates: ${templatesNames}`, 400);
+  }
+}
+
 export default {
   get(query) {
     return model.get(query);
@@ -103,9 +111,7 @@ export default {
   },
 
   async delete(id) {
-    if ((await templates.countByRelationType(id)) > 0) {
-      throw createError('Relationship type is being used in a relationship property', 400);
-    }
+    await validateTypeInTemplates(id);
 
     const connectionCount = await relationships.countByRelationType(id);
     const newRelationshipCount = await getNewRelationshipCount(id);
