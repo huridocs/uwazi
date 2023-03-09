@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router-dom';
+import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
@@ -54,7 +55,6 @@ import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
-import { IncomingHttpHeaders } from 'http';
 
 const getRoutesLayout = (
   settings: settingsType | undefined,
@@ -120,12 +120,12 @@ const getRoutesLayout = (
         <Route
           index
           element={adminsOnlyRoute(<TranslationsList />)}
-          loader={translationsListLoader}
+          loader={translationsListLoader(headers)}
         />
         <Route
           path="edit/:context"
           element={adminsOnlyRoute(<EditTranslations />)}
-          loader={editTranslationsLoader}
+          loader={editTranslationsLoader(headers)}
         />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />

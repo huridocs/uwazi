@@ -1,12 +1,16 @@
 import React from 'react';
-import { Link, useLoaderData } from 'react-router-dom';
+import { IncomingHttpHeaders } from 'http';
+import { Link, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { Button } from 'app/stories/Button';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import * as translationsAPI from 'V2/api/translations/index';
 
-const translationsListLoader = ({ request }: { request: Request }) => translationsAPI.get(request);
+const translationsListLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  () =>
+    translationsAPI.get(headers);
 
 const renderButton = data => (
   <Link to={`edit/${data.row.values.id}`}>
