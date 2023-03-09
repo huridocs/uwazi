@@ -2,39 +2,47 @@ import React from 'react';
 import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Table } from 'app/stories/Table';
+import { Pill } from 'app/stories/Pill';
+import { Header } from 'app/stories/Header';
 import * as translationsAPI from 'V2/api/translations/index';
 import { ClientTranslationSchema } from 'app/istore';
+import { getTableValue } from './actions';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   ({ params }: { params: Params }) =>
     translationsAPI.get(headers, params);
 
+const renderPill = ({ cell }) => <Pill>{cell.value.toUpperCase()}</Pill>;
+
 const columns = [
   { Header: 'Language', accessor: 'language', disableSortBy: true },
-  { Header: '', accessor: 'languageISO', disableSortBy: true },
-  { Header: 'Current Value', accessor: 'currentValue' },
+  { Header: '', accessor: 'languageKey', Cell: renderPill, disableSortBy: true },
+  { Header: 'Current Value', accessor: 'value', disableSortBy: true },
 ];
 
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
-  const getContextKeys = Object.keys(translations[0]?.contexts[0]?.values || {});
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {});
+  const contextLabel = translations[0].contexts[0].label;
 
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
-        {getContextKeys.map(contextKey => (
-          <div className="mt-4">
-            <Table columns={columns} data={[]} title={contextKey} />
-          </div>
-        ))}
+        <Header backUrl="/settings">
+          <h1 className="text-base">Translations &gt; {contextLabel}</h1>
+        </Header>
+        {contextTerms.map(contextTerm => {
+          const values = getTableValue(translations, contextTerm);
+          return (
+            <div className="mt-4">
+              <Table columns={columns} data={values} title={contextTerm} fixedColumns />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
 export { EditTranslations, editTranslationsLoader };
-
-//   { title: 'Entity 2', created: 2, icon: 'plus' },
-//   { title: 'Entity 1', created: 1, icon: 'check' },
-//   { title: 'Entity 3', created: 3, icon: 'flag' },

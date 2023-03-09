@@ -9,7 +9,7 @@ interface HeaderProps {
 const Header = ({ children, backUrl }: HeaderProps) => (
   <div className="flex space-x-2">
     {backUrl && (
-      <Link to={backUrl} className="block md:hidden">
+      <Link to={backUrl} className="block lg:hidden">
         <div className="flex space-x-1">
           <svg
             className="w-6 h-6"
