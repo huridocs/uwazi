@@ -2,7 +2,7 @@
 
 exports[`MultiSelect should display a not found message when there are no options 1`] = `
 <ul
-  className="multiselect is-active"
+  className="multiselect is-active "
 >
   <li
     className="multiselectActions"
@@ -77,7 +77,7 @@ exports[`MultiSelect should not render aggregations on the groups when not defin
 
 exports[`MultiSelect should not render an empty group 1`] = `
 <ul
-  className="multiselect is-active"
+  className="multiselect is-active "
 >
   <li
     className="multiselectActions"
@@ -123,6 +123,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
     >
       <span
         className="multiselectItem-icon"
+        onClick={[Function]}
       >
         <Connect(Icon)
           className="checkbox-empty"
@@ -150,9 +151,18 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
+        <Connect(Icon)
+          className="chevron-right"
+          icon="chevron-right"
+        />
+        <Connect(Icon)
+          className="chevron-down"
+          icon="chevron-down"
+        />
       </span>
       <span
         className="multiselectItem-name"
+        onClick={[Function]}
       >
         <Icon
           className="item-icon"
@@ -190,6 +200,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
     >
       <span
         className="multiselectItem-icon"
+        onClick={[Function]}
       >
         <Connect(Icon)
           className="checkbox-empty"
@@ -217,9 +228,18 @@ exports[`MultiSelect should not render an empty group 1`] = `
             ]
           }
         />
+        <Connect(Icon)
+          className="chevron-right"
+          icon="chevron-right"
+        />
+        <Connect(Icon)
+          className="chevron-down"
+          icon="chevron-down"
+        />
       </span>
       <span
         className="multiselectItem-name"
+        onClick={[Function]}
       >
         <Icon
           className="item-icon"
@@ -258,6 +278,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       >
         <span
           className="multiselectItem-icon"
+          onClick={[Function]}
         >
           <Connect(Icon)
             className="checkbox-empty"
@@ -285,9 +306,18 @@ exports[`MultiSelect should not render an empty group 1`] = `
               ]
             }
           />
+          <Connect(Icon)
+            className="chevron-right"
+            icon="chevron-right"
+          />
+          <Connect(Icon)
+            className="chevron-down"
+            icon="chevron-down"
+          />
         </span>
         <span
           className="multiselectItem-name"
+          onClick={[Function]}
         >
           <Icon
             className="item-icon"
@@ -339,6 +369,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
           >
             <span
               className="multiselectItem-icon"
+              onClick={[Function]}
             >
               <Connect(Icon)
                 className="checkbox-empty"
@@ -366,9 +397,18 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
+              <Connect(Icon)
+                className="chevron-right"
+                icon="chevron-right"
+              />
+              <Connect(Icon)
+                className="chevron-down"
+                icon="chevron-down"
+              />
             </span>
             <span
               className="multiselectItem-name"
+              onClick={[Function]}
             >
               <Icon
                 className="item-icon"
@@ -406,6 +446,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
           >
             <span
               className="multiselectItem-icon"
+              onClick={[Function]}
             >
               <Connect(Icon)
                 className="checkbox-empty"
@@ -433,9 +474,18 @@ exports[`MultiSelect should not render an empty group 1`] = `
                   ]
                 }
               />
+              <Connect(Icon)
+                className="chevron-right"
+                icon="chevron-right"
+              />
+              <Connect(Icon)
+                className="chevron-down"
+                icon="chevron-down"
+              />
             </span>
             <span
               className="multiselectItem-name"
+              onClick={[Function]}
             >
               <Icon
                 className="item-icon"

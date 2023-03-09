@@ -32,12 +32,14 @@ import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 import { FiltersSidePanel } from './FilterSidePanel';
+import { IXExtractorInfo } from './ExtractorModal';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
   acceptIXSuggestion: (suggestion: EntitySuggestionType, allLanguages: boolean) => void;
   templates: IImmutable<TemplateSchema[]>;
   languages: any[] | undefined;
+  extractor: IXExtractorInfo;
 }
 
 interface AggregategationsType {
@@ -66,6 +68,7 @@ const EntitySuggestionsComponent = ({
   acceptIXSuggestion,
   templates,
   languages,
+  extractor,
 }: EntitySuggestionsProps) => {
   const isMounted = useRef(false);
   const [suggestions, setSuggestions] = useState<EntitySuggestionType[]>([]);
@@ -187,10 +190,10 @@ const EntitySuggestionsComponent = ({
     _templateSelection: string[] = []
   ) => {
     const filter: {
-      propertyName?: string;
+      extractorId?: string;
       states?: string[];
       entityTemplates?: string[];
-    } = { propertyName: reviewedProperty.name };
+    } = { extractorId: extractor._id };
     if (_stateSelection.length > 0) filter.states = _stateSelection;
     if (_templateSelection.length > 0) filter.entityTemplates = _templateSelection;
     const params = new RequestParams({
@@ -208,7 +211,7 @@ const EntitySuggestionsComponent = ({
 
   const retriveStats = () => {
     const params = new RequestParams({
-      propertyName: reviewedProperty.name,
+      extractorId: extractor._id,
     });
     getStats(params)
       .then((response: any) => {
@@ -252,7 +255,7 @@ const EntitySuggestionsComponent = ({
   const _trainModel = async () => {
     setStatus({ key: 'sending_labeled_data' });
     const params = new RequestParams({
-      property: reviewedProperty.name,
+      extractorId: extractor._id,
     });
 
     const response = await trainModel(params);
@@ -267,7 +270,7 @@ const EntitySuggestionsComponent = ({
   const _cancelFindingSuggestions = async () => {
     setOpenCancelFindingSuggestions(false);
     const params = new RequestParams({
-      property: reviewedProperty.name,
+      extractorId: extractor._id,
     });
 
     if (status.key !== 'ready') {
@@ -315,7 +318,7 @@ const EntitySuggestionsComponent = ({
   }, [filters]);
   useEffect(() => {
     const params = new RequestParams({
-      property: reviewedProperty.name,
+      extractorId: extractor._id,
     });
     ixStatus(params)
       .then((response: any) => {
@@ -407,7 +410,7 @@ const EntitySuggestionsComponent = ({
                 &nbsp; <Translate>for</Translate> &nbsp;
               </span>
               <span className="suggestion-templates">
-                {aggregations.template.map(({ _id }) => (
+                {extractor.templates.map(_id => (
                   <span color="segment-pdf" key={_id}>
                     {templateNamesById[_id]}
                   </span>

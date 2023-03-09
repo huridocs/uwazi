@@ -52,10 +52,15 @@ import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import UnlockAccount from './Users/UnlockAccount';
-import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
+import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
+import { IncomingHttpHeaders } from 'http';
 
-const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
+const getRoutesLayout = (
+  settings: settingsType | undefined,
+  indexElement: React.ReactNode,
+  headers?: IncomingHttpHeaders
+) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route index element={indexElement} />
     <Route path="login" element={<Login />} />
@@ -95,7 +100,8 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
         element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
       />
       <Route
-        path="metadata_extraction/suggestions/:propertyName"
+        path="metadata_extraction/suggestions/:extractorId"
+        loader={IXSuggestionsLoader(headers)}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">
@@ -130,9 +136,13 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
   </Route>
 );
 
-const getRoutes = (settings: settingsType | undefined, userId: string | undefined) => {
+const getRoutes = (
+  settings: settingsType | undefined,
+  userId: string | undefined,
+  headers?: IncomingHttpHeaders
+) => {
   const { element, parameters } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element);
+  const layout = getRoutesLayout(settings, element, headers);
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
