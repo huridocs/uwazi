@@ -25,6 +25,7 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  fixedColumns?: boolean;
 }
 
 const getIcon = (column: TableColumn<any>) => {
@@ -39,7 +40,7 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const Table = ({ columns, data, title }: TableProps) => {
+const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
       columns,
@@ -53,7 +54,10 @@ const Table = ({ columns, data, title }: TableProps) => {
   );
 
   return (
-    <FlowbiteTable {...getTableProps()} className="table-fixed">
+    <FlowbiteTable
+      {...getTableProps()}
+      className={`${fixedColumns ? 'table-fixed' : 'table-auto'}`}
+    >
       {title && (
         <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
           {title}

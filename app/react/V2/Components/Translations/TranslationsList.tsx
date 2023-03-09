@@ -41,17 +41,23 @@ const TranslationsList = () => {
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
-        <h1 className="text-2xl">Translations</h1>
-        <Table
-          columns={columns}
-          data={contexts.systemContexts}
-          title={<Translate>System</Translate>}
-        />
-        <Table
-          columns={columns}
-          data={contexts.contentContexts}
-          title={<Translate>Content</Translate>}
-        />
+        <h1 className="text-xl">Translations</h1>
+        <div className="mt-4">
+          <Table
+            columns={columns}
+            data={contexts.systemContexts}
+            title={<Translate>System</Translate>}
+            fixedColumns
+          />
+        </div>
+        <div className="mt-4">
+          <Table
+            columns={columns}
+            data={contexts.contentContexts}
+            title={<Translate>Content</Translate>}
+            fixedColumns
+          />
+        </div>
       </div>
     </div>
   );
