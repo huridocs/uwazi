@@ -7,6 +7,7 @@ module.exports = {
     './app/react/stories/**/*.{js,jsx,ts,tsx}',
     'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
   ],
+  mode: 'jit',
   theme: {
     fontFamily: {
       sans: [
