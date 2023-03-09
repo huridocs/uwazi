@@ -12,4 +12,13 @@ export const TranslationMappers = {
       context: translation.context,
     };
   },
+  toModel(translation: TranslationDBO): Translation {
+    return new Translation(
+      translation._id.toString(),
+      translation.key,
+      translation.value,
+      translation.language,
+      translation.context
+    );
+  },
 };
