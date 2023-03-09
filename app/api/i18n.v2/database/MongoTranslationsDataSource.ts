@@ -20,6 +20,21 @@ export class MongoTranslationsDataSource
     return translations;
   }
 
+  async update(translations: Translation[]): Promise<Translation[]> {
+    const items = translations.map(translation => TranslationMappers.toDBO(translation));
+
+    await items.reduce(async (previous, item) => {
+      await previous;
+      await this.getCollection().updateOne(
+        { _id: item._id },
+        { $set: item },
+        { session: this.getSession() }
+      );
+    }, Promise.resolve());
+
+    return translations;
+  }
+
   getAll() {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find(),
