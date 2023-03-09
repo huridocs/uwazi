@@ -1,6 +1,7 @@
 import translations from 'api/i18n/translations';
 import relationships from 'api/relationships/relationships';
 import templates from 'api/templates';
+import { createError } from 'api/utils';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
@@ -103,7 +104,7 @@ export default {
 
   async delete(id) {
     if ((await templates.countByRelationType(id)) > 0) {
-      throw new Error('Relationship type is being used in a relationship property');
+      throw createError('Relationship type is being used in a relationship property', 400);
     }
 
     const connectionCount = await relationships.countByRelationType(id);
