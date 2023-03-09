@@ -1,14 +1,21 @@
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { RelationshipPropertyMappingFactory } from 'api/templates.v2/database/mappings/RelationshipPropertyMappingFactory';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyMappings } from './mappings';
 
-const createNewRelationshipMappingFactory = () => {
+const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
+  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+
+  if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
+    return null;
+  }
+
   const templateDataSource = new MongoTemplatesDataSource(db, transactionManager);
 
   return new RelationshipPropertyMappingFactory(templateDataSource, propertyMappings);
@@ -27,7 +34,7 @@ export default {
       },
     };
 
-    const newRelationshipMappingFactory = createNewRelationshipMappingFactory();
+    const newRelationshipMappingFactory = await createNewRelationshipMappingFactory();
 
     await Promise.all(
       templates.map(async template =>
@@ -39,7 +46,7 @@ export default {
 
             baseMappingObject.properties.metadata.properties[property.name] = {
               properties:
-                property.type === 'newRelationship'
+                newRelationshipMappingFactory && property.type === 'newRelationship'
                   ? await newRelationshipMappingFactory.create(property)
                   : propertyMappings[property.type](),
             };

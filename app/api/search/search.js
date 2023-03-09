@@ -11,6 +11,9 @@ import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
@@ -18,20 +21,32 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 
-function processRelationshipsV2InMetadata(hit) {
-  const mappedMetadata = {};
-  Object.keys(hit._source.metadata || {}).forEach(propertyName => {
-    mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
-      ({ originalValue, ...rest }) => {
-        if (originalValue) {
-          return { ...originalValue, inheritedValue: [rest] };
-        }
-        return rest;
-      }
-    );
-  });
+async function getRelationshipsV2PRocessor() {
+  const db = getConnection();
+  const client = getClient();
 
-  return mappedMetadata;
+  const transactionManager = new MongoTransactionManager(client);
+  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+
+  if (!settingsDataSource.readNewRelationshipsAllowed()) {
+    return hit => hit;
+  }
+
+  return hit => {
+    const mappedMetadata = {};
+    Object.keys(hit._source.metadata || {}).forEach(propertyName => {
+      mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
+        ({ originalValue, ...rest }) => {
+          if (originalValue) {
+            return { ...originalValue, inheritedValue: [rest] };
+          }
+          return rest;
+        }
+      );
+    });
+
+    return mappedMetadata;
+  };
 }
 
 function processParentThesauri(property, values, dictionaries, properties) {
@@ -491,6 +506,7 @@ const permissionsInformation = (hit, user) => {
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
   const user = permissionsContext.getUserInContext();
+  const processRelationshipsV2InMetadata = await getRelationshipsV2PRocessor();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;

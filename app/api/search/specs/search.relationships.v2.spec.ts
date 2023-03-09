@@ -76,6 +76,13 @@ beforeEach(async () => {
           { published: true }
         ),
       ],
+      settings: [
+        {
+          features: {
+            newRelationships: true,
+          },
+        },
+      ],
     },
     elasticIndex
   );

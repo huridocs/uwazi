@@ -11,10 +11,20 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import { elastic } from './elastic';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 
 export class IndexError extends Error {}
 
-const preprocessEntitiesToIndex = entitiesToIndex => {
+const preprocessEntitiesToIndex = async entitiesToIndex => {
+  const db = getConnection();
+  const client = getClient();
+  const transactionManager = new MongoTransactionManager(client);
+  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+
+  if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
+    return entitiesToIndex;
+  }
+
   const templateDS = new MongoTemplatesDataSource(
     getConnection(),
     new MongoTransactionManager(getClient())

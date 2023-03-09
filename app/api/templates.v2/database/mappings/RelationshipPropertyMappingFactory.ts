@@ -2,7 +2,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 
-type MappedPropertyTypes = Exclude<PropertyTypes, 'preview'>;
+type MappedPropertyTypes = Exclude<PropertyTypes, 'preview' | 'newRelationship'>;
 
 type PropertyMappings = { [key in MappedPropertyTypes]: () => unknown };
 
