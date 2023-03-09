@@ -22,6 +22,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
 import { faCircle } from '@fortawesome/free-solid-svg-icons/faCircle';
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock';
 import { faClone } from '@fortawesome/free-solid-svg-icons/faClone';
@@ -144,6 +145,7 @@ const icons = {
   faCheckCircle,
   faChevronLeft,
   faChevronRight,
+  faChevronDown,
   faCircle,
   faClock,
   faClone,

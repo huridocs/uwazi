@@ -1,6 +1,21 @@
 .metadata-extraction-table {
   .table tr th {
-    border-bottom: 0;
+    border: 1px solid #f5f5f5;
+    background: #f5f5f5;
+    border-radius: 6px 6px 0px 0px;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    color: #272727;
+
+    &:first-of-type {
+      padding-left: 17px;
+    }
+
+    span.extractor-checkbox {
+      margin-right: 20px;
+    }
   }
   .table tr:first-of-type td {
     border-top: 0;
@@ -8,7 +23,24 @@
   .table > tbody > tr > td {
     vertical-align: middle;
     text-align: left;
-    padding: 10px 0px;
+    padding: 8px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+
+    &.templateNameViewer > span {
+      padding-right: 10px;
+    }
+
+    span.extractor-checkbox {
+      margin-right: 10px;
+    }
+
+    &:last-of-type {
+      width: 90px;
+    }
   }
 }
 
@@ -21,5 +53,103 @@
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.extractor-creation-modal {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
+  min-height: 100px;
+  min-width: 400px;
+  padding: 16px 20px 20px;
+  border-radius: 6px;
+
+  .modal-header {
+    border-bottom: none;
+    display: flex;
+    justify-content: space-between;
+
+    .extractor-label {
+      display: flex;
+      width: 50%;
+      text-align: center;
+      font-weight: 700;
+      line-height: 16px;
+    }
+    .all-templates-button {
+      width: 50%;
+      text-align: right;
+      font-weight: 500;
+      line-height: 19px;
+
+      .btn {
+        width: 70%;
+        background: #ffffff;
+        box-shadow: 0px 2px 2px rgba(55, 71, 79, 0.4);
+        border-radius: 4px;
+        font-size: 16px;
+        border: none;
+      }
+    }
+  }
+
+  .modal-body {
+    min-height: 70px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 16px;
+
+    .property-selection {
+      margin-top: 12px;
+    }
+    .extractor-name-input {
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 115%;
+    }
+
+    .left {
+      font-style: italic;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+    .ix-extraction-multiselect {
+      .multiselect-group {
+        margin-bottom: 8px;
+
+        .multiselectItem-name {
+          font-style: normal;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 19px;
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    border-top: none;
+
+    .extractor-footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .btn {
+        width: 50%;
+        background: #ffffff;
+        box-shadow: 0px 2px 2px rgba(55, 71, 79, 0.4);
+        border-radius: 4px;
+        font-size: 16px;
+        border: none;
+      }
+    }
+    .btn.action-button {
+      opacity: 1;
+    }
   }
 }

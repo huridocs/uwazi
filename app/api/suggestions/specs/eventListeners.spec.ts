@@ -6,8 +6,10 @@ import { FileCreatedEvent } from 'api/files/events/FileCreatedEvent';
 import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { search } from 'api/search';
+import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
+import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
@@ -18,7 +20,7 @@ const fixturesFactory = getFixturesFactory();
 
 const notExtractedTemplateName = 'not_extracted_template';
 const extractedTemplateName = 'extracted_template';
-const extractedTemplate2Name = 'extracted_template2';
+const otherExtractedTemplateName = 'other_extracted_template';
 
 const adminUser = {
   username: 'admin',
@@ -26,111 +28,108 @@ const adminUser = {
   email: 'user@test.com',
 };
 
+const fixtures: DBFixture = {
+  templates: [
+    fixturesFactory.template(notExtractedTemplateName, [
+      fixturesFactory.property('some_property', propertyTypes.text),
+    ]),
+    fixturesFactory.template(extractedTemplateName, [
+      fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+      fixturesFactory.property('extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+    ]),
+    fixturesFactory.template(otherExtractedTemplateName, [
+      fixturesFactory.property('extracted_property_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2_1', propertyTypes.text),
+      fixturesFactory.property('extracted_property_2_2', propertyTypes.numeric),
+    ]),
+  ],
+  entities: [
+    fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
+    fixturesFactory.entity(
+      'ent2',
+      notExtractedTemplateName,
+      {},
+      { sharedId: 'entity with template not in config' }
+    ),
+  ],
+  files: [
+    fixturesFactory.file('entfile', 'entity for new file', 'document', 'entfile.pdf'),
+    fixturesFactory.file(
+      'entfile2',
+      'entity with template not in config',
+      'document',
+      'entfile2.pdf'
+    ),
+  ],
+  settings: [
+    {
+      _id: db.id(),
+      languages: [{ key: 'en', default: true, label: 'English' }],
+      features: {
+        metadataExtraction: {
+          url: 'service-url',
+        },
+      },
+    },
+  ],
+  ixextractors: [
+    fixturesFactory.ixExtractor('title_extractor', 'title', [
+      extractedTemplateName,
+      otherExtractedTemplateName,
+    ]),
+    fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+      extractedTemplateName,
+      otherExtractedTemplateName,
+    ]),
+    fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', [extractedTemplateName]),
+    fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+    fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+      otherExtractedTemplateName,
+    ]),
+    fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+      otherExtractedTemplateName,
+    ]),
+  ],
+  ixsuggestions: [
+    fixturesFactory.ixSuggestion(
+      'new_prop_1_suggestion',
+      'extractor1',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'extracted_property_1'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_prop_2_suggestion',
+      'extractor2',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'extracted_property_2'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_title_suggestion',
+      'title_extractor',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'title'
+    ),
+  ],
+};
+
+const disableFeatures = () =>
+  testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
+
 beforeAll(() => {
   registerEventListeners(applicationEventsBus);
 });
 
 beforeEach(async () => {
   jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
-  await db.setupFixturesAndContext({
-    users: [adminUser],
-    templates: [
-      fixturesFactory.template(notExtractedTemplateName, [
-        fixturesFactory.property('some_property', propertyTypes.text),
-      ]),
-      fixturesFactory.template(extractedTemplateName, [
-        fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
-        fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
-        fixturesFactory.property('extracted_property_1', propertyTypes.text),
-        fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
-      ]),
-      fixturesFactory.template(extractedTemplate2Name, [
-        fixturesFactory.property('not_extracted_property_2_1', propertyTypes.text),
-        fixturesFactory.property('extracted_property_2_1', propertyTypes.text),
-        fixturesFactory.property('extracted_property_2_2', propertyTypes.numeric),
-      ]),
-    ],
-    entities: [
-      fixturesFactory.entity('ent', extractedTemplateName, {}, { sharedId: 'entity for new file' }),
-      fixturesFactory.entity(
-        'ent2',
-        notExtractedTemplateName,
-        {},
-        { sharedId: 'entity with template not in config' }
-      ),
-    ],
-    files: [
-      fixturesFactory.file('entfile', 'entity for new file', 'document', 'entfile.pdf'),
-      fixturesFactory.file(
-        'entfile2',
-        'entity with template not in config',
-        'document',
-        'entfile2.pdf'
-      ),
-    ],
-    settings: [
-      {
-        _id: db.id(),
-        languages: [{ key: 'en', default: true, label: 'English' }],
-        features: {
-          metadataExtraction: {
-            url: 'service-url',
-            templates: [
-              {
-                template: fixturesFactory.id(extractedTemplateName).toString(),
-                properties: ['extracted_property_1', 'extracted_property_2', 'title'],
-              },
-              {
-                template: fixturesFactory.id(extractedTemplate2Name).toString(),
-                properties: ['extracted_property_2_1', 'extracted_property_2_2', 'title'],
-              },
-            ],
-          },
-        },
-      },
-    ],
-    ixsuggestions: [
-      {
-        status: 'ready',
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        language: 'en',
-        fileId: fixturesFactory.id('entfile'),
-        propertyName: 'extracted_property_1',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: 1675070647850,
-        state: 'Empty / Value',
-      },
-      {
-        status: 'ready',
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        language: 'en',
-        fileId: fixturesFactory.id('entfile'),
-        propertyName: 'extracted_property_2',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: 1675070647850,
-        state: 'Empty / Value',
-      },
-      {
-        status: 'ready',
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        language: 'en',
-        fileId: fixturesFactory.id('entfile'),
-        propertyName: 'title',
-        error: '',
-        segment: '',
-        suggestedValue: '',
-        date: 1675070647850,
-        state: 'Empty / Value',
-      },
-    ],
-  });
+  await db.setupFixturesAndContext(fixtures);
 });
 
 afterAll(async () => {
@@ -163,6 +162,25 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 
   afterAll(() => {
     updateSpy.mockRestore();
+  });
+
+  it('should not act if the feature is not configured', async () => {
+    await disableFeatures();
+
+    await applicationEventsBus.emit(
+      new EntityUpdatedEvent({
+        before: [extractedBefore],
+        after: [
+          {
+            ...extractedBefore.metadata,
+            extracted_property_1: [{ value: 'new text' }],
+          },
+        ],
+        targetLanguageKey: 'en',
+      })
+    );
+
+    expect(updateSpy).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -319,23 +337,29 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
     {
       case: 'should update suggestions if template is changed from configured to another configured',
       sharedId: 'entity for new file',
-      newTemplate: fixturesFactory.id(extractedTemplate2Name),
+      newTemplate: fixturesFactory.id(otherExtractedTemplateName),
       expectedSuggestions: [
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
+          propertyName: 'extracted_property_1',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'extracted_property_2_1',
           fileId: fixturesFactory.id('entfile'),
         },
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'extracted_property_2_2',
           fileId: fixturesFactory.id('entfile'),
         },
         {
           entityId: 'entity for new file',
-          entityTemplate: fixturesFactory.id(extractedTemplate2Name).toString(),
+          entityTemplate: fixturesFactory.id(otherExtractedTemplateName).toString(),
           propertyName: 'title',
           fileId: fixturesFactory.id('entfile'),
         },
@@ -356,7 +380,21 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${EntityDeletedEvent.name}`, () => {
-  it('should delete all suggestions related to entities that triggered the event', async () => {
+  it.each([
+    {
+      message: 'should not act if the feature is not enabled',
+      featureEnabled: false,
+    },
+    {
+      message: 'should delete all suggestions related to entities that triggered the event',
+      featureEnabled: true,
+      calledWith: 'shared',
+    },
+  ])('$message', async ({ featureEnabled, calledWith }) => {
+    if (!featureEnabled) {
+      await disableFeatures();
+    }
+
     const deleteSpy = jest.spyOn(Suggestions, 'deleteByEntityId');
 
     const doc1Id = db.id();
@@ -377,12 +415,37 @@ describe(`On ${EntityDeletedEvent.name}`, () => {
       })
     );
 
-    expect(deleteSpy).toHaveBeenCalledWith('shared');
+    if (calledWith) {
+      expect(deleteSpy).toHaveBeenCalledWith(calledWith);
+    } else {
+      expect(deleteSpy).not.toHaveBeenCalled();
+    }
     deleteSpy.mockRestore();
   });
 });
 
 describe(`On ${FileCreatedEvent.name}`, () => {
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+
+    const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
+
+    const fileInfo = fixturesFactory.file(
+      'new file',
+      'entity for new file',
+      'document',
+      'new_file.pdf'
+    );
+
+    await applicationEventsBus.emit(
+      new FileCreatedEvent({
+        newFile: fileInfo,
+      })
+    );
+
+    expect(saveSpy).not.toHaveBeenCalled();
+  });
+
   it('should create blank suggestions, if the new file is an entity document', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
@@ -407,7 +470,21 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         error: '',
         fileId: fixturesFactory.id('new file'),
         language: 'en',
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
         propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
         segment: '',
         status: 'ready',
         suggestedValue: '',
@@ -420,18 +497,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         fileId: fixturesFactory.id('new file'),
         language: 'en',
         propertyName: 'extracted_property_2',
-        segment: '',
-        status: 'ready',
-        suggestedValue: '',
-      },
-      {
-        date: expect.any(Number),
-        entityId: 'entity for new file',
-        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
-        error: '',
-        fileId: fixturesFactory.id('new file'),
-        language: 'en',
-        propertyName: 'title',
+        extractorId: fixturesFactory.id('extractor2'),
         segment: '',
         status: 'ready',
         suggestedValue: '',
@@ -508,6 +574,17 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     updateSpy.mockRestore();
   });
 
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+    const updateSpy = jest.spyOn(Suggestions, 'updateStates');
+
+    await applicationEventsBus.emit(
+      new FileUpdatedEvent({ before: original, after: { ...original, ...extractedMetadata } })
+    );
+
+    expect(updateSpy).not.toHaveBeenCalled();
+  });
+
   it('should update ix suggestions if extractedMetada changes', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
@@ -551,7 +628,19 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
 });
 
 describe(`On ${FilesDeletedEvent.name}`, () => {
-  it('should delete all suggestions related to files that triggered the event', async () => {
+  it.each([
+    {
+      message: 'should delete all suggestions related to files that triggered the event',
+      enabled: true,
+    },
+    {
+      message: 'should not act if the feature is not enabled',
+      enabled: false,
+    },
+  ])('$message', async ({ enabled }) => {
+    if (!enabled) {
+      await disableFeatures();
+    }
     const deleteSpy = jest.spyOn(Suggestions, 'delete');
 
     const file1Id = db.id();
@@ -582,7 +671,240 @@ describe(`On ${FilesDeletedEvent.name}`, () => {
       })
     );
 
-    expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    if (enabled) {
+      expect(deleteSpy).toHaveBeenCalledWith({ fileId: { $in: [file1Id, file2Id] } });
+    } else {
+      expect(deleteSpy).not.toHaveBeenCalled();
+    }
+
     deleteSpy.mockRestore();
+  });
+});
+
+describe(`On ${TemplateUpdatedEvent.name}`, () => {
+  it('should not act if the feature is not enabled', async () => {
+    await disableFeatures();
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+          ],
+        },
+      })
+    );
+
+    expect(extractors).toEqual(
+      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
+    );
+    expect(suggestions).toEqual(
+      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
+    );
+  });
+
+  it('should delete the template from the extractor if the property not longer exists', async () => {
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+          ],
+        },
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
+    ]);
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toMatchObject([
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+      },
+    ]);
+  });
+
+  it('should remove the template from the extractor if the property changed names', async () => {
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+          ],
+        },
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        extractedTemplateName,
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
+    ]);
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toMatchObject([
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'extracted_property_1',
+        extractorId: fixturesFactory.id('extractor1'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'title',
+        extractorId: fixturesFactory.id('title_extractor'),
+      },
+    ]);
+  });
+});
+
+describe(`On ${TemplateDeletedEvent.name}`, () => {
+  it('should delete the template from the extractor if the property not longer exists', async () => {
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    expect(extractors).toEqual([
+      fixturesFactory.ixExtractor('title_extractor', 'title', [otherExtractedTemplateName]),
+      fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
+      fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
+      fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
+        otherExtractedTemplateName,
+      ]),
+      fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
+        otherExtractedTemplateName,
+      ]),
+    ]);
+  });
+
+  it('should delete the suggestions related to the template', async () => {
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+
+    expect(suggestions).toEqual([]);
+  });
+
+  it('should not act if the feature is not enabld', async () => {
+    await disableFeatures();
+
+    const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
+    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    expect(suggestions).toEqual(
+      await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray()
+    );
+    expect(extractors).toEqual(
+      await testingDB.mongodb?.collection('ixextractors').find({}).toArray()
+    );
   });
 });

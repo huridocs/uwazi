@@ -20,6 +20,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { socket } from 'app/socket';
 import { EntitySuggestions } from '../EntitySuggestions';
 import * as SuggestionsAPI from '../SuggestionsAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 
 const mockedPDFSidePanelContent = 'Mocked Side Panel';
 const filledPropertyValue = 'new value for reviewed property';
@@ -51,6 +52,7 @@ describe('EntitySuggestions', () => {
         property={property}
         acceptIXSuggestion={acceptIXSuggestion}
         languages={[{}, {}]}
+        extractor={{ _id: 'someid', name: 'name', property: 'title', templates: [] }}
       />,
       () => ({
         ...defaultState,
@@ -137,13 +139,12 @@ describe('EntitySuggestions', () => {
       await act(async () => {
         fireEvent.click(screen.getByText('4'));
       });
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: {
-          filter: { propertyName: 'other_title' },
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith(
+        new RequestParams({
+          filter: { extractorId: 'someid' },
           page: { size: 100, number: 4 },
-        },
-        headers: {},
-      });
+        })
+      );
     });
 
     it('should retrieve suggestions data when pageSize changed', async () => {
@@ -152,10 +153,12 @@ describe('EntitySuggestions', () => {
           target: { value: 300 },
         });
       });
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: { filter: { propertyName: 'other_title' }, page: { size: 300, number: 1 } },
-        headers: {},
-      });
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith(
+        new RequestParams({
+          filter: { extractorId: 'someid' },
+          page: { size: 300, number: 1 },
+        })
+      );
     });
   });
   describe('date property', () => {
@@ -216,19 +219,15 @@ describe('EntitySuggestions', () => {
       await act(async () => {
         fireEvent.click(trainingButton);
       });
-      expect(SuggestionsAPI.trainModel).toHaveBeenLastCalledWith({
-        data: {
-          property: 'other_title',
-        },
-        headers: {},
-      });
-      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith({
-        data: {
-          filter: { propertyName: 'other_title' },
+      expect(SuggestionsAPI.trainModel).toHaveBeenLastCalledWith(
+        new RequestParams({ extractorId: 'someid' })
+      );
+      expect(SuggestionsAPI.getSuggestions).toHaveBeenLastCalledWith(
+        new RequestParams({
+          filter: { extractorId: 'someid' },
           page: { size: 100, number: 1 },
-        },
-        headers: {},
-      });
+        })
+      );
     });
   });
 

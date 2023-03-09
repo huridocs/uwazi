@@ -1,5 +1,8 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
+
+const fixturesFactory = getFixturesFactory();
 
 const entityId = db.id();
 const entityEnId = db.id();
@@ -8,7 +11,7 @@ const uploadId = db.id();
 const uploadId2 = db.id();
 const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
-const templateId = db.id();
+const templateId = fixturesFactory.id('template');
 const importTemplate = db.id();
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
@@ -149,6 +152,10 @@ const fixtures: DBFixture = {
     },
   ],
   users: [collabUser, writerUser, adminUser],
+  ixextractors: [
+    fixturesFactory.ixExtractor('property_1_extractor', 'property 1', ['template']),
+    fixturesFactory.ixExtractor('property_2_extractor', 'property 2', ['template']),
+  ],
   ixsuggestions: [
     {
       status: 'ready',
@@ -157,6 +164,7 @@ const fixtures: DBFixture = {
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 1',
+      extractorId: fixturesFactory.id('property_1_extractor'),
       date: 1654002449676,
       state: 'Empty / Label',
       segment: '',
@@ -169,6 +177,7 @@ const fixtures: DBFixture = {
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 2',
+      extractorId: fixturesFactory.id('property_2_extractor'),
       date: 1654002449676,
       state: 'Empty / Label',
       segment: '',
@@ -181,6 +190,7 @@ const fixtures: DBFixture = {
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 1',
+      extractorId: fixturesFactory.id('property_1_extractor'),
       date: 1654002449676,
       state: 'Empty / Label',
       segment: '',
@@ -193,6 +203,7 @@ const fixtures: DBFixture = {
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 2',
+      extractorId: fixturesFactory.id('property_2_extractor'),
       date: 1654002449676,
       state: 'Empty / Label',
       segment: '',
