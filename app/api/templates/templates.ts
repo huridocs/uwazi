@@ -304,5 +304,9 @@ export default {
     return model.count({ 'properties.content': thesauriId });
   },
 
+  async countByRelationType(relationTypeId: string) {
+    return model.count({ 'properties.relationType': relationTypeId });
+  },
+
   getRelatedThesauri,
 };
