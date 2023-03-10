@@ -11,3 +11,5 @@ export interface TraverseQueryDBO {
   types?: ObjectId[];
   match: MatchQueryDBO[];
 }
+
+export type QueryInPropertyDBO = MatchQueryDBO['traverse'];
