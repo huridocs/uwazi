@@ -1,7 +1,7 @@
 import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/utils/api';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { IXTemplateConfiguration } from './PropertyConfigurationModal';
+import { IXExtractorInfo } from './ExtractorModal';
 
 const getSuggestions = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('suggestions', requestParams);
@@ -36,8 +36,24 @@ const acceptEntitySuggestion = async (requestParams: RequestParams) => {
   const { json: response } = await api.post('suggestions/accept', requestParams);
   return response;
 };
-const saveConfigurations = async (requestParams: RequestParams<IXTemplateConfiguration[]>) => {
-  const { json: response } = await api.post('suggestions/configurations', requestParams);
+
+const getAllExtractors = async (requestParams: RequestParams) => {
+  const { json: response } = await api.get('ixextractors', requestParams);
+  return response;
+};
+
+const createExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
+  const { json: response } = await api.post('ixextractors', requestParams);
+  return response;
+};
+
+const deleteExtractors = async (requestParams: RequestParams<string[]>) => {
+  const { json: response } = await api.delete('ixextractors', requestParams);
+  return response;
+};
+
+const updateExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
+  const { json: response } = await api.put('ixextractors', requestParams);
   return response;
 };
 
@@ -48,5 +64,8 @@ export {
   cancelFindingSuggestions,
   ixStatus,
   acceptEntitySuggestion,
-  saveConfigurations,
+  getAllExtractors,
+  createExtractor,
+  deleteExtractors,
+  updateExtractor,
 };

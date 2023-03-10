@@ -13,6 +13,10 @@ import {
   ExtractedMetadataSchema,
 } from 'shared/types/commonTypes';
 import { UpdateLog } from 'api/updatelogs';
+import { IXExtractorType } from 'shared/types/extractorType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
+import { SuggestionState } from 'shared/types/suggestionSchema';
+import { WithId } from 'api/odm/model';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -103,7 +107,7 @@ function getFixturesFactory() {
       language: string = 'en',
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
-    ): FileType => ({
+    ): WithId<FileType> => ({
       _id: idMapper(`${id}`),
       entity,
       language,
@@ -186,6 +190,38 @@ function getFixturesFactory() {
       mongoId: idMapper(mongoId),
       timestamp,
       deleted,
+    }),
+
+    ixExtractor: (name: string, property: string, templates: string[] = []): IXExtractorType => ({
+      _id: idMapper(name),
+      name,
+      property,
+      templates: templates.map(idMapper),
+    }),
+
+    ixSuggestion: (
+      suggestionId: string,
+      extractor: string,
+      entity: string,
+      entityTemplate: string,
+      file: string,
+      property: string,
+      otherProps: Partial<IXSuggestionType> = {}
+    ): IXSuggestionType => ({
+      _id: idMapper(suggestionId),
+      status: 'ready' as const,
+      entityId: entity,
+      entityTemplate: idMapper(entityTemplate).toString(),
+      language: 'en',
+      fileId: idMapper(file),
+      propertyName: property,
+      extractorId: idMapper(extractor),
+      error: '',
+      segment: '',
+      suggestedValue: '',
+      date: 1,
+      state: SuggestionState.valueEmpty,
+      ...otherProps,
     }),
   });
 }

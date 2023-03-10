@@ -40,7 +40,12 @@ export default {
       templates.map(async template =>
         Promise.all(
           (template.properties || []).map(async property => {
-            if (!property.name || !property.type || property.type === 'preview') {
+            if (
+              !property.name ||
+              !property.type ||
+              property.type === 'preview' ||
+              (!newRelationshipMappingFactory && property.type === 'newRelationship')
+            ) {
               return;
             }
 
