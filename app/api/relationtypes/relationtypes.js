@@ -1,5 +1,7 @@
 import translations from 'api/i18n/translations';
 import relationships from 'api/relationships/relationships';
+import templates from 'api/templates';
+import { createError } from 'api/utils';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
@@ -80,6 +82,14 @@ function _update(newTemplate) {
   });
 }
 
+async function validateTypeInTemplates(id) {
+  const templatesUsingType = await templates.findUsingRelationTypeInProp(id);
+  if (templatesUsingType.length > 0) {
+    const templatesNames = templatesUsingType.map(t => t.name).join(', ');
+    throw createError(`Cannot delete type being used in templates: ${templatesNames}`, 400);
+  }
+}
+
 export default {
   get(query) {
     return model.get(query);
@@ -101,6 +111,8 @@ export default {
   },
 
   async delete(id) {
+    await validateTypeInTemplates(id);
+
     const connectionCount = await relationships.countByRelationType(id);
     const newRelationshipCount = await getNewRelationshipCount(id);
 
