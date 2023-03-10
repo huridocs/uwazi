@@ -4,7 +4,7 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
-import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
+import { MediaModal, MediaModalProps } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
 
 type MediaFieldProps = MediaModalProps & {
@@ -68,6 +68,12 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
+  const getAndCompareFileMimeType = (file: any, mediaType: 'image/*' | 'video/*') => {
+    const mimetype = file.mimetype;
+    const replaced = mimetype.replace(/(.+)\/.+/, '$1/*');
+    return replaced === mediaType;
+  };
+
   const file = prepareValue(value, localAttachments);
 
   useEffect(() => {
@@ -100,12 +106,20 @@ const MediaField = (props: MediaFieldProps) => {
         )}
       </div>
 
-      {file.fileURL &&
-        (type === MediaModalType.Image ? (
-          <img src={file.fileURL} alt="" />
-        ) : (
-          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />
-        ))}
+      {(() => {
+        if (!file.fileURL) {
+          return undefined;
+        }
+        if (!file.supportingFile) {
+          return undefined;
+        }
+        if (getAndCompareFileMimeType(file.supportingFile, 'image/*')) {
+          return <img src={file.fileURL} alt="" />;
+        }
+        if (getAndCompareFileMimeType(file.supportingFile, 'video/*')) {
+          return <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />;
+        }
+      })()}
 
       <MediaModal
         isOpen={openModal}
