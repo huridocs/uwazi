@@ -8,10 +8,10 @@ import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMappe
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
 import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
 import { elastic } from './elastic';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 
 export class IndexError extends Error {}
 
