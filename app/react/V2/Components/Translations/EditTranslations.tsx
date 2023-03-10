@@ -29,7 +29,7 @@ const EditTranslations = () => {
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
-        <Header backUrl="/settings">
+        <Header backUrl="/settings/translations">
           <h1 className="text-base">Translations &gt; {contextLabel}</h1>
         </Header>
         {contextTerms.map(contextTerm => {
