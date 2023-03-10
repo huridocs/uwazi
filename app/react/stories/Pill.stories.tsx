@@ -9,7 +9,7 @@ const PillStory = {
 
 const Template: ComponentStory<typeof Pill> = args => (
   <div className="tw-content">
-    <Pill style={args.style}>{args.children}</Pill>
+    <Pill color={args.color}>{args.children}</Pill>
   </div>
 );
 
@@ -17,7 +17,7 @@ const Basic = Template.bind({});
 
 Basic.args = {
   children: <span>Pill Content</span>,
-  style: 'default',
+  color: 'gray',
 };
 
 export { Basic };

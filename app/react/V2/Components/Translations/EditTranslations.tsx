@@ -13,7 +13,7 @@ const editTranslationsLoader =
   ({ params }: { params: Params }) =>
     translationsAPI.get(headers, params);
 
-const renderPill = ({ cell }) => <Pill>{cell.value.toUpperCase()}</Pill>;
+const renderPill = ({ cell }) => <Pill color="gray">{cell.value.toUpperCase()}</Pill>;
 
 const columns = [
   { Header: 'Language', accessor: 'language', disableSortBy: true },
