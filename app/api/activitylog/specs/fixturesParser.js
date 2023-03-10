@@ -9,6 +9,7 @@ const fileId = testingDB.id();
 const userId = testingDB.id();
 const groupId = testingDB.id();
 const suggestionId = testingDB.id();
+const extractorId = testingDB.id();
 
 const fixtures = {
   activitylogs: [
@@ -67,6 +68,15 @@ const fixtures = {
       language: 'en',
       date: 5,
       page: 2,
+      extractorId,
+    },
+  ],
+  ixextractors: [
+    {
+      _id: extractorId,
+      name: 'extractor_name',
+      property: 'title',
+      templates: [],
     },
   ],
 };
@@ -82,4 +92,5 @@ export {
   userId,
   groupId,
   suggestionId,
+  extractorId,
 };

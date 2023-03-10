@@ -18,6 +18,7 @@ const suggestionForEntityA = {
   entityId: '_idEntityA',
   sharedId: 'sharedA',
   propertyName: 'title',
+  extractorId: 'title_extractor',
   entityTitle: 'Current title',
   currentValue: 'Current title',
   suggestedValue: 'Suggested title',

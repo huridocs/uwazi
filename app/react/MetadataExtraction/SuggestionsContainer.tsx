@@ -1,36 +1,43 @@
 import React from 'react';
 import { isUndefined } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { ClientTemplateSchema, IStore } from 'app/istore';
-import { acceptSuggestion } from 'app/MetadataExtraction/actions/actions';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { ClientPropertySchema, ClientTemplateSchema, IStore } from 'app/istore';
+import { acceptSuggestion, loadExtractor } from 'app/MetadataExtraction/actions/actions';
 import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
+import { IXExtractorInfo } from './ExtractorModal';
+import { IncomingHttpHeaders } from 'http';
 
 const SuggestionComponent = ({
   templates,
   acceptSuggestion: acceptIXSuggestion,
   languages,
 }: ComponentProps) => {
-  const { propertyName } = useParams();
-  const propertiesKey = propertyName === 'title' ? 'commonProperties' : 'properties';
+  const extractor = useLoaderData() as IXExtractorInfo;
+  let property;
 
-  const property = templates
-    .map(template =>
-      ensure<IImmutable<ClientTemplateSchema>>(template)
-        .get(propertiesKey)
-        ?.find(p => p?.get('name') === propertyName)
-    )
-    .filter(v => !isUndefined(v));
+  if (extractor) {
+    const propertiesKey = extractor.property === 'title' ? 'commonProperties' : 'properties';
+    property = templates
+      .map(template =>
+        ensure<IImmutable<ClientTemplateSchema>>(template)
+          .get(propertiesKey)
+          ?.find(p => p?.get('name') === extractor.property)
+      )
+      .filter(v => !isUndefined(v));
+  }
+
   if (property && property.size > 0) {
     return (
       <div className="settings-content">
         <EntitySuggestions
-          property={property.get(0)!.toJS()}
+          property={property.get(0)?.toJS() as ClientPropertySchema}
           acceptIXSuggestion={acceptIXSuggestion}
           languages={languages?.toArray()}
+          extractor={extractor}
         />
       </div>
     );
@@ -58,3 +65,10 @@ type MappedProps = ConnectedProps<typeof connector>;
 type ComponentProps = MappedProps;
 
 export const IXSuggestions = connect(mapStateToProps, mapDispatchToProps)(SuggestionComponent);
+
+export const IXSuggestionsLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params: { extractorId } }) => {
+    const extractors = await loadExtractor({ id: extractorId! }, headers);
+    return extractors[0];
+  };

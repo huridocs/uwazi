@@ -7,18 +7,9 @@ const settings = [
   {
     languages: [{ default: true, label: 'English', key: 'en' }],
     features: {
+      'metadata-extraction': true,
       metadataExtraction: {
         url: 'http://localhost:1234/',
-        templates: [
-          {
-            template: factory.id('templateToSegmentA'),
-            properties: ['property1', 'property2', 'property3', 'property4'],
-          },
-          {
-            template: factory.id('templateToSegmentB'),
-            properties: ['property1'],
-          },
-        ],
       },
       segmentation: {
         url: 'http://localhost:1234/files',
@@ -36,6 +27,15 @@ const fixturesPdfNameF = 'documentF.pdf';
 
 const fixtures: DBFixture = {
   settings,
+  ixextractors: [
+    factory.ixExtractor('prop1extractor', 'property1', [
+      'templateToSegmentA',
+      'templateToSegmentB',
+    ]),
+    factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
+    factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
+    factory.ixExtractor('prop4extractor', 'property4', ['templateToSegmentA']),
+  ],
   entities: [
     factory.entity(
       'A1',
@@ -191,6 +191,7 @@ const fixtures: DBFixture = {
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
+      extractorId: factory.id('prop1extractor'),
       suggestedValue: 'suggestion_text_1',
       segment: 'segment_text_1',
       status: 'ready',
@@ -203,6 +204,7 @@ const fixtures: DBFixture = {
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
       propertyName: 'property1',
+      extractorId: factory.id('prop1extractor'),
       suggestedValue: 'suggestion_text_3',
       segment: 'segment_text_3',
       status: 'ready',
@@ -214,6 +216,7 @@ const fixtures: DBFixture = {
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
+      extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_1',
       segment: 'segment_text_1',
@@ -226,6 +229,7 @@ const fixtures: DBFixture = {
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
+      extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_1',
       segment: 'segment_text_1',
@@ -238,6 +242,7 @@ const fixtures: DBFixture = {
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
+      extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_1',
       segment: 'segment_text_property2_1',
@@ -250,6 +255,7 @@ const fixtures: DBFixture = {
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
+      extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_2',
       segment: 'segment_text_property2_2',
@@ -262,6 +268,7 @@ const fixtures: DBFixture = {
       entityId: 'A1',
       entityTemplate: factory.id('templateToSegmentA').toString(),
       language: 'en',
+      extractorId: factory.id('prop2extractor'),
       propertyName: 'property2',
       suggestedValue: 'suggestion_text_property2_3',
       segment: 'segment_text_property2_3',
@@ -271,11 +278,26 @@ const fixtures: DBFixture = {
     },
   ],
   ixmodels: [
-    { propertyName: 'property1', creationDate: 200, status: 'ready', findingSuggestions: true },
-    { propertyName: 'property4', creationDate: 200, status: 'ready', findingSuggestions: true },
-    { propertyName: 'property2', creationDate: 200, status: 'ready', findingSuggestions: true },
     {
-      propertyName: 'property3',
+      extractorId: factory.id('prop1extractor'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop4extractor'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop2extractor'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('prop3extractor'),
       creationDate: 200,
       status: 'processing',
       findingSuggestions: true,

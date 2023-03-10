@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Icon } from 'UI';
-
+import { RequestParams } from 'app/utils/RequestParams';
 import { Translate, I18NLink } from 'app/I18N';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
@@ -12,13 +12,31 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsHeader } from 'app/Settings/components/SettingsHeader';
-import { saveConfigurations } from './actions/actions';
-import { IXTemplateConfiguration, PropertyConfigurationModal } from './PropertyConfigurationModal';
+import { loadExtractors, deleteExtractors } from './actions/actions';
+import { IXExtractorInfo, ExtractorModal } from './ExtractorModal';
+import {
+  createExtractor as createExtractorAPICall,
+  updateExtractor as updateExtractorAPICall,
+} from './SuggestionsAPI';
 
-function mapStateToProps({ settings, templates }: any) {
+type indexedTemplates = {
+  [k: string]: {
+    _id: string;
+    name: string;
+    properties: { [k: string]: PropertySchema };
+  };
+};
+
+type preparedExtractor = IXExtractorInfo & {
+  label?: string;
+  type?: PropertySchema['type'];
+};
+
+function mapStateToProps({ settings, templates, ixExtractors }: any) {
   return {
     settings: settings.collection,
     templates,
+    ixExtractors,
   };
 }
 
@@ -28,78 +46,104 @@ class MetadataExtractionComponent extends React.Component<
 > {
   constructor(props: MetadataExtractionDashboardPropTypes) {
     super(props);
-    this.saveConfigs = this.saveConfigs.bind(this);
+    this.saveExtractor = this.saveExtractor.bind(this);
+    this.deleteExtractors = this.deleteExtractors.bind(this);
     this.state = {
-      configurationModalIsOpen: false,
+      extractorModelIsOpen: false,
+      selectedExtractorIds: new Set<string>(),
+      extractorToEdit: undefined,
     };
   }
 
-  arrangeTemplatesAndProperties() {
-    const formatted: FormattedSettingsData = {};
-
-    const extractionSettings =
-      this.props.settings.get('features')?.get('metadataExtraction')?.get('templates') || [];
-
-    extractionSettings.forEach((setting: any) => {
-      const template = setting.has('template')
-        ? this.props.templates.find(temp => temp?.get('_id') === setting.get('template'))
-        : this.props.templates.find(temp => temp?.get('name') === setting.get('name'));
-
-      if (!template) {
-        store?.dispatch(
-          notify(`Template "${setting.get('_id') || setting.get('name')}" not found.`, 'warning')
-        );
-        return;
-      }
-
-      const rawProperties = setting.get('properties');
-      const properties: Array<string> | undefined =
-        typeof rawProperties === 'string' ? [rawProperties] : rawProperties;
-      properties?.forEach(propertyName => {
-        let property = template.get('properties')?.find(p => p?.get('name') === propertyName);
-        let label;
-        if (!property) {
-          property = template.get('commonProperties')?.find(p => p?.get('name') === propertyName);
-          label = propertyName;
-        } else {
-          label = property.get('label');
-        }
-        if (!property) {
-          store?.dispatch(
-            notify(
-              `Property "${label}" not found on template "${template.get('name')}".`,
-              'warning'
-            )
-          );
-          return;
-        }
-        if (!formatted.hasOwnProperty(propertyName)) {
-          formatted[propertyName] = {
-            properties: [property.toJS()],
-            templates: [template.toJS()],
-          };
-        } else {
-          formatted[propertyName].properties.push(property.toJS());
-          formatted[propertyName].templates.push(template.toJS());
-        }
-      });
-    });
-
-    return formatted;
+  async componentDidMount(): Promise<void> {
+    await this.props.loadExtractors();
   }
 
-  async saveConfigs(newSettingsConfigs: IXTemplateConfiguration[]) {
-    this.setState({ configurationModalIsOpen: false });
-    await this.props.saveConfigurations(newSettingsConfigs);
+  handleExtractorSelection(extractorId: string, selected: boolean) {
+    const { selectedExtractorIds } = this.state;
+    if (selected) {
+      selectedExtractorIds.add(extractorId);
+    } else {
+      selectedExtractorIds.delete(extractorId);
+    }
+    this.setState({ selectedExtractorIds });
+  }
+
+  async saveExtractor(extractorInfo: IXExtractorInfo) {
+    const params = new RequestParams(extractorInfo);
+    if (extractorInfo._id) {
+      await updateExtractorAPICall(params);
+      this.setState({ selectedExtractorIds: new Set<string>() });
+    } else {
+      await createExtractorAPICall(params);
+    }
+
+    this.props.loadExtractors();
+    this.setState({ extractorModelIsOpen: false });
+  }
+
+  async deleteExtractors() {
+    await this.props.deleteExtractors(
+      this.props.ixExtractors.toJS(),
+      Array.from(this.state.selectedExtractorIds)
+    );
+    this.setState({ selectedExtractorIds: new Set<string>() });
+  }
+
+  prepareTemplates() {
+    const templates: TemplateSchema[] = this.props.templates.toJS();
+    const indexed: indexedTemplates = Object.fromEntries(
+      templates.map(t => [
+        t._id,
+        {
+          _id: t._id,
+          name: t.name,
+          properties: Object.fromEntries(
+            (t.properties || [])
+              .map(p => [p.name, p])
+              .concat([['title', { name: 'title', label: 'Title', type: 'text' }]])
+          ),
+        },
+      ])
+    );
+    return indexed;
+  }
+
+  prepareExtractors(extractorList: IXExtractorInfo[], templateInfo: indexedTemplates) {
+    const shownExtractors: preparedExtractor[] = extractorList.map(extractor => {
+      if (extractor.templates.length === 0) return extractor;
+      const firstTemplate = extractor.templates[0];
+      if (!(firstTemplate in templateInfo)) {
+        store?.dispatch(notify(`Template ${firstTemplate} not found.`, 'warning'));
+        return extractor;
+      }
+      const properties = templateInfo[firstTemplate].properties;
+      if (!(extractor.property in properties)) {
+        store?.dispatch(
+          notify(
+            `Property ${extractor.property} not found on template ${firstTemplate}.`,
+            'warning'
+          )
+        );
+        return extractor;
+      }
+      const property = properties[extractor.property];
+      return {
+        ...extractor,
+        type: property.type,
+        label: property.label,
+      };
+    });
+    return shownExtractors;
   }
 
   render() {
-    const formattedData: FormattedSettingsData = this.arrangeTemplatesAndProperties();
-    const extractionSettings =
-      this.props.settings.toJS().features!.metadataExtraction!.templates || [];
+    const extractorList: IXExtractorInfo[] = this.props.ixExtractors.toJS();
+    const templateInfo = this.prepareTemplates();
+    const shownExtractors = this.prepareExtractors(extractorList, templateInfo);
 
     return (
-      <div className="settings-content without-footer">
+      <div className="settings-content">
         <div className="panel panel-default">
           <SettingsHeader>
             <Translate>Metadata extraction dashboard</Translate>
@@ -107,56 +151,69 @@ class MetadataExtractionComponent extends React.Component<
           <div className="panel-subheading">
             <Translate>Extract information from your documents</Translate>
           </div>
-          <button
-            className="btn btn-default"
-            type="button"
-            onClick={() => {
-              this.setState({ configurationModalIsOpen: true });
-            }}
-          >
-            <Translate>Configure properties</Translate>
-          </button>
-          <PropertyConfigurationModal
-            isOpen={this.state.configurationModalIsOpen}
-            onClose={() => this.setState({ configurationModalIsOpen: false })}
-            onAccept={this.saveConfigs}
+          <ExtractorModal
+            isOpen={this.state.extractorModelIsOpen}
+            onClose={() => this.setState({ extractorModelIsOpen: false })}
+            onAccept={this.saveExtractor}
             templates={this.props.templates.toJS()}
-            currentProperties={extractionSettings}
+            extractor={this.state.extractorToEdit}
           />
           <div className="metadata-extraction-table">
             <table className="table">
               <thead>
                 <tr>
                   <th>
-                    <Translate>Metadata to extract</Translate>
+                    <span className="extractor-checkbox">
+                      <Icon icon={['far', 'square']} className="checkbox-empty" />
+                    </span>
+                    <Translate>Extractor Name</Translate>
                   </th>
                   <th>
-                    <Translate>Template</Translate>
+                    <Translate>Property</Translate>
+                  </th>
+                  <th>
+                    <Translate>Template(s)</Translate>
+                  </th>
+                  <th>
+                    <Translate>Action</Translate>
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(formattedData).map(([propIndex, data]) => (
-                  <tr key={propIndex}>
+                {shownExtractors.map(extractor => (
+                  <tr key={extractor.name + extractor._id}>
                     <td>
-                      <Icon icon={Icons[data.properties[0].type]} fixedWidth />
-                      {data.properties[0].label}
+                      <span className="extractor-checkbox">
+                        <input
+                          type="checkbox"
+                          value={extractor._id}
+                          onChange={event => {
+                            if (extractor._id) {
+                              this.handleExtractorSelection(
+                                event.target.value,
+                                event.target.checked
+                              );
+                            }
+                          }}
+                        />
+                      </span>
+                      {extractor.name}{' '}
                     </td>
+                    <td>
+                      <Icon icon={Icons[extractor.type || 'text']} fixedWidth />
+                      {extractor.label || extractor.property}
+                    </td>
+
                     <td className="templateNameViewer">
-                      {data.templates.map((template, index) => (
-                        <div key={template.name}>
-                          {template.name}
-                          {index !== data.templates.length - 1 ? ',' : ''}
-                        </div>
+                      {extractor.templates.map(template => (
+                        <span key={template}>{templateInfo[template].name}</span>
                       ))}
                     </td>
                     <td>
                       <I18NLink
-                        to={`settings/metadata_extraction/suggestions/${data.properties[0].name}`}
+                        to={`settings/metadata_extraction/suggestions/${extractor._id}`}
                         className="btn btn-success btn-xs"
                       >
-                        <Icon icon="bars" />
-                        &nbsp;
                         <Translate>Review</Translate>
                       </I18NLink>
                     </td>
@@ -164,6 +221,42 @@ class MetadataExtractionComponent extends React.Component<
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="settings-footer">
+            <div className="btn-cluster">
+              {this.state.selectedExtractorIds.size > 0 ? (
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={() => {
+                    const selectedExtractorId = Array.from(this.state.selectedExtractorIds)[0];
+                    const extractorToEdit = this.props.ixExtractors
+                      .toJS()
+                      .find((extractor: IXExtractorInfo) => extractor._id === selectedExtractorId);
+                    this.setState({ extractorToEdit });
+                    this.setState({ extractorModelIsOpen: true });
+                  }}
+                >
+                  <Translate>Edit Extractor</Translate>
+                </button>
+              ) : (
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={() => {
+                    this.setState({ extractorModelIsOpen: true });
+                  }}
+                >
+                  <Translate>Create Extractor</Translate>
+                </button>
+              )}
+
+              {!!this.state.selectedExtractorIds.size && (
+                <button className="btn btn-danger" type="button" onClick={this.deleteExtractors}>
+                  <Translate>Delete</Translate>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -174,7 +267,9 @@ class MetadataExtractionComponent extends React.Component<
 export interface MetadataExtractionDashboardPropTypes {
   templates: IImmutable<TemplateSchema[]>;
   settings: IImmutable<ClientSettings>;
-  saveConfigurations: (configurations: IXTemplateConfiguration[]) => void;
+  ixExtractors: IImmutable<IXExtractorInfo[]>;
+  deleteExtractors: (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => void;
+  loadExtractors: () => void;
 }
 
 export interface FormattedSettingsData {
@@ -185,11 +280,13 @@ export interface FormattedSettingsData {
 }
 
 export interface MetadataExtractionDashboardStateTypes {
-  configurationModalIsOpen: boolean;
+  extractorModelIsOpen: boolean;
+  selectedExtractorIds: Set<string>;
+  extractorToEdit?: IXExtractorInfo;
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ saveConfigurations }, dispatch);
+  bindActionCreators({ deleteExtractors, loadExtractors }, dispatch);
 
 export const MetadataExtractionDashboard = connect(
   mapStateToProps,

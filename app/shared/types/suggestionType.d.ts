@@ -10,6 +10,7 @@ import {
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
+  extractorId: string;
   sharedId: string;
   fileId: string;
   entityTitle: string;
@@ -46,6 +47,7 @@ export interface EntitySuggestionType {
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
+  extractorId: ObjectIdSchema;
   entityTemplate: string;
   fileId?: ObjectIdSchema;
   propertyName: string;
@@ -87,12 +89,12 @@ export interface IXSuggestionsQuery {
 }
 
 export interface IXSuggestionsStatsQuery {
-  propertyName: string;
+  extractorId: string;
 }
 
 export interface IXSuggestionsFilter {
   language?: string;
-  propertyName: string;
+  extractorId: ObjectIdSchema;
   states?: (
     | 'Match / Label'
     | 'Mismatch / Label'

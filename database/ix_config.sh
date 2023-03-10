@@ -1,5 +1,5 @@
 #!/bin/bash
-DB=${1:-uwazi_development}
+DB=${1:-${DATABASE_NAME:-uwazi_development}}
 HOST=${2:-${DBHOST:-127.0.0.1}}
 echo -e "\n\nSetting default IX configuration"
 mongo -host $HOST $DB --eval 'db.settings.update({},{$set : {"features":{
