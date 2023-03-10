@@ -5,9 +5,9 @@ import templatesAPI from 'api/templates';
 import settings from 'api/settings';
 import relationtypes from 'api/relationtypes';
 import entities from 'api/entities/entities';
-import { generateID } from 'api/odm';
 import { createError } from 'api/utils';
 
+import { ObjectId } from 'mongodb';
 import model from './model';
 import { search } from '../search';
 import { generateNames } from '../templates/utils';
@@ -145,10 +145,14 @@ export default {
     } else {
       ownRelations = await model.get({
         entity,
-        $or: [
-          { $and: [{ file: { $exists: false } }] },
-          file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
-        ],
+        ...(file
+          ? {
+              $or: [
+                { file: { $exists: false } },
+                file ? { $and: [{ file: { $exists: true } }, { file }] } : {},
+              ],
+            }
+          : {}),
       });
     }
     const hubsIds = ownRelations.map(relationship => relationship.hub);
@@ -275,7 +279,7 @@ export default {
         throw createError('In a group, either all relationships must have a hub or none of them.');
       }
       if (group.length && !group[0].hub) {
-        const newHub = generateID();
+        const newHub = new ObjectId();
         group = group.map(r => ({ ...r, hub: r.hub || newHub }));
       }
       return group;
@@ -348,7 +352,6 @@ export default {
 
   async generateCreatedReferences(property, newValues, entity, existingReferences) {
     const { relationType: propertyRelationType } = property;
-
     const toCreate = newValues.filter(
       v =>
         !(existingReferences[propertyRelationType] && existingReferences[propertyRelationType][v])
@@ -359,16 +362,16 @@ export default {
     if (toCreate.length) {
       const candidateHub = await guessRelationshipPropertyHub(
         entity.sharedId,
-        generateID(propertyRelationType)
+        new ObjectId(propertyRelationType)
       );
 
-      const hubId = (candidateHub[0] && candidateHub[0]._id) || generateID();
+      const hubId = (candidateHub[0] && candidateHub[0]._id) || new ObjectId();
       newReferencesBase = candidateHub[0] ? [] : [{ entity: entity.sharedId, hub: hubId }];
 
       newReferences = toCreate.map(value => ({
         entity: value,
         hub: hubId,
-        template: generateID(propertyRelationType),
+        template: propertyRelationType,
       }));
     }
 
@@ -415,7 +418,7 @@ export default {
 
     const existingReferences = await getEntityReferencesByRelationshipTypes(
       entity.sharedId,
-      relationshipProperties.map(p => generateID(p.relationType))
+      relationshipProperties.map(p => p.relationType)
     );
 
     return { relationshipProperties, existingReferences };

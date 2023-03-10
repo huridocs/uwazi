@@ -22,9 +22,6 @@ export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
-const generateID = mongoose.Types.ObjectId;
-export { generateID };
-
 export class OdmModel<T> {
   db: MultiTenantMongooseModel<T>;
 

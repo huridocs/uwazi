@@ -59,23 +59,33 @@ type ThesauriValueData = {
   thesauriIdToExistingValues: Map<string, Set<string>>;
   thesauriIdToNewValues: Map<string, Set<string>>;
   thesauriIdToNormalizedNewValues: Map<string, Set<string>>;
+  thesauriIdToGroups: Map<string, Set<string>>;
 };
 
 const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesauriValueData => {
   const thesauriIdToExistingValues = new Map();
   const thesauriIdToNewValues = new Map();
   const thesauriIdToNormalizedNewValues = new Map();
+  const thesauriIdToGroups = new Map();
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
     const a = flatThesaurusValues(t, true);
     const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
+    const thesaurusGroups =
+      t.values?.filter(v => v.values).map(v => normalizeThesaurusLabel(v.label)) || [];
     thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());
+    thesauriIdToGroups.set(id, new Set(thesaurusGroups));
   });
 
-  return { thesauriIdToExistingValues, thesauriIdToNewValues, thesauriIdToNormalizedNewValues };
+  return {
+    thesauriIdToExistingValues,
+    thesauriIdToNewValues,
+    thesauriIdToNormalizedNewValues,
+    thesauriIdToGroups,
+  };
 };
 
 const syncSaveThesauri = async (
@@ -109,15 +119,12 @@ const arrangeThesauri = async (
   const thesauriRelatedProperties = template.properties?.filter(p =>
     ['select', 'multiselect'].includes(p.type)
   );
-
   const nameToThesauriId = createNameToIdMap(thesauriRelatedProperties, languages);
-
   const allRelatedThesauri = await thesauri.get({
     $in: Array.from(
       new Set(thesauriRelatedProperties?.map(p => p.content?.toString()).filter(t => t))
     ),
   });
-
   const thesauriValueData = setupIdValueMaps(allRelatedThesauri);
 
   await csv(await file.readStream(), stopOnError)
@@ -127,6 +134,13 @@ const arrangeThesauri = async (
         ([name, id]) => {
           const labels = splitMultiselectLabels(safeNamedRow[name]);
           Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+            if (thesauriValueData.thesauriIdToGroups.get(id)?.has(normalizedLabel)) {
+              throw new Error(
+                `The label "${originalLabel}" at property "${name}" is a group label in line:\n${JSON.stringify(
+                  row
+                )}`
+              );
+            }
             if (
               !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
               !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
