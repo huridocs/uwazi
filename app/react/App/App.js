@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet, useLocation, useParams, useMatches } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
