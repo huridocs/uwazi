@@ -2,11 +2,27 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Field } from 'react-redux-form';
 import { connect } from 'react-redux';
+import { actions } from 'app/BasicReducer';
 import { Icon } from 'app/UI';
 import { Translate } from 'app/I18N';
+import { store } from 'app/store';
 import { checkErrorsOnLabel } from '../utils/checkErrorsOnLabel';
 
 import PropertyConfigOptions from './PropertyConfigOptions';
+
+const saveQuery = (value, index, template) => {
+  //  model={`template.data.properties[${index}].query`}
+  try {
+    const query = JSON.parse(value);
+    const newProperty = { ...template.data.properties[index], query };
+    const newProperties = [...template.data.properties];
+    newProperties[index] = newProperty;
+    const newData = { ...template.data, properties: newProperties };
+    store.dispatch(actions.setIn('template', 'data', newData));
+  } catch (e) {
+    console.log(e)
+  }
+};
 
 export class FormConfigInput extends Component {
   render() {
@@ -37,14 +53,18 @@ export class FormConfigInput extends Component {
             <div no-translate>
               <b>This is a new relationship!</b>
               <br />
-              {this.props.denormalizedProperty && (
-                <>
-                  Denormalized property: {this.props.denormalizedProperty}
-                  <br />
-                </>
-              )}
-              The query is: <br />
-              <pre>{JSON.stringify(this.props.query, null, 2)}</pre>
+              Denormalized property:
+              <Field model={`template.data.properties[${index}].denormalizedProperty`}>
+                <input className="form-control" />
+              </Field>
+              <br />
+              Current Query: <br />
+              <pre>{JSON.stringify(this.props.template.data.properties[index].query, null, 2)}</pre>
+              Edit Query: <br />
+              <textarea
+                style={{ width: '100%', height: '100px' }}
+                onChange={e => saveQuery(e.target.value, index, this.props.template)}
+              />
             </div>
           </>
         )}
@@ -66,11 +86,14 @@ FormConfigInput.propTypes = {
   // relationship v2:
   query: PropTypes.array,
   denormalizedProperty: PropTypes.string,
+  template: PropTypes.object,
 };
 
 export function mapStateToProps(state, props) {
   return {
     labelHasError: checkErrorsOnLabel(state, props),
+    // relationship v2:
+    template: state.template,
   };
 }
 
