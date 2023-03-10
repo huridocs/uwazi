@@ -27,7 +27,8 @@ const App = ({ customParams }) => {
   const sharedId = params.sharedId || customParams?.sharedId;
   const shouldAddAppClassName =
     ['/', `/${params.lang}/`].includes(location.pathname) ||
-    location.pathname.match(/\/page\/.*\/.*/g);
+    location.pathname.match(/\/page\/.*\/.*/g) ||
+    location.pathname.match(/\/entity\/.*/g);
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);
