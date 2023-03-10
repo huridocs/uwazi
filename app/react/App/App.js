@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams, useMatches } from 'react-router-dom';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
@@ -25,6 +25,9 @@ const App = ({ customParams }) => {
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
+  const shouldAddAppClassName =
+    ['/', `/${params.lang}/`].includes(location.pathname) ||
+    location.pathname.match(/\/page\/.*\/.*/g);
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);
@@ -45,7 +48,7 @@ const App = ({ customParams }) => {
     navClass += ' is-active';
   }
 
-  const appClassName = sharedId ? `pageId_${sharedId}` : '';
+  const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
   return (
     <div id="app" className={appClassName}>
