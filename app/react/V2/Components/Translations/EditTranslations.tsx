@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { availableLanguages } from 'shared/languagesList';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
-import { Header } from 'app/stories/Header';
+import { NavigationHeader } from 'app/stories/NavigationHeader';
 import * as translationsAPI from 'V2/api/translations/index';
 import { ClientTranslationSchema } from 'app/istore';
 
@@ -66,9 +66,9 @@ const EditTranslations = () => {
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
-        <Header backUrl="/settings/translations">
-          <h1 className="text-base">Translations &gt; {contextLabel}</h1>
-        </Header>
+        <NavigationHeader backUrl="/settings/translations">
+          <h1 className="text-base text-gray-700">Translations &gt; {contextLabel}</h1>
+        </NavigationHeader>
         <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map(contextTerm => {
             const values = composeTableValues(translations, contextTerm);

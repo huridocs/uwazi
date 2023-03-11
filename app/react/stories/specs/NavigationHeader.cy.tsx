@@ -1,11 +1,11 @@
 import React from 'react';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/testing-react';
-import * as stories from '../Header.stories';
+import * as stories from '../NavigationHeader.stories';
 
 const { Basic, WithLink } = composeStories(stories);
 
-describe('Header', () => {
+describe('NavigationHeader', () => {
   it('should only render the back link when the URL is defined', () => {
     cy.viewport(550, 750);
     mount(<WithLink />);

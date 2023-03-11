@@ -4,7 +4,7 @@ import { Link, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { Button } from 'app/stories/Button';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
-import { Header } from 'app/stories/Header';
+import { NavigationHeader } from 'app/stories/NavigationHeader';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import * as translationsAPI from 'V2/api/translations/index';
 
@@ -46,9 +46,9 @@ const TranslationsList = () => {
   return (
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
-        <Header backUrl="/settings">
-          <h1 className="text-base">Translations</h1>
-        </Header>
+        <NavigationHeader backUrl="/settings">
+          <h1 className="text-base text-gray-700">Translations</h1>
+        </NavigationHeader>
         <div className="mt-4">
           <Table
             columns={columns}

@@ -6,8 +6,8 @@ interface HeaderProps {
   backUrl?: string;
 }
 
-const Header = ({ children, backUrl }: HeaderProps) => (
-  <div className="flex space-x-2">
+const NavigationHeader = ({ children, backUrl }: HeaderProps) => (
+  <div className="flex space-x-2 items-center">
     {backUrl && (
       <Link to={backUrl} className="block lg:hidden">
         <div className="flex space-x-1">
@@ -30,4 +30,4 @@ const Header = ({ children, backUrl }: HeaderProps) => (
   </div>
 );
 
-export { Header };
+export { NavigationHeader };
