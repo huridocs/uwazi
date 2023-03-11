@@ -2,7 +2,7 @@
 import React from 'react';
 import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { availableLanguages } from 'shared/languagesList';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
@@ -38,21 +38,22 @@ const composeTableValues = (translations: ClientTranslationSchema[], term: strin
 
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {});
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
   const contextLabel = translations[0].contexts[0].label;
 
-  const {
-    register,
-    handleSubmit,
-    resetField,
-    formState: { errors },
-  } = useForm({
-    defaultValues: { translations: [...translations] },
+  const { register, handleSubmit, setValue, control } = useForm({
+    defaultValues: { translations },
     mode: 'onSubmit',
   });
 
+  const { fields } = useFieldArray({
+    control,
+    name: 'translations',
+    rules: { required: true },
+  });
+
   const inputField = ({ cell }) => {
-    const reset = () => resetField(cell.value.fieldKey);
+    const reset = () => setValue(cell.value.fieldKey, '');
     return (
       <div>
         <label htmlFor={cell.value.fieldId} className="hidden">
@@ -63,7 +64,7 @@ const EditTranslations = () => {
             type="text"
             id={cell.value.fieldId}
             {...register(cell.value.fieldKey)}
-            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5"
+            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 block flex-1 min-w-0 w-full text-sm p-2.5 focus:ring-blue-500 focus:border-blue-500 focus:border-r"
           />
           <button
             type="button"
@@ -95,7 +96,7 @@ const EditTranslations = () => {
         </NavigationHeader>
         <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map(contextTerm => {
-            const values = composeTableValues(translations, contextTerm);
+            const values = composeTableValues(fields, contextTerm);
             return (
               <div className="mt-4">
                 <Table columns={columns} data={values} title={contextTerm} />
