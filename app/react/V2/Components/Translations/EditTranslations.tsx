@@ -30,7 +30,8 @@ const composeTableValues = (translations: ClientTranslationSchema[], term: strin
       languageKey: language.locale,
       value: {
         fieldValue: value,
-        fieldKey: `translations.${index}.contexts[0].values.${term}`,
+        fieldKey: `translations[${index}].contexts[0].values.${term}`,
+        fieldId: term,
       },
     };
   });
@@ -43,15 +44,38 @@ const EditTranslations = () => {
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors },
   } = useForm({
-    defaultValues: { translations },
+    defaultValues: { translations: [...translations] },
     mode: 'onSubmit',
   });
 
-  const inputField = ({ cell }) => (
-    <input type="text" {...register(cell.value.fieldKey, { required: true })} />
-  );
+  const inputField = ({ cell }) => {
+    const reset = () => resetField(cell.value.fieldKey);
+    return (
+      <div>
+        <label htmlFor={cell.value.fieldId} className="hidden">
+          {cell.value.fieldKey}
+        </label>
+        <div className="flex">
+          <input
+            type="text"
+            id={cell.value.fieldId}
+            {...register(cell.value.fieldKey)}
+            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5"
+          />
+          <button
+            type="button"
+            onClick={reset}
+            className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg"
+          >
+            x
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const columns = [
     { Header: 'Language', accessor: 'language', disableSortBy: true },
@@ -74,7 +98,7 @@ const EditTranslations = () => {
             const values = composeTableValues(translations, contextTerm);
             return (
               <div className="mt-4">
-                <Table columns={columns} data={values} title={contextTerm} fixedColumns />
+                <Table columns={columns} data={values} title={contextTerm} />
               </div>
             );
           })}
