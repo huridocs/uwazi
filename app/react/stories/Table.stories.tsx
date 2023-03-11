@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Checkbox } from 'flowbite-react';
 import { Table } from './Table';
+import { Button } from './Button';
 
 const TableStory = {
   title: 'Components/Table',
@@ -10,29 +11,63 @@ const TableStory = {
 
 const Template: ComponentStory<typeof Table> = args => (
   <div className="tw-content">
-    <Table columns={args.columns} data={args.data} title={args.title} />
+    <Table
+      fixedColumns={args.fixedColumns}
+      columns={args.columns}
+      data={args.data}
+      title={args.title}
+    />
   </div>
 );
 
 const Basic = Template.bind({});
+const WithActions = Template.bind({});
 
 const checkboxCell = () => <Checkbox />;
 
+const actionsCell = () => (
+  <div>
+    <Button>Primary</Button>
+    <Button type="secondary">Secondary</Button>
+  </div>
+);
+
 Basic.args = {
+  fixedColumns: true,
+  title: 'Table name',
   columns: [
-    { id: 'select', Header: '', Cell: checkboxCell, action: true },
-    { Header: 'Icon', accessor: 'icon', disableSortBy: true },
-    { Header: 'Title', accessor: 'title', id: 'title' },
-    { Header: 'Date added', accessor: 'created', disableSortBy: true },
+    { id: 'select', Header: '', Cell: checkboxCell },
+    { Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
+    { Header: 'Description', accessor: 'description' },
+    { Header: 'Date added', accessor: 'created' },
   ],
   data: [
-    { title: 'Entity 2', created: 2, icon: 'plus' },
-    { title: 'Entity 1', created: 1, icon: 'check' },
-    { title: 'Entity 3', created: 3, icon: 'flag' },
+    { title: 'Entity 2', created: 2, description: 'Short text' },
+    {
+      title: 'Entity 1',
+      created: 1,
+      description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel efficitur quam. Donec feugiat at libero at rutrum.',
+    },
+    {
+      title: 'Entity 3',
+      created: 3,
+      description: 'Morbi congue et justo vitae congue. Vivamus porttitor et leo vitae efficitur',
+    },
   ],
-  title: <h3>Table name</h3>,
 };
 
-export { Basic };
+WithActions.args = {
+  ...Basic.args,
+  columns: [
+    { id: 'select', Header: '', Cell: checkboxCell },
+    { Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
+    { Header: 'Description', accessor: 'description' },
+    { Header: 'Date added', accessor: 'created' },
+    { id: 'action', Header: 'Actions', Cell: actionsCell },
+  ],
+};
+
+export { Basic, WithActions };
 
 export default TableStory as ComponentMeta<typeof Table>;

@@ -19,7 +19,7 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>> & { action?: boolean };
+  Partial<UseSortByColumnProps<T>> & { isSortable?: boolean };
 
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
@@ -65,11 +65,11 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
       )}
       <FlowbiteTable.Head>
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
-          headerGroup.headers.map((column: any, index: number, headers: HeaderGroup<any>[]) => (
+          headerGroup.headers.map((column: any) => (
             <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
-              <div className="flex flex-row">
+              <div className={`${column.isSortable ? 'flex flex-row' : ''}`}>
                 {column.render('Header')}
-                {column.Header && !column.disableSortBy && getIcon(column)}
+                {column.Header && column.isSortable && getIcon(column)}
               </div>
             </FlowbiteTable.HeadCell>
           ))
