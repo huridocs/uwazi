@@ -5,6 +5,7 @@ import { Button } from 'app/stories/Button';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { NavigationHeader } from 'app/stories/NavigationHeader';
+import { Pill } from 'app/stories/Pill';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import * as translationsAPI from 'V2/api/translations/index';
 
@@ -21,9 +22,11 @@ const renderButton = data => (
   </Link>
 );
 
+const pill = ({ cell }) => <Pill color="gray">{cell.value}</Pill>;
+
 const columns = [
-  { Header: 'View', accessor: 'label', disableSortBy: true, id: 'view' },
-  { Header: 'Type', accessor: 'type' },
+  { Header: 'View', accessor: 'label', disableSortBy: true },
+  { Header: 'Type', accessor: 'type', Cell: pill },
   { Header: 'Action', accessor: 'id', disableSortBy: true, Cell: renderButton },
 ];
 

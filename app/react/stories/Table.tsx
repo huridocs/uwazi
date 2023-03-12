@@ -56,10 +56,10 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
   return (
     <FlowbiteTable
       {...getTableProps()}
-      className={`${fixedColumns ? 'table-fixed' : 'table-auto'}`}
+      className={` ${fixedColumns ? 'table-fixed' : 'table-auto'}`}
     >
       {title && (
-        <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
+        <caption className="p-5 text-lg font-semibold text-left bg-white text-gray-900">
           {title}
         </caption>
       )}
@@ -67,7 +67,7 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
           headerGroup.headers.map((column: any) => (
             <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
-              <div className={`${column.isSortable ? 'flex flex-row' : ''}`}>
+              <div className={`text-gray-500 ${column.isSortable ? 'flex flex-row' : ''}`}>
                 {column.render('Header')}
                 {column.Header && column.isSortable && getIcon(column)}
               </div>
@@ -75,7 +75,7 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
           ))
         )}
       </FlowbiteTable.Head>
-      <FlowbiteTable.Body {...getTableBodyProps()}>
+      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900">
         {rows.map((row: Row<any>) => {
           prepareRow(row);
           return (
