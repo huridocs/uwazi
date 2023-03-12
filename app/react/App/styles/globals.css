@@ -3173,10 +3173,6 @@ input:checked + .toggle-bg {
   z-index: 10;
 }
 
-.focus\:border-r:focus {
-  border-right-width: 1px;
-}
-
 .focus\:border-blue-500:focus {
   --tw-border-opacity: 1;
   border-color: rgb(63 131 248 / var(--tw-border-opacity));

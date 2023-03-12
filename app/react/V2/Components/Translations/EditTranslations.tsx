@@ -2,8 +2,11 @@
 import React from 'react';
 import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 import { availableLanguages } from 'shared/languagesList';
+import { generateID } from 'shared/IDGenerator';
+import { t } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
 import { NavigationHeader } from 'app/stories/NavigationHeader';
@@ -30,30 +33,29 @@ const composeTableValues = (translations: ClientTranslationSchema[], term: strin
       languageKey: language.locale,
       value: {
         fieldValue: value,
-        fieldKey: `translations[${index}].contexts[0].values.${term}`,
-        fieldId: term,
+        fieldKey: `formData[${index}].contexts[0].values.${term}`,
+        fieldId: generateID(6, 6),
       },
     };
   });
 
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {});
   const contextLabel = translations[0].contexts[0].label;
 
-  const { register, handleSubmit, setValue, control } = useForm({
-    defaultValues: { translations },
+  const {
+    register,
+    handleSubmit,
+    resetField,
+    formState: { errors },
+  } = useForm({
+    defaultValues: { formData: [...translations] },
     mode: 'onSubmit',
   });
 
-  const { fields } = useFieldArray({
-    control,
-    name: 'translations',
-    rules: { required: true },
-  });
-
   const inputField = ({ cell }) => {
-    const reset = () => setValue(cell.value.fieldKey, '');
+    const reset = () => resetField(cell.value.fieldKey, { defaultValue: '' });
     return (
       <div>
         <label htmlFor={cell.value.fieldId} className="hidden">
@@ -63,8 +65,8 @@ const EditTranslations = () => {
           <input
             type="text"
             id={cell.value.fieldId}
-            {...register(cell.value.fieldKey)}
-            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 block flex-1 min-w-0 w-full text-sm p-2.5 focus:ring-blue-500 focus:border-blue-500 focus:border-r"
+            {...register(cell.value.fieldKey, { required: true })}
+            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 block flex-1 min-w-0 w-full text-sm p-2.5"
           />
           <button
             type="button"
@@ -74,6 +76,15 @@ const EditTranslations = () => {
             x
           </button>
         </div>
+        <ErrorMessage
+          errors={errors}
+          name={cell.value.fieldKey}
+          render={() => (
+            <p className="error" role="alert">
+              {t('System', 'This field is required')}
+            </p>
+          )}
+        />
       </div>
     );
   };
@@ -96,7 +107,7 @@ const EditTranslations = () => {
         </NavigationHeader>
         <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map(contextTerm => {
-            const values = composeTableValues(fields, contextTerm);
+            const values = composeTableValues(translations, contextTerm);
             return (
               <div className="mt-4">
                 <Table columns={columns} data={values} title={contextTerm} />
