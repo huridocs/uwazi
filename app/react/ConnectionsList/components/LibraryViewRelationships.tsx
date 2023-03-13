@@ -132,8 +132,7 @@ const LibraryViewRelationshipsComp = (props: ComponentProps) => {
   return (
     <>
       <div className="sidepanel-relationships">
-        {parentEntity &&
-          hubs.map((hub: any, index: number) => createLabelGroups(props, hub, index))}
+        {hubs.map((hub: any, index: number) => createLabelGroups(props, hub, index))}
       </div>
       <LoadMoreRelationshipsButton />
       <RelationshipMetadata />
