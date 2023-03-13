@@ -8,6 +8,13 @@
     color: $c-grey-dark;
   }
 
+  .untranslated:not(.default) {
+    .input-group-addon {
+      background-color: #fdf6b2;
+      color: #723b13;
+    }
+  }
+
   .panel-heading {
     display: flex;
     align-items: baseline;
