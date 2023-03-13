@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Map } from 'immutable';
 import { bindActionCreators, Dispatch } from 'redux';
-import { generateID } from 'shared/IDGenerator';
 import { Icon } from 'app/UI';
 import { Item } from 'app/Layout';
 import { Collapsible } from 'app/App/Collapsible';
@@ -43,10 +42,9 @@ type ComponentProps = ConnectedProps<typeof connector> & LibraryViewRelationship
 const createRightRelationshipGroups = (
   rightRelationships: any,
   props: ComponentProps,
-  expanded: boolean,
-  key: string
+  expanded: boolean
 ) => {
-  const { relationTypes, selectConnection } = props;
+  const { relationTypes, selectConnection, parentEntity } = props;
   return (
     <div className="sidepanel-relationship-right">
       {rightRelationships.map((relationship: Map<any, any>, index: number) => {
@@ -68,7 +66,7 @@ const createRightRelationshipGroups = (
             className="sidepanel-relationship-collapsible"
             headerInfo={`(${entityRelationships.size})`}
             collapse={!expanded}
-            key={key + index.toString()}
+            key={(parentEntity.get('_id') as string).toString() + index.toString()}
           >
             <>
               {entityRelationships.map((rel: any, entityRelationshipsIndex: number) => (
@@ -104,18 +102,18 @@ const renderLabel = (template: any, relationTypes: any) =>
     </span>
   );
 
-const createLabelGroups = (props: ComponentProps, hub: any, key: string) => {
-  const { relationTypes, expanded } = props;
+const createLabelGroups = (props: ComponentProps, hub: any, index: number) => {
+  const { relationTypes, expanded, parentEntity } = props;
   const template = hub.getIn(['leftRelationship', 'template']);
   return (
     <StickyHeader
       scrollElementSelector=".scrollable"
       stickyElementSelector=".sidepanel-relationship-left-label"
-      key={key}
+      key={(parentEntity.get('_id') as string).toString() + index.toString()}
     >
       <div className="sidepanel-relationship">
         {renderLabel(template, relationTypes)}
-        {createRightRelationshipGroups(hub.get('rightRelationships'), props, expanded, key)}
+        {createRightRelationshipGroups(hub.get('rightRelationships'), props, expanded)}
       </div>
     </StickyHeader>
   );
@@ -123,19 +121,18 @@ const createLabelGroups = (props: ComponentProps, hub: any, key: string) => {
 
 const LibraryViewRelationshipsComp = (props: ComponentProps) => {
   const { hubs, searchResults, parentEntity, parseResults } = props;
-  const rows = searchResults.get('rows');
-  const key = (parentEntity && parentEntity.get('_id'))?.toString() || generateID(6, 6);
 
   useEffect(() => {
-    if (parentEntity && rows.size) {
+    if (parentEntity && searchResults.get('rows').size) {
       parseResults(searchResults, parentEntity, false);
     }
-  }, [searchResults, parseResults, rows.size, parentEntity]);
+  }, [searchResults, parentEntity, parseResults]);
 
   return (
     <>
       <div className="sidepanel-relationships">
-        {hubs.map((hub: any) => createLabelGroups(props, hub, key))}
+        {parentEntity &&
+          hubs.map((hub: any, index: number) => createLabelGroups(props, hub, index))}
       </div>
       <LoadMoreRelationshipsButton />
       <RelationshipMetadata />
