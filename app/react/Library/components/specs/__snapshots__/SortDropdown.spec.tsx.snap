@@ -111,7 +111,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
     <a
       aria-current="page"
       disable="true"
-      href="/en/library/?q=(order:asc,searchTerm:'my search',sort:_score)"
+      href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:_score)"
     >
       <button
         class="sorting-toggle"
