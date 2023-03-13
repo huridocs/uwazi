@@ -1,5 +1,5 @@
 import uuid from 'node-uuid';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { differenceBy, intersectionBy } from 'lodash';
 
 import settings from 'api/settings/settings';
@@ -24,7 +24,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
       {
         $match: {
           'properties._id': {
-            $in: properties.map(p => new ObjectID(p.inherit?.property)),
+            $in: properties.map(p => new ObjectId(p.inherit?.property)),
           },
         },
       },
@@ -36,7 +36,7 @@ const getInheritedProps = async (templates: TemplateSchema[]) => {
               as: 'property',
               cond: {
                 $or: properties.map(p => ({
-                  $eq: ['$$property._id', new ObjectID(p.inherit?.property)],
+                  $eq: ['$$property._id', new ObjectId(p.inherit?.property)],
                 })),
               },
             },

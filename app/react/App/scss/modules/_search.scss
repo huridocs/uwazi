@@ -734,6 +734,13 @@
   line-height: 1.2em;
   padding: 5px 0;
   width: 100%;
+
+  &.no-top-level-select {
+    .multiselectItem-icon,
+    .multiselectItem-name {
+      cursor: pointer;
+    }
+  }
 }
 
 .multiselectItem-icon {
@@ -752,6 +759,30 @@
   .checkbox-group {
     display: none;
     color: $c-success;
+  }
+  .chevron-right {
+    display: none;
+  }
+  .chevron-down {
+    display: none;
+  }
+
+  &.no-select {
+    .checkbox-empty {
+      display: none;
+    }
+    .chevron-right {
+      display: block;
+    }
+
+    &.expanded {
+      .chevron-right {
+        display: none;
+      }
+      .chevron-down {
+        display: block;
+      }
+    }
   }
 }
 

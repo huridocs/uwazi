@@ -1,5 +1,6 @@
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
+import { applicationEventsBus } from 'api/eventsbus';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import { updateMapping } from 'api/search/entitiesIndex';
@@ -13,6 +14,8 @@ import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { validateTemplate } from 'shared/types/templateSchema';
 import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateDeletedEvent } from './events/TemplateDeletedEvent';
+import { TemplateUpdatedEvent } from './events/TemplateUpdatedEvent';
 import { checkIfReindex } from './reindex';
 import model from './templatesModel';
 import {
@@ -202,13 +205,20 @@ export default {
     }
 
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
-    const savedTemplate = model.save(template);
+    const savedTemplate = await model.save(template);
     if (templateStructureChanges) {
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
       });
     }
+
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: currentTemplate,
+        after: savedTemplate,
+      })
+    );
 
     return savedTemplate;
   },
@@ -293,6 +303,8 @@ export default {
     await this.removePropsWithNonexistentId(_id);
     await model.delete(_id);
 
+    await applicationEventsBus.emit(new TemplateDeletedEvent({ templateId: _id }));
+
     return template;
   },
 
@@ -302,6 +314,10 @@ export default {
 
   async countByThesauri(thesauriId: string) {
     return model.count({ 'properties.content': thesauriId });
+  },
+
+  async findUsingRelationTypeInProp(relationTypeId: string) {
+    return model.get({ 'properties.relationType': relationTypeId }, 'name');
   },
 
   getRelatedThesauri,

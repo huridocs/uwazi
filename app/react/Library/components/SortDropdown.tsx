@@ -64,7 +64,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
   );
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const sortButtonLink = `${path}${encodeSearch(
-    { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc' },
+    { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc', from: 0 },
     true
   )}`;
 

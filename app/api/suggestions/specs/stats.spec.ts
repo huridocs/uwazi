@@ -4,98 +4,63 @@ import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { getStats } from '../stats';
 
-const fixtureFactory = getFixturesFactory();
+const fixturesFactory = getFixturesFactory();
+
+const suggestionBase = {
+  entityId: '',
+  propertyName: 'age',
+  entityTemplate: fixturesFactory.id('template').toString(),
+  extractorId: fixturesFactory.id('age_extractor'),
+  suggestedValue: '',
+  segment: '',
+  language: '',
+};
 
 const fixtures: DBFixture = {
   ixsuggestions: [
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelEmpty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelMatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.labelMismatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueEmpty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueMatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.valueMismatch,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.obsolete,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.empty,
     },
     {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state: SuggestionState.emptyMismatch,
     },
   ],
@@ -111,7 +76,7 @@ afterAll(async () => {
 
 describe('when the property exists', () => {
   it('should return the training counts', async () => {
-    expect(await getStats('age')).toMatchObject({
+    expect(await getStats(fixturesFactory.id('age_extractor').toString())).toMatchObject({
       counts: {
         labeled: 3,
         nonLabeledMatching: 1,
@@ -181,16 +146,11 @@ describe('when the property exists', () => {
   ])('$state state should $action in accuracy', async ({ state, result }) => {
     const input = {
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state,
     };
     await testingEnvironment.setUp({ ixsuggestions: [input] });
-    const stats = await getStats('age');
+    const stats = await getStats(fixturesFactory.id('age_extractor').toString());
     expect(stats.accuracy).toEqual(result);
   });
 
@@ -218,22 +178,17 @@ describe('when the property exists', () => {
   ])('should return accuracy correctly', async ({ states }) => {
     const inputs = states.map(state => ({
       _id: testingDB.id(),
-      entityId: '',
-      entityTemplate: fixtureFactory.id('template').toString(),
-      propertyName: 'age',
-      suggestedValue: '',
-      segment: '',
-      language: '',
+      ...suggestionBase,
       state,
     }));
     await testingEnvironment.setUp({ ixsuggestions: inputs });
-    const stats = await getStats('age');
+    const stats = await getStats(fixturesFactory.id('age_extractor').toString());
     expect(stats.accuracy).toEqual(0.5);
   });
 });
 
 describe('when the property does not exists', () => {
   it('should not fail', async () => {
-    await getStats('non existent prop');
+    await getStats(fixturesFactory.id('non_existing_extractor').toString());
   });
 });

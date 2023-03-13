@@ -230,7 +230,7 @@ const resetTranslations = () => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
-  const routes = getRoutes(settings, req.user && req.user._id);
+  const routes = getRoutes(settings, req.user && req.user._id, req.headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 

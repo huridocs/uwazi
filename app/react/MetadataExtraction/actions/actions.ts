@@ -9,14 +9,36 @@ import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
 import { actions } from 'app/BasicReducer';
-import { saveConfigurations as saveConfigs } from '../SuggestionsAPI';
-import { IXTemplateConfiguration } from '../PropertyConfigurationModal';
+import { IXExtractorInfo } from '../ExtractorModal';
+import {
+  getAllExtractors,
+  createExtractor as createExtractorAPICall,
+  deleteExtractors as deleteExtractorsAPICall,
+} from '../SuggestionsAPI';
 
-const saveConfigurations =
-  (newSettingsConfigs: IXTemplateConfiguration[]) => async (dispatch: any) => {
-    const settings = await saveConfigs(new RequestParams(newSettingsConfigs));
-    dispatch(actions.set('settings/collection', settings));
-    dispatch(notificationActions.notify(t('System', 'Settings updated'), 'success'));
+const loadExtractors = () => async (dispatch: any) => {
+  const extractors = await getAllExtractors(new RequestParams());
+  dispatch(actions.set('ixExtractors', extractors));
+};
+
+const loadExtractor = async (query: { id: string }, headers = {}): Promise<IXExtractorInfo[]> => {
+  const extractors = await getAllExtractors(new RequestParams(query, headers));
+  return extractors;
+};
+
+const createExtractor = (newExtractorInfo: IXExtractorInfo) => async (dispatch: any) => {
+  const extractor = await createExtractorAPICall(new RequestParams(newExtractorInfo));
+  dispatch(actions.push('ixExtractors', extractor));
+};
+
+const deleteExtractors =
+  (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => async (dispatch: any) => {
+    await deleteExtractorsAPICall(new RequestParams(extractorIds));
+    const idSet = new Set(extractorIds);
+    const newExtractors = currentExtractors.filter(
+      (extractor: IXExtractorInfo) => extractor._id && !idSet.has(extractor._id)
+    );
+    dispatch(actions.set('ixExtractors', newExtractors));
   };
 
 const fetchEntity = async (entityId: string, language: string) => {
@@ -55,4 +77,13 @@ const acceptSuggestion =
     }
   };
 
-export { acceptSuggestion, fetchEntity, fetchFile, scrollToPage, saveConfigurations };
+export {
+  acceptSuggestion,
+  loadExtractors,
+  loadExtractor,
+  createExtractor,
+  deleteExtractors,
+  fetchEntity,
+  fetchFile,
+  scrollToPage,
+};
