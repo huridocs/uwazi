@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
@@ -19,10 +21,10 @@ const addCountsOf = (groups: Groups, _states: SuggestionState[]) => {
   return groups.buckets.filter(g => states.has(g._id)).reduce(addCount, 0);
 };
 
-const getGroups = async (propertyName: string): Promise<Groups> =>
+const getGroups = async (extractorId: ObjectIdSchema): Promise<Groups> =>
   IXSuggestionsModel.db
     .aggregate([
-      { $match: { propertyName } },
+      { $match: { extractorId } },
       {
         $facet: {
           buckets: [
@@ -57,8 +59,9 @@ const calcAccuracy = (groups: Groups) => {
   return total ? correct / total : 0;
 };
 
-const getStats = async (propertyName: string): Promise<SuggestionsStats> => {
-  const groups = await getGroups(propertyName);
+const getStats = async (_extractorId: string): Promise<SuggestionsStats> => {
+  const extractorId = new ObjectId(_extractorId);
+  const groups = await getGroups(extractorId);
 
   const labeled = addCountsOf(groups, [
     SuggestionState.labelMatch,

@@ -32,16 +32,20 @@ type MultiSelectProps<ValueType> = {
   sortbyLabel: boolean;
   forceHoist: boolean;
   placeholder: string;
+  className?: string;
   onChange: (_v: any) => void;
   onFilter: (_searchTerm: string) => void;
   totalPossibleOptions: number;
   allowSelectGroup: boolean;
+  // TEST!!!
+  topLevelSelectable: boolean;
 };
 
 const defaultProps = {
   optionsLabel: 'label',
   optionsValue: 'value',
   prefix: '',
+  className: '',
   options: [] as Option[],
   filter: '',
   optionsToShow: 5,
@@ -56,6 +60,7 @@ const defaultProps = {
   onFilter: async (_searchTerm: string) => {},
   totalPossibleOptions: 0,
   allowSelectGroup: false,
+  topLevelSelectable: true,
 };
 
 interface MultiSelectState {
@@ -337,17 +342,25 @@ abstract class MultiSelectBase<ValueType> extends Component<
     return toggled || this.checked(parent) !== SelectStates.OFF;
   }
 
-  label(option: Option) {
+  label(option: Option, isSelect = true) {
     const { optionsValue, optionsLabel, prefix } = this.props;
+    const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
     return (
       <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
-        <span className="multiselectItem-icon">
+        <span
+          className={`multiselectItem-icon${
+            !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
+          }`}
+          onClick={clickEvent}
+        >
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
           <Icon icon="minus" className="checkbox-partial" />
           <Icon icon={['fas', 'square']} className="checkbox-group" />
+          <Icon icon="chevron-right" className="chevron-right" />
+          <Icon icon="chevron-down" className="chevron-down" />
         </span>
-        <span className="multiselectItem-name">
+        <span className="multiselectItem-name" onClick={clickEvent}>
           <CustomIcon className="item-icon" data={option.icon} />
           {this.state.serverSideRender && option.url ? (
             <Link to={option.url}>{option[optionsLabel]}</Link>
@@ -358,7 +371,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
         &nbsp;
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
-          {option.options && (
+          {isSelect && option.options && (
             <span
               className="multiselectItem-action"
               onClick={this.toggleOptions.bind(this, option)}
@@ -381,16 +394,22 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const state = this.checked(group);
     return (
       <li key={index} className="multiselect-group" aria-label="group">
-        <div className="multiselectItem">
-          <input
-            type="checkbox"
-            className="group-checkbox multiselectItem-input"
-            id={prefix + group.id}
-            onChange={this.changeGroup.bind(this, group)}
-            checked={state !== SelectStates.OFF}
-            data-state={state}
-          />
-          {this.label({ ...group, results: group.results })}
+        <div
+          className={`multiselectItem${
+            !this.props.topLevelSelectable ? ' no-top-level-select' : ''
+          }`}
+        >
+          {this.props.topLevelSelectable && (
+            <input
+              type="checkbox"
+              className="group-checkbox multiselectItem-input"
+              id={prefix + group.id}
+              onChange={this.changeGroup.bind(this, group)}
+              checked={state !== SelectStates.OFF}
+              data-state={state}
+            />
+          )}
+          {this.label({ ...group, results: group.results }, this.props.topLevelSelectable)}
         </div>
         <ShowIf if={this.showSubOptions(group)}>
           <ul className="multiselectChild is-active">
@@ -483,7 +502,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
   }
 
   render() {
-    const { optionsLabel } = this.props;
+    const { optionsLabel, className } = this.props;
 
     let totalOptions = this.props.options.filter(option => {
       let notDefined;
@@ -550,7 +569,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     }) as Option[];
 
     return (
-      <ul className="multiselect is-active">
+      <ul className={`multiselect is-active ${className}`}>
         {this.renderSearch()}
         {!renderingOptions.length && (
           <span className="no-options-message">{t('System', 'No options found')}</span>

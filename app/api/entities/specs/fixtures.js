@@ -1,7 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+
+const fixtureFactory = getFixturesFactory();
 
 const batmanFinishesId = db.id();
 const batmanStillNotDoneId = db.id();
@@ -706,6 +709,7 @@ export default {
       _id: db.id(),
       entityId: 'shared',
       propertyName: 'title',
+      extractorId: fixtureFactory.id('extractor'),
       suggestedValue: 'different title',
       segment: 'different title',
       language: 'en',
@@ -716,6 +720,7 @@ export default {
       _id: db.id(),
       entityId: 'other',
       propertyName: 'title',
+      extractorId: fixtureFactory.id('extractor'),
       suggestedValue: 'other title',
       segment: 'other title',
       language: 'en',

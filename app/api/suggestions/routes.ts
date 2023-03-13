@@ -1,4 +1,5 @@
-import { Application, Request, Response } from 'express';
+/* eslint-disable max-lines */
+import { Application, NextFunction, Request, Response } from 'express';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
@@ -10,9 +11,8 @@ import {
   SuggestionsQueryFilterSchema,
 } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { IXSuggestionsFilter, IXSuggestionsStatsQuery } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
-import { saveConfigurations } from './configurationManager';
 
 const IX = new InformationExtraction();
 
@@ -32,22 +32,23 @@ async function processTrainFunction(
   res.json(status);
 }
 
-function propertyRequestValidation(root = 'body') {
+function extractorIdRequestValidation(root = 'body') {
   return validateAndCoerceRequest({
     type: 'object',
     properties: {
       [root]: {
         type: 'object',
         additionalProperties: false,
-        required: ['property'],
+        required: ['extractorId'],
         properties: {
-          property: { type: 'string' },
+          extractorId: { type: 'string' },
         },
       },
     },
   });
 }
 
+// eslint-disable-next-line max-statements
 export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
@@ -77,8 +78,8 @@ export const suggestionsRoutes = (app: Application) => {
       req: Request & {
         query: { filter: IXSuggestionsFilter; page: { number: number; size: number } };
       },
-      res,
-      _next
+      res: Response,
+      _next: NextFunction
     ) => {
       const suggestionsList = await Suggestions.get(
         { language: req.language, ...req.query.filter },
@@ -98,8 +99,12 @@ export const suggestionsRoutes = (app: Application) => {
         query: IXSuggestionsStatsQuerySchema,
       },
     }),
-    async (req: Request<{}, {}, {}, { propertyName: string }>, res, _next) => {
-      const stats = await Suggestions.getStats(req.query.propertyName);
+    async (
+      req: Request & { query: IXSuggestionsStatsQuery },
+      res: Response,
+      _next: NextFunction
+    ) => {
+      const stats = await Suggestions.getStats(req.query.extractorId);
       res.json(stats);
     }
   );
@@ -108,7 +113,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/stop',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.stopModel, req, res);
     }
@@ -118,37 +123,9 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/train',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.trainModel, req, res);
-    }
-  );
-
-  app.post(
-    '/api/suggestions/configurations',
-    needsAuthorization(['admin']),
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              template: { type: 'string' },
-              properties: {
-                type: 'array',
-                items: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    }),
-    (req, res, next) => {
-      saveConfigurations(req.body)
-        .then(response => res.json(response))
-        .catch(next);
     }
   );
 
@@ -156,7 +133,7 @@ export const suggestionsRoutes = (app: Application) => {
     '/api/suggestions/status',
     serviceMiddleware,
     needsAuthorization(['admin']),
-    propertyRequestValidation('body'),
+    extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
     }
