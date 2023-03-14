@@ -64,17 +64,18 @@ const deleteRelatedNewRelationships = async (sharedId: string) => {
   }
 };
 
-const denormalizeAfterEntityCreation = async (
-  { sharedId, language }: { sharedId: string; language: string },
-  index: boolean = true
-) => {
+const denormalizeAfterEntityCreation = async ({
+  sharedId,
+  language,
+}: {
+  sharedId: string;
+  language: string;
+}) => {
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const denormalizationService = DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
-    if (index) {
-      await transactionManager.executeOnCommitHandlers(undefined);
-    }
+    await transactionManager.executeOnCommitHandlers(undefined);
   }
 };
 

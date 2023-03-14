@@ -86,7 +86,7 @@ const prepareIndex = async () => {
   process.stdout.write(' - Custom templates mapping\r\n');
   const templates = await templatesModel.get();
   const dictionaries = await dictionariesModel.get({ enable_classification: true });
-  const templatesMapping = elasticMapFactory.mapping(templates, !!dictionaries.length);
+  const templatesMapping = await elasticMapFactory.mapping(templates, !!dictionaries.length);
   await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
   process.stdout.write(' [done]\n');
 };
@@ -108,7 +108,10 @@ const processErrors = async err => {
   if (err instanceof IndexError) {
     process.stdout.write('\r\nWarning! Errors found during reindex.\r\n');
   } else {
-    const errorMsg = err instanceof Error ? err.message + '\r\n' + JSON.stringify(err, null, ' ') : JSON.stringify(err, null, ' ');
+    const errorMsg =
+      err instanceof Error
+        ? err.message + '\r\n' + JSON.stringify(err, null, ' ')
+        : JSON.stringify(err, null, ' ');
     errorLog.error(`Uncaught Reindex error.\r\n${errorMsg}\r\nWill exit with (1)\r\n`);
     await endScriptProcedures();
     throw err;

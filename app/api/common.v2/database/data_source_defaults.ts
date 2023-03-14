@@ -1,5 +1,6 @@
+import { IdGenerator } from '../contracts/IdGenerator';
 import { getClient } from './getConnectionForCurrentTenant';
-import { MongoIdGenerator } from './MongoIdGenerator';
+import { MongoIdHandler } from './MongoIdGenerator';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
 const DefaultTransactionManager = () => {
@@ -7,6 +8,6 @@ const DefaultTransactionManager = () => {
   return new MongoTransactionManager(client);
 };
 
-const DefaultIdGenerator = MongoIdGenerator;
+const DefaultIdGenerator: IdGenerator = MongoIdHandler;
 
 export { DefaultIdGenerator, DefaultTransactionManager };

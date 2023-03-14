@@ -94,11 +94,27 @@ const fixtures = {
         hu: {
           metadata: {
             relationshipProp1: [{ value: 'entity4', label: 'entity4-hu' }],
+            relationshipProp1_with_inherit: [
+              {
+                value: 'entity4',
+                label: 'entity4-hu',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'inherited_value_hu' }],
+              },
+            ],
           },
         },
         es: {
           metadata: {
             relationshipProp1: [{ value: 'entity4', label: 'entity4-es' }],
+            relationshipProp1_with_inherit: [
+              {
+                value: 'entity4',
+                label: 'entity4-es',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'inherited_value_es' }],
+              },
+            ],
           },
         },
       }
@@ -106,7 +122,25 @@ const fixtures = {
     ...entityInLanguages(['hu', 'es'], 'entity2'),
     ...entityInLanguages(['hu', 'es'], 'hub1', 'formerHubsTemplate'),
     ...entityInLanguages(['hu', 'es'], 'entity3', 'template2'),
-    ...entityInLanguages(['hu', 'es'], 'entity4', 'template4'),
+    ...factory.entityInMultipleLanguages(
+      ['hu', 'es'],
+      'entity4',
+      'template4',
+      {},
+      { obsoleteMetadata: [] },
+      {
+        hu: {
+          metadata: {
+            to_inherit: [{ value: 'inherited_value_hu' }],
+          },
+        },
+        es: {
+          metadata: {
+            to_inherit: [{ value: 'inherited_value_es' }],
+          },
+        },
+      }
+    ),
     ...entityInLanguages(['hu', 'es'], 'hub2', 'formerHubsTemplate'),
     ...entityInLanguages(['hu', 'es'], 'entity5', 'template2'),
     ...entityInLanguages(['hu', 'es'], 'entity6', 'template3'),
@@ -123,6 +157,34 @@ const fixtures = {
         name: 'relationshipProp1',
         type: 'newRelationship',
         label: 'relationshipProp1',
+        query: [
+          {
+            types: [factory.id('nullType')],
+            direction: 'out',
+            match: [
+              {
+                templates: [factory.id('formerHubsTemplate')],
+                traverse: [
+                  {
+                    types: [factory.id('relType1')],
+                    direction: 'in',
+                    match: [
+                      {
+                        templates: [factory.id('template4')],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: 'relationshipProp1_with_inherit',
+        type: 'newRelationship',
+        label: 'relationshipProp1_with_inherit',
+        denormalizedProperty: 'to_inherit',
         query: [
           {
             types: [factory.id('nullType')],
@@ -177,6 +239,11 @@ const fixtures = {
       },
     ]),
     factory.template('template4', [
+      {
+        name: 'to_inherit',
+        type: 'text',
+        label: 'to_inherit',
+      },
       {
         name: 'relationshipProp3',
         type: 'newRelationship',
@@ -243,15 +310,17 @@ beforeEach(async () => {
   db = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
+  const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
   service = new DenormalizationService(
     relationshipsDataSource,
     new MongoEntitiesDataSource(
       db,
+      templatesDataSource,
       relationshipsDataSource,
       new MongoSettingsDataSource(db, transactionManager),
       transactionManager
     ),
-    new MongoTemplatesDataSource(db, transactionManager),
+    templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {}
@@ -277,7 +346,10 @@ describe('denormalizeAfterCreatingRelationships()', () => {
           expect.arrayContaining([
             expect.objectContaining({
               sharedId: 'entity1',
-              obsoleteMetadata: ['relationshipProp1'],
+              obsoleteMetadata: expect.arrayContaining([
+                'relationshipProp1',
+                'relationshipProp1_with_inherit',
+              ]),
             }),
             expect.objectContaining({
               sharedId: 'entity4',
@@ -313,7 +385,10 @@ describe('denormalizeBeforeDeletingFiles()', () => {
           expect.arrayContaining([
             expect.objectContaining({
               sharedId: 'entity1',
-              obsoleteMetadata: ['relationshipProp1'],
+              obsoleteMetadata: expect.arrayContaining([
+                'relationshipProp1',
+                'relationshipProp1_with_inherit',
+              ]),
             }),
             expect.objectContaining({
               sharedId: 'entity4',
@@ -337,12 +412,15 @@ describe('denormalizeBeforeDeletingFiles()', () => {
 describe('denormalizeAfterUpdatingEntities()', () => {
   describe('when executing on an existing entity', () => {
     it('should update the relationship fields denormalizations in the entity with the new data in the provided language', async () => {
-      await testingDB.mongodb
-        ?.collection('entities')
-        .updateOne(
-          { sharedId: 'entity4', language: 'es' },
-          { $set: { title: 'entity4-es-edited' } }
-        );
+      await testingDB.mongodb?.collection('entities').updateOne(
+        { sharedId: 'entity4', language: 'es' },
+        {
+          $set: {
+            title: 'entity4-es-edited',
+            'metadata.to_inherit': [{ value: 'inherited_value_es_edited' }],
+          },
+        }
+      );
 
       await service.denormalizeAfterUpdatingEntities(['entity4'], 'es');
 
@@ -356,6 +434,14 @@ describe('denormalizeAfterUpdatingEntities()', () => {
           language: 'hu',
           metadata: {
             relationshipProp1: [{ value: 'entity4', label: 'entity4-hu' }],
+            relationshipProp1_with_inherit: [
+              {
+                value: 'entity4',
+                label: 'entity4-hu',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'inherited_value_hu' }],
+              },
+            ],
           },
           obsoleteMetadata: [],
         },
@@ -364,6 +450,14 @@ describe('denormalizeAfterUpdatingEntities()', () => {
           language: 'es',
           metadata: {
             relationshipProp1: [{ value: 'entity4', label: 'entity4-es-edited' }],
+            relationshipProp1_with_inherit: [
+              {
+                value: 'entity4',
+                label: 'entity4-es-edited',
+                inheritedType: 'text',
+                inheritedValue: [{ value: 'inherited_value_es_edited' }],
+              },
+            ],
           },
           obsoleteMetadata: [],
         },

@@ -84,6 +84,18 @@ class MetadataProperty extends Component {
         defaultInput = <FormConfigDate index={index} type={type} />;
         break;
 
+      // relationships v2:
+      case 'newRelationship':
+        defaultInput = (
+          <FormConfigInput
+            type={type}
+            index={index}
+            query={this.props.query}
+            denormalizedProperty={this.props.denormalizedProperty}
+          />
+        );
+        break;
+
       default:
         defaultInput = <FormConfigInput type={type} index={index} />;
         break;
@@ -233,6 +245,9 @@ MetadataProperty.propTypes = {
   uiState: PropTypes.object,
   editProperty: PropTypes.func,
   syncedTemplate: PropTypes.bool,
+  // relationships v2:
+  query: PropTypes.array,
+  denormalizedProperty: PropTypes.string,
 };
 
 const target = {

@@ -1,19 +1,14 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { Relationship } from '../model/Relationship';
-import { RelationshipMappers } from './RelationshipMappers';
+import { TraversalResult, RelationshipMappers } from './RelationshipMappers';
 import { RelationshipDBOType } from './schemas/relationshipTypes';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { compileQuery } from './MongoGraphQueryCompiler';
 import { MatchQueryNode } from '../model/MatchQueryNode';
-import { JoinedRelationshipDBOType } from './schemas/relationshipAggregationTypes';
 
-const idsToDb = (ids: string[]) => ids.map(id => MongoIdGenerator.mapToDb(id));
-
-type TraversalResult = {
-  traversal?: TraversalResult;
-};
+const idsToDb = (ids: string[]) => ids.map(id => MongoIdHandler.mapToDb(id));
 
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
@@ -22,7 +17,7 @@ export class MongoRelationshipsDataSource
   protected collectionName = 'relationships';
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
-    const items = relationships.map(r => RelationshipMappers.toDBO(r));
+    const items = relationships.map(RelationshipMappers.toDBO);
     await this.getCollection().insertMany(items, {
       session: this.getSession(),
     });
@@ -30,21 +25,17 @@ export class MongoRelationshipsDataSource
     return relationships;
   }
 
-  private async count(ids: string[]) {
-    return this.getCollection().countDocuments(
+  async exists(ids: string[]) {
+    const existingCount = await this.getCollection().countDocuments(
       { _id: { $in: idsToDb(ids) } },
       { session: this.getSession() }
     );
-  }
-
-  async exists(ids: string[]) {
-    const existingCount = await this.count(ids);
     return existingCount === ids.length;
   }
 
   async countByType(type: string) {
     const total = await this.getCollection().countDocuments(
-      { type: MongoIdGenerator.mapToDb(type) },
+      { type: MongoIdHandler.mapToDb(type) },
       { session: this.getSession() }
     );
     return total;
@@ -62,34 +53,6 @@ export class MongoRelationshipsDataSource
   async delete(_ids: string[]) {
     const ids = idsToDb(_ids);
     await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.getSession() });
-  }
-
-  getByEntity(sharedId: string) {
-    const dataCursor = this.getCollection().aggregate<JoinedRelationshipDBOType>([
-      {
-        $match: {
-          $or: [{ from: sharedId }, { to: sharedId }],
-        },
-      },
-      {
-        $lookup: {
-          from: 'entities',
-          localField: 'from',
-          foreignField: 'sharedId',
-          as: 'from',
-        },
-      },
-      {
-        $lookup: {
-          from: 'entities',
-          localField: 'to',
-          foreignField: 'sharedId',
-          as: 'to',
-        },
-      },
-    ]);
-
-    return new MongoResultSet(dataCursor, RelationshipMappers.toAggregatedResult);
   }
 
   getByFiles(fileIds: string[]) {

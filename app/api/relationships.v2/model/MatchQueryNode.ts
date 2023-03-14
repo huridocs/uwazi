@@ -34,14 +34,6 @@ export class MatchQueryNode extends QueryNode {
     return this.traversals;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getProjection() {
-    return {
-      sharedId: 1,
-      title: 1,
-    } as const;
-  }
-
   getFilters() {
     return { ...this.filters };
   }
