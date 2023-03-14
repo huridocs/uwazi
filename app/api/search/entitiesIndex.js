@@ -4,11 +4,34 @@ import entities from 'api/entities';
 import { errorLog } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
-import { elastic } from './elastic';
-import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import elasticMapping from '../../../database/elastic_mapping/elastic_mapping';
+import elasticMapFactory from '../../../database/elastic_mapping/elasticMapFactory';
+import { elastic } from './elastic';
 
 export class IndexError extends Error {}
+
+const preprocessEntitiesToIndex = async entitiesToIndex => {
+  const db = getConnection();
+  const client = getClient();
+  const transactionManager = new MongoTransactionManager(client);
+  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+
+  if (!(await settingsDataSource.readNewRelationshipsAllowed())) {
+    return entitiesToIndex;
+  }
+
+  const templateDS = new MongoTemplatesDataSource(
+    getConnection(),
+    new MongoTransactionManager(getClient())
+  );
+  const transformer = new ElasticEntityMapper(templateDS);
+  return Promise.all(entitiesToIndex.map(e => transformer.toElastic(e)));
+};
 
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
@@ -114,7 +137,8 @@ const indexBatch = async (totalRows, options) => {
     .for(steps)
     .withConcurrency(10)
     .process(async stepBatch => {
-      const entitiesToIndex = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
+      const entitiesToPreprocess = await getEntitiesToIndex(queryToIndex, stepBatch, limit, select);
+      const entitiesToIndex = await preprocessEntitiesToIndex(entitiesToPreprocess);
       if (entitiesToIndex.length > 0) {
         await bulkIndexAndCallback({
           searchInstance,
@@ -153,7 +177,7 @@ const indexEntities = async ({
 };
 
 const updateMapping = async tmpls => {
-  const mapping = elasticMapFactory.mapping(tmpls);
+  const mapping = await elasticMapFactory.mapping(tmpls);
   await elastic.indices.putMapping({ body: mapping });
 };
 

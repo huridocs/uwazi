@@ -31,6 +31,23 @@ export class FormConfigInput extends Component {
           </div>
         )}
         <PropertyConfigOptions index={index} type={type} canBeFilter={canBeFilter} />
+        {type === 'newRelationship' && (
+          <>
+            <br />
+            <div no-translate>
+              <b>This is a new relationship!</b>
+              <br />
+              {this.props.denormalizedProperty && (
+                <>
+                  Denormalized property: {this.props.denormalizedProperty}
+                  <br />
+                </>
+              )}
+              The query is: <br />
+              <pre>{JSON.stringify(this.props.query, null, 2)}</pre>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -46,6 +63,9 @@ FormConfigInput.propTypes = {
   index: PropTypes.number.isRequired,
   type: PropTypes.string.isRequired,
   labelHasError: PropTypes.bool,
+  // relationship v2:
+  query: PropTypes.array,
+  denormalizedProperty: PropTypes.string,
 };
 
 export function mapStateToProps(state, props) {

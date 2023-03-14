@@ -220,6 +220,9 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
                       localID={property.localID}
                       index={index}
                       syncedTemplate={syncedTemplate}
+                      // relationships v2
+                      query={property.query}
+                      denormalizedProperty={property.denormalizedProperty}
                     />
                   ))}
                   {!syncedTemplate && (
