@@ -39,11 +39,19 @@ const TranslationsList = () => {
   } = { systemContexts: [], contentContexts: [] };
 
   translations[0]?.contexts?.forEach(context => {
-    delete context.values;
-    if (context.type === 'Uwazi UI') {
-      return contexts.systemContexts.push({ ...context });
+    const contextTranslations = { ...context };
+
+    if (!contextTranslations.values || Object.keys(contextTranslations.values).length === 0) {
+      return undefined;
     }
-    return contexts.contentContexts.push({ ...context });
+
+    delete contextTranslations.values;
+
+    if (contextTranslations.type === 'Uwazi UI') {
+      return contexts.systemContexts.push({ ...contextTranslations });
+    }
+
+    return contexts.contentContexts.push({ ...contextTranslations });
   });
 
   return (
