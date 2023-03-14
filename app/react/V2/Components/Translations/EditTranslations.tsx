@@ -33,7 +33,7 @@ const composeTableValues = (translations: ClientTranslationSchema[], term: strin
       languageKey: language.locale,
       value: {
         fieldValue: value,
-        fieldKey: `formData[${index}].contexts[0].values.${term}`,
+        fieldKey: `formData.${index}.contexts.0.values.${term}`,
         fieldId: generateID(6, 6),
       },
     };
@@ -50,14 +50,14 @@ const EditTranslations = () => {
     resetField,
     formState: { errors },
   } = useForm({
-    defaultValues: { formData: [...translations] },
+    defaultValues: { formData: translations },
     mode: 'onSubmit',
   });
 
   const inputField = ({ cell }) => {
     const reset = () => resetField(cell.value.fieldKey, { defaultValue: '' });
     return (
-      <div>
+      <div key={cell.value.fieldKey}>
         <label htmlFor={cell.value.fieldId} className="hidden">
           {cell.value.fieldKey}
         </label>
@@ -109,7 +109,7 @@ const EditTranslations = () => {
           {contextTerms.map(contextTerm => {
             const values = composeTableValues(translations, contextTerm);
             return (
-              <div className="mt-4">
+              <div className="mt-4" key={contextTerm}>
                 <Table columns={columns} data={values} title={contextTerm} />
               </div>
             );
