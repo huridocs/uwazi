@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Column,
   HeaderGroup,
-  Row,
   useFilters,
   useRowSelect,
   useRowState,
@@ -19,7 +18,7 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>> & { isSortable?: boolean };
+  Partial<UseSortByColumnProps<T>> & { key: string | number; isSortable?: boolean };
 
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
@@ -66,7 +65,10 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
       <FlowbiteTable.Head>
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
           headerGroup.headers.map((column: any) => (
-            <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
+            <FlowbiteTable.HeadCell
+              {...column.getHeaderProps(column.getSortByToggleProps())}
+              key={column.key}
+            >
               <div className={`text-gray-500 ${column.isSortable ? 'flex flex-row' : ''}`}>
                 {column.render('Header')}
                 {column.Header && column.isSortable && getIcon(column)}
@@ -76,12 +78,14 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
         )}
       </FlowbiteTable.Head>
       <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900">
-        {rows.map((row: Row<any>) => {
+        {rows.map(row => {
           prepareRow(row);
           return (
             <FlowbiteTable.Row {...row.getRowProps()}>
               {row.cells.map(cell => (
-                <FlowbiteTable.Cell>{cell.render('Cell')}</FlowbiteTable.Cell>
+                <FlowbiteTable.Cell key={cell.column.key.toString() + cell.row.id}>
+                  {cell.render('Cell')}
+                </FlowbiteTable.Cell>
               ))}
             </FlowbiteTable.Row>
           );

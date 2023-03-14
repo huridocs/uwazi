@@ -36,10 +36,10 @@ Basic.args = {
   fixedColumns: true,
   title: 'Table name',
   columns: [
-    { id: 'select', Header: '', Cell: checkboxCell },
-    { Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Date added', accessor: 'created' },
+    { key: '1', id: 'select', Header: '', Cell: checkboxCell },
+    { key: '2', Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
+    { key: '3', Header: 'Description', accessor: 'description' },
+    { key: '4', Header: 'Date added', accessor: 'created' },
   ],
   data: [
     { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -60,11 +60,11 @@ Basic.args = {
 WithActions.args = {
   ...Basic.args,
   columns: [
-    { id: 'select', Header: '', Cell: checkboxCell },
-    { Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
-    { Header: 'Description', accessor: 'description' },
-    { Header: 'Date added', accessor: 'created' },
-    { id: 'action', Header: 'Actions', Cell: actionsCell },
+    { key: '1', id: 'select', Header: '', Cell: checkboxCell },
+    { key: '2', Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
+    { key: '3', Header: 'Description', accessor: 'description' },
+    { key: '4', Header: 'Date added', accessor: 'created' },
+    { key: '5', id: 'action', Header: 'Actions', Cell: actionsCell },
   ],
 };
 
