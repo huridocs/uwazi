@@ -15,14 +15,28 @@ const directionToField = {
 function projectAndArrangeTraversals(projection: Record<string, 1>, childrenCount: number) {
   const traversalFields = [];
   for (let index = 0; index < childrenCount; index += 1) {
-    traversalFields.push(`$traversal-${index}`);
+    traversalFields.push(`traversal-${index}`);
   }
 
-  return [
-    {
-      $project: { ...projection, traversal: { $concatArrays: traversalFields } },
-    },
-  ];
+  const traversal = { $concatArrays: traversalFields.map(field => `$${field}`) };
+
+  return childrenCount
+    ? [
+        {
+          $set: { traversal },
+        },
+        {
+          $unset: traversalFields.concat(['visited']),
+        },
+        {
+          $project: { ...projection, traversal: 1 },
+        },
+      ]
+    : [
+        {
+          $unset: traversalFields.concat(['visited']),
+        },
+      ];
 }
 
 function unwind(childrenCount: number) {
@@ -109,7 +123,7 @@ const compilers = {
                   reduced.concat(compilers.traversal(nested, nestedIndex, language)),
                 []
               ),
-            ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),
+            ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
             ...unwind(query.getTraversals().length),
           ],
         },
@@ -145,7 +159,7 @@ const compilers = {
             reduced.concat(compilers.traversal(nested, nestedIndex, language)),
           []
         ),
-      ...projectAndArrangeTraversals(query.getProjection(), query.getTraversals().length),
+      ...projectAndArrangeTraversals({ sharedId: 1, title: 1 }, query.getTraversals().length),
       ...unwind(query.getTraversals().length),
     ];
   },

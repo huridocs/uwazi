@@ -1,5 +1,5 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { ObjectId } from 'mongodb';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { RelationshipTypesDataSource } from '../contracts/RelationshipTypesDataSource';
 
 export class MongoRelationshipTypesDataSource
@@ -10,7 +10,7 @@ export class MongoRelationshipTypesDataSource
   async typesExist(ids: string[]) {
     const uniqueIds = Array.from(new Set(ids));
     const countInExistence = await this.getCollection().countDocuments(
-      { _id: { $in: uniqueIds.map(id => new ObjectId(id)) } },
+      { _id: { $in: uniqueIds.map(MongoIdHandler.mapToDb) } },
       { session: this.getSession() }
     );
     return countInExistence === uniqueIds.length;

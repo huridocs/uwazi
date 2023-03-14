@@ -10,8 +10,19 @@ const fixtures = {
   entities: [
     factory.entity('entity1', 'template1', {
       relProp: [
-        { value: 'entity2', label: 'entity2' },
-        { value: 'entity3', label: 'entity3' },
+        {
+          value: 'entity2',
+          label: 'entity2',
+          inheritedValue: [{ value: 'entity2' }],
+          inheritedType: 'text',
+        },
+        {
+          value: 'entity3',
+
+          label: 'entity3',
+          inheritedValue: [{ value: 'entity3' }],
+          inheritedType: 'text',
+        },
       ],
     }),
     factory.entity('entity2', 'template1', {

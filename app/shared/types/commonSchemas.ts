@@ -194,12 +194,6 @@ export const propertySchema = {
     generatedId: { type: 'boolean' },
     content: { type: 'string' },
     relationType: { type: 'string' },
-    query: {
-      type: 'array',
-      items: {
-        type: 'object',
-      },
-    }, // TODO: write a schema for this
     inherit: {
       type: 'object',
       additionalProperties: false,
@@ -222,5 +216,13 @@ export const propertySchema = {
         type: 'string',
       },
     },
+    // for relationships v2
+    query: {
+      type: 'array',
+      items: {
+        type: 'object',
+      },
+    }, // TODO: write a schema for this
+    denormalizedProperty: { type: 'string' },
   },
 };
