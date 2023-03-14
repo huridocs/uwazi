@@ -90,9 +90,9 @@ const EditTranslations = () => {
   };
 
   const columns = [
-    { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
-    { key: '2', Header: '', accessor: 'languageKey', Cell: renderPill, disableSortBy: true },
-    { key: '3', Header: 'Current Value', accessor: 'value', Cell: inputField, disableSortBy: true },
+    { key: '1', Header: 'Language', accessor: 'language' },
+    { key: '2', Header: '', accessor: 'languageKey', Cell: renderPill },
+    { key: '3', Header: 'Current Value', accessor: 'value', Cell: inputField },
   ];
 
   const submitFunction = data => {
