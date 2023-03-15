@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import React from 'react';
+import { IncomingHttpHeaders } from 'http';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
@@ -52,7 +53,7 @@ import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
-import UnlockAccount from './Users/UnlockAccount';
+import ConnectedUnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
 
@@ -75,12 +76,12 @@ const getRoutesLayout = (
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
+    <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={adminsOnlyRoute(<Configure2fa />)} />
+      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
       <Route path="users" element={adminsOnlyRoute(<UserManagement />)} />
