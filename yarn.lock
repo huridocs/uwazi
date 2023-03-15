@@ -8560,6 +8560,13 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha512-NJGVKPS81XejHcLhaLJS7plab0fK3slPh11mESeeDq2W4ZI5kUKK/LRRdVDvjJseojbPB7ZwjnyOybg3Igea/A==
 
+cypress-odiff@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/cypress-odiff/-/cypress-odiff-1.1.1.tgz#5700095a8af20942a179e50dcc853690bb162ce4"
+  integrity sha512-ezoKPIiAEbWyNJuDODyiZT2IYu6EV/Yl4Ui06ao/Ozs8bPGlaaEU2yyKM1CusicgxxM44OUKQ3GIZnODDy8PAw==
+  dependencies:
+    odiff-bin "2.5.0"
+
 cypress@^12.6.0:
   version "12.6.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.6.0.tgz#d71a82639756173c0682b3d467eb9f0523460e91"
@@ -16072,6 +16079,11 @@ obuf@^1.0.0, obuf@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
+
+odiff-bin@2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/odiff-bin/-/odiff-bin-2.5.0.tgz#b8b551e5a3b48d2b7fe1e8042650fe82c50d7f79"
+  integrity sha512-wquvVqZltr0w3IFWTjiWloNjlIDaMq0aWoWLStV9GHWRjio1Pznh1UkWkVWp8UukT/TiHoFKrRC47viZVOnmsA==
 
 on-finished@2.4.1, on-finished@^2.3.0:
   version "2.4.1"
