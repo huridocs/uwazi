@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import React from 'react';
-import { IncomingHttpHeaders } from 'http';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
