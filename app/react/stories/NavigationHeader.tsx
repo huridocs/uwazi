@@ -22,7 +22,7 @@ const NavigationHeader = ({ children, backUrl }: HeaderProps) => (
           >
             <path d="M15.75 19.5L8.25 12l7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="hidden">Back</span>
+          <span className="sr-only">Go to previous page</span>
         </div>
       </Link>
     )}

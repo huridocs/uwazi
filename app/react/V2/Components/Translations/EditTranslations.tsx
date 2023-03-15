@@ -69,7 +69,7 @@ const EditTranslations = () => {
     const reset = () => resetField(cell.value, { defaultValue: '' });
     return (
       <div key={cell.value}>
-        <label htmlFor={cell.value} className="hidden">
+        <label htmlFor={cell.value} className="sr-only">
           {cell.fieldKey}
         </label>
         <div className="flex">
