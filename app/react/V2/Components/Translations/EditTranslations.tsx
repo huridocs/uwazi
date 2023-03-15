@@ -26,30 +26,32 @@ const editTranslationsLoader =
 const renderPill = ({ cell }) => <Pill color="gray">{cell.value.toUpperCase()}</Pill>;
 
 const composeTableValues = (formData: formDataType, termIndex: number) =>
-  formData.map((language, index) => {
+  formData.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
     return {
       language: languaLabel,
       languageKey: language.locale,
-      fieldKey: `formData.${index}.values.${termIndex}.value`,
+      fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
     };
   });
 
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {});
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
   const contextLabel = translations[0].contexts[0].label;
 
   const formData = translations.map(language => {
-    const values = Object.entries(language.contexts[0].values || {}).reduce(
-      (result, [key, value], index) => ({
-        ...result,
-        [index]: { key, value },
-      }),
-      {}
-    );
+    const values = Object.entries(language.contexts[0].values || {})
+      .sort()
+      .reduce(
+        (result, [key, value], index) => ({
+          ...result,
+          [index]: { key, value },
+        }),
+        {}
+      );
     return { _id: language._id?.toString(), locale: language.locale, values };
   });
 
