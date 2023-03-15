@@ -10,7 +10,7 @@ const Paginator = ({ page, onNextClick, onPreviousClick }: PaginatorProps) => (
   <div className="inline-flex items-center">
     <button
       type="button"
-      onClick={() => onPreviousClick}
+      onClick={onPreviousClick}
       className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700"
     >
       <span className="sr-only">Previous page</span>
@@ -30,7 +30,7 @@ const Paginator = ({ page, onNextClick, onPreviousClick }: PaginatorProps) => (
     </p>
     <button
       type="button"
-      onClick={() => onNextClick}
+      onClick={onNextClick}
       className="block px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700"
     >
       <span className="sr-only">Next Page</span>
