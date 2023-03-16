@@ -110,7 +110,7 @@ const Notification = ({ type = 'sucess', text, heading, details }: NotificationP
   }
 
   return (
-    <div className={`${containerClass} p-4 mb-4 border rounded-lg max-w-xl`} role="alert">
+    <div className={`${containerClass} p-4 mb-4 border rounded-lg`} role="alert">
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}

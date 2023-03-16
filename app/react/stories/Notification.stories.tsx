@@ -9,7 +9,14 @@ const NotificationStory = {
 
 const Template: ComponentStory<typeof Notification> = args => (
   <div className="tw-content">
-    <Notification type={args.type} text={args.text} heading={args.heading} details={args.details} />
+    <div className="max-w-xl">
+      <Notification
+        type={args.type}
+        text={args.text}
+        heading={args.heading}
+        details={args.details}
+      />
+    </div>
   </div>
 );
 
