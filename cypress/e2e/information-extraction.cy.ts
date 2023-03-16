@@ -53,9 +53,9 @@ describe('Information Extraction', () => {
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
     cy.contains('span.multiselectItem-name', 'Ordenes del presidente').click();
-    cy.get('.multiselectChild.is-active label[for="58ada34c299e82674854505b-title"]').click();
+    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('span.multiselectItem-name', 'Causa').click();
-    cy.get('.multiselectChild.is-active label[for="58ada34c299e826748545061-title"]').click();
+    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('.modal-footer .extractor-footer span', 'Add').click();
     cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
     cy.get('.table').compareScreenshot();
@@ -76,12 +76,12 @@ describe('Information Extraction', () => {
     cy.get('.extractor-checkbox > input').click();
     cy.contains('span', 'Edit Extractor').click();
     cy.get('input.extractor-name-input').type(' edited');
-    cy.get('.multiselectChild.is-active label[for="58ada34c299e826748545061-title"]').click();
+    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('span.multiselectItem-name', 'Ordenes de la corte').click();
-    cy.get('.multiselectChild.is-active label[for="58ada34c299e82674854504e-title"]').click();
+    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('.modal-footer .extractor-footer span', 'Save').click();
-    cy.wait(100);
-    cy.get('.table tbody tr').should('have.length', 1);
+    cy.get('.table tbody tr td').should('contain.text', 'Extractor 1 edited');
+    cy.wait(200);
     cy.get('.table').compareScreenshot();
   });
 
@@ -92,13 +92,5 @@ describe('Information Extraction', () => {
     cy.get('.suggestion-templates span').eq(0).should('contain.text', 'Ordenes del presidente');
     cy.get('.suggestion-templates span').eq(1).should('contain.text', 'Ordenes de la corte');
     cy.get('.settings-content').compareScreenshot();
-    // cy.get('table > tbody > tr:nth-child(1) > td:nth-child(4)').should(
-    //   'contain.text',
-    //   'Lorem Ipsum'
-    // );
-    // cy.get('table > tbody > tr:nth-child(2) > td:nth-child(4)').should(
-    //   'contain.text',
-    //   'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
-    // );
   });
 });
