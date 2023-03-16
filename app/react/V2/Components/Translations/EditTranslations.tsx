@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useState } from 'react';
 import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -15,8 +15,26 @@ import { ClientTranslationSchema } from 'app/istore';
 type formDataType = {
   _id?: string;
   locale?: string;
-  values: {};
+  values: { [index: number]: { [key: string]: string } };
 }[];
+
+const formatValues = (
+  data: formDataType,
+  currentTranslations: ClientTranslationSchema[]
+): ClientTranslationSchema[] =>
+  data.map((language, index) => {
+    const values = Object.values(language.values).reduce(
+      (result, value) => ({
+        ...result,
+        [value.key]: value.value,
+      }),
+      {}
+    );
+    return {
+      ...currentTranslations[index],
+      contexts: [{ ...currentTranslations[index].contexts[0], values }],
+    };
+  });
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -40,6 +58,7 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
   const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const [submitting, setIsSubmitting] = useState(false);
   const contextLabel = translations[0].contexts[0].label;
 
   const formData = translations.map(language => {
@@ -77,11 +96,13 @@ const EditTranslations = () => {
             type="text"
             id={cell.value}
             {...register(cell.value, { required: true })}
+            disabled={submitting}
             className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 block flex-1 min-w-0 w-full text-sm p-2.5"
           />
           <button
             type="button"
             onClick={reset}
+            disabled={submitting}
             className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg"
           >
             x
@@ -106,8 +127,19 @@ const EditTranslations = () => {
     { key: '3', Header: 'Current Value', accessor: 'fieldKey', Cell: inputField },
   ];
 
-  const submitFunction = (data: { formData: formDataType }) => {
-    console.log(data);
+  const submitFunction = async (data: { formData: formDataType }) => {
+    setIsSubmitting(true);
+    const values = formatValues(data.formData, translations);
+    translationsAPI
+      .post(values)
+      .then(response => {
+        setIsSubmitting(false);
+        //notify
+      })
+      .catch(e => {
+        console.log(e);
+        //notify
+      });
   };
 
   return (
@@ -125,7 +157,9 @@ const EditTranslations = () => {
               </div>
             );
           })}
-          <button type="submit">SEND</button>
+          <button type="submit" disabled={submitting}>
+            SEND
+          </button>
         </form>
       </div>
     </div>
