@@ -57,6 +57,8 @@ module.exports = {
     },
     colors: {
       primary: colors.indigo,
+      sucess: colors.green,
+      error: colors.red,
     },
   },
   plugins: [
