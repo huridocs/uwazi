@@ -41,9 +41,9 @@
 const { addCompareScreenshotCommand } = require('cypress-odiff');
 const path = require('path');
 
-console.log(path.join(__dirname, '../snapshots'));
-
-addCompareScreenshotCommand({ customSnapshotsDir: path.join(__dirname, '../snapshots') });
+addCompareScreenshotCommand({
+  pluginOptions: { customSnapshotsDir: path.join(__dirname, '../snapshots') },
+});
 
 function getTextNode(el, match) {
   const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
