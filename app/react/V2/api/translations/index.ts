@@ -10,4 +10,7 @@ const get = (headers?: IncomingHttpHeaders, params?: Params): ClientTranslationS
   return response;
 };
 
-export { get };
+const post = async (updatedTranslations: ClientTranslationSchema[]) =>
+  Promise.all(updatedTranslations.map(language => I18NApi.save(new RequestParams(language))));
+
+export { get, post };
