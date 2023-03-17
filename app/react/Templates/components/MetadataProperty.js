@@ -240,7 +240,7 @@ MetadataProperty.propTypes = {
   editProperty: PropTypes.func,
   syncedTemplate: PropTypes.bool,
   // relationships v2:
-  query: PropTypes.string,
+  query: PropTypes.array,
   denormalizedProperty: PropTypes.string,
 };
 
