@@ -6,7 +6,6 @@ const labelEntityTitle = (
   selector: string = 'span[role="presentation"]'
 ) => {
   cy.get('.view-doc').eq(entityPos).click();
-  // cy.wait(2000);
   //@ts-ignore
   cy.contains(selector, selectValue).setSelection(selectValue);
   cy.get('button.edit-metadata').click();
@@ -80,8 +79,7 @@ describe('Information Extraction', () => {
     cy.contains('span.multiselectItem-name', 'Ordenes de la corte').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('.modal-footer .extractor-footer span', 'Save').click();
-    cy.get('.table tbody tr td').should('contain.text', 'Extractor 1 edited');
-    cy.wait(200);
+    cy.contains('.table thead tr th span', 'Property').should('be.visible');
     cy.get('.table').toMatchImageSnapshot();
   });
 
