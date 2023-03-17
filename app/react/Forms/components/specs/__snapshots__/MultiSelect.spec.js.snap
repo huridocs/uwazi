@@ -118,7 +118,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       value="option1"
     />
     <label
-      className="multiselectItem-label"
+      className="multiselectItem-label multiselectItem-option"
       htmlFor="option1"
     >
       <span
@@ -195,7 +195,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
       value="option2"
     />
     <label
-      className="multiselectItem-label"
+      className="multiselectItem-label multiselectItem-option"
       htmlFor="option2"
     >
       <span
@@ -273,7 +273,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
         type="checkbox"
       />
       <label
-        className="multiselectItem-label"
+        className="multiselectItem-label multiselectItem-option"
         htmlFor="Group"
       >
         <span
@@ -364,7 +364,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
             value="group-option1"
           />
           <label
-            className="multiselectItem-label"
+            className="multiselectItem-label multiselectItem-option"
             htmlFor="group-option1"
           >
             <span
@@ -441,7 +441,7 @@ exports[`MultiSelect should not render an empty group 1`] = `
             value="group-option2"
           />
           <label
-            className="multiselectItem-label"
+            className="multiselectItem-label multiselectItem-option"
             htmlFor="group-option2"
           >
             <span
