@@ -5,6 +5,7 @@ interface NotificationProps {
   text: string | React.ReactNode;
   heading?: string | React.ReactNode;
   details?: string | React.ReactNode;
+  dismissAction?: () => void;
 }
 
 const viewMoreIcons = {
@@ -73,7 +74,13 @@ const getIcon = (size: 'large' | 'small', type: 'sucess' | 'info' | 'error') => 
   );
 };
 
-const Notification = ({ type = 'sucess', text, heading, details }: NotificationProps) => {
+const Notification = ({
+  type = 'sucess',
+  text,
+  heading,
+  details,
+  dismissAction,
+}: NotificationProps) => {
   const [viewMore, setViewMore] = useState(false);
 
   let containerClass: string;
@@ -110,7 +117,11 @@ const Notification = ({ type = 'sucess', text, heading, details }: NotificationP
   }
 
   return (
-    <div className={`${containerClass} p-4 mb-4 border rounded-lg`} role="alert">
+    <div
+      className={`${containerClass} p-4 mb-4 border rounded-lg`}
+      role="alert"
+      id="notification-container"
+    >
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}
@@ -136,6 +147,7 @@ const Notification = ({ type = 'sucess', text, heading, details }: NotificationP
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Close"
           id="dismiss"
+          onClick={dismissAction}
         >
           Dismiss
         </button>

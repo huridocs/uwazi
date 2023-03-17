@@ -1,12 +1,11 @@
 import React from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { mount } from '@cypress/react18';
-import { NotificationProps } from 'app/stories/Notification';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
 import { NotificationsContainer } from '../../UI/NotificationsContainer';
 
-describe('Table', () => {
-  const notification: NotificationProps = {
+describe('Notifications container', () => {
+  const notification: notificationAtomType = {
     type: 'info',
     text: 'This notifies the user with some information',
     details: 'This are some extra details for this notification',
@@ -45,10 +44,16 @@ describe('Table', () => {
   it('should allow users to dismiss the noficication', () => {
     cy.get('#send-notification').click();
     cy.get('#dismiss').click();
+    cy.get('#notification-container').should('not.exist');
   });
 
   describe('automatic dismissal of notifications', () => {
-    it('should dissapear on its own after a time', () => {});
+    it('should dissapear on its own after a time', () => {
+      cy.clock();
+      cy.get('#send-notification').click();
+      cy.clock().tick(6000);
+      cy.get('#notification-container').should('not.exist');
+    });
 
     it('should not dissapear on its own if the user is hovering over the notification', () => {});
 
