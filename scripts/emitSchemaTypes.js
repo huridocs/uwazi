@@ -20,7 +20,10 @@ const opts = {
 const banner = '/* eslint-disable */\n/**AUTO-GENERATED. RUN yarn emit-types to update.*/\n';
 
 const customImports = {
-  '../app/shared/types/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
+  '../app/shared/types/commonSchemas.ts': [
+    "import { ObjectId } from 'mongodb';",
+    "import { TraverseInputType } from 'shared/types/relationshipsQueryTypes'",
+  ],
   '../app/api/common.v2/database/schemas/commonSchemas.ts': ["import { ObjectId } from 'mongodb';"],
   '../app/shared/types/connectionSchema.ts': ["import { FileType } from 'shared/types/fileType';"],
 };
