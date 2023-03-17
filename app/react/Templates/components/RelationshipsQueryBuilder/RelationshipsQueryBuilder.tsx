@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/no-multi-comp */
+import { MultiSelect } from 'app/Forms';
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -147,7 +148,7 @@ interface MatchNodeProps {
   isLast?: boolean;
   onChange: (value: MatchQueryInputType) => void;
   templates: ClientTemplateSchema[];
-  depth: number;
+  path: string;
 }
 
 const MatchNodeComponent = ({
@@ -156,7 +157,7 @@ const MatchNodeComponent = ({
   isLast,
   onChange,
   templates,
-  depth,
+  path,
 }: MatchNodeProps) => {
   const createOnChildChangeHandler =
     (index: number) => (newTraverseValue: TraverseQueryInputType) => {
@@ -165,8 +166,8 @@ const MatchNodeComponent = ({
       onChange({ ...value, traverse: traverses });
     };
 
-  const onTemplatesChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) =>
-    onChange({ ...value, templates: [...event.target.selectedOptions].map(o => o.value) });
+  const onTemplatesChangeHandler = (newTemplates: string[]) =>
+    onChange({ ...value, templates: newTemplates });
 
   const onAddElementHandler = () =>
     onChange({
@@ -188,24 +189,25 @@ const MatchNodeComponent = ({
       nested={
         value.traverse?.map((traversal, index) => (
           <TravesalNode
-            key={`${depth}-${index}`}
+            key={index}
             value={traversal}
             isFirst={index === 0}
             onChange={createOnChildChangeHandler(index)}
-            depth={depth + 1}
+            path={`${path}.${index}`}
           />
         )) || []
       }
       onAddElementHandler={onAddElementHandler}
     >
       <div style={{ ...nodeStyles, borderRadius: '3px' }}>
-        <select value={value.templates} onChange={onTemplatesChangeHandler} multiple>
-          {templates.map(template => (
-            <option selected={value.templates.includes(template._id)} value={template._id}>
-              {template.name}
-            </option>
-          ))}
-        </select>
+        <MultiSelect
+          prefix={path}
+          onChange={onTemplatesChangeHandler}
+          options={templates}
+          value={value.templates}
+          optionsValue="_id"
+          optionsLabel="name"
+        />
       </div>
     </Node>
   );
@@ -221,7 +223,7 @@ interface TravesalNodeProps {
   isLast?: boolean;
   onChange: (value: TraverseQueryInputType) => void;
   relationTypes: RelationshipTypesType[];
-  depth: number;
+  path: string;
 }
 
 const TravesalNodeComponent = ({
@@ -230,7 +232,7 @@ const TravesalNodeComponent = ({
   isLast,
   onChange,
   relationTypes,
-  depth,
+  path,
 }: TravesalNodeProps) => {
   const createOnChildChangeHandler = (index: number) => (newMatchValue: MatchQueryInputType) => {
     const matches = [...value.match];
@@ -253,8 +255,7 @@ const TravesalNodeComponent = ({
   const onDirectionChangeHandler = (event: { target: { value: string } }) =>
     onChange({ ...value, direction: event.target.value as 'in' | 'out' });
 
-  const onTypesChangeHandler = (event: React.ChangeEvent<HTMLSelectElement>) =>
-    onChange({ ...value, types: [...event.target.selectedOptions].map(o => o.value) });
+  const onTypesChangeHandler = (types: string[]) => onChange({ ...value, types });
 
   return (
     <Node
@@ -262,11 +263,11 @@ const TravesalNodeComponent = ({
       isLast={isLast}
       nested={value.match.map((match, index) => (
         <MatchNode
-          key={`${depth}-${index}`}
+          key={index}
           value={match}
           isFirst={index === 0}
           onChange={createOnChildChangeHandler(index)}
-          depth={depth + 1}
+          path={`${path}.${index}`}
         />
       ))}
       onAddElementHandler={onAddElementHandler}
@@ -276,13 +277,14 @@ const TravesalNodeComponent = ({
           <option value="out">{'-- out -->'}</option>
           <option value="in">{'<-- in --'}</option>
         </select>
-        <select value={value.types} onChange={onTypesChangeHandler} multiple>
-          {relationTypes.map(relationType => (
-            <option selected={value.types.includes(relationType._id)} value={relationType._id}>
-              {relationType.name}
-            </option>
-          ))}
-        </select>
+        <MultiSelect
+          prefix={path}
+          onChange={onTypesChangeHandler}
+          options={relationTypes}
+          value={value.types}
+          optionsValue="_id"
+          optionsLabel="name"
+        />
       </div>
     </Node>
   );
@@ -326,7 +328,7 @@ export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQuer
             value={traversal}
             isFirst={index === 0}
             onChange={createOnChildChangeHandler(index)}
-            depth={0}
+            path={`${index}`}
           />
         ))}
         <AddElement isFirst={!value?.length} onClick={onAddElementHandler} />
