@@ -11,93 +11,101 @@ import {
   TraverseQueryInputType,
 } from 'shared/types/relationshipsQueryTypes';
 
+const edgeStylesBase = {
+  styles: {
+    width: '10px',
+    flexGrow: '1',
+  },
+  lineWidth: 1,
+  getLineStyle: (multiplier: number) => `solid ${multiplier * edgeStylesBase.lineWidth}px black`,
+};
+
+const edgeStyles = {
+  noVertical: {
+    top: {
+      ...edgeStylesBase.styles,
+      borderBottom: edgeStylesBase.getLineStyle(1),
+    },
+    bottom: {
+      ...edgeStylesBase.styles,
+      borderTop: edgeStylesBase.getLineStyle(1),
+    },
+  },
+  withVertical: {
+    left: {
+      top: {
+        ...edgeStylesBase.styles,
+        borderBottom: edgeStylesBase.getLineStyle(1),
+        borderLeft: edgeStylesBase.getLineStyle(2),
+      },
+      bottom: {
+        ...edgeStylesBase.styles,
+        borderTop: edgeStylesBase.getLineStyle(1),
+        borderLeft: edgeStylesBase.getLineStyle(2),
+      },
+    },
+  },
+};
+
+const edgeContainerStyles = {
+  display: 'flex',
+  flexDirection: 'column' as const,
+};
+
 const boxStyles = {
   display: 'flex',
-  'flex-direction': 'row',
-  'align-items': 'stretch',
+  flexDirection: 'row' as const,
+  alignItems: 'stretch',
 };
 
 const nodeContainerStyles = {
   display: 'flex',
-  'align-items': 'center',
-};
-
-const upEdgeStyles = {
-  width: '10px',
-  'border-bottom': 'solid 1px black',
-  'border-left': 'solid 2px black',
-  'flex-grow': '1',
-};
-
-const upEdgeStylesNone = {
-  width: '10px',
-  'border-bottom': 'solid 1px black',
-  'flex-grow': '1',
-};
-
-const downEdgeStylesNone = {
-  width: '10px',
-  'border-top': 'solid 1px black',
-  'flex-grow': '1',
-};
-
-const downEdgeStyles = {
-  width: '10px',
-  'border-top': 'solid 1px black',
-  'border-left': 'solid 2px black',
-  'flex-grow': '1',
-};
-
-const upEdgeStylesRight = {
-  width: '10px',
-  'border-bottom': 'solid 1px black',
-  'flex-grow': '1',
-};
-
-const downEdgeStylesRight = {
-  width: '10px',
-  'border-top': 'solid 1px black',
-  'flex-grow': '1',
-};
-
-const verticalEdgeStyles = {
-  display: 'flex',
-  'flex-direction': 'column',
+  alignItems: 'center',
 };
 
 const nodeStyles = {
   border: 'solid 1px black',
+  borderRadius: '3px',
   padding: '3px',
-  'margin-top': '6px',
+  marginTop: '6px',
   display: 'flex',
-  'flex-direction': 'column',
+  flexDirection: 'column' as const,
 };
 
 const childrenStyles = {
   display: 'flex',
-  'flex-direction': 'column',
-  'justify-content': 'center',
+  flexDirection: 'column' as const,
+  justifyContent: 'center',
 };
 
 interface EdgesProps {
   isFirst?: boolean;
   isLast?: boolean;
+  isRight?: boolean;
 }
 
-const Edges = ({ isFirst, isLast }: EdgesProps) => {
-  if (isFirst && isLast) {
+const Edges = ({ isFirst, isLast, isRight }: EdgesProps) => {
+  if (isRight || (isFirst && isLast)) {
     return (
-      <div style={verticalEdgeStyles}>
-        <div style={upEdgeStylesNone} />
-        <div style={downEdgeStylesNone} />
+      <div style={edgeContainerStyles}>
+        <div style={edgeStyles.noVertical.top} />
+        <div style={edgeStyles.noVertical.bottom} />
       </div>
     );
   }
 
   return (
-    <div style={verticalEdgeStyles}>
-      {isFirst ? <div style={upEdgeStylesNone} /> : <div style={upEdgeStyles} />}
-      {isLast ? <div style={downEdgeStylesNone} /> : <div style={downEdgeStyles} />}
+    <div style={edgeContainerStyles}>
+      {isFirst ? (
+        <div style={edgeStyles.noVertical.top} />
+      ) : (
+        <div style={edgeStyles.withVertical.left.top} />
+      )}
+      {isLast ? (
+        <div style={edgeStyles.noVertical.bottom} />
+      ) : (
+        <div style={edgeStyles.withVertical.left.bottom} />
+      )}
     </div>
   );
 };
@@ -118,23 +126,43 @@ const AddElement = ({ isFirst, onClick }: AddElementProps) => (
   </div>
 );
 interface NodeProps {
+  caption: string;
   isFirst?: boolean;
   isLast?: boolean;
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
   nested: JSX.Element[];
   onAddElementHandler: () => void;
+  onDeleteElementHandler: () => void;
 }
 
-const Node = ({ isFirst, isLast, nested, children, onAddElementHandler }: NodeProps) => (
+const Node = ({
+  caption,
+  isFirst,
+  isLast,
+  nested,
+  children,
+  onAddElementHandler,
+  onDeleteElementHandler,
+}: NodeProps) => (
   <div style={boxStyles}>
     <Edges isFirst={isFirst} isLast={isLast} />
-    <div style={nodeContainerStyles}>{children}</div>
-    {nested.length ? (
-      <div style={verticalEdgeStyles}>
-        <div style={upEdgeStylesRight} />
-        <div style={downEdgeStylesRight} />
+    <div style={nodeContainerStyles}>
+      <div style={nodeStyles}>
+        <div
+          style={{
+            float: 'left',
+            borderBottom: 'solid 1px lightgrey',
+            marginBottom: '5px',
+            paddingBottom: '5px',
+          }}
+        >
+          <span style={{ marginRight: '5px' }}>{caption}</span>
+          <input type="button" value="x" onClick={onDeleteElementHandler} />
+        </div>
+        {children}
       </div>
-    ) : null}
+    </div>
+    {nested.length ? <Edges isRight /> : null}
     <div style={childrenStyles}>
       {nested}
       <AddElement isFirst={nested.length === 0} onClick={onAddElementHandler} />
@@ -147,6 +175,7 @@ interface MatchNodeProps {
   isFirst?: boolean;
   isLast?: boolean;
   onChange: (value: MatchQueryInputType) => void;
+  onDelete: () => void;
   templates: ClientTemplateSchema[];
   path: string;
 }
@@ -156,6 +185,7 @@ const MatchNodeComponent = ({
   isFirst,
   isLast,
   onChange,
+  onDelete,
   templates,
   path,
 }: MatchNodeProps) => {
@@ -165,6 +195,10 @@ const MatchNodeComponent = ({
       traverses[index] = newTraverseValue;
       onChange({ ...value, traverse: traverses });
     };
+
+  const createOnDeleteChildHandler = (index: number) => () => {
+    onChange({ ...value, traverse: value.traverse?.filter((_m, i) => i !== index) });
+  };
 
   const onTemplatesChangeHandler = (newTemplates: string[]) =>
     onChange({ ...value, templates: newTemplates });
@@ -184,6 +218,7 @@ const MatchNodeComponent = ({
 
   return (
     <Node
+      caption="Match entities"
       isFirst={isFirst}
       isLast={isLast}
       nested={
@@ -193,22 +228,22 @@ const MatchNodeComponent = ({
             value={traversal}
             isFirst={index === 0}
             onChange={createOnChildChangeHandler(index)}
+            onDelete={createOnDeleteChildHandler(index)}
             path={`${path}.${index}`}
           />
         )) || []
       }
       onAddElementHandler={onAddElementHandler}
+      onDeleteElementHandler={onDelete}
     >
-      <div style={{ ...nodeStyles, borderRadius: '3px' }}>
-        <MultiSelect
-          prefix={path}
-          onChange={onTemplatesChangeHandler}
-          options={templates}
-          value={value.templates}
-          optionsValue="_id"
-          optionsLabel="name"
-        />
-      </div>
+      <MultiSelect
+        prefix={path}
+        onChange={onTemplatesChangeHandler}
+        options={templates}
+        value={value.templates}
+        optionsValue="_id"
+        optionsLabel="name"
+      />
     </Node>
   );
 };
@@ -222,6 +257,7 @@ interface TravesalNodeProps {
   isFirst?: boolean;
   isLast?: boolean;
   onChange: (value: TraverseQueryInputType) => void;
+  onDelete: () => void;
   relationTypes: RelationshipTypesType[];
   path: string;
 }
@@ -231,6 +267,7 @@ const TravesalNodeComponent = ({
   isFirst,
   isLast,
   onChange,
+  onDelete,
   relationTypes,
   path,
 }: TravesalNodeProps) => {
@@ -238,6 +275,10 @@ const TravesalNodeComponent = ({
     const matches = [...value.match];
     matches[index] = newMatchValue;
     onChange({ ...value, match: matches });
+  };
+
+  const createOnDeleteChildHandler = (index: number) => () => {
+    onChange({ ...value, match: value.match.filter((_m, i) => i !== index) });
   };
 
   const onAddElementHandler = () =>
@@ -259,6 +300,7 @@ const TravesalNodeComponent = ({
 
   return (
     <Node
+      caption="Traverse relationships"
       isFirst={isFirst}
       isLast={isLast}
       nested={value.match.map((match, index) => (
@@ -267,25 +309,25 @@ const TravesalNodeComponent = ({
           value={match}
           isFirst={index === 0}
           onChange={createOnChildChangeHandler(index)}
+          onDelete={createOnDeleteChildHandler(index)}
           path={`${path}.${index}`}
         />
       ))}
       onAddElementHandler={onAddElementHandler}
+      onDeleteElementHandler={onDelete}
     >
-      <div style={nodeStyles}>
-        <select value={value.direction} onChange={onDirectionChangeHandler}>
-          <option value="out">{'-- out -->'}</option>
-          <option value="in">{'<-- in --'}</option>
-        </select>
-        <MultiSelect
-          prefix={path}
-          onChange={onTypesChangeHandler}
-          options={relationTypes}
-          value={value.types}
-          optionsValue="_id"
-          optionsLabel="name"
-        />
-      </div>
+      <select value={value.direction} onChange={onDirectionChangeHandler}>
+        <option value="out">{'-- out -->'}</option>
+        <option value="in">{'<-- in --'}</option>
+      </select>
+      <MultiSelect
+        prefix={path}
+        onChange={onTypesChangeHandler}
+        options={relationTypes}
+        value={value.types}
+        optionsValue="_id"
+        optionsLabel="name"
+      />
     </Node>
   );
 };
@@ -307,20 +349,27 @@ export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQuer
       onChange(traverses);
     };
 
+  const createOnDeleteChildHandler = (index: number) => () => {
+    onChange((value ?? []).filter((_m, i) => i !== index));
+  };
+
   const onAddElementHandler = () =>
     onChange([...(value ?? []), { direction: 'out', types: [], match: [] }]);
 
   return (
     <div className="form-control" style={{ ...boxStyles, height: 'unset', overflowX: 'scroll' }}>
       <div style={nodeContainerStyles}>
-        <div style={{ ...nodeStyles, width: '50px', height: '50px', borderRadius: '50px' }} />
+        <div
+          style={{
+            ...nodeStyles,
+            width: '50px',
+            height: '50px',
+            borderRadius: '50px',
+            marginTop: 0,
+          }}
+        />
       </div>
-      {value?.length ? (
-        <div style={verticalEdgeStyles}>
-          <div style={upEdgeStylesRight} />
-          <div style={downEdgeStylesRight} />
-        </div>
-      ) : null}
+      {value?.length ? <Edges isRight /> : null}
       <div style={childrenStyles}>
         {value?.map((traversal, index) => (
           <TravesalNode
@@ -328,6 +377,7 @@ export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQuer
             value={traversal}
             isFirst={index === 0}
             onChange={createOnChildChangeHandler(index)}
+            onDelete={createOnDeleteChildHandler(index)}
             path={`${index}`}
           />
         ))}
