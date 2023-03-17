@@ -67,7 +67,8 @@ const nodeStyles = {
   border: 'solid 1px black',
   borderRadius: '3px',
   padding: '3px',
-  marginTop: '6px',
+  marginTop: '3px',
+  marginBottom: '3px',
   display: 'flex',
   flexDirection: 'column' as const,
 };
@@ -133,6 +134,7 @@ interface NodeProps {
   nested: JSX.Element[];
   onAddElementHandler: () => void;
   onDeleteElementHandler: () => void;
+  deleteDisabled?: boolean;
 }
 
 const Node = ({
@@ -143,6 +145,7 @@ const Node = ({
   children,
   onAddElementHandler,
   onDeleteElementHandler,
+  deleteDisabled,
 }: NodeProps) => (
   <div style={boxStyles}>
     <Edges isFirst={isFirst} isLast={isLast} />
@@ -157,7 +160,12 @@ const Node = ({
           }}
         >
           <span style={{ marginRight: '5px' }}>{caption}</span>
-          <input type="button" value="x" onClick={onDeleteElementHandler} />
+          <input
+            type="button"
+            value="x"
+            onClick={onDeleteElementHandler}
+            disabled={deleteDisabled}
+          />
         </div>
         {children}
       </div>
@@ -170,6 +178,17 @@ const Node = ({
   </div>
 );
 
+const createDefaultTraversal = () =>
+  ({
+    direction: 'out',
+    types: [],
+    match: [
+      {
+        templates: [],
+      },
+    ],
+  } as TraverseQueryInputType);
+
 interface MatchNodeProps {
   value: MatchQueryInputType;
   isFirst?: boolean;
@@ -178,6 +197,7 @@ interface MatchNodeProps {
   onDelete: () => void;
   templates: ClientTemplateSchema[];
   path: string;
+  canDelete?: boolean;
 }
 
 const MatchNodeComponent = ({
@@ -188,6 +208,7 @@ const MatchNodeComponent = ({
   onDelete,
   templates,
   path,
+  canDelete,
 }: MatchNodeProps) => {
   const createOnChildChangeHandler =
     (index: number) => (newTraverseValue: TraverseQueryInputType) => {
@@ -206,14 +227,7 @@ const MatchNodeComponent = ({
   const onAddElementHandler = () =>
     onChange({
       ...value,
-      traverse: [
-        ...(value.traverse ?? []),
-        {
-          direction: 'out',
-          types: [],
-          match: [],
-        },
-      ],
+      traverse: [...(value.traverse ?? []), createDefaultTraversal()],
     });
 
   return (
@@ -235,6 +249,7 @@ const MatchNodeComponent = ({
       }
       onAddElementHandler={onAddElementHandler}
       onDeleteElementHandler={onDelete}
+      deleteDisabled={!canDelete}
     >
       <MultiSelect
         prefix={path}
@@ -311,6 +326,7 @@ const TravesalNodeComponent = ({
           onChange={createOnChildChangeHandler(index)}
           onDelete={createOnDeleteChildHandler(index)}
           path={`${path}.${index}`}
+          canDelete={value.match.length > 1}
         />
       ))}
       onAddElementHandler={onAddElementHandler}
@@ -353,8 +369,7 @@ export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQuer
     onChange((value ?? []).filter((_m, i) => i !== index));
   };
 
-  const onAddElementHandler = () =>
-    onChange([...(value ?? []), { direction: 'out', types: [], match: [] }]);
+  const onAddElementHandler = () => onChange([...(value ?? []), createDefaultTraversal()]);
 
   return (
     <div className="form-control" style={{ ...boxStyles, height: 'unset', overflowX: 'scroll' }}>
