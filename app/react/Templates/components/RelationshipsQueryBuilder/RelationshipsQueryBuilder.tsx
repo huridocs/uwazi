@@ -122,51 +122,53 @@ interface MatchNodeProps {
   onChange: (value: MatchQueryInputType) => void;
 }
 
-const MatchNode = ({ value, isFirst, isLast, onChange }: MatchNodeProps) => (
-  <div style={boxStyles}>
-    <Edges isFirst={isFirst} isLast={isLast} />
-    <div style={boxContainerStyles}>
-      <div style={nodeStyles}>
-        <input type="text" value={value.templates[0]} />
+const MatchNode = ({ value, isFirst, isLast, onChange }: MatchNodeProps) => {
+  const createOnChildChangeHandler = (index: number) => (newMatchValue: TraverseQueryInputType) => {
+    const traverses = [...(value.traverse ?? [])];
+    traverses[index] = newMatchValue;
+    onChange({ ...value, traverse: traverses });
+  };
+
+  const onAddElementHandler = () =>
+    onChange({
+      ...value,
+      traverse: [
+        ...(value.traverse ?? []),
+        {
+          direction: 'out',
+          types: [],
+          match: [],
+        },
+      ],
+    });
+
+  return (
+    <div style={boxStyles}>
+      <Edges isFirst={isFirst} isLast={isLast} />
+      <div style={boxContainerStyles}>
+        <div style={nodeStyles}>
+          <input type="text" value={value.templates[0]} />
+        </div>
+      </div>
+      {value.traverse?.length ? (
+        <div style={verticalEdgeStyles}>
+          <div style={upEdgeStylesRight} />
+          <div style={downEdgeStylesRight} />
+        </div>
+      ) : null}
+      <div style={childrenStyles}>
+        {value.traverse?.map((traversal, index) => (
+          <TravesalNode
+            value={traversal}
+            isFirst={index === 0}
+            onChange={createOnChildChangeHandler(index)}
+          />
+        ))}
+        <AddElement isFirst={value.traverse?.length === 0} onClick={onAddElementHandler} />
       </div>
     </div>
-    {value.traverse?.length ? (
-      <div style={verticalEdgeStyles}>
-        <div style={upEdgeStylesRight} />
-        <div style={downEdgeStylesRight} />
-      </div>
-    ) : null}
-    <div style={childrenStyles}>
-      {value.traverse?.map((traversal, index) => (
-        <TravesalNode
-          value={traversal}
-          isFirst={index === 0}
-          onChange={newMatchValue => {
-            const traverses = [...(value.traverse ?? [])];
-            traverses[index] = newMatchValue;
-            onChange({ ...value, traverse: traverses });
-          }}
-        />
-      ))}
-      <AddElement
-        isFirst={value.traverse?.length === 0}
-        onClick={() =>
-          onChange({
-            ...value,
-            traverse: [
-              ...(value.traverse ?? []),
-              {
-                direction: 'out',
-                types: [],
-                match: [],
-              },
-            ],
-          })
-        }
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 interface TravesalNodeProps {
   value: TraverseQueryInputType;
@@ -175,90 +177,96 @@ interface TravesalNodeProps {
   onChange: (value: TraverseQueryInputType) => void;
 }
 
-const TravesalNode = ({ value, isFirst, isLast, onChange }: TravesalNodeProps) => (
-  <div style={boxStyles}>
-    <Edges isFirst={isFirst} isLast={isLast} />
-    <div style={boxContainerStyles}>
-      <div style={nodeStyles}>
-        <select
-          value={value.direction}
-          onChange={event => onChange({ ...value, direction: event.target.value as 'in' | 'out' })}
-        >
-          <option value="out">{'-- out -->'}</option>
-          <option value="in">{'<-- in --'}</option>
-        </select>
-        <input type="text" value={value.types[0]} />
+const TravesalNode = ({ value, isFirst, isLast, onChange }: TravesalNodeProps) => {
+  const createOnChildChangeHandler = (index: number) => (newMatchValue: MatchQueryInputType) => {
+    const matches = [...value.match];
+    matches[index] = newMatchValue;
+    onChange({ ...value, match: matches });
+  };
+
+  const onAddElementHandler = () =>
+    onChange({
+      ...value,
+      match: [
+        ...(value.match ?? []),
+        {
+          templates: [],
+          traverse: [],
+        },
+      ],
+    });
+
+  const onDirectionChangeHandler = (event: { target: { value: string } }) =>
+    onChange({ ...value, direction: event.target.value as 'in' | 'out' });
+
+  return (
+    <div style={boxStyles}>
+      <Edges isFirst={isFirst} isLast={isLast} />
+      <div style={boxContainerStyles}>
+        <div style={nodeStyles}>
+          <select value={value.direction} onChange={onDirectionChangeHandler}>
+            <option value="out">{'-- out -->'}</option>
+            <option value="in">{'<-- in --'}</option>
+          </select>
+          <input type="text" value={value.types[0]} />
+        </div>
+      </div>
+      {value.match.length ? (
+        <div style={verticalEdgeStyles}>
+          <div style={upEdgeStylesRight} />
+          <div style={downEdgeStylesRight} />
+        </div>
+      ) : null}
+      <div style={childrenStyles}>
+        {value.match.map((match, index) => (
+          <MatchNode
+            value={match}
+            isFirst={index === 0}
+            onChange={createOnChildChangeHandler(index)}
+          />
+        ))}
+        <AddElement isFirst={value.match.length === 0} onClick={onAddElementHandler} />
       </div>
     </div>
-    {value.match.length ? (
-      <div style={verticalEdgeStyles}>
-        <div style={upEdgeStylesRight} />
-        <div style={downEdgeStylesRight} />
-      </div>
-    ) : null}
-    <div style={childrenStyles}>
-      {value.match.map((match, index) => (
-        <MatchNode
-          value={match}
-          isFirst={index === 0}
-          onChange={newMatchValue => {
-            const matches = [...value.match];
-            matches[index] = newMatchValue;
-            onChange({ ...value, match: matches });
-          }}
-        />
-      ))}
-      <AddElement
-        isFirst={value.match.length === 0}
-        onClick={() =>
-          onChange({
-            ...value,
-            match: [
-              ...(value.match ?? []),
-              {
-                templates: [],
-                traverse: [],
-              },
-            ],
-          })
-        }
-      />
-    </div>
-  </div>
-);
+  );
+};
 
 interface RelationshipsQueryBuilderProps {
   value: TraverseInputType;
   onChange: (value: TraverseInputType) => void;
 }
 
-export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQueryBuilderProps) => (
-  <div className="form-control" style={{ ...boxStyles, height: 'unset' }}>
-    <div style={boxContainerStyles}>
-      <div style={{ ...nodeStyles, width: '50px', height: '50px', borderRadius: '50px' }} />
-    </div>
-    {value?.length ? (
-      <div style={verticalEdgeStyles}>
-        <div style={upEdgeStylesRight} />
-        <div style={downEdgeStylesRight} />
+export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQueryBuilderProps) => {
+  const createOnChildChangeHandler = (index: number) => (newMatchValue: TraverseQueryInputType) => {
+    const traverses = [...(value ?? [])];
+    traverses[index] = newMatchValue;
+    onChange(traverses);
+  };
+
+  const onAddElementHandler = () =>
+    onChange([...(value ?? []), { direction: 'out', types: [], match: [] }]);
+
+  return (
+    <div className="form-control" style={{ ...boxStyles, height: 'unset' }}>
+      <div style={boxContainerStyles}>
+        <div style={{ ...nodeStyles, width: '50px', height: '50px', borderRadius: '50px' }} />
       </div>
-    ) : null}
-    <div style={childrenStyles}>
-      {value?.map((traversal, index) => (
-        <TravesalNode
-          value={traversal}
-          isFirst={index === 0}
-          onChange={newMatchValue => {
-            const traverses = [...(value ?? [])];
-            traverses[index] = newMatchValue;
-            onChange(traverses);
-          }}
-        />
-      ))}
-      <AddElement
-        isFirst={value?.length === 0}
-        onClick={() => onChange([...(value ?? []), { direction: 'out', types: [], match: [] }])}
-      />
+      {value?.length ? (
+        <div style={verticalEdgeStyles}>
+          <div style={upEdgeStylesRight} />
+          <div style={downEdgeStylesRight} />
+        </div>
+      ) : null}
+      <div style={childrenStyles}>
+        {value?.map((traversal, index) => (
+          <TravesalNode
+            value={traversal}
+            isFirst={index === 0}
+            onChange={createOnChildChangeHandler(index)}
+          />
+        ))}
+        <AddElement isFirst={value?.length === 0} onClick={onAddElementHandler} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
