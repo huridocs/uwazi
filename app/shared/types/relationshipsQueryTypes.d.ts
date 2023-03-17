@@ -1,6 +1,3 @@
-/* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emit-types to update.*/
-
 export interface MatchQueryInputType {
   templates: string[];
   traverse?: TraverseInputType;
