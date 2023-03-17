@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
@@ -98,12 +99,17 @@ const Edges = ({ isFirst, isLast }: EdgesProps) => {
   );
 };
 
-const AddElement = ({ isFirst }: { isFirst: boolean }) => (
+interface AddElementProps {
+  isFirst: boolean;
+  onClick: () => void;
+}
+
+const AddElement = ({ isFirst, onClick }: AddElementProps) => (
   <div style={boxStyles}>
     <Edges isFirst={isFirst} isLast />
     <div style={boxContainerStyles}>
       <div style={{ ...nodeStyles, border: 'none' }}>
-        <input type="button" value="+" />
+        <input type="button" value="+" onClick={onClick} />
       </div>
     </div>
   </div>
@@ -113,9 +119,10 @@ interface MatchNodeProps {
   value: MatchQueryInputType;
   isFirst?: boolean;
   isLast?: boolean;
+  onChange: (value: MatchQueryInputType) => void;
 }
 
-const MatchNode = ({ value, isFirst, isLast }: MatchNodeProps) => (
+const MatchNode = ({ value, isFirst, isLast, onChange }: MatchNodeProps) => (
   <div style={boxStyles}>
     <Edges isFirst={isFirst} isLast={isLast} />
     <div style={boxContainerStyles}>
@@ -131,9 +138,32 @@ const MatchNode = ({ value, isFirst, isLast }: MatchNodeProps) => (
     ) : null}
     <div style={childrenStyles}>
       {value.traverse?.map((traversal, index) => (
-        <TravesalNode value={traversal} isFirst={index === 0} />
+        <TravesalNode
+          value={traversal}
+          isFirst={index === 0}
+          onChange={newMatchValue => {
+            const traverses = [...(value.traverse ?? [])];
+            traverses[index] = newMatchValue;
+            onChange({ ...value, traverse: traverses });
+          }}
+        />
       ))}
-      <AddElement isFirst={value.traverse?.length === 0} />
+      <AddElement
+        isFirst={value.traverse?.length === 0}
+        onClick={() =>
+          onChange({
+            ...value,
+            traverse: [
+              ...(value.traverse ?? []),
+              {
+                direction: 'out',
+                types: [],
+                match: [],
+              },
+            ],
+          })
+        }
+      />
     </div>
   </div>
 );
@@ -142,15 +172,22 @@ interface TravesalNodeProps {
   value: TraverseQueryInputType;
   isFirst?: boolean;
   isLast?: boolean;
+  onChange: (value: TraverseQueryInputType) => void;
 }
 
-const TravesalNode = ({ value, isFirst, isLast }: TravesalNodeProps) => (
+const TravesalNode = ({ value, isFirst, isLast, onChange }: TravesalNodeProps) => (
   <div style={boxStyles}>
     <Edges isFirst={isFirst} isLast={isLast} />
     <div style={boxContainerStyles}>
       <div style={nodeStyles}>
-        <input type="text" value={value.direction} />
-        <input type="text" value={value.types.join(', ')} />
+        <select
+          value={value.direction}
+          onChange={event => onChange({ ...value, direction: event.target.value as 'in' | 'out' })}
+        >
+          <option value="out">{'-- out -->'}</option>
+          <option value="in">{'<-- in --'}</option>
+        </select>
+        <input type="text" value={value.types[0]} />
       </div>
     </div>
     {value.match.length ? (
@@ -161,18 +198,41 @@ const TravesalNode = ({ value, isFirst, isLast }: TravesalNodeProps) => (
     ) : null}
     <div style={childrenStyles}>
       {value.match.map((match, index) => (
-        <MatchNode value={match} isFirst={index === 0} />
+        <MatchNode
+          value={match}
+          isFirst={index === 0}
+          onChange={newMatchValue => {
+            const matches = [...value.match];
+            matches[index] = newMatchValue;
+            onChange({ ...value, match: matches });
+          }}
+        />
       ))}
-      <AddElement isFirst={value.match.length === 0} />
+      <AddElement
+        isFirst={value.match.length === 0}
+        onClick={() =>
+          onChange({
+            ...value,
+            match: [
+              ...(value.match ?? []),
+              {
+                templates: [],
+                traverse: [],
+              },
+            ],
+          })
+        }
+      />
     </div>
   </div>
 );
 
 interface RelationshipsQueryBuilderProps {
   value: TraverseInputType;
+  onChange: (value: TraverseInputType) => void;
 }
 
-export const RelationshipsQueryBuilder = ({ value }: RelationshipsQueryBuilderProps) => (
+export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQueryBuilderProps) => (
   <div className="form-control" style={{ ...boxStyles, height: 'unset' }}>
     <div style={boxContainerStyles}>
       <div style={{ ...nodeStyles, width: '50px', height: '50px', borderRadius: '50px' }} />
@@ -185,9 +245,20 @@ export const RelationshipsQueryBuilder = ({ value }: RelationshipsQueryBuilderPr
     ) : null}
     <div style={childrenStyles}>
       {value?.map((traversal, index) => (
-        <TravesalNode value={traversal} isFirst={index === 0} />
+        <TravesalNode
+          value={traversal}
+          isFirst={index === 0}
+          onChange={newMatchValue => {
+            const traverses = [...(value ?? [])];
+            traverses[index] = newMatchValue;
+            onChange(traverses);
+          }}
+        />
       ))}
-      <AddElement isFirst={value?.length === 0} />
+      <AddElement
+        isFirst={value?.length === 0}
+        onClick={() => onChange([...(value ?? []), { direction: 'out', types: [], match: [] }])}
+      />
     </div>
   </div>
 );
