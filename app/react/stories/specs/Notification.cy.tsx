@@ -3,7 +3,7 @@ import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/testing-react';
 import * as stories from '../Notification.stories';
 
-const { Basic, WithHeading } = composeStories(stories);
+const { Basic, WithHeading, WithDetails } = composeStories(stories);
 
 describe('Notification', () => {
   it('should render the heading when passed', () => {
@@ -14,12 +14,17 @@ describe('Notification', () => {
     cy.get('.text-lg').should('not.exist');
   });
 
-  it('should show and hide more information', () => {
+  it('should not show the button for details when details are not available', () => {
     mount(<Basic />);
-    cy.get('.bg-sucess-700').click();
+    cy.get('#details').should('not.exist');
+  });
+
+  it('should show and hide more information', () => {
+    mount(<WithDetails />);
+    cy.get('#details').click();
     cy.get('.text-sm.mb-4').should('be.visible');
 
-    cy.get('.bg-sucess-700').click();
+    cy.get('#details').click();
     cy.get('.text-sm.mb-4').should('not.exist');
   });
 });

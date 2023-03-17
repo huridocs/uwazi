@@ -22,11 +22,18 @@ const Template: ComponentStory<typeof Notification> = args => (
 
 const Basic = Template.bind({});
 const WithHeading = Template.bind({});
+const WithDetails = Template.bind({});
 
 Basic.args = {
   type: 'sucess',
   text: `This is the text for the notification with a rather larger text that should eventually break to a new line. Then it has even more text.
   Then it has a next line because it's a long text. Then it has even more text.`,
+  details: '',
+  heading: '',
+};
+
+WithDetails.args = {
+  ...Basic.args,
   details:
     'This is some extra information that should only appear when the user clicks on the view more button',
 };
@@ -36,6 +43,6 @@ WithHeading.args = {
   heading: 'This is the title of the notification',
 };
 
-export { Basic, WithHeading };
+export { Basic, WithHeading, WithDetails };
 
 export default NotificationStory as ComponentMeta<typeof Notification>;

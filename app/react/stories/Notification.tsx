@@ -135,20 +135,25 @@ const Notification = ({ type = 'sucess', text, heading, details }: NotificationP
           className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Close"
+          id="dismiss"
         >
           Dismiss
         </button>
-        <button
-          type="button"
-          onClick={onClick}
-          className={`${viewMoreClass} text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
-        >
-          {viewMore ? viewMoreIcons.less : viewMoreIcons.more}
-          {viewMore ? <>View less</> : <>View more</>}
-        </button>
+        {details && (
+          <button
+            type="button"
+            onClick={onClick}
+            id="details"
+            className={`${viewMoreClass} text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
+          >
+            {viewMore ? viewMoreIcons.less : viewMoreIcons.more}
+            {viewMore ? <>View less</> : <>View more</>}
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
+export type { NotificationProps };
 export { Notification };
