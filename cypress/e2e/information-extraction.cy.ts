@@ -58,7 +58,7 @@ describe('Information Extraction', () => {
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('.modal-footer .extractor-footer span', 'Add').click();
     cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
-    cy.get('.table').compareScreenshot();
+    cy.get('.table').toMatchImageSnapshot();
   });
 
   it('should select all templates when from all templates button is clicked', () => {
@@ -67,7 +67,7 @@ describe('Information Extraction', () => {
     cy.get('.extractor-checkbox > input').click();
     cy.contains('span', 'Edit Extractor').click();
     cy.contains('span', 'From all templates').click();
-    cy.get('.extractor-creation-modal').compareScreenshot();
+    cy.get('.extractor-creation-modal').toMatchImageSnapshot();
   });
 
   it('should edit an extractor', () => {
@@ -82,7 +82,7 @@ describe('Information Extraction', () => {
     cy.contains('.modal-footer .extractor-footer span', 'Save').click();
     cy.get('.table tbody tr td').should('contain.text', 'Extractor 1 edited');
     cy.wait(200);
-    cy.get('.table').compareScreenshot();
+    cy.get('.table').toMatchImageSnapshot();
   });
 
   it('should show title initial suggestion states as Empty / Label', () => {
@@ -91,6 +91,6 @@ describe('Information Extraction', () => {
     cy.get('a.btn-success.btn-xs').click();
     cy.get('.suggestion-templates span').eq(1).should('be.visible');
     cy.get('.training-dashboard').should('be.visible');
-    cy.get('.settings-content').compareScreenshot();
+    cy.get('.settings-content').toMatchImageSnapshot();
   });
 });

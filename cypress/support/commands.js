@@ -35,16 +35,7 @@
 //   }
 // }
 
-// const compareSnapshotCommand = require('cypress-image-diff-js/dist/command');
-// compareSnapshotCommand();
-
-const { addCompareScreenshotCommand } = require('cypress-odiff');
-const path = require('path');
-
-addCompareScreenshotCommand({
-  compareOptions: { threshold: 0.5 },
-  pluginOptions: { customSnapshotsDir: path.join(__dirname, '../snapshots') },
-});
+import 'cypress-plugin-snapshots/commands';
 
 function getTextNode(el, match) {
   const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
