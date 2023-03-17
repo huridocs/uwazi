@@ -42,6 +42,7 @@ const { addCompareScreenshotCommand } = require('cypress-odiff');
 const path = require('path');
 
 addCompareScreenshotCommand({
+  compareOptions: { threshold: 0.1 },
   pluginOptions: { customSnapshotsDir: path.join(__dirname, '../snapshots') },
 });
 

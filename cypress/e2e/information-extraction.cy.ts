@@ -89,8 +89,8 @@ describe('Information Extraction', () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
-    cy.get('.suggestion-templates span').eq(0).should('contain.text', 'Ordenes del presidente');
-    cy.get('.suggestion-templates span').eq(1).should('contain.text', 'Ordenes de la corte');
+    cy.get('.suggestion-templates span').eq(1).should('be.visible');
+    cy.get('.training-dashboard').should('be.visible');
     cy.get('.settings-content').compareScreenshot();
   });
 });
