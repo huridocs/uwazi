@@ -1062,12 +1062,20 @@ input:checked + .toggle-bg {
   top: -0.25rem;
 }
 
+.bottom-1 {
+  bottom: 0.25rem;
+}
+
 .bottom-5 {
   bottom: 1.25rem;
 }
 
 .left-0 {
   left: 0px;
+}
+
+.left-1 {
+  left: 0.25rem;
 }
 
 .left-1\/2 {

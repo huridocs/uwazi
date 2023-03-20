@@ -28,6 +28,10 @@ describe('Notifications container', () => {
     );
   };
 
+  before(() => {
+    cy.viewport(500, 500);
+  });
+
   beforeEach(() => {
     mount(
       <RecoilRoot>

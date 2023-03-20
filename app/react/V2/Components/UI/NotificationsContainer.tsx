@@ -46,7 +46,11 @@ const NotificationsContainer = () => {
   return (
     <div className="tw-content">
       {notificationIsSet && (
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          className="fixed bottom-1 left-1 max-w-md"
+        >
           <Notification
             type={notification.type}
             text={notification.text}
