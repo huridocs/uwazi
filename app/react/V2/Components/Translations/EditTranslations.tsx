@@ -90,6 +90,7 @@ const EditTranslations = () => {
 
   const inputField = ({ cell }) => {
     const reset = () => resetField(cell.value, { defaultValue: '' });
+    const textColor = submitting ? 'text-gray-500' : 'text-gray-900';
     return (
       <div key={cell.value}>
         <label htmlFor={cell.value} className="sr-only">
@@ -101,13 +102,13 @@ const EditTranslations = () => {
             id={cell.value}
             {...register(cell.value, { required: true })}
             disabled={submitting}
-            className="rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg text-gray-900 block flex-1 min-w-0 w-full text-sm p-2.5"
+            className={`${textColor} rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg block flex-1 min-w-0 w-full text-sm p-2.5`}
           />
           <button
             type="button"
             onClick={reset}
             disabled={submitting}
-            className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg"
+            className={`${textColor} inline-flex items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg`}
           >
             x
           </button>
@@ -116,7 +117,7 @@ const EditTranslations = () => {
           errors={errors}
           name={cell.value}
           render={() => (
-            <p className="error" role="alert">
+            <p className="text-error-700 font-bold" role="alert">
               <Translate>This field is required</Translate>
             </p>
           )}
@@ -151,8 +152,10 @@ const EditTranslations = () => {
           text: <Translate>An error occurred</Translate>,
           details: e.json.error,
         });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
-    setIsSubmitting(false);
   };
 
   return (
