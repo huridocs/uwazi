@@ -1,23 +1,23 @@
 import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { Property } from './Property';
 
-export class RelationshipProperty {
-  readonly type = 'newRelationship';
-
-  readonly name: string;
-
-  readonly label: string;
-
+class RelationshipProperty extends Property {
   readonly query: MatchQueryNode['traversals'];
 
-  readonly template: string;
+  readonly denormalizedProperty?: string;
 
-  constructor(name: string, label: string, query: MatchQueryNode['traversals'], template: string) {
-    this.name = name;
-    this.label = label;
+  constructor(
+    name: string,
+    label: string,
+    query: MatchQueryNode['traversals'],
+    template: string,
+    denormalizedProperty?: string
+  ) {
+    super('newRelationship', name, label, template);
     this.query = query;
-    this.template = template;
+    this.denormalizedProperty = denormalizedProperty;
   }
 
   buildQueryRootedInTemplate() {
@@ -31,4 +31,10 @@ export class RelationshipProperty {
   buildQueryInvertedFromEntity(entity: Entity) {
     return this.buildQueryRootedInTemplate().invertFromEntity(entity);
   }
+
+  get inherits() {
+    return this.denormalizedProperty !== undefined;
+  }
 }
+
+export { RelationshipProperty };

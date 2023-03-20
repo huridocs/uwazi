@@ -1,4 +1,5 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { EntityPermissions } from '../model/EntityPermissions';
@@ -31,7 +32,7 @@ export class MongoPermissionsDataSource
             isRestricted(entry)
               ? {
                   ...entry,
-                  refId: entry.refId.toHexString(),
+                  refId: MongoIdHandler.mapToApp(entry.refId),
                 }
               : entry
           ) ?? []

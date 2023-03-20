@@ -28,7 +28,7 @@ const getOptionUrl = (option: SortType, path: string, query: string | null) => {
   const currentQuery = rison.decode(decodeURIComponent(query || '()'));
   const type = getPropertySortType(option);
   return `${path}${encodeSearch(
-    { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value },
+    { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value, from: 0 },
     true
   )}`;
 };

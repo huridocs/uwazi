@@ -3,13 +3,13 @@ import { Entity } from '../model/Entity';
 
 export interface EntitiesDataSource {
   entitiesExist(sharedIds: string[]): Promise<boolean>;
-  getByIds(sharedIds: string[]): ResultSet<Entity>;
-  getByDenormalizedId(properties: string[], sharedIds: string[]): ResultSet<string>;
+  getByIds(sharedIds: string[], language?: string): ResultSet<Entity>;
+  getByDenormalizedId(properties: string[], sharedIds?: string[]): ResultSet<string>;
   markMetadataAsChanged(propData: { sharedId: string; property: string }[]): Promise<void>;
-  updateDenormalizedTitle(
-    properties: string[],
-    sharedId: string,
+  updateDenormalizedMetadataValues(
+    denormalizedSharedId: string,
     language: string,
-    value: string
+    title: string,
+    propertiesToNewValues: { propertyName: string; value?: any }[]
   ): Promise<void>;
 }

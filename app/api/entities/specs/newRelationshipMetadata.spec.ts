@@ -227,33 +227,35 @@ describe('entities.get()', () => {
 });
 
 describe('entities.save()', () => {
-  it('should mark newRelationship metadata as obsolete when creating new entity', async () => {
-    const performSpy = jest
-      .spyOn(v2Support, 'assignNewRelationshipFieldsValues')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any) => Promise.resolve());
-    const markSpy = jest
-      .spyOn(v2Support, 'denormalizeAfterEntityCreation')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation(async (e: any, i: any) => Promise.resolve());
+  describe('when creating an entity', () => {
+    it('should mark newRelationship metadata as obsolete on the created entity', async () => {
+      const performSpy = jest
+        .spyOn(v2Support, 'assignNewRelationshipFieldsValues')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .mockImplementation(async (e: any) => Promise.resolve());
+      const markSpy = jest
+        .spyOn(v2Support, 'denormalizeAfterEntityCreation')
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .mockImplementation(async (e: any) => Promise.resolve());
 
-    const expected = {
-      title: 'new_entity',
-      obsoleteMetadata: ['relProp'],
-    };
-    const saved = await entities.save(
-      {
-        template: factory.id('template1'),
+      const expected = {
         title: 'new_entity',
-      },
-      { user: adminUser, language: 'en' }
-    );
-    expect(saved).toMatchObject(expected);
-    const inDb = await db?.collection('entities').find({ title: 'new_entity' }).toArray();
-    expect(inDb).toMatchObject([expected, expected]);
+        obsoleteMetadata: ['relProp'],
+      };
+      const saved = await entities.save(
+        {
+          template: factory.id('template1'),
+          title: 'new_entity',
+        },
+        { user: adminUser, language: 'en' }
+      );
+      expect(saved).toMatchObject(expected);
+      const inDb = await db?.collection('entities').find({ title: 'new_entity' }).toArray();
+      expect(inDb).toMatchObject([expected, expected]);
 
-    performSpy.mockRestore();
-    markSpy.mockRestore();
+      performSpy.mockRestore();
+      markSpy.mockRestore();
+    });
   });
 
   describe('when updating an entity', () => {
@@ -263,6 +265,7 @@ describe('entities.save()', () => {
         {
           _id: factory.id('entity2-en'),
           sharedId: 'entity2',
+          language: 'en',
           template: factory.id('template1'),
           title: 'entity2-en-renamed',
         },

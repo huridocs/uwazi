@@ -1,5 +1,9 @@
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { ObjectId } from 'mongodb';
-import { GraphQueryResult } from '../model/GraphQueryResult';
+import { EntityMappers } from 'api/entities.v2/database/EntityMapper';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { EntityDBO } from 'api/entities.v2/database/schemas/EntityTypes';
+import { RelationshipDBOType } from './schemas/relationshipTypes';
 import {
   EntityPointer,
   Relationship,
@@ -7,15 +11,21 @@ import {
   TextReferencePointer,
 } from '../model/Relationship';
 import { JoinedRelationshipDBOType } from './schemas/relationshipAggregationTypes';
-import { RelationshipDBOType } from './schemas/relationshipTypes';
 
-type TraversalResult = {
-  traversal?: TraversalResult;
+type EntityTraversal =
+  | {
+      _id: ObjectId;
+      sharedId: string;
+      title: string;
+      traversal: RelationshipTraversal;
+    }
+  | (EntityDBO & { traversal: undefined });
+
+type RelationshipTraversal = {
+  _id: ObjectId;
+  type: string;
+  traversal: EntityTraversal;
 };
-
-function unrollTraversal({ traversal, ...rest }: TraversalResult): unknown[] {
-  return [{ ...rest }].concat(traversal ? unrollTraversal(traversal) : []);
-}
 
 function mapSelectionsToDBO(selections: TextReferencePointer['selections']) {
   return selections.map(selection => ({
@@ -65,25 +75,25 @@ function mapPointerToModel(pointer: RelationshipDBOType['from' | 'to']) {
 export const RelationshipMappers = {
   toDBO(relationship: Relationship): RelationshipDBOType {
     return {
-      _id: new ObjectId(relationship._id),
+      _id: MongoIdHandler.mapToDb(relationship._id),
       from: mapPointerToDBO(relationship.from),
       to: mapPointerToDBO(relationship.to),
-      type: new ObjectId(relationship.type),
+      type: MongoIdHandler.mapToDb(relationship.type),
     };
   },
 
   toModel(relationship: RelationshipDBOType) {
     return new Relationship(
-      relationship._id.toHexString(),
+      MongoIdHandler.mapToApp(relationship._id),
       mapPointerToModel(relationship.from),
       mapPointerToModel(relationship.to),
-      relationship.type.toHexString()
+      MongoIdHandler.mapToApp(relationship.type)
     );
   },
 
   toAggregatedResult(joined: JoinedRelationshipDBOType) {
     return {
-      _id: joined._id.toHexString(),
+      _id: MongoIdHandler.mapToApp(joined._id),
       from: {
         sharedId: joined.from[0]?.sharedId,
         title: joined.from[0]?.title,
@@ -92,11 +102,18 @@ export const RelationshipMappers = {
         sharedId: joined.to[0]?.sharedId,
         title: joined.to[0]?.title,
       },
-      type: joined.type.toHexString(),
+      type: MongoIdHandler.mapToApp(joined.type),
     };
   },
 
-  toGraphQueryResult(traversal: TraversalResult) {
-    return new GraphQueryResult(unrollTraversal(traversal));
+  toGraphQueryResult(entityTraversal: EntityTraversal): Entity {
+    if (entityTraversal.traversal) {
+      return RelationshipMappers.toGraphQueryResult(entityTraversal.traversal.traversal);
+    }
+
+    const { traversal, ...entityData } = entityTraversal;
+    return EntityMappers.toModel(entityData);
   },
 };
+
+export type TraversalResult = EntityTraversal;
