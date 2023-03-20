@@ -6,7 +6,6 @@ interface NotificationProps {
   heading?: string | React.ReactNode;
   details?: string | React.ReactNode;
   dismissAction?: () => void;
-  addShadow?: boolean;
 }
 
 const viewMoreIcons = {
@@ -81,7 +80,6 @@ const Notification = ({
   heading,
   details,
   dismissAction,
-  addShadow,
 }: NotificationProps) => {
   const [viewMore, setViewMore] = useState(false);
 
@@ -120,7 +118,7 @@ const Notification = ({
 
   return (
     <div
-      className={`${containerClass} p-4 mb-4 border rounded-lg ${addShadow ? 'shadow-lg' : ''}`}
+      className={`${containerClass} p-4 mb-4 border rounded-lg`}
       role="alert"
       data-cy="notifications-container"
     >

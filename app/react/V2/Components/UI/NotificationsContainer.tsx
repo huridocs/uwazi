@@ -51,14 +51,15 @@ const NotificationsContainer = () => {
           onMouseLeave={handleMouseLeave}
           className="fixed bottom-1 left-2 md:w-2/5 w-4/5"
         >
-          <Notification
-            type={notification.type}
-            text={notification.text}
-            details={notification.details}
-            heading={notification.heading}
-            dismissAction={onClickHandler}
-            addShadow
-          />
+          <div className="shadow-lg">
+            <Notification
+              type={notification.type}
+              text={notification.text}
+              details={notification.details}
+              heading={notification.heading}
+              dismissAction={onClickHandler}
+            />
+          </div>
         </div>
       )}
     </div>
