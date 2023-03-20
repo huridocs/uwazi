@@ -49,7 +49,7 @@ const NotificationsContainer = () => {
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className="fixed bottom-1 left-1 max-w-md"
+          className="fixed bottom-1 left-2 md:w-2/5 w-4/5"
         >
           <Notification
             type={notification.type}

@@ -1074,12 +1074,12 @@ input:checked + .toggle-bg {
   left: 0px;
 }
 
-.left-1 {
-  left: 0.25rem;
-}
-
 .left-1\/2 {
   left: 50%;
+}
+
+.left-2 {
+  left: 0.5rem;
 }
 
 .right-0 {
@@ -1411,6 +1411,10 @@ input:checked + .toggle-bg {
 
 .w-4 {
   width: 1rem;
+}
+
+.w-4\/5 {
+  width: 80%;
 }
 
 .w-5 {
@@ -4428,6 +4432,10 @@ input:checked + .toggle-bg {
 
   .md\:h-full {
     height: 100%;
+  }
+
+  .md\:w-2\/5 {
+    width: 40%;
   }
 
   .md\:w-48 {

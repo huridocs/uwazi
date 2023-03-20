@@ -4,13 +4,15 @@ import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
+import { useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
-import { t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
 import { NavigationHeader } from 'app/stories/NavigationHeader';
 import * as translationsAPI from 'V2/api/translations/index';
 import { ClientTranslationSchema } from 'app/istore';
+import { notificationAtom } from 'app/V2/atoms';
 
 type formDataType = {
   _id?: string;
@@ -55,11 +57,13 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
     };
   });
 
+// eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
   const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
   const [submitting, setIsSubmitting] = useState(false);
   const contextLabel = translations[0].contexts[0].label;
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const formData = translations.map(language => {
     const values = Object.entries(language.contexts[0].values || {})
@@ -132,13 +136,16 @@ const EditTranslations = () => {
     const values = formatValues(data.formData, translations);
     translationsAPI
       .post(values)
-      .then(response => {
+      .then(() => {
         setIsSubmitting(false);
-        //notify
+        setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
       })
       .catch(e => {
-        console.log(e);
-        //notify
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: e,
+        });
       });
   };
 
