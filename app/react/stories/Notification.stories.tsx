@@ -15,6 +15,7 @@ const Template: ComponentStory<typeof Notification> = args => (
         text={args.text}
         heading={args.heading}
         details={args.details}
+        addShadow={args.addShadow}
       />
     </div>
   </div>
@@ -30,6 +31,7 @@ Basic.args = {
   Then it has a next line because it's a long text. Then it has even more text.`,
   details: '',
   heading: '',
+  addShadow: false,
 };
 
 WithDetails.args = {

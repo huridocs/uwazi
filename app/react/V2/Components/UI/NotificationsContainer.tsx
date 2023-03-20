@@ -57,6 +57,7 @@ const NotificationsContainer = () => {
             details={notification.details}
             heading={notification.heading}
             dismissAction={onClickHandler}
+            addShadow
           />
         </div>
       )}
