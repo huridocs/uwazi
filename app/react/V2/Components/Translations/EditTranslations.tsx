@@ -10,9 +10,19 @@ import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
 import { NavigationHeader } from 'app/stories/NavigationHeader';
-import * as translationsAPI from 'V2/api/translations/index';
+import { Settings } from 'shared/types/settingsType';
 import { ClientTranslationSchema } from 'app/istore';
+import * as translationsAPI from 'V2/api/translations';
+import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'app/V2/atoms';
+
+const editTranslationsLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params }: { params: Params }) => {
+    const translations = await translationsAPI.get(headers, params);
+    const settings = await settingsAPI.get(headers);
+    return { translations, settings };
+  };
 
 type formDataType = {
   _id?: string;
@@ -20,7 +30,7 @@ type formDataType = {
   values: { [index: number]: { [key: string]: string } };
 }[];
 
-const formatValues = (
+const prepareValuesToSave = (
   data: formDataType,
   currentTranslations: ClientTranslationSchema[]
 ): ClientTranslationSchema[] =>
@@ -38,12 +48,10 @@ const formatValues = (
     };
   });
 
-const editTranslationsLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  ({ params }: { params: Params }) =>
-    translationsAPI.get(headers, params);
-
-const renderPill = ({ cell }) => <Pill color="gray">{cell.value.toUpperCase()}</Pill>;
+const renderPill = ({ cell }) => {
+  const color = cell.value.isUntranslated ? 'yellow' : 'gray';
+  return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
+};
 
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
@@ -52,31 +60,51 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
     )?.localized_label;
     return {
       language: languaLabel,
-      languageKey: language.locale,
+      translationStatus: {
+        languageKey: language.locale,
+        isUntranslated: formData[languageIndex].values[termIndex].isUntranslated,
+      },
       fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
     };
   });
 
-// eslint-disable-next-line max-statements
-const EditTranslations = () => {
-  const translations = useLoaderData() as ClientTranslationSchema[];
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
-  const [submitting, setIsSubmitting] = useState(false);
-  const contextLabel = translations[0].contexts[0].label;
-  const setNotifications = useSetRecoilState(notificationAtom);
+const prepareFormValues = (translations: ClientTranslationSchema[], defaultLanguageKey: string) => {
+  const defaultLanguageValues = translations.find(
+    language => language.locale === defaultLanguageKey
+  ).contexts[0].values;
 
-  const formData = translations.map(language => {
+  return translations.map(language => {
     const values = Object.entries(language.contexts[0].values || {})
       .sort()
       .reduce(
         (result, [key, value], index) => ({
           ...result,
-          [index]: { key, value },
+          [index]: {
+            key,
+            value,
+            isUntranslated:
+              defaultLanguageValues[key] === value && defaultLanguageKey !== language.locale,
+          },
         }),
         {}
       );
     return { _id: language._id?.toString(), locale: language.locale, values };
   });
+};
+
+// eslint-disable-next-line max-statements
+const EditTranslations = () => {
+  const { translations, settings } = useLoaderData() as {
+    translations: ClientTranslationSchema[];
+    settings: Settings;
+  };
+  const defaultLanguage = settings?.languages?.find(language => language.default);
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const [submitting, setIsSubmitting] = useState(false);
+  const contextLabel = translations[0].contexts[0].label;
+  const setNotifications = useSetRecoilState(notificationAtom);
+
+  const formData = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -128,7 +156,7 @@ const EditTranslations = () => {
 
   const columns = [
     { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
-    { key: '2', Header: '', accessor: 'languageKey', Cell: renderPill, disableSortBy: true },
+    { key: '2', Header: '', accessor: 'translationStatus', Cell: renderPill, disableSortBy: true },
     {
       key: '3',
       Header: 'Current Value',
@@ -140,7 +168,7 @@ const EditTranslations = () => {
 
   const submitFunction = async (data: { formData: formDataType }) => {
     setIsSubmitting(true);
-    const values = formatValues(data.formData, translations);
+    const values = prepareValuesToSave(data.formData, translations);
     translationsAPI
       .post(values)
       .then(() => {
