@@ -117,7 +117,7 @@ const EditTranslations = () => {
           name={cell.value}
           render={() => (
             <p className="error" role="alert">
-              {t('System', 'This field is required')}
+              <Translate>This field is required</Translate>
             </p>
           )}
         />
@@ -126,9 +126,15 @@ const EditTranslations = () => {
   };
 
   const columns = [
-    { key: '1', Header: 'Language', accessor: 'language' },
-    { key: '2', Header: '', accessor: 'languageKey', Cell: renderPill },
-    { key: '3', Header: 'Current Value', accessor: 'fieldKey', Cell: inputField },
+    { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
+    { key: '2', Header: '', accessor: 'languageKey', Cell: renderPill, disableSortBy: true },
+    {
+      key: '3',
+      Header: 'Current Value',
+      accessor: 'fieldKey',
+      Cell: inputField,
+      disableSortBy: true,
+    },
   ];
 
   const submitFunction = async (data: { formData: formDataType }) => {
@@ -137,16 +143,16 @@ const EditTranslations = () => {
     translationsAPI
       .post(values)
       .then(() => {
-        setIsSubmitting(false);
         setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
       })
       .catch(e => {
         setNotifications({
           type: 'error',
           text: <Translate>An error occurred</Translate>,
-          details: e,
+          details: e.json.error,
         });
       });
+    setIsSubmitting(false);
   };
 
   return (

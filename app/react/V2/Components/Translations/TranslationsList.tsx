@@ -25,9 +25,9 @@ const renderButton = data => (
 const pill = ({ cell }) => <Pill color="gray">{cell.value}</Pill>;
 
 const columns = [
-  { key: '1', Header: 'View', accessor: 'label' },
-  { key: '2', Header: 'Type', accessor: 'type', Cell: pill, isSortable: true },
-  { key: '3', Header: 'Action', accessor: 'id', Cell: renderButton },
+  { key: '1', Header: 'View', accessor: 'label', disableSortBy: true },
+  { key: '2', Header: 'Type', accessor: 'type', Cell: pill },
+  { key: '3', Header: 'Action', accessor: 'id', Cell: renderButton, disableSortBy: true },
 ];
 
 const TranslationsList = () => {

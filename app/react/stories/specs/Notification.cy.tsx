@@ -21,10 +21,10 @@ describe('Notification', () => {
 
   it('should show and hide more information', () => {
     mount(<WithDetails />);
-    cy.get('#details').click();
+    cy.contains('View more').click();
     cy.get('.text-sm.mb-4').should('be.visible');
 
-    cy.get('#details').click();
+    cy.contains('View less').click();
     cy.get('.text-sm.mb-4').should('not.exist');
   });
 });

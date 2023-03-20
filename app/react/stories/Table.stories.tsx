@@ -36,10 +36,10 @@ Basic.args = {
   fixedColumns: true,
   title: 'Table name',
   columns: [
-    { key: '1', id: 'select', Header: '', Cell: checkboxCell },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
-    { key: '3', Header: 'Description', accessor: 'description' },
-    { key: '4', Header: 'Date added', accessor: 'created' },
+    { key: '1', id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
+    { key: '2', Header: 'Title', accessor: 'title', id: 'title' },
+    { key: '3', Header: 'Description', accessor: 'description', disableSortBy: true },
+    { key: '4', Header: 'Date added', accessor: 'created', disableSortBy: true },
   ],
   data: [
     { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -60,11 +60,11 @@ Basic.args = {
 WithActions.args = {
   ...Basic.args,
   columns: [
-    { key: '1', id: 'select', Header: '', Cell: checkboxCell },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title', isSortable: true },
-    { key: '3', Header: 'Description', accessor: 'description' },
-    { key: '4', Header: 'Date added', accessor: 'created' },
-    { key: '5', id: 'action', Header: 'Actions', Cell: actionsCell },
+    { key: '1', id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
+    { key: '2', Header: 'Title', accessor: 'title', id: 'title' },
+    { key: '3', Header: 'Description', accessor: 'description', disableSortBy: true },
+    { key: '4', Header: 'Date added', accessor: 'created', disableSortBy: true },
+    { key: '5', id: 'action', Header: 'Actions', Cell: actionsCell, disableSortBy: true },
   ],
 };
 

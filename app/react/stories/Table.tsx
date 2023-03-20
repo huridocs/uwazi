@@ -18,7 +18,7 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>> & { key: string | number; isSortable?: boolean };
+  Partial<UseSortByColumnProps<T>> & { key: string | number; disableSortBy?: boolean };
 
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
@@ -69,9 +69,9 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
               {...column.getHeaderProps(column.getSortByToggleProps())}
               key={column.key}
             >
-              <div className={`text-gray-500 ${column.isSortable ? 'flex flex-row' : ''}`}>
+              <div className={`text-gray-500 ${!column.disableSortBy ? 'flex flex-row' : ''}`}>
                 {column.render('Header')}
-                {column.Header && column.isSortable && getIcon(column)}
+                {column.Header && !column.disableSortBy && getIcon(column)}
               </div>
             </FlowbiteTable.HeadCell>
           ))
