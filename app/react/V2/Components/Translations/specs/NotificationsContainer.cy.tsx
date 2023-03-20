@@ -48,15 +48,23 @@ describe('Notifications container', () => {
   });
 
   describe('automatic dismissal of notifications', () => {
-    it('should dissapear on its own after a time', () => {
+    it('should disappear on its own after a time', () => {
       cy.clock();
       cy.get('#send-notification').click();
       cy.clock().tick(6000);
       cy.get('#notification-container').should('not.exist');
     });
 
-    it('should not dissapear on its own if the user is hovering over the notification', () => {});
+    it('should not disappear on its own if the user is hovering over the notification', () => {
+      cy.clock();
+      cy.get('#send-notification').click();
+      cy.get('#notification-container').trigger('mouseover');
+      cy.clock().tick(7000);
+      cy.get('#notification-container').should('exist');
 
-    it('should not dissapear on its own if the user clicked the view more button', () => {});
+      cy.get('#notification-container').trigger('mouseout');
+      cy.clock().tick(6000);
+      cy.get('#notification-container').should('not.exist');
+    });
   });
 });
