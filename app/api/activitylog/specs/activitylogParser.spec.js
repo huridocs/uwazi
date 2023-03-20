@@ -9,6 +9,7 @@ import {
   firstDoc,
   firstDocSharedId,
   nonExistentId,
+  extractorId,
 } from './fixturesParser';
 import { getSemanticData } from '../activitylogParser';
 import * as activityLogBuilderExports from '../activityLogBuilder';
@@ -1181,7 +1182,8 @@ describe('Activitylog Parser', () => {
             action: 'UPDATE',
             description: 'Accepted suggestion on entity',
             name: 'doc1',
-            extra: ' updated property: title, with value: Red Robin . All languages: true',
+            extra:
+              ' updated property: title on extractor extractor_name, with value: Red Robin . All languages: true',
           }
         );
       });
@@ -1194,13 +1196,13 @@ describe('Activitylog Parser', () => {
             method: 'POST',
             url: '/api/suggestions/train',
             body: JSON.stringify({
-              property: 'title',
+              extractorId: extractorId.toString(),
             }),
           },
           {
             action: 'CREATE',
             description: 'Information extraction training',
-            extra: ' property title ',
+            extra: ' extractor extractor_name ',
           }
         );
       });

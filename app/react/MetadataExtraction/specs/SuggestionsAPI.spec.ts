@@ -5,7 +5,9 @@ import {
   trainModel,
   ixStatus,
   acceptEntitySuggestion,
-  saveConfigurations,
+  createExtractor,
+  deleteExtractors,
+  getAllExtractors,
 } from 'app/MetadataExtraction/SuggestionsAPI';
 
 describe('SuggestionsAPI', () => {
@@ -46,11 +48,31 @@ describe('SuggestionsAPI', () => {
     });
   });
 
-  describe('saveConfigurations', () => {
-    it('should return settings after saving the configurations', async () => {
+  describe('getAllExtractors', () => {
+    it('should return all the extractor', async () => {
+      const request = new RequestParams();
+      spyOn(api, 'get').and.returnValue(Promise.resolve({ json: 'success' }));
+      const result = await getAllExtractors(request);
+      expect(result).toEqual('success');
+      expect(api.get).toHaveBeenCalledWith('ixextractors', expect.anything());
+    });
+  });
+
+  describe('createExtractor', () => {
+    it('should return extractor after saving', async () => {
       const request = new RequestParams();
       spyOn(api, 'post').and.returnValue(Promise.resolve({ json: 'success' }));
-      const result = await saveConfigurations(request);
+      const result = await createExtractor(request);
+      expect(result).toEqual('success');
+      expect(api.post).toHaveBeenCalledWith('ixextractors', expect.anything());
+    });
+  });
+
+  describe('deleteExtractors', () => {
+    it('should return result after delete', async () => {
+      const request = new RequestParams();
+      spyOn(api, 'delete').and.returnValue(Promise.resolve({ json: 'success' }));
+      const result = await deleteExtractors(request);
       expect(result).toEqual('success');
     });
   });

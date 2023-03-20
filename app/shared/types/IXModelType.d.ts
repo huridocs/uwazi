@@ -5,7 +5,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface IXModelType {
   _id?: ObjectIdSchema;
-  propertyName: string;
+  extractorId: ObjectIdSchema;
   creationDate: number;
   status?: 'processing' | 'failed' | 'ready';
   findingSuggestions?: boolean;

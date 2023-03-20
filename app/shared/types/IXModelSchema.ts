@@ -13,10 +13,10 @@ export const IXModelSchema = {
   additionalProperties: false,
   title: 'IXModelType',
   definitions: { objectIdSchema },
-  required: ['propertyName', 'creationDate'],
+  required: ['extractorId', 'creationDate'],
   properties: {
     _id: objectIdSchema,
-    propertyName: { type: 'string', minLength: 1 },
+    extractorId: objectIdSchema,
     creationDate: { type: 'number' },
     status: { type: 'string', enum: Object.values(ModelStatus), default: ModelStatus.processing },
     findingSuggestions: { type: 'boolean', default: true },
