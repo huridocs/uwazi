@@ -120,7 +120,7 @@ const Notification = ({
     <div
       className={`${containerClass} p-4 mb-4 border rounded-lg`}
       role="alert"
-      id="notification-container"
+      data-cy="notifications-container"
     >
       {heading && (
         <div className="flex items-cente">
@@ -146,7 +146,6 @@ const Notification = ({
           className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
           data-dismiss-target="#alert-additional-content-1"
           aria-label="Close"
-          id="dismiss"
           onClick={dismissAction}
         >
           Dismiss
@@ -155,7 +154,6 @@ const Notification = ({
           <button
             type="button"
             onClick={onClick}
-            id="details"
             className={`${viewMoreClass} text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
           >
             {viewMore ? viewMoreIcons.less : viewMoreIcons.more}

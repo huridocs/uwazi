@@ -47,8 +47,8 @@ describe('Notifications container', () => {
 
   it('should allow users to dismiss the noficication', () => {
     cy.get('#send-notification').click();
-    cy.get('#dismiss').click();
-    cy.get('#notification-container').should('not.exist');
+    cy.contains('button', 'Dismiss').click();
+    cy.get('[data-cy="notifications-container"]').should('not.exist');
   });
 
   describe('automatic dismissal of notifications', () => {
@@ -56,19 +56,19 @@ describe('Notifications container', () => {
       cy.clock();
       cy.get('#send-notification').click();
       cy.clock().tick(6000);
-      cy.get('#notification-container').should('not.exist');
+      cy.get('[data-cy="notifications-container"]').should('not.exist');
     });
 
     it('should not disappear on its own if the user is hovering over the notification', () => {
       cy.clock();
       cy.get('#send-notification').click();
-      cy.get('#notification-container').trigger('mouseover');
+      cy.get('[data-cy="notifications-container"]').trigger('mouseover');
       cy.clock().tick(7000);
-      cy.get('#notification-container').should('exist');
+      cy.get('[data-cy="notifications-container"]').should('exist');
 
-      cy.get('#notification-container').trigger('mouseout');
+      cy.get('[data-cy="notifications-container"]').trigger('mouseout');
       cy.clock().tick(6000);
-      cy.get('#notification-container').should('not.exist');
+      cy.get('[data-cy="notifications-container"]').should('not.exist');
     });
   });
 });
