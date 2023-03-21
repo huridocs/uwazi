@@ -9,7 +9,6 @@ import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';
 import activitylog from '../activitylog';
 import activitylogMiddleware from '../activitylogMiddleware';
-import { Logger } from 'winston';
 
 describe('activitylogMiddleware', () => {
   let req;
