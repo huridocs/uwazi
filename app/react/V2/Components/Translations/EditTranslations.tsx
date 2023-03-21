@@ -98,13 +98,14 @@ const EditTranslations = () => {
     translations: ClientTranslationSchema[];
     settings: Settings;
   };
+  const [translationsState, setTranslationsState] = useState(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const contextTerms = Object.keys(translationsState[0].contexts[0].values || {}).sort();
   const [submitting, setIsSubmitting] = useState(false);
-  const contextLabel = translations[0].contexts[0].label;
+  const contextLabel = translationsState[0].contexts[0].label;
   const setNotifications = useSetRecoilState(notificationAtom);
 
-  const formData = prepareFormValues(translations, defaultLanguage?.key || 'en');
+  const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -171,8 +172,9 @@ const EditTranslations = () => {
     const values = prepareValuesToSave(data.formData, translations);
     translationsAPI
       .post(values)
-      .then(() => {
+      .then(response => {
         setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
+        setTranslationsState(response);
       })
       .catch(e => {
         setNotifications({
