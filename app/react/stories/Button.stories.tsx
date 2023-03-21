@@ -9,7 +9,7 @@ const ButtonStory = {
 
 const Template: ComponentStory<typeof Button> = args => (
   <div className="tw-content">
-    <Button type={args.type} onClickFuntion={args.onClickFuntion}>
+    <Button buttonStyle={args.buttonStyle} size={args.size} disabled={args.disabled}>
       {args.children}
     </Button>
   </div>
@@ -18,9 +18,10 @@ const Template: ComponentStory<typeof Button> = args => (
 const Basic = Template.bind({});
 
 Basic.args = {
-  children: <span>Button name</span>,
-  type: 'primary',
-  onClickFuntion: () => {},
+  buttonStyle: 'primary',
+  size: 'medium',
+  disabled: false,
+  children: 'Button name',
 };
 
 export { Basic };
