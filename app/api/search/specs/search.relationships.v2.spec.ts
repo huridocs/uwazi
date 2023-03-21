@@ -5,7 +5,7 @@ import { search } from '../search';
 import { fixturesTimeOut } from './fixtures_elastic';
 
 const fixturesFactory = getFixturesFactory();
-const elasticIndex = 'index_for_index_testing';
+const elasticIndex = 'relationship_v2_testing_index';
 
 beforeEach(async () => {
   await testingEnvironment.setUp(
