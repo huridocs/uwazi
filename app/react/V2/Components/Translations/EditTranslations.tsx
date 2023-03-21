@@ -121,22 +121,22 @@ const EditTranslations = () => {
     const textColor = submitting ? 'text-gray-500' : 'text-gray-900';
     return (
       <div key={cell.value}>
-        <label htmlFor={cell.value} className="sr-only">
-          {cell.fieldKey}
-        </label>
         <div className="flex">
+          <label htmlFor={cell.value} className="sr-only">
+            {cell.fieldKey}
+          </label>
           <input
             type="text"
             id={cell.value}
             {...register(cell.value, { required: true })}
             disabled={submitting}
-            className={`${textColor} rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg block flex-1 min-w-0 w-full text-sm p-2.5`}
+            className={`${textColor} rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 rounded-l-lg block flex-1 min-w-0 lg:w-full text-sm p-2.5`}
           />
           <button
             type="button"
             onClick={reset}
             disabled={submitting}
-            className={`${textColor} inline-flex items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg`}
+            className={`${textColor} items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg inline-flex`}
           >
             x
           </button>

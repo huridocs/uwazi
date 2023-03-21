@@ -55,7 +55,7 @@ const Table = ({ columns, data, title, fixedColumns }: TableProps) => {
   return (
     <FlowbiteTable
       {...getTableProps()}
-      className={` ${fixedColumns ? 'table-fixed' : 'table-auto'}`}
+      className={` ${fixedColumns ? 'lg:table-fixed' : 'lg:table-auto'} table-auto`}
     >
       {title && (
         <caption className="p-5 text-lg font-semibold text-left bg-white text-gray-900">
