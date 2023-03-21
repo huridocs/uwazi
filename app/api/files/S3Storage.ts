@@ -13,7 +13,7 @@ export class S3Storage {
   constructor() {
     this.client = new S3Client({
       requestHandler: new NodeHttpHandler({
-        socketTimeout: 1000,
+        socketTimeout: 10000,
       }),
       apiVersion: 'latest',
       region: 'placeholder-region',
