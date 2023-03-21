@@ -11,7 +11,7 @@ import * as translationsAPI from 'V2/api/translations/index';
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  () =>
+  async () =>
     translationsAPI.get(headers);
 
 const renderButton = data => (
@@ -22,7 +22,11 @@ const renderButton = data => (
   </Link>
 );
 
-const pill = ({ cell }) => <Pill color="gray">{cell.value}</Pill>;
+const pill = ({ cell }) => (
+  <Pill color="gray">
+    <Translate>{cell.value}</Translate>
+  </Pill>
+);
 
 const columns = [
   { key: '1', Header: 'View', accessor: 'label', disableSortBy: true },
@@ -58,7 +62,9 @@ const TranslationsList = () => {
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
         <NavigationHeader backUrl="/settings">
-          <h1 className="text-base text-gray-700">Translations</h1>
+          <h1 className="text-base text-gray-700">
+            <Translate>Translations</Translate>
+          </h1>
         </NavigationHeader>
         <div className="mt-4">
           <Table

@@ -190,7 +190,11 @@ const EditTranslations = () => {
     <div className="tw-content" style={{ width: '100%' }}>
       <div className="p-5">
         <NavigationHeader backUrl="/settings/translations">
-          <h1 className="text-base text-gray-700">Translations &gt; {contextLabel}</h1>
+          <h1 className="text-base text-gray-700 flex gap-2 sm:gap-6">
+            <Translate>Translations</Translate>
+            <span>&gt;</span>
+            <Translate>{contextLabel}</Translate>
+          </h1>
         </NavigationHeader>
         <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map((contextTerm, termIndex) => {
