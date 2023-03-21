@@ -3,8 +3,8 @@ import React from 'react';
 interface ButtonProps {
   children: string | React.ReactNode;
   buttonStyle?: 'primary' | 'secondary' | 'tertiary';
-  size?: 'small' | 'medium';
   type?: 'submit' | 'button';
+  size?: 'small' | 'medium';
   disabled?: boolean;
   onClickFuntion?: () => any;
 }
@@ -13,9 +13,9 @@ const Button = ({
   children,
   buttonStyle = 'primary',
   type = 'button',
+  size,
   disabled,
   onClickFuntion,
-  size,
 }: ButtonProps) => {
   let classNames;
   const textStyles =

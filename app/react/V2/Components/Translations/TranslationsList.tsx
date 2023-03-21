@@ -16,7 +16,7 @@ const translationsListLoader =
 
 const renderButton = data => (
   <Link to={`edit/${data.row.values.id}`}>
-    <Button type="secondary">
+    <Button buttonStyle="secondary">
       <Translate>Translate</Translate>
     </Button>
   </Link>
@@ -59,7 +59,7 @@ const TranslationsList = () => {
   });
 
   return (
-    <div className="tw-content" style={{ width: '100%' }}>
+    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <div className="p-5">
         <NavigationHeader backUrl="/settings">
           <h1 className="text-base text-gray-700">

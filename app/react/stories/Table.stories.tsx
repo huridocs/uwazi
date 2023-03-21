@@ -28,7 +28,7 @@ const checkboxCell = () => <Checkbox />;
 const actionsCell = () => (
   <div>
     <Button>Primary</Button>
-    <Button type="secondary">Secondary</Button>
+    <Button buttonStyle="secondary">Secondary</Button>
   </div>
 );
 

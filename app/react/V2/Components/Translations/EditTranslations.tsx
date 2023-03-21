@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { Params, useLoaderData, LoaderFunction } from 'react-router-dom';
+import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
@@ -10,6 +10,7 @@ import { Translate } from 'app/I18N';
 import { Table } from 'app/stories/Table';
 import { Pill } from 'app/stories/Pill';
 import { NavigationHeader } from 'app/stories/NavigationHeader';
+import { Button } from 'app/stories/Button';
 import { Settings } from 'shared/types/settingsType';
 import { ClientTranslationSchema } from 'app/istore';
 import * as translationsAPI from 'V2/api/translations';
@@ -189,16 +190,16 @@ const EditTranslations = () => {
   };
 
   return (
-    <div className="tw-content" style={{ width: '100%' }}>
-      <div className="p-5">
-        <NavigationHeader backUrl="/settings/translations">
-          <h1 className="text-base text-gray-700 flex gap-2 sm:gap-6">
-            <Translate>Translations</Translate>
-            <span>&gt;</span>
-            <Translate>{contextLabel}</Translate>
-          </h1>
-        </NavigationHeader>
-        <form onSubmit={handleSubmit(submitFunction)}>
+    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+      <form onSubmit={handleSubmit(submitFunction)}>
+        <div className="p-5">
+          <NavigationHeader backUrl="/settings/translations">
+            <h1 className="text-base text-gray-700 flex gap-2 sm:gap-6">
+              <Translate>Translations</Translate>
+              <span>&gt;</span>
+              <Translate>{contextLabel}</Translate>
+            </h1>
+          </NavigationHeader>
           {contextTerms.map((contextTerm, termIndex) => {
             const values = composeTableValues(formData, termIndex);
             return (
@@ -207,11 +208,22 @@ const EditTranslations = () => {
               </div>
             );
           })}
-          <button type="submit" disabled={submitting}>
-            SEND
-          </button>
-        </form>
-      </div>
+        </div>
+
+        <div className="sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
+          <div className="pt-1">
+            <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+              Import
+            </Button>
+            <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+              <Link to="translations">Cancel</Link>
+            </Button>
+            <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
+              Save
+            </Button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
