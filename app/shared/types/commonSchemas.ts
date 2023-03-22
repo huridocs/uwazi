@@ -219,7 +219,6 @@ export const propertySchema = {
     // for relationships v2
     query: {
       type: 'array',
-      tsType: 'TraverseInputType',
     },
     denormalizedProperty: { type: 'string' },
   },

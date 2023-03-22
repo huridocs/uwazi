@@ -3,8 +3,6 @@
 import { ObjectId } from 'mongodb';
 import { TraverseInputType } from 'shared/types/relationshipsQueryTypes'
 
-import { TraverseInputSchema } from 'shared/types/relationshipsQueryTypes';
-
 export interface AttachmentSchema {
   _id?: string | ObjectId;
   originalname?: string;
@@ -186,7 +184,7 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  query?: TraverseInputType;
+  query?: unknown[];
   denormalizedProperty?: string;
 }
 

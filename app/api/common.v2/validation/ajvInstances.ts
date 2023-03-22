@@ -1,28 +1,32 @@
 import util from 'util';
 
-import Ajv, { AnySchemaObject } from 'ajv';
-import ValidationError from 'ajv/dist/runtime/validation_error';
+import Ajv from 'ajv';
+import { JTDSchemaType } from 'ajv/dist/types/jtd-schema';
+import { ValidationError } from './ValidationError';
 
-const defaultAjv = new Ajv({ allErrors: true });
-defaultAjv.addVocabulary(['tsType']);
+const ajv = new Ajv({ allErrors: true });
 
-type ValidatorType<T> = (value: any) => value is T;
+type ValidatorSchema<T, Refs extends Record<string, unknown>> = JTDSchemaType<T, Refs>;
 
-const createValidator = <T>(ajvInstance: Ajv, ajvSchema: AnySchemaObject): ValidatorType<T> => {
-  const validator = ajvInstance.compile<T>(ajvSchema);
-  return (value: any): value is T => {
+function createValidator<T, Refs extends Record<string, unknown> = {}>(
+  schema: ValidatorSchema<T, Refs>
+) {
+  const validator = ajv.compile(schema);
+  return (value: unknown): value is T => {
     const valid = validator(value);
     if (!valid) {
-      const err = new ValidationError(validator.errors || []);
-      err.message = util.inspect(err, false, null);
-      throw err;
+      const error = new ValidationError(
+        validator.errors?.map(({ instancePath, message }) => ({
+          path: instancePath,
+          message: message || '',
+        })) || []
+      );
+      error.message = util.inspect(error, false, null);
+      throw error;
     }
     return true;
   };
-};
+}
 
-const createDefaultValidator = <T>(ajvSchema: AnySchemaObject) =>
-  createValidator<T>(defaultAjv, ajvSchema);
-
-export type { ValidatorType };
-export { createDefaultValidator };
+export { createValidator };
+export type { ValidatorSchema };

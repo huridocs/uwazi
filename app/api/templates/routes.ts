@@ -5,7 +5,6 @@ import { search } from 'api/search';
 import { createError, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import templates from './templates';
-import { validateNewRelationshipPropertiesInInput } from './v2_support';
 
 const reindexAllTemplates = async () => {
   const allTemplates = await templates.get();
@@ -27,8 +26,6 @@ export default (app: Application) => {
   app.post('/api/templates', needsAuthorization(), async (req, res, next) => {
     try {
       const { reindex: fullReindex, ...template } = req.body;
-
-      await validateNewRelationshipPropertiesInInput(template);
 
       const response = await handleMappingConflict(async () =>
         templates.save(template, req.language, !fullReindex)

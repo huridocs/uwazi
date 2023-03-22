@@ -1,3 +1,4 @@
+import { mapAjvToAppValidation } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -26,6 +27,7 @@ import {
   getUpdatedNames,
   updateExtractedMetadataProperties,
 } from './utils';
+import { validateNewRelationshipPropertiesInInput } from './v2_support';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -162,7 +164,9 @@ export default {
     template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
-    await validateTemplate(template);
+    await mapAjvToAppValidation(validateTemplate)(template);
+    await validateNewRelationshipPropertiesInInput(template);
+
     await this.swapNamesValidation(template);
 
     if (reindex) {
