@@ -31,6 +31,7 @@ const attemptRisonDecode = string => {
 };
 
 export function toUrlParams(_data) {
+  let risonData = '';
   if (typeof _data === 'string') {
     return `?${_data}`;
   }
@@ -40,30 +41,85 @@ export function toUrlParams(_data) {
     return '';
   }
 
-  return `?${Object.keys(data)
-    .map(key => {
-      if (typeof data[key] === 'undefined' || data[key] === null) {
-        return;
-      }
+  // return `?${Object.keys(data)
+  //   .map(key => {
+  //     if (typeof data[key] === 'undefined' || data[key] === null) {
+  //       return;
+  //     }
 
-      if (typeof data[key] === 'object') {
-        data[key] = JSON.stringify(data[key]);
-      }
+  //     if (Array.isArray(data[key])) {
+  //       console.log('is array');
+  //       const query = new URLSearchParams();
+  //       data[key].forEach(value => {
+  //         query.append(key, value);
+  //       });
+  //       data[key] = query.toString();
+  //       console.log(data[key]);
+  //     }
 
-      let encodedValue = encodeURIComponent(data[key]);
+  //     if (typeof data[key] === 'object') {
+  //       data[key] = JSON.stringify(data[key]);
+  //     }
 
-      if (encodeURIComponent(key) === 'q') {
-        try {
-          attemptRisonDecode(data[key]);
-          encodedValue = data[key];
-        } catch (err) {
-          encodedValue = encodeURIComponent(data[key]);
-        }
-      }
-      return `${encodeURIComponent(key)}=${encodedValue}`;
-    })
-    .filter(param => param)
-    .join('&')}`;
+  //     let encodedValue = encodeURIComponent(data[key]);
+
+  //     if (encodeURIComponent(key) === 'q') {
+  //       try {
+  //         attemptRisonDecode(data[key]);
+  //         encodedValue = data[key];
+  //       } catch (err) {
+  //         encodedValue = encodeURIComponent(data[key]);
+  //       }
+  //     }
+  //     return `${encodeURIComponent(key)}=${encodedValue}`;
+  //   })
+  //   .filter(param => param)
+  //   .join('&')}`;
+
+  if (data['q']) {
+    risonData = data['q'];
+    try {
+      console.log('decoding rison data');
+      attemptRisonDecode(risonData);
+    } catch (err) {
+      console.log('error decoding rison data');
+      risonData = encodeURIComponent(risonData);
+    }
+  }
+  const query = new URLSearchParams();
+
+  Object.keys(data).forEach(key => {
+    if (typeof data[key] === 'undefined' || data[key] === null) {
+      return;
+    }
+    if (Array.isArray(data[key])) {
+      data[key].forEach(value => {
+        query.append(key, value);
+      });
+      return;
+    }
+
+    if (typeof data[key] === 'object') {
+      data[key] = JSON.stringify(data[key]);
+    }
+
+    if (key === 'q') {
+      return;
+    }
+  });
+
+  const queryString = query.toString();
+
+  if (queryString !== '') {
+    if (risonData !== '') {
+      return `?${queryString}&q=${risonData}`;
+    }
+    return `?${queryString}`;
+  } else {
+    if (risonData !== '') {
+      return `?q=${risonData}`;
+    }
+  }
 }
 
 const removeUndefinedKeys = obj => {
@@ -86,6 +142,7 @@ const _fetch = (url, data, method, _headers) => {
 
   if (method === 'GET' || method === 'DELETE') {
     params = toUrlParams(data);
+    console.log(params);
   }
 
   if (method === 'POST' || method === 'PUT') {
