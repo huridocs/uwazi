@@ -103,7 +103,7 @@ const EditTranslations = () => {
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const contextTerms = Object.keys(translationsState[0].contexts[0].values || {}).sort();
   const [submitting, setIsSubmitting] = useState(false);
-  const contextLabel = translationsState[0].contexts[0].label;
+  const { label: contextLabel, id: contextId } = translationsState[0].contexts[0];
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
@@ -212,12 +212,16 @@ const EditTranslations = () => {
         </div>
 
         <div className="sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
-          <div className="pt-1">
+          <div className="pt-1 flex justify-end gap-2 p-2">
+            <div className="flex-1">
+              {contextId === 'System' && (
+                <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+                  Import
+                </Button>
+              )}
+            </div>
             <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-              Import
-            </Button>
-            <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-              <Link to="translations">Cancel</Link>
+              <Link to="/settings/translations">Cancel</Link>
             </Button>
             <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
               Save
