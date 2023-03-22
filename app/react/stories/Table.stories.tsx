@@ -11,12 +11,7 @@ const TableStory = {
 
 const Template: ComponentStory<typeof Table> = args => (
   <div className="tw-content">
-    <Table
-      fixedColumns={args.fixedColumns}
-      columns={args.columns}
-      data={args.data}
-      title={args.title}
-    />
+    <Table columns={args.columns} data={args.data} title={args.title} />
   </div>
 );
 
@@ -26,14 +21,13 @@ const WithActions = Template.bind({});
 const checkboxCell = () => <Checkbox />;
 
 const actionsCell = () => (
-  <div>
+  <div className="flex gap-1">
     <Button>Primary</Button>
     <Button buttonStyle="secondary">Secondary</Button>
   </div>
 );
 
 Basic.args = {
-  fixedColumns: true,
   title: 'Table name',
   columns: [
     { key: '1', id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
@@ -60,11 +54,35 @@ Basic.args = {
 WithActions.args = {
   ...Basic.args,
   columns: [
-    { key: '1', id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title' },
-    { key: '3', Header: 'Description', accessor: 'description', disableSortBy: true },
-    { key: '4', Header: 'Date added', accessor: 'created', disableSortBy: true },
-    { key: '5', id: 'action', Header: 'Actions', Cell: actionsCell, disableSortBy: true },
+    {
+      key: '1',
+      id: 'select',
+      Header: '',
+      Cell: checkboxCell,
+      disableSortBy: true,
+    },
+    { key: '2', Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
+    {
+      key: '4',
+      Header: 'Date added',
+      accessor: 'created',
+      disableSortBy: true,
+      className: 'w-1/3',
+    },
+    {
+      key: '3',
+      Header: 'Description',
+      accessor: 'description',
+      disableSortBy: true,
+      className: 'w-1/3',
+    },
+    {
+      key: '5',
+      id: 'action',
+      Header: 'Actions',
+      Cell: actionsCell,
+      disableSortBy: true,
+    },
   ],
 };
 

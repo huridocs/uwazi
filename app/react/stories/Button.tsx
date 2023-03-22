@@ -18,8 +18,7 @@ const Button = ({
   onClickFuntion,
 }: ButtonProps) => {
   let classNames;
-  const textStyles =
-    size === 'small' ? 'text-xs px-3 py-1.5 mr-1 mb-1' : 'text-sm px-5 py-2.5 mr-2 mb-2';
+  const textStyles = size === 'small' ? 'text-xs px-3 py-1.5' : 'text-sm px-5 py-2.5';
 
   switch (buttonStyle) {
     case 'secondary':
