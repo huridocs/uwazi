@@ -18,11 +18,7 @@ const NotificationsContainer = () => {
       setTimerId(timer);
     }
 
-    return () => {
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-    };
+    return () => clearTimeout(timerId);
   }, [resetState, notificationIsSet, timerId]);
 
   const onClickHandler = () => {
@@ -36,6 +32,10 @@ const NotificationsContainer = () => {
   };
 
   const handleMouseLeave = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+
     const timer = setTimeout(() => {
       resetState();
     }, 6000);
@@ -49,7 +49,7 @@ const NotificationsContainer = () => {
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className="fixed bottom-1 left-2 md:w-2/5 w-4/5"
+          className="fixed bottom-1 left-2 md:w-2/5 w-4/5 z-10"
         >
           <div className="shadow-lg">
             <Notification
