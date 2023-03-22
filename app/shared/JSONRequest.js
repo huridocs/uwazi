@@ -31,7 +31,6 @@ const attemptRisonDecode = string => {
 };
 
 export function toUrlParams(_data) {
-  let risonData = undefined;
   if (typeof _data === 'string') {
     return `?${_data}`;
   }
@@ -41,38 +40,33 @@ export function toUrlParams(_data) {
     return '';
   }
 
-  if (data['q']) {
-    risonData = data['q'];
-    try {
-      attemptRisonDecode(risonData);
-    } catch (err) {
-      risonData = encodeURIComponent(risonData);
-    }
-  }
-  const query = new URLSearchParams();
+  return `?${Object.keys(data)
+    .map(key => {
+      if (typeof data[key] === 'undefined' || data[key] === null) {
+        return;
+      }
+      if (Array.isArray(data[key]) && key !== 'include') {
+        const values = data[key];
+        const query = values.map(value => `${key}=${value}`).join('&');
+        return query;
+      }
+      if (typeof data[key] === 'object') {
+        data[key] = JSON.stringify(data[key]);
+      }
 
-  Object.keys(data).forEach(key => {
-    if (typeof data[key] === 'undefined' || data[key] === null || key === 'q') {
-      return;
-    }
-    if (Array.isArray(data[key])) {
-      data[key].forEach(value => {
-        query.append(key, value);
-      });
-      return;
-    }
-
-    if (typeof data[key] === 'object') {
-      query.set(key, JSON.stringify(data[key]));
-      return;
-    }
-
-    query.set(key, data[key]);
-  });
-
-  const queryString = query.toString();
-
-  return '?' + queryString + (typeof risonData !== 'undefined' ? `&q=${risonData}` : '');
+      let encodedValue = encodeURIComponent(data[key]);
+      if (encodeURIComponent(key) === 'q') {
+        try {
+          attemptRisonDecode(data[key]);
+          encodedValue = data[key];
+        } catch (err) {
+          encodedValue = encodeURIComponent(data[key]);
+        }
+      }
+      return `${encodeURIComponent(key)}=${encodedValue}`;
+    })
+    .filter(param => param)
+    .join('&')}`;
 }
 
 const removeUndefinedKeys = obj => {
