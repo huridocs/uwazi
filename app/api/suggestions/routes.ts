@@ -28,7 +28,7 @@ async function processTrainFunction(
     return;
   }
 
-  const status = await callback(req.body.property);
+  const status = await callback(req.body.extractorId);
   res.json(status);
 }
 
