@@ -112,8 +112,7 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     resetField,
-    reset: resetForm,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
@@ -178,7 +177,6 @@ const EditTranslations = () => {
       .then(response => {
         setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
         setTranslationsState(response);
-        resetForm({ formData: prepareFormValues(response, defaultLanguage?.key || 'en') });
       })
       .catch(e => {
         setNotifications({
@@ -225,12 +223,7 @@ const EditTranslations = () => {
             <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
               <Link to="/settings/translations">Cancel</Link>
             </Button>
-            <Button
-              size="small"
-              buttonStyle="primary"
-              type="submit"
-              disabled={submitting || !isDirty}
-            >
+            <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
               Save
             </Button>
           </div>
