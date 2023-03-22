@@ -1,12 +1,12 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, useLoaderData, LoaderFunction } from 'react-router-dom';
-import { Button } from 'app/stories/Button';
 import { Translate } from 'app/I18N';
-import { Table } from 'app/stories/Table';
-import { NavigationHeader } from 'app/stories/NavigationHeader';
-import { Pill } from 'app/stories/Pill';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
+import { Button } from 'V2/Components/UI/Button';
+import { Table } from 'V2/Components/UI/Table';
+import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { Pill } from 'V2/Components/UI/Pill';
 import * as translationsAPI from 'V2/api/translations/index';
 
 const translationsListLoader =

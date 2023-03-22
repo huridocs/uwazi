@@ -6,16 +6,16 @@ import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
-import { Translate } from 'app/I18N';
-import { Table } from 'app/stories/Table';
-import { Pill } from 'app/stories/Pill';
-import { NavigationHeader } from 'app/stories/NavigationHeader';
-import { Button } from 'app/stories/Button';
 import { Settings } from 'shared/types/settingsType';
+import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
+import { Table } from 'V2/Components/UI/Table';
+import { Pill } from 'V2/Components/UI/Pill';
+import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { Button } from 'V2/Components/UI/Button';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom } from 'V2/atoms';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

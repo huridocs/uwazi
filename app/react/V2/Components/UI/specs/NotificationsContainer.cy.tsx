@@ -2,7 +2,7 @@ import React from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { mount } from '@cypress/react18';
 import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
-import { NotificationsContainer } from '../../UI/NotificationsContainer';
+import { NotificationsContainer } from '../NotificationsContainer';
 
 describe('Notifications container', () => {
   const notification: notificationAtomType = {

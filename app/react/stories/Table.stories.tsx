@@ -1,8 +1,8 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Checkbox } from 'flowbite-react';
-import { Table } from './Table';
-import { Button } from './Button';
+import { Table } from 'V2/Components/UI/Table';
+import { Button } from 'V2/Components/UI/Button';
 
 const TableStory = {
   title: 'Components/Table',

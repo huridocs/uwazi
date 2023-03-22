@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/testing-react';
 import { map } from 'lodash';
-import * as stories from '../Table.stories';
+import * as stories from 'app/stories/Table.stories';
 
 const { Basic } = composeStories(stories);
 

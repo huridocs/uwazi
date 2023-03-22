@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Notification } from './Notification';
+import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationStory = {
   title: 'Components/Notification',

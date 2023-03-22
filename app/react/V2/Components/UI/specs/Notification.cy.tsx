@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/testing-react';
-import * as stories from '../Notification.stories';
+import * as stories from 'app/stories/Notification.stories';
 
 const { Basic, WithHeading, WithDetails } = composeStories(stories);
 

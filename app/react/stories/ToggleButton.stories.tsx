@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { ToggleButton } from './ToggleButton';
+import { ToggleButton } from 'V2/Components/UI/ToggleButton';
 
 const ToggleButtonStory = {
   title: 'Components/ToggleButton',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Button } from './Button';
+import { Button } from 'V2/Components/UI/Button';
 
 const ButtonStory = {
   title: 'Components/Button',

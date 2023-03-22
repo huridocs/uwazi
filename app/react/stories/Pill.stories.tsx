@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Pill } from './Pill';
+import { Pill } from 'V2/Components/UI/Pill';
 
 const PillStory = {
   title: 'Components/Pill',

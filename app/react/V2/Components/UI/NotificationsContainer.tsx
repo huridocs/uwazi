@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
-import { Notification } from 'app/stories/Notification';
+import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationsContainer = () => {
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();

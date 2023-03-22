@@ -2,7 +2,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
-import { NavigationHeader } from './NavigationHeader';
+import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 
 const NavigationHeaderStory = {
   title: 'Components/NavigationHeader',
