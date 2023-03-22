@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { NotificationProps } from 'app/stories/Notification';
+import { NotificationProps } from '../Components/UI/Notification';
 
 type notificationAtomType = Omit<NotificationProps, 'dismissAction'>;
 

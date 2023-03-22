@@ -82,6 +82,7 @@ WithActions.args = {
       Header: 'Actions',
       Cell: actionsCell,
       disableSortBy: true,
+      className: 'text-center',
     },
   ],
 };
