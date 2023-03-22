@@ -14,6 +14,7 @@ import { Table } from 'V2/Components/UI/Table';
 import { Pill } from 'V2/Components/UI/Pill';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { Button } from 'V2/Components/UI/Button';
+import { ToggleButton } from 'V2/Components/UI/ToggleButton';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
@@ -228,8 +229,8 @@ const EditTranslations = () => {
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
-      <form onSubmit={handleSubmit(submitFunction)}>
-        <div className="p-5">
+      <div className="p-5">
+        <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
             <h1 className="text-base text-gray-700 flex gap-2 sm:gap-6">
               <Translate>Translations</Translate>
@@ -237,34 +238,45 @@ const EditTranslations = () => {
               <Translate>{contextLabel}</Translate>
             </h1>
           </NavigationHeader>
+        </div>
+
+        <div className="pb-4">
+          <ToggleButton>
+            <div className="text-gray-700 ml-2 text-sm">
+              <Translate>Show untranslated terms only</Translate>
+            </div>
+          </ToggleButton>
+        </div>
+
+        <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map((contextTerm, termIndex) => {
             const values = composeTableValues(formData, termIndex);
             return (
-              <div className="mt-4" key={contextTerm}>
+              <div key={contextTerm}>
                 <Table columns={columns} data={values} title={contextTerm} />
               </div>
             );
           })}
-        </div>
 
-        <div className="absolute lg:sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
-          <div className="pt-1 flex justify-end gap-2 p-2">
-            <div className="flex-1">
-              {contextId === 'System' && (
-                <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                  Import
-                </Button>
-              )}
+          <div className="absolute lg:sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
+            <div className="pt-1 flex justify-end gap-2 p-2">
+              <div className="flex-1">
+                {contextId === 'System' && (
+                  <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+                    Import
+                  </Button>
+                )}
+              </div>
+              <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+                <Link to="/settings/translations">Cancel</Link>
+              </Button>
+              <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
+                Save
+              </Button>
             </div>
-            <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-              <Link to="/settings/translations">Cancel</Link>
-            </Button>
-            <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
-              Save
-            </Button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

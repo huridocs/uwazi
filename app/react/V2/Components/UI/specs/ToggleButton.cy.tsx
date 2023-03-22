@@ -10,11 +10,9 @@ describe('ToggleButton', () => {
 
     return (
       <div className="tw-content">
-        <ToggleButton
-          label="My toggle button"
-          onToggle={() => setShow(!show)}
-          disabled={isDisabled}
-        />
+        <ToggleButton onToggle={() => setShow(!show)} disabled={isDisabled}>
+          <span className="ml-3">My toggle button</span>
+        </ToggleButton>
         {show && <p className="pt-3">This text appears and hides using the above toggle</p>}
       </div>
     );

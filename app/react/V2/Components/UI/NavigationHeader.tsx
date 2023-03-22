@@ -7,10 +7,10 @@ interface HeaderProps {
 }
 
 const NavigationHeader = ({ children, backUrl }: HeaderProps) => (
-  <div className="flex space-x-2 items-center">
+  <div className="flex items-center">
     {backUrl && (
       <Link to={backUrl} className="block lg:hidden">
-        <div className="flex space-x-1">
+        <div className="flex mr-3">
           <svg
             className="w-6 h-6"
             aria-hidden="true"

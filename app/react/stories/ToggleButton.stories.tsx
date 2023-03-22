@@ -11,7 +11,9 @@ const Template: ComponentStory<typeof ToggleButton> = args => {
   const [show, setShow] = useState(false);
   return (
     <div className="tw-content">
-      <ToggleButton label={args.label} onToggle={() => setShow(!show)} disabled={args.disabled} />
+      <ToggleButton onToggle={() => setShow(!show)} disabled={args.disabled}>
+        <div className="ml-2">{args.children}</div>
+      </ToggleButton>
       {show && <p className="pt-3">This text appears and hides using the above toggle</p>}
     </div>
   );
@@ -20,7 +22,7 @@ const Template: ComponentStory<typeof ToggleButton> = args => {
 const Basic = Template.bind({});
 
 Basic.args = {
-  label: 'My toggle button',
+  children: 'My toggle button',
   disabled: false,
 };
 
