@@ -23,15 +23,24 @@ const renderButton = data => (
 );
 
 const pill = ({ cell }) => (
-  <Pill color="gray">
-    <Translate>{cell.value}</Translate>
-  </Pill>
+  <div className="whitespace-nowrap">
+    <Pill color="gray">
+      <Translate>{cell.value}</Translate>
+    </Pill>
+  </div>
 );
 
 const columns = [
-  { key: '1', Header: 'View', accessor: 'label', disableSortBy: true },
-  { key: '2', Header: 'Type', accessor: 'type', Cell: pill },
-  { key: '3', Header: 'Action', accessor: 'id', Cell: renderButton, disableSortBy: true },
+  { key: '1', Header: 'View', accessor: 'label', disableSortBy: true, className: 'w-1/3' },
+  { key: '2', Header: 'Type', accessor: 'type', Cell: pill, className: 'w-2/3' },
+  {
+    key: '3',
+    Header: 'Action',
+    accessor: 'id',
+    Cell: renderButton,
+    disableSortBy: true,
+    className: 'text-center w-0',
+  },
 ];
 
 const TranslationsList = () => {

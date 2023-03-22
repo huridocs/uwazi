@@ -165,6 +165,7 @@ const EditTranslations = () => {
       accessor: 'fieldKey',
       Cell: inputField,
       disableSortBy: true,
+      className: 'w-full',
     },
   ];
 

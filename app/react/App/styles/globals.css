@@ -1373,6 +1373,10 @@ input:checked + .toggle-bg {
   height: 1px;
 }
 
+.w-0 {
+  width: 0px;
+}
+
 .w-1\/3 {
   width: 33.333333%;
 }
@@ -1395,6 +1399,10 @@ input:checked + .toggle-bg {
 
 .w-2 {
   width: 0.5rem;
+}
+
+.w-2\/3 {
+  width: 66.666667%;
 }
 
 .w-2\/4 {
