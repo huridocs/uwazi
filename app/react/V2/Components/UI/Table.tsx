@@ -1,12 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Column,
   HeaderGroup,
-  useFilters,
   useRowSelect,
   useRowState,
-  usePagination,
   useTable,
   useSortBy,
   UseSortByOptions,
@@ -43,14 +41,15 @@ const getIcon = (column: TableColumn<any>) => {
 };
 
 const Table = ({ columns, data, title }: TableProps) => {
+  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedData = useMemo(() => data, [data]);
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
-      columns,
-      data,
+      columns: memoizedColumns,
+      data: memoizedData,
     },
-    useFilters,
     useSortBy,
-    usePagination,
     useRowSelect,
     useRowState
   );
