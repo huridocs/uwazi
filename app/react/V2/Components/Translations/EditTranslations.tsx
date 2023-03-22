@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
@@ -166,7 +167,16 @@ const EditTranslations = () => {
             className={`${textColor} items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0
             border-gray-300 rounded-r-lg inline-flex`}
           >
-            x
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              stroke="currentColor"
+              className="w-3 h-3"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
         <ErrorMessage
@@ -237,7 +247,7 @@ const EditTranslations = () => {
           })}
         </div>
 
-        <div className="sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
+        <div className="absolute lg:sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
           <div className="pt-1 flex justify-end gap-2 p-2">
             <div className="flex-1">
               {contextId === 'System' && (

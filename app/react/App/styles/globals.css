@@ -1033,10 +1033,6 @@ input:checked + .toggle-bg {
   position: relative;
 }
 
-.sticky {
-  position: sticky;
-}
-
 .inset-y-0 {
   top: 0px;
   bottom: 0px;
@@ -4676,6 +4672,10 @@ input:checked + .toggle-bg {
 }
 
 @media (min-width: 1024px) {
+  .lg\:sticky {
+    position: sticky;
+  }
+
   .lg\:my-8 {
     margin-top: 2rem;
     margin-bottom: 2rem;
