@@ -3,7 +3,7 @@ import translations from 'api/i18n/translations';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ContextType } from 'shared/translationSchema';
 import relationtypes from '../relationtypes.js';
-import fixtures, { canNotBeDeleted, against } from './fixtures.js';
+import fixtures, { canNotBeDeleted, against, inRelProperty } from './fixtures.js';
 
 describe('relationtypes', () => {
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe('relationtypes', () => {
   describe('get()', () => {
     it('should return all the relationtypes in the database', async () => {
       const result = await relationtypes.get();
-      expect(result.length).toBe(3);
+      expect(result.length).toBe(4);
       expect(result[0].name).toBe('Against');
     });
   });
@@ -126,6 +126,15 @@ describe('relationtypes', () => {
         expect(result).toBe(false);
         const result2 = await relationtypes.getById(canNotBeDeleted);
         expect(result2._id.equals(canNotBeDeleted)).toBe(true);
+      });
+
+      it('should throw if the type is used in a relationship property', async () => {
+        try {
+          await relationtypes.delete(inRelProperty);
+          throw new Error('should have thrown error');
+        } catch (e) {
+          expect(e.message).toMatch('With rel prop');
+        }
       });
     });
   });

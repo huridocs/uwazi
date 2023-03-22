@@ -74,4 +74,5 @@ export default combineReducers({
   oneUpReview,
   exportSearchResults,
   userGroups: createReducer('userGroups', []),
+  ixExtractors: createReducer('ixExtractors', []),
 });

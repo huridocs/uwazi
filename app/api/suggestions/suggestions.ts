@@ -24,6 +24,7 @@ import {
 } from './pipelineStages';
 import { getStats } from './stats';
 import { updateStates } from './updateState';
+import { ObjectId } from 'mongodb';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -112,6 +113,7 @@ const buildListQuery = (
         fileId: 1,
         language: 1,
         propertyName: 1,
+        extractorId: 1,
         suggestedValue: 1,
         segment: 1,
         currentValue: 1,
@@ -152,7 +154,7 @@ const fetchAndAggregateSuggestions = async (
   }: {
     states?: string[];
     entityTemplates?: string[];
-    propertyName: string;
+    extractorId?: ObjectIdSchema;
     state?: { $in: string[] };
     entityTemplate?: { $in: string[] };
   } = _filters;
@@ -185,6 +187,7 @@ const fetchAndAggregateSuggestions = async (
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
+  getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
 
   get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
@@ -192,6 +195,7 @@ const Suggestions = {
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
     const { language, ...filters } = filter;
+    filters.extractorId = new ObjectId(filter.extractorId);
 
     return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
   },
@@ -244,20 +248,6 @@ const Suggestions = {
     await IXSuggestionsModel.delete({ entityId: sharedId });
   },
 
-  deleteByProperty: async (propertyName: string, templateId: string) => {
-    const cursor = IXSuggestionsModel.db.find({ propertyName }).cursor();
-
-    // eslint-disable-next-line no-await-in-loop
-    for (let suggestion = await cursor.next(); suggestion; suggestion = await cursor.next()) {
-      const sharedId = suggestion.entityId;
-      // eslint-disable-next-line no-await-in-loop
-      const [entity] = await entities.getUnrestricted({ sharedId });
-      if (entity && entity.template?.toString() === templateId) {
-        // eslint-disable-next-line no-await-in-loop
-        await IXSuggestionsModel.delete({ _id: suggestion._id });
-      }
-    }
-  },
   delete: IXSuggestionsModel.delete.bind(IXSuggestionsModel),
   registerEventListeners,
 };

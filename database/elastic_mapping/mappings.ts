@@ -137,7 +137,7 @@ const propertyMappings = {
   relationship: relationshipType,
   select: selectType,
   generatedid: textType,
-  newRelationship: relationshipType,
+  newRelationship: () => null,
 };
 
 export {

@@ -134,6 +134,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
     })
   );
 
+  await denormalizeAfterEntityUpdate(entity);
+
   await applicationEventsBus.emit(
     new EntityUpdatedEvent({
       before: docLanguages,
@@ -151,7 +153,7 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     docTemplate.properties.filter(p => p.type === propertyTypes.newRelationship).map(p => p.name) ||
     [];
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
-  return Promise.all(
+  const result = await Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
       const avoidIdDuplication = doc._id && !lang.default;
@@ -179,6 +181,9 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
       return model.save(langDoc);
     })
   );
+
+  await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
+  return result;
 }
 
 async function getEntityTemplate(doc, language) {
@@ -383,12 +388,6 @@ export default {
 
     if (index) {
       await search.indexEntities({ sharedId }, '+fullText');
-    }
-
-    if (doc.sharedId) {
-      await denormalizeAfterEntityUpdate(entity);
-    } else {
-      await denormalizeAfterEntityCreation(entity, index);
     }
 
     return entity;

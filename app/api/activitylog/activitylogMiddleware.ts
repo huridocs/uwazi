@@ -4,6 +4,7 @@ import { tenants } from 'api/tenants';
 import { Readable } from 'stream';
 import activitylog from './activitylog';
 import { NextFunction, Request, Response } from 'express';
+import { handleError } from 'api/utils';
 
 const ignoredMethods = ['GET', 'OPTIONS', 'HEAD'];
 export const IGNORED_ENDPOINTS = [
@@ -58,14 +59,20 @@ export default (req: Request, _res: Response, next: NextFunction) => {
   const baseurl = url.split('?').shift() || '';
   if (mustBeLogged(baseurl, method, body)) {
     const entry = createEntry(req, baseurl);
-    // eslint-disable-next-line no-void
-    void activitylog.save(entry);
-    // eslint-disable-next-line no-void
-    void storage.storeFile(
-      `${tenants.current().name}_${entry.time}_activity.log`,
-      Readable.from([JSON.stringify(entry)]),
-      'activitylog'
-    );
+
+    activitylog.save(entry).catch(e => {
+      handleError(e, { req });
+    });
+
+    storage
+      .storeFile(
+        `${tenants.current().name}_${entry.time}_activity.log`,
+        Readable.from([JSON.stringify(entry)]),
+        'activitylog'
+      )
+      .catch(e => {
+        handleError(e, { req });
+      });
   }
   next();
 };
