@@ -80,7 +80,6 @@ const TranslationsList = () => {
             columns={columns}
             data={contexts.systemContexts}
             title={<Translate>System</Translate>}
-            fixedColumns
           />
         </div>
         <div className="mt-4">
@@ -88,7 +87,6 @@ const TranslationsList = () => {
             columns={columns}
             data={contexts.contentContexts}
             title={<Translate>Content</Translate>}
-            fixedColumns
           />
         </div>
       </div>

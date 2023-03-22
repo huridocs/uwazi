@@ -49,10 +49,9 @@ const prepareValuesToSave = (
     };
   });
 
-const renderPill = ({ cell }) => {
-  const color = cell.value.isUntranslated ? 'yellow' : 'gray';
-  return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
-};
+const renderPill = ({ cell }) => (
+  <Pill color={cell.value.translationStatusColor}>{cell.value.languageKey.toUpperCase()}</Pill>
+);
 
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
@@ -63,11 +62,27 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
       language: languaLabel,
       translationStatus: {
         languageKey: language.locale,
-        isUntranslated: formData[languageIndex].values[termIndex].isUntranslated,
+        translationStatusColor: formData[languageIndex].values[termIndex].translationStatusColor,
       },
       fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
     };
   });
+
+const getTraslationStatusColor = (
+  defaultLanguageValues: { [key: string]: string },
+  evaluatedTerm: { key: string; value: string },
+  currentLanguageKey: string,
+  defaultLanguageKey: string
+) => {
+  const isUntranslated =
+    defaultLanguageValues[evaluatedTerm.key] === evaluatedTerm.value &&
+    defaultLanguageKey !== currentLanguageKey;
+  const isDefaultLanguage = defaultLanguageKey === currentLanguageKey;
+
+  if (isUntranslated) return 'yellow';
+  if (isDefaultLanguage) return 'primary';
+  return 'gray';
+};
 
 const prepareFormValues = (translations: ClientTranslationSchema[], defaultLanguageKey: string) => {
   const defaultLanguageValues = translations.find(
@@ -83,8 +98,12 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
           [index]: {
             key,
             value,
-            isUntranslated:
-              defaultLanguageValues[key] === value && defaultLanguageKey !== language.locale,
+            translationStatusColor: getTraslationStatusColor(
+              defaultLanguageValues,
+              { key, value },
+              language.locale,
+              defaultLanguageKey
+            ),
           },
         }),
         {}
@@ -93,20 +112,25 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
   });
 };
 
+const getContextInfo = (translations: ClientTranslationSchema[]) => {
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const { label: contextLabel, id: contextId } = translations[0].contexts[0];
+  return { contextTerms, contextLabel, contextId };
+};
+
 // eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const { translations, settings } = useLoaderData() as {
     translations: ClientTranslationSchema[];
     settings: Settings;
   };
-  const [translationsState, setTranslationsState] = useState(translations);
-  const defaultLanguage = settings?.languages?.find(language => language.default);
-  const contextTerms = Object.keys(translationsState[0].contexts[0].values || {}).sort();
   const [submitting, setIsSubmitting] = useState(false);
-  const { label: contextLabel, id: contextId } = translationsState[0].contexts[0];
+  const [translationsState, setTranslationsState] = useState(translations);
   const setNotifications = useSetRecoilState(notificationAtom);
 
+  const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
+  const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
 
   const {
     register,
