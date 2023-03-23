@@ -395,7 +395,7 @@ class InformationExtraction {
     status: ModelStatus = ModelStatus.processing,
     findingSuggestions = true
   ) => {
-    const [currentModel] = await ixmodels.get({ extractorId });
+    const [currentModel] = await ixmodels.get({ extractorId: extractorId.toString() });
 
     await ixmodels.save({
       ...currentModel,
@@ -413,7 +413,7 @@ class InformationExtraction {
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
       const [currentModel] = await IXModelsModel.get({
-        extractorId: message.params!.id,
+        extractorId: message.params!.id.toString(),
       });
 
       if (message.task === 'create_model' && message.success) {
@@ -455,7 +455,7 @@ class InformationExtraction {
     emitToTenant(
       message.tenant,
       'ix_model_status',
-      message.params!.id,
+      message.params!.id.toString(),
       'processing_suggestions',
       '',
       suggestionsStatus
