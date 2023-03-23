@@ -51,11 +51,13 @@ describe('Information Extraction', () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
-    cy.contains('span.multiselectItem-name', 'Ordenes del presidente').click();
+    const firstTemplate = cy.contains('li', 'Ordenes del presidente');
+    firstTemplate.find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    cy.contains('span.multiselectItem-name', 'Causa').click();
+    const secondTemplate = cy.contains('li', 'Causa');
+    secondTemplate.find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    cy.contains('.modal-footer .extractor-footer span', 'Add').click();
+    cy.contains('button', 'Add').click();
     cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
     cy.get('.table').toMatchImageSnapshot();
   });
@@ -64,8 +66,8 @@ describe('Information Extraction', () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
-    cy.contains('span', 'Edit Extractor').click();
-    cy.contains('span', 'From all templates').click();
+    cy.contains('button', 'Edit Extractor').click();
+    cy.contains('button', 'From all templates').click();
     cy.get('.extractor-creation-modal').toMatchImageSnapshot();
   });
 
@@ -73,12 +75,13 @@ describe('Information Extraction', () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
-    cy.contains('span', 'Edit Extractor').click();
+    cy.contains('button', 'Edit Extractor').click();
     cy.get('input.extractor-name-input').type(' edited');
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    cy.contains('span.multiselectItem-name', 'Ordenes de la corte').click();
+    const template = cy.contains('li', 'Ordenes de la corte');
+    template.find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    cy.contains('.modal-footer .extractor-footer span', 'Save').click();
+    cy.contains('button', 'Save').click();
     cy.contains('.table thead tr th span', 'Property').should('be.visible');
     cy.get('.table').toMatchImageSnapshot();
   });
