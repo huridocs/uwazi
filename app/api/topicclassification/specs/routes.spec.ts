@@ -25,6 +25,7 @@ async function fakeGet(url: string, _data: any, _headers: any) {
         models: ['undefined-topmovies'],
         error: '',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   if (url === `${topicClassification.tcServer}/models?model=undefined-topmovies`) {
@@ -35,6 +36,7 @@ async function fakeGet(url: string, _data: any, _headers: any) {
       json: {
         preferred: '123',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   if (url === `${topicClassification.tcServer}/task?name=train-undefined-topmovies`) {
@@ -46,6 +48,7 @@ async function fakeGet(url: string, _data: any, _headers: any) {
         state: 'done',
         status: 'done training',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   return {
@@ -56,6 +59,7 @@ async function fakeGet(url: string, _data: any, _headers: any) {
       state: 'not found',
       status: 'not found',
     },
+    endpoint: { url, method: 'GET' },
   };
 }
 
@@ -78,6 +82,7 @@ async function fakePost(url: string, data: any, _headers: any) {
         state: 'running',
         status: 'started training',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   return {
@@ -88,6 +93,7 @@ async function fakePost(url: string, data: any, _headers: any) {
       state: 'not found',
       status: 'not found',
     },
+    endpoint: { url, method: 'GET' },
   };
 }
 
