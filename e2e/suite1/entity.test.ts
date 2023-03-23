@@ -152,6 +152,7 @@ describe('Entities', () => {
       await expect(page).toClick('.item-name span', {
         text: 'Entity with media files',
       });
+      await page.waitForSelector('#tabpanel-metadata video');
       await expect(page).toMatchElement('.metadata-name-descripci_n > dd > div > p', {
         text: 'A description of the report',
       });

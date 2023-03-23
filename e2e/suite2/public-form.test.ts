@@ -163,6 +163,7 @@ describe('Public forms', () => {
       await expect(page).toClick('.item-name span', {
         text: 'Entity with image and media fields',
       });
+      await page.waitForSelector('#tabpanel-metadata video');
       await expect(page).toMatchElement('.metadata-name-descriptor', {
         text: 'Amnistía',
       });
