@@ -105,7 +105,7 @@ class PDFViewComponent extends Component {
 
     return (
       <>
-        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${query.page}`} />}</Helmet>
+        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}

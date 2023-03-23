@@ -148,6 +148,15 @@ describe('PDFView', () => {
         component.find({ link: [{ href: 'pathname?page=1', rel: 'canonical' }] })
       ).toMatchSnapshot();
     });
+    describe('when page is undefined', () => {
+      it('should render link canonical with a default page', () => {
+        raw = 'true';
+        page = undefined;
+        pathname = 'pathname';
+        render();
+        expect(component.find({ link: [{ rel: 'canonical' }] })).toMatchSnapshot();
+      });
+    });
   });
   describe('when not raw', () => {
     it('should not render link canonical', () => {
