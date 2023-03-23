@@ -52,10 +52,13 @@ const prepareValuesToSave = (
     };
   });
 
-const renderPill = ({ cell }) => (
-  <Pill color={cell.value.translationStatusColor}>{cell.value.languageKey.toUpperCase()}</Pill>
-);
+const renderPill = ({ cell }) => {
+  let color: 'gray' | 'primary' | 'yellow' = 'gray';
+  if (cell.value.status === 'defaultLanguage') color = 'primary';
+  if (cell.value.status === 'untranslated') color = 'yellow';
 
+  return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
+};
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
@@ -65,13 +68,13 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
       language: languaLabel,
       translationStatus: {
         languageKey: language.locale,
-        translationStatusColor: formData[languageIndex].values[termIndex].translationStatusColor,
+        status: formData[languageIndex].values[termIndex].translationStatus,
       },
       fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
     };
   });
 
-const getTraslationStatusColor = (
+const getTraslationStatus = (
   defaultLanguageValues: { [key: string]: string },
   evaluatedTerm: { key: string; value: string },
   currentLanguageKey: string,
@@ -82,9 +85,9 @@ const getTraslationStatusColor = (
     defaultLanguageKey !== currentLanguageKey;
   const isDefaultLanguage = defaultLanguageKey === currentLanguageKey;
 
-  if (isUntranslated) return 'yellow';
-  if (isDefaultLanguage) return 'primary';
-  return 'gray';
+  if (isUntranslated) return 'untranslated';
+  if (isDefaultLanguage) return 'defaultLanguage';
+  return 'translated';
 };
 
 const prepareFormValues = (translations: ClientTranslationSchema[], defaultLanguageKey: string) => {
@@ -101,7 +104,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
           [index]: {
             key,
             value,
-            translationStatusColor: getTraslationStatusColor(
+            translationStatus: getTraslationStatus(
               defaultLanguageValues,
               { key, value },
               language.locale,
@@ -121,6 +124,9 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
   return { contextTerms, contextLabel, contextId };
 };
 
+const filterTableValues = (values: any[]) =>
+  values.filter(value => value.translationStatus.status !== 'translated');
+
 // eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const { translations, settings } = useLoaderData() as {
@@ -129,6 +135,7 @@ const EditTranslations = () => {
   };
   const [submitting, setIsSubmitting] = useState(false);
   const [translationsState, setTranslationsState] = useState(translations);
+  const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const defaultLanguage = settings?.languages?.find(language => language.default);
@@ -218,7 +225,7 @@ const EditTranslations = () => {
         </div>
 
         <div className="pb-4">
-          <ToggleButton>
+          <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
             <div className="text-gray-700 ml-2 text-sm">
               <Translate>Show untranslated terms only</Translate>
             </div>
@@ -227,7 +234,8 @@ const EditTranslations = () => {
 
         <form onSubmit={handleSubmit(submitFunction)}>
           {contextTerms.map((contextTerm, termIndex) => {
-            const values = composeTableValues(formData, termIndex);
+            let values = composeTableValues(formData, termIndex);
+            if (hideTranslated) values = filterTableValues(values);
             return (
               <div key={contextTerm}>
                 <Table columns={columns} data={values} title={contextTerm} />
@@ -240,15 +248,17 @@ const EditTranslations = () => {
               <div className="flex-1">
                 {contextId === 'System' && (
                   <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                    Import
+                    <Translate>Import</Translate>
                   </Button>
                 )}
               </div>
               <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                <Link to="/settings/translations">Cancel</Link>
+                <Link to="/settings/translations">
+                  <Translate>Cancel</Translate>
+                </Link>
               </Button>
               <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
-                Save
+                <Translate>Save</Translate>
               </Button>
             </div>
           </div>
