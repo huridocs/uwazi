@@ -15,6 +15,7 @@ import { Pill } from 'V2/Components/UI/Pill';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { Button } from 'V2/Components/UI/Button';
 import { ToggleButton } from 'V2/Components/UI/ToggleButton';
+import { InputField } from 'V2/Components/UI/InputField';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
@@ -146,40 +147,16 @@ const EditTranslations = () => {
 
   const inputField = ({ cell }) => {
     const reset = () => resetField(cell.value, { defaultValue: '' });
-    const textColor = submitting ? 'text-gray-500' : 'text-gray-900';
     return (
       <div key={cell.value}>
-        <div className="flex">
-          <label htmlFor={cell.value} className="sr-only">
-            {cell.fieldKey}
-          </label>
-          <input
-            type="text"
-            id={cell.value}
-            {...register(cell.value, { required: true })}
-            disabled={submitting}
-            className={`${textColor} rounded-none bg-gray-50 border-y border-l border-r-0 border-gray-300 
-            rounded-l-lg block flex-1 min-w-0 lg:w-full text-sm p-2.5`}
-          />
-          <button
-            type="button"
-            onClick={reset}
-            disabled={submitting}
-            className={`${textColor} items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0
-            border-gray-300 rounded-r-lg inline-flex`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              stroke="currentColor"
-              className="w-3 h-3"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        <InputField
+          fieldID={cell.value}
+          label={cell.fieldKey}
+          hideLabel
+          disabled={submitting}
+          buttonAction={reset}
+          inputControls={{ ...register(cell.value, { required: true }) }}
+        />
         <ErrorMessage
           errors={errors}
           name={cell.value}
