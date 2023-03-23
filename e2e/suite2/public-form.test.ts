@@ -188,7 +188,7 @@ describe('Public forms', () => {
 
       await checkStringValuesInSelectors([
         { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
-        { selector: videoFieldSource, expected: /^\/api\/files\/\w+\.mp4$/ },
+        { selector: videoFieldSource, expected: /^blob:http:\/\/localhost:3000\/[\w-]+$/ },
         { selector: ImagenAdicionalFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
       ]);
 
