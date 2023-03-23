@@ -41,3 +41,45 @@ Array [
   />,
 ]
 `;
+
+exports[`PDFView when raw when page is undefined should render link canonical with a default page 1`] = `
+Array [
+  <SideEffect(NullComponent)
+    defer={true}
+    encodeSpecialCharacters={true}
+    link={
+      Array [
+        Object {
+          "href": "pathname?page=1",
+          "rel": "canonical",
+        },
+      ]
+    }
+  >
+    <NullComponent
+      defer={true}
+      encodeSpecialCharacters={true}
+      link={
+        Array [
+          Object {
+            "href": "pathname?page=1",
+            "rel": "canonical",
+          },
+        ]
+      }
+    />
+  </SideEffect(NullComponent)>,
+  <NullComponent
+    defer={true}
+    encodeSpecialCharacters={true}
+    link={
+      Array [
+        Object {
+          "href": "pathname?page=1",
+          "rel": "canonical",
+        },
+      ]
+    }
+  />,
+]
+`;
