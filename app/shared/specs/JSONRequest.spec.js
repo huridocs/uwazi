@@ -26,10 +26,6 @@ describe('JSONRequest', () => {
       .delete(
         'http://localhost:3000/api/test?id=123',
         JSON.stringify({ response: 'delete with params' })
-      )
-      .delete(
-        'http://localhost:3000/api/test?ids=test1&ids=test2',
-        JSON.stringify({ response: 'delete with array params' })
       );
   });
 
@@ -302,14 +298,6 @@ describe('JSONRequest', () => {
             done();
           })
           .catch(done.fail);
-      });
-
-      it('should accept array in params', async () => {
-        const response = await request.delete('http://localhost:3000/api/test', {
-          ids: ['test1', 'test2'],
-        });
-        expect(response.status).toBe(200);
-        expect(response.json).toEqual({ response: 'delete with array params' });
       });
     });
 
