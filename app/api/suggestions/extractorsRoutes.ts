@@ -1,5 +1,6 @@
 import { needsAuthorization } from 'api/auth';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
+import { parseQuery } from 'api/utils';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { Application } from 'express';
 import { ObjectId } from 'mongodb';
@@ -67,6 +68,7 @@ export const extractorsRoutes = (app: Application) => {
     '/api/ixextractors',
     serviceMiddleware,
     needsAuthorization(['admin']),
+    parseQuery,
     validateAndCoerceRequest({
       type: 'object',
       properties: {
@@ -79,6 +81,7 @@ export const extractorsRoutes = (app: Application) => {
       },
     }),
     async (req, res, _next) => {
+      // @ts-ignore
       const extractorIds: string[] = ensure<string[]>(req.query.ids);
       await Extractors.delete(extractorIds);
       res.sendStatus(200);

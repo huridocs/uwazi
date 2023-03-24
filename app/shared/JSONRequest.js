@@ -45,11 +45,6 @@ export function toUrlParams(_data) {
       if (typeof data[key] === 'undefined' || data[key] === null) {
         return;
       }
-      if (Array.isArray(data[key]) && key === 'ids') {
-        const values = data[key];
-        const query = values.map(value => `${key}=${value}`).join('&');
-        return query;
-      }
       if (typeof data[key] === 'object') {
         data[key] = JSON.stringify(data[key]);
       }
