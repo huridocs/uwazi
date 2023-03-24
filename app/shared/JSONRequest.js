@@ -45,11 +45,13 @@ export function toUrlParams(_data) {
       if (typeof data[key] === 'undefined' || data[key] === null) {
         return;
       }
+
       if (typeof data[key] === 'object') {
         data[key] = JSON.stringify(data[key]);
       }
 
       let encodedValue = encodeURIComponent(data[key]);
+
       if (encodeURIComponent(key) === 'q') {
         try {
           attemptRisonDecode(data[key]);
