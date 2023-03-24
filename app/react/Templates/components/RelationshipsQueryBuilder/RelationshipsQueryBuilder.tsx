@@ -5,11 +5,7 @@ import { MultiSelect } from 'app/Forms';
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  MatchQueryInputType,
-  TraverseInputType,
-  TraverseQueryInputType,
-} from 'shared/types/relationshipsQueryTypes';
+import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
 
 const edgeStylesBase = {
   styles: {
@@ -187,13 +183,13 @@ const createDefaultTraversal = () =>
         templates: [],
       },
     ],
-  } as TraverseQueryInputType);
+  } as TraverseQuery);
 
 interface MatchNodeProps {
-  value: MatchQueryInputType;
+  value: MatchQuery;
   isFirst?: boolean;
   isLast?: boolean;
-  onChange: (value: MatchQueryInputType) => void;
+  onChange: (value: MatchQuery) => void;
   onDelete: () => void;
   templates: ClientTemplateSchema[];
   path: string;
@@ -210,12 +206,11 @@ const MatchNodeComponent = ({
   path,
   canDelete,
 }: MatchNodeProps) => {
-  const createOnChildChangeHandler =
-    (index: number) => (newTraverseValue: TraverseQueryInputType) => {
-      const traverses = [...(value.traverse ?? [])];
-      traverses[index] = newTraverseValue;
-      onChange({ ...value, traverse: traverses });
-    };
+  const createOnChildChangeHandler = (index: number) => (newTraverseValue: TraverseQuery) => {
+    const traverses = [...(value.traverse ?? [])];
+    traverses[index] = newTraverseValue;
+    onChange({ ...value, traverse: traverses });
+  };
 
   const createOnDeleteChildHandler = (index: number) => () => {
     onChange({ ...value, traverse: value.traverse?.filter((_m, i) => i !== index) });
@@ -268,10 +263,10 @@ const MatchNode = connect((state: IStore) => ({
 }))(MatchNodeComponent);
 
 interface TravesalNodeProps {
-  value: TraverseQueryInputType;
+  value: TraverseQuery;
   isFirst?: boolean;
   isLast?: boolean;
-  onChange: (value: TraverseQueryInputType) => void;
+  onChange: (value: TraverseQuery) => void;
   onDelete: () => void;
   relationTypes: RelationshipTypesType[];
   path: string;
@@ -286,7 +281,7 @@ const TravesalNodeComponent = ({
   relationTypes,
   path,
 }: TravesalNodeProps) => {
-  const createOnChildChangeHandler = (index: number) => (newMatchValue: MatchQueryInputType) => {
+  const createOnChildChangeHandler = (index: number) => (newMatchValue: MatchQuery) => {
     const matches = [...value.match];
     matches[index] = newMatchValue;
     onChange({ ...value, match: matches });
@@ -353,17 +348,16 @@ const TravesalNode = connect((state: IStore) => ({
 }))(TravesalNodeComponent);
 
 interface RelationshipsQueryBuilderProps {
-  value: TraverseInputType;
-  onChange: (value: TraverseInputType) => void;
+  value: TraverseQuery[];
+  onChange: (value: TraverseQuery[]) => void;
 }
 
 export const RelationshipsQueryBuilder = ({ value, onChange }: RelationshipsQueryBuilderProps) => {
-  const createOnChildChangeHandler =
-    (index: number) => (newTraverseValue: TraverseQueryInputType) => {
-      const traverses = [...(value ?? [])];
-      traverses[index] = newTraverseValue;
-      onChange(traverses);
-    };
+  const createOnChildChangeHandler = (index: number) => (newTraverseValue: TraverseQuery) => {
+    const traverses = [...(value ?? [])];
+    traverses[index] = newTraverseValue;
+    onChange(traverses);
+  };
 
   const createOnDeleteChildHandler = (index: number) => () => {
     onChange((value ?? []).filter((_m, i) => i !== index));

@@ -71,13 +71,12 @@ describe('POST relationships', () => {
   const cases = [
     { from: 'entity1', to: 'entity2', type: 'some_type' },
     'random string',
-    [],
     [{ property: 'non relationship object' }],
     undefined,
   ];
 
   it.each(cases)(
-    'should throw a validation error if the input is not an array. Case %#',
+    'should throw a validation error if the input is not an array of relationships. Case %#',
     async input => {
       const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
         (req as any).user = { _id: factory.id('admin_user'), role: 'admin' };
@@ -110,7 +109,13 @@ describe('POST relationships', () => {
 
       await request(app)
         .post(URL)
-        .send([{ from: 'entity1', to: 'entity2', type: factory.id('type1').toHexString() }])
+        .send([
+          {
+            from: { type: 'entity', entity: 'entity1' },
+            to: { type: 'entity', entity: 'entity2' },
+            type: factory.id('type1').toHexString(),
+          },
+        ])
         .expect(pass ? 200 : 401);
     }
   );
@@ -124,9 +129,14 @@ describe('POST relationships', () => {
     const response = await request(app)
       .post(URL)
       .send([
-        { from: 'entity2', to: 'entity1', type: factory.id('type1').toHexString() },
+        {
+          from: { type: 'entity', entity: 'entity2' },
+          to: { type: 'entity', entity: 'entity1' },
+          type: factory.id('type1').toHexString(),
+        },
         {
           from: {
+            type: 'text',
             entity: 'entity1',
             file: factory.id('file1').toHexString(),
             text: 'some text',
@@ -147,7 +157,7 @@ describe('POST relationships', () => {
               },
             ],
           },
-          to: 'entity2',
+          to: { type: 'entity', entity: 'entity2' },
           type: factory.id('type1').toHexString(),
         },
       ]);
@@ -216,7 +226,11 @@ describe('DELETE relationships', () => {
   });
 
   const cases = [
-    { from: 'entity1', to: 'entity2', type: 'some_type' },
+    {
+      from: { type: 'entity', entity: 'entity1' },
+      to: { type: 'entity', entity: 'entity2' },
+      type: 'some_type',
+    },
     [],
     [{ property: 'non relationship object' }],
     undefined,
@@ -257,7 +271,7 @@ describe('DELETE relationships', () => {
       await request(app)
         .delete(URL)
         .query({
-          ids: [factory.id('relationship1').toHexString()],
+          ids: JSON.stringify([factory.id('relationship1').toHexString()]),
         })
         .expect(pass ? 200 : 401);
     }
@@ -271,7 +285,7 @@ describe('DELETE relationships', () => {
 
     await request(app)
       .delete(URL)
-      .query({ ids: [factory.id('relationship1').toHexString()] })
+      .query({ ids: JSON.stringify([factory.id('relationship1').toHexString()]) })
       .expect(200);
 
     expect(

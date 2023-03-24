@@ -9,6 +9,7 @@ export class ValidationError extends Error {
   constructor(errors: ErrorObject[]) {
     super('Validation error');
     this.errors = errors;
+    this.message += `${this.errors.map(error => `\n${JSON.stringify(error)}`)}`;
   }
 
   static merge(instances: ValidationError[]) {

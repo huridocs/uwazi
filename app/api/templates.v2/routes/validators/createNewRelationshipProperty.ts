@@ -1,26 +1,9 @@
-import { ValidatorSchema, createValidator } from 'api/common.v2/validation/ajvInstances';
-
-interface MatchQueryInputType {
-  templates: string[];
-  traverse?: TraverseQueryInputType[];
-}
-
-interface TraverseQueryInputType {
-  direction: 'in' | 'out';
-  types: string[];
-  match: MatchQueryInputType[];
-}
-
-interface RelationshipProperty {
-  label: string;
-  name: string;
-  query: TraverseQueryInputType[];
-  denormalizedProperty?: string;
-}
+import { ValidatorSchema, createValidator } from 'api/common.v2/validation/routesValidation';
+import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 
 const createNewRelationshipPropertySchema: ValidatorSchema<
-  RelationshipProperty,
-  { query: RelationshipProperty['query'] }
+  RelationshipPropertyData,
+  { query: RelationshipPropertyData['query'] }
 > = {
   properties: {
     label: { type: 'string' },
