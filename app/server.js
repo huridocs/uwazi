@@ -119,6 +119,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
   apiRoutes(app, http);
   serverSideRender(app);
+
   if (config.sentry.dsn) {
     app.use(Sentry.Handlers.errorHandler());
   }
