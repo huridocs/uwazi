@@ -20313,10 +20313,10 @@ timestring@^6.0.0:
   resolved "https://registry.yarnpkg.com/timestring/-/timestring-6.0.0.tgz#b0c7c331981ecf2066ce88bcfb8ee3ae32e7a0f6"
   integrity sha512-wMctrWD2HZZLuIlchlkE2dfXJh7J2KDI9Dwl+2abPYg0mswQHfOAyQW3jJg1pY5VfttSINZuKcXoB3FGypVklA==
 
-tiny-cookie@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/tiny-cookie/-/tiny-cookie-2.3.2.tgz"
-  integrity sha512-qbymkVh+6+Gc/c9sqnvbG+dOHH6bschjphK3SHgIfT6h/t+63GBL37JXNoXEc6u/+BcwU6XmaWUuf19ouLVtPg==
+tiny-cookie@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/tiny-cookie/-/tiny-cookie-2.4.0.tgz#f2f2d4c2b1714cbb28ded23a7024e026c02b4a4a"
+  integrity sha512-MbXgqX1JwuaOgHWIM7KsEryxIHSpRchroXh/fy67mw2XLPvrpZvQ2j85zSf8bLpRhTztLnOtOkVSKytJPo1ATA==
 
 tiny-inflate@^1.0.2:
   version "1.0.2"
