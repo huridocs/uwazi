@@ -1,10 +1,9 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { GraphQueryResult } from 'api/relationships.v2/model/GraphQueryResult';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -28,6 +27,7 @@ const fixtures = {
       'template1',
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp3: [{ value: 'old_value', label: 'old_label' }],
         numeric: [{ value: 1 }],
       },
       { obsoleteMetadata: ['relProp3'] }
@@ -38,17 +38,93 @@ const fixtures = {
       {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
         numeric: [{ value: 1 }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
       },
       { obsoleteMetadata: ['relProp4'] }
     ),
+    factory.entity(
+      'inherit_target_1',
+      'template-to-inherit',
+      { inherited: [{ value: 1 }] },
+      { language: 'en', title: 'inherit_target_1_en' }
+    ),
+    factory.entity(
+      'inherit_target_1',
+      'template-to-inherit',
+      { inherited: [{ value: 2 }] },
+      { language: 'pt', title: 'inherit_target_1_pt' }
+    ),
+    factory.entity(
+      'inherit_target_2',
+      'template-to-inherit',
+      { inherited: [{ value: 3 }] },
+      { language: 'en', title: 'inherit_target_2_en' }
+    ),
+    factory.entity(
+      'inherit_target_2',
+      'template-to-inherit',
+      { inherited: [{ value: 4 }] },
+      { language: 'pt', title: 'inherit_target_2_pt' }
+    ),
+  ],
+  relationships: [
+    {
+      _id: factory.id('e3_to_it1'),
+      from: { entity: 'entity3' },
+      to: { entity: 'inherit_target_1' },
+      type: factory.id('reltypeid'),
+    },
+    {
+      _id: factory.id('e4_to_it2'),
+      from: { entity: 'entity4' },
+      to: { entity: 'inherit_target_2' },
+      type: factory.id('reltypeid'),
+    },
+  ],
+  relationtypes: [
+    {
+      _id: factory.id('reltypeid'),
+      template: 'reltype',
+    },
   ],
   templates: [
     factory.template('template1', [
-      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp3', label: 'relProp3', query: [{ match: [{}] }] },
-      { type: 'newRelationship', name: 'relProp4', label: 'relProp4', query: [{ match: [{}] }] },
+      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{}] },
+      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{}] },
+      {
+        type: 'newRelationship',
+        name: 'relProp3',
+        label: 'relProp3',
+        query: [
+          {
+            types: [factory.id('reltypeid')],
+            direction: 'out',
+            match: [{ templates: [factory.id('template-to-inherit')] }],
+          },
+        ],
+      },
+      {
+        type: 'newRelationship',
+        name: 'relProp4',
+        label: 'relProp4',
+        query: [
+          {
+            types: [factory.id('reltypeid')],
+            direction: 'out',
+            match: [{ templates: [factory.id('template-to-inherit')] }],
+          },
+        ],
+        denormalizedProperty: 'inherited',
+      },
     ]),
+    factory.template('template-to-inherit', [factory.property('inherited', 'numeric')]),
   ],
 };
 
@@ -65,11 +141,14 @@ describe('Relationship fields caching strategy', () => {
     it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
       const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const db = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
+        db,
+        new MongoTemplatesDataSource(db, transactionManager),
         relationshipsDsMock,
         settingsDsMock,
-        new MongoTransactionManager(getClient())
+        transactionManager
       );
 
       await ds.markMetadataAsChanged([
@@ -78,7 +157,13 @@ describe('Relationship fields caching strategy', () => {
       ]);
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
-      expect(entities).toMatchObject([
+      expect(
+        entities?.map(e => ({
+          sharedId: e.sharedId,
+          language: e.language,
+          obsoleteMetadata: e.obsoleteMetadata,
+        }))
+      ).toMatchObject([
         { sharedId: 'entity1', language: 'en', obsoleteMetadata: ['relProp1'] },
         { sharedId: 'entity1', language: 'pt', obsoleteMetadata: ['relProp1'] },
         { sharedId: 'entity2', language: 'en', obsoleteMetadata: ['relProp2'] },
@@ -87,6 +172,10 @@ describe('Relationship fields caching strategy', () => {
         { sharedId: 'entity3', language: 'pt', obsoleteMetadata: ['relProp3'] },
         { sharedId: 'entity4', language: 'en', obsoleteMetadata: ['relProp4'] },
         { sharedId: 'entity4', language: 'pt', obsoleteMetadata: ['relProp4'] },
+        { sharedId: 'inherit_target_1', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_1', language: 'pt', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
       ]);
     });
   });
@@ -94,29 +183,15 @@ describe('Relationship fields caching strategy', () => {
   describe('When loading some entities', () => {
     let entities: any[];
     beforeEach(async () => {
-      let counter = 0;
-      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({
-        getByQuery(_query, lang) {
-          counter += 1;
-          return partialImplementation<MongoResultSet<any, GraphQueryResult>>({
-            all: async () =>
-              Promise.resolve([
-                new GraphQueryResult([
-                  {
-                    sharedId: `calculated${counter}-${lang}`,
-                    title: `calculated${counter}-${lang}`,
-                  },
-                ]),
-              ]),
-          });
-        },
-      });
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const db = getConnection();
+      const tm = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
-        relationshipsDsMock,
+        db,
+        new MongoTemplatesDataSource(db, tm),
+        new MongoRelationshipsDataSource(db, tm),
         settingsDsMock,
-        new MongoTransactionManager(getClient())
+        tm
       );
 
       entities = await ds.getByIds(['entity3', 'entity4']).all();
@@ -161,28 +236,42 @@ describe('Relationship fields caching strategy', () => {
           sharedId: 'entity3',
           language: 'en',
           metadata: {
-            relProp3: [{ value: 'calculated1-en', label: 'calculated1-en' }],
+            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_en' }],
           },
         },
         {
           sharedId: 'entity3',
           language: 'pt',
           metadata: {
-            relProp3: [{ value: 'calculated2-pt', label: 'calculated2-pt' }],
+            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_pt' }],
           },
         },
         {
           sharedId: 'entity4',
           language: 'en',
           metadata: {
-            relProp4: [{ value: 'calculated3-en', label: 'calculated3-en' }],
+            relProp4: [
+              {
+                value: 'inherit_target_2',
+                label: 'inherit_target_2_en',
+                inheritedValue: [{ value: 3 }],
+                inheritedType: 'numeric',
+              },
+            ],
           },
         },
         {
           sharedId: 'entity4',
           language: 'pt',
           metadata: {
-            relProp4: [{ value: 'calculated4-pt', label: 'calculated4-pt' }],
+            relProp4: [
+              {
+                value: 'inherit_target_2',
+                label: 'inherit_target_2_pt',
+                inheritedValue: [{ value: 4 }],
+                inheritedType: 'numeric',
+              },
+            ],
           },
         },
       ]);
@@ -239,15 +328,18 @@ describe('When checking for the existence of entities', () => {
   it.each(cases)(
     'should return $expected checking for sharedIds in $ids',
     async ({ ids, expected }) => {
+      const db = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
-        getConnection(),
+        db,
+        new MongoTemplatesDataSource(db, transactionManager),
         partialImplementation<MongoRelationshipsDataSource>({}),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
             return Promise.resolve(['en', 'pt']);
           },
         }),
-        new MongoTransactionManager(getClient())
+        transactionManager
       );
 
       expect(await ds.entitiesExist(ids)).toBe(expected);
@@ -256,15 +348,18 @@ describe('When checking for the existence of entities', () => {
 });
 
 it('should return the sharedIds of the entities that have a particular id within their denormalized values in a metatata prop', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
   const ds = new MongoEntitiesDataSource(
-    getConnection(),
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
     partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
       },
     }),
-    new MongoTransactionManager(getClient())
+    transactionManager
   );
 
   expect(
@@ -274,24 +369,29 @@ it('should return the sharedIds of the entities that have a particular id within
   ).toEqual(['entity3', 'entity3', 'entity4', 'entity4']);
 });
 
-it('should update the label of the denormalized value in all related entities', async () => {
+it('should update the denormalizations value in all related entities', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
   const ds = new MongoEntitiesDataSource(
-    getConnection(),
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
     partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
       },
     }),
-    new MongoTransactionManager(getClient())
+    transactionManager
   );
 
-  await ds.updateDenormalizedTitle(
-    ['relProp1', 'relProp2', 'relProp3', 'relProp4'],
-    'valid value',
-    'en',
-    'new label'
-  );
+  await ds.updateDenormalizedMetadataValues('old_value', 'en', 'new_label', [
+    { propertyName: 'relProp3' },
+    { propertyName: 'relProp4', value: [{ value: 11 }] },
+  ]);
+
+  await ds.updateDenormalizedMetadataValues('valid value', 'en', 'new label', [
+    { propertyName: 'relProp1' },
+  ]);
 
   const entities = await testingDB.mongodb
     ?.collection('entities')
@@ -304,6 +404,7 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'en',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'new label' }],
+        relProp3: [{ value: 'old_value', label: 'new_label' }],
       },
     },
     {
@@ -311,6 +412,7 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'pt',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp3: [{ value: 'old_value', label: 'old_label' }],
       },
     },
     {
@@ -318,6 +420,14 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'en',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'new label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'new_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 11 }],
+          },
+        ],
       },
     },
     {
@@ -325,6 +435,14 @@ it('should update the label of the denormalized value in all related entities', 
       language: 'pt',
       metadata: {
         relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [{ value: 0 }],
+          },
+        ],
       },
     },
   ]);

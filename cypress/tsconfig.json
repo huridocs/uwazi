@@ -3,5 +3,11 @@
   "compilerOptions": {
     "types": ["cypress"]
   },
-  "include": ["node_modules/cypress", "./**/*.ts", "cypress.d.ts", "../**/*.cy.tsx"]
+  "include": [
+    "node_modules/cypress",
+    "./**/*.ts",
+    "cypress.d.ts",
+    "../**/*.cy.tsx",
+    "support/commands.js"
+  ]
 }

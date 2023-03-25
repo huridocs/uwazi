@@ -28,7 +28,7 @@ const getOptionUrl = (option: SortType, path: string, query: string | null) => {
   const currentQuery = rison.decode(decodeURIComponent(query || '()'));
   const type = getPropertySortType(option);
   return `${path}${encodeSearch(
-    { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value },
+    { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value, from: 0 },
     true
   )}`;
 };
@@ -64,7 +64,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
   );
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');
   const sortButtonLink = `${path}${encodeSearch(
-    { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc' },
+    { ...currentQuery, order: currentQuery.order === 'asc' ? 'desc' : 'asc', from: 0 },
     true
   )}`;
 

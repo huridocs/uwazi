@@ -7,6 +7,7 @@ import userGroups from 'api/usergroups/userGroups';
 import { files } from 'api/files';
 import { PermissionType } from 'shared/types/permissionSchema';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 
 const formatLanguage = langKey => {
   const lang = availableLanguages.find(({ key }) => key === langKey);
@@ -136,7 +137,13 @@ const loadAllowedUsersAndGroups = data => {
 const loadSuggestionData = async data => {
   const suggestion = await Suggestions.getById(data.suggestion._id);
   const entity = await entities.getById(data.suggestion.entityId);
-  return { ...data, ...suggestion, title: entity?.title };
+  const [extractor] = await Extractors.get({ _id: suggestion.extractorId });
+  return { ...data, ...suggestion, title: entity?.title, extractorName: extractor.name };
+};
+
+const loadExtractorData = async data => {
+  const [extractor] = await Extractors.get({ _id: data.extractorId });
+  return { ...data, ...extractor };
 };
 
 export {
@@ -158,4 +165,5 @@ export {
   entitiesNames,
   loadAllowedUsersAndGroups,
   loadSuggestionData,
+  loadExtractorData,
 };

@@ -24,7 +24,11 @@ const App = ({ customParams }) => {
   const [confirmOptions, setConfirmOptions] = useState({});
   const location = useLocation();
   const params = useParams();
-  const sharedId = customParams?.sharedId || params.sharedId;
+  const sharedId = params.sharedId || customParams?.sharedId;
+  const shouldAddAppClassName =
+    ['/', `/${params.lang}/`].includes(location.pathname) ||
+    location.pathname.match(/\/page\/.*\/.*/g) ||
+    location.pathname.match(/\/entity\/.*/g);
 
   const toggleMobileMenu = visible => {
     setShowMenu(visible);
@@ -45,7 +49,7 @@ const App = ({ customParams }) => {
     navClass += ' is-active';
   }
 
-  const appClassName = sharedId ? `pageId_${sharedId}` : '';
+  const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
   return (
     <div id="app" className={appClassName}>

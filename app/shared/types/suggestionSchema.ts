@@ -29,6 +29,7 @@ export const IXSuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    extractorId: objectIdSchema,
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
@@ -43,7 +44,15 @@ export const IXSuggestionSchema = {
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
   },
-  required: ['propertyName', 'entityId', 'entityTemplate', 'suggestedValue', 'segment', 'language'],
+  required: [
+    'propertyName',
+    'entityId',
+    'extractorId',
+    'entityTemplate',
+    'suggestedValue',
+    'segment',
+    'language',
+  ],
 };
 
 export const EntitySuggestionSchema = {
@@ -54,6 +63,7 @@ export const EntitySuggestionSchema = {
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
+    extractorId: { type: 'string', minLength: 1 },
     sharedId: { type: 'string', minLength: 1 },
     fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
@@ -73,6 +83,7 @@ export const EntitySuggestionSchema = {
     'propertyName',
     'entityTitle',
     'entityId',
+    'extractorId',
     'sharedId',
     'fileId',
     'suggestedValue',
@@ -87,13 +98,14 @@ export const SuggestionsQueryFilterSchema = {
   type: 'object',
   title: 'IXSuggestionsFilter',
   additionalProperties: false,
+  definitions: { objectIdSchema },
   properties: {
     language: { type: 'string' },
-    propertyName: { type: 'string' },
+    extractorId: objectIdSchema,
     states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
     entityTemplates: { type: 'array', items: { type: 'string' } },
   },
-  required: ['propertyName'],
+  required: ['extractorId'],
 };
 
 export const IXSuggestionsQuerySchema = {
@@ -119,7 +131,7 @@ export const IXSuggestionsStatsQuerySchema = {
   additionalProperties: false,
   definitions: { SuggestionsQueryFilterSchema },
   properties: {
-    propertyName: { type: 'string' },
+    extractorId: { type: 'string' },
   },
-  required: ['propertyName'],
+  required: ['extractorId'],
 };

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import React from 'react';
+import { IncomingHttpHeaders } from 'http';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
@@ -45,11 +46,15 @@ import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
-import UnlockAccount from './Users/UnlockAccount';
-import { IXSuggestions } from './MetadataExtraction/SuggestionsContainer';
+import ConnectedUnlockAccount from './Users/UnlockAccount';
+import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
 
-const getRoutesLayout = (settings: settingsType | undefined, indexElement: React.ReactNode) => (
+const getRoutesLayout = (
+  settings: settingsType | undefined,
+  indexElement: React.ReactNode,
+  headers?: IncomingHttpHeaders
+) => (
   <Route errorElement={<RouteErrorBoundary />}>
     <Route index element={indexElement} />
     <Route path="login" element={<Login />} />
@@ -64,12 +69,12 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
     <Route path="page/:sharedId" element={<PageView />} />
     <Route path="page/:sharedId/:slug" element={<PageView />} />
     <Route path="setpassword/:key" element={<ResetPassword />} />
-    <Route path="unlockaccount/:username/:code" element={<UnlockAccount />} />
+    <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={adminsOnlyRoute(<Configure2fa />)} />
+      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
       <Route path="users" element={adminsOnlyRoute(<UserManagement />)} />
@@ -89,7 +94,8 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
         element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
       />
       <Route
-        path="metadata_extraction/suggestions/:propertyName"
+        path="metadata_extraction/suggestions/:extractorId"
+        loader={IXSuggestionsLoader(headers)}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">
@@ -116,9 +122,13 @@ const getRoutesLayout = (settings: settingsType | undefined, indexElement: React
   </Route>
 );
 
-const getRoutes = (settings: settingsType | undefined, userId: string | undefined) => {
+const getRoutes = (
+  settings: settingsType | undefined,
+  userId: string | undefined,
+  headers?: IncomingHttpHeaders
+) => {
   const { element, parameters } = getIndexElement(settings, userId);
-  const layout = getRoutesLayout(settings, element);
+  const layout = getRoutesLayout(settings, element, headers);
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}

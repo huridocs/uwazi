@@ -2,33 +2,41 @@
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
-import { RecoilRoot } from 'recoil';
-import { Helmet } from 'react-helmet';
-import { Provider } from 'react-redux';
-import { matchRoutes, RouteObject } from 'react-router-dom';
-import { omit } from 'lodash';
-import {
-  unstable_createStaticRouter as createStaticRouter,
-  unstable_StaticRouterProvider as StaticRouterProvider,
-} from 'react-router-dom/server';
 import {
   AgnosticDataRouteObject,
   unstable_createStaticHandler as createStaticHandler,
 } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { omit } from 'lodash';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
+import { Helmet } from 'react-helmet';
+import { Provider } from 'react-redux';
+import { matchRoutes, RouteObject } from 'react-router-dom';
+import {
+  unstable_createStaticRouter as createStaticRouter,
+  unstable_StaticRouterProvider as StaticRouterProvider,
+} from 'react-router-dom/server';
+import { RecoilRoot } from 'recoil';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { Settings } from 'shared/types/settingsType';
-import createStore from './store';
-import { getRoutes } from './Routes';
-import { ClientTranslationSchema, IStore } from './istore';
-import { I18NUtils, t, Translate } from './I18N';
-import Root from './App/Root';
-import CustomProvider from './App/Provider';
 import translationsApi from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
+import CustomProvider from './App/Provider';
+import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
+import { I18NUtils, t, Translate } from './I18N';
+import { ClientTranslationSchema, IStore } from './istore';
+import { getRoutes } from './Routes';
+import createStore from './store';
+
+class ServerRenderingFetchError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServerRenderingFetchError';
+  }
+}
 
 const onlySystemTranslations = (translations: ClientTranslationSchema[]) => {
   const rows = translations.map(translation => {
@@ -189,16 +197,28 @@ const setReduxState = async (
       headers
     );
 
-    await Promise.all(
-      dataLoaders.map(async loader => {
-        const actions = await loader(requestParams, reduxState);
-        if (Array.isArray(actions)) {
-          actions.forEach(action => {
-            initialStore.dispatch(action);
-          });
-        }
-      })
-    );
+    try {
+      await Promise.all(
+        dataLoaders.map(async loader => {
+          const actions = await loader(requestParams, reduxState);
+          if (Array.isArray(actions)) {
+            actions.forEach(action => {
+              initialStore.dispatch(action);
+            });
+          }
+        })
+      );
+    } catch (e) {
+      if (e instanceof FetchResponseError) {
+        throw new ServerRenderingFetchError(
+          `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
+        );
+      }
+      if (e.message) {
+        throw new ServerRenderingFetchError(e.message);
+      }
+      throw e;
+    }
   }
   return { initialStore, initialState: initialStore.getState() };
 };
@@ -230,7 +250,7 @@ const resetTranslations = () => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
-  const routes = getRoutes(settings, req.user && req.user._id);
+  const routes = getRoutes(settings, req.user && req.user._id, req.headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 

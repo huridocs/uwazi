@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 import { config } from 'api/config';
 
 export class S3Storage {
@@ -11,6 +12,9 @@ export class S3Storage {
 
   constructor() {
     this.client = new S3Client({
+      requestHandler: new NodeHttpHandler({
+        socketTimeout: 30000,
+      }),
       apiVersion: 'latest',
       region: 'placeholder-region',
       endpoint: config.s3.endpoint,

@@ -1,5 +1,5 @@
 import testingDB from 'api/utils/testing_db';
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import migration from '../index.js';
 
 describe('migration remove_evidence_vault_config', () => {
@@ -36,7 +36,7 @@ describe('migration remove_evidence_vault_config', () => {
     const [settings] = await testingDB.mongodb.collection('settings').find().toArray();
 
     expect(settings).toEqual({
-      _id: expect.any(ObjectID),
+      _id: expect.any(ObjectId),
       site_name: 'test site',
       project: 'project',
     });
@@ -55,7 +55,7 @@ describe('migration remove_evidence_vault_config', () => {
     const [settings] = await testingDB.mongodb.collection('settings').find().toArray();
 
     expect(settings).toEqual({
-      _id: expect.any(ObjectID),
+      _id: expect.any(ObjectId),
       site_name: 'test site',
       project: 'project',
     });
