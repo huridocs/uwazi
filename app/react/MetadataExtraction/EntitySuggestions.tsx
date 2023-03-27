@@ -330,8 +330,8 @@ const EntitySuggestionsComponent = ({
 
     socket.on(
       'ix_model_status',
-      (propertyName: string, modelStatus: string, _: string, data: any) => {
-        if (propertyName === reviewedProperty.name) {
+      (extractorId: string, modelStatus: string, _: string, data: any) => {
+        if (extractorId === extractor._id) {
           setStatus({ key: modelStatus, data });
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus({ key: 'ready' });

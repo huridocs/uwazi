@@ -33,7 +33,7 @@ const createExtractor = (newExtractorInfo: IXExtractorInfo) => async (dispatch: 
 
 const deleteExtractors =
   (currentExtractors: IXExtractorInfo[], extractorIds: string[]) => async (dispatch: any) => {
-    await deleteExtractorsAPICall(new RequestParams(extractorIds));
+    await deleteExtractorsAPICall(new RequestParams({ ids: extractorIds }));
     const idSet = new Set(extractorIds);
     const newExtractors = currentExtractors.filter(
       (extractor: IXExtractorInfo) => extractor._id && !idSet.has(extractor._id)

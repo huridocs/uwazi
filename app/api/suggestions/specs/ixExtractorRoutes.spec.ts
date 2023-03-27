@@ -240,6 +240,16 @@ describe('extractor routes', () => {
   });
 
   describe('DELETE /api/ixextractors', () => {
+    it('should reject malformed input', async () => {
+      const input = {
+        ids: { _id: { $exists: 1 } },
+      };
+      const response = await request(app).delete('/api/ixextractors').query(input).expect(400);
+      expect(response.body.error).toContain('validation failed');
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.length).toBe(3);
+    });
+
     it('should reject non existing _id', async () => {
       const input = {
         ids: [
