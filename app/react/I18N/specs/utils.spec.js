@@ -3,6 +3,11 @@ import * as appUtils from 'app/utils';
 
 import utils from '../utils.js';
 
+jest.mock('tiny-cookie', () => ({
+  ...jest.requireActual('tiny-cookie'),
+  set: jest.fn(),
+}));
+
 describe('I18NUtils', () => {
   let languages;
 
@@ -35,7 +40,7 @@ describe('I18NUtils', () => {
 
   describe('saveLocale', () => {
     beforeEach(() => {
-      spyOn(Cookie, 'set');
+      Cookie.set.mockRestore();
     });
 
     it('should set the cookie locale', () => {
