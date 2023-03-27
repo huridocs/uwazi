@@ -7,7 +7,7 @@ import { Translate } from 'app/I18N';
 
 import { Notification } from 'app/Notifications/components/Notification';
 
-export class Cookiepopup extends Component {
+class Cookiepopup extends Component {
   constructor(props) {
     super(props);
     this.state = { cookieExists: !isClient || (isClient && Boolean(Cookie.get('cookiepolicy'))) };
@@ -45,4 +45,5 @@ const mapStateToProps = state => ({
   cookiepolicy: Boolean(state.settings.collection.get('cookiepolicy')),
 });
 
+export { Cookiepopup };
 export default connect(mapStateToProps)(Cookiepopup);
