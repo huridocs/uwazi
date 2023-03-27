@@ -573,7 +573,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
     }) as Option[];
 
     return (
-      <ul className={`multiselect is-active ${className}`} data-cy="multiselect">
+      <ul className={`multiselect is-active ${className}`}>
         {this.renderSearch()}
         {!renderingOptions.length && (
           <span className="no-options-message">{t('System', 'No options found')}</span>
