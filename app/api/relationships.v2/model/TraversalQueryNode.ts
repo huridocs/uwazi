@@ -189,6 +189,10 @@ export class TraversalQueryNode extends QueryNode {
     return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
   }
 
+  getTemplatesInLeaves(): string[] {
+    return this.matches.map(m => m.getTemplatesInLeaves()).flat();
+  }
+
   static forRelationship(
     relationship: Relationship,
     direction: 'in' | 'out',

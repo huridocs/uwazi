@@ -1,8 +1,14 @@
-import { ObjectId } from 'mongodb';
+import { TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { PropertySchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 
-export interface TemplateDBO {
-  _id: ObjectId;
+export interface RelationshipPropertyDBO {
+  type: 'newRelationship';
   name: string;
-  // propertly type properties when migrating templates to v2
-  properties: any[];
+  label: string;
+  query: TraverseQuery[];
+  denormalizedProperty?: string;
+}
+export interface TemplateDBO extends Omit<TemplateSchema, 'properties'> {
+  properties: (PropertySchema | RelationshipPropertyDBO)[];
 }

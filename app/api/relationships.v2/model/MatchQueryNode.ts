@@ -143,6 +143,14 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
+  getTemplatesInLeaves(): string[] {
+    if (!this.traversals?.length) {
+      return this.filters.templates ?? [];
+    }
+
+    return this.traversals.map(t => t.getTemplatesInLeaves()).flat();
+  }
+
   static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
     return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }
