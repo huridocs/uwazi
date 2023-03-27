@@ -3,7 +3,7 @@ module.exports = {
   devtool: false,
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    fallback: { crypto: require.resolve('crypto-browserify') },
+    fallback: { crypto: false },
   },
   module: {
     rules: [
