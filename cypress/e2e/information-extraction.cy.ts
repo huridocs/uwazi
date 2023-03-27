@@ -51,11 +51,11 @@ describe('Information Extraction', () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
     cy.get('input.extractor-name-input').type('Extractor 1');
-    const firstTemplate = cy.contains('li', 'Ordenes del presidente');
-    firstTemplate.find('label').click();
+    cy.contains('li', 'Ordenes del presidente').as('firstTemplate');
+    cy.get('@firstTemplate').find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    const secondTemplate = cy.contains('li', 'Causa');
-    secondTemplate.find('label').click();
+    cy.contains('li', 'Causa').as('secondTemplate');
+    cy.get('@secondTemplate').find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('button', 'Add').click();
     cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
@@ -78,8 +78,8 @@ describe('Information Extraction', () => {
     cy.contains('button', 'Edit Extractor').click();
     cy.get('input.extractor-name-input').type(' edited');
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    const template = cy.contains('li', 'Ordenes de la corte');
-    template.find('label').click();
+    cy.contains('li', 'Ordenes de la corte').as('template');
+    cy.get('@template').find('label').click();
     cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
     cy.contains('button', 'Save').click();
     cy.contains('.table thead tr th span', 'Property').should('be.visible');
@@ -94,5 +94,35 @@ describe('Information Extraction', () => {
     cy.get('.training-dashboard').should('be.visible');
     cy.get('table').should('be.visible');
     cy.get('.settings-content').toMatchImageSnapshot();
+  });
+
+  it('should find suggestions successfully', () => {
+    englishLoggedInUwazi();
+    navigateToMetadataExtractionPage();
+    cy.get('a.btn-success.btn-xs').click();
+    cy.get('.suggestion-templates span').eq(1).should('be.visible');
+    cy.get('.training-dashboard').should('be.visible');
+    cy.get('table').should('be.visible');
+    cy.contains('button', 'Find suggestions').click();
+    cy.get('.settings-content').toMatchImageSnapshot();
+  });
+
+  it('should show filters sidepanel', () => {
+    englishLoggedInUwazi();
+    navigateToMetadataExtractionPage();
+    cy.get('a.btn-success.btn-xs').click();
+    cy.get('.suggestion-templates span').eq(1).should('be.visible');
+    cy.get('.training-dashboard').should('be.visible');
+    cy.get('table').should('be.visible');
+    cy.contains('button', 'Show Filters').click();
+    cy.get('.settings-content .sidepanel-body').toMatchImageSnapshot();
+  });
+
+  it('should delete an extractor', () => {
+    englishLoggedInUwazi();
+    navigateToMetadataExtractionPage();
+    cy.get('.extractor-checkbox input').click();
+    cy.contains('button', 'Delete').click();
+    cy.get('table').toMatchImageSnapshot();
   });
 });
