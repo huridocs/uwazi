@@ -175,7 +175,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "pdfjs-dist": "3.3.122",
-    "postcss-loader": "^7.0.2",
+    "postcss-loader": "^7.1.0",
     "postcss-prefix-selector": "^1.16.0",
     "prom-client": "^14.1.1",
     "prop-types": "^15.8.1",
