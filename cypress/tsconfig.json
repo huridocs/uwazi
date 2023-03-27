@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress", "cypress-visual-regression"]
+    "types": ["cypress", "cypress-plugin-snapshots"]
   },
   "include": [
     "node_modules/cypress",
