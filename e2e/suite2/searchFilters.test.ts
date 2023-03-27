@@ -131,11 +131,16 @@ describe('search filters path', () => {
   });
 
   describe('date filters', () => {
+    const fillDate = async (selector: string, date: string) => {
+      await expect(page).toClick(`div.${selector}`);
+      await expect(page).toFill(`div.${selector} > div > div > input`, date);
+      await page.waitForSelector('.react-datepicker__day--selected');
+      await page.click('.react-datepicker__day--selected');
+    };
+
     it('should filter by a date for Ordenes de la corte', async () => {
-      await expect(page).toFill('div.DatePicker__From > div > div > input', '31/07/2015');
-      await page.click('.react-datepicker__day--selected');
-      await expect(page).toFill('div.DatePicker__To > div > div > input', '31/08/2022');
-      await page.click('.react-datepicker__day--selected');
+      await fillDate('DatePicker__From', '31/07/2015');
+      await fillDate('DatePicker__To', '31/08/2022');
       await waitForEvent('DOMContentLoaded');
       const entityTitles = await getAllEntitiesTitles(3);
       expect(entityTitles.length).toEqual(3);
