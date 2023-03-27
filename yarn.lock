@@ -8996,6 +8996,15 @@ cypress-plugin-snapshots@^1.4.4:
     source-map-support "^0.5.10"
     unidiff "1.0.2"
 
+cypress-visual-regression@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/cypress-visual-regression/-/cypress-visual-regression-3.0.0.tgz#7623ce4dce6399c7d6823c9c074f4b5fdba55fda"
+  integrity sha512-Rn+SDZjdAL29Mmg+TORe9ez+ragBP6Ew31nWx1x3YbL9LkObpLCO08XcdAkY73/w4eKlBarmJcs6de5LrIa50A==
+  dependencies:
+    pixelmatch "^5.2.1"
+    pngjs "^6.0.0"
+    sanitize-filename "^1.6.3"
+
 cypress@^12.6.0:
   version "12.6.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.6.0.tgz#d71a82639756173c0682b3d467eb9f0523460e91"
@@ -17380,6 +17389,13 @@ pixelmatch@^5.1.0:
   dependencies:
     pngjs "^4.0.1"
 
+pixelmatch@^5.2.1:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/pixelmatch/-/pixelmatch-5.3.0.tgz#5e5321a7abedfb7962d60dbf345deda87cb9560a"
+  integrity sha512-o8mkY4E/+LNUf6LzX96ht6k6CEDi65k9G2rjMtBe9Oo+VPKSvl+0GKHuH/AlG+GA5LPG/i5hrekkxUc3s2HU+Q==
+  dependencies:
+    pngjs "^6.0.0"
+
 pkg-dir@4.2.0, pkg-dir@^4.1.0, pkg-dir@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/pkg-dir/-/pkg-dir-4.2.0.tgz"
@@ -17431,6 +17447,11 @@ pngjs@^4.0.1:
   version "4.0.1"
   resolved "https://registry.npmjs.org/pngjs/-/pngjs-4.0.1.tgz"
   integrity sha512-rf5+2/ioHeQxR6IxuYNYGFytUyG3lma/WW1nsmjeHlWwtb2aByla6dkVc8pmJ9nplzkTA0q2xx7mMWrOTqT4Gg==
+
+pngjs@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-6.0.0.tgz#ca9e5d2aa48db0228a52c419c3308e87720da821"
+  integrity sha512-TRzzuFRRmEoSW/p1KVAmiOgPco2Irlah+bGFCeNfJXxxYGwSw7YwAOAcd7X28K/m5bjBWKsC29KyoMfHbypayg==
 
 pnp-webpack-plugin@1.6.4:
   version "1.6.4"
@@ -20987,6 +21008,11 @@ timestring@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/timestring/-/timestring-6.0.0.tgz#b0c7c331981ecf2066ce88bcfb8ee3ae32e7a0f6"
   integrity sha512-wMctrWD2HZZLuIlchlkE2dfXJh7J2KDI9Dwl+2abPYg0mswQHfOAyQW3jJg1pY5VfttSINZuKcXoB3FGypVklA==
+
+timm@^1.6.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/timm/-/timm-1.7.1.tgz#96bab60c7d45b5a10a8a4d0f0117c6b7e5aff76f"
+  integrity sha512-IjZc9KIotudix8bMaBW6QvMuq64BrJWFs1+4V0lXwWGQZwH+LnX87doAYhem4caOEusRP9/g6jVDQmZ8XOk1nw==
 
 tiny-cookie@^2.4.0:
   version "2.4.0"

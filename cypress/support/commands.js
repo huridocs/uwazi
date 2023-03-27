@@ -35,7 +35,9 @@
 //   }
 // }
 
-import 'cypress-plugin-snapshots/commands';
+const compareSnapshotCommand = require('cypress-visual-regression/dist/command');
+
+compareSnapshotCommand();
 
 function getTextNode(el, match) {
   const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
