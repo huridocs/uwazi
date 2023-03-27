@@ -2,7 +2,7 @@ import { needsAuthorization } from 'api/auth';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { parseQuery } from 'api/utils';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { Application } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import { ObjectId } from 'mongodb';
 import { ensure } from 'shared/tsUtils';
 import { serviceMiddleware } from './serviceMiddleware';
@@ -80,8 +80,7 @@ export const extractorsRoutes = (app: Application) => {
         },
       },
     }),
-    async (req, res, _next) => {
-      // @ts-ignore
+    async (req: Request & { query: { ids: string[] } }, res: Response, _next: NextFunction) => {
       const extractorIds: string[] = ensure<string[]>(req.query.ids);
       await Extractors.delete(extractorIds);
       res.sendStatus(200);
