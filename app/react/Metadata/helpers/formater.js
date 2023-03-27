@@ -122,6 +122,18 @@ const propertyValueFormatter = {
   date: timestamp => moment.utc(timestamp, 'X').format('ll'),
 };
 
+//relationship v2
+const getPropertyType = (propertyName, templates) => {
+  for (let i = 0; i < templates.size; i += 1) {
+    const template = templates.get(i);
+    const property = template.get('properties').find(p => p.get('name') === propertyName);
+    if (property) {
+      return property.get('type');
+    }
+  }
+  return 'text';
+};
+
 export default {
   formatDateRange(daterange = {}) {
     let from = '';
@@ -335,6 +347,72 @@ export default {
     };
   },
 
+  // relationship v2
+  newRelationshipWithInherit(property, propValue, thesauri, options, templates) {
+    const label = property.get('label');
+    const name = property.get('name');
+    const denormalizedProperty = property.get('denormalizedProperty');
+    const type = getPropertyType(denormalizedProperty, templates);
+    const noLabel = property.get('noLabel');
+    const propertyInfo = Immutable.fromJS({
+      label,
+      name,
+      type,
+      noLabel,
+    });
+
+    const methodType = this[type] ? type : 'default';
+    let value = (propValue || [])
+      .map(v => {
+        if (v && v.inheritedValue) {
+          if (
+            !v.inheritedValue.length ||
+            v.inheritedValue.every(
+              iv => !(iv.value || type === null || (type === 'numeric' && iv.value === 0))
+            )
+          ) {
+            return null;
+          }
+
+          const relatedEntity = prepareRelatedEntity(options, v, templates, property);
+
+          const formattedValue = this[methodType](
+            propertyInfo,
+            v.inheritedValue,
+            thesauri,
+            options,
+            templates
+          );
+          return {
+            ...formattedValue,
+            ...(relatedEntity && { relatedEntity }),
+          };
+        }
+
+        return {};
+      })
+      .filter(v => v);
+    let propType = 'inherit';
+    if (['multidate', 'multidaterange', 'multiselect', 'geolocation'].includes(type)) {
+      propType = type;
+      value = this.flattenInheritedMultiValue(value, type, propValue || [], undefined, {
+        doc: options.doc,
+      });
+    }
+    value = value.filter(v => v);
+    return {
+      translateContext: property.get('content'),
+      name,
+      value,
+      label,
+      noLabel,
+      type: propType,
+      inheritedType: type,
+      onlyForCards: Boolean(options.onlyForCards),
+      indexInTemplate: property.get('indexInTemplate'),
+    };
+  },
+
   flattenInheritedMultiValue(
     relationshipValues,
     type,
@@ -456,6 +534,17 @@ export default {
 
     if (property.get('inherit')) {
       return this.inherit(property, value, thesauri, { ...options, doc }, templates);
+    }
+
+    //relationship v2
+    if (property.get('denormalizedProperty')) {
+      return this.newRelationshipWithInherit(
+        property,
+        value,
+        thesauri,
+        { ...options, doc },
+        templates
+      );
     }
 
     const methodType = this[property.get('type')] ? property.get('type') : 'default';

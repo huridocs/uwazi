@@ -49,8 +49,7 @@ export class DenormalizationService {
       properties.map(async property =>
         Promise.all(
           invertQueryCallback(property).map(async query => {
-            await this.relationshipsDS.getByQuery(query, language).forEach(async result => {
-              const entity = result.leaf() as { sharedId: string };
+            await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
                 sharedId: entity.sharedId,
                 property: property.name,
@@ -107,27 +106,28 @@ export class DenormalizationService {
     });
   }
 
-  private async updateDenormalizedMetadataDirectly(entityIds: string[], language: string) {
+  private async updateDenormalizedMetadataDirectly(changedEntityIds: string[], language: string) {
     const relationshipProperties = await this.templatesDS.getAllRelationshipProperties().all();
     const relationshipPropertyNames = relationshipProperties.map(property => property.name);
 
-    await Promise.all(
-      entityIds.map(async sharedId => {
-        const entities = await this.entitiesDS.getByIds([sharedId]).all();
-        const entity = entities.find(e => e.language === language);
-        if (!entity) throw new Error('missing entity');
+    await this.entitiesDS.getByIds(changedEntityIds, language).forEach(async entity => {
+      const newValuesForProperties = relationshipProperties.map(property => ({
+        propertyName: property.name,
+        ...(property.denormalizedProperty
+          ? { value: entity.metadata[property.denormalizedProperty] }
+          : {}),
+      }));
 
-        await this.entitiesDS.updateDenormalizedTitle(
-          relationshipPropertyNames,
-          sharedId,
-          language,
-          entity.title
-        );
-      })
-    );
+      await this.entitiesDS.updateDenormalizedMetadataValues(
+        entity.sharedId,
+        language,
+        entity.title,
+        newValuesForProperties
+      );
+    });
 
     const affectedEntities = await this.entitiesDS
-      .getByDenormalizedId(relationshipPropertyNames, entityIds)
+      .getByDenormalizedId(relationshipPropertyNames, changedEntityIds)
       .all();
 
     this.transactionManager.onCommitted(async () => {

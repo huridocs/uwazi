@@ -11,12 +11,43 @@ import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
+
+async function getRelationshipsV2PRocessor() {
+  const db = getConnection();
+  const client = getClient();
+
+  const transactionManager = new MongoTransactionManager(client);
+  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
+
+  if (!settingsDataSource.readNewRelationshipsAllowed()) {
+    return hit => hit;
+  }
+
+  return hit => {
+    const mappedMetadata = {};
+    Object.keys(hit._source.metadata || {}).forEach(propertyName => {
+      mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
+        ({ originalValue, ...rest }) => {
+          if (originalValue) {
+            return { ...originalValue, inheritedValue: [rest] };
+          }
+          return rest;
+        }
+      );
+    });
+
+    return mappedMetadata;
+  };
+}
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -59,6 +90,10 @@ function processFilters(filters, properties, dictionaries) {
 
     if (property.inherit) {
       ({ type } = propertiesHelper.getInheritedProperty(property, properties));
+    }
+
+    if (property.type === 'newRelationship') {
+      type = properties.find(p => p.name === property.denormalizedProperty)?.type || 'select';
     }
 
     if (['multidaterange', 'daterange', 'date', 'multidate'].includes(type)) {
@@ -471,12 +506,14 @@ const permissionsInformation = (hit, user) => {
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
   const user = permissionsContext.getUserInContext();
+  const processRelationshipsV2InMetadata = await getRelationshipsV2PRocessor();
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
     result.permissions = permissionsInformation(hit, user);
+    result.metadata = processRelationshipsV2InMetadata(hit);
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(
