@@ -27,7 +27,7 @@ import {
   getUpdatedNames,
   updateExtractedMetadataProperties,
 } from './utils';
-import { validateNewRelationshipPropertiesInInput } from './v2_support';
+import * as v2 from './v2_support';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -165,15 +165,17 @@ export default {
     /* eslint-enable no-param-reassign */
 
     await mapAjvToAppValidation(validateTemplate)(template);
-    await validateNewRelationshipPropertiesInInput(template);
+    const mappedTemplate = await v2.mapNewRelationshipPropertiesToDBO(template);
 
-    await this.swapNamesValidation(template);
+    await this.swapNamesValidation(mappedTemplate);
 
     if (reindex) {
-      await updateMapping([template]);
+      await updateMapping([mappedTemplate]);
     }
 
-    return template._id ? this._update(template, language, reindex) : _save(template);
+    return mappedTemplate._id
+      ? this._update(mappedTemplate, language, reindex)
+      : _save(mappedTemplate);
   },
 
   async swapNamesValidation(template: TemplateSchema) {

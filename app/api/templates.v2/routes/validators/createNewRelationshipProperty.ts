@@ -9,6 +9,7 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
     label: { type: 'string' },
     name: { type: 'string' },
     query: { ref: 'query' },
+    type: { enum: ['newRelationship'] },
   },
   optionalProperties: {
     denormalizedProperty: { type: 'string' },
