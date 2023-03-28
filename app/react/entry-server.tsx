@@ -2,10 +2,7 @@
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import {
-  AgnosticDataRouteObject,
-  unstable_createStaticHandler as createStaticHandler,
-} from '@remix-run/router';
+import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { omit } from 'lodash';

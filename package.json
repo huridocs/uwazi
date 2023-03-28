@@ -98,7 +98,7 @@
     "@heroicons/react": "^2.0.15",
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
-    "@remix-run/router": "^1.0.4",
+    "@remix-run/router": "^1.4.0",
     "@sentry/node": "^7.36.0",
     "@sentry/react": "7.36.0",
     "@sentry/tracing": "^7.36.0",
