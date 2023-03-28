@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   check_translations:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
