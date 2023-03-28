@@ -104,6 +104,7 @@ describe('Information Extraction', () => {
     cy.get('.training-dashboard').should('be.visible');
     cy.get('table').should('be.visible');
     cy.contains('button', 'Find suggestions').click();
+    cy.get('.suggested-value').should('contain.text', '2023');
     cy.get('.settings-content').toMatchImageSnapshot();
   });
 
@@ -123,6 +124,7 @@ describe('Information Extraction', () => {
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox input').click();
     cy.contains('button', 'Delete').click();
+    cy.contains('button', 'Create Extractor').should('be.visible');
     cy.get('table').toMatchImageSnapshot();
   });
 });
