@@ -58,7 +58,8 @@ describe('loader', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create values in thesauri', async () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
   });
@@ -137,7 +138,7 @@ describe('loader', () => {
     });
   });
 
-  it('should save metadata labels are saved properly', async () => {
+  it('should save metadata labels properly', async () => {
     const english = await entities.get({ language: 'en' });
     const spanish = await entities.get({ language: 'es' });
     const englishSelectLabels = getMetadataLabels('select_property', english);

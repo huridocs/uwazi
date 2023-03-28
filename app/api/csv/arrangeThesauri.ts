@@ -1,6 +1,7 @@
 import { ImportFile } from 'api/csv/importFile';
 import { WithId } from 'api/odm';
 import thesauri from 'api/thesauri';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
@@ -36,25 +37,6 @@ class ArrangeThesauriError extends Error {
   }
 }
 
-const createNameToIdMap = (
-  thesauriRelatedProperties: PropertySchema[] | undefined,
-  languages?: string[]
-): { [k: string]: string } => {
-  const nameToThesauriId: { [k: string]: string } = {};
-
-  thesauriRelatedProperties?.forEach(p => {
-    if (p.content && p.type) {
-      const thesarusID = p.content.toString();
-      nameToThesauriId[p.name] = thesarusID;
-      languages?.forEach(suffix => {
-        nameToThesauriId[`${p.name}__${suffix}`] = thesarusID;
-      });
-    }
-  });
-
-  return nameToThesauriId;
-};
-
 type ThesauriValueData = {
   thesauriIdToExistingValues: Map<string, Set<string>>;
   thesauriIdToNewValues: Map<string, Set<string>>;
@@ -88,10 +70,41 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
   };
 };
 
+const handleRow = (
+  row: CSVRow,
+  propNameToThesauriId: Record<string, string | undefined>,
+  newNameGeneration: boolean,
+  thesauriValueData: ThesauriValueData
+): void => {
+  const safeNamedRow = toSafeName(row, newNameGeneration);
+  console.log('safeNamedRow', safeNamedRow)
+  Object.entries(filterJSObject(propNameToThesauriId, Object.keys(safeNamedRow))).forEach(
+    ([name, id]) => {
+      const labels = splitMultiselectLabels(safeNamedRow[name]);
+      Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+        if (thesauriValueData.thesauriIdToGroups.get(id)?.has(normalizedLabel)) {
+          throw new Error(
+            `The label "${originalLabel}" at property "${name}" is a group label in line:\n${JSON.stringify(
+              row
+            )}`
+          );
+        }
+        if (
+          !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
+          !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
+        ) {
+          thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
+          thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
+        }
+      });
+    }
+  );
+};
+
 const syncSaveThesauri = async (
   allRelatedThesauri: WithId<ThesaurusSchema>[],
   thesauriIdToNewValues: Map<string, Set<string>>
-) => {
+): Promise<void> => {
   const thesauriWithNewValues = allRelatedThesauri.filter(
     t => (thesauriIdToNewValues.get(t._id.toString()) || new Set()).size > 0
   );
@@ -115,43 +128,27 @@ const arrangeThesauri = async (
   newNameGeneration: boolean,
   languages?: string[],
   stopOnError: boolean = true
-) => {
+): Promise<void> => {
   const thesauriRelatedProperties = template.properties?.filter(p =>
     ['select', 'multiselect'].includes(p.type)
   );
-  const nameToThesauriId = createNameToIdMap(thesauriRelatedProperties, languages);
+
+  const propNameToThesauriId = objectIndex(
+    thesauriRelatedProperties || [],
+    p => p.name,
+    p => p.content?.toString()
+  );
+
   const allRelatedThesauri = await thesauri.get({
-    $in: Array.from(
-      new Set(thesauriRelatedProperties?.map(p => p.content?.toString()).filter(t => t))
-    ),
+    $in: Object.values(propNameToThesauriId),
   });
+
   const thesauriValueData = setupIdValueMaps(allRelatedThesauri);
 
   await csv(await file.readStream(), stopOnError)
-    .onRow(async (row: CSVRow) => {
-      const safeNamedRow = toSafeName(row, newNameGeneration);
-      Object.entries(filterJSObject(nameToThesauriId, Object.keys(safeNamedRow))).forEach(
-        ([name, id]) => {
-          const labels = splitMultiselectLabels(safeNamedRow[name]);
-          Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-            if (thesauriValueData.thesauriIdToGroups.get(id)?.has(normalizedLabel)) {
-              throw new Error(
-                `The label "${originalLabel}" at property "${name}" is a group label in line:\n${JSON.stringify(
-                  row
-                )}`
-              );
-            }
-            if (
-              !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
-              !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
-            ) {
-              thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
-              thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
-            }
-          });
-        }
-      );
-    })
+    .onRow(async (row: CSVRow) =>
+      handleRow(row, propNameToThesauriId, newNameGeneration, thesauriValueData)
+    )
     .onError(async (e: Error, row: CSVRow, index: number) => {
       throw new ArrangeThesauriError(e, row, index);
     })
