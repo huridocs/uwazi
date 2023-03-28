@@ -47,7 +47,7 @@ const createExtractor = async (requestParams: RequestParams<IXExtractorInfo>) =>
   return response;
 };
 
-const deleteExtractors = async (requestParams: RequestParams<string[]>) => {
+const deleteExtractors = async (requestParams: RequestParams<{ ids: string[] }>) => {
   const { json: response } = await api.delete('ixextractors', requestParams);
   return response;
 };
