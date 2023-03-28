@@ -57,7 +57,7 @@ jobs:
         working-directory: dummy_extractor_services
       - run: make install_venv -C dummy_extractor_services
       - run: make start -C dummy_extractor_services > logs.log &
-      - run: sleep 10 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
       - name: Log on failure
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
