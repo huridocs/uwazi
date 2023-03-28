@@ -3,24 +3,22 @@ import _ from 'lodash';
 import translations from 'api/i18n';
 import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings';
-import templates, { templateUtils } from 'api/templates';
+import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
 import { ObjectId } from 'mongodb';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { propertyTypes } from 'shared/propertyTypes';
 import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { arrangeThesauri } from './arrangeThesauri';
-import csv, { CSVRow, peekHeaders } from './csv';
-import { extractEntity, notTranslated, toSafeName } from './entityRow';
+import csv, { CSVRow } from './csv';
+import { extractEntity, toSafeName } from './entityRow';
 import { importEntity, translateEntity } from './importEntity';
-import importFile, { ImportFile } from './importFile';
+import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
-import { arrangeColumns } from './arrangeColumns';
+import { validateColumns } from './arrangeColumns';
 
 const readResources = async (
   templateId: ObjectId | string
@@ -85,7 +83,7 @@ export class CSVLoader extends EventEmitter {
     const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
       await readResources(templateId);
     const file = importFile(csvPath);
-    const headers = await arrangeColumns(
+    const headers = await validateColumns(
       file,
       template,
       availableLanguages,
