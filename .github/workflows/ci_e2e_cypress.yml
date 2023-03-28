@@ -48,7 +48,11 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - run: git clone https://github.com/huridocs/dummy_extractor_services.git
+      - name: Clone dummy services
+        uses: actions/checkout@v2
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
       - run: make start > logs.log &
         working-directory: ./dummy_extractor_services
       - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
