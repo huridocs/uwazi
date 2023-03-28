@@ -53,8 +53,7 @@ jobs:
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
-      - run: ls dummy_extractor_services -l
-      - run: make start -f dummy_extractor_services/Makefile > dummy_extractor_services/logs.log &
+      - run: make start -C dummy_extractor_services > dummy_extractor_services/logs.log &
       - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
       - name: Cache build
         id: cache-build
