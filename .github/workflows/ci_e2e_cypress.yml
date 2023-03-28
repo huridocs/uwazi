@@ -49,8 +49,9 @@ jobs:
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
       - run: git clone https://github.com/huridocs/dummy_extractor_services.git
-      - run: make start &
+      - run: make start > logs.log &
         working-directory: ./dummy_extractor_services
+      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
