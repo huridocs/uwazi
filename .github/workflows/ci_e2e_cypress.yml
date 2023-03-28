@@ -53,7 +53,9 @@ jobs:
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
-      - run: make install_venv -C dummy_extractor_services
+      - run: python3 -m venv venv
+        working-directory: dummy_extractor_services
+      - run: make install -C dummy_extractor_services
       - run: make start -C dummy_extractor_services > dummy_extractor_services/logs.log &
       - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
       - name: Log on failure
