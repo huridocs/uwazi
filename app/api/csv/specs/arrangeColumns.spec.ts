@@ -3,7 +3,7 @@ import path from 'path';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ArrangeColumnsError } from '../arrangeColumns';
+import { ArrangeColumnsError } from '../validateColumns';
 import { CSVLoader } from '../csvLoader';
 import { mockCsvFileReadStream } from './helpers';
 

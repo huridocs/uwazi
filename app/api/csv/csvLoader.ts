@@ -18,7 +18,7 @@ import { extractEntity, toSafeName } from './entityRow';
 import { importEntity, translateEntity } from './importEntity';
 import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
-import { validateColumns } from './arrangeColumns';
+import { validateColumns } from './validateColumns';
 
 const readResources = async (
   templateId: ObjectId | string
