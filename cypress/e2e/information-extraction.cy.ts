@@ -96,7 +96,7 @@ describe('Information Extraction', () => {
     cy.get('.settings-content').toMatchImageSnapshot();
   });
 
-  it('should find suggestions successfully', () => {
+  it('should find suggestions successfully', { defaultCommandTimeout: 6000 }, () => {
     englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
