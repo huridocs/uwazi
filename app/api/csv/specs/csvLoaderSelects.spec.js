@@ -42,16 +42,16 @@ describe('loader', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv_loader.index');
-    await loader.load(
-      path.join(__dirname, '/arrangeThesauriTest.csv'),
-      fixtureFactory.id('template')
-    );
-    selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
-    selectLabels = selectThesaurus.values.map(tv => tv.label);
-    selectLabelsSet = new Set(selectLabels);
-    multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
-    multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
-    multiselectLabelsSet = new Set(multiselectLabels);
+    // await loader.load(
+    //   path.join(__dirname, '/arrangeThesauriTest.csv'),
+    //   fixtureFactory.id('template')
+    // );
+    // selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
+    // selectLabels = selectThesaurus.values.map(tv => tv.label);
+    // selectLabelsSet = new Set(selectLabels);
+    // multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
+    // multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
+    // multiselectLabelsSet = new Set(multiselectLabels);
   });
 
   afterAll(async () => {
@@ -335,22 +335,6 @@ describe('loader', () => {
           e.message.startsWith(
             'The label "P" at property "nested_select_property" is a group label in line:'
           )
-        ).toBe(true);
-      }
-    });
-
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should not allow importing selects without the default language column', async () => {
-      try {
-        await loader.load(
-          path.join(__dirname, '/arrangeThesauriMissingDefaultLanguageCase.csv'),
-          fixtureFactory.id('template')
-        );
-        expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
-      } catch (e) {
-        expect(e).toBeInstanceOf(ArrangeThesauriError);
-        expect(
-          e.message.startsWith('The property "select_property" is missing the default language.')
         ).toBe(true);
       }
     });

@@ -1,21 +1,55 @@
+import _ from 'lodash';
+
 import translations from 'api/i18n';
-import { WithId } from 'api/odm';
+import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings';
-import templates from 'api/templates';
+import templates, { templateUtils } from 'api/templates';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
 import { ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { propertyTypes } from 'shared/propertyTypes';
 import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { arrangeThesauri } from './arrangeThesauri';
-import csv, { CSVRow } from './csv';
-import { extractEntity, toSafeName } from './entityRow';
+import csv, { CSVRow, peekHeaders } from './csv';
+import { extractEntity, notTranslated, toSafeName } from './entityRow';
 import { importEntity, translateEntity } from './importEntity';
-import importFile from './importFile';
+import importFile, { ImportFile } from './importFile';
 import { thesauriFromStream } from './importThesauri';
+import { arrangeColumns } from './arrangeColumns';
 
+const readResources = async (
+  templateId: ObjectId | string
+): Promise<{
+  template: EnforcedWithId<TemplateSchema>;
+  newNameGeneration: boolean;
+  availableLanguages: string[];
+  defaultLanguage: string;
+  dateFormat: string | undefined;
+}> => {
+  const template = await templates.getById(templateId);
+  if (!template) {
+    throw new Error('template not found!');
+  }
+  const { newNameGeneration = false, languages, dateFormat } = await settings.get();
+  const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
+    (language: LanguageSchema) => language.key
+  );
+  const defaultLanguage = languages?.find((l: LanguageSchema) => l.default)?.key;
+  if (!defaultLanguage) throw new Error('default language not found!');
+
+  return {
+    template,
+    newNameGeneration,
+    availableLanguages,
+    defaultLanguage,
+    dateFormat,
+  };
+};
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -48,16 +82,16 @@ export class CSVLoader extends EventEmitter {
     templateId: ObjectId | string,
     options = { language: 'en', user: {} }
   ) {
-    const template = await templates.getById(templateId);
-    if (!template) {
-      throw new Error('template not found!');
-    }
-    const { newNameGeneration = false, languages, dateFormat } = await settings.get();
-    const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
-      (language: LanguageSchema) => language.key
-    );
-    const defaultLanguage = languages?.find((l: LanguageSchema) => l.default)?.key;
+    const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
+      await readResources(templateId);
     const file = importFile(csvPath);
+    const headers = await arrangeColumns(
+      file,
+      template,
+      availableLanguages,
+      defaultLanguage,
+      newNameGeneration
+    );
     await arrangeThesauri(file, template, newNameGeneration, availableLanguages);
 
     await csv(await file.readStream(), this.stopOnError)

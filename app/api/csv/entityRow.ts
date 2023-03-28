@@ -65,4 +65,4 @@ const extractEntity = (
   };
 };
 
-export { extractEntity, toSafeName };
+export { extractEntity, toSafeName, notTranslated };
