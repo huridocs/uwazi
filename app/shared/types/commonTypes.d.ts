@@ -114,6 +114,7 @@ export interface MetadataObjectSchema {
     label?: string;
     [k: string]: unknown | undefined;
   }[];
+  timeLinks?: string;
   inheritedType?: string;
   [k: string]: unknown | undefined;
 }
