@@ -55,10 +55,9 @@ jobs:
           path: dummy_extractor_services
       - run: python3 -m venv venv
         working-directory: dummy_extractor_services
-      - run: make install -C dummy_extractor_services
-      - run: . venv/bin/activate; command gunicorn -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:5051 & command gunicorn -k uvicorn.workers.UvicornWorker app:app --bind 0.0.0.0:5052 & command python -m worker_metadata & command python -m worker_paragraphs > logs.log &
-        working-directory: dummy_extractor_services
-      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
+      - run: make install_venv -C dummy_extractor_services
+      - run: make start -C dummy_extractor_services > logs.log &
+      - run: sleep 50 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
       - name: Log on failure
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
