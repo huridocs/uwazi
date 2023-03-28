@@ -16,6 +16,7 @@ import { importEntity, translateEntity } from './importEntity';
 import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
 
+
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
 
@@ -55,6 +56,7 @@ export class CSVLoader extends EventEmitter {
     const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
       (language: LanguageSchema) => language.key
     );
+    const defaultLanguage = languages?.find((l: LanguageSchema) => l.default)?.key;
     const file = importFile(csvPath);
     await arrangeThesauri(file, template, newNameGeneration, availableLanguages);
 

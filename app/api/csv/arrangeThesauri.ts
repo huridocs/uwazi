@@ -77,7 +77,7 @@ const handleRow = (
   thesauriValueData: ThesauriValueData
 ): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
-  console.log('safeNamedRow', safeNamedRow)
+  // console.log('safeNamedRow', safeNamedRow)
   Object.entries(filterJSObject(propNameToThesauriId, Object.keys(safeNamedRow))).forEach(
     ([name, id]) => {
       const labels = splitMultiselectLabels(safeNamedRow[name]);

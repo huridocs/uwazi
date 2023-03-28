@@ -58,8 +58,7 @@ describe('loader', () => {
     await testingEnvironment.tearDown();
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should create values in thesauri', async () => {
+  it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
   });
@@ -336,6 +335,22 @@ describe('loader', () => {
           e.message.startsWith(
             'The label "P" at property "nested_select_property" is a group label in line:'
           )
+        ).toBe(true);
+      }
+    });
+
+    // eslint-disable-next-line jest/no-focused-tests
+    fit('should not allow importing selects without the default language column', async () => {
+      try {
+        await loader.load(
+          path.join(__dirname, '/arrangeThesauriMissingDefaultLanguageCase.csv'),
+          fixtureFactory.id('template')
+        );
+        expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
+      } catch (e) {
+        expect(e).toBeInstanceOf(ArrangeThesauriError);
+        expect(
+          e.message.startsWith('The property "select_property" is missing the default language.')
         ).toBe(true);
       }
     });
