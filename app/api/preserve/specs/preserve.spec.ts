@@ -17,6 +17,7 @@ describe('Preserve', () => {
         status: 200,
         headers: new Headers(),
         cookie: 'cookie',
+        endpoint: { url: 'fake url', method: 'GET' },
       })
     );
     await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');

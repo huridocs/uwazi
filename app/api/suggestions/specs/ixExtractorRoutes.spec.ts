@@ -2,11 +2,13 @@ import { Application } from 'express';
 import { Db } from 'mongodb';
 import request from 'supertest';
 
+import { errorLog } from 'api/log';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
+import { Logger } from 'winston';
 import { extractorsRoutes } from '../extractorsRoutes';
 
 const adminUser = {
@@ -85,6 +87,7 @@ describe('extractor routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
+    jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
     db = testingDB.mongodb;
   });
 
@@ -240,6 +243,16 @@ describe('extractor routes', () => {
   });
 
   describe('DELETE /api/ixextractors', () => {
+    it('should reject malformed input', async () => {
+      const input = {
+        ids: { _id: { $exists: 1 } },
+      };
+      const response = await request(app).delete('/api/ixextractors').query(input).expect(400);
+      expect(response.body.error).toContain('validation failed');
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.length).toBe(3);
+    });
+
     it('should reject non existing _id', async () => {
       const input = {
         ids: [
