@@ -79,15 +79,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     setVideoPlaying(playingStatus);
   };
 
-  const constructTimelinksString = (timelinks: TimeLink[], url: string) => {
-    const timelinksObj = timelinks.reduce((current: any, timelink) => {
-      current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
-        timelink.label;
-      return current;
-    }, {});
-    return `(${url}, ${JSON.stringify({ timelinks: timelinksObj })})`;
-  };
-
   const timeLinks = (_timelinks: any) => {
     const timelinks = _timelinks || {};
     return Object.keys(timelinks).map((timeKey, index) => {
@@ -134,15 +125,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     });
   };
 
-  const updateParentForm = (url: string) => {
-    const fullTimelinksString = constructTimelinksString(getValues().timelines, url);
-    if (props.onTimeLinkAdded) props.onTimeLinkAdded(fullTimelinksString);
+  const updateParentForm = () => {
+    if (props.onTimeLinkAdded) props.onTimeLinkAdded(getValues().timelines);
   };
 
-  const appendTimelinkAndUpdateParent = (url: string, timelink?: TimeLink) => {
+  const appendTimelinkAndUpdateParent = (timelink?: TimeLink) => {
     const currentTimelink = timelink || newTimeline;
     append(currentTimelink);
-    updateParentForm(url);
+    updateParentForm();
   };
 
   const renderNewTimeLinkForm = (url: string) => (
@@ -216,7 +206,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           placeholder="00"
           key={field.id}
           {...register(`timelines.${index}.timeHours`, {
-            onChange: _ => updateParentForm(url),
+            onChange: _ => updateParentForm(),
           })}
         />
         <span className="seperator">:</span>
@@ -226,7 +216,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           placeholder="00"
           key={field.id}
           {...register(`timelines.${index}.timeMinutes`, {
-            onChange: _ => updateParentForm(url),
+            onChange: _ => updateParentForm(),
           })}
         />
         <span className="seperator">:</span>
@@ -236,7 +226,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           placeholder="00"
           key={field.id}
           {...register(`timelines.${index}.timeSeconds`, {
-            onChange: _ => updateParentForm(url),
+            onChange: _ => updateParentForm(),
           })}
         />
       </div>
@@ -246,7 +236,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         placeholder="Enter title"
         key={field.id}
         {...register(`timelines.${index}.label`, {
-          onChange: _ => updateParentForm(url),
+          onChange: _ => updateParentForm(),
         })}
       />
       <button
@@ -255,7 +245,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         className="delete-timestamp-btn"
         onClick={() => {
           remove(index);
-          updateParentForm(url);
+          updateParentForm();
         }}
       >
         <Icon icon="trash-alt" />
@@ -274,13 +264,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    fetch(config.url)
-      .then(async res => res.blob())
-      .then(blob => {
-        setMediaURL(URL.createObjectURL(blob));
-      })
-      .catch(_e => {});
-  }, [config.url]);
+    if (mediaURL === '' && config.url) {
+      fetch(config.url)
+        .then(async res => res.blob())
+        .then(blob => {
+          setMediaURL(URL.createObjectURL(blob));
+        })
+        .catch(_e => {});
+    }
+  }, [config.url, mediaURL]);
 
   useEffect(
     () => () => {
@@ -348,4 +340,5 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 };
 
+export type { TimeLink };
 export default MarkdownMedia;

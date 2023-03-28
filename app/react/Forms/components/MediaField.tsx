@@ -5,7 +5,7 @@ import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
 import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
-import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
+import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: File } | null;
@@ -70,12 +70,22 @@ const MediaField = (props: MediaFieldProps) => {
 
   const file = prepareValue(value, localAttachments);
 
-  useEffect(() => {
-    if (file.originalValue && !file.supportingFile && file.type === 'uploadId') {
-      handleImageRemove();
-    }
-  }, [localAttachments]);
+  const constructTimelinksString = (timelinks: TimeLink[]) => {
+    const timelinksObj = timelinks.reduce((current: any, timelink) => {
+      current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
+        timelink.label;
+      return current;
+    }, {});
+    const [, fileLocalID] = file.originalValue.match(/((\w+){10,20})($|, ({.+}))/) || [
+      '',
+      file.originalValue,
+    ];
+    return `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`;
+  };
 
+  const updateTimeLinks = timelinks => {
+    onChange(constructTimelinksString(timelinks));
+  };
   useEffect(
     () => () => {
       if (file.supportingFile?.serializedFile && file.fileURL) {
@@ -104,7 +114,7 @@ const MediaField = (props: MediaFieldProps) => {
         (type === MediaModalType.Image ? (
           <img src={file.fileURL} alt="" />
         ) : (
-          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />
+          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />
         ))}
 
       <MediaModal
