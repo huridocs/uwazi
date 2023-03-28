@@ -1,5 +1,5 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdGenerator } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -14,7 +14,7 @@ const createService = () =>
   new CreateTranslationsService(
     new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
     new MongoTransactionManager(getClient()),
-    MongoIdGenerator
+    MongoIdHandler
   );
 
 const fixtures = {

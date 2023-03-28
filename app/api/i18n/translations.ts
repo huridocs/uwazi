@@ -15,6 +15,8 @@ import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
 import { ContextType } from 'shared/translationSchema';
 import model from './translationsModel';
+import { createTranslationsV2 } from './v2_support';
+import { tenants } from 'api/tenants';
 
 export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
@@ -200,10 +202,14 @@ export default {
       return update(translation);
     }
 
-    return model.save({
+    const translationToSave = {
       ...translation,
       contexts: translation.contexts && translation.contexts.map(processContextValues),
-    });
+    } as TranslationType;
+
+    await createTranslationsV2(translationToSave);
+
+    return model.save(translationToSave);
   },
 
   async addEntry(contextId: string, key: string, defaultValue: string) {

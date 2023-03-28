@@ -3,7 +3,7 @@ import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { Translation } from '../model/Translation';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 
-interface CreateTranslationsData {
+export interface CreateTranslationsData {
   language: string; // should be an enum ?
   key: string;
   value: string;
