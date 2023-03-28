@@ -55,6 +55,9 @@ jobs:
           path: dummy_extractor_services
       - run: make start -C dummy_extractor_services > dummy_extractor_services/logs.log &
       - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/
+      - name: Log on failure
+        if: ${{ failure() }}
+        run: cat dummy_extractor_services/logs.log
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
