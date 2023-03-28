@@ -108,3 +108,8 @@ jobs:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: snapshots
+          path: cypress/e2e/__image_snapshots__/
