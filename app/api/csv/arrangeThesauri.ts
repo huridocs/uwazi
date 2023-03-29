@@ -1,26 +1,20 @@
+import _ from 'lodash';
+
 import { ImportFile } from 'api/csv/importFile';
+import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import thesauri from 'api/thesauri';
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { ensure } from 'shared/tsUtils';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
-import _ from 'lodash';
-
-const filterJSObject = (input: { [k: string]: any }, keys: string[]): { [k: string]: any } => {
-  const result: { [k: string]: any } = {};
-  keys.forEach(k => {
-    if (input.hasOwnProperty(k)) {
-      result[k] = input[k];
-    }
-  });
-  return result;
-};
 
 class ArrangeThesauriError extends Error {
   source: Error;
@@ -42,26 +36,31 @@ type ThesauriValueData = {
   thesauriIdToNewValues: Map<string, Set<string>>;
   thesauriIdToNormalizedNewValues: Map<string, Set<string>>;
   thesauriIdToGroups: Map<string, Set<string>>;
+  thesauriIdToTranslations: Map<string, Record<string, Record<string, string>>>;
 };
+
+type PropertyWithContent = PropertySchema & { content: string };
 
 const setupProperties = async (
   template: TemplateSchema,
   _headersWithoutLanguage: string[],
   _languagesPerHeader: Record<string, Set<string>>
 ): Promise<{
-  propNameToThesauriId: Record<string, string | undefined>;
+  propNameToThesauriId: Record<string, string>;
   headersWithoutLanguage: string[];
   languagesPerHeader: Record<string, Set<string>>;
   allRelatedThesauri: WithId<ThesaurusSchema>[];
 }> => {
-  const thesauriRelatedProperties = template.properties?.filter(p =>
-    ['select', 'multiselect'].includes(p.type)
+  const thesauriRelatedProperties: PropertyWithContent[] = ensure<PropertyWithContent[]>(
+    template.properties
+      ?.filter(p => ['select', 'multiselect'].includes(p.type))
+      .filter(p => p.content) || []
   );
 
   const propNameToThesauriId = objectIndex(
     thesauriRelatedProperties || [],
     p => p.name,
-    p => p.content?.toString()
+    p => p.content.toString()
   );
 
   const propNames = new Set(Object.keys(propNameToThesauriId));
@@ -88,6 +87,7 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
   const thesauriIdToNewValues = new Map();
   const thesauriIdToNormalizedNewValues = new Map();
   const thesauriIdToGroups = new Map();
+  const thesauriIdToTranslations = new Map();
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
@@ -99,6 +99,7 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
     thesauriIdToNewValues.set(id, new Set());
     thesauriIdToNormalizedNewValues.set(id, new Set());
     thesauriIdToGroups.set(id, new Set(thesaurusGroups));
+    thesauriIdToTranslations.set(id, {});
   });
 
   return {
@@ -106,6 +107,7 @@ const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thesau
     thesauriIdToNewValues,
     thesauriIdToNormalizedNewValues,
     thesauriIdToGroups,
+    thesauriIdToTranslations,
   };
 };
 
@@ -116,7 +118,7 @@ const tryAddingLabel = (
   name: string,
   id: any,
   row: CSVRow
-) => {
+): Set<string> => {
   if (thesauriValueData.thesauriIdToGroups.get(id)?.has(normalizedLabel)) {
     throw new Error(
       `The label "${originalLabel}" at property "${name}" is a group label in line:\n${JSON.stringify(
@@ -124,13 +126,35 @@ const tryAddingLabel = (
       )}`
     );
   }
+  const newKeys: Set<string> = new Set();
   if (
     !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
     !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
   ) {
     thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
     thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
+    newKeys.add(originalLabel);
   }
+  return newKeys;
+};
+
+const tryAddingTranslation = (
+  thesauriValueData: ThesauriValueData,
+  potentialTranslations: (string | undefined)[][],
+  newKeys: Set<string>
+): void => {
+  const { thesauriIdToTranslations } = thesauriValueData;
+  potentialTranslations
+    .filter(([id, language, key, value]) => id && language && key && value && newKeys.has(key))
+    .forEach(([id, language, key, value]) => {
+      if (id && language && key && value) {
+        const translations = thesauriIdToTranslations.get(id) || {};
+        const keysAndValues = translations[language] || {};
+        keysAndValues[key] = value;
+        translations[language] = keysAndValues;
+        thesauriIdToTranslations.set(id, translations);
+      }
+    });
 };
 
 const handleRow = (
@@ -143,10 +167,9 @@ const handleRow = (
   defaultLanguage?: string
 ): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
-  // console.log('safeNamedRow', safeNamedRow)
   headersWithoutLanguage.forEach(header => {
-    const labels = splitMultiselectLabels(safeNamedRow[header]);
-    Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
+    const { normalizedLabelToLabel } = splitMultiselectLabels(safeNamedRow[header]);
+    Object.entries(normalizedLabelToLabel).forEach(([normalizedLabel, originalLabel]) => {
       tryAddingLabel(
         thesauriValueData,
         normalizedLabel,
@@ -158,9 +181,18 @@ const handleRow = (
     });
   });
   Object.keys(languagesPerHeader).forEach(header => {
-    const labels = splitMultiselectLabels(safeNamedRow[`${header}__${defaultLanguage}`]);
-    Object.entries(labels).forEach(([normalizedLabel, originalLabel]) => {
-      tryAddingLabel(
+    const { labels: keys, normalizedLabelToLabel } = splitMultiselectLabels(
+      safeNamedRow[`${header}__${defaultLanguage}`]
+    );
+    const potentialTranslations = Array.from(languagesPerHeader[header])
+      .map(lang => {
+        const fullHeader = `${header}__${lang}`;
+        const translatedLabels = splitMultiselectLabels(safeNamedRow[fullHeader]).labels;
+        return translatedLabels.map((trl, i) => [propNameToThesauriId[header], lang, keys[i], trl]);
+      })
+      .flat();
+    Object.entries(normalizedLabelToLabel).forEach(([normalizedLabel, originalLabel]) => {
+      const newKeys = tryAddingLabel(
         thesauriValueData,
         normalizedLabel,
         originalLabel,
@@ -168,6 +200,7 @@ const handleRow = (
         propNameToThesauriId[header],
         row
       );
+      if (newKeys.size) tryAddingTranslation(thesauriValueData, potentialTranslations, newKeys);
     });
   });
 };
@@ -193,6 +226,18 @@ const syncSaveThesauri = async (
   }
 };
 
+const syncUpdateTranslations = async (
+  thesauriIdToTranslations: ThesauriValueData['thesauriIdToTranslations']
+): Promise<void> => {
+  const thesauriIds = Array.from(thesauriIdToTranslations.keys());
+  for (let i = 0; i < thesauriIds.length; i += 1) {
+    const thesauriId = thesauriIds[i];
+    const thesaurusTranslations = thesauriIdToTranslations.get(thesauriId);
+    // eslint-disable-next-line no-await-in-loop
+    if (thesaurusTranslations) await translations.updateEntries(thesauriId, thesaurusTranslations);
+  }
+};
+
 const arrangeThesauri = async (
   file: ImportFile,
   template: TemplateSchema,
@@ -207,8 +252,6 @@ const arrangeThesauri = async (
 
   const thesauriValueData = setupIdValueMaps(allRelatedThesauri);
 
-  console.log(headersWithoutLanguage, languagesPerHeader);
-
   await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow) =>
       handleRow(
@@ -218,7 +261,7 @@ const arrangeThesauri = async (
         thesauriValueData,
         headersWithoutLanguage,
         languagesPerHeader,
-        defaultLanguage,
+        defaultLanguage
       )
     )
     .onError(async (e: Error, row: CSVRow, index: number) => {
@@ -226,9 +269,8 @@ const arrangeThesauri = async (
     })
     .read();
 
-  console.log(thesauriValueData);
-
   await syncSaveThesauri(allRelatedThesauri, thesauriValueData.thesauriIdToNewValues);
+  await syncUpdateTranslations(thesauriValueData.thesauriIdToTranslations);
 };
 
 export { arrangeThesauri, ArrangeThesauriError };

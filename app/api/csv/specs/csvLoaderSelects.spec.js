@@ -58,7 +58,6 @@ describe('loader', () => {
     await testingEnvironment.tearDown();
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
