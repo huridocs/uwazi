@@ -24,4 +24,4 @@ const ImageViewer = (props: ImageViewerProps) => {
   );
 };
 
-export { ImageViewer };
+export { ImageViewer, type ImageViewerProps };
