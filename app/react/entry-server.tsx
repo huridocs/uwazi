@@ -11,10 +11,7 @@ import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import { matchRoutes, RouteObject } from 'react-router-dom';
-import {
-  unstable_createStaticRouter as createStaticRouter,
-  unstable_StaticRouterProvider as StaticRouterProvider,
-} from 'react-router-dom/server';
+import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
 import { RecoilRoot } from 'recoil';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Settings } from 'shared/types/settingsType';
