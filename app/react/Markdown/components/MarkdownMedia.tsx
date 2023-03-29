@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
-import React, { createRef, LegacyRef, useState } from 'react';
+import React, { createRef, LegacyRef, useEffect, useState } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
@@ -59,6 +59,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     timeSeconds: '00',
     label: '',
   });
+  const [errorFlag, setErrorFlag] = useState(false);
   const { options } = propsToConfig(props);
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
@@ -73,6 +74,10 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   });
 
   const playerRef: LegacyRef<ReactPlayer> | undefined = createRef();
+
+  useEffect(() => {
+    setErrorFlag(false);
+  }, [props.config]);
 
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
@@ -279,6 +284,10 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     dimensions.height = '100%';
   }
 
+  if (errorFlag) {
+    return <div className="media-error">This file type is not supported on media fields</div>;
+  }
+
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
       <div>
@@ -295,8 +304,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           onPlay={() => {
             setVideoPlaying(true);
           }}
+          onError={() => {
+            setErrorFlag(true);
+          }}
         />
       </div>
+
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && (
         <div className="timelinks-form">
