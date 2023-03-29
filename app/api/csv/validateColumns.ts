@@ -131,7 +131,11 @@ const validateColumns = async (
   availableLanguages: string[],
   defaultLanguage: string,
   newNameGeneration: boolean
-): Promise<void> => {
+): Promise<{
+  propertiesByName: Record<string, PropertySchema>;
+  headersWithoutLanguage: string[];
+  languagesPerHeader: Record<string, Set<string>>;
+}> => {
   const { propertiesByName, headersWithoutLanguage, languagesPerHeader } = await readColumns(
     file,
     template,
@@ -143,6 +147,8 @@ const validateColumns = async (
   shouldNotBeInBoth(headersWithoutLanguage, languagesPerHeader);
   languageColumnsShouldSupportLanguage(propertiesByName, languagesPerHeader);
   languageColumnsShouldHaveDefaultLanguage(languagesPerHeader, defaultLanguage);
+
+  return { propertiesByName, headersWithoutLanguage, languagesPerHeader };
 };
 
 export { validateColumns, ArrangeColumnsError };

@@ -83,30 +83,43 @@ export class CSVLoader extends EventEmitter {
     const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
       await readResources(templateId);
     const file = importFile(csvPath);
-    await validateColumns(file, template, availableLanguages, defaultLanguage, newNameGeneration);
-    await arrangeThesauri(file, template, newNameGeneration, availableLanguages);
+    const { headersWithoutLanguage, languagesPerHeader } = await validateColumns(
+      file,
+      template,
+      availableLanguages,
+      defaultLanguage,
+      newNameGeneration
+    );
+    await arrangeThesauri(
+      file,
+      template,
+      newNameGeneration,
+      headersWithoutLanguage,
+      languagesPerHeader,
+      defaultLanguage
+    );
 
-    await csv(await file.readStream(), this.stopOnError)
-      .onRow(async (row: CSVRow) => {
-        const { rawEntity, rawTranslations } = extractEntity(
-          row,
-          availableLanguages,
-          options.language,
-          newNameGeneration
-        );
-        if (rawEntity) {
-          const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
-          await translateEntity(entity, rawTranslations, template, file);
-          this.emit('entityLoaded', entity);
-        }
-      })
-      .onError(async (e: Error, row: CSVRow, index: number) => {
-        this._errors[index] = e;
-        this.emit('loadError', e, toSafeName(row), index);
-      })
-      .read();
+    // await csv(await file.readStream(), this.stopOnError)
+    //   .onRow(async (row: CSVRow) => {
+    //     const { rawEntity, rawTranslations } = extractEntity(
+    //       row,
+    //       availableLanguages,
+    //       options.language,
+    //       newNameGeneration
+    //     );
+    //     if (rawEntity) {
+    //       const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
+    //       await translateEntity(entity, rawTranslations, template, file);
+    //       this.emit('entityLoaded', entity);
+    //     }
+    //   })
+    //   .onError(async (e: Error, row: CSVRow, index: number) => {
+    //     this._errors[index] = e;
+    //     this.emit('loadError', e, toSafeName(row), index);
+    //   })
+    //   .read();
 
-    this.throwErrors();
+    // this.throwErrors();
   }
 
   /* eslint-disable class-methods-use-this */

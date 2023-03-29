@@ -42,22 +42,23 @@ describe('loader', () => {
 
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures, 'csv_loader.index');
-    // await loader.load(
-    //   path.join(__dirname, '/arrangeThesauriTest.csv'),
-    //   fixtureFactory.id('template')
-    // );
-    // selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
-    // selectLabels = selectThesaurus.values.map(tv => tv.label);
-    // selectLabelsSet = new Set(selectLabels);
-    // multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
-    // multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
-    // multiselectLabelsSet = new Set(multiselectLabels);
+    await loader.load(
+      path.join(__dirname, '/arrangeThesauriTest.csv'),
+      fixtureFactory.id('template')
+    );
+    selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus'));
+    selectLabels = selectThesaurus.values.map(tv => tv.label);
+    selectLabelsSet = new Set(selectLabels);
+    multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
+    multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
+    multiselectLabelsSet = new Set(multiselectLabels);
   });
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
+  // eslint-disable-next-line jest/no-focused-tests
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
     expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
