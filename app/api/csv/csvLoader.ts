@@ -83,13 +83,7 @@ export class CSVLoader extends EventEmitter {
     const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
       await readResources(templateId);
     const file = importFile(csvPath);
-    const headers = await validateColumns(
-      file,
-      template,
-      availableLanguages,
-      defaultLanguage,
-      newNameGeneration
-    );
+    await validateColumns(file, template, availableLanguages, defaultLanguage, newNameGeneration);
     await arrangeThesauri(file, template, newNameGeneration, availableLanguages);
 
     await csv(await file.readStream(), this.stopOnError)

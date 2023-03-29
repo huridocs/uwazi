@@ -12,12 +12,9 @@ const DELIMITER_REGEX = new RegExp(`[${DELIMITERS.join('')}]`);
 const peekHeaders = async (readStream: Readable): Promise<string[]> => {
   let headers: string[] = [];
   const rl = readline.createInterface({ input: readStream });
-  // eslint-disable-next-line no-restricted-syntax, no-unreachable-loop
-  for await (const line of rl) {
-    headers = line.split(DELIMITER_REGEX);
-    rl.close();
-    break;
-  }
+  const line = (await rl[Symbol.asyncIterator]().next()).value;
+  headers = line.split(DELIMITER_REGEX);
+  rl.close();
   readStream.unpipe();
   readStream.destroy();
   return headers;

@@ -93,7 +93,6 @@ describe('csvLoader', () => {
       await loader.load('mocked_file', fixtureFactory.id('template'));
       expect.fail(`Should have thrown an ${ArrangeColumnsError.name} error.}`);
     } catch (e) {
-      console.log(e);
       expect(e).toBeInstanceOf(ArrangeColumnsError);
       expect(e.message.startsWith(message)).toBe(true);
     } finally {
