@@ -119,7 +119,11 @@ const MediaField = (props: MediaFieldProps) => {
         if (getAndCompareFileMimeType(file.supportingFile, 'video/*')) {
           return <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={onChange} />;
         }
-        return <div className="media-error">This file type is not supported on media fields</div>;
+        return (
+          <div className="media-error">
+            <Translate>This file type is not supported on media fields</Translate>
+          </div>
+        );
       })()}
 
       <MediaModal
