@@ -285,7 +285,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   }
 
   if (errorFlag) {
-    return <div className="media-error">This file type is not supported on media fields</div>;
+    return (
+      <div className="media-error">
+        <Translate>This file type is not supported on media fields</Translate>
+      </div>
+    );
   }
 
   return (

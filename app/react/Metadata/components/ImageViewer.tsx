@@ -1,3 +1,4 @@
+import { Translate } from 'app/I18N';
 import React, { useState } from 'react';
 
 interface ImageViewerProps {
@@ -11,7 +12,11 @@ const ImageViewer = (props: ImageViewerProps) => {
   const [errorFlag, setErrorFlag] = useState(false);
 
   if (errorFlag) {
-    return <div className="media-error">This file type is not supported in image fields</div>;
+    return (
+      <div className="media-error">
+        <Translate>This file type is not supported in image fields</Translate>
+      </div>
+    );
   }
 
   return (
