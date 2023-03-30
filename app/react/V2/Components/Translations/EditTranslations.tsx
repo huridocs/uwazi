@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -231,6 +231,16 @@ const EditTranslations = () => {
     }
   };
 
+  const dataForTables = useMemo(
+    () =>
+      contextTerms.map((contextTerm, termIndex) => {
+        let values = composeTableValues(formData, termIndex);
+        if (hideTranslated) values = filterTableValues(values);
+        return { [contextTerm]: values };
+      }),
+    [contextTerms, formData, hideTranslated]
+  );
+
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <div className="p-5">
@@ -253,12 +263,11 @@ const EditTranslations = () => {
         </div>
 
         <form onSubmit={handleSubmit(submitFunction)}>
-          {contextTerms.map((contextTerm, termIndex) => {
-            let values = composeTableValues(formData, termIndex);
-            if (hideTranslated) values = filterTableValues(values);
+          {dataForTables.map(data => {
+            const [contextTerm] = Object.keys(data);
             return (
               <div key={contextTerm}>
-                <Table columns={columns} data={values} title={contextTerm} />
+                <Table columns={columns} data={data[contextTerm]} title={contextTerm} />
               </div>
             );
           })}
