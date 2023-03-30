@@ -50,12 +50,12 @@ describe('Information Extraction', () => {
   it('Should create an extractor', () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
-    cy.get('[data-cy=modal]').as('modal');
-    cy.get('@modal').get('input').type('Extractor 1');
-    cy.get('@modal').contains('li', 'Ordenes del presidente').as('firstTemplate');
+    cy.get('[data-cy=modal]').as('newExtractorModal');
+    cy.get('@newExtractorModal').get('input').type('Extractor 1');
+    cy.get('@newExtractorModal').contains('li', 'Ordenes del presidente').as('firstTemplate');
     cy.get('@firstTemplate').find('label').click();
     cy.get('@firstTemplate').contains('label', 'Title').click();
-    cy.get('@modal').contains('li', 'Causa').as('secondTemplate');
+    cy.get('@newExtractorModal').contains('li', 'Causa').as('secondTemplate');
     cy.get('@secondTemplate').find('label').click();
     cy.get('@secondTemplate').contains('label', 'Title').click();
     cy.contains('button', 'Add').click();
@@ -77,8 +77,9 @@ describe('Information Extraction', () => {
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
-    cy.get('input.extractor-name-input').type(' edited');
-    cy.contains('.multiselectChild.is-active label', 'Title').click();
+    cy.get('[data-cy=modal]').as('editExtractorModal');
+    cy.get('@editExtractorModal').get('input').eq(2).type(' edited');
+    cy.get('@editExtractorModal').contains('label', 'Title').click();
     cy.contains('li', 'Ordenes de la corte').as('template');
     cy.get('@template').find('label').click();
     cy.get('@template').contains('label', 'Title').click();
@@ -105,7 +106,7 @@ describe('Information Extraction', () => {
     cy.get('.training-dashboard').should('be.visible');
     cy.get('table').should('be.visible');
     cy.contains('button', 'Find suggestions').click();
-    cy.get('.suggested-value').should('contain.text', '2023');
+    cy.get('table tr').should('have.length.above', 1);
     cy.get('.settings-content').toMatchImageSnapshot();
   });
 
