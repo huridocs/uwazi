@@ -50,13 +50,14 @@ describe('Information Extraction', () => {
   it('Should create an extractor', () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
-    cy.get('input.extractor-name-input').type('Extractor 1');
-    cy.contains('li', 'Ordenes del presidente').as('firstTemplate');
+    cy.get('[data-cy=modal]').as('modal');
+    cy.get('@modal').get('input').type('Extractor 1');
+    cy.get('@modal').contains('li', 'Ordenes del presidente').as('firstTemplate');
     cy.get('@firstTemplate').find('label').click();
-    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
-    cy.contains('li', 'Causa').as('secondTemplate');
+    cy.get('@firstTemplate').contains('label', 'Title').click();
+    cy.get('@modal').contains('li', 'Causa').as('secondTemplate');
     cy.get('@secondTemplate').find('label').click();
-    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
+    cy.get('@secondTemplate').contains('label', 'Title').click();
     cy.contains('button', 'Add').click();
     cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
     cy.get('.table').toMatchImageSnapshot();
@@ -77,10 +78,10 @@ describe('Information Extraction', () => {
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
     cy.get('input.extractor-name-input').type(' edited');
-    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
+    cy.contains('.multiselectChild.is-active label', 'Title').click();
     cy.contains('li', 'Ordenes de la corte').as('template');
     cy.get('@template').find('label').click();
-    cy.get('.multiselectChild.is-active label.multiselectItem-option').eq(1).click();
+    cy.get('@template').contains('label', 'Title').click();
     cy.contains('button', 'Save').click();
     cy.contains('.table thead tr th span', 'Property').should('be.visible');
     cy.get('.table').toMatchImageSnapshot();

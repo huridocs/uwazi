@@ -119,7 +119,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
     />
     <label
       className="multiselectItem-label multiselectItem-option"
-      data-test-id=""
       htmlFor="option1"
       onClick={[Function]}
     >
@@ -197,7 +196,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
     />
     <label
       className="multiselectItem-label multiselectItem-option"
-      data-test-id=""
       htmlFor="option2"
       onClick={[Function]}
     >
@@ -276,7 +274,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
       />
       <label
         className="multiselectItem-label multiselectItem-option"
-        data-test-id=""
         htmlFor="Group"
         onClick={[Function]}
       >
@@ -368,7 +365,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
           />
           <label
             className="multiselectItem-label multiselectItem-option"
-            data-test-id=""
             htmlFor="group-option1"
             onClick={[Function]}
           >
@@ -446,7 +442,6 @@ exports[`MultiSelect should not render an empty group 1`] = `
           />
           <label
             className="multiselectItem-label multiselectItem-option"
-            data-test-id=""
             htmlFor="group-option2"
             onClick={[Function]}
           >

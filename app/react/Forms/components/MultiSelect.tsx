@@ -347,7 +347,6 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
     return (
       <label
-        data-test-id=""
         className="multiselectItem-label multiselectItem-option"
         htmlFor={prefix + option[optionsValue]}
         onClick={clickEvent}
