@@ -26,9 +26,7 @@ const InputField = ({
 }: InputFieldProps) => {
   const hasClearFieldButton = Boolean(buttonAction);
   const textColor = disabled ? 'text-gray-500' : 'text-gray-900';
-  const inputBorderStyles = hasClearFieldButton
-    ? 'border-y border-l border-r-0 rounded-l-lg rounded-none'
-    : 'border rounded-lg';
+  const buttonStyles = hasClearFieldButton ? 'pr-12' : '';
 
   const { onChange, onBlur, name, ref } = inputControls || {
     onChange: () => {},
@@ -42,7 +40,7 @@ const InputField = ({
       <label htmlFor={fieldID} className={hideLabel ? 'sr-only' : ''}>
         {label}
       </label>
-      <div className="flex">
+      <div className="relative w-full">
         <input
           type="text"
           id={fieldID}
@@ -51,7 +49,7 @@ const InputField = ({
           name={name}
           ref={ref}
           disabled={disabled}
-          className={`${textColor} ${inputBorderStyles} bg-gray-50 border-gray-300 block flex-1 min-w-0 lg:w-full text-sm p-2.5`}
+          className={`${textColor} ${buttonStyles} border rounded-lg bg-gray-50 border-gray-300 block flex-1 min-w-0 lg:w-full text-sm p-2.5`}
           placeholder={placeholder}
         />
         {hasClearFieldButton && (
@@ -59,7 +57,7 @@ const InputField = ({
             type="button"
             onClick={buttonAction}
             disabled={disabled}
-            className={`${textColor} items-center px-3 text-sm bg-gray-50 border-y border-r border-l-0 border-gray-300 rounded-r-lg inline-flex`}
+            className={`${textColor} border-l absolute top-px right-0 p-2.5 text-sm font-medium rounded-r-lg border-gray-300 hover:text-primary-700 focus:outline-none`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +65,7 @@ const InputField = ({
               viewBox="0 0 24 24"
               strokeWidth="2.5"
               stroke="currentColor"
-              className="w-3 h-3"
+              className="w-5 h-5"
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -68,7 +68,7 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
       language: languaLabel,
       translationStatus: {
         languageKey: language.locale,
-        status: formData[languageIndex].values[termIndex].translationStatus,
+        status: formData[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
       },
       fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
     };
@@ -141,6 +141,7 @@ const EditTranslations = () => {
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
   const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
+  const fileInputRef = useRef();
 
   const {
     register,
@@ -211,6 +212,25 @@ const EditTranslations = () => {
       });
   };
 
+  const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsSubmitting(true);
+      try {
+        const response = await translationsAPI.importTranslations(file, 'System');
+        setNotifications({ type: 'sucess', text: <Translate>Translations Imported</Translate> });
+        setTranslationsState(response);
+      } catch (e) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: e.json.error,
+        });
+      }
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <div className="p-5">
@@ -247,9 +267,24 @@ const EditTranslations = () => {
             <div className="pt-1 flex justify-end gap-2 p-2">
               <div className="flex-1">
                 {contextId === 'System' && (
-                  <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                    <Translate>Import</Translate>
-                  </Button>
+                  <>
+                    <Button
+                      size="small"
+                      buttonStyle="tertiary"
+                      type="button"
+                      disabled={submitting}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Translate>Import</Translate>
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="text/csv"
+                      style={{ display: 'none' }}
+                      onChange={onFileImported}
+                    />
+                  </>
                 )}
               </div>
               <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>

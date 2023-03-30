@@ -6,7 +6,7 @@ interface ButtonProps {
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
   disabled?: boolean;
-  onClickFuntion?: () => any;
+  onClick?: () => any;
 }
 
 const Button = ({
@@ -15,7 +15,7 @@ const Button = ({
   type = 'button',
   size,
   disabled,
-  onClickFuntion,
+  onClick,
 }: ButtonProps) => {
   let classNames;
   const textStyles = size === 'small' ? 'text-xs px-3 py-1.5' : 'text-sm px-5 py-2.5';
@@ -40,7 +40,7 @@ const Button = ({
   return (
     <button
       type={type === 'submit' ? 'submit' : 'button'}
-      onClick={onClickFuntion}
+      onClick={onClick}
       disabled={disabled}
       className={`${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
       border-2 focus:outline-none focus:ring-4 focus:ring-indigo-200`}
