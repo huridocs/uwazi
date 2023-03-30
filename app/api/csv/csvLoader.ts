@@ -90,13 +90,15 @@ export class CSVLoader extends EventEmitter {
       defaultLanguage,
       newNameGeneration
     );
-    await arrangeThesauri(
-      file,
-      template,
-      newNameGeneration,
-      headersWithoutLanguage,
-      languagesPerHeader,
-      defaultLanguage
+    const selectPropNames = new Set(
+      await arrangeThesauri(
+        file,
+        template,
+        newNameGeneration,
+        headersWithoutLanguage,
+        languagesPerHeader,
+        defaultLanguage
+      )
     );
 
     await csv(await file.readStream(), this.stopOnError)
@@ -105,7 +107,9 @@ export class CSVLoader extends EventEmitter {
           row,
           availableLanguages,
           options.language,
-          newNameGeneration
+          defaultLanguage,
+          selectPropNames,
+          newNameGeneration,
         );
         if (rawEntity) {
           const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });

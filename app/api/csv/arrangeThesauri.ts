@@ -246,7 +246,7 @@ const arrangeThesauri = async (
   _languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage?: string,
   stopOnError: boolean = true
-): Promise<void> => {
+): Promise<string[]> => {
   const { propNameToThesauriId, headersWithoutLanguage, languagesPerHeader, allRelatedThesauri } =
     await setupProperties(template, _headersWithoutLanguage, _languagesPerHeader);
 
@@ -271,6 +271,8 @@ const arrangeThesauri = async (
 
   await syncSaveThesauri(allRelatedThesauri, thesauriValueData.thesauriIdToNewValues);
   await syncUpdateTranslations(thesauriValueData.thesauriIdToTranslations);
+
+  return Object.keys(propNameToThesauriId);
 };
 
 export { arrangeThesauri, ArrangeThesauriError };
