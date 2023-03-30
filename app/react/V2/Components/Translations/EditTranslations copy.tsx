@@ -130,8 +130,8 @@ const prepareFormValues = (
       ),
     }))
   );
-  const data = sortBy(flatten(data1), 'key');
-  return data;
+
+  return sortBy(flatten(data1), 'key');
 };
 
 // eslint-disable-next-line max-statements
@@ -147,7 +147,6 @@ const EditTranslations = () => {
 
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
-
   const {
     register,
     handleSubmit,
@@ -159,26 +158,29 @@ const EditTranslations = () => {
   });
 
   const inputField = ({ cell }) => {
-    const reset = () => resetField(cell.value, { defaultValue: '' });
+    if (cell.isAggregated || cell.isGrouped) {
+      return '';
+    }
+    const reset = () => resetField(`formData.${cell.row.id}.value`, { defaultValue: '' });
     return (
       <div key={cell.value}>
         <InputField
-          fieldID={cell.value}
-          label={cell.fieldKey}
+          fieldID={cell.row.id}
+          label={`${cell.row.original.key} ${cell.row.original.locale}`}
           hideLabel
           disabled={submitting}
           buttonAction={reset}
-          inputControls={{ ...register(cell.value, { required: true }) }}
+          inputControls={{ ...register(`formData.${cell.row.id}.value`, { required: true }) }}
         />
-        <ErrorMessage
+        {/* <ErrorMessage
           errors={errors}
-          name={cell.value}
+          name={`formData.${cell.row.id}.value`}
           render={() => (
             <p className="font-bold text-error-700" role="alert">
               <Translate>This field is required</Translate>
             </p>
           )}
-        />
+        /> */}
       </div>
     );
   };
@@ -204,29 +206,31 @@ const EditTranslations = () => {
     {
       Header: 'Current Value',
       accessor: 'value',
+      Cell: inputField,
       disableGroupBy: true,
     },
   ];
 
   const submitFunction = async (data: { formData: formDataType }) => {
     setIsSubmitting(true);
-    const values = prepareValuesToSave(data.formData, translations);
-    translationsAPI
-      .post(values)
-      .then(response => {
-        setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
-        setTranslationsState(response);
-      })
-      .catch(e => {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
-        });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+    console.log('submitting', submitting);
+    //const values = prepareValuesToSave(data.formData, translations);
+    // translationsAPI
+    //   .post(values)
+    //   .then(response => {
+    //     setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
+    //     setTranslationsState(response);
+    //   })
+    //   .catch(e => {
+    //     setNotifications({
+    //       type: 'error',
+    //       text: <Translate>An error occurred</Translate>,
+    //       details: e.json.error,
+    //     });
+    //   })
+    //   .finally(() => {
+    //     setIsSubmitting(false);
+    //   });
   };
 
   return (
