@@ -6,6 +6,15 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { httpRequest } from 'shared/superagent';
 import loadingBar from 'app/App/LoadingProgressBar';
 
+const filterTranslationsByContext = (
+  translations: ClientTranslationSchema[],
+  contextId: string
+): ClientTranslationSchema[] =>
+  translations.map(language => {
+    const contexts = language.contexts.filter(context => context.id === contextId);
+    return { ...language, contexts };
+  });
+
 const get = async (
   headers?: IncomingHttpHeaders,
   params?: Params
@@ -15,17 +24,21 @@ const get = async (
   return response;
 };
 
-const post = async (updatedTranslations: ClientTranslationSchema[]) =>
-  Promise.all(updatedTranslations.map(language => I18NApi.save(new RequestParams(language))));
+const post = async (updatedTranslations: ClientTranslationSchema[], contextId: string) => {
+  const translations = await Promise.all(
+    updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
+  );
+  return filterTranslationsByContext(translations, contextId);
+};
 
 const importTranslations = async (
   file: File,
-  translationContext: string
+  contextId: string
 ): Promise<ClientTranslationSchema[]> => {
   loadingBar.start();
   const translations = (await httpRequest(
     'translations/import',
-    { context: translationContext },
+    { context: contextId },
     {
       Accept: 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
@@ -34,12 +47,7 @@ const importTranslations = async (
   )) as ClientTranslationSchema[];
   loadingBar.done();
 
-  const contextTranslations = translations.map(language => {
-    const contexts = language.contexts.filter(context => context.id === translationContext);
-    return { ...language, contexts };
-  });
-
-  return contextTranslations;
+  return filterTranslationsByContext(translations, contextId);
 };
 
 export { get, post, importTranslations };

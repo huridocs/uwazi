@@ -194,22 +194,21 @@ const EditTranslations = () => {
   const submitFunction = async (data: { formData: formDataType }) => {
     setIsSubmitting(true);
     const values = prepareValuesToSave(data.formData, translations);
-    translationsAPI
-      .post(values)
-      .then(response => {
-        setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
+    if (values && contextId) {
+      setIsSubmitting(true);
+      try {
+        const response = await translationsAPI.post(values, contextId);
         setTranslationsState(response);
-      })
-      .catch(e => {
+        setNotifications({ type: 'sucess', text: <Translate>Translations Saved</Translate> });
+      } catch (e) {
         setNotifications({
           type: 'error',
           text: <Translate>An error occurred</Translate>,
           details: e.json.error,
         });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      }
+      setIsSubmitting(false);
+    }
   };
 
   const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,8 +217,8 @@ const EditTranslations = () => {
       setIsSubmitting(true);
       try {
         const response = await translationsAPI.importTranslations(file, 'System');
-        setNotifications({ type: 'sucess', text: <Translate>Translations Imported</Translate> });
         setTranslationsState(response);
+        setNotifications({ type: 'sucess', text: <Translate>Translations Imported</Translate> });
       } catch (e) {
         setNotifications({
           type: 'error',
