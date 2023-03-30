@@ -231,7 +231,7 @@ const EditTranslations = () => {
     }
   };
 
-  const dataForTables = useMemo(
+  const tablesData = useMemo(
     () =>
       contextTerms.map((contextTerm, termIndex) => {
         let values = composeTableValues(formData, termIndex);
@@ -263,11 +263,11 @@ const EditTranslations = () => {
         </div>
 
         <form onSubmit={handleSubmit(submitFunction)}>
-          {dataForTables.map(data => {
-            const [contextTerm] = Object.keys(data);
+          {tablesData.map(tableData => {
+            const [contextTerm] = Object.keys(tableData);
             return (
               <div key={contextTerm}>
-                <Table columns={columns} data={data[contextTerm]} title={contextTerm} />
+                <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
               </div>
             );
           })}
@@ -290,7 +290,7 @@ const EditTranslations = () => {
                       ref={fileInputRef}
                       type="file"
                       accept="text/csv"
-                      style={{ display: 'none' }}
+                      className="hidden"
                       onChange={onFileImported}
                     />
                   </>
