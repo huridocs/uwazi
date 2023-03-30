@@ -34,6 +34,8 @@ const PROPERTIES_WITH_LANGUAGE = new Set([
   propertyTypes.markdown,
   propertyTypes.select,
   propertyTypes.multiselect,
+  propertyTypes.link,
+  propertyTypes.nested,
   'title',
 ]);
 

@@ -40,7 +40,9 @@ const multiselect = async (
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
 
-  const values = splitMultiselectLabels(entityToImport[ensure<string>(property.name)]);
+  const values = splitMultiselectLabels(
+    entityToImport[ensure<string>(property.name)]
+  ).normalizedLabelToLabel;
   const thesaurusValues = flatThesaurusValues(currentThesauri);
 
   return Object.keys(values)
