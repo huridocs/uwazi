@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { Application, NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
@@ -13,11 +14,12 @@ import {
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { IXSuggestionsFilter, IXSuggestionsStatsQuery } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 const IX = new InformationExtraction();
 
 async function processTrainFunction(
-  callback: (property: string) => Promise<{ message: string; status: string }>,
+  callback: (extractorId: ObjectIdSchema) => Promise<{ message: string; status: string }>,
   req: Request,
   res: Response
 ) {
@@ -28,7 +30,7 @@ async function processTrainFunction(
     return;
   }
 
-  const status = await callback(req.body.property);
+  const status = await callback(new ObjectId(req.body.extractorId));
   res.json(status);
 }
 

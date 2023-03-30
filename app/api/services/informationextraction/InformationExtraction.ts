@@ -455,7 +455,7 @@ class InformationExtraction {
     emitToTenant(
       message.tenant,
       'ix_model_status',
-      message.params!.id,
+      message.params!.id.toString(),
       'processing_suggestions',
       '',
       suggestionsStatus
