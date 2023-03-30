@@ -62,12 +62,9 @@ const renderPill = ({ cell }) => {
   let color: 'gray' | 'primary' | 'yellow' = 'gray';
   if (cell.value === 'defaultLanguage') color = 'primary';
   if (cell.value === 'untranslated') color = 'yellow';
-
-  return '';
-
   return (
-    <Pill key={cell.value.locale + cell.value} color={color}>
-      {cell.value.locale.toUpperCase()}
+    <Pill key={cell.row.original.locale + cell.row.values.key} color={color}>
+      {cell.row.original.locale.toUpperCase()}
     </Pill>
   );
 };
