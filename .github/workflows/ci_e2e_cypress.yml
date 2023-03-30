@@ -1,0 +1,115 @@
+name: e2e cypress
+
+on:
+  push:
+    branches:
+      - production
+      - development
+      - staging
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-cypress:
+    runs-on: ubuntu-20.04
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
+        ports:
+          - 9200/tcp
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+      mongodb:
+        image: mongo:4.2.6
+        ports:
+          - 27017/tcp
+      redis:
+        image: redis:5.0.14
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout reposistory
+        uses: actions/checkout@v3
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: install dependencies
+        run: yarn install
+      - run: sudo apt update
+      - run: sudo apt-get install poppler-utils
+      - name: Clone dummy services
+        uses: actions/checkout@v2
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
+      - run: python3 -m venv venv
+        working-directory: dummy_extractor_services
+      - run: make install_venv -C dummy_extractor_services
+      - run: make start -C dummy_extractor_services > logs.log &
+      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+      - name: Log on failure
+        if: ${{ failure() }}
+        run: cat dummy_extractor_services/logs.log
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: ./prod
+          key: >-
+            ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
+            ${{ hashFiles('database/**/*.*') }}-
+            ${{ hashFiles('**/yarn.lock') }}-
+            ${{ hashFiles('**/webpack.production.config.js') }}-
+            ${{ hashFiles('**/.babelrc') }}-
+            ${{ hashFiles('webpack/**/config.js') }}-
+      - name: build production
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: yarn production-build
+      - run: yarn e2e-puppeteer-fixtures
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true
+      - run: yarn ix-config
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DATABASE_NAME: uwazi_e2e
+      - name: start Uwazi
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          EXTERNAL_SERVICES: true
+        run: yarn run-production &
+      - name: wait for uwazi to be ready
+        run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
+        timeout-minutes: 2
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          browser: chrome
+          component: false
+        timeout-minutes: 25
+        env:
+          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          TRANSPILED: true
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: snapshots
+          path: cypress/e2e/__image_snapshots__/
