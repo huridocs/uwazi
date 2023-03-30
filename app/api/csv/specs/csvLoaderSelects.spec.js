@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import path from 'path';
 
 import translations from 'api/i18n/translations';

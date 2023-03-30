@@ -1,24 +1,3 @@
-// const propertyTypes = {
-//   date: 'date' as 'date', ---- ?
-//   daterange: 'daterange' as 'daterange', ---- ?
-//   geolocation: 'geolocation' as 'geolocation', ---- NO
-//   image: 'image' as 'image', ---- NO
-//   link: 'link' as 'link', ---- NO
-//   markdown: 'markdown' as 'markdown', ---- YES
-//   media: 'media' as 'media', ---- NO
-//   multidate: 'multidate' as 'multidate', ---- ?
-//   multidaterange: 'multidaterange' as 'multidaterange', ---- ?
-//   multiselect: 'multiselect' as 'multiselect', ---- YES
-//   nested: 'nested' as 'nested', ---- ?
-//   numeric: 'numeric' as 'numeric', ---- NO
-//   preview: 'preview' as 'preview', ---- NO
-//   relationship: 'relationship' as 'relationship', ---- NO
-//   select: 'select' as 'select', ---- YES
-//   text: 'text' as 'text', ---- YES
-//   generatedid: 'generatedid' as 'generatedid', ---- NO
-//   newRelationship: 'newRelationship' as 'newRelationship', ---- NO
-// };
-
 import { templateUtils } from 'api/templates';
 import _ from 'lodash';
 import { objectIndex } from 'shared/data_utils/objectIndex';
