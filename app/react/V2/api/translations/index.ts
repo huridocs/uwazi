@@ -20,20 +20,26 @@ const post = async (updatedTranslations: ClientTranslationSchema[]) =>
 
 const importTranslations = async (
   file: File,
-  context: string
+  translationContext: string
 ): Promise<ClientTranslationSchema[]> => {
   loadingBar.start();
-  const translations = await httpRequest(
+  const translations = (await httpRequest(
     'translations/import',
-    { context },
+    { context: translationContext },
     {
       Accept: 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
     },
     file
-  );
+  )) as ClientTranslationSchema[];
   loadingBar.done();
-  return translations as ClientTranslationSchema[];
+
+  const contextTranslations = translations.map(language => {
+    const contexts = language.contexts.filter(context => context.id === translationContext);
+    return { ...language, contexts };
+  });
+
+  return contextTranslations;
 };
 
 export { get, post, importTranslations };
