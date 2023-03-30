@@ -1,4 +1,3 @@
-import { mapAjvToAppValidation } from 'api/common.v2/validation/ValidationError';
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -164,7 +163,7 @@ export default {
     template.properties = await denormalizeInheritedProperties(template);
     /* eslint-enable no-param-reassign */
 
-    await mapAjvToAppValidation(validateTemplate)(template);
+    await validateTemplate(template);
     const mappedTemplate = await v2.mapNewRelationshipPropertiesToDBO(template);
 
     await this.swapNamesValidation(mappedTemplate);

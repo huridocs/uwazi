@@ -1,14 +1,16 @@
-import { TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { ObjectId } from 'mongodb';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
+import { TraverseQueryDBO } from './RelationshipsQueryDBO';
 
 export interface RelationshipPropertyDBO {
   type: 'newRelationship';
   name: string;
   label: string;
-  query: TraverseQuery[];
+  query: TraverseQueryDBO[];
   denormalizedProperty?: string;
 }
-export interface TemplateDBO extends Omit<TemplateSchema, 'properties'> {
+export interface TemplateDBO extends TemplateSchema {
+  _id: ObjectId;
   properties: (PropertySchema | RelationshipPropertyDBO)[];
 }

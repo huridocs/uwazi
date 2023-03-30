@@ -7,6 +7,7 @@ import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
+import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { TemplateDBO } from './schemas/TemplateDBO';
 
 type PropertyDBO = TemplateDBO['properties'][number];
@@ -17,7 +18,7 @@ const propertyToApp = (property: PropertyDBO, templateId: TemplateDBO['_id']): P
     return new RelationshipProperty(
       property.name,
       property.label,
-      mapPropertyQuery(property.query),
+      mapPropertyQuery(property.query as TraverseQueryDBO[]),
       id,
       property.denormalizedProperty
     );
