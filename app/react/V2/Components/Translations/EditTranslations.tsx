@@ -141,7 +141,7 @@ const EditTranslations = () => {
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
   const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
-  const fileInputRef = useRef();
+  const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
   const {
     register,
