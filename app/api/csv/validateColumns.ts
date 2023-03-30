@@ -72,23 +72,6 @@ const readColumns = async (
   return { propertiesByName, headersWithoutLanguage, languagesPerHeader };
 };
 
-const shouldExistInTemplate = (
-  propertiesByName: Record<string, PropertySchema>,
-  headersWithoutLanguage: string[],
-  languagesPerHeader: Record<string, Set<string>>
-): void => {
-  headersWithoutLanguage.forEach(h => {
-    if (!propertiesByName[h]) {
-      throw new ArrangeColumnsError(`Property "${h}" does not exist in the template.`);
-    }
-  });
-  Object.keys(languagesPerHeader).forEach(h => {
-    if (!propertiesByName[h]) {
-      throw new ArrangeColumnsError(`Property "${h}" does not exist in the template.`);
-    }
-  });
-};
-
 const shouldNotBeInBoth = (
   headersWithoutLanguage: string[],
   languagesPerHeader: Record<string, Set<string>>
@@ -145,7 +128,6 @@ const validateColumns = async (
     newNameGeneration
   );
 
-  shouldExistInTemplate(propertiesByName, headersWithoutLanguage, languagesPerHeader);
   shouldNotBeInBoth(headersWithoutLanguage, languagesPerHeader);
   languageColumnsShouldSupportLanguage(propertiesByName, languagesPerHeader);
   languageColumnsShouldHaveDefaultLanguage(languagesPerHeader, defaultLanguage);

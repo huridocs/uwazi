@@ -42,12 +42,6 @@ describe('csvLoader', () => {
 
   it.each([
     {
-      reason: 'should not allow columns that are not in the template',
-      csv: `title, textprop, non_existing_prop, selectprop
-            case, testcal, bad, selectval`,
-      message: 'Property "non_existing_prop" does not exist in the template.',
-    },
-    {
       reason: 'properties should not mix language and non-language columns',
       csv: 'title, textprop, textprop__es, textprop__en',
       message: 'Properties "textprop" mix language and non-language columns.',
