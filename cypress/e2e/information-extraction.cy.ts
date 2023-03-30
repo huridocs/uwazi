@@ -77,9 +77,8 @@ describe('Information Extraction', () => {
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
-    cy.get('[data-cy=modal]').as('editExtractorModal');
-    cy.get('@editExtractorModal').get('input').eq(2).type(' edited');
-    cy.get('@editExtractorModal').contains('label', 'Title').click();
+    cy.get('input.extractor-name-input').type(' edited');
+    cy.contains('.multiselectChild label', 'Title').click();
     cy.contains('li', 'Ordenes de la corte').as('template');
     cy.get('@template').find('label').click();
     cy.get('@template').contains('label', 'Title').click();
