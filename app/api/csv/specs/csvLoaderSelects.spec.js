@@ -41,7 +41,7 @@ describe('loader', () => {
   let multiselectLabelsSet;
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv_loader.index');
+    await testingEnvironment.setUp(fixtures, 'csv_loader_selects.index');
     await loader.load(
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')

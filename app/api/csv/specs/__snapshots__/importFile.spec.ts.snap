@@ -10,11 +10,11 @@ title3, text value 3, 2020, ______________, thesauri2   , notType3              
 `;
 
 exports[`importFile readStream when file is a a zip should return a stream for a file that should be called import.csv by default 1`] = `
-"Title , file , attachments,
+"Title , file , attachments
 
-file1, 1.pdf, att1.doc,
-file2, 2.pdf, att1.doc|att2.jpg,
-file3, 3.pdf,                  ,
+file1, 1.pdf, att1.doc
+file2, 2.pdf, att1.doc|att2.jpg
+file3, 3.pdf,
 "
 `;
 
