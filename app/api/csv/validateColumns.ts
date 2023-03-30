@@ -88,7 +88,7 @@ const languageColumnsShouldSupportLanguage = (
   languagesPerHeader: Record<string, Set<string>>
 ): void => {
   Object.keys(languagesPerHeader).forEach(h => {
-    if (!PROPERTIES_WITH_LANGUAGE.has(propertiesByName[h].type)) {
+    if (h !== 'file' && !PROPERTIES_WITH_LANGUAGE.has(propertiesByName[h].type)) {
       throw new ArrangeColumnsError(
         `Property "${h}" does not support languages. Remove the language suffix from the column name.`
       );
