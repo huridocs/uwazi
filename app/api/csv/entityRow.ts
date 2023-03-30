@@ -36,8 +36,8 @@ const extractEntity = (
   availableLanguages: Languages,
   currentLanguage: string,
   defaultLanguage: string,
-  selectPropNames: Set<string>,
-  newNameGeneration: boolean = false,
+  propNameToThesauriId: Record<string, string>,
+  newNameGeneration: boolean = false
 ) => {
   const safeNamed = toSafeName(row, newNameGeneration);
 
@@ -55,9 +55,8 @@ const extractEntity = (
         .reduce<RawEntity>(
           (entity, key) => {
             const propName = key.split(`__${languageCode}`)[0];
-            const selectedKey = selectPropNames.has(propName)
-              ? `${propName}__${defaultLanguage}`
-              : key;
+            const selectedKey =
+              propName in propNameToThesauriId ? `${propName}__${defaultLanguage}` : key;
             entity[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
             return entity;
           },

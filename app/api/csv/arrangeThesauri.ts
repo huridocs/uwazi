@@ -148,11 +148,11 @@ const tryAddingTranslation = (
     .filter(([id, language, key, value]) => id && language && key && value && newKeys.has(key))
     .forEach(([id, language, key, value]) => {
       if (id && language && key && value) {
-        const translations = thesauriIdToTranslations.get(id) || {};
-        const keysAndValues = translations[language] || {};
+        const translationDict = thesauriIdToTranslations.get(id) || {};
+        const keysAndValues = translationDict[language] || {};
         keysAndValues[key] = value;
-        translations[language] = keysAndValues;
-        thesauriIdToTranslations.set(id, translations);
+        translationDict[language] = keysAndValues;
+        thesauriIdToTranslations.set(id, translationDict);
       }
     });
 };
@@ -246,7 +246,7 @@ const arrangeThesauri = async (
   _languagesPerHeader: Record<string, Set<string>>,
   defaultLanguage?: string,
   stopOnError: boolean = true
-): Promise<string[]> => {
+): Promise<Record<string, string>> => {
   const { propNameToThesauriId, headersWithoutLanguage, languagesPerHeader, allRelatedThesauri } =
     await setupProperties(template, _headersWithoutLanguage, _languagesPerHeader);
 
@@ -272,7 +272,7 @@ const arrangeThesauri = async (
   await syncSaveThesauri(allRelatedThesauri, thesauriValueData.thesauriIdToNewValues);
   await syncUpdateTranslations(thesauriValueData.thesauriIdToTranslations);
 
-  return Object.keys(propNameToThesauriId);
+  return propNameToThesauriId;
 };
 
 export { arrangeThesauri, ArrangeThesauriError };

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { ObjectId } from 'mongodb';
 
 import translations from 'api/i18n';
 import { EnforcedWithId, WithId } from 'api/odm';
@@ -6,16 +6,18 @@ import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
-import { ObjectId } from 'mongodb';
+
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+
 import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import { extractEntity, toSafeName } from './entityRow';
-import { importEntity, translateEntity } from './importEntity';
+import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity';
 import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
 import { validateColumns } from './validateColumns';
@@ -48,6 +50,18 @@ const readResources = async (
     dateFormat,
   };
 };
+
+const getTranslations = async (): Promise<FullyIndexedTranslations> =>
+  objectIndex(
+    await translations.get({}),
+    tr => tr.locale || '',
+    tr =>
+      objectIndex(
+        tr.contexts || [],
+        c => c.id || '',
+        c => c.values
+      )
+  );
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -90,16 +104,15 @@ export class CSVLoader extends EventEmitter {
       defaultLanguage,
       newNameGeneration
     );
-    const selectPropNames = new Set(
-      await arrangeThesauri(
-        file,
-        template,
-        newNameGeneration,
-        headersWithoutLanguage,
-        languagesPerHeader,
-        defaultLanguage
-      )
+    const propNameToThesauriId = await arrangeThesauri(
+      file,
+      template,
+      newNameGeneration,
+      headersWithoutLanguage,
+      languagesPerHeader,
+      defaultLanguage
     );
+    const indexedTranslations = await getTranslations();
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
@@ -108,12 +121,19 @@ export class CSVLoader extends EventEmitter {
           availableLanguages,
           options.language,
           defaultLanguage,
-          selectPropNames,
-          newNameGeneration,
+          propNameToThesauriId,
+          newNameGeneration
         );
         if (rawEntity) {
           const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
-          await translateEntity(entity, rawTranslations, template, file);
+          await translateEntity(
+            entity,
+            rawTranslations,
+            template,
+            file,
+            propNameToThesauriId,
+            indexedTranslations
+          );
           this.emit('entityLoaded', entity);
         }
       })
