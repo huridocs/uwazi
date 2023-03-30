@@ -36,6 +36,7 @@ const GroupTable = ({ columns, data, title, initialGroupBy }: GroupTableProps) =
       columns: memoizedColumns,
       data: memoizedData,
       expandSubRows: true,
+      autoResetExpanded: false,
       initialState: {
         groupBy: initialGroupBy,
       },
@@ -74,7 +75,7 @@ const GroupTable = ({ columns, data, title, initialGroupBy }: GroupTableProps) =
     return content;
   }
 
-  useEffect(() => tableInstance.toggleAllRowsExpanded(true), []);
+  React.useMemo(() => tableInstance.toggleAllRowsExpanded(true), [tableInstance]);
 
   return (
     <FlowbiteTable {...getTableProps()}>
