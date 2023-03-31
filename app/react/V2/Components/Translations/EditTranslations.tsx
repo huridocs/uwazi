@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useMemo, useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { useSetRecoilState } from 'recoil';
+import RenderIfVisible from 'react-render-if-visible';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
@@ -19,7 +19,6 @@ import { InputField } from 'V2/Components/UI/InputField';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
-import RenderIfVisible from 'react-render-if-visible';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -53,7 +52,7 @@ const prepareValuesToSave = (
     };
   });
 
-const renderPill = ({ cell }) => {
+const renderPill = ({ cell }: any) => {
   let color: 'gray' | 'primary' | 'yellow' = 'gray';
   if (cell.value.status === 'defaultLanguage') color = 'primary';
   if (cell.value.status === 'untranslated') color = 'yellow';
@@ -95,7 +94,7 @@ const getTraslationStatus = (
 const prepareFormValues = (translations: ClientTranslationSchema[], defaultLanguageKey: string) => {
   const defaultLanguageValues = translations.find(
     language => language.locale === defaultLanguageKey
-  ).contexts[0].values;
+  )?.contexts[0].values;
 
   return translations.map(language => {
     const values = Object.entries(language.contexts[0].values || {})
@@ -107,7 +106,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
             key,
             value,
             translationStatus: getTraslationStatus(
-              defaultLanguageValues,
+              defaultLanguageValues || {},
               { key, value },
               language.locale,
               defaultLanguageKey
@@ -155,7 +154,7 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  const inputField = ({ cell }) => {
+  const inputField = ({ cell }: any) => {
     const reset = () => resetField(cell.value, { defaultValue: '' });
     return (
       <div key={cell.value}>
@@ -271,11 +270,11 @@ const EditTranslations = () => {
           {tablesData.map(tableData => {
             const [contextTerm] = Object.keys(tableData);
             return (
-              <RenderIfVisible>
-                <div key={contextTerm} className="mt-4">
+              <div key={contextTerm} className="mt-4">
+                <RenderIfVisible>
                   <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
-                </div>
-              </RenderIfVisible>
+                </RenderIfVisible>
+              </div>
             );
           })}
 

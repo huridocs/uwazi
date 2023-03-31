@@ -14,15 +14,15 @@ const translationsListLoader =
   async () =>
     translationsAPI.get(headers);
 
-const renderButton = data => (
-  <Link to={`edit/${data.row.values.id}`}>
+const renderButton = ({ row }: any) => (
+  <Link to={`edit/${row.values.id}`}>
     <Button buttonStyle="secondary">
       <Translate>Translate</Translate>
     </Button>
   </Link>
 );
 
-const pill = ({ cell }) => (
+const pill = ({ cell }: any) => (
   <div className="whitespace-nowrap">
     <Pill color="gray">
       <Translate>{cell.value}</Translate>
@@ -57,8 +57,6 @@ const TranslationsList = () => {
     if (!contextTranslations.values || Object.keys(contextTranslations.values).length === 0) {
       return undefined;
     }
-
-    delete contextTranslations.values;
 
     if (contextTranslations.type === 'Uwazi UI') {
       return contexts.systemContexts.push({ ...contextTranslations });
