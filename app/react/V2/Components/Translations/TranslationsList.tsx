@@ -68,7 +68,11 @@ const TranslationsList = () => {
   });
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+    <div
+      className="tw-content"
+      style={{ width: '100%', overflowY: 'auto' }}
+      data-cy="settings-translations"
+    >
       <div className="p-5">
         <NavigationHeader backUrl="/settings">
           <h1 className="text-base text-gray-700">

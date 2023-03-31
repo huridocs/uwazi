@@ -241,7 +241,11 @@ const EditTranslations = () => {
   );
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+    <div
+      className="tw-content"
+      style={{ width: '100%', overflowY: 'auto' }}
+      data-cy="settings-translations"
+    >
       <div className="p-5">
         <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
