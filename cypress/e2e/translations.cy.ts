@@ -37,6 +37,7 @@ describe('Translations', () => {
     englishLoggedInUwazi();
     navigateToTranslationsPage();
     cy.contains('[data-testid=content] button', 'Translate').click();
+    cy.get('form').should('be.visible');
     cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
       name: 'edit-translations',
     });
