@@ -1,9 +1,11 @@
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider, useFormContext, useFieldArray, Controller } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { useSetRecoilState } from 'recoil';
 import { flatten, toPairs, sortBy, pickBy, pick } from 'lodash';
@@ -68,20 +70,6 @@ const renderPill = ({ cell }) => {
     </Pill>
   );
 };
-const composeTableValues = (formData: formDataType, termIndex: number) =>
-  formData.map((language, languageIndex) => {
-    const languaLabel = availableLanguages.find(
-      availableLanguage => availableLanguage.key === language.locale
-    )?.localized_label;
-    return {
-      language: languaLabel,
-      translationStatus: {
-        languageKey: language.locale,
-        status: formData[languageIndex].values[termIndex].translationStatus,
-      },
-      fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
-    };
-  });
 
 const getTraslationStatus = (
   defaultLanguageValues: { [key: string]: string },
@@ -147,43 +135,55 @@ const EditTranslations = () => {
 
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
+  const formMethods = useForm({
+    defaultValues: { formData },
+    mode: 'onSubmit',
+    shouldUnregister: false,
+  });
+
   const {
     register,
     handleSubmit,
     resetField,
     formState: { errors },
-  } = useForm({
-    defaultValues: { formData },
-    mode: 'onSubmit',
+    control,
+  } = formMethods;
+
+  const { fields, remove } = useFieldArray({
+    control,
+    name: 'formData',
   });
 
-  const inputField = ({ cell }) => {
+  const EditableCell = ({
+    cell,
+    value: initialValue,
+    row: { index },
+    column: { id, accessor },
+  }) => {
     if (cell.isAggregated || cell.isGrouped) {
-      return '';
+      return <> </>;
     }
-    const reset = () => resetField(`formData.${cell.row.id}.value`, { defaultValue: '' });
+    const formContext = useFormContext();
+    const { getValues } = formContext;
+    const defaultValue = getValues().formData[index].value;
+
     return (
-      <div key={cell.value}>
-        <InputField
-          fieldID={cell.row.id}
-          label={`${cell.row.original.key} ${cell.row.original.locale}`}
-          hideLabel
-          disabled={submitting}
-          buttonAction={reset}
-          inputControls={{ ...register(`formData.${cell.row.id}.value`, { required: true }) }}
+      <>
+        <Controller
+          name={`formData[${index}].value`}
+          defaultValue={defaultValue}
+          rules={{ required: { value: true, message: 'field is required' } }}
+          // control={control}
+          render={
+            ({ field }) => <input {...field} /> // ✅
+          }
         />
-        {/* <ErrorMessage
-          errors={errors}
-          name={`formData.${cell.row.id}.value`}
-          render={() => (
-            <p className="font-bold text-error-700" role="alert">
-              <Translate>This field is required</Translate>
-            </p>
-          )}
-        /> */}
-      </div>
+        {errors?.formData?.[index]?.value?.message}
+      </>
     );
   };
+
+  const ValueCell = React.memo(EditableCell);
 
   const columns = [
     {
@@ -206,7 +206,7 @@ const EditTranslations = () => {
     {
       Header: 'Current Value',
       accessor: 'value',
-      Cell: inputField,
+      Cell: ValueCell,
       disableGroupBy: true,
     },
   ];
@@ -235,48 +235,50 @@ const EditTranslations = () => {
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
-      <div className="p-5">
-        <div className="pb-4">
-          <NavigationHeader backUrl="/settings/translations">
-            <h1 className="flex gap-2 text-gray-700 text-baseregi sm:gap-6">
-              <Translate>Translations</Translate>
-              <span>&gt;</span>
-              <Translate>system</Translate>
-            </h1>
-          </NavigationHeader>
-        </div>
+      <FormProvider {...formMethods}>
+        <div className="p-5">
+          <div className="pb-4">
+            <NavigationHeader backUrl="/settings/translations">
+              <h1 className="flex gap-2 text-gray-700 text-baseregi sm:gap-6">
+                <Translate>Translations</Translate>
+                <span>&gt;</span>
+                <Translate>system</Translate>
+              </h1>
+            </NavigationHeader>
+          </div>
 
-        <div className="pb-4">
-          <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
-            <div className="ml-2 text-sm text-gray-700">
-              <Translate>Show untranslated terms only</Translate>
-            </div>
-          </ToggleButton>
-        </div>
+          <div className="pb-4">
+            <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
+              <div className="ml-2 text-sm text-gray-700">
+                <Translate>Show untranslated terms only</Translate>
+              </div>
+            </ToggleButton>
+          </div>
 
-        <form onSubmit={handleSubmit(submitFunction)}>
-          <GroupTable columns={columns} data={formData} initialGroupBy={['key']} />
-          <div className="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 lg:sticky z-1">
-            <div className="flex justify-end gap-2 p-2 pt-1">
-              {/* <div className="flex-1"> */}
-              {/* {contextId === 'System' && (
+          <form noValidate onSubmit={handleSubmit(submitFunction)}>
+            <GroupTable columns={columns} data={fields} initialGroupBy={['key']} />
+            <div className="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 lg:sticky z-1">
+              <div className="flex justify-end gap-2 p-2 pt-1">
+                {/* <div className="flex-1"> */}
+                {/* {contextId === 'System' && (
                   <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
                     <Translate>Import</Translate>
                   </Button>
                 )} */}
-              {/* </div> */}
-              <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                <Link to="/settings/translations">
-                  <Translate>Cancel</Translate>
-                </Link>
-              </Button>
-              <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
-                <Translate>Save</Translate>
-              </Button>
+                {/* </div> */}
+                <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
+                  <Link to="/settings/translations">
+                    <Translate>Cancel</Translate>
+                  </Link>
+                </Button>
+                <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      </FormProvider>
     </div>
   );
 };
