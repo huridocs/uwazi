@@ -19,6 +19,7 @@ import { InputField } from 'V2/Components/UI/InputField';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
+import RenderIfVisible from 'react-render-if-visible';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -59,6 +60,7 @@ const renderPill = ({ cell }) => {
 
   return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
 };
+
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
@@ -269,9 +271,11 @@ const EditTranslations = () => {
           {tablesData.map(tableData => {
             const [contextTerm] = Object.keys(tableData);
             return (
-              <div key={contextTerm} className="mt-4">
-                <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
-              </div>
+              <RenderIfVisible>
+                <div key={contextTerm} className="mt-4">
+                  <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
+                </div>
+              </RenderIfVisible>
             );
           })}
 
