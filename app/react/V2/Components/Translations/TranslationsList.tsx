@@ -75,14 +75,14 @@ const TranslationsList = () => {
             <Translate>Translations</Translate>
           </h1>
         </NavigationHeader>
-        <div className="mt-4">
+        <div className="mt-4" data-cy="translations">
           <Table
             columns={columns}
             data={contexts.systemContexts}
             title={<Translate>System</Translate>}
           />
         </div>
-        <div className="mt-4">
+        <div className="mt-4" data-cy="content">
           <Table
             columns={columns}
             data={contexts.contentContexts}
