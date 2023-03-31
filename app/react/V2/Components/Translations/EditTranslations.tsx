@@ -233,11 +233,18 @@ const EditTranslations = () => {
 
   const tablesData = useMemo(
     () =>
-      contextTerms.map((contextTerm, termIndex) => {
-        let values = composeTableValues(formData, termIndex);
-        if (hideTranslated) values = filterTableValues(values);
-        return { [contextTerm]: values };
-      }),
+      contextTerms
+        .map((contextTerm, termIndex) => {
+          let values = composeTableValues(formData, termIndex);
+          if (hideTranslated) {
+            values = filterTableValues(values);
+          }
+          if (values.length === 1 && hideTranslated) {
+            return undefined;
+          }
+          return { [contextTerm]: values };
+        })
+        .filter(v => v),
     [contextTerms, formData, hideTranslated]
   );
 
