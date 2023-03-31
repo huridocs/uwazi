@@ -5,59 +5,61 @@ import {
   CreateTranslationsData,
   CreateTranslationsService,
 } from 'api/i18n.v2/services/CreateTranslationsService';
+import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
 import { tenants } from 'api/tenants';
 import { TranslationType } from 'shared/translationType';
 
+const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
+  if (translation.contexts?.length) {
+    return translation.contexts.reduce(
+      (flatTranslations, context) =>
+        flatTranslations.concat(
+          context.values
+            ? context.values.map(
+                contextValue =>
+                  ({
+                    language: translation.locale,
+                    key: contextValue.key,
+                    value: contextValue.value,
+                    context: { type: context.type, label: context.label, id: context.id },
+                  } as CreateTranslationsData)
+              )
+            : []
+        ),
+      [] as CreateTranslationsData[]
+    );
+  }
+  return [];
+};
+
 export const createTranslationsV2 = async (translation: TranslationType) => {
-  if (translation.contexts?.length && tenants.current().featureFlags?.translationsV2) {
+  if (tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
-    ).create(
-      translation.contexts.reduce(
-        (flatTranslations, context) =>
-          flatTranslations.concat(
-            context.values
-              ? context.values.map(
-                  contextValue =>
-                    ({
-                      language: translation.locale,
-                      key: contextValue.key,
-                      value: contextValue.value,
-                      context: { type: context.type, label: context.label, id: context.id },
-                    } as CreateTranslationsData)
-                )
-              : []
-          ),
-        [] as CreateTranslationsData[]
-      )
-    );
+    ).create(flattenTranslations(translation));
   }
 };
 
 export const upsertTranslationsV2 = async (translation: TranslationType) => {
-  if (translation.contexts?.length && tenants.current().featureFlags?.translationsV2) {
+  if (tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
-    ).upsert(
-      translation.contexts.reduce(
-        (flatTranslations, context) =>
-          flatTranslations.concat(
-            context.values
-              ? context.values.map(
-                  contextValue =>
-                    ({
-                      language: translation.locale,
-                      key: contextValue.key,
-                      value: contextValue.value,
-                      context: { type: context.type, label: context.label, id: context.id },
-                    } as CreateTranslationsData)
-                )
-              : []
-          ),
-        [] as CreateTranslationsData[]
-      )
-    );
+    ).upsert(flattenTranslations(translation));
   }
+};
+
+export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
+  await new DeleteTranslationsService(
+    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoTransactionManager(getClient())
+  ).deleteByContextId(contextId);
+};
+
+export const deleteTranslationsByLanguageV2 = async (language: string) => {
+  await new DeleteTranslationsService(
+    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoTransactionManager(getClient())
+  ).deleteByLanguage(language);
 };

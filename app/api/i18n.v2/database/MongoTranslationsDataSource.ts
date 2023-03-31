@@ -38,6 +38,14 @@ export class MongoTranslationsDataSource
     return translations;
   }
 
+  async deleteByContextId(contextId: string) {
+    return this.getCollection().deleteMany({ 'context.id': contextId });
+  }
+
+  async deleteByLanguage(language: string) {
+    return this.getCollection().deleteMany({ language });
+  }
+
   getAll() {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find(),

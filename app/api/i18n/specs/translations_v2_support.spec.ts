@@ -124,4 +124,100 @@ describe('translations v2 support', () => {
       });
     });
   });
+
+  describe('deleteContext', () => {
+    it('should delete all translations belonging to a context', async () => {
+      await translations.save({
+        locale: 'en',
+        contexts: [
+          {
+            id: 'contextId',
+            label: 'contextLabel',
+            type: 'Entity',
+            values: [
+              { key: 'Key', value: 'Value' },
+              { key: 'Key2', value: 'Value2' },
+            ],
+          },
+          {
+            id: 'contextId2',
+            label: 'contextLabel',
+            type: 'Entity',
+            values: [
+              { key: 'Key', value: 'Value' },
+              { key: 'Key2', value: 'Value2' },
+            ],
+          },
+        ],
+      });
+
+      await translations.deleteContext('contextId');
+      const translationsRemaining = await db.collection(newTranslationsCollection).find().toArray();
+      expect(translationsRemaining).toMatchObject([
+        {
+          language: 'en',
+          key: 'Key',
+          value: 'Value',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId2' },
+        },
+        {
+          language: 'en',
+          key: 'Key2',
+          value: 'Value2',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId2' },
+        },
+      ]);
+    });
+  });
+
+  describe('removeLanguage', () => {
+    it('should delete all translations belonging to a language', async () => {
+      await translations.save({
+        locale: 'en',
+        contexts: [
+          {
+            id: 'contextId',
+            label: 'contextLabel',
+            type: 'Entity',
+            values: [
+              { key: 'Key', value: 'Value' },
+              { key: 'Key2', value: 'Value2' },
+            ],
+          },
+        ],
+      });
+
+      await translations.save({
+        locale: 'es',
+        contexts: [
+          {
+            id: 'contextId',
+            label: 'contextLabel',
+            type: 'Entity',
+            values: [
+              { key: 'Key', value: 'Value' },
+              { key: 'Key2', value: 'Value2' },
+            ],
+          },
+        ],
+      });
+
+      await translations.removeLanguage('en');
+      const translationsRemaining = await db.collection(newTranslationsCollection).find().toArray();
+      expect(translationsRemaining).toMatchObject([
+        {
+          language: 'es',
+          key: 'Key',
+          value: 'Value',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
+        },
+        {
+          language: 'es',
+          key: 'Key2',
+          value: 'Value2',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
+        },
+      ]);
+    });
+  });
 });

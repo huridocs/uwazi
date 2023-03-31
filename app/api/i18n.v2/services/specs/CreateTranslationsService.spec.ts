@@ -1,5 +1,4 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -13,8 +12,7 @@ const collectionInDb = (collection = 'translations_v2') =>
 const createService = () =>
   new CreateTranslationsService(
     new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-    new MongoTransactionManager(getClient()),
-    MongoIdHandler
+    new MongoTransactionManager(getClient())
   );
 
 const fixtures = {
@@ -85,14 +83,12 @@ describe('create()', () => {
 
       expect(translations).toEqual([
         {
-          _id: expect.any(String),
           language: 'es',
           key: 'clave',
           value: 'valor',
           context: { type: 'test', label: 'Test', id: 'test' },
         },
         {
-          _id: expect.any(String),
           language: 'en',
           key: 'key',
           value: 'value',

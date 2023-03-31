@@ -56,21 +56,18 @@ describe('getAll()', () => {
 
     expect(await allTranslations.all()).toEqual([
       {
-        _id: expect.any(String),
         key: 'key1',
         value: 'value1',
         language: 'en',
         context: { type: 'type', label: 'label', id: 'context1' },
       },
       {
-        _id: expect.any(String),
         key: 'key2',
         value: 'value2',
         language: 'en',
         context: { type: 'type', label: 'label', id: 'context1' },
       },
       {
-        _id: expect.any(String),
         key: 'key3',
         value: 'value3',
         language: 'en',

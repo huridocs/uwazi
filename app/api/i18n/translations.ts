@@ -15,8 +15,12 @@ import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
 import { ContextType } from 'shared/translationSchema';
 import model from './translationsModel';
-import { createTranslationsV2, upsertTranslationsV2 } from './v2_support';
-import { tenants } from 'api/tenants';
+import {
+  createTranslationsV2,
+  deleteTranslationsByContextIdV2,
+  deleteTranslationsByLanguageV2,
+  upsertTranslationsV2,
+} from './v2_support';
 
 export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
@@ -294,6 +298,7 @@ export default {
         })
       )
     );
+    await deleteTranslationsByContextIdV2(id);
     return 'ok';
   },
 
@@ -416,6 +421,7 @@ export default {
   },
 
   async removeLanguage(locale: string) {
+    await deleteTranslationsByLanguageV2(locale);
     return model.delete({ locale });
   },
 
