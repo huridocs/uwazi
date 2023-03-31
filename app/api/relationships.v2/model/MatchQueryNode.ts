@@ -143,9 +143,9 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
-  getTemplatesInLeaves(): string[] {
+  getTemplatesInLeaves(): (string | 'ALL')[] {
     if (!this.traversals?.length) {
-      return this.filters.templates ?? [];
+      return this.filters.templates?.length ? this.filters.templates : ['ALL'];
     }
 
     return this.traversals.map(t => t.getTemplatesInLeaves()).flat();

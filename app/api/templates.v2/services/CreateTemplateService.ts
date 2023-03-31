@@ -23,13 +23,16 @@ const BuildQuery = {
       query.match.map(BuildQuery.match)
     ),
   match: (query: MatchQuery): MatchQueryNode =>
-    new MatchQueryNode({ templates: query.templates }, query.traverse?.map(BuildQuery.traverse)),
+    new MatchQueryNode(
+      { templates: query.templates },
+      query.traverse?.map(BuildQuery.traverse) ?? []
+    ),
   build: (traversals: TraverseQuery[]) =>
     new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
 };
 
 export class CreateTemplateService {
-  validateQuery(query: MatchQueryNode) {
+  private validateQuery(query: MatchQueryNode) {
     const templatesInLeaves = query.getTemplatesInLeaves();
     const uniqueTemplates = new Set(templatesInLeaves);
     if (uniqueTemplates.size > 1) {
