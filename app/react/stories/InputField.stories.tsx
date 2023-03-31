@@ -9,7 +9,7 @@ const InputFieldStory = {
 
 const Template: ComponentStory<typeof InputField> = args => (
   <div className="tw-content">
-    <div className="w-1/2">
+    <div className="md:w-1/2">
       <InputField
         fieldID={args.fieldID}
         label={<p className="text-lg mb-2">{args.label}</p>}

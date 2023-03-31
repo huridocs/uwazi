@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { useSetRecoilState } from 'recoil';
+import RenderIfVisible from 'react-render-if-visible';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
@@ -52,13 +52,14 @@ const prepareValuesToSave = (
     };
   });
 
-const renderPill = ({ cell }) => {
+const renderPill = ({ cell }: any) => {
   let color: 'gray' | 'primary' | 'yellow' = 'gray';
   if (cell.value.status === 'defaultLanguage') color = 'primary';
   if (cell.value.status === 'untranslated') color = 'yellow';
 
   return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
 };
+
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
@@ -93,7 +94,7 @@ const getTraslationStatus = (
 const prepareFormValues = (translations: ClientTranslationSchema[], defaultLanguageKey: string) => {
   const defaultLanguageValues = translations.find(
     language => language.locale === defaultLanguageKey
-  ).contexts[0].values;
+  )?.contexts[0].values;
 
   return translations.map(language => {
     const values = Object.entries(language.contexts[0].values || {})
@@ -105,7 +106,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
             key,
             value,
             translationStatus: getTraslationStatus(
-              defaultLanguageValues,
+              defaultLanguageValues || {},
               { key, value },
               language.locale,
               defaultLanguageKey
@@ -153,13 +154,13 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  const inputField = ({ cell }) => {
+  const inputField = ({ cell }: any) => {
     const reset = () => resetField(cell.value, { defaultValue: '' });
     return (
       <div key={cell.value}>
         <InputField
           fieldID={cell.value}
-          label={cell.fieldKey}
+          label={cell.row.values.language}
           hideLabel
           disabled={submitting}
           buttonAction={reset}
@@ -230,18 +231,25 @@ const EditTranslations = () => {
     }
   };
 
-  const tablesData = useMemo(
-    () =>
-      contextTerms.map((contextTerm, termIndex) => {
-        let values = composeTableValues(formData, termIndex);
-        if (hideTranslated) values = filterTableValues(values);
-        return { [contextTerm]: values };
-      }),
-    [contextTerms, formData, hideTranslated]
-  );
+  const tablesData = contextTerms
+    .map((contextTerm, termIndex) => {
+      let values = composeTableValues(formData, termIndex);
+      if (hideTranslated) {
+        values = filterTableValues(values);
+      }
+      if (values.length === 1 && hideTranslated) {
+        return undefined;
+      }
+      return { [contextTerm]: values };
+    })
+    .filter(v => v);
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+    <div
+      className="tw-content"
+      style={{ width: '100%', overflowY: 'auto' }}
+      data-testid="settings-translations"
+    >
       <div className="p-5">
         <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
@@ -263,10 +271,12 @@ const EditTranslations = () => {
 
         <form onSubmit={handleSubmit(submitFunction)}>
           {tablesData.map(tableData => {
-            const [contextTerm] = Object.keys(tableData);
+            const [contextTerm] = Object.keys(tableData!);
             return (
-              <div key={contextTerm}>
-                <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
+              <div key={contextTerm} className="mt-4">
+                <RenderIfVisible>
+                  <Table columns={columns} data={tableData![contextTerm]} title={contextTerm} />
+                </RenderIfVisible>
               </div>
             );
           })}

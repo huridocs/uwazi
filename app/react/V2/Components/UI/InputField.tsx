@@ -49,7 +49,7 @@ const InputField = ({
           name={name}
           ref={ref}
           disabled={disabled}
-          className={`${textColor} ${buttonStyles} border rounded-lg bg-gray-50 border-gray-300 block flex-1 min-w-0 lg:w-full text-sm p-2.5`}
+          className={`${textColor} ${buttonStyles} border rounded-lg bg-gray-50 border-gray-300 block flex-1 w-full text-sm p-2.5`}
           placeholder={placeholder}
         />
         {hasClearFieldButton && (
@@ -57,7 +57,8 @@ const InputField = ({
             type="button"
             onClick={buttonAction}
             disabled={disabled}
-            className={`${textColor} border-l absolute top-px right-0 p-2.5 text-sm font-medium rounded-r-lg border-gray-300 hover:text-primary-700 focus:outline-none`}
+            className={`${textColor} border-l absolute top-px right-0 p-2.5 text-sm font-medium rounded-r-lg border-gray-300
+            hover:text-primary-700 focus:outline-none`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

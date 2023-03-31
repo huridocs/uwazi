@@ -1,20 +1,67 @@
+import { ObjectId } from 'mongodb';
+
 import translations from 'api/i18n';
-import { WithId } from 'api/odm';
+import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { EventEmitter } from 'events';
-import { ObjectId } from 'mongodb';
+
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { TranslationType } from 'shared/translationType';
 import { ensure } from 'shared/tsUtils';
 import { LanguageSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+
 import { arrangeThesauri } from './arrangeThesauri';
 import csv, { CSVRow } from './csv';
 import { extractEntity, toSafeName } from './entityRow';
-import { importEntity, translateEntity } from './importEntity';
+import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity';
 import importFile from './importFile';
 import { thesauriFromStream } from './importThesauri';
+import { validateColumns } from './validateColumns';
+
+const readResources = async (
+  templateId: ObjectId | string
+): Promise<{
+  template: EnforcedWithId<TemplateSchema>;
+  newNameGeneration: boolean;
+  availableLanguages: string[];
+  defaultLanguage: string;
+  dateFormat: string | undefined;
+}> => {
+  const template = await templates.getById(templateId);
+  if (!template) {
+    throw new Error('template not found!');
+  }
+  const { newNameGeneration = false, languages, dateFormat } = await settings.get();
+  const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
+    (language: LanguageSchema) => language.key
+  );
+  const defaultLanguage = languages?.find((l: LanguageSchema) => l.default)?.key;
+  if (!defaultLanguage) throw new Error('default language not found!');
+
+  return {
+    template,
+    newNameGeneration,
+    availableLanguages,
+    defaultLanguage,
+    dateFormat,
+  };
+};
+
+const getTranslations = async (): Promise<FullyIndexedTranslations> =>
+  objectIndex(
+    await translations.get({}),
+    tr => tr.locale || '',
+    tr =>
+      objectIndex(
+        tr.contexts || [],
+        c => c.id || '',
+        c => c.values
+      )
+  );
 
 export class CSVLoader extends EventEmitter {
   stopOnError: boolean;
@@ -47,16 +94,25 @@ export class CSVLoader extends EventEmitter {
     templateId: ObjectId | string,
     options = { language: 'en', user: {} }
   ) {
-    const template = await templates.getById(templateId);
-    if (!template) {
-      throw new Error('template not found!');
-    }
-    const { newNameGeneration = false, languages, dateFormat } = await settings.get();
-    const availableLanguages: string[] = ensure<LanguageSchema[]>(languages).map(
-      (language: LanguageSchema) => language.key
-    );
+    const { template, newNameGeneration, availableLanguages, defaultLanguage, dateFormat } =
+      await readResources(templateId);
     const file = importFile(csvPath);
-    await arrangeThesauri(file, template, newNameGeneration, availableLanguages);
+    const { headersWithoutLanguage, languagesPerHeader } = await validateColumns(
+      file,
+      template,
+      availableLanguages,
+      defaultLanguage,
+      newNameGeneration
+    );
+    const propNameToThesauriId = await arrangeThesauri(
+      file,
+      template,
+      newNameGeneration,
+      headersWithoutLanguage,
+      languagesPerHeader,
+      defaultLanguage
+    );
+    const indexedTranslations = await getTranslations();
 
     await csv(await file.readStream(), this.stopOnError)
       .onRow(async (row: CSVRow) => {
@@ -64,11 +120,20 @@ export class CSVLoader extends EventEmitter {
           row,
           availableLanguages,
           options.language,
+          defaultLanguage,
+          propNameToThesauriId,
           newNameGeneration
         );
         if (rawEntity) {
           const entity = await importEntity(rawEntity, template, file, { ...options, dateFormat });
-          await translateEntity(entity, rawTranslations, template, file);
+          await translateEntity(
+            entity,
+            rawTranslations,
+            template,
+            file,
+            propNameToThesauriId,
+            indexedTranslations
+          );
           this.emit('entityLoaded', entity);
         }
       })

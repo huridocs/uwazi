@@ -127,7 +127,7 @@ const Notification = ({
     <div
       className={`${containerClass} p-4 mb-4 border rounded-lg`}
       role="alert"
-      data-cy="notifications-container"
+      data-testid="notifications-container"
     >
       {heading && (
         <div className="flex items-cente">

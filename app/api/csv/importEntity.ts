@@ -108,19 +108,60 @@ const importEntity = async (
   return entity;
 };
 
+type FullyIndexedTranslations = Record<string, Record<string, Record<string, string>>>;
+
+const translateSelectLabels = (
+  entity: EntitySchema,
+  language: string,
+  translations: FullyIndexedTranslations,
+  propNameToThesauriId: Record<string, string>
+) => {
+  const translatedMetadata = Object.fromEntries(
+    Object.entries(entity.metadata || {}).map(([key, values]) => {
+      if (key in propNameToThesauriId) {
+        return [
+          key,
+          (values || []).map(({ value, label }) => ({
+            value,
+            label: label
+              ? translations[language][propNameToThesauriId[key]][label] || label
+              : label,
+          })),
+        ];
+      }
+      return [key, values];
+    })
+  );
+  const translatedEntity = { ...entity, metadata: translatedMetadata };
+  return translatedEntity;
+};
+
 const translateEntity = async (
   entity: EntitySchema,
   translations: RawEntity[],
   template: TemplateSchema,
-  importFile: ImportFile
+  importFile: ImportFile,
+  propNameToThesauriId: Record<string, string>,
+  indexedTranslations: FullyIndexedTranslations
 ) => {
   await entitiesModel.saveMultiple(
     await Promise.all(
-      translations.map(async translatedEntity =>
-        entityObject({ ...translatedEntity, id: ensure(entity.sharedId) }, template, {
-          language: translatedEntity.language,
-        })
-      )
+      translations.map(async translatedEntity => {
+        const translatedEntityObject = await entityObject(
+          { ...translatedEntity, id: ensure(entity.sharedId) },
+          template,
+          {
+            language: translatedEntity.language,
+          }
+        );
+
+        return translateSelectLabels(
+          translatedEntityObject,
+          translatedEntity.language,
+          indexedTranslations,
+          propNameToThesauriId
+        );
+      })
     )
   );
 
@@ -137,3 +178,4 @@ const translateEntity = async (
 };
 
 export { importEntity, translateEntity };
+export type { FullyIndexedTranslations };

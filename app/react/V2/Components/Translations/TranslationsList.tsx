@@ -14,15 +14,15 @@ const translationsListLoader =
   async () =>
     translationsAPI.get(headers);
 
-const renderButton = data => (
-  <Link to={`edit/${data.row.values.id}`}>
+const renderButton = ({ row }: any) => (
+  <Link to={`edit/${row.values.id}`}>
     <Button buttonStyle="secondary">
       <Translate>Translate</Translate>
     </Button>
   </Link>
 );
 
-const pill = ({ cell }) => (
+const pill = ({ cell }: any) => (
   <div className="whitespace-nowrap">
     <Pill color="gray">
       <Translate>{cell.value}</Translate>
@@ -58,8 +58,6 @@ const TranslationsList = () => {
       return undefined;
     }
 
-    delete contextTranslations.values;
-
     if (contextTranslations.type === 'Uwazi UI') {
       return contexts.systemContexts.push({ ...contextTranslations });
     }
@@ -68,21 +66,25 @@ const TranslationsList = () => {
   });
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+    <div
+      className="tw-content"
+      style={{ width: '100%', overflowY: 'auto' }}
+      data-testid="settings-translations"
+    >
       <div className="p-5">
         <NavigationHeader backUrl="/settings">
           <h1 className="text-base text-gray-700">
             <Translate>Translations</Translate>
           </h1>
         </NavigationHeader>
-        <div className="mt-4">
+        <div className="mt-4" data-testid="translations">
           <Table
             columns={columns}
             data={contexts.systemContexts}
             title={<Translate>System</Translate>}
           />
         </div>
-        <div className="mt-4">
+        <div className="mt-4" data-testid="content">
           <Table
             columns={columns}
             data={contexts.contentContexts}
