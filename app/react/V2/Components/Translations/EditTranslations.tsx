@@ -159,7 +159,7 @@ const EditTranslations = () => {
       <div key={cell.value}>
         <InputField
           fieldID={cell.value}
-          label={cell.fieldKey}
+          label={cell.row.values.language}
           hideLabel
           disabled={submitting}
           buttonAction={reset}
@@ -269,7 +269,7 @@ const EditTranslations = () => {
           {tablesData.map(tableData => {
             const [contextTerm] = Object.keys(tableData);
             return (
-              <div key={contextTerm}>
+              <div key={contextTerm} className="mt-4">
                 <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
               </div>
             );
