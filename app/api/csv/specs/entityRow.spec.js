@@ -3,6 +3,7 @@ import { extractEntity } from '../entityRow';
 describe('entityRow', () => {
   const languages = ['es', 'en', 'pt'];
   const currentLanguage = 'en';
+  const defaultLanguage = 'en';
 
   it('should return entity for the current language (not missinterpreting coincidences in letters as language escaping)', () => {
     const { rawEntity } = extractEntity(
@@ -12,7 +13,9 @@ describe('entityRow', () => {
         not_portuguese_ptescaped_property: 'not portuguese',
       },
       languages,
-      currentLanguage
+      currentLanguage,
+      defaultLanguage,
+      {}
     );
 
     expect(rawEntity).toEqual({
@@ -29,7 +32,9 @@ describe('entityRow', () => {
         title__en: 'test_en',
       },
       languages,
-      currentLanguage
+      currentLanguage,
+      defaultLanguage,
+      {}
     );
 
     expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
@@ -43,7 +48,9 @@ describe('entityRow', () => {
         title__pt: ' ',
       },
       languages,
-      currentLanguage
+      currentLanguage,
+      defaultLanguage,
+      {}
     );
 
     expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
@@ -57,7 +64,9 @@ describe('entityRow', () => {
         text__pt: 'text_pt',
       },
       languages,
-      currentLanguage
+      currentLanguage,
+      defaultLanguage,
+      {}
     );
 
     expect(rawTranslations).toEqual([
@@ -75,7 +84,9 @@ describe('entityRow', () => {
         a__pt_property: 'not portugese',
       },
       languages,
-      'es'
+      'es',
+      defaultLanguage,
+      {}
     );
 
     expect(rawEntity).toEqual({
