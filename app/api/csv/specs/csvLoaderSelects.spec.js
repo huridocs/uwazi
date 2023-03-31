@@ -184,7 +184,7 @@ describe('loader', () => {
     });
   });
 
-  it('should share metada values (thesauri value pointers) across languages', async () => {
+  it('should share metadata values (thesauri value pointers) across languages', async () => {
     const english = await entities.get({ language: 'en' });
     const spanish = await entities.get({ language: 'es' });
     const englishSelectValues = getMetadataValues('select_property', english);
