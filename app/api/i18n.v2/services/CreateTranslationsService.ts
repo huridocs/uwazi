@@ -1,4 +1,3 @@
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { Translation } from '../model/Translation';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
@@ -15,16 +14,9 @@ export class CreateTranslationsService {
 
   private transactionManager: TransactionManager;
 
-  private idGenerator: IdGenerator;
-
-  constructor(
-    translationsDS: TranslationsDataSource,
-    transactionManager: TransactionManager,
-    idGenerator: IdGenerator
-  ) {
+  constructor(translationsDS: TranslationsDataSource, transactionManager: TransactionManager) {
     this.translationsDS = translationsDS;
     this.transactionManager = transactionManager;
-    this.idGenerator = idGenerator;
   }
 
   async create(translations: CreateTranslationsData[]) {
@@ -33,7 +25,22 @@ export class CreateTranslationsService {
         translations.map(
           translation =>
             new Translation(
-              this.idGenerator.generate(),
+              translation.key,
+              translation.value,
+              translation.language,
+              translation.context
+            )
+        )
+      )
+    );
+  }
+
+  async upsert(translations: CreateTranslationsData[]) {
+    return this.transactionManager.run(async () =>
+      this.translationsDS.upsert(
+        translations.map(
+          translation =>
+            new Translation(
               translation.key,
               translation.value,
               translation.language,

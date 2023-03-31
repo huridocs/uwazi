@@ -15,7 +15,7 @@ import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
 import { ContextType } from 'shared/translationSchema';
 import model from './translationsModel';
-import { createTranslationsV2 } from './v2_support';
+import { createTranslationsV2, upsertTranslationsV2 } from './v2_support';
 import { tenants } from 'api/tenants';
 
 export class UITranslationNotAvailable extends Error {
@@ -198,14 +198,15 @@ export default {
   },
 
   async save(translation: TranslationType | IndexedTranslations) {
-    if (translation._id) {
-      return update(translation);
-    }
-
     const translationToSave = {
       ...translation,
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
+
+    if (translation._id) {
+      await upsertTranslationsV2(translationToSave);
+      return update(translation);
+    }
 
     await createTranslationsV2(translationToSave);
 

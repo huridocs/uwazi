@@ -104,6 +104,13 @@ describe('translations v2 support', () => {
           value: 'updatedValue2',
           context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
         },
+        {
+          _id: expect.any(ObjectId),
+          language: 'en',
+          key: 'Key3',
+          value: 'createdValue',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
+        },
       ]);
     });
   });

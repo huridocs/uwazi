@@ -20,17 +20,20 @@ export class MongoTranslationsDataSource
     return translations;
   }
 
-  async update(translations: Translation[]): Promise<Translation[]> {
+  async upsert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
+    const writeStream = this.createBulkStream();
 
-    await items.reduce(async (previous, item) => {
-      await previous;
-      await this.getCollection().updateOne(
-        { _id: item._id },
-        { $set: item },
-        { session: this.getSession() }
-      );
-    }, Promise.resolve());
+    await Promise.all(
+      items.map(async item =>
+        writeStream.updateOne(
+          { language: item.language, key: item.key, context: item.context },
+          { $set: item },
+          true
+        )
+      )
+    );
+    await writeStream.flush();
 
     return translations;
   }

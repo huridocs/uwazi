@@ -3,6 +3,6 @@ import { Translation } from '../model/Translation';
 
 export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
-  update(translations: Translation[]): Promise<Translation[]>;
+  upsert(translations: Translation[]): Promise<Translation[]>;
   getAll(): ResultSet<Translation>;
 }

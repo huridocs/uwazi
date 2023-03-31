@@ -39,6 +39,28 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
 
 export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (translation.contexts?.length && tenants.current().featureFlags?.translationsV2) {
-
+    await new CreateTranslationsService(
+      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient()),
+      MongoIdHandler
+    ).upsert(
+      translation.contexts.reduce(
+        (flatTranslations, context) =>
+          flatTranslations.concat(
+            context.values
+              ? context.values.map(
+                  contextValue =>
+                    ({
+                      language: translation.locale,
+                      key: contextValue.key,
+                      value: contextValue.value,
+                      context: { type: context.type, label: context.label, id: context.id },
+                    } as CreateTranslationsData)
+                )
+              : []
+          ),
+        [] as CreateTranslationsData[]
+      )
+    );
   }
 };
