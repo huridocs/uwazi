@@ -20,7 +20,6 @@ describe('Translations', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
-    cy.exec('yarn ix-config', { env });
 
     cy.visit('http://localhost:3000');
     changeLanguage();
@@ -29,7 +28,7 @@ describe('Translations', () => {
 
   it('Should visit the translations page', () => {
     navigateToTranslationsPage();
-    cy.get('[data-cy=settings-translations]').toMatchImageSnapshot({
+    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
       name: 'settings-translations',
     });
   });
@@ -37,13 +36,13 @@ describe('Translations', () => {
   it('Should edit a translation', () => {
     englishLoggedInUwazi();
     navigateToTranslationsPage();
-    cy.get('[data-cy=content]').as('contentTranslations');
-    cy.get('@contentTranslations').contains('button', 'Translate').click();
-    cy.get('[data-cy=settings-translations]').toMatchImageSnapshot({ name: 'edit-translations' });
-    cy.get('[data-testid=table-element]').eq(0).as('fechaTable');
-    cy.get('@fechaTable').get('input[type=text]').eq(0).clear().type('Fecha edited');
+    cy.contains('[data-testid=content] button', 'Translate').click();
+    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
+      name: 'edit-translations',
+    });
+    cy.get('input[type=text]').eq(0).clear().type('Fecha edited');
     cy.contains('button', 'Save').click();
-    cy.get('[data-cy=settings-translations]').scrollTo('top');
-    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
+    cy.get('[data-testid=settings-translations]').scrollTo('top');
+    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'edited-context' });
   });
 });

@@ -17,7 +17,7 @@ const ToggleButton = ({ children, onToggle, value, disabled }: ToggleButtonProps
         className="sr-only peer"
         disabled={disabled}
         onChange={onToggle}
-        data-cy="toggle"
+        data-testid="toggle"
       />
       <div
         className={`${checkedColor} w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full

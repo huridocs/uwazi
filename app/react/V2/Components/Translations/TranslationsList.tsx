@@ -71,7 +71,7 @@ const TranslationsList = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-cy="settings-translations"
+      data-testid="settings-translations"
     >
       <div className="p-5">
         <NavigationHeader backUrl="/settings">
@@ -79,14 +79,14 @@ const TranslationsList = () => {
             <Translate>Translations</Translate>
           </h1>
         </NavigationHeader>
-        <div className="mt-4" data-cy="translations">
+        <div className="mt-4" data-testid="translations">
           <Table
             columns={columns}
             data={contexts.systemContexts}
             title={<Translate>System</Translate>}
           />
         </div>
-        <div className="mt-4" data-cy="content">
+        <div className="mt-4" data-testid="content">
           <Table
             columns={columns}
             data={contexts.contentContexts}

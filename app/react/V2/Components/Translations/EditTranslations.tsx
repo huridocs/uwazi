@@ -244,7 +244,7 @@ const EditTranslations = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-cy="settings-translations"
+      data-testid="settings-translations"
     >
       <div className="p-5">
         <div className="pb-4">
