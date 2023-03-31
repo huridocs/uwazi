@@ -23,25 +23,6 @@ const commonTranslationContexts = () => [
     type: 'Dictionary',
   },
   {
-    id: fixtureFactory.id('Select Thesaurus').toString(),
-    label: 'Select Thesaurus',
-    values: [
-      { key: 'Select Thesaurus', value: 'Select Thesaurus' },
-      { key: 'A', value: 'A' },
-    ],
-    type: 'Dictionary',
-  },
-  {
-    id: fixtureFactory.id('multiselect_thesaurus').toString(),
-    label: 'multiselect_thesaurus',
-    values: [
-      { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
-      { key: 'A', value: 'A' },
-      { key: 'B', value: 'B' },
-    ],
-    type: 'Dictionary',
-  },
-  {
     id: fixtureFactory.id('nested_thesaurus').toString(),
     label: 'nested_thesaurus',
     values: [
@@ -98,6 +79,20 @@ const fixtures = {
       select_property: [fixtureFactory.metadataValue('A')],
       multiselect_property: [fixtureFactory.metadataValue('A'), fixtureFactory.metadataValue('B')],
     }),
+    fixtureFactory.entity(
+      'existing_entity_id',
+      'template',
+      {
+        unrelated_property: [fixtureFactory.metadataValue('unrelated_value')],
+        no_new_value_select: [fixtureFactory.metadataValue('1')],
+        select_property: [{ label: 'Aes', value: 'A' }],
+        multiselect_property: [
+          { label: 'Aes', value: 'A' },
+          { label: 'Bes', value: 'B' },
+        ],
+      },
+      { language: 'es' }
+    ),
   ],
   settings: [
     {
@@ -113,12 +108,54 @@ const fixtures = {
     {
       _id: db.id(),
       locale: 'en',
-      contexts: commonTranslationContexts(),
+      contexts: [
+        ...commonTranslationContexts(),
+        {
+          id: fixtureFactory.id('Select Thesaurus').toString(),
+          label: 'Select Thesaurus',
+          values: [
+            { key: 'Select Thesaurus', value: 'Select Thesaurus' },
+            { key: 'A', value: 'A' },
+          ],
+          type: 'Dictionary',
+        },
+        {
+          id: fixtureFactory.id('multiselect_thesaurus').toString(),
+          label: 'multiselect_thesaurus',
+          values: [
+            { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
+            { key: 'A', value: 'A' },
+            { key: 'B', value: 'B' },
+          ],
+          type: 'Dictionary',
+        },
+      ],
     },
     {
       _id: db.id(),
       locale: 'es',
-      contexts: commonTranslationContexts(),
+      contexts: [
+        ...commonTranslationContexts(),
+        {
+          id: fixtureFactory.id('Select Thesaurus').toString(),
+          label: 'Select Thesaurus',
+          values: [
+            { key: 'Select Thesaurus', value: 'Select Thesaurus' },
+            { key: 'A', value: 'Aes' },
+          ],
+          type: 'Dictionary',
+        },
+        {
+          id: fixtureFactory.id('multiselect_thesaurus').toString(),
+          label: 'multiselect_thesaurus',
+          values: [
+            { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
+            { key: 'A', value: 'Aes' },
+            { key: 'B', value: 'Bes' },
+          ],
+          type: 'Dictionary',
+        },
+      ],
     },
   ],
 };
