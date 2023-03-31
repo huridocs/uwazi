@@ -1,5 +1,4 @@
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoTranslationsDataSource } from 'api/i18n.v2/database/MongoTranslationsDataSource';
 import {
@@ -13,8 +12,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
   if (translation.contexts?.length && tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient()),
-      MongoIdHandler
+      new MongoTransactionManager(getClient())
     ).create(
       translation.contexts.reduce(
         (flatTranslations, context) =>
@@ -41,8 +39,7 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (translation.contexts?.length && tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient()),
-      MongoIdHandler
+      new MongoTransactionManager(getClient())
     ).upsert(
       translation.contexts.reduce(
         (flatTranslations, context) =>
