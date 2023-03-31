@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -231,22 +231,18 @@ const EditTranslations = () => {
     }
   };
 
-  const tablesData = useMemo(
-    () =>
-      contextTerms
-        .map((contextTerm, termIndex) => {
-          let values = composeTableValues(formData, termIndex);
-          if (hideTranslated) {
-            values = filterTableValues(values);
-          }
-          if (values.length === 1 && hideTranslated) {
-            return undefined;
-          }
-          return { [contextTerm]: values };
-        })
-        .filter(v => v),
-    [contextTerms, formData, hideTranslated]
-  );
+  const tablesData = contextTerms
+    .map((contextTerm, termIndex) => {
+      let values = composeTableValues(formData, termIndex);
+      if (hideTranslated) {
+        values = filterTableValues(values);
+      }
+      if (values.length === 1 && hideTranslated) {
+        return undefined;
+      }
+      return { [contextTerm]: values };
+    })
+    .filter(v => v);
 
   return (
     <div
@@ -275,11 +271,11 @@ const EditTranslations = () => {
 
         <form onSubmit={handleSubmit(submitFunction)}>
           {tablesData.map(tableData => {
-            const [contextTerm] = Object.keys(tableData);
+            const [contextTerm] = Object.keys(tableData!);
             return (
               <div key={contextTerm} className="mt-4">
                 <RenderIfVisible>
-                  <Table columns={columns} data={tableData[contextTerm]} title={contextTerm} />
+                  <Table columns={columns} data={tableData![contextTerm]} title={contextTerm} />
                 </RenderIfVisible>
               </div>
             );
