@@ -120,7 +120,7 @@ const fixtures: DBFixture = {
   ],
 };
 
-const disableFeatures = () =>
+const disableFeatures = async () =>
   testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
 
 beforeAll(() => {
