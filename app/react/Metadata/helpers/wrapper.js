@@ -51,10 +51,11 @@ function wrapEntityMetadata(entity) {
     );
 
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-    const [, fileLocalID, , , timeLinks] = entity.metadata[key].match(
-      /((\w+){10,20})($|, ({.+}))/
-    ) || ['', entity.metadata[key]];
-    if (timeLinks) {
+    const [, fileLocalID, timeLinks] = entity.metadata[key].match(/([\w+]{10,20}), ({.+})/) || [
+      '',
+      entity.metadata[key],
+    ];
+    if (fileLocalID && timeLinks) {
       newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
     }
     const newFileMetadataValue = newFileMetadataValues[fileLocalID];
