@@ -135,7 +135,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     updateParentForm();
   };
 
-  const renderNewTimeLinkForm = (url: string) => (
+  const renderNewTimeLinkForm = () => (
     <div className="new-timelink">
       <div className="timestamp">
         <input
@@ -184,7 +184,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         type="button"
         className="new-timestamp-btn"
         onClick={() => {
-          appendTimelinkAndUpdateParent(url);
+          appendTimelinkAndUpdateParent(newTimeline);
           setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
         }}
       >
@@ -193,11 +193,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     </div>
   );
 
-  const renderSingleTimeLinkInputs = (
-    field: FieldArrayWithId<TimeLink>,
-    url: string,
-    index: number
-  ) => (
+  const renderSingleTimeLinkInputs = (field: FieldArrayWithId<TimeLink>, index: number) => (
     <div className="new-timelink" key={index}>
       <div className="timestamp">
         <input
@@ -253,12 +249,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     </div>
   );
 
-  const renderTimeLinksForm = (url: string) => (
+  const renderTimeLinksForm = () => (
     <>
       {fields.map((field: FieldArrayWithId<TimeLink>, index: number) =>
-        renderSingleTimeLinkInputs(field, url, index)
+        renderSingleTimeLinkInputs(field, index)
       )}
-      {renderNewTimeLinkForm(url)}
+      {renderNewTimeLinkForm()}
     </>
   );
 
@@ -324,7 +320,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
                 timeSeconds: seconds < 10 ? `0${seconds.toString()}` : seconds.toString(),
                 label: '',
               };
-              appendTimelinkAndUpdateParent(config.url, timelink);
+              appendTimelinkAndUpdateParent(timelink);
             }}
           >
             <Translate>Add timelink</Translate>
@@ -332,7 +328,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           <h5>
             <Translate>Timelinks</Translate>
           </h5>
-          {renderTimeLinksForm(config.url)}
+          {renderTimeLinksForm()}
         </div>
       )}
       <p className="print-view-alt">{config.url}</p>

@@ -76,16 +76,16 @@ const MediaField = (props: MediaFieldProps) => {
         timelink.label;
       return current;
     }, {});
-    const [, fileLocalID] = file.originalValue.match(/((\w+){10,20})($|, ({.+}))/) || [
-      '',
-      file.originalValue,
-    ];
+    const [, fileLocalID] = file.originalValue.match(
+      /([\w+]{10,20}|'{0,1}\/api\/files\/\w+\.\w+'{0,1}), ({.+})/
+    ) || ['', file.originalValue];
     return `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`;
   };
 
-  const updateTimeLinks = timelinks => {
+  const updateTimeLinks = (timelinks: TimeLink[]) => {
     onChange(constructTimelinksString(timelinks));
   };
+
   useEffect(
     () => () => {
       if (file.supportingFile?.serializedFile && file.fileURL) {
