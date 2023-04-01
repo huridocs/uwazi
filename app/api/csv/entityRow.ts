@@ -35,6 +35,8 @@ const extractEntity = (
   row: CSVRow,
   availableLanguages: Languages,
   currentLanguage: string,
+  defaultLanguage: string,
+  propNameToThesauriId: Record<string, string>,
   newNameGeneration: boolean = false
 ) => {
   const safeNamed = toSafeName(row, newNameGeneration);
@@ -52,7 +54,10 @@ const extractEntity = (
         .filter(key => key.match(new RegExp(`__${languageCode}$`)))
         .reduce<RawEntity>(
           (entity, key) => {
-            entity[key.split(`__${languageCode}`)[0]] = safeNamed[key]; //eslint-disable-line no-param-reassign
+            const propName = key.split(`__${languageCode}`)[0];
+            const selectedKey =
+              propName in propNameToThesauriId ? `${propName}__${defaultLanguage}` : key;
+            entity[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
             return entity;
           },
           { ...baseEntity, language: languageCode }
@@ -65,4 +70,4 @@ const extractEntity = (
   };
 };
 
-export { extractEntity, toSafeName };
+export { extractEntity, toSafeName, notTranslated };
