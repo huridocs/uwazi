@@ -32,8 +32,8 @@ const getPropertyOfSelector = async (
 ) =>
   element
     ?.$(selector)
-    .then(input => input?.getProperty(property))
-    .then(input => input?.jsonValue<string>());
+    .then(async input => input?.getProperty(property))
+    .then(async input => input?.jsonValue<string>());
 
 const getPropertiesOfSubelements = async (
   element: ElementHandle | Page,
