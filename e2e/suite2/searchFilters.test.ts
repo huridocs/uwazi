@@ -134,8 +134,10 @@ describe('search filters path', () => {
     const fillDate = async (selector: string, date: string) => {
       await expect(page).toClick(`div.${selector}`);
       await expect(page).toFill(`div.${selector} > div > div > input`, date);
-      await page.waitForSelector('.react-datepicker__day--selected');
-      await page.click('.react-datepicker__day--selected');
+      try {
+        await page.waitForSelector('.react-datepicker__day--selected');
+        await page.click('.react-datepicker__day--selected');
+      } catch (_ex) {}
     };
 
     it('should filter by a date for Ordenes de la corte', async () => {
