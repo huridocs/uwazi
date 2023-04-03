@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Translate } from 'app/I18N';
 
 interface NotificationProps {
   type: 'sucess' | 'info' | 'error';
@@ -156,7 +157,7 @@ const Notification = ({
           aria-label="Close"
           onClick={dismissAction}
         >
-          Dismiss
+          <Translate>Dismiss</Translate>
         </button>
         {details && (
           <button
@@ -166,7 +167,7 @@ const Notification = ({
             font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center`}
           >
             {viewMore ? viewMoreIcons.less : viewMoreIcons.more}
-            {viewMore ? <>View less</> : <>View more</>}
+            {viewMore ? <Translate>View less</Translate> : <Translate>View more</Translate>}
           </button>
         )}
       </div>
