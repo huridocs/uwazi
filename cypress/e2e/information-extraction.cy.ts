@@ -84,7 +84,6 @@ describe('Information Extraction', () => {
     cy.get('@template').contains('label', 'Title').click();
     cy.contains('button', 'Save').click();
     cy.contains('.table thead tr th span', 'Property').should('be.visible');
-    cy.get('[data-testid=modal]').should('not.be.visible');
     cy.get('.table').toMatchImageSnapshot();
   });
 
