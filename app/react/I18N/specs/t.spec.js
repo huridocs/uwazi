@@ -45,7 +45,6 @@ describe('t', () => {
     };
 
     spyOn(store, 'getState').and.returnValue(state);
-    spyOn(I18NApi, 'addEntry');
   });
 
   it('should return the translation', () => {

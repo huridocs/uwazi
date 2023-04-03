@@ -198,28 +198,6 @@ describe('translations', () => {
     }
   });
 
-  describe('addEntry()', () => {
-    it('should add the new key to each dictionary in the given context', async () => {
-      const result = await translations.addEntry('System', 'Key', 'default');
-
-      expect(result).toBe('ok');
-
-      const translated = await translations.get();
-
-      expect(translated[0].contexts?.[0].values.Key).toBe('default');
-      expect(translated[1].contexts?.[0].values.Key).toBe('default');
-    });
-
-    it('should not allow adding existing keys', async () => {
-      try {
-        await translations.addEntry('System', 'Password', 'password_again');
-        fail('Should throw error.');
-      } catch (error) {
-        expect(error.message).toContain('Process is trying to save repeated translation key');
-      }
-    });
-  });
-
   describe('updateEntries', () => {
     it('should update the entries', async () => {
       await translations.updateEntries('System', {
