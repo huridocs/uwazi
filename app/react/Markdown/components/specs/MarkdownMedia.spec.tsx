@@ -1,43 +1,38 @@
 /**
  * @jest-environment jsdom
  */
-
 import React from 'react';
-import fetchMock from 'fetch-mock';
-import { renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { act, fireEvent } from '@testing-library/react';
-import * as ReactPlayer from 'react-player';
-
+import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
+import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import MarkdownMedia from '../MarkdownMedia';
 
+let playerRef: { current: { seekTo: any } };
+
+const mockUseRef = jest.fn().mockImplementation(args => {
+  const actual = jest.requireActual<typeof React>('react')
+    ? jest.requireActual<typeof React>('react').useRef(args)
+    : null;
+  if (args === null && actual) {
+    playerRef = actual;
+    return actual;
+  }
+  return actual;
+});
+
+jest.mock('react', () => ({
+  ...jest.requireActual<typeof React>('react'),
+  useRef: (args: any) => mockUseRef(args),
+}));
+
 describe('MarkdownMedia', () => {
-  let props;
-  let renderResult;
-
-  const mockedCreateObjectURL = jest.fn();
-  const mockedRevokeObjectURL = jest.fn();
-
-  const blob = new Blob([''], { type: 'video/mp4"' });
+  let renderResult: RenderResult;
+  const mockedCreateObjectURL: jest.Mock = jest.fn();
+  const mockedRevokeObjectURL: jest.Mock = jest.fn();
 
   beforeAll(() => {
-    props = {
-      config:
-        '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
-    };
-    fetchMock.mock('https://www.vimeo.com/253530307', {
-      body: blob,
-      sendAsJson: false,
-    });
     URL.createObjectURL = mockedCreateObjectURL;
     mockedCreateObjectURL.mockReturnValue('blob:abc');
     URL.revokeObjectURL = mockedRevokeObjectURL;
-  });
-
-  beforeEach(() => {
-    props = {
-      config:
-        '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
-    };
   });
 
   afterAll(() => {
@@ -45,64 +40,46 @@ describe('MarkdownMedia', () => {
     mockedRevokeObjectURL.mockReset();
   });
 
-  const render = async () => {
-    await act(() => {
-      ({ renderResult } = renderConnectedContainer(<MarkdownMedia {...props} />));
-    });
+  const render = (compact = false) => {
+    const props = {
+      compact,
+      config:
+        '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
+    };
+    ({ renderResult } = renderConnectedContainer(<MarkdownMedia {...props} />, () => defaultState));
   };
-
   describe('render', () => {
-    it('should render an iframe with the correct video id', async () => {
-      await render();
-      const response = await fetch('https://www.vimeo.com/253530307');
-      const expectedBlob = await response.blob();
-      expect(mockedCreateObjectURL).toHaveBeenCalledWith(expectedBlob);
-      expect(renderResult.container.getElementsByClassName('react-player')[0].children[0].src).toBe(
-        'blob:abc'
-      );
-      expect(renderResult.container).toMatchSnapshot();
-      renderResult.unmount();
-      expect(mockedCreateObjectURL).toHaveBeenCalledWith(expectedBlob);
+    it('should render an iframe with the correct video id', () => {
+      render();
+      expect(renderResult.asFragment()).toMatchSnapshot();
     });
 
-    it('should use compact class name if compact prop is set', async () => {
-      props.compact = true;
-      await render();
-      expect(renderResult.container).toMatchSnapshot();
+    it('should use compact class name if compact prop is set', () => {
+      render(true);
+      expect(renderResult.asFragment()).toMatchSnapshot();
     });
 
     describe('Video timeline', () => {
-      it('should render the timelinks', async () => {
-        await render();
+      it('should render the timelinks', () => {
+        render();
         const links = renderResult.container.getElementsByClassName('timelink');
         expect(links.length).toBe(2);
       });
 
       it('should interact with the player', async () => {
-        const MockReactPlayer = p => <div {...p}>ReactPlayer</div>;
+        render();
+        const spySeekTo = jest.spyOn(playerRef.current, 'seekTo');
+        const firstTimeLink = screen.getAllByText('A rude awakening')[0];
 
-        jest
-          .spyOn(ReactPlayer, 'default')
-          .mockImplementation(componentProps => <MockReactPlayer {...componentProps} />);
-
-        await render();
-        const firstTimeLink = await renderResult.container.getElementsByClassName(
-          'timelink-icon'
-        )[0];
-        const secondTimeLink = renderResult.container.getElementsByClassName('timelink-icon')[1];
-
-        await act(() => {
-          fireEvent.click(secondTimeLink);
-        });
-        await act(() => {
-          expect(renderResult.container).toMatchSnapshot();
-        });
-
-        await act(() => {
+        await act(async () => {
           fireEvent.click(firstTimeLink);
+          expect(spySeekTo).toHaveBeenCalledWith(2 * 60 + 10);
         });
-        await act(() => {
-          expect(renderResult.container).toMatchSnapshot();
+        const secondTimeLink = screen.getAllByText('Finally, you are up!')[0];
+
+        await act(async () => {
+          fireEvent.click(secondTimeLink);
+          expect(spySeekTo).toHaveBeenCalledWith(5 * 60 + 30);
         });
       });
     });

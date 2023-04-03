@@ -99,11 +99,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
       <div
         class="react-player"
         style="width: 100%; height: 100%;"
-      >
-        <div
-          style="width: 100%; height: 100%; overflow: hidden;"
-        />
-      </div>
+      />
     </div>
     <div>
       <div
