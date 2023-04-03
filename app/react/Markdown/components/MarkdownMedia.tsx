@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
@@ -53,7 +53,7 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
-  const playerRef = useRef<ReactPlayer>(null);
+  const playerRef: Ref<ReactPlayer> | undefined = useRef(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '00',
@@ -300,7 +300,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           onPlay={() => {
             setVideoPlaying(true);
           }}
-          playingindex={playingTimelinkIndex}
         />
       </div>
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
