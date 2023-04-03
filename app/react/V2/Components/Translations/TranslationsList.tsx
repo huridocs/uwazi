@@ -81,14 +81,14 @@ const TranslationsList = () => {
           <Table
             columns={columns}
             data={contexts.systemContexts}
-            title={<Translate>System</Translate>}
+            title={<Translate>System translations</Translate>}
           />
         </div>
         <div className="mt-4" data-testid="content">
           <Table
             columns={columns}
             data={contexts.contentContexts}
-            title={<Translate>Content</Translate>}
+            title={<Translate>Content translations</Translate>}
           />
         </div>
       </div>

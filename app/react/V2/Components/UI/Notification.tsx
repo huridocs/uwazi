@@ -133,7 +133,6 @@ const Notification = ({
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}
-          <span className="sr-only">Info</span>
           <h3 className="text-lg font-medium ml-2">{heading}</h3>
         </div>
       )}

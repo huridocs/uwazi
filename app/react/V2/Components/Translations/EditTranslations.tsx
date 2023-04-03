@@ -201,7 +201,7 @@ const submitFunction = async (
     try {
       const response = await translationsAPI.post(values, contextId);
       setters.setTranslationsState(response);
-      setters.setNotifications({ type: 'sucess', text: <Translate>Translations Saved</Translate> });
+      setters.setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
     } catch (e) {
       setters.setNotifications({
         type: 'error',
@@ -229,7 +229,7 @@ const onFileImported = async (
       setters.setTranslationsState(response);
       setters.setNotifications({
         type: 'sucess',
-        text: <Translate>Translations Imported</Translate>,
+        text: <Translate>Translations imported.</Translate>,
       });
     } catch (e) {
       setters.setNotifications({
@@ -309,7 +309,7 @@ const EditTranslations = () => {
         <div className="pb-4">
           <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
             <div className="text-gray-700 ml-2 text-sm">
-              <Translate>Show untranslated terms only</Translate>
+              <Translate>Untranslated Terms</Translate>
             </div>
           </ToggleButton>
         </div>
