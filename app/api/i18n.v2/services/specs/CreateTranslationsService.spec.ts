@@ -53,8 +53,8 @@ const createTranslationsThroughService = async () => {
   ]);
 };
 
-describe('create()', () => {
-  describe('When the input is correct', () => {
+describe('CreateTranslationsService', () => {
+  describe('create()', () => {
     it('should persist new translations', async () => {
       await createTranslationsThroughService();
 
@@ -92,6 +92,106 @@ describe('create()', () => {
           language: 'en',
           key: 'key',
           value: 'value',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+      ]);
+    });
+  });
+
+  describe('upsert()', () => {
+    it('should persist new translations and update existing ones', async () => {
+      await createTranslationsThroughService();
+      await createService().upsert([
+        {
+          language: 'en',
+          key: 'key',
+          value: 'updatedValue',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva',
+          value: 'valor nuevo',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva 2',
+          value: 'valor nuevo 2',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+      ]);
+
+      const translationsInDb = await collectionInDb().find({}).sort({ key: 1 }).toArray();
+
+      expect(translationsInDb).toMatchObject([
+        {
+          language: 'es',
+          key: 'clave',
+          value: 'valor',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva',
+          value: 'valor nuevo',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva 2',
+          value: 'valor nuevo 2',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'en',
+          key: 'key',
+          value: 'updatedValue',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+      ]);
+    });
+
+    it('should return persisted translations', async () => {
+      await createTranslationsThroughService();
+      const translations = await createService().upsert([
+        {
+          language: 'en',
+          key: 'key',
+          value: 'updatedValue',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva',
+          value: 'valor nuevo',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva 2',
+          value: 'valor nuevo 2',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+      ]);
+
+      expect(translations).toEqual([
+        {
+          language: 'en',
+          key: 'key',
+          value: 'updatedValue',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva',
+          value: 'valor nuevo',
+          context: { type: 'test', label: 'Test', id: 'test' },
+        },
+        {
+          language: 'es',
+          key: 'clave nueva 2',
+          value: 'valor nuevo 2',
           context: { type: 'test', label: 'Test', id: 'test' },
         },
       ]);
