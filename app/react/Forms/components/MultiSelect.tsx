@@ -346,12 +346,15 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { optionsValue, optionsLabel, prefix } = this.props;
     const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
     return (
-      <label className="multiselectItem-label" htmlFor={prefix + option[optionsValue]}>
+      <label
+        className="multiselectItem-label multiselectItem-option"
+        htmlFor={prefix + option[optionsValue]}
+        onClick={clickEvent}
+      >
         <span
           className={`multiselectItem-icon${
             !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
           }`}
-          onClick={clickEvent}
         >
           <Icon icon={['far', 'square']} className="checkbox-empty" />
           <Icon icon="check" className="checkbox-checked" />
