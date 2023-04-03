@@ -242,6 +242,16 @@ const onFileImported = async (
   }
 };
 
+const calculateTableData = (terms: string[], formData: formDataType, hideTranslated: boolean) =>
+  terms
+    .map((term, index) => {
+      let values = composeTableValues(formData, index);
+      if (hideTranslated) values = filterTableValues(values);
+      if (values.length === 1 && hideTranslated) return undefined;
+      return { [term]: values };
+    })
+    .filter(v => v);
+
 // eslint-disable-next-line max-statements
 const EditTranslations = () => {
   const { translations, settings } = useLoaderData() as {
@@ -277,18 +287,7 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  const tablesData = contextTerms
-    .map((contextTerm, termIndex) => {
-      let values = composeTableValues(formData, termIndex);
-      if (hideTranslated) {
-        values = filterTableValues(values);
-      }
-      if (values.length === 1 && hideTranslated) {
-        return undefined;
-      }
-      return { [contextTerm]: values };
-    })
-    .filter(v => v);
+  const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
 
   return (
     <div
