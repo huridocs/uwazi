@@ -5,5 +5,6 @@ export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
   upsert(translations: Translation[]): Promise<Translation[]>;
   deleteByContextId(contextId: string);
+  deleteByLanguage(language: string);
   getAll(): ResultSet<Translation>;
 }
