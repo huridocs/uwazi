@@ -1,7 +1,9 @@
 import React from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { mount } from '@cypress/react18';
-import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
+import { Provider } from 'react-redux';
+import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
+import { notificationAtom, notificationAtomType } from 'V2/atoms';
 import { NotificationsContainer } from '../NotificationsContainer';
 
 describe('Notifications container', () => {
@@ -19,12 +21,14 @@ describe('Notifications container', () => {
     };
 
     return (
-      <>
-        <NotificationsContainer />
-        <button type="button" id="send-notification" onClick={onClick}>
-          Send notification
-        </button>
-      </>
+      <Provider store={createStore()}>
+        <>
+          <NotificationsContainer />
+          <button type="button" id="send-notification" onClick={onClick}>
+            Send notification
+          </button>
+        </>
+      </Provider>
     );
   };
 
