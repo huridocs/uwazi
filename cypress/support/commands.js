@@ -85,6 +85,20 @@ Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, end
   })
 );
 
+Cypress.on('window:before:load', window => {
+  window.document.head.insertAdjacentHTML(
+    'beforeend',
+    `
+    <style>
+      /* Disable CSS transitions. */
+      *, *::before, *::after { -webkit-transition: none !important; -moz-transition: none !important; -o-transition: none !important; transition: none !important; }
+      /* Disable CSS animations. */
+      *, *::before, *::after { -webkit-animation: none !important; -moz-animation: none !important; -o-animation: none !important; animation: none !important; }
+    </style>
+  `
+  );
+});
+
 // // Low level command reused by `setCursorBefore` and `setCursorAfter`, equal to `setCursorAfter`
 // Cypress.Commands.add('setCursor', { prevSubject: true }, (subject, query, atStart) => {
 //   return cy.wrap(subject).selection($el => {
