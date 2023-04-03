@@ -31,6 +31,8 @@ import fixtures, {
 } from './fixtures/fixtures.js';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
+import { ObjectId } from 'mongodb';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 
 describe('templates', () => {
   const elasticIndex = 'templates_spec_index';
@@ -149,6 +151,64 @@ describe('templates', () => {
       emitSpy.expectToEmitEvent(TemplateUpdatedEvent, {
         before: previousTemplate[0],
         after: currentTemplate[0],
+      });
+    });
+
+    describe('relationships v2', () => {
+      beforeEach(async () => {
+        await db.mongodb
+          .collection('settings')
+          .updateOne({}, { $set: { features: { newRelationships: true } } });
+      });
+
+      afterAll(async () => {
+        await db.mongodb
+          .collection('settings')
+          .updateOne({}, { $set: { features: { newRelationships: false } } });
+      });
+
+      it('should validate the property and correctly map it to the database', async () => {
+        const newTemplate = {
+          name: 'template with new relationship',
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+          properties: [
+            {
+              type: 'newRelationship',
+              label: 'New Relationship',
+              query: [{ direction: 'out', types: [], match: [{ templates: [] }] }],
+            },
+            { type: 'text', label: 'Text1' },
+          ],
+        };
+        const template = await templates.save(newTemplate);
+        expect(template.properties[0]).toEqual({
+          _id: expect.any(ObjectId),
+          type: 'newRelationship',
+          label: 'New Relationship',
+          name: 'new_relationship',
+          query: [{ direction: 'out', types: [], match: [{ templates: [], traverse: [] }] }],
+        });
+        expect(template.properties[1].label).toBe('Text1');
+      });
+
+      it('should throw a validation error', async () => {
+        const newTemplate = {
+          name: 'template with invalid new relationship',
+          commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+          properties: [
+            {
+              type: 'newRelationship',
+              label: 'New Relationship',
+              query: [{}],
+            },
+          ],
+        };
+        try {
+          await templates.save(newTemplate);
+          throw new Error('should have thrown a validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(ValidationError);
+        }
       });
     });
 
