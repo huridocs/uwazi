@@ -363,12 +363,16 @@ export default {
 
     const [defaultTranslation] = await model.get({ locale: defaultLanguage.key });
 
-    return model.save({
+    const newLanguageTranslations = {
       ...defaultTranslation,
       _id: undefined,
       locale,
       contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
-    });
+    };
+
+    await createTranslationsV2(newLanguageTranslations);
+
+    return model.save(newLanguageTranslations);
   },
 
   async removeLanguage(locale: string) {

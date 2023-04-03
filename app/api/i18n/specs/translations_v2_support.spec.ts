@@ -11,7 +11,7 @@ const newTranslationsCollection = 'translations_v2';
 
 describe('translations v2 support', () => {
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext(fixtures);
+    await testingDB.setupFixturesAndContext({ ...fixtures, translations: [] });
     db = testingDB.mongodb as Db;
     testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
   });
@@ -122,6 +122,47 @@ describe('translations v2 support', () => {
           },
         ]);
       });
+    });
+  });
+
+  describe('addLanguage', () => {
+    it('should do nothing when the feature flag is off', async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+      await createTranslation();
+      await translations.addLanguage('ca');
+
+      const createdTranslations = await db
+        .collection(newTranslationsCollection)
+        .find({ language: 'ca' })
+        .toArray();
+
+      expect(createdTranslations).toEqual([]);
+    });
+
+    it('should duplicate translations from the default language to the new one', async () => {
+      await createTranslation();
+
+      await translations.addLanguage('ca');
+
+      const createdTranslations = await db
+        .collection(newTranslationsCollection)
+        .find({ language: 'ca' })
+        .toArray();
+
+      expect(createdTranslations).toMatchObject([
+        {
+          language: 'ca',
+          key: 'Key',
+          value: 'Value',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
+        },
+        {
+          language: 'ca',
+          key: 'Key2',
+          value: 'Value2',
+          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
+        },
+      ]);
     });
   });
 
