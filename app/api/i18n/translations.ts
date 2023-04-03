@@ -302,40 +302,6 @@ export default {
     return 'ok';
   },
 
-  async processSystemKeys(keys: { key: string; label?: string }[]) {
-    const languages = await model.get();
-    if (!languages.length) {
-      throw new Error('No translations found !!');
-    }
-
-    const systemContextValues =
-      (languages[0]?.contexts || []).find(c => c.label === 'System')?.values || [];
-    const allKeys = systemContextValues.map(v => v.key);
-
-    const existingKeys = new Set(allKeys);
-    const newKeys = new Set(keys.map(k => k.key));
-    const keysToAdd = keys
-      .filter(key => !existingKeys.has(key.key))
-      .map(key => ({ key: key.key, value: key.label || key.key }));
-
-    languages.forEach(language => {
-      if (!language.contexts) return;
-      let system = language.contexts.find(c => c.label === 'System');
-      if (!system) {
-        system = {
-          id: 'System',
-          label: 'System',
-          values: keys.map(k => ({ key: k.key, value: k.label || k.key })),
-        };
-        language.contexts.unshift(system);
-      }
-      const valuesWithRemovedValues = (system.values || []).filter(i => newKeys.has(i.key || ''));
-      system.values = valuesWithRemovedValues.concat(keysToAdd);
-    });
-
-    return model.saveMultiple(languages);
-  },
-
   async updateContext(
     id: string,
     newContextName: string | undefined,
