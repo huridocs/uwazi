@@ -105,4 +105,9 @@ export class MongoTemplatesDataSource
 
     return new MongoResultSet(cursor, template => propertyToApp(template.properties, template._id));
   }
+
+  getTemplatesHavingProperty(propertyName: string) {
+    const cursor = this.getCollection().find({ 'properties.name': propertyName });
+    return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
+  }
 }

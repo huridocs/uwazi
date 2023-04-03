@@ -6,4 +6,5 @@ export interface TemplatesDataSource {
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getAllProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
+  getTemplatesHavingProperty(propertyName: string): ResultSet<string>;
 }

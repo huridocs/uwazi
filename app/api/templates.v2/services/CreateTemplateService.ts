@@ -2,6 +2,7 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 
 interface MatchQuery {
@@ -32,19 +33,34 @@ const BuildQuery = {
 };
 
 export class CreateTemplateService {
-  private validateQuery(query: MatchQueryNode) {
+  private templatesDataSource: TemplatesDataSource;
+
+  constructor(templatesDataSource: TemplatesDataSource) {
+    this.templatesDataSource = templatesDataSource;
+  }
+
+  private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
+    if (!denormalizedProperty) {
+      return;
+    }
+
     const templatesInLeaves = query.getTemplatesInLeaves();
-    const uniqueTemplates = new Set(templatesInLeaves);
-    if (uniqueTemplates.size > 1) {
+    const uniqueTemplates = Array.from(new Set(templatesInLeaves));
+
+    const templatesHavingProperty = await this.templatesDataSource
+      .getTemplatesHavingProperty(denormalizedProperty)
+      .all();
+
+    if (!uniqueTemplates.every(template => templatesHavingProperty.includes(template))) {
       throw new ValidationError([
-        { path: '/query', message: 'all target entities must be of the same template' },
+        { path: '/query', message: 'all target entities have the property to denormalize' },
       ]);
     }
   }
 
-  createRelationshipProperty(property: RelationshipPropertyData) {
+  async createRelationshipProperty(property: RelationshipPropertyData) {
     const query = BuildQuery.build(property.query);
-    this.validateQuery(query);
+    await this.validateQuery(query, property.denormalizedProperty);
     return {
       ...property,
       query: QueryMapper.toDBO(query.getTraversals()),
