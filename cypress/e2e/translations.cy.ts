@@ -38,6 +38,8 @@ describe('Translations', () => {
     navigateToTranslationsPage();
     cy.contains('[data-testid=content] button', 'Translate').click();
     cy.get('form').should('be.visible');
+    cy.contains('caption', 'Fecha').should('be.visible');
+    cy.get('table').eq(0).should('be.visible');
     cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
       name: 'edit-translations',
     });
