@@ -53,6 +53,8 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
+  const playerRef = useRef<ReactPlayer>(null);
+
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '00',
     timeMinutes: '00',
@@ -63,7 +65,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
-  const playerRef = useRef<ReactPlayer>(null);
   const [mediaURL, setMediaURL] = useState('');
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
