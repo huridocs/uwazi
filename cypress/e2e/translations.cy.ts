@@ -46,6 +46,7 @@ describe('Translations', () => {
     cy.get('input[type=text]').eq(0).clear().type('Fecha edited');
     cy.contains('button', 'Save').click();
     cy.get('[data-testid=settings-translations]').scrollTo('top');
+    cy.get('[data-testid=table-element]').eq(0).get('input').should('have.length', 9);
     cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'edited-context' });
   });
 });
