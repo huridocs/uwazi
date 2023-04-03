@@ -6,6 +6,7 @@ import { FieldErrors, useForm, UseFormRegister, UseFormResetField } from 'react-
 import { ErrorMessage } from '@hookform/error-message';
 import { SetterOrUpdater, useSetRecoilState } from 'recoil';
 import RenderIfVisible from 'react-render-if-visible';
+import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
@@ -323,20 +324,29 @@ const EditTranslations = () => {
             })
           )}
         >
-          {tablesData.map(tableData => {
-            const [contextTerm] = Object.keys(tableData!);
-            return (
-              <div key={contextTerm} className="mt-4">
-                <RenderIfVisible>
-                  <Table
-                    columns={getColumns(register, resetField, errors, submitting)}
-                    data={tableData![contextTerm]}
-                    title={contextTerm}
-                  />
-                </RenderIfVisible>
-              </div>
-            );
-          })}
+          {tablesData.length ? (
+            tablesData.map(tableData => {
+              const [contextTerm] = Object.keys(tableData!);
+              return (
+                <div key={contextTerm} className="mt-4">
+                  <RenderIfVisible>
+                    <Table
+                      columns={getColumns(register, resetField, errors, submitting)}
+                      data={tableData![contextTerm]}
+                      title={contextTerm}
+                    />
+                  </RenderIfVisible>
+                </div>
+              );
+            })
+          ) : (
+            <div className="flex gap-2 items-center p-4 border rounded-md border-gray-50 bg-primary-50">
+              <InformationCircleIcon className="w-10 text-primary-800" />
+              <span className="text-primary-800">
+                <Translate>There are no untranslated terms</Translate>
+              </span>
+            </div>
+          )}
 
           <div className="absolute lg:sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
             <div className="pt-1 flex justify-end gap-2 p-2">
