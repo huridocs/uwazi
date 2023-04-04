@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 
 interface ButtonProps {
   children: string | React.ReactNode;
-  buttonStyle?: 'primary' | 'secondary' | 'tertiary';
+  buttonStyle?: 'primary' | 'secondary' | 'tertiary' | 'danger';
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
   disabled?: boolean;
-  onClick?: () => any;
+  onClick?: MouseEventHandler;
 }
 
 const Button = ({
@@ -30,7 +30,10 @@ const Button = ({
       classNames =
         'text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700';
       break;
-
+    case 'danger':
+      classNames =
+        'text-white bg-error-700 border-error-700 disabled:bg-error-300 disabled:border-error-300 enabled:hover:bg-error-800 enabled:hover:border-error-800';
+      break;
     default:
       classNames =
         'text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800';

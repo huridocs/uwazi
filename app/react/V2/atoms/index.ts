@@ -1,4 +1,5 @@
 import { notificationAtom, notificationAtomType } from './notificationAtom';
+import { modalAtom, showModalAtom, modalAtomType } from './modalAtom';
 
-export type { notificationAtomType };
-export { notificationAtom };
+export type { notificationAtomType, modalAtomType };
+export { notificationAtom, modalAtom, showModalAtom };

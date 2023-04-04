@@ -1,25 +1,28 @@
 /* eslint-disable max-lines */
 import React, { useMemo, useRef, useState } from 'react';
-import { Params, useLoaderData, LoaderFunction, Link } from 'react-router-dom';
+import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router-dom';
+import RenderIfVisible from 'react-render-if-visible';
+import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { FieldErrors, useForm, UseFormRegister, UseFormResetField } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { SetterOrUpdater, useSetRecoilState } from 'recoil';
-import RenderIfVisible from 'react-render-if-visible';
-import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
-import { Table } from 'V2/Components/UI/Table';
-import { Pill } from 'V2/Components/UI/Pill';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-import { Button } from 'V2/Components/UI/Button';
-import { ToggleButton } from 'V2/Components/UI/ToggleButton';
-import { InputField } from 'V2/Components/UI/InputField';
+import {
+  Table,
+  Pill,
+  InputField,
+  Button,
+  Modal,
+  NavigationHeader,
+  ToggleButton,
+} from 'V2/Components/UI';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom, notificationAtomType } from 'V2/atoms';
+import { notificationAtom, notificationAtomType, modalAtom, showModalAtom } from 'V2/atoms';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -263,6 +266,9 @@ const EditTranslations = () => {
   const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
+  const setModal = useSetRecoilState(modalAtom);
+  const setShowModal = useSetRecoilState(showModalAtom);
+  const navigate = useNavigate();
 
   const { contextTerms, contextLabel, contextId } = useMemo(
     () => getContextInfo(translationsState),
@@ -282,13 +288,48 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     resetField,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
   });
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
+
+  const cancel = () => {
+    if (isDirty) {
+      setModal({
+        size: 'md',
+        children: (
+          <>
+            <Modal.Header>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+                <Translate>Discard changes?</Translate>
+              </h3>
+              <Modal.CloseButton onClick={() => setShowModal(false)} />
+            </Modal.Header>
+            <Modal.Body>
+              <Translate>You have some unsaved changes, do you want to continue?</Translate>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                onClick={() => {
+                  setShowModal(false);
+                  navigate('/settings/translations');
+                }}
+              >
+                <Translate>Discard changes</Translate>
+              </Button>
+              <Button buttonStyle="tertiary" onClick={() => setShowModal(false)}>
+                <Translate>Cacel</Translate>
+              </Button>
+            </Modal.Footer>
+          </>
+        ),
+      });
+      setShowModal(true);
+    }
+  };
 
   return (
     <div
@@ -378,10 +419,14 @@ const EditTranslations = () => {
                   </>
                 )}
               </div>
-              <Button size="small" buttonStyle="tertiary" type="button" disabled={submitting}>
-                <Link to="/settings/translations">
-                  <Translate>Cancel</Translate>
-                </Link>
+              <Button
+                onClick={cancel}
+                size="small"
+                buttonStyle="tertiary"
+                type="button"
+                disabled={submitting}
+              >
+                <Translate>Cancel</Translate>
               </Button>
               <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
                 <Translate>Save</Translate>
