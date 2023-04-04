@@ -261,4 +261,93 @@ describe('translations v2 support', () => {
       ]);
     });
   });
+
+  describe('get', () => {
+    describe('when feature flag is off', () => {
+      it('should not migrate translations to new collection', async () => {
+        await testingDB.setupFixturesAndContext(fixtures);
+        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+
+        await translations.get();
+
+        const translationsMigrated = await db
+          .collection(newTranslationsCollection)
+          .find()
+          .toArray();
+
+        expect(translationsMigrated).toMatchObject([]);
+      });
+      it('should empty the new translations collection', async () => {
+        await testingDB.setupFixturesAndContext(fixtures);
+
+        await translations.get();
+        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+        await translations.get();
+
+        const translationsMigrated = await db
+          .collection(newTranslationsCollection)
+          .find()
+          .toArray();
+
+        expect(translationsMigrated).toMatchObject([]);
+      });
+    });
+    describe('when feature flag is on', () => {
+      it('should migrate current translations to the new collection', async () => {
+        await testingDB.setupFixturesAndContext(fixtures);
+
+        await translations.get();
+
+        const translationsMigrated = await db
+          .collection(newTranslationsCollection)
+          .find({ 'context.id': 'System', language: 'en' })
+          .toArray();
+
+        expect(translationsMigrated).toMatchObject([
+          {
+            language: 'en',
+            key: 'Password',
+            value: 'Password',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'Account',
+            value: 'Account',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'Email',
+            value: 'E-Mail',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'Age',
+            value: 'Age',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'Library',
+            value: 'Library',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+        ]);
+      });
+
+      it('should only migrate once', async () => {
+        await testingDB.setupFixturesAndContext(fixtures);
+
+        await Promise.all([translations.get(), translations.get()]);
+
+        const numberOfTranslationsMigrated = await db
+          .collection(newTranslationsCollection)
+          .countDocuments();
+
+        expect(numberOfTranslationsMigrated).toBe(18);
+      });
+    });
+  });
 });

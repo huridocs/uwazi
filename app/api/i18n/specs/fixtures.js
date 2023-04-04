@@ -17,6 +17,7 @@ export default {
           _id: db.id(),
           id: 'System',
           label: 'System',
+          type: 'Uwazi UI',
           values: [
             { key: 'Password', value: 'Password' },
             { key: 'Account', value: 'Account' },
