@@ -9,7 +9,14 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
       <div
         class="react-player"
         style="width: 100%; height: 360px;"
-      />
+      >
+        <video
+          controls=""
+          preload="auto"
+          src="blob:abc"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
     </div>
     <div>
       <div
@@ -99,7 +106,14 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
       <div
         class="react-player"
         style="width: 100%; height: 100%;"
-      />
+      >
+        <video
+          controls=""
+          preload="auto"
+          src="blob:abc"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
     </div>
     <div>
       <div
