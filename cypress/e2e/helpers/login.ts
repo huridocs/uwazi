@@ -5,4 +5,9 @@ const login = (username: string, password: string) => {
   cy.get('button[type="submit"').click();
 };
 
-export { login };
+const logout = () => {
+  cy.get('.only-desktop a[aria-label="Settings"]').click();
+  cy.contains('a', 'Logout').click();
+};
+
+export { login, logout };

@@ -50,7 +50,7 @@ describe('Information Extraction', () => {
   it('Should create an extractor', () => {
     navigateToMetadataExtractionPage();
     cy.contains('span', 'Create Extractor').click();
-    cy.get('[data-cy=modal]').as('newExtractorModal');
+    cy.get('[data-testid=modal]').as('newExtractorModal');
     cy.get('@newExtractorModal').get('input').type('Extractor 1');
     cy.get('@newExtractorModal').contains('li', 'Ordenes del presidente').as('firstTemplate');
     cy.get('@firstTemplate').find('label').click();
