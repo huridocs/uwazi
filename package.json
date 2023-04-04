@@ -165,7 +165,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "0.5.40",
     "mongodb": "5.1.0",
-    "mongoose": "7.0.0",
+    "mongoose": "7.0.3",
     "multer": "^1.4.5-lts.1",
     "node-uuid": "^1.4.7",
     "nodemailer": "^6.7.5",
