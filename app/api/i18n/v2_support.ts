@@ -6,6 +6,7 @@ import {
   CreateTranslationsService,
 } from 'api/i18n.v2/services/CreateTranslationsService';
 import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
+import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { tenants } from 'api/tenants';
 import { TranslationType } from 'shared/translationType';
 
@@ -43,7 +44,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
 
 export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
-    await new CreateTranslationsService(
+    await new UpsertTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).upsert(flattenTranslations(translation));

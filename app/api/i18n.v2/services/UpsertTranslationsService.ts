@@ -9,7 +9,7 @@ export interface CreateTranslationsData {
   context: { type: string; label: string; id: string };
 }
 
-export class CreateTranslationsService {
+export class UpsertTranslationsService {
   private translationsDS: TranslationsDataSource;
 
   private transactionManager: TransactionManager;
@@ -19,9 +19,9 @@ export class CreateTranslationsService {
     this.transactionManager = transactionManager;
   }
 
-  async create(translations: CreateTranslationsData[]) {
+  async upsert(translations: CreateTranslationsData[]) {
     return this.transactionManager.run(async () =>
-      this.translationsDS.insert(
+      this.translationsDS.upsert(
         translations.map(
           translation =>
             new Translation(
