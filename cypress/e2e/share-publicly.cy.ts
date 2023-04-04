@@ -1,4 +1,3 @@
-import { eq } from 'lodash';
 import { login, logout } from './helpers';
 
 const changeLanguage = () => {
@@ -125,9 +124,11 @@ describe('Share Publicly', () => {
 
   it('should show mixed access', () => {
     englishLoggedInUwazi();
-    // await goToAllEntities();
-    // await expect(page).toFill('input[name="library.search.searchTerm"]', 'test 2016');
-    // await expect(page).toClick('[aria-label="Search button"]');
+    cy.get('input[name="library.search.searchTerm"]').type('test 2016');
+    cy.get('[aria-label="Search button"]').click();
+    cy.get('.item-document').should('have.length', 3);
+    cy.contains('button', 'Select all').click();
+    cy.contains('button', 'Share').click();
     // await expectDocumentCountAfterSearch(page, 3);
     // await expect(page).toClick('button', { text: 'Select all' });
     // await expect(page).toClick('.is-active .share-btn', {
