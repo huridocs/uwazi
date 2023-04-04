@@ -3,6 +3,8 @@
  */
 import React from 'react';
 import { RenderResult, fireEvent, screen, act } from '@testing-library/react';
+import fetchMock from 'fetch-mock';
+
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import MarkdownMedia from '../MarkdownMedia';
 
@@ -33,6 +35,7 @@ describe('MarkdownMedia', () => {
     URL.createObjectURL = mockedCreateObjectURL;
     mockedCreateObjectURL.mockReturnValue('blob:abc');
     URL.revokeObjectURL = mockedRevokeObjectURL;
+    fetchMock.mock('https://www.vimeo.com/253530307', {}, { overwriteRoutes: true });
   });
 
   afterAll(() => {
@@ -40,34 +43,41 @@ describe('MarkdownMedia', () => {
     mockedRevokeObjectURL.mockReset();
   });
 
-  const render = (compact = false) => {
+  const render = async (compact = false) => {
     const props = {
       compact,
       config:
         '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
     };
-    ({ renderResult } = renderConnectedContainer(<MarkdownMedia {...props} />, () => defaultState));
+    await act(() => {
+      ({ renderResult } = renderConnectedContainer(
+        <MarkdownMedia {...props} />,
+        () => defaultState
+      ));
+    });
+    expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
   };
+
   describe('render', () => {
-    it('should render an iframe with the correct video id', () => {
-      render();
+    it('should render an iframe with the correct video id', async () => {
+      await render();
       expect(renderResult.asFragment()).toMatchSnapshot();
     });
 
-    it('should use compact class name if compact prop is set', () => {
-      render(true);
+    it('should use compact class name if compact prop is set', async () => {
+      await render(true);
       expect(renderResult.asFragment()).toMatchSnapshot();
     });
 
     describe('Video timeline', () => {
-      it('should render the timelinks', () => {
-        render();
+      it('should render the timelinks', async () => {
+        await render();
         const links = renderResult.container.getElementsByClassName('timelink');
         expect(links.length).toBe(2);
       });
 
       it('should interact with the player', async () => {
-        render();
+        await render();
         const spySeekTo = jest.spyOn(playerRef.current, 'seekTo');
         const firstTimeLink = screen.getAllByText('A rude awakening')[0];
 
