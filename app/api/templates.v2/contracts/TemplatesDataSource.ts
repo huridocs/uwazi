@@ -3,8 +3,9 @@ import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 
 export interface TemplatesDataSource {
+  getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getAllProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
-  getTemplatesHavingProperty(propertyName: string): ResultSet<string>;
+  getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
 }

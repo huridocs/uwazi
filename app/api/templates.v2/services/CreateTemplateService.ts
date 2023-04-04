@@ -32,6 +32,10 @@ const BuildQuery = {
     new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
 };
 
+const expandAllTemplates =
+  (allTemplatesIds: string[]) => (record: { path: number[]; templates: string[] }) =>
+    record.templates.includes('ALL') ? { ...record, templates: allTemplatesIds } : record;
+
 export class CreateTemplateService {
   private templatesDataSource: TemplatesDataSource;
 
@@ -44,17 +48,25 @@ export class CreateTemplateService {
       return;
     }
 
-    const templatesInLeaves = query.getTemplatesInLeaves();
-    const uniqueTemplates = Array.from(new Set(templatesInLeaves));
+    const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
+    const templatesInLeaves = query.getTemplatesInLeaves().map(expandAllTemplates(allTemplatesIds));
 
     const templatesHavingProperty = await this.templatesDataSource
-      .getTemplatesHavingProperty(denormalizedProperty)
+      .getTemplatesIdsHavingProperty(denormalizedProperty)
       .all();
 
-    if (!uniqueTemplates.every(template => templatesHavingProperty.includes(template))) {
-      throw new ValidationError([
-        { path: '/query', message: 'all target entities have the property to denormalize' },
-      ]);
+    const errors: ValidationError['errors'] = [];
+    templatesInLeaves.forEach(record => {
+      if (!record.templates.every(template => templatesHavingProperty.includes(template))) {
+        errors.push({
+          path: `/query/${record.path.join('/')}/templates`,
+          message: 'template does not have the required property',
+        });
+      }
+    });
+
+    if (errors.length) {
+      throw new ValidationError(errors);
     }
   }
 

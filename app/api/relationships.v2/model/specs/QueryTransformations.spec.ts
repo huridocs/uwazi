@@ -404,6 +404,10 @@ describe('when getting the templates matched by the leaf nodes', () => {
 
     const templates = query.getTemplatesInLeaves();
 
-    expect(templates).toEqual(['template1', 'template2', 'ALL', 'template2']);
+    expect(templates).toEqual([
+      { path: [0, 0, 0, 0], templates: ['template1', 'template2'] },
+      { path: [0, 0, 1, 0], templates: ['ALL'] },
+      { path: [1, 0], templates: ['template2'] },
+    ]);
   });
 });

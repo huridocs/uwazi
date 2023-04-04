@@ -143,12 +143,17 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
-  getTemplatesInLeaves(): (string | 'ALL')[] {
+  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {
     if (!this.traversals?.length) {
-      return this.filters.templates?.length ? this.filters.templates : ['ALL'];
+      return [
+        {
+          path,
+          templates: this.filters.templates?.length ? this.filters.templates : ['ALL'],
+        },
+      ];
     }
 
-    return this.traversals.map(t => t.getTemplatesInLeaves()).flat();
+    return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
   }
 
   static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {

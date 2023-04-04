@@ -189,8 +189,8 @@ export class TraversalQueryNode extends QueryNode {
     return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
   }
 
-  getTemplatesInLeaves(): string[] {
-    return this.matches.map(m => m.getTemplatesInLeaves()).flat();
+  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {
+    return this.matches.map((m, index) => m.getTemplatesInLeaves([...path, index])).flat();
   }
 
   static forRelationship(

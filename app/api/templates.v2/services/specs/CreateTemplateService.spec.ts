@@ -10,9 +10,18 @@ const fixturesFactory = getFixturesFactory();
 
 const fixtures = {
   templates: [
-    fixturesFactory.template('template1', [fixturesFactory.property('text1', 'text')]),
-    fixturesFactory.template('template2', [fixturesFactory.property('text1', 'text')]),
-    fixturesFactory.template('template3', [fixturesFactory.property('number1', 'numeric')]),
+    fixturesFactory.template('template1', [
+      fixturesFactory.property('text1', 'text'),
+      fixturesFactory.property('text2', 'text'),
+    ]),
+    fixturesFactory.template('template2', [
+      fixturesFactory.property('text1', 'text'),
+      fixturesFactory.property('text2', 'text'),
+    ]),
+    fixturesFactory.template('template3', [
+      fixturesFactory.property('number1', 'numeric'),
+      fixturesFactory.property('text2', 'text'),
+    ]),
   ],
 };
 
@@ -63,6 +72,9 @@ describe('when validating the query', () => {
       });
     } catch (e) {
       expect(e).toBeInstanceOf(ValidationError);
+      if (e instanceof ValidationError) {
+        expect(e.errors[0].path).toBe('/query/1/0/templates');
+      }
     }
   });
 
@@ -96,5 +108,24 @@ describe('when validating the query', () => {
     });
   });
 
-  it.todo('should consider filters matching all templates');
+  it('should consider filters matching all templates', async () => {
+    const service = setUpService();
+    await service.createRelationshipProperty({
+      name: 'new_relationship',
+      type: 'newRelationship',
+      label: 'new relationshp',
+      query: [
+        {
+          direction: 'out',
+          types: [],
+          match: [
+            {
+              templates: [],
+            },
+          ],
+        },
+      ],
+      denormalizedProperty: 'text2',
+    });
+  });
 });

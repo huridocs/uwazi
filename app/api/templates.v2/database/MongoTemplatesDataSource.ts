@@ -106,8 +106,16 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(cursor, template => propertyToApp(template.properties, template._id));
   }
 
-  getTemplatesHavingProperty(propertyName: string) {
-    const cursor = this.getCollection().find({ 'properties.name': propertyName });
+  getTemplatesIdsHavingProperty(propertyName: string) {
+    const cursor = this.getCollection().find(
+      { 'properties.name': propertyName },
+      { projection: { _id: 1 } }
+    );
+    return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
+  }
+
+  getAllTemplatesIds() {
+    const cursor = this.getCollection().find({}, { projection: { _id: 1 } });
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 }
