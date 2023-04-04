@@ -51,13 +51,13 @@ export class CreateTemplateService {
     const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
     const templatesInLeaves = query.getTemplatesInLeaves().map(expandAllTemplates(allTemplatesIds));
 
-    const templatesHavingProperty = await this.templatesDataSource
-      .getTemplatesIdsHavingProperty(denormalizedProperty)
-      .all();
+    const templatesHavingProperty = new Set(
+      await this.templatesDataSource.getTemplatesIdsHavingProperty(denormalizedProperty).all()
+    );
 
     const errors: ValidationError['errors'] = [];
     templatesInLeaves.forEach(record => {
-      if (!record.templates.every(template => templatesHavingProperty.includes(template))) {
+      if (!record.templates.every(template => templatesHavingProperty.has(template))) {
         errors.push({
           path: `/query/${record.path.join('/')}/templates`,
           message: 'template does not have the required property',
