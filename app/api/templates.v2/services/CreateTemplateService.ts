@@ -34,7 +34,7 @@ const BuildQuery = {
 
 const expandAllTemplates =
   (allTemplatesIds: string[]) => (record: { path: number[]; templates: string[] }) =>
-    record.templates.includes('ALL') ? { ...record, templates: allTemplatesIds } : record;
+    record.templates.length ? record : { ...record, templates: allTemplatesIds };
 
 export class CreateTemplateService {
   private templatesDataSource: TemplatesDataSource;

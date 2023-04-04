@@ -27,7 +27,10 @@ export class MatchQueryNode extends QueryNode {
   constructor(filters?: MatchFilters, traversals?: TraversalQueryNode[]) {
     super();
     this.filters = filters || {};
-    traversals?.forEach(t => this.addTraversal(t));
+    traversals?.forEach(t => {
+      this.traversals.push(t);
+      t.setParent(this);
+    });
   }
 
   protected getChildrenNodes(): QueryNode[] {
@@ -36,11 +39,6 @@ export class MatchQueryNode extends QueryNode {
 
   getFilters() {
     return { ...this.filters };
-  }
-
-  addTraversal(traversal: TraversalQueryNode) {
-    this.traversals.push(traversal);
-    traversal.setParent(this);
   }
 
   getTraversals() {
@@ -143,12 +141,12 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
-  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {
+  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: string[] }[] {
     if (!this.traversals?.length) {
       return [
         {
           path,
-          templates: this.filters.templates?.length ? this.filters.templates : ['ALL'],
+          templates: this.filters.templates || [],
         },
       ];
     }
