@@ -1,8 +1,10 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { LEGACY_createStore as createStore } from 'app/V2/shared/testingHelpers';
 
 const NavigationHeaderStory = {
   title: 'Components/NavigationHeader',
@@ -17,9 +19,11 @@ const NavigationHeaderStory = {
 
 const Template: ComponentStory<typeof NavigationHeader> = args => (
   <MemoryRouter>
-    <div className="tw-content">
-      <NavigationHeader backUrl={args.backUrl}>{args.children}</NavigationHeader>
-    </div>
+    <Provider store={createStore()}>
+      <div className="tw-content">
+        <NavigationHeader backUrl={args.backUrl}>{args.children}</NavigationHeader>
+      </div>
+    </Provider>
   </MemoryRouter>
 );
 
@@ -27,11 +31,11 @@ const Basic = Template.bind({});
 const WithLink = Template.bind({});
 
 Basic.args = {
-  children: <span>Page title</span>,
+  children: 'Page title',
 };
 
 WithLink.args = {
-  children: <span>Page title</span>,
+  children: 'Page title',
   backUrl: '/backUrl',
 };
 
