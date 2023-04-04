@@ -1,4 +1,4 @@
-import { login, logout } from './helpers';
+import { login, refreshIndex } from './helpers';
 
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
@@ -56,6 +56,7 @@ describe('Share Publicly', () => {
     cy.get('[data-testid=modal] input').type('colla');
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
     cy.get('div[data-testid=modal] select').eq(2).select('write');
+    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     cy.contains('button', 'Save changes').click();
   });
 
@@ -67,6 +68,7 @@ describe('Share Publicly', () => {
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
     cy.get('div[data-testid=modal] select').eq(1).select('delete');
+    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     cy.contains('button', 'Save changes').click();
   });
 
@@ -82,7 +84,7 @@ describe('Share Publicly', () => {
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
       cy.get('ul[role=listbox]').contains('span', 'Public').click();
-
+      cy.get('div[data-testid=modal]').toMatchImageSnapshot();
       cy.contains('button', 'Save changes').click();
     });
 
@@ -94,59 +96,54 @@ describe('Share Publicly', () => {
   });
 
   describe('as a collaborator', () => {
-    beforeEach(() => {
-      englishLoggedInUwazi('colla', 'borator');
-    });
-
     it('should not be able to unshare entities publicly', () => {
+      englishLoggedInUwazi('colla', 'borator');
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('div[data-testid=modal] select').eq(1).should('not.exist');
+      cy.get('div[data-testid=modal]').toMatchImageSnapshot();
       cy.contains('button', 'Close').click();
       cy.get('aside button[aria-label="Close side panel"]').eq(1).click();
     });
 
     it('should create an entity', () => {
+      englishLoggedInUwazi('colla', 'borator');
       cy.contains('button', 'Create entity').click();
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('div.alert', 'Entity created').click();
+      cy.get('main').toMatchImageSnapshot();
     });
 
     it('should not be able to share the entity', () => {
+      englishLoggedInUwazi('colla', 'borator');
       // TODO: Should select restricted entities better
       cy.get('aside').contains('span', 'Published').click();
       cy.contains('h2', 'Test title').click();
       cy.contains('button', 'Share').click();
       cy.get('div[data-testid=modal] select').should('have.length', 2);
+      cy.get('div[data-testid=modal]').toMatchImageSnapshot();
+    });
+
+    it('should show mixed access', () => {
+      englishLoggedInUwazi();
+      cy.get('input[name="library.search.searchTerm"]').type('test 2016');
+      cy.get('[aria-label="Search button"]').click();
+      cy.get('.item-document').should('have.length', 3);
+      cy.contains('button', 'Select all').click();
+      cy.get('aside').should('be.visible');
+      cy.contains('button', 'Share').click();
+      cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     });
   });
 
-  it('should show mixed access', () => {
-    englishLoggedInUwazi();
-    cy.get('input[name="library.search.searchTerm"]').type('test 2016');
-    cy.get('[aria-label="Search button"]').click();
-    cy.get('.item-document').should('have.length', 3);
-    cy.contains('button', 'Select all').click();
-    cy.contains('button', 'Share').click();
-    // await expectDocumentCountAfterSearch(page, 3);
-    // await expect(page).toClick('button', { text: 'Select all' });
-    // await expect(page).toClick('.is-active .share-btn', {
-    //   text: 'Share',
-    // });
-    // await page.waitForSelector('.members-list tr:nth-child(2)');
-    // await expect(page).toMatchElement('.members-list tr:nth-child(2) select', {
-    //   text: 'Mixed access',
-    // });
-  });
-
-  it('should keep publishing status if mixed access selected', () => {
-    englishLoggedInUwazi();
-    // await expect(page).toSelect('.member-list-wrapper  tr:nth-child(3) select', 'Can see');
-    // await expect(page).toClick('button', { text: 'Save changes' });
-    // await refreshIndex();
-    // await page.reload();
-    // await expectDocumentCountAfterSearch(page, 3);
-    // expect(await countPrivateEntities()).toBe(1);
-  });
+  // it('should keep publishing status if mixed access selected', () => {
+  //   englishLoggedInUwazi();
+  //   // await expect(page).toSelect('.member-list-wrapper  tr:nth-child(3) select', 'Can see');
+  //   // await expect(page).toClick('button', { text: 'Save changes' });
+  //   // await refreshIndex();
+  //   // await page.reload();
+  //   // await expectDocumentCountAfterSearch(page, 3);
+  //   // expect(await countPrivateEntities()).toBe(1);
+  // });
 });
