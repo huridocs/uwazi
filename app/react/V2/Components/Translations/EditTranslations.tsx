@@ -4,7 +4,7 @@ import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router
 import RenderIfVisible from 'react-render-if-visible';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
-import { FieldErrors, useForm, UseFormRegister, UseFormResetField } from 'react-hook-form';
+import { FieldErrors, useForm, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { SetterOrUpdater, useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
@@ -136,17 +136,17 @@ const inputField = (
   { cell }: any,
   {
     register,
-    resetField,
+    setValue,
     errors,
     submitting,
   }: {
     register: UseFormRegister<any>;
-    resetField: UseFormResetField<any>;
+    setValue: UseFormSetValue<any>;
     errors: FieldErrors<any>;
     submitting: boolean;
   }
 ) => {
-  const reset = () => resetField(cell.value, { defaultValue: '' });
+  const reset = () => setValue(cell.value, '', { shouldDirty: true });
   return (
     <div key={cell.value}>
       <InputField
@@ -172,7 +172,7 @@ const inputField = (
 
 const getColumns = (
   register: UseFormRegister<any>,
-  resetField: UseFormResetField<any>,
+  setValue: UseFormSetValue<any>,
   errors: FieldErrors<any>,
   submitting: boolean
 ) => [
@@ -182,7 +182,7 @@ const getColumns = (
     key: '3',
     Header: 'Current Value',
     accessor: 'fieldKey',
-    Cell: (data: any) => inputField(data, { register, resetField, errors, submitting }),
+    Cell: (data: any) => inputField(data, { register, setValue, errors, submitting }),
     disableSortBy: true,
     className: 'w-full',
   },
@@ -287,7 +287,7 @@ const EditTranslations = () => {
   const {
     register,
     handleSubmit,
-    resetField,
+    setValue,
     formState: { errors, isDirty },
   } = useForm({
     defaultValues: { formData },
@@ -327,8 +327,10 @@ const EditTranslations = () => {
           </>
         ),
       });
-      setShowModal(true);
+      return setShowModal(true);
     }
+
+    return navigate('/settings/translations');
   };
 
   return (
@@ -372,7 +374,7 @@ const EditTranslations = () => {
                 <div key={contextTerm} className="mt-4">
                   <RenderIfVisible>
                     <Table
-                      columns={getColumns(register, resetField, errors, submitting)}
+                      columns={getColumns(register, setValue, errors, submitting)}
                       data={tableData![contextTerm]}
                       title={contextTerm}
                     />
