@@ -4,8 +4,7 @@ import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router
 import RenderIfVisible from 'react-render-if-visible';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
-import { FieldErrors, useForm, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { ErrorMessage } from '@hookform/error-message';
+import { useForm, UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { SetterOrUpdater, useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
@@ -137,16 +136,17 @@ const inputField = (
   {
     register,
     setValue,
-    errors,
+    getFieldState,
     submitting,
   }: {
     register: UseFormRegister<any>;
     setValue: UseFormSetValue<any>;
-    errors: FieldErrors<any>;
+    getFieldState: UseFormGetFieldState<any>;
     submitting: boolean;
   }
 ) => {
   const reset = () => setValue(cell.value, '', { shouldDirty: true });
+  const hasErrors = Boolean(getFieldState(cell.value).error);
   return (
     <div key={cell.value}>
       <InputField
@@ -157,15 +157,6 @@ const inputField = (
         buttonAction={reset}
         inputControls={{ ...register(cell.value, { required: true }) }}
       />
-      <ErrorMessage
-        errors={errors}
-        name={cell.value}
-        render={() => (
-          <p className="text-error-700 font-bold" role="alert">
-            <Translate>This field is required</Translate>
-          </p>
-        )}
-      />
     </div>
   );
 };
@@ -173,7 +164,7 @@ const inputField = (
 const getColumns = (
   register: UseFormRegister<any>,
   setValue: UseFormSetValue<any>,
-  errors: FieldErrors<any>,
+  getFieldState: UseFormGetFieldState<any>,
   submitting: boolean
 ) => [
   { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
@@ -182,7 +173,7 @@ const getColumns = (
     key: '3',
     Header: 'Current Value',
     accessor: 'fieldKey',
-    Cell: (data: any) => inputField(data, { register, setValue, errors, submitting }),
+    Cell: (data: any) => inputField(data, { register, setValue, getFieldState, submitting }),
     disableSortBy: true,
     className: 'w-full',
   },
@@ -288,7 +279,8 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isDirty },
+    getFieldState,
+    formState: { isDirty },
   } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
@@ -372,13 +364,14 @@ const EditTranslations = () => {
               const [contextTerm] = Object.keys(tableData!);
               return (
                 <div key={contextTerm} className="mt-4">
-                  <RenderIfVisible>
+                  <RenderIfVisible stayRendered>
                     <Table
-                      columns={getColumns(register, setValue, errors, submitting)}
+                      columns={getColumns(register, setValue, getFieldState, submitting)}
                       data={tableData![contextTerm]}
                       title={contextTerm}
                     />
                   </RenderIfVisible>
+                  ,
                 </div>
               );
             })
