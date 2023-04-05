@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
@@ -10,7 +10,7 @@ import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
-import { ConfirmationModal, TranslationsTable } from 'V2/Components/Translations';
+import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translations';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
@@ -131,27 +131,19 @@ const EditTranslations = () => {
     translations: ClientTranslationSchema[];
     settings: Settings;
   };
+
   const [submitting, setIsSubmitting] = useState(false);
   const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
   const setModal = useSetRecoilState(modalAtom);
   const setShowModal = useSetRecoilState(showModalAtom);
+
   const navigate = useNavigate();
-
-  const { contextTerms, contextLabel, contextId } = useMemo(
-    () => getContextInfo(translationsState),
-    [translationsState]
-  );
-
-  const defaultLanguage = settings?.languages?.find(language => language.default);
-
-  const formData = useMemo(
-    () => prepareFormValues(translationsState, defaultLanguage?.key || 'en'),
-    [defaultLanguage?.key, translationsState]
-  );
-
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+  const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
+  const defaultLanguage = settings?.languages?.find(language => language.default);
+  const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -250,7 +242,7 @@ const EditTranslations = () => {
 
         <form onSubmit={handleSubmit(submitFunction)}>
           {tablesData.length ? (
-            <TranslationsTable
+            <TranslationsTables
               tablesData={tablesData}
               register={register}
               setValue={setValue}

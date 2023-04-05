@@ -14,7 +14,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
   const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
   const hasErrors = Boolean(getFieldState(data.cell.value).error);
   return (
-    <div key={data.cell.value}>
+    <div>
       <InputField
         fieldID={data.cell.value}
         label={data.cell.row.values.language}

@@ -13,7 +13,7 @@ type translationsTableType = {
   submitting: boolean;
 };
 
-const TranslationsTable = ({
+const TranslationsTables = ({
   tablesData,
   register,
   setValue,
@@ -45,9 +45,9 @@ const TranslationsTable = ({
         const [contextTerm] = Object.keys(data);
         return (
           <div key={contextTerm} className="mt-4">
-            <RenderIfVisible stayRendered>
-              <Table columns={columns} data={data[contextTerm]} title={contextTerm} />
-            </RenderIfVisible>
+            {/* <RenderIfVisible stayRendered> */}
+            <Table columns={columns} data={data[contextTerm]} title={contextTerm} />
+            {/* </RenderIfVisible> */}
           </div>
         );
       })}
@@ -55,4 +55,4 @@ const TranslationsTable = ({
   );
 };
 
-export { TranslationsTable };
+export { TranslationsTables };
