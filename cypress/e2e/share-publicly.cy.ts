@@ -1,4 +1,4 @@
-import { login, refreshIndex } from './helpers';
+import { login } from './helpers';
 
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
@@ -132,18 +132,22 @@ describe('Share Publicly', () => {
       cy.get('.item-document').should('have.length', 3);
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
-      cy.contains('button', 'Share').click();
+      cy.get('aside button.share-btn').eq(1).click();
       cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     });
-  });
 
-  // it('should keep publishing status if mixed access selected', () => {
-  //   englishLoggedInUwazi();
-  //   // await expect(page).toSelect('.member-list-wrapper  tr:nth-child(3) select', 'Can see');
-  //   // await expect(page).toClick('button', { text: 'Save changes' });
-  //   // await refreshIndex();
-  //   // await page.reload();
-  //   // await expectDocumentCountAfterSearch(page, 3);
-  //   // expect(await countPrivateEntities()).toBe(1);
-  // });
+    it('should keep publishing status if mixed access selected', () => {
+      englishLoggedInUwazi();
+      cy.get('input[name="library.search.searchTerm"]').type('test 2016');
+      cy.get('[aria-label="Search button"]').click();
+      cy.get('.item-document').should('have.length', 3);
+      cy.contains('button', 'Select all').click();
+      cy.get('aside').should('be.visible');
+      cy.get('aside button.share-btn').eq(1).click();
+      cy.get('div[data-testid=modal] select').eq(1).select('read');
+      cy.contains('button', 'Save changes').click();
+      cy.get('.item-document').should('have.length', 3);
+      cy.get('.item-document').eq(0).toMatchImageSnapshot();
+    });
+  });
 });
