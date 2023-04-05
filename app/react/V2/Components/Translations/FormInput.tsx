@@ -12,7 +12,7 @@ type fromPropsType = {
 const FormInput = (data: any, formProps: fromPropsType) => {
   const { register, setValue, getFieldState, submitting } = formProps;
   const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
-  const hasErrors = Boolean(getFieldState(data.cell.value).error);
+  const { invalid: hasErrors } = getFieldState(data.cell.value);
   return (
     <div>
       <InputField
@@ -22,6 +22,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         disabled={submitting}
         clearFieldAction={reset}
         inputControls={{ ...register(data.cell.value, { required: true }) }}
+        hasErrors={hasErrors}
       />
     </div>
   );
