@@ -27,6 +27,40 @@ const createUser = (userDetails: {
   cy.get('aside').contains('button', 'Save').click();
 };
 
+const selectPublishedEntities = () => {
+  cy.get('#publishedStatuspublished')
+    .invoke('is', ':checked')
+    .then(checked => {
+      if (!checked) {
+        cy.get('aside').contains('span', 'Published').click();
+      }
+    });
+  cy.get('#publishedStatusrestricted')
+    .invoke('is', ':checked')
+    .then(checked => {
+      if (checked) {
+        cy.get('aside').contains('span', 'Restricted').click();
+      }
+    });
+};
+
+const selectRestrictedEntities = () => {
+  cy.get('#publishedStatuspublished')
+    .invoke('is', ':checked')
+    .then(checked => {
+      if (checked) {
+        cy.get('aside').contains('span', 'Published').click();
+      }
+    });
+  cy.get('#publishedStatusrestricted')
+    .invoke('is', ':checked')
+    .then(checked => {
+      if (!checked) {
+        cy.get('aside').contains('span', 'Restricted').click();
+      }
+    });
+};
+
 describe('Share Publicly', () => {
   const entityTitle =
     'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012';
@@ -49,8 +83,8 @@ describe('Share Publicly', () => {
   it('should share an entity with the collaborator', () => {
     englishLoggedInUwazi();
 
-    // TODO: Should select published entities better
-    cy.get('aside').contains('span', 'Restricted').click();
+    selectPublishedEntities();
+
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
     cy.get('[data-testid=modal] input').type('colla');
@@ -62,9 +96,7 @@ describe('Share Publicly', () => {
 
   it('should unshare entities publicly', () => {
     englishLoggedInUwazi();
-
-    // TODO: Should select published entities better
-    cy.get('aside').contains('span', 'Restricted').click();
+    selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
     cy.get('div[data-testid=modal] select').eq(1).select('delete');
@@ -78,8 +110,7 @@ describe('Share Publicly', () => {
     });
 
     it('should share the entity', () => {
-      // TODO: Should select restricted entities better
-      cy.get('aside').contains('span', 'Restricted').click();
+      selectPublishedEntities();
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
@@ -117,8 +148,7 @@ describe('Share Publicly', () => {
 
     it('should not be able to share the entity', () => {
       englishLoggedInUwazi('colla', 'borator');
-      // TODO: Should select restricted entities better
-      cy.get('aside').contains('span', 'Published').click();
+      selectRestrictedEntities();
       cy.contains('h2', 'Test title').click();
       cy.contains('button', 'Share').click();
       cy.get('div[data-testid=modal] select').should('have.length', 2);
