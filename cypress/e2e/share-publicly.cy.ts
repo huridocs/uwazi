@@ -92,7 +92,7 @@ describe('Share Publicly', () => {
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('div.alert', 'Entity created').click();
-      cy.get('main').toMatchImageSnapshot();
+      cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
     });
 
     it('should not be able to share the entity', () => {
