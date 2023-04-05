@@ -1,27 +1,19 @@
 /* eslint-disable max-lines */
 import React, { useMemo, useRef, useState } from 'react';
 import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router-dom';
-import RenderIfVisible from 'react-render-if-visible';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
-import { useForm, UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { SetterOrUpdater, useSetRecoilState } from 'recoil';
+import { useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
-import {
-  Table,
-  Pill,
-  InputField,
-  Button,
-  Modal,
-  NavigationHeader,
-  ToggleButton,
-} from 'V2/Components/UI';
+import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
+import { ConfirmationModal, TranslationsTable } from 'V2/Components/Translations';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom, notificationAtomType, modalAtom, showModalAtom } from 'V2/atoms';
+import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -54,14 +46,6 @@ const prepareValuesToSave = (
       contexts: [{ ...currentTranslations[index].contexts[0], values }],
     };
   });
-
-const renderPill = ({ cell }: any) => {
-  let color: 'gray' | 'primary' | 'yellow' = 'gray';
-  if (cell.value.status === 'defaultLanguage') color = 'primary';
-  if (cell.value.status === 'untranslated') color = 'yellow';
-
-  return <Pill color={color}>{cell.value.languageKey.toUpperCase()}</Pill>;
-};
 
 const composeTableValues = (formData: formDataType, termIndex: number) =>
   formData.map((language, languageIndex) => {
@@ -131,112 +115,6 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
 const filterTableValues = (values: any[]) =>
   values.filter(value => value.translationStatus.status !== 'translated');
 
-const inputField = (
-  { cell }: any,
-  {
-    register,
-    setValue,
-    getFieldState,
-    submitting,
-  }: {
-    register: UseFormRegister<any>;
-    setValue: UseFormSetValue<any>;
-    getFieldState: UseFormGetFieldState<any>;
-    submitting: boolean;
-  }
-) => {
-  const reset = () => setValue(cell.value, '', { shouldDirty: true });
-  const hasErrors = Boolean(getFieldState(cell.value).error);
-  return (
-    <div key={cell.value}>
-      <InputField
-        fieldID={cell.value}
-        label={cell.row.values.language}
-        hideLabel
-        disabled={submitting}
-        buttonAction={reset}
-        inputControls={{ ...register(cell.value, { required: true }) }}
-      />
-    </div>
-  );
-};
-
-const getColumns = (
-  register: UseFormRegister<any>,
-  setValue: UseFormSetValue<any>,
-  getFieldState: UseFormGetFieldState<any>,
-  submitting: boolean
-) => [
-  { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
-  { key: '2', Header: '', accessor: 'translationStatus', Cell: renderPill, disableSortBy: true },
-  {
-    key: '3',
-    Header: 'Current Value',
-    accessor: 'fieldKey',
-    Cell: (data: any) => inputField(data, { register, setValue, getFieldState, submitting }),
-    disableSortBy: true,
-    className: 'w-full',
-  },
-];
-
-const submitFunction = async (
-  data: { formData: formDataType },
-  translations: ClientTranslationSchema[],
-  contextId: string,
-  setters: {
-    setIsSubmitting: (state: boolean) => void;
-    setTranslationsState: (state: ClientTranslationSchema[]) => void;
-    setNotifications: SetterOrUpdater<notificationAtomType>;
-  }
-) => {
-  setters.setIsSubmitting(true);
-  const values = prepareValuesToSave(data.formData, translations);
-  if (values && contextId) {
-    setters.setIsSubmitting(true);
-    try {
-      const response = await translationsAPI.post(values, contextId);
-      setters.setTranslationsState(response);
-      setters.setNotifications({ type: 'sucess', text: <Translate>Translations saved</Translate> });
-    } catch (e) {
-      setters.setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: e.json.error,
-      });
-    }
-    setters.setIsSubmitting(false);
-  }
-};
-
-const onFileImported = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  setters: {
-    setIsSubmitting: (state: boolean) => void;
-    setTranslationsState: (state: ClientTranslationSchema[]) => void;
-    setNotifications: SetterOrUpdater<notificationAtomType>;
-  }
-) => {
-  const file = event.target.files?.[0];
-  if (file) {
-    setters.setIsSubmitting(true);
-    try {
-      const response = await translationsAPI.importTranslations(file, 'System');
-      setters.setTranslationsState(response);
-      setters.setNotifications({
-        type: 'sucess',
-        text: <Translate>Translations imported.</Translate>,
-      });
-    } catch (e) {
-      setters.setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: e.json.error,
-      });
-    }
-    setters.setIsSubmitting(false);
-  }
-};
-
 const calculateTableData = (terms: string[], formData: formDataType, hideTranslated: boolean) =>
   terms
     .map((term, index) => {
@@ -292,37 +170,57 @@ const EditTranslations = () => {
     if (isDirty) {
       setModal({
         size: 'md',
-        children: (
-          <>
-            <Modal.Header>
-              <h3 className="text-xl font-medium text-gray-900">
-                <Translate>Discard changes?</Translate>
-              </h3>
-              <Modal.CloseButton onClick={() => setShowModal(false)} />
-            </Modal.Header>
-            <Modal.Body>
-              <Translate>You have some unsaved changes, do you want to continue?</Translate>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                onClick={() => {
-                  setShowModal(false);
-                  navigate('/settings/translations');
-                }}
-              >
-                <Translate>Discard changes</Translate>
-              </Button>
-              <Button buttonStyle="tertiary" onClick={() => setShowModal(false)}>
-                <Translate>Cacel</Translate>
-              </Button>
-            </Modal.Footer>
-          </>
-        ),
+        children: <ConfirmationModal setShowModal={setShowModal} navigate={navigate} />,
       });
       return setShowModal(true);
     }
 
     return navigate('/settings/translations');
+  };
+
+  const submitFunction = async (data: { formData: formDataType }) => {
+    setIsSubmitting(true);
+    const values = prepareValuesToSave(data.formData, translations);
+    if (values && contextId) {
+      setIsSubmitting(true);
+      try {
+        const response = await translationsAPI.post(values, contextId);
+        setTranslationsState(response);
+        setNotifications({
+          type: 'sucess',
+          text: <Translate>Translations saved</Translate>,
+        });
+      } catch (e) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: e.json.error,
+        });
+      }
+      setIsSubmitting(false);
+    }
+  };
+
+  const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsSubmitting(true);
+      try {
+        const response = await translationsAPI.importTranslations(file, 'System');
+        setTranslationsState(response);
+        setNotifications({
+          type: 'sucess',
+          text: <Translate>Translations imported.</Translate>,
+        });
+      } catch (e) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: e.json.error,
+        });
+      }
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -350,31 +248,15 @@ const EditTranslations = () => {
           </ToggleButton>
         </div>
 
-        <form
-          onSubmit={handleSubmit(async data =>
-            submitFunction(data, translations, contextId || '', {
-              setIsSubmitting,
-              setTranslationsState,
-              setNotifications,
-            })
-          )}
-        >
+        <form onSubmit={handleSubmit(submitFunction)}>
           {tablesData.length ? (
-            tablesData.map(tableData => {
-              const [contextTerm] = Object.keys(tableData!);
-              return (
-                <div key={contextTerm} className="mt-4">
-                  <RenderIfVisible stayRendered>
-                    <Table
-                      columns={getColumns(register, setValue, getFieldState, submitting)}
-                      data={tableData![contextTerm]}
-                      title={contextTerm}
-                    />
-                  </RenderIfVisible>
-                  ,
-                </div>
-              );
-            })
+            <TranslationsTable
+              tablesData={tablesData}
+              register={register}
+              setValue={setValue}
+              getFieldState={getFieldState}
+              submitting={submitting}
+            />
           ) : (
             <div className="flex gap-2 items-center p-4 border rounded-md border-gray-50 bg-primary-50">
               <InformationCircleIcon className="w-10 text-primary-800" />
@@ -403,13 +285,7 @@ const EditTranslations = () => {
                       type="file"
                       accept="text/csv"
                       className="hidden"
-                      onChange={async event =>
-                        onFileImported(event, {
-                          setIsSubmitting,
-                          setTranslationsState,
-                          setNotifications,
-                        })
-                      }
+                      onChange={onFileImported}
                     />
                   </>
                 )}

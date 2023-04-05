@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof InputField> = args => (
         label={<p className="text-lg mb-2">{args.label}</p>}
         disabled={args.disabled}
         hideLabel={args.hideLabel}
-        buttonAction={args.buttonAction}
+        clearFieldAction={args.clearFieldAction}
         placeholder={args.placeholder}
       />
     </div>
@@ -35,7 +35,7 @@ Basic.args = {
 
 WithClearFieldButton.args = {
   ...Basic.args,
-  buttonAction: () => {},
+  clearFieldAction: () => {},
 };
 
 export { Basic, WithClearFieldButton };

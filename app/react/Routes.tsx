@@ -42,11 +42,11 @@ import { Settings as settingsType } from 'shared/types/settingsType';
 import {
   TranslationsList,
   translationsListLoader,
-} from 'V2/Components/Translations/TranslationsList';
+} from 'V2/Routes/Settings/Translations/TranslationsList';
 import {
   EditTranslations,
   editTranslationsLoader,
-} from 'V2/Components/Translations/EditTranslations';
+} from 'V2/Routes/Settings/Translations/EditTranslations';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';

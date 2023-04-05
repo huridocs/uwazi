@@ -12,7 +12,7 @@ interface InputFieldProps {
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
-  buttonAction?: () => any;
+  clearFieldAction?: () => any;
 }
 
 const InputField = ({
@@ -22,9 +22,9 @@ const InputField = ({
   disabled,
   hideLabel,
   placeholder,
-  buttonAction,
+  clearFieldAction,
 }: InputFieldProps) => {
-  const hasClearFieldButton = Boolean(buttonAction);
+  const hasClearFieldButton = Boolean(clearFieldAction);
   const textColor = disabled ? 'text-gray-500' : 'text-gray-900';
   const buttonStyles = hasClearFieldButton ? 'pr-12' : '';
 
@@ -55,7 +55,7 @@ const InputField = ({
         {hasClearFieldButton && (
           <button
             type="button"
-            onClick={buttonAction}
+            onClick={clearFieldAction}
             disabled={disabled}
             className={`${textColor} border-l absolute top-px right-0 p-2.5 text-sm font-medium rounded-r-lg border-gray-300
             hover:text-primary-700 focus:outline-none`}
