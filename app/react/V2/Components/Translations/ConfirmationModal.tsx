@@ -18,7 +18,7 @@ const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) =>
       <Modal.CloseButton onClick={() => setShowModal(false)} />
     </Modal.Header>
     <Modal.Body>
-      <Translate>You have some unsaved changes, do you want to continue?</Translate>
+      <Translate>You have unsaved changes, do you want to continue?</Translate>
     </Modal.Body>
     <Modal.Footer>
       <Button
@@ -30,7 +30,7 @@ const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) =>
         <Translate>Discard changes</Translate>
       </Button>
       <Button buttonStyle="tertiary" onClick={() => setShowModal(false)}>
-        <Translate>Cacel</Translate>
+        <Translate>Cancel</Translate>
       </Button>
     </Modal.Footer>
   </>
