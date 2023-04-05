@@ -4,18 +4,14 @@ const selectPublishedEntities = () => {
     .invoke('is', ':checked')
     .then(checked => {
       if (!checked) {
-        cy.get('@sidePanel').then(() => {
-          cy.get('@sidePanel').contains('span', 'Published').click();
-        });
+        cy.get('@sidePanel').contains('span', 'Published').click();
       }
     });
   cy.get('#publishedStatusrestricted')
     .invoke('is', ':checked')
     .then(checked => {
       if (checked) {
-        cy.get('@sidePanel').then(() => {
-          cy.get('@sidePanel').contains('span', 'Restricted').click();
-        });
+        cy.get('@sidePanel').contains('span', 'Restricted').click();
       }
     });
 };
@@ -26,18 +22,14 @@ const selectRestrictedEntities = () => {
     .invoke('is', ':checked')
     .then(checked => {
       if (checked) {
-        cy.get('@sidePanel').then(() => {
-          cy.get('@sidePanel').contains('span', 'Published').click();
-        });
+        cy.get('@sidePanel').contains('span', 'Published').click();
       }
     });
   cy.get('#publishedStatusrestricted')
     .invoke('is', ':checked')
     .then(checked => {
       if (!checked) {
-        cy.get('@sidePanel').then(() => {
-          cy.get('@sidePanel').contains('span', 'Restricted').click();
-        });
+        cy.get('@sidePanel').contains('span', 'Restricted').click();
       }
     });
 };
