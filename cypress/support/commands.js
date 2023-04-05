@@ -41,9 +41,19 @@ Cypress.on('window:before:load', window => {
     `
     <style>
       /* Disable CSS transitions. */
-      *, *::before, *::after { -webkit-transition: none !important; -moz-transition: none !important; -o-transition: none !important; transition: none !important; }
+      *, *::before, *::after {
+        -webkit-transition: none !important;
+        -moz-transition: none !important;
+        -o-transition: none !important;
+        transition: none !important;
+      }
       /* Disable CSS animations. */
-      *, *::before, *::after { -webkit-animation: none !important; -moz-animation: none !important; -o-animation: none !important; animation: none !important; }
+      *, *::before, *::after {
+        -webkit-animation: none !important;
+        -moz-animation: none !important;
+        -o-animation: none !important;
+        animation: none !important;
+      }
       #nprogress {
         visibility: hidden !important;
       }

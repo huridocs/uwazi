@@ -7,7 +7,6 @@ describe('Share Entities', () => {
   const titleEntity2 = 'Applicability of Article 65 of the American Convention on Human Rights';
   const titleEntity3 = 'Article 65 of the American Convention on Human Rights';
   const titleEntity4 = 'Aitken';
-  const titlePublic1 = 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014';
 
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -41,7 +40,8 @@ describe('Share Entities', () => {
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('editor');
     cy.get('ul[role=listbox]').contains('span', 'editor').click();
-    cy.get('[data-testid=modal] input').clear().type('Ase');
+    cy.get('[data-testid=modal] input').clear();
+    cy.get('[data-testid=modal] input').type('Ase');
     cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
     cy.get('div[data-testid=modal] select').eq(1).select('write');
     cy.get('[data-testid=modal]').toMatchImageSnapshot();
@@ -113,7 +113,8 @@ describe('Share Entities', () => {
     selectRestrictedEntities();
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Edit').click();
-    cy.get('aside.is-active textarea').eq(0).clear().type('Edited title');
+    cy.get('aside.is-active textarea').eq(0).clear();
+    cy.get('aside.is-active textarea').eq(0).type('Edited title');
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
