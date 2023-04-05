@@ -1,4 +1,4 @@
-import { login } from './helpers';
+import { login, selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
 
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
@@ -9,56 +9,6 @@ const englishLoggedInUwazi = (username = 'admin', password = 'admin') => {
   cy.visit('http://localhost:3000');
   changeLanguage();
   login(username, password);
-};
-
-const createUser = (userDetails: {
-  username: string;
-  password: string;
-  email: string;
-  group: string;
-}) => {
-  cy.get('.only-desktop a[aria-label="Settings"]').click();
-  cy.contains('a', 'Users').click();
-  cy.contains('button', 'Add user').click();
-  cy.get('aside').get('input[name=email]').clear().type(userDetails.email);
-  cy.get('aside').get('input[name=username]').clear().type(userDetails.username);
-  cy.get('aside').get('input[name=password]').clear().type(userDetails.password);
-  cy.get('aside').contains('span', userDetails.group).click();
-  cy.get('aside').contains('button', 'Save').click();
-};
-
-const selectPublishedEntities = () => {
-  cy.get('#publishedStatuspublished')
-    .invoke('is', ':checked')
-    .then(checked => {
-      if (!checked) {
-        cy.get('aside').contains('span', 'Published').click();
-      }
-    });
-  cy.get('#publishedStatusrestricted')
-    .invoke('is', ':checked')
-    .then(checked => {
-      if (checked) {
-        cy.get('aside').contains('span', 'Restricted').click();
-      }
-    });
-};
-
-const selectRestrictedEntities = () => {
-  cy.get('#publishedStatuspublished')
-    .invoke('is', ':checked')
-    .then(checked => {
-      if (checked) {
-        cy.get('aside').contains('span', 'Published').click();
-      }
-    });
-  cy.get('#publishedStatusrestricted')
-    .invoke('is', ':checked')
-    .then(checked => {
-      if (!checked) {
-        cy.get('aside').contains('span', 'Restricted').click();
-      }
-    });
 };
 
 describe('Share Publicly', () => {
@@ -120,8 +70,7 @@ describe('Share Publicly', () => {
     });
 
     it('should not display the entity among the restricted ones', () => {
-      // TODO: Should select restricted entities better
-      cy.get('aside').contains('span', 'Published').click();
+      selectRestrictedEntities();
       cy.contains('h2', entityTitle).should('not.exist');
     });
   });
