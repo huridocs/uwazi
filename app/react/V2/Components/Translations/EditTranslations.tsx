@@ -303,7 +303,7 @@ const EditTranslations = () => {
         children: (
           <>
             <Modal.Header>
-              <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+              <h3 className="text-xl font-medium text-gray-900">
                 <Translate>Discard changes?</Translate>
               </h3>
               <Modal.CloseButton onClick={() => setShowModal(false)} />

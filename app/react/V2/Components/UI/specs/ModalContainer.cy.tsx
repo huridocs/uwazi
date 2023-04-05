@@ -16,9 +16,7 @@ describe('ModalContainer.cy.tsx', () => {
       children: (
         <>
           <Modal.Header>
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-              Important information
-            </h3>
+            <h3 className="text-xl font-medium text-gray-900">Important information</h3>
             <Modal.CloseButton onClick={() => setShowModal(false)} />
           </Modal.Header>
           <Modal.Body>Testing Components with Cypress is super cool!</Modal.Body>
