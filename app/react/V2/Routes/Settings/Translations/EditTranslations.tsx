@@ -149,11 +149,10 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     setValue,
-    getFieldState,
-    formState: { isDirty },
+    formState: { isDirty, errors },
   } = useForm({
     defaultValues: { formData },
-    mode: 'onSubmit',
+    mode: 'all',
   });
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
@@ -246,7 +245,7 @@ const EditTranslations = () => {
               tablesData={tablesData}
               register={register}
               setValue={setValue}
-              getFieldState={getFieldState}
+              errors={errors}
               submitting={submitting}
             />
           ) : (
