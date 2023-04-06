@@ -125,6 +125,7 @@ describe('Share Publicly', () => {
       cy.get('aside button.share-btn').eq(1).click();
       cy.get('div[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
+      cy.get('.ReactModal__Overlay--after-open').should('not.be.visible');
       cy.get('.item-document').should('have.length', 3);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });
