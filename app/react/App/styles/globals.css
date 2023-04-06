@@ -1359,6 +1359,10 @@ input:checked + .toggle-bg {
   height: 24rem;
 }
 
+.h-\[79vh\] {
+  height: 79vh;
+}
+
 .h-auto {
   height: auto;
 }
@@ -1532,6 +1536,10 @@ input:checked + .toggle-bg {
 
 .shrink-0 {
   flex-shrink: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
 }
 
 .-translate-x-1\/2 {
@@ -2587,6 +2595,10 @@ input:checked + .toggle-bg {
 
 .pl-3 {
   padding-left: 0.75rem;
+}
+
+.pl-5 {
+  padding-left: 1.25rem;
 }
 
 .pl-8 {

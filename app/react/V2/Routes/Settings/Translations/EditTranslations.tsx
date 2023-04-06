@@ -220,10 +220,10 @@ const EditTranslations = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="p-5">
+      <div className="px-5 pl-5">
         <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
-            <h1 className="text-base text-gray-700 flex gap-2 sm:gap-6">
+            <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
               <Translate>Translations</Translate>
               <span>&gt;</span>
               <Translate>{contextLabel}</Translate>
@@ -233,32 +233,34 @@ const EditTranslations = () => {
 
         <div className="pb-4">
           <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
-            <div className="text-gray-700 ml-2 text-sm">
+            <div className="ml-2 text-sm text-gray-700">
               <Translate>Untranslated Terms</Translate>
             </div>
           </ToggleButton>
         </div>
 
-        <form onSubmit={handleSubmit(submitFunction)}>
-          {tablesData.length ? (
-            <TranslationsTables
-              tablesData={tablesData}
-              register={register}
-              setValue={setValue}
-              errors={errors}
-              submitting={submitting}
-            />
-          ) : (
-            <div className="flex gap-2 items-center p-4 border rounded-md border-gray-50 bg-primary-50">
-              <InformationCircleIcon className="w-10 text-primary-800" />
-              <span className="text-primary-800">
-                <Translate>There are no untranslated terms</Translate>
-              </span>
-            </div>
-          )}
+        <form onSubmit={handleSubmit(submitFunction)} className="flex flex-col h-[79vh]">
+          <div className="flex-grow">
+            {tablesData.length ? (
+              <TranslationsTables
+                tablesData={tablesData}
+                register={register}
+                setValue={setValue}
+                errors={errors}
+                submitting={submitting}
+              />
+            ) : (
+              <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
+                <InformationCircleIcon className="w-10 text-primary-800" />
+                <span className="text-primary-800">
+                  <Translate>There are no untranslated terms</Translate>
+                </span>
+              </div>
+            )}
+          </div>
 
-          <div className="absolute lg:sticky bottom-0 left-0 z-1 w-full bg-white border-t border-gray-200">
-            <div className="pt-1 flex justify-end gap-2 p-2">
+          <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 lg:sticky z-1">
+            <div className="flex justify-end gap-2 p-2 pt-1">
               <div className="flex-1">
                 {contextId === 'System' && (
                   <>
