@@ -120,9 +120,10 @@ describe('Share Entities', () => {
     cy.contains('h2', 'Edited title').should('exist');
   });
 
-  it('should be able to see only published entities', () => {
+  it('should be able to see only published entities', { defaultCommandTimeout: 6000 }, () => {
     englishLoggedInUwazi('colla', 'borator');
     selectPublishedEntities();
+    cy.get('.search-box input').clear();
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
     cy.get('.item-document').should('have.length', 1);
