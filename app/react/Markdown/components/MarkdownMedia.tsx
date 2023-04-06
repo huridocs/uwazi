@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import { Translate } from 'app/I18N';
@@ -6,7 +7,7 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 
-export interface MarkdownMediaProps {
+interface MarkdownMediaProps {
   compact?: boolean;
   editing?: boolean;
   onTimeLinkAdded?: Function;
@@ -201,7 +202,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           type="text"
           className="timestamp-hours"
           placeholder="00"
-          key={field.id}
+          key={`${field.id}hours`}
           {...register(`timelines.${index}.timeHours`, {
             onChange: _ => updateParentForm(),
           })}
@@ -211,7 +212,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           type="text"
           className="timestamp-minutes"
           placeholder="00"
-          key={field.id}
+          key={`${field.id}minutes`}
           {...register(`timelines.${index}.timeMinutes`, {
             onChange: _ => updateParentForm(),
           })}
@@ -221,7 +222,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           type="text"
           className="timestamp-seconds"
           placeholder="00"
-          key={field.id}
+          key={`${field.id}seconds`}
           {...register(`timelines.${index}.timeSeconds`, {
             onChange: _ => updateParentForm(),
           })}
@@ -336,5 +337,5 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 };
 
-export type { TimeLink };
+export type { TimeLink, MarkdownMediaProps };
 export default MarkdownMedia;
