@@ -289,6 +289,7 @@ describe('entitySavingManager', () => {
       it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
         await writeFile(newImageFile.path!, 'sample content');
         await writeFile(newPdfFile.path!, validPdfString);
+        await writeFile(newVideoFile.path!, 'test info');
         const entity = {
           title: 'newEntity',
           template: template2Id,
