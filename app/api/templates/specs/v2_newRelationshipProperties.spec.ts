@@ -6,6 +6,7 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
+import { d } from 'src/data/unitShortcuts';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -34,12 +35,20 @@ const fixtures: DBFixture = {
   relationtypes: [fixtureFactory.relationType('relation')],
   templates: [
     fixtureFactory.template('existing_template', []),
+    fixtureFactory.template('template_with_existing_relationship', [
+      fixtureFactory.property('existing_relationship', 'newRelationship', {
+        query: [],
+      }),
+    ]),
     fixtureFactory.template('unrelated_template', []),
   ],
   entities: [
     fixtureFactory.entity('entity1', 'existing_template'),
     fixtureFactory.entity('entity2', 'existing_template'),
     fixtureFactory.entity('entity3', 'unrelated_template'),
+    fixtureFactory.entity('entity4', 'template_with_existing_relationship', {
+      existing_relationship: [{ value: 'existing_value' }],
+    }),
   ],
   settings: [
     {
@@ -221,7 +230,29 @@ describe('template.save()', () => {
           ['new_relationship'],
           ['new_relationship'],
           [],
+          [],
         ]);
+      });
+    });
+
+    describe('when the property is deleted', () => {
+      it('uwazi should normally delete the property and metadata', async () => {
+        const [existingTemplate] = await templates.get({
+          name: 'template_with_existing_relationship',
+        });
+        const updatedTemplate = {
+          ...existingTemplate,
+          properties: [],
+        };
+        const template = await templates.save(updatedTemplate, 'en');
+        expect(template.properties).toEqual([]);
+
+        const relatedEntities = await db.mongodb
+          ?.collection('entities')
+          .find({ template: existingTemplate._id })
+          .toArray();
+
+        expect(relatedEntities?.map(e => e.metadata)).toEqual([{}]);
       });
     });
   });
