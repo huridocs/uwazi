@@ -55,29 +55,25 @@ WithActions.args = {
   ...Basic.args,
   columns: [
     {
-      key: '1',
       id: 'select',
       Header: '',
       Cell: checkboxCell,
       disableSortBy: true,
     },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
+    { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
     {
-      key: '4',
       Header: 'Date added',
       accessor: 'created',
       disableSortBy: true,
       className: 'w-1/3',
     },
     {
-      key: '3',
       Header: 'Description',
       accessor: 'description',
       disableSortBy: true,
       className: 'w-1/3',
     },
     {
-      key: '5',
       id: 'action',
       Header: 'Actions',
       Cell: actionsCell,
