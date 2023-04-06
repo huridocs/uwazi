@@ -64,7 +64,7 @@ describe('Share Publicly', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
-      cy.get('ul[role=listbox]').contains('span', 'Public').click();
+      cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.get('div[data-testid=modal]').toMatchImageSnapshot();
       cy.contains('button', 'Save changes').click();
     });
