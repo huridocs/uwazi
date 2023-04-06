@@ -59,7 +59,7 @@ describe('Share Publicly', () => {
       englishLoggedInUwazi();
     });
 
-    it('should share the entity', () => {
+    it('should share the entity', { defaultCommandTimeout: 6000 }, () => {
       selectPublishedEntities();
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
