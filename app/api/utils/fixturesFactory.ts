@@ -120,6 +120,11 @@ function getFixturesFactory() {
       extractedMetadata,
     }),
 
+    relationType: (name: string): { _id: ObjectId; name: string } => ({
+      _id: idMapper(name),
+      name,
+    }),
+
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),

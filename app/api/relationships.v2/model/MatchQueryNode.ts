@@ -17,6 +17,13 @@ interface EntitiesMap {
   [sharedId: string]: Entity;
 }
 
+interface TemplateRecordElement {
+  path: number[];
+  templates: string[];
+}
+
+type TemplateRecords = TemplateRecordElement[];
+
 export class MatchQueryNode extends QueryNode {
   private filters: MatchFilters;
 
@@ -141,7 +148,22 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
-  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: string[] }[] {
+  getTemplates(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    records.push({
+      path,
+      templates: this.filters.templates || [],
+    });
+    if (this.traversals.length) {
+      this.traversals.forEach((t, index) => t.getTemplates([...path, index], records));
+    }
+    return records;
+  }
+
+  getTemplatesInLeaves(path: number[] = []): TemplateRecords {
     if (!this.traversals?.length) {
       return [
         {
@@ -158,3 +180,5 @@ export class MatchQueryNode extends QueryNode {
     return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }
 }
+
+export type { TemplateRecordElement, TemplateRecords };

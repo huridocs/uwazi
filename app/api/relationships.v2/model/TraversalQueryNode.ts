@@ -1,5 +1,5 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { MatchQueryNode } from './MatchQueryNode';
+import { MatchQueryNode, TemplateRecords } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';
 
 interface TraversalFilters {
@@ -187,6 +187,15 @@ export class TraversalQueryNode extends QueryNode {
 
   shallowClone(matches?: MatchQueryNode[]) {
     return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
+  }
+
+  getTemplates(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    this.matches.forEach((m, index) => m.getTemplates([...path, index], records));
+    return records;
   }
 
   getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {

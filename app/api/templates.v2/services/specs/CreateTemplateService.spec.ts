@@ -9,6 +9,7 @@ import { CreateTemplateService } from '../CreateTemplateService';
 const fixturesFactory = getFixturesFactory();
 
 const fixtures = {
+  relationtypes: [fixturesFactory.relationType('relation')],
   templates: [
     fixturesFactory.template('template1', [
       fixturesFactory.property('text1', 'text'),
@@ -70,6 +71,7 @@ describe('when validating the query', () => {
         ],
         denormalizedProperty: 'text1',
       });
+      throw new Error('should have thrown an error');
     } catch (e) {
       expect(e).toBeInstanceOf(ValidationError);
       if (e instanceof ValidationError) {
@@ -127,5 +129,72 @@ describe('when validating the query', () => {
       ],
       denormalizedProperty: 'text2',
     });
+  });
+
+  it('should check that templates exist', async () => {
+    const service = setUpService();
+
+    try {
+      await service.createRelationshipProperty({
+        name: 'new_relationship',
+        type: 'newRelationship',
+        label: 'new relationshp',
+        query: [
+          {
+            direction: 'out',
+            types: [],
+            match: [
+              {
+                templates: [fixturesFactory.id('non-existing-template').toHexString()],
+              },
+            ],
+          },
+        ],
+        denormalizedProperty: 'text1',
+      });
+      throw new Error('should have thrown an error');
+    } catch (e) {
+      expect(e).toBeInstanceOf(ValidationError);
+      if (e instanceof ValidationError) {
+        expect(e.errors[0].path).toBe('/query/0/0/templates');
+        expect(e.errors[0].message).toBe(
+          `Templates ${fixturesFactory.id('non-existing-template').toHexString()} do not exist.`
+        );
+      }
+    }
+  });
+
+  it('should check that reltypes exist', async () => {
+    const service = setUpService();
+
+    try {
+      await service.createRelationshipProperty({
+        name: 'new_relationship',
+        type: 'newRelationship',
+        label: 'new relationshp',
+        query: [
+          {
+            direction: 'out',
+            types: [fixturesFactory.id('non-existing-reltype').toHexString()],
+            match: [
+              {
+                templates: [fixturesFactory.id('template1').toHexString()],
+              },
+            ],
+          },
+        ],
+        denormalizedProperty: 'text1',
+      });
+      throw new Error('should have thrown an error');
+    } catch (e) {
+      console.log(e)
+      expect(e).toBeInstanceOf(ValidationError);
+      if (e instanceof ValidationError) {
+        expect(e.errors[0].path).toBe('/query/0/0/types');
+        expect(e.errors[0].message).toBe(
+          `Relation types ${fixturesFactory.id('non-existing-reltype').toHexString()} do not exist.`
+        );
+      }
+    }
   });
 });

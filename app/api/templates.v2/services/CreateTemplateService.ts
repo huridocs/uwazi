@@ -1,5 +1,5 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
@@ -32,9 +32,8 @@ const BuildQuery = {
     new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
 };
 
-const expandAllTemplates =
-  (allTemplatesIds: string[]) => (record: { path: number[]; templates: string[] }) =>
-    record.templates.length ? record : { ...record, templates: allTemplatesIds };
+const expandAllTemplates = (allTemplatesIds: string[]) => (record: TemplateRecordElement) =>
+  record.templates.length ? record : { ...record, templates: allTemplatesIds };
 
 export class CreateTemplateService {
   private templatesDataSource: TemplatesDataSource;
@@ -43,12 +42,27 @@ export class CreateTemplateService {
     this.templatesDataSource = templatesDataSource;
   }
 
+  // eslint-disable-next-line max-statements
   private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
+    const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
+    const alltemplateIdSet = new Set(allTemplatesIds);
+
+    const allQueryTemplates = query.getTemplates().map(expandAllTemplates(allTemplatesIds));
+    allQueryTemplates.forEach(record => {
+      const nonExisting = record.templates.filter(template => !alltemplateIdSet.has(template));
+      if (nonExisting.length) {
+        throw new ValidationError([
+          {
+            path: `/query/${record.path.join('/')}/templates`,
+            message: `Templates ${nonExisting.join(', ')} do not exist.`,
+          },
+        ]);
+      }
+    });
+
     if (!denormalizedProperty) {
       return;
     }
-
-    const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
     const templatesInLeaves = query.getTemplatesInLeaves().map(expandAllTemplates(allTemplatesIds));
 
     const templatesHavingProperty = new Set(
