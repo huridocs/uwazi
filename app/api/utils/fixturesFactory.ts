@@ -17,6 +17,7 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
+import { TemplateSchema } from 'shared/types/templateType';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -27,6 +28,27 @@ function getIdMapper() {
     return map.get(key)!;
   };
 }
+
+const commonProperties: TemplateSchema['commonProperties'] = [
+  {
+    label: 'Title',
+    name: 'title',
+    isCommonProperty: true,
+    type: 'text',
+  },
+  {
+    label: 'Date added',
+    name: 'creationDate',
+    isCommonProperty: true,
+    type: 'date',
+  },
+  {
+    label: 'Date modified',
+    name: 'editDate',
+    isCommonProperty: true,
+    type: 'date',
+  },
+];
 
 const thesaurusNestedValues = (
   rootValue: string,
@@ -54,6 +76,7 @@ function getFixturesFactory() {
       _id: idMapper(name),
       name,
       properties,
+      commonProperties,
     }),
 
     entity: (

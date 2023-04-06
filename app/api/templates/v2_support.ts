@@ -7,7 +7,7 @@ import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/v
 import { CreateTemplateService } from 'api/templates.v2/services/CreateTemplateService';
 import { TemplateSchema } from 'shared/types/templateType';
 
-const processNewRelationshipProperty = async (template: TemplateSchema) => {
+const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const connection = getConnection();
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
@@ -32,4 +32,18 @@ const processNewRelationshipProperty = async (template: TemplateSchema) => {
   return { ...template, properties: mappedProperties };
 };
 
-export { processNewRelationshipProperty };
+const processNewRelationshipPropertiesOnUpdate = async (oldTemplate: TemplateSchema, newTemplate: TemplateSchema) => {
+  const connection = getConnection();
+  const client = getClient();
+  const transactionManager = new MongoTransactionManager(client);
+  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+    return newTemplate;
+  }
+  const templatesDataSource = new MongoTemplatesDataSource(connection, transactionManager);
+  const relTypesDataSource = new MongoRelationshipTypesDataSource(connection, transactionManager);
+  const createTemplateSevice = new CreateTemplateService(templatesDataSource, relTypesDataSource);
+
+  return newTemplate;
+};
+
+export { processNewRelationshipProperties };

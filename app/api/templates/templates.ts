@@ -164,7 +164,7 @@ export default {
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
-    const mappedTemplate = await v2.processNewRelationshipProperty(template);
+    const mappedTemplate = await v2.processNewRelationshipProperties(template);
 
     await this.swapNamesValidation(mappedTemplate);
 

@@ -1,10 +1,13 @@
 import { ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
+
+const fixtureFactory = getFixturesFactory();
 
 const commonProperties: TemplateSchema['commonProperties'] = [
   {
@@ -28,6 +31,8 @@ const commonProperties: TemplateSchema['commonProperties'] = [
 ];
 
 const fixtures: DBFixture = {
+  relationtypes: [fixtureFactory.relationType('relation')],
+  templates: [fixtureFactory.template('existing_template', [])],
   settings: [
     {
       _id: db.id(),
@@ -62,7 +67,13 @@ describe('template.save()', () => {
             label: 'New Relationship',
             name: 'new_relationship',
             type: 'newRelationship' as 'newRelationship',
-            query: [{ direction: 'out', types: [], match: [{ templates: [] }] }],
+            query: [
+              {
+                direction: 'out',
+                types: [fixtureFactory.id('relation').toString()],
+                match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+              },
+            ],
           },
           { name: 'text1', label: 'Text1', type: 'text' as 'text' },
         ],
@@ -73,7 +84,13 @@ describe('template.save()', () => {
         type: 'newRelationship',
         label: 'New Relationship',
         name: 'new_relationship',
-        query: [{ direction: 'out', types: [], match: [{ templates: [], traverse: [] }] }],
+        query: [
+          {
+            direction: 'out',
+            types: [fixtureFactory.id('relation')],
+            match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
+          },
+        ],
       });
       expect(template.properties?.[1].label).toBe('Text1');
     });
@@ -97,6 +114,78 @@ describe('template.save()', () => {
       } catch (e) {
         expect(e).toBeInstanceOf(ValidationError);
       }
+    });
+  });
+
+  describe('on template update', () => {
+    describe('when the property is new', () => {
+      it('should validate the property and correctly map it to the database', async () => {
+        const existingTemplates = await templates.get({ name: 'existing_template' });
+        expect(existingTemplates.length).toBe(1);
+        const existingTemplate = existingTemplates[0];
+        const newTemplate = {
+          ...existingTemplate,
+          properties: [
+            {
+              label: 'New Relationship',
+              name: 'new_relationship',
+              type: 'newRelationship' as 'newRelationship',
+              query: [
+                {
+                  direction: 'out',
+                  types: [fixtureFactory.id('relation').toString()],
+                  match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+                },
+              ],
+            },
+            { name: 'text1', label: 'Text1', type: 'text' as 'text' },
+          ],
+        };
+        const template = await templates.save(newTemplate, 'en');
+        expect(template.properties).toEqual([
+          {
+            _id: expect.any(ObjectId),
+            type: 'newRelationship',
+            label: 'New Relationship',
+            name: 'new_relationship',
+            query: [
+              {
+                direction: 'out',
+                types: [fixtureFactory.id('relation')],
+                match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
+              },
+            ],
+          },
+          {
+            _id: expect.any(ObjectId),
+            type: 'text',
+            label: 'Text1',
+            name: 'text1',
+          },
+        ]);
+        expect(template.properties?.[1].label).toBe('Text1');
+      });
+
+      it('should throw a validation error', async () => {
+        const [existingTemplates] = await templates.get({ name: 'existing_template' });
+        const newTemplate = {
+          ...existingTemplates,
+          properties: [
+            {
+              name: 'new_relationship',
+              type: 'newRelationship' as 'newRelationship',
+              label: 'New Relationship',
+              query: [{}],
+            },
+          ],
+        };
+        try {
+          await templates.save(newTemplate, 'en');
+          throw new Error('should have thrown a validation error');
+        } catch (e) {
+          expect(e).toBeInstanceOf(ValidationError);
+        }
+      });
     });
   });
 });
