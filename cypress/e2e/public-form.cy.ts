@@ -110,7 +110,8 @@ describe('Public Form', () => {
 
     it('should check the second entity with files', () => {
       cy.contains('h2', 'Entity with image and media fields').click();
-      cy.get('aside.is-active').toMatchImageSnapshot();
+      cy.contains('aside.is-active a', 'View').click();
+      cy.get('.attachments-list-parent').eq(0).scrollIntoView().toMatchImageSnapshot();
     });
   });
 });
