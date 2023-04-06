@@ -7,6 +7,10 @@ export class GetTranslationsService {
     this.translationsDS = translationsDS;
   }
 
+  getByLanguage(language: string) {
+    return this.translationsDS.getByLanguage(language);
+  }
+
   getAll() {
     return this.translationsDS.getAll();
   }

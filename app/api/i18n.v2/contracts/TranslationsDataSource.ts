@@ -7,4 +7,5 @@ export interface TranslationsDataSource {
   deleteByContextId(contextId: string);
   deleteByLanguage(language: string);
   getAll(): ResultSet<Translation>;
+  getByLanguage(language: string): ResultSet<Translation>;
 }

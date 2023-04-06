@@ -19,6 +19,7 @@ import {
   createTranslationsV2,
   deleteTranslationsByContextIdV2,
   deleteTranslationsByLanguageV2,
+  getTranslationsByLanguageV2,
   migrateTranslationsToV2,
   upsertTranslationsV2,
 } from './v2_support';
@@ -191,8 +192,11 @@ const update = async (translation: TranslationType | IndexedTranslations) => {
 
 export default {
   prepareContexts,
-  async get(query = {}, selector = {}) {
-    await migrateTranslationsToV2();
+  async get(query: { _id?: string; locale?: string } = {}, selector = {}) {
+    const alreadyMigrated = await migrateTranslationsToV2();
+    if (alreadyMigrated) {
+      return getTranslationsByLanguageV2();
+    }
     const translations = await model.get(query, selector);
     return translations.map(
       translation =>

@@ -6,6 +6,7 @@ import {
   CreateTranslationsService,
 } from 'api/i18n.v2/services/CreateTranslationsService';
 import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
+import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { tenants } from 'api/tenants';
 import { TranslationType } from 'shared/translationType';
@@ -65,16 +66,42 @@ export const deleteTranslationsByLanguageV2 = async (language: string) => {
   ).deleteByLanguage(language);
 };
 
+export const getTranslationsByLanguageV2 = async () => {
+  const resultMap: { [language: string]: TranslationType } = {};
+  await new GetTranslationsService(
+    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+  )
+    .getAll()
+    .forEach(translation => {
+      if (!resultMap[translation.language]) {
+        resultMap[translation.language] = {
+          locale: translation.language,
+          contexts: [],
+        };
+      }
+    });
+
+  return Object.values(resultMap);
+};
+
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
   if (!tenants.current().featureFlags?.translationsV2) {
     await db.collection('translations_v2').deleteMany({});
+    //should delete lock collection !!
     return;
   }
 
-  const alreadyMigrated = await db.collection('translations_v2_helper').findOne();
-  if (alreadyMigrated?.migrated) {
-    return;
+  const needsMigration = await db
+    .collection('translations_v2_helper')
+    .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } }, { upsert: true });
+
+  if (needsMigration.value?.migrated) {
+    return true;
+  }
+
+  if (needsMigration.value?.migrating) {
+    return false;
   }
 
   const currentTranslationsCursor = db.collection('translations').find();
@@ -91,5 +118,7 @@ export const migrateTranslationsToV2 = async () => {
     }
   }
 
-  await db.collection('translations_v2_helper').insertOne({ migrated: true });
+  await db
+    .collection('translations_v2_helper')
+    .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
 };

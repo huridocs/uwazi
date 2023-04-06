@@ -52,4 +52,11 @@ export class MongoTranslationsDataSource
       TranslationMappers.toModel
     );
   }
+
+  getByLanguage(language: string) {
+    return new MongoResultSet<TranslationDBO, Translation>(
+      this.getCollection().find({ language }),
+      TranslationMappers.toModel
+    );
+  }
 }

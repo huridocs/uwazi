@@ -1,8 +1,9 @@
 import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
-import { TranslationValue } from 'shared/translationType';
+import { TranslationType, TranslationValue } from 'shared/translationType';
 import translations from '../translations';
+import translationsModel from '../translationsModel';
 
 import fixtures from './fixtures.js';
 
@@ -337,16 +338,107 @@ describe('translations v2 support', () => {
         ]);
       });
 
-      it('should only migrate once', async () => {
+      it('should only migrate once (on concurrent calls also)', async () => {
         await testingDB.setupFixturesAndContext(fixtures);
 
-        await Promise.all([translations.get(), translations.get()]);
+        await Promise.all([translations.get(), translations.get(), translations.get()]);
 
         const numberOfTranslationsMigrated = await db
           .collection(newTranslationsCollection)
           .countDocuments();
 
         expect(numberOfTranslationsMigrated).toBe(18);
+      });
+
+      it('should return from the old collection when not migrated', async () => {
+        await testingDB.setupFixturesAndContext({
+          ...fixtures,
+          translations: [
+            {
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Password' },
+                    { key: 'Account', value: 'Account' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        const [english] = await translations.get();
+        expect(english).toMatchObject({
+          locale: 'en',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: {
+                Account: 'Account',
+                Password: 'Password',
+              },
+            },
+          ],
+        });
+      });
+
+      fit('should return from the new collection when migrated', async () => {
+        await testingDB.setupFixturesAndContext({
+          ...fixtures,
+          translations: [
+            {
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Password' },
+                    { key: 'Account', value: 'Account' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        await translations.get();
+        jest.spyOn(translationsModel, 'get').mockReturnValue(Promise.resolve([]));
+        const [english] = await translations.get();
+        expect(english).toMatchObject([
+          {
+            locale: 'en',
+            contexts: [
+              {
+                id: 'System',
+                label: 'System',
+                type: 'Uwazi UI',
+                values: [
+                  { key: 'Password', value: 'Password' },
+                  { key: 'Account', value: 'Account' },
+                  { key: 'Email', value: 'E-Mail' },
+                  { key: 'Age', value: 'Age' },
+                  { key: 'Library', value: 'Library' },
+                ],
+              },
+              {
+                type: 'Dictionary',
+                values: [
+                  { key: 'dictionary 2', value: 'dictionary 2' },
+                  { key: 'Password', value: 'Password' },
+                  { key: 'Account', value: 'Account' },
+                  { key: 'Email', value: 'E-Mail' },
+                  { key: 'Age', value: 'Age' },
+                ],
+              },
+            ],
+          },
+        ]);
       });
     });
   });
