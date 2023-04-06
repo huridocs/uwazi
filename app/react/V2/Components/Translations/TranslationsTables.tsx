@@ -21,16 +21,14 @@ const TranslationsTables = ({
   submitting,
 }: translationsTableType) => {
   const columns = [
-    { key: '1', Header: 'Language', accessor: 'language', disableSortBy: true },
+    { Header: 'Language', accessor: 'language', disableSortBy: true },
     {
-      key: '2',
       Header: '',
       accessor: 'translationStatus',
       Cell: LanguagePill,
       disableSortBy: true,
     },
     {
-      key: '3',
       Header: 'Current Value',
       accessor: 'fieldKey',
       Cell: (data: any) => FormInput(data, { register, setValue, errors, submitting }),
