@@ -2,31 +2,13 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { propertyTypes } from 'shared/propertyTypes';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
-import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { TemplateDBO } from './schemas/TemplateDBO';
 import { Template } from '../model/Template';
 import { TemplateMappers } from './TemplateMappers';
-
-type PropertyDBO = TemplateDBO['properties'][number];
-
-const propertyToApp = (property: PropertyDBO, templateId: TemplateDBO['_id']): Property => {
-  const id = MongoIdHandler.mapToApp(templateId);
-  if (property.type === propertyTypes.newRelationship) {
-    return new RelationshipProperty(
-      property.name,
-      property.label,
-      mapPropertyQuery(property.query as TraverseQueryDBO[]),
-      id,
-      property.denormalizedProperty
-    );
-  }
-  return new Property(property.type, property.name, property.label, id);
-};
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
@@ -68,6 +50,7 @@ export class MongoTemplatesDataSource
       cursor,
       template =>
         new RelationshipProperty(
+          template.properties._id,
           template.properties.name,
           template.properties.label,
           mapPropertyQuery(template.properties.query),
@@ -83,7 +66,7 @@ export class MongoTemplatesDataSource
         .find({}, { session: this.getSession() })
         .toArray();
       const properties = templates
-        .map(t => t.properties.map(p => propertyToApp(p, t._id)) || [])
+        .map(t => t.properties.map(p => TemplateMappers.propertyDBOToApp(p, t._id)) || [])
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
@@ -111,7 +94,9 @@ export class MongoTemplatesDataSource
       { session: this.getSession() }
     );
 
-    return new MongoResultSet(cursor, template => propertyToApp(template.properties, template._id));
+    return new MongoResultSet(cursor, template =>
+      TemplateMappers.propertyDBOToApp(template.properties, template._id)
+    );
   }
 
   getTemplatesIdsHavingProperty(propertyName: string) {

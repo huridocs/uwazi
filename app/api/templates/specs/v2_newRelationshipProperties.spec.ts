@@ -32,7 +32,15 @@ const commonProperties: TemplateSchema['commonProperties'] = [
 
 const fixtures: DBFixture = {
   relationtypes: [fixtureFactory.relationType('relation')],
-  templates: [fixtureFactory.template('existing_template', [])],
+  templates: [
+    fixtureFactory.template('existing_template', []),
+    fixtureFactory.template('unrelated_template', []),
+  ],
+  entities: [
+    fixtureFactory.entity('entity1', 'existing_template'),
+    fixtureFactory.entity('entity2', 'existing_template'),
+    fixtureFactory.entity('entity3', 'unrelated_template'),
+  ],
   settings: [
     {
       _id: db.id(),
@@ -123,7 +131,7 @@ describe('template.save()', () => {
         const existingTemplates = await templates.get({ name: 'existing_template' });
         expect(existingTemplates.length).toBe(1);
         const existingTemplate = existingTemplates[0];
-        const newTemplate = {
+        const updatedTemplate = {
           ...existingTemplate,
           properties: [
             {
@@ -141,7 +149,7 @@ describe('template.save()', () => {
             { name: 'text1', label: 'Text1', type: 'text' as 'text' },
           ],
         };
-        const template = await templates.save(newTemplate, 'en');
+        const template = await templates.save(updatedTemplate, 'en');
         expect(template.properties).toEqual([
           {
             _id: expect.any(ObjectId),
@@ -185,6 +193,35 @@ describe('template.save()', () => {
         } catch (e) {
           expect(e).toBeInstanceOf(ValidationError);
         }
+      });
+
+      it('should mark the properties as obsolete metadata in entites', async () => {
+        const [existingTemplates] = await templates.get({ name: 'existing_template' });
+        const updatedTemplate = {
+          ...existingTemplates,
+          properties: [
+            {
+              label: 'New Relationship',
+              name: 'new_relationship',
+              type: 'newRelationship' as 'newRelationship',
+              query: [
+                {
+                  direction: 'out',
+                  types: [fixtureFactory.id('relation').toString()],
+                  match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+                },
+              ],
+            },
+            { name: 'text1', label: 'Text1', type: 'text' as 'text' },
+          ],
+        };
+        await templates.save(updatedTemplate, 'en');
+        const allEntities = await db.mongodb?.collection('entities').find({}).toArray();
+        expect(allEntities?.map(e => e.obsoleteMetadata)).toEqual([
+          ['new_relationship'],
+          ['new_relationship'],
+          [],
+        ]);
       });
     });
   });

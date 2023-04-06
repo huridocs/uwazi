@@ -6,6 +6,7 @@ export interface EntitiesDataSource {
   getByIds(sharedIds: string[], language?: string): ResultSet<Entity>;
   getByDenormalizedId(properties: string[], sharedIds?: string[]): ResultSet<string>;
   markMetadataAsChanged(propData: { sharedId: string; property: string }[]): Promise<void>;
+  markMetadataAsChangedByTemplate(templateId: string, properties: string[]): Promise<void>;
   updateDenormalizedMetadataValues(
     denormalizedSharedId: string,
     language: string,

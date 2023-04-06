@@ -6,6 +6,9 @@ import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplat
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { CreateTemplateService } from '../CreateTemplateService';
+import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -40,7 +43,16 @@ function setUpService() {
   const transactionManager = new MongoTransactionManager(getClient());
   const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  return new CreateTemplateService(templatesDS, relTypeDS);
+  const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
+  const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
+  const entityDS = new MongoEntitiesDataSource(
+    connection,
+    templatesDS,
+    relationshipsDS,
+    settingsDS,
+    transactionManager
+  );
+  return new CreateTemplateService(templatesDS, relTypeDS, entityDS);
 }
 
 describe('when validating the query', () => {

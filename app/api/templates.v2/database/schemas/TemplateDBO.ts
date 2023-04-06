@@ -4,6 +4,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { TraverseQueryDBO } from './RelationshipsQueryDBO';
 
 export interface RelationshipPropertyDBO {
+  _id: ObjectId;
   type: 'newRelationship';
   name: string;
   label: string;

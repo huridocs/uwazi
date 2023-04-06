@@ -218,6 +218,8 @@ export default {
       });
     }
 
+    await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
         before: currentTemplate,

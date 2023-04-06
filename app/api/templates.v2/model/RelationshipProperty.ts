@@ -9,13 +9,14 @@ class RelationshipProperty extends Property {
   readonly denormalizedProperty?: string;
 
   constructor(
+    id: string,
     name: string,
     label: string,
     query: MatchQueryNode['traversals'],
     template: string,
     denormalizedProperty?: string
   ) {
-    super('newRelationship', name, label, template);
+    super(id, 'newRelationship', name, label, template);
     this.query = query;
     this.denormalizedProperty = denormalizedProperty;
   }

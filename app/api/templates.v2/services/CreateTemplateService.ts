@@ -1,10 +1,13 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
-import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
+import { TemplateInput, TemplateMappers } from '../database/TemplateMappers';
+import { RelationshipProperty } from '../model/RelationshipProperty';
 
 interface MatchQuery {
   templates: string[];
@@ -108,12 +111,16 @@ export class CreateTemplateService {
 
   private relTypesDataSource: RelationshipTypesDataSource;
 
+  private entitiesDataSource: EntitiesDataSource;
+
   constructor(
     templatesDataSource: TemplatesDataSource,
-    relTypesDataSource: RelationshipTypesDataSource
+    relTypesDataSource: RelationshipTypesDataSource,
+    entitiesDataSource: EntitiesDataSource
   ) {
     this.templatesDataSource = templatesDataSource;
     this.relTypesDataSource = relTypesDataSource;
+    this.entitiesDataSource = entitiesDataSource;
   }
 
   private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
@@ -146,5 +153,28 @@ export class CreateTemplateService {
       ...property,
       query: QueryMapper.toDBO(query.getTraversals()),
     };
+  }
+
+  async markEntityMetadataAsObsolete(templateId: string, properties: string[]) {
+    await this.entitiesDataSource.markMetadataAsChangedByTemplate(templateId, properties);
+  }
+
+  static readTemplateInput(template: TemplateInput) {
+    return TemplateMappers.ApiToApp(template);
+  }
+
+  async handleRelationshipPropertyUpdates(
+    _oldTemplate: TemplateInput,
+    _newTemplate: TemplateInput
+  ) {
+    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
+    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+
+    const newRelationshipNames = oldTemplate
+      .selectNewProperties(newTemplate)
+      .filter(p => p instanceof RelationshipProperty)
+      .map(p => p.name);
+
+    await this.markEntityMetadataAsObsolete(newTemplate.id, newRelationshipNames);
   }
 }

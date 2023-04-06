@@ -2,6 +2,7 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
@@ -110,6 +111,15 @@ export class MongoEntitiesDataSource
       );
     }
     await stream.flush();
+  }
+
+  async markMetadataAsChangedByTemplate(_templateId: string, properties: string[]): Promise<void> {
+    const templateId = MongoIdHandler.mapToDb(_templateId);
+    const collection = this.getCollection();
+    await collection.updateMany(
+      { template: templateId },
+      { $addToSet: { obsoleteMetadata: { $each: properties } } }
+    );
   }
 
   getByIds(sharedIds: string[], language?: string) {

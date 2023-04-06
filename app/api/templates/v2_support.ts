@@ -1,22 +1,18 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty';
-import { CreateTemplateService } from 'api/templates.v2/services/CreateTemplateService';
+import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
 import { TemplateSchema } from 'shared/types/templateType';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
-  const connection = getConnection();
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return template;
   }
-  const templatesDataSource = new MongoTemplatesDataSource(connection, transactionManager);
-  const relTypesDataSource = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  const createTemplateSevice = new CreateTemplateService(templatesDataSource, relTypesDataSource);
+
+  const createTemplateService = CreateTemplateService();
 
   const mappedProperties = await Promise.all(
     (template.properties || []).map(async property => {
@@ -25,25 +21,27 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
       }
 
       const relationshipProperty = validateCreateNewRelationshipProperty(property);
-      return createTemplateSevice.createRelationshipProperty(relationshipProperty);
+      return createTemplateService.createRelationshipProperty(relationshipProperty);
     })
   );
 
   return { ...template, properties: mappedProperties };
 };
 
-const processNewRelationshipPropertiesOnUpdate = async (oldTemplate: TemplateSchema, newTemplate: TemplateSchema) => {
-  const connection = getConnection();
+const processNewRelationshipPropertiesOnUpdate = async (
+  _oldTemplate: TemplateSchema,
+  _newTemplate: TemplateSchema
+) => {
   const client = getClient();
   const transactionManager = new MongoTransactionManager(client);
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
-    return newTemplate;
+    return _newTemplate;
   }
-  const templatesDataSource = new MongoTemplatesDataSource(connection, transactionManager);
-  const relTypesDataSource = new MongoRelationshipTypesDataSource(connection, transactionManager);
-  const createTemplateSevice = new CreateTemplateService(templatesDataSource, relTypesDataSource);
+  const createTemplateService = CreateTemplateService();
 
-  return newTemplate;
+  await createTemplateService.handleRelationshipPropertyUpdates(_oldTemplate, _newTemplate);
+
+  return _newTemplate;
 };
 
-export { processNewRelationshipProperties };
+export { processNewRelationshipProperties, processNewRelationshipPropertiesOnUpdate };
