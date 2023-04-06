@@ -6,7 +6,6 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
-import { d } from 'src/data/unitShortcuts';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -253,6 +252,46 @@ describe('template.save()', () => {
           .toArray();
 
         expect(relatedEntities?.map(e => e.metadata)).toEqual([{}]);
+      });
+    });
+
+    describe('when the property is updated', () => {
+      it('on property name change, uwazi should normally update the property and metadata', async () => {
+        const [existingTemplate] = await templates.get({
+          name: 'template_with_existing_relationship',
+        });
+        const updatedTemplate = {
+          ...existingTemplate,
+          properties: [
+            {
+              ...existingTemplate.properties![0],
+              _id: existingTemplate.properties![0]._id!.toString(),
+              label: 'new name',
+              name: 'new_name',
+            },
+          ],
+        };
+        const template = await templates.save(updatedTemplate, 'en');
+        expect(template.properties).toEqual([
+          {
+            _id: expect.any(ObjectId),
+            type: 'newRelationship',
+            label: 'new name',
+            name: 'new_name',
+            query: [],
+          },
+        ]);
+
+        const relatedEntities = await db.mongodb
+          ?.collection('entities')
+          .find({ template: existingTemplate._id })
+          .toArray();
+
+        expect(relatedEntities?.map(e => e.metadata)).toEqual([
+          {
+            new_name: [{ value: 'existing_value' }],
+          },
+        ]);
       });
     });
   });

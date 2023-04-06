@@ -10,6 +10,7 @@ export interface TraverseQuery {
 }
 
 export interface RelationshipPropertyData {
+  _id?: string;
   type: 'newRelationship';
   label: string;
   name: string;

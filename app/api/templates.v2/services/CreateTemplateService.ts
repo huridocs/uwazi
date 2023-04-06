@@ -1,12 +1,11 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
-import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
-import { TemplateInput, TemplateMappers } from '../database/TemplateMappers';
+import { BuildQuery, TemplateInput, TemplateMappers } from '../database/TemplateMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 
 interface MatchQuery {
@@ -88,22 +87,6 @@ const flushErrors = (errors: ValidationError['errors']) => {
   if (errors.length) {
     throw new ValidationError(errors);
   }
-};
-
-const BuildQuery = {
-  traverse: (query: TraverseQuery): TraversalQueryNode =>
-    new TraversalQueryNode(
-      query.direction,
-      { types: query.types },
-      query.match.map(BuildQuery.match)
-    ),
-  match: (query: MatchQuery): MatchQueryNode =>
-    new MatchQueryNode(
-      { templates: query.templates },
-      query.traverse?.map(BuildQuery.traverse) ?? []
-    ),
-  build: (traversals: TraverseQuery[]) =>
-    new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
 };
 
 export class CreateTemplateService {

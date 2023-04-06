@@ -12,6 +12,7 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
     type: { enum: ['newRelationship'] },
   },
   optionalProperties: {
+    _id: { type: 'string' },
     denormalizedProperty: { type: 'string' },
   },
   definitions: {

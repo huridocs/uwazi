@@ -1,4 +1,7 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
+import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -9,11 +12,44 @@ import { mapPropertyQuery } from './QueryMapper';
 import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { TemplateDBO } from './schemas/TemplateDBO';
 
+const BuildQuery = {
+  traverse: (query: TraverseQuery): TraversalQueryNode =>
+    new TraversalQueryNode(
+      query.direction,
+      { types: query.types },
+      query.match.map(BuildQuery.match)
+    ),
+  match: (query: MatchQuery): MatchQueryNode =>
+    new MatchQueryNode(
+      { templates: query.templates },
+      query.traverse?.map(BuildQuery.traverse) ?? []
+    ),
+  build: (traversals: TraverseQuery[]) =>
+    new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
+};
+
 type PropertyDBO = TemplateDBO['properties'][number];
 
 type TemplateInput = TemplateSchema;
 
 const propertyApiToApp = (property: PropertySchema, templateId: string): Property => {
+  const propertyId = property._id?.toString() || MongoIdHandler.generate();
+  const { query } = property;
+  if (property.type === propertyTypes.newRelationship) {
+    return new RelationshipProperty(
+      propertyId,
+      property.name,
+      property.label,
+      (query as TraverseQuery[]).map(BuildQuery.traverse),
+      templateId,
+      property.denormalizedProperty
+    );
+  }
+  return new Property(propertyId, property.type, property.name, property.label, templateId);
+};
+
+const propertyDBOToApp = (property: PropertyDBO, _templateId: TemplateDBO['_id']): Property => {
+  const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
   if (property.type === propertyTypes.newRelationship) {
     return new RelationshipProperty(
@@ -28,12 +64,7 @@ const propertyApiToApp = (property: PropertySchema, templateId: string): Propert
   return new Property(propertyId, property.type, property.name, property.label, templateId);
 };
 
-const propertyDBOToApp = (property: PropertyDBO, _templateId: TemplateDBO['_id']): Property => {
-  const templateId = MongoIdHandler.mapToApp(_templateId);
-  return propertyApiToApp(property, templateId);
-};
-
-export const TemplateMappers = {
+const TemplateMappers = {
   propertyApiToApp,
   propertyDBOToApp,
   DBOToApp: (tdbo: TemplateDBO): Template =>
@@ -53,4 +84,5 @@ export const TemplateMappers = {
   },
 };
 
+export { BuildQuery, TemplateMappers };
 export type { TemplateInput };
