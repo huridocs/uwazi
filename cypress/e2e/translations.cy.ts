@@ -43,7 +43,8 @@ describe('Translations', () => {
     cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
       name: 'edit-translations',
     });
-    cy.get('input[type=text]').eq(0).clear().type('Fecha edited');
+    cy.get('input[type=text]').eq(0).clear();
+    cy.get('input[type=text]').eq(0).type('Fecha edited');
     cy.contains('button', 'Save').click();
     cy.get('[data-testid=settings-translations]').scrollTo('top');
     cy.get('[data-testid=table-element]').eq(0).get('input').should('have.length', 9);
