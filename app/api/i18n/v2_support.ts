@@ -1,6 +1,8 @@
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoTranslationsDataSource } from 'api/i18n.v2/database/MongoTranslationsDataSource';
+import { Translation } from 'api/i18n.v2/model/Translation';
 import {
   CreateTranslationsData,
   CreateTranslationsService,
@@ -9,7 +11,7 @@ import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslatio
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { tenants } from 'api/tenants';
-import { TranslationType } from 'shared/translationType';
+import { TranslationContext, TranslationType } from 'shared/translationType';
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -34,6 +36,36 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
   return [];
 };
 
+const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translation>) => {
+  const resultMap: { [language: string]: TranslationType } = {};
+  const contexts: { [language: string]: { [context: string]: TranslationContext } } = {};
+  await tranlationsResult.forEach(translation => {
+    if (!resultMap[translation.language]) {
+      resultMap[translation.language] = {
+        locale: translation.language,
+        contexts: [],
+      };
+      contexts[translation.language] = {};
+    }
+    if (!contexts[translation.language][translation.context.id]) {
+      contexts[translation.language][translation.context.id] = {
+        id: translation.context.id,
+        label: translation.context.label,
+        type: translation.context.type,
+        values: [],
+      };
+    }
+    contexts[translation.language][translation.context.id].values.push({
+      key: translation.key,
+      value: translation.value,
+    });
+  });
+
+  return Object.values(resultMap).map(translation => {
+    translation.contexts = Object.values(contexts[translation.locale]);
+    return translation;
+  });
+};
 export const createTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
@@ -66,22 +98,16 @@ export const deleteTranslationsByLanguageV2 = async (language: string) => {
   ).deleteByLanguage(language);
 };
 
-export const getTranslationsByLanguageV2 = async () => {
-  const resultMap: { [language: string]: TranslationType } = {};
-  await new GetTranslationsService(
+export const getTranslationsV2 = async (language?: string) => {
+  const service = new GetTranslationsService(
     new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
-  )
-    .getAll()
-    .forEach(translation => {
-      if (!resultMap[translation.language]) {
-        resultMap[translation.language] = {
-          locale: translation.language,
-          contexts: [],
-        };
-      }
-    });
+  );
 
-  return Object.values(resultMap);
+  if (language) {
+    return resultsToV1TranslationType(service.getByLanguage(language));
+  }
+
+  return resultsToV1TranslationType(service.getAll());
 };
 
 export const migrateTranslationsToV2 = async () => {

@@ -1,7 +1,7 @@
 import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
-import { TranslationType, TranslationValue } from 'shared/translationType';
+import { TranslationValue } from 'shared/translationType';
 import translations from '../translations';
 import translationsModel from '../translationsModel';
 
@@ -387,10 +387,24 @@ describe('translations v2 support', () => {
         });
       });
 
-      fit('should return from the new collection when migrated', async () => {
+      it('should return from the new collection when migrated', async () => {
         await testingDB.setupFixturesAndContext({
           ...fixtures,
           translations: [
+            {
+              locale: 'es',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Contraseña' },
+                    { key: 'Account', value: 'Cuenta' },
+                  ],
+                },
+              ],
+            },
             {
               locale: 'en',
               contexts: [
@@ -409,36 +423,146 @@ describe('translations v2 support', () => {
         });
         await translations.get();
         jest.spyOn(translationsModel, 'get').mockReturnValue(Promise.resolve([]));
-        const [english] = await translations.get();
-        expect(english).toMatchObject([
-          {
-            locale: 'en',
-            contexts: [
-              {
-                id: 'System',
-                label: 'System',
-                type: 'Uwazi UI',
-                values: [
-                  { key: 'Password', value: 'Password' },
-                  { key: 'Account', value: 'Account' },
-                  { key: 'Email', value: 'E-Mail' },
-                  { key: 'Age', value: 'Age' },
-                  { key: 'Library', value: 'Library' },
-                ],
-              },
-              {
-                type: 'Dictionary',
-                values: [
-                  { key: 'dictionary 2', value: 'dictionary 2' },
-                  { key: 'Password', value: 'Password' },
-                  { key: 'Account', value: 'Account' },
-                  { key: 'Email', value: 'E-Mail' },
-                  { key: 'Age', value: 'Age' },
-                ],
-              },
-            ],
-          },
-        ]);
+        const [spanish, english] = await translations.get();
+        expect(english).toMatchObject({
+          locale: 'en',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: [
+                { key: 'Password', value: 'Password' },
+                { key: 'Account', value: 'Account' },
+              ],
+            },
+          ],
+        });
+
+        expect(spanish).toMatchObject({
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: [
+                { key: 'Password', value: 'Contraseña' },
+                { key: 'Account', value: 'Cuenta' },
+              ],
+            },
+          ],
+        });
+      });
+
+      it('should return only the language requested', async () => {
+        await testingDB.setupFixturesAndContext({
+          ...fixtures,
+          translations: [
+            {
+              locale: 'es',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Contraseña' },
+                    { key: 'Account', value: 'Cuenta' },
+                  ],
+                },
+              ],
+            },
+            {
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Password' },
+                    { key: 'Account', value: 'Account' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        await translations.get();
+        jest.spyOn(translationsModel, 'get').mockReturnValue(Promise.resolve([]));
+        const [spanish, english] = await translations.get({ locale: 'es' });
+        expect(english).toBeUndefined();
+        expect(spanish).toMatchObject({
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: [
+                { key: 'Password', value: 'Contraseña' },
+                { key: 'Account', value: 'Cuenta' },
+              ],
+            },
+          ],
+        });
+      });
+
+      it('should return only the old _id requested which maps to a language', async () => {
+        const englishId = new ObjectId();
+        await testingDB.setupFixturesAndContext({
+          ...fixtures,
+          translations: [
+            {
+              _id: englishId,
+              locale: 'es',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Contraseña' },
+                    { key: 'Account', value: 'Cuenta' },
+                  ],
+                },
+              ],
+            },
+            {
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Password' },
+                    { key: 'Account', value: 'Account' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        await translations.get();
+        jest.spyOn(translationsModel, 'get').mockReturnValue(Promise.resolve([]));
+        const [english, rest] = await translations.get({ _id: englishId.toString() });
+        expect(rest).toBeUndefined();
+        expect(english).toMatchObject({
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: [
+                { key: 'Password', value: 'Password' },
+                { key: 'Account', value: 'Account' },
+              ],
+            },
+          ],
+        });
       });
     });
   });

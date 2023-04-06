@@ -19,7 +19,7 @@ import {
   createTranslationsV2,
   deleteTranslationsByContextIdV2,
   deleteTranslationsByLanguageV2,
-  getTranslationsByLanguageV2,
+  getTranslationsV2,
   migrateTranslationsToV2,
   upsertTranslationsV2,
 } from './v2_support';
@@ -195,7 +195,7 @@ export default {
   async get(query: { _id?: string; locale?: string } = {}, selector = {}) {
     const alreadyMigrated = await migrateTranslationsToV2();
     if (alreadyMigrated) {
-      return getTranslationsByLanguageV2();
+      return getTranslationsV2(query.locale);
     }
     const translations = await model.get(query, selector);
     return translations.map(
