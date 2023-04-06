@@ -120,7 +120,7 @@ describe('Share Entities', () => {
     cy.contains('h2', 'Edited title').should('exist');
   });
 
-  it('should be able to see only published entities', { defaultCommandTimeout: 6000 }, () => {
+  it('should be able to see only published entities', () => {
     englishLoggedInUwazi('colla', 'borator');
     selectPublishedEntities();
     cy.get('.search-box input').clear();
