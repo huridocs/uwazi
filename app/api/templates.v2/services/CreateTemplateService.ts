@@ -4,6 +4,7 @@ import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNod
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
+import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 
 interface MatchQuery {
   templates: string[];
@@ -38,25 +39,44 @@ const expandAllTemplates = (allTemplatesIds: string[]) => (record: TemplateRecor
 export class CreateTemplateService {
   private templatesDataSource: TemplatesDataSource;
 
-  constructor(templatesDataSource: TemplatesDataSource) {
+  private relTypesDataSource: RelationshipTypesDataSource;
+
+  constructor(
+    templatesDataSource: TemplatesDataSource,
+    relTypesDataSource: RelationshipTypesDataSource
+  ) {
     this.templatesDataSource = templatesDataSource;
+    this.relTypesDataSource = relTypesDataSource;
   }
 
   // eslint-disable-next-line max-statements
   private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
+    const errors: ValidationError['errors'] = [];
+
     const allTemplatesIds = await this.templatesDataSource.getAllTemplatesIds().all();
-    const alltemplateIdSet = new Set(allTemplatesIds);
+    const templateIdSet = new Set(allTemplatesIds);
 
     const allQueryTemplates = query.getTemplates().map(expandAllTemplates(allTemplatesIds));
     allQueryTemplates.forEach(record => {
-      const nonExisting = record.templates.filter(template => !alltemplateIdSet.has(template));
+      const nonExisting = record.templates.filter(template => !templateIdSet.has(template));
       if (nonExisting.length) {
-        throw new ValidationError([
-          {
-            path: `/query/${record.path.join('/')}/templates`,
-            message: `Templates ${nonExisting.join(', ')} do not exist.`,
-          },
-        ]);
+        errors.push({
+          path: `/query/${record.path.join('/')}/templates`,
+          message: `Templates ${nonExisting.join(', ')} do not exist.`,
+        });
+      }
+    });
+
+    const relTypeIds = await this.relTypesDataSource.getRelationshipTypeIds();
+    const relTypeIdSet = new Set(relTypeIds);
+    const allQueryRelationTypes = query.getRelationTypes().map(expandAllTemplates(relTypeIds));
+    allQueryRelationTypes.forEach(record => {
+      const nonExisting = record.templates.filter(template => !relTypeIdSet.has(template));
+      if (nonExisting.length) {
+        errors.push({
+          path: `/query/${record.path.join('/')}/types`,
+          message: `Relation types ${nonExisting.join(', ')} do not exist.`,
+        });
       }
     });
 
@@ -69,7 +89,6 @@ export class CreateTemplateService {
       await this.templatesDataSource.getTemplatesIdsHavingProperty(denormalizedProperty).all()
     );
 
-    const errors: ValidationError['errors'] = [];
     templatesInLeaves.forEach(record => {
       if (!record.templates.every(template => templatesHavingProperty.has(template))) {
         errors.push({

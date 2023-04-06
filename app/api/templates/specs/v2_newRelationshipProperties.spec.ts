@@ -3,8 +3,8 @@ import { ObjectId } from 'mongodb';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import templates from '../templates';
 import { TemplateSchema } from 'shared/types/templateType';
+import templates from '../templates';
 
 const commonProperties: TemplateSchema['commonProperties'] = [
   {

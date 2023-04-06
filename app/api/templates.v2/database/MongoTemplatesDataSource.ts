@@ -79,7 +79,9 @@ export class MongoTemplatesDataSource
 
   async getPropertyByName(name: string) {
     if (!this._nameToPropertyMap) {
-      const templates = await this.getCollection().find({}).toArray();
+      const templates = await this.getCollection()
+        .find({}, { session: this.getSession() })
+        .toArray();
       const properties = templates
         .map(t => t.properties.map(p => propertyToApp(p, t._id)) || [])
         .flat();
@@ -115,19 +117,24 @@ export class MongoTemplatesDataSource
   getTemplatesIdsHavingProperty(propertyName: string) {
     const cursor = this.getCollection().find(
       { 'properties.name': propertyName },
-      { projection: { _id: 1 } }
+      { projection: { _id: 1 }, session: this.getSession() }
     );
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
   getAllTemplatesIds() {
-    const cursor = this.getCollection().find({}, { projection: { _id: 1 } });
+    const cursor = this.getCollection().find(
+      {},
+      { projection: { _id: 1 }, session: this.getSession() }
+    );
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
   async getAllTemplates(forceRefresh: boolean = false): Promise<Template[]> {
     if (!this._allTemplates || forceRefresh) {
-      const rawTemplates = await this.getCollection().find({}).toArray();
+      const rawTemplates = await this.getCollection()
+        .find({}, { session: this.getSession() })
+        .toArray();
       this._allTemplates = rawTemplates.map(t => TemplateMappers.DBOToApp(t));
     }
     return this._allTemplates;

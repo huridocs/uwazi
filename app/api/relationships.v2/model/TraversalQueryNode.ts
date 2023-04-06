@@ -198,6 +198,19 @@ export class TraversalQueryNode extends QueryNode {
     return records;
   }
 
+  getRelationTypes(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    records.push({
+      path,
+      templates: this.filters.types || [],
+    });
+    this.matches.forEach((m, index) => m.getRelationTypes([...path, index], records));
+    return records;
+  }
+
   getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {
     return this.matches.map((m, index) => m.getTemplatesInLeaves([...path, index])).flat();
   }

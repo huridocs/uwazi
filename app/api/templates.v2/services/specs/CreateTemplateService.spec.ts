@@ -1,6 +1,7 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -35,9 +36,11 @@ afterAll(async () => {
 });
 
 function setUpService() {
+  const connection = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
-  const templatesDS = new MongoTemplatesDataSource(getConnection(), transactionManager);
-  return new CreateTemplateService(templatesDS);
+  const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
+  const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
+  return new CreateTemplateService(templatesDS, relTypeDS);
 }
 
 describe('when validating the query', () => {
@@ -187,10 +190,9 @@ describe('when validating the query', () => {
       });
       throw new Error('should have thrown an error');
     } catch (e) {
-      console.log(e)
       expect(e).toBeInstanceOf(ValidationError);
       if (e instanceof ValidationError) {
-        expect(e.errors[0].path).toBe('/query/0/0/types');
+        expect(e.errors[0].path).toBe('/query/0/types');
         expect(e.errors[0].message).toBe(
           `Relation types ${fixturesFactory.id('non-existing-reltype').toHexString()} do not exist.`
         );

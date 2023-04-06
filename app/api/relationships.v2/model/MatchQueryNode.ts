@@ -163,6 +163,17 @@ export class MatchQueryNode extends QueryNode {
     return records;
   }
 
+  getRelationTypes(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    if (this.traversals.length) {
+      this.traversals.forEach((t, index) => t.getRelationTypes([...path, index], records));
+    }
+    return records;
+  }
+
   getTemplatesInLeaves(path: number[] = []): TemplateRecords {
     if (!this.traversals?.length) {
       return [
