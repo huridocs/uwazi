@@ -9,6 +9,8 @@ import { RelationshipProperty } from '../model/RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { TemplateDBO } from './schemas/TemplateDBO';
+import { Template } from '../model/Template';
+import { TemplateMappers } from './TemplateMappers';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 
@@ -33,6 +35,10 @@ export class MongoTemplatesDataSource
   protected collectionName = 'templates';
 
   private _nameToPropertyMap?: Record<string, Property>;
+
+  private _allTemplates?: Template[];
+
+  private _allTemplatesById?: Record<string, Template>;
 
   getAllRelationshipProperties() {
     const cursor = this.getCollection().aggregate(
@@ -117,5 +123,24 @@ export class MongoTemplatesDataSource
   getAllTemplatesIds() {
     const cursor = this.getCollection().find({}, { projection: { _id: 1 } });
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
+  }
+
+  async getAllTemplates(forceRefresh: boolean = false): Promise<Template[]> {
+    if (!this._allTemplates || forceRefresh) {
+      const rawTemplates = await this.getCollection().find({}).toArray();
+      this._allTemplates = rawTemplates.map(t => TemplateMappers.DBOToApp(t));
+    }
+    return this._allTemplates;
+  }
+
+  async getTemplateIdIndex(forceRefresh: boolean = false): Promise<Record<string, Template>> {
+    if (!this._allTemplatesById || forceRefresh) {
+      this._allTemplatesById = objectIndex(
+        await this.getAllTemplates(forceRefresh),
+        t => t.id,
+        t => t
+      );
+    }
+    return this._allTemplatesById;
   }
 }
