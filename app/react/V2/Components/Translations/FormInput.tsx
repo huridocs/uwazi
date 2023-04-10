@@ -1,18 +1,19 @@
 import React from 'react';
-import { ErrorMessage } from '@hookform/error-message';
-import { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { InputField } from '../UI';
 
 type fromPropsType = {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
-  errors: FieldErrors<any>;
+  getFieldState: UseFormGetFieldState<any>;
   submitting: boolean;
 };
 
 const FormInput = (data: any, formProps: fromPropsType) => {
-  const { register, setValue, errors, submitting } = formProps;
+  const { register, setValue, submitting, getFieldState } = formProps;
+  const { error } = getFieldState(data.cell.value);
+  const hasErrors = Boolean(error);
   const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
   return (
     <div>
@@ -22,19 +23,18 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         hideLabel
         disabled={submitting}
         clearFieldAction={reset}
+        hasErrors={hasErrors}
         inputControls={{
           ...register(data.cell.value, {
             required: true,
           }),
         }}
       />
-      <div className="mt-2 text-error-700 font-bold">
-        <ErrorMessage
-          name={data.cell.value}
-          errors={errors}
-          render={() => <Translate>This field is required</Translate>}
-        />
-      </div>
+      {hasErrors && (
+        <div className="mt-2 text-error-700 font-bold">
+          <Translate>This field is required</Translate>
+        </div>
+      )}
     </div>
   );
 };

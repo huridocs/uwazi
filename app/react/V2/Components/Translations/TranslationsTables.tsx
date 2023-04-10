@@ -1,6 +1,6 @@
 import React from 'react';
 import RenderIfVisible from 'react-render-if-visible';
-import { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Table } from '../UI';
 import { FormInput } from './FormInput';
 import { LanguagePill } from './LanguagePill';
@@ -9,7 +9,7 @@ type translationsTableType = {
   tablesData: any[];
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
-  errors: FieldErrors<any>;
+  getFieldState: UseFormGetFieldState<any>;
   submitting: boolean;
 };
 
@@ -17,8 +17,8 @@ const TranslationsTables = ({
   tablesData,
   register,
   setValue,
-  errors,
   submitting,
+  getFieldState,
 }: translationsTableType) => {
   const columns = [
     { Header: 'Language', accessor: 'language', disableSortBy: true },
@@ -31,7 +31,7 @@ const TranslationsTables = ({
     {
       Header: 'Current Value',
       accessor: 'fieldKey',
-      Cell: (data: any) => FormInput(data, { register, setValue, errors, submitting }),
+      Cell: (data: any) => FormInput(data, { register, setValue, submitting, getFieldState }),
       disableSortBy: true,
       className: 'w-full',
     },

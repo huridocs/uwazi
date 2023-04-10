@@ -149,10 +149,11 @@ const EditTranslations = () => {
     register,
     handleSubmit,
     setValue,
+    getFieldState,
     formState: { isDirty, errors },
   } = useForm({
     defaultValues: { formData },
-    mode: 'all',
+    mode: 'onSubmit',
   });
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
@@ -220,7 +221,7 @@ const EditTranslations = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="px-5 pl-5">
+      <div className="px-5 pt-5">
         <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
             <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
@@ -239,15 +240,15 @@ const EditTranslations = () => {
           </ToggleButton>
         </div>
 
-        <form onSubmit={handleSubmit(submitFunction)} className="flex flex-col h-[79vh]">
-          <div className="flex-grow">
+        <form onSubmit={handleSubmit(submitFunction)} className="flex flex-col h-max">
+          <div>
             {tablesData.length ? (
               <TranslationsTables
                 tablesData={tablesData}
+                submitting={submitting}
                 register={register}
                 setValue={setValue}
-                errors={errors}
-                submitting={submitting}
+                getFieldState={getFieldState}
               />
             ) : (
               <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
