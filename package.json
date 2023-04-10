@@ -17,7 +17,9 @@
   "author": "huridocs.org",
   "main": "server.js",
   "scripts": {
-    "check-types": "tsc --noEmit --pretty & tsc --noEmit --pretty --project cypress",
+    "check-app-types": "tsc --noEmit --pretty",
+    "check-cy-types": "tsc --noEmit --pretty --project cypress",
+    "check-types": "yarn check-app-types; yarn check-cy-types",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "emit-types": "node scripts/emitSchemaTypes.js",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
