@@ -323,7 +323,7 @@
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
     "canvas": "^2.11.0",
     "clean-webpack-plugin": "4.0.0",
-    "concurrently": "^7.6.0",
+    "concurrently": "^8.0.1",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.2.2",
