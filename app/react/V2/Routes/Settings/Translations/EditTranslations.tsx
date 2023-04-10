@@ -132,7 +132,6 @@ const EditTranslations = () => {
     settings: Settings;
   };
 
-  const [submitting, setIsSubmitting] = useState(false);
   const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -150,7 +149,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
-    formState: { isDirty, errors },
+    formState: { isDirty, errors, isSubmitting },
   } = useForm({
     defaultValues: { formData },
     mode: 'onSubmit',
@@ -171,10 +170,8 @@ const EditTranslations = () => {
   };
 
   const submitFunction = async (data: { formData: formDataType }) => {
-    setIsSubmitting(true);
     const values = prepareValuesToSave(data.formData, translations);
     if (values && contextId) {
-      setIsSubmitting(true);
       try {
         const response = await translationsAPI.post(values, contextId);
         setTranslationsState(response);
@@ -189,14 +186,12 @@ const EditTranslations = () => {
           details: e.json.error,
         });
       }
-      setIsSubmitting(false);
     }
   };
 
   const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setIsSubmitting(true);
       try {
         const response = await translationsAPI.importTranslations(file, 'System');
         setTranslationsState(response);
@@ -211,7 +206,6 @@ const EditTranslations = () => {
           details: e.json.error,
         });
       }
-      setIsSubmitting(false);
     }
   };
 
@@ -245,7 +239,7 @@ const EditTranslations = () => {
             {tablesData.length ? (
               <TranslationsTables
                 tablesData={tablesData}
-                submitting={submitting}
+                submitting={isSubmitting}
                 register={register}
                 setValue={setValue}
                 getFieldState={getFieldState}
@@ -269,7 +263,7 @@ const EditTranslations = () => {
                       size="small"
                       buttonStyle="tertiary"
                       type="button"
-                      disabled={submitting}
+                      disabled={isSubmitting}
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <Translate>Import</Translate>
@@ -289,11 +283,11 @@ const EditTranslations = () => {
                 size="small"
                 buttonStyle="tertiary"
                 type="button"
-                disabled={submitting}
+                disabled={isSubmitting}
               >
                 <Translate>Cancel</Translate>
               </Button>
-              <Button size="small" buttonStyle="primary" type="submit" disabled={submitting}>
+              <Button size="small" buttonStyle="primary" type="submit" disabled={isSubmitting}>
                 <Translate>Save</Translate>
               </Button>
             </div>
