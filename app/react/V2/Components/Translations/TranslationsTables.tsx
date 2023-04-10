@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Table } from '../UI';
@@ -20,6 +20,11 @@ const TranslationsTables = ({
   submitting,
   getFieldState,
 }: translationsTableType) => {
+  const memoizedInput = useMemo(
+    () => data => FormInput(data, { register, setValue, submitting, getFieldState }),
+    [getFieldState, register, setValue, submitting]
+  );
+
   const columns = [
     { Header: 'Language', accessor: 'language', disableSortBy: true },
     {
@@ -31,7 +36,7 @@ const TranslationsTables = ({
     {
       Header: 'Current Value',
       accessor: 'fieldKey',
-      Cell: (data: any) => FormInput(data, { register, setValue, submitting, getFieldState }),
+      Cell: memoizedInput,
       disableSortBy: true,
       className: 'w-full',
     },
