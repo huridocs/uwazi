@@ -216,27 +216,31 @@ const EditTranslations = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="h-full px-5 pt-5">
-        <div className="pb-4">
-          <NavigationHeader backUrl="/settings/translations">
-            <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
-              <Translate>Translations</Translate>
-              <span>&gt;</span>
-              <Translate>{contextLabel}</Translate>
-            </h1>
-          </NavigationHeader>
-        </div>
+      <div className="flex flex-col h-full">
+        <div className="px-5 pt-5 flex-grow">
+          <div className="pb-4">
+            <NavigationHeader backUrl="/settings/translations">
+              <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
+                <Translate>Translations</Translate>
+                <span>&gt;</span>
+                <Translate>{contextLabel}</Translate>
+              </h1>
+            </NavigationHeader>
+          </div>
 
-        <div className="pb-4">
-          <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
-            <div className="ml-2 text-sm text-gray-700">
-              <Translate>Untranslated Terms</Translate>
-            </div>
-          </ToggleButton>
-        </div>
+          <div className="pb-4">
+            <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
+              <div className="ml-2 text-sm text-gray-700">
+                <Translate>Untranslated Terms</Translate>
+              </div>
+            </ToggleButton>
+          </div>
 
-        <form onSubmit={handleSubmit(submitFunction)} className="flex flex-col h-5/6">
-          <div className="flex-grow">
+          <form
+            onSubmit={handleSubmit(submitFunction)}
+            className="flex flex-col h-5/6"
+            id="edit-translations"
+          >
             {tablesData.length ? (
               <TranslationsTables
                 tablesData={tablesData}
@@ -253,47 +257,53 @@ const EditTranslations = () => {
                 </span>
               </div>
             )}
-          </div>
+          </form>
+        </div>
 
-          <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 lg:sticky z-1">
-            <div className="flex justify-end gap-2 p-2 pt-1">
-              <div className="flex-1">
-                {contextId === 'System' && (
-                  <>
-                    <Button
-                      size="small"
-                      buttonStyle="tertiary"
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <Translate>Import</Translate>
-                    </Button>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="text/csv"
-                      className="hidden"
-                      onChange={onFileImported}
-                    />
-                  </>
-                )}
-              </div>
-              <Button
-                onClick={cancel}
-                size="small"
-                buttonStyle="tertiary"
-                type="button"
-                disabled={isSubmitting}
-              >
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button size="small" buttonStyle="primary" type="submit" disabled={isSubmitting}>
-                <Translate>Save</Translate>
-              </Button>
+        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 lg:sticky z-1 p-1">
+          <div className="flex justify-end gap-2 p-2 pt-1">
+            <div className="flex-1">
+              {contextId === 'System' && (
+                <>
+                  <Button
+                    size="small"
+                    buttonStyle="tertiary"
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Translate>Import</Translate>
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="text/csv"
+                    className="hidden"
+                    onChange={onFileImported}
+                  />
+                </>
+              )}
             </div>
+            <Button
+              onClick={cancel}
+              size="small"
+              buttonStyle="tertiary"
+              type="button"
+              disabled={isSubmitting}
+            >
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button
+              size="small"
+              buttonStyle="primary"
+              type="submit"
+              disabled={isSubmitting}
+              formId="edit-translations"
+            >
+              <Translate>Save</Translate>
+            </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
