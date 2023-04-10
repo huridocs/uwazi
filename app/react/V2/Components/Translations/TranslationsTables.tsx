@@ -21,7 +21,7 @@ const TranslationsTables = ({
   getFieldState,
 }: translationsTableType) => {
   const memoizedInput = useMemo(
-    () => data => FormInput(data, { register, setValue, submitting, getFieldState }),
+    () => (data: any) => FormInput(data, { register, setValue, submitting, getFieldState }),
     [getFieldState, register, setValue, submitting]
   );
 

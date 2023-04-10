@@ -137,9 +137,9 @@ const EditTranslations = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const setModal = useSetRecoilState(modalAtom);
   const setShowModal = useSetRecoilState(showModalAtom);
-
   const navigate = useNavigate();
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+
   const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
@@ -149,6 +149,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { isDirty, errors, isSubmitting },
   } = useForm({
     defaultValues: { formData },
