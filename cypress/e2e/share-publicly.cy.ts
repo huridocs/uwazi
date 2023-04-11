@@ -1,15 +1,10 @@
-import { login, selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
-
-const changeLanguage = () => {
-  cy.get('.menuNav-language > .dropdown').click();
-  cy.get('div[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
-};
-
-const englishLoggedInUwazi = (username = 'admin', password = 'admin') => {
-  cy.visit('http://localhost:3000');
-  changeLanguage();
-  login(username, password);
-};
+import {
+  selectPublishedEntities,
+  selectRestrictedEntities,
+  createUser,
+  logout,
+  englishLoggedInUwazi,
+} from './helpers';
 
 describe('Share Publicly', () => {
   const entityTitle =
@@ -17,10 +12,10 @@ describe('Share Publicly', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    englishLoggedInUwazi();
   });
 
   it('should create a colaborator in the shared User Group', () => {
-    englishLoggedInUwazi();
     cy.get('a[aria-label="Library"]').click();
     createUser({
       username: 'colla',
@@ -31,10 +26,8 @@ describe('Share Publicly', () => {
   });
 
   it('should share an entity with the collaborator', () => {
-    englishLoggedInUwazi();
-
+    cy.get('a[aria-label="Library"]').click();
     selectPublishedEntities();
-
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
     cy.get('[data-testid=modal] input').type('colla');
@@ -45,8 +38,6 @@ describe('Share Publicly', () => {
   });
 
   it('should unshare entities publicly', () => {
-    englishLoggedInUwazi();
-    selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
     cy.get('div[data-testid=modal] select').eq(1).select('delete');
@@ -55,12 +46,7 @@ describe('Share Publicly', () => {
   });
 
   describe('share entities publicly', () => {
-    beforeEach(() => {
-      englishLoggedInUwazi();
-    });
-
-    it('should share the entity', { defaultCommandTimeout: 6000 }, () => {
-      selectPublishedEntities();
+    it('should share the entity', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
@@ -70,6 +56,7 @@ describe('Share Publicly', () => {
     });
 
     it('should not display the entity among the restricted ones', () => {
+      cy.reload();
       selectRestrictedEntities();
       cy.contains('h2', entityTitle).should('not.exist');
     });
@@ -77,6 +64,8 @@ describe('Share Publicly', () => {
 
   describe('as a collaborator', () => {
     it('should not be able to unshare entities publicly', () => {
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      logout();
       englishLoggedInUwazi('colla', 'borator');
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
@@ -87,25 +76,29 @@ describe('Share Publicly', () => {
     });
 
     it('should create an entity', () => {
-      englishLoggedInUwazi('colla', 'borator');
       cy.contains('button', 'Create entity').click();
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('div.alert', 'Entity created').click();
       cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
+      cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
 
     it('should not be able to share the entity', () => {
-      englishLoggedInUwazi('colla', 'borator');
       selectRestrictedEntities();
       cy.contains('h2', 'Test title').click();
       cy.contains('button', 'Share').click();
       cy.get('div[data-testid=modal] select').should('have.length', 2);
       cy.get('div[data-testid=modal]').toMatchImageSnapshot();
+      cy.contains('div[data-testid=modal] button', 'Close').click();
+      cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
 
     it('should show mixed access', () => {
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      logout();
       englishLoggedInUwazi();
+      cy.contains('header a', 'Uwazi').click();
       cy.get('input[name="library.search.searchTerm"]').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 3);
@@ -113,10 +106,10 @@ describe('Share Publicly', () => {
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
       cy.get('div[data-testid=modal]').toMatchImageSnapshot();
+      cy.contains('div[data-testid=modal] button', 'Close').click();
     });
 
     it('should keep publishing status if mixed access selected', () => {
-      englishLoggedInUwazi();
       cy.get('input[name="library.search.searchTerm"]').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 3);

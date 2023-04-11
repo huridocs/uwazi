@@ -1,14 +1,15 @@
 import { selectRestrictedEntities } from './helpers';
-import { englishLoggedInUwazi } from './helpers/login';
+import { englishLoggedInUwazi, logout } from './helpers/login';
 
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    englishLoggedInUwazi();
   });
 
-  beforeEach(() => {
-    englishLoggedInUwazi();
+  after(() => {
+    logout();
   });
 
   it('should white list the templates', () => {
@@ -22,13 +23,13 @@ describe('Public Form', () => {
     cy.get('input[placeholder="Search item"]').type('Reporte');
     cy.contains('span', 'Reporte').click();
     cy.get('input[placeholder="Search item"]').clear();
-    cy.get('#collectionSettings .row').eq(16).toMatchImageSnapshot();
+    cy.get('#collectionSettings .row').eq(16).scrollIntoView().toMatchImageSnapshot();
     cy.contains('button', 'Save').click();
     cy.get('.alert.alert-success').click();
   });
 
   it('should create a page with a public form', () => {
-    cy.contains('a', 'Settings').click();
+    // cy.contains('a', 'Settings').click();
     cy.contains('a', 'Pages').click();
     cy.contains('a', 'Add page').click();
     cy.get('[name="page.data.title"]').type('Public Form Page');
@@ -99,7 +100,8 @@ describe('Public Form', () => {
   });
 
   describe('check created entities', () => {
-    beforeEach(() => {
+    before(() => {
+      cy.get('a[aria-label="Library"]').click();
       selectRestrictedEntities();
     });
 

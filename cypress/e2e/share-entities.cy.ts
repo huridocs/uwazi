@@ -1,5 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
-import { englishLoggedInUwazi } from './helpers/login';
+import { englishLoggedInUwazi, logout } from './helpers/login';
 
 describe('Share Entities', () => {
   const titleEntity1 =
@@ -11,10 +11,10 @@ describe('Share Entities', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    englishLoggedInUwazi();
   });
 
   it('should create a collaborator in the shared User Group', () => {
-    englishLoggedInUwazi();
     createUser({
       username: 'colla',
       password: 'borator',
@@ -25,17 +25,16 @@ describe('Share Entities', () => {
 
   // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', () => {
-    englishLoggedInUwazi();
+    cy.get('a[aria-label="Library"]').click();
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').focus();
     cy.get('div[data-testid=modal] [role=listbox]').toMatchImageSnapshot();
+    cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
   it('Should update the permissions of an entity', () => {
-    englishLoggedInUwazi();
-    selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('editor');
@@ -49,26 +48,22 @@ describe('Share Entities', () => {
   });
 
   it('Should not keep previous entity data', () => {
-    englishLoggedInUwazi();
-    selectRestrictedEntities();
     cy.contains('h2', titleEntity2).click();
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('.members-list').toMatchImageSnapshot();
+    cy.contains('[data-testid=modal] button', 'Close').click();
+    cy.get('.alert.alert-success').click();
   });
 
   it('Should open the share modal for multiple selection', () => {
-    englishLoggedInUwazi();
-    selectRestrictedEntities();
-    cy.get('.item').should('have.length', 5);
     cy.contains('button', 'Select all').click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('table.members-list tbody tr').should('have.length', 3);
     cy.get('.members-list').toMatchImageSnapshot();
+    cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
   it('should share other entities with the collaborator', () => {
-    englishLoggedInUwazi();
-    selectRestrictedEntities();
     cy.contains('h2', titleEntity3).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('colla');
@@ -79,8 +74,6 @@ describe('Share Entities', () => {
   });
 
   it('should share other entities with the collaborator via the group', () => {
-    englishLoggedInUwazi();
-    selectRestrictedEntities();
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('Ase');
@@ -100,6 +93,7 @@ describe('Share Entities', () => {
   };
 
   it('should be able to see and edit entities as a collaborator', () => {
+    logout();
     englishLoggedInUwazi('colla', 'borator');
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
@@ -109,8 +103,6 @@ describe('Share Entities', () => {
   });
 
   it('should be able to edit a save', () => {
-    englishLoggedInUwazi('colla', 'borator');
-    selectRestrictedEntities();
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Edit').click();
     cy.get('aside.is-active textarea').eq(0).clear();
@@ -121,7 +113,7 @@ describe('Share Entities', () => {
   });
 
   it('should be able to see only published entities', () => {
-    englishLoggedInUwazi('colla', 'borator');
+    cy.reload();
     selectPublishedEntities();
     cy.get('.search-box input').clear();
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');

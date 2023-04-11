@@ -7,7 +7,8 @@ const login = (username: string, password: string) => {
 
 const logout = () => {
   cy.get('.only-desktop a[aria-label="Settings"]').click();
-  cy.contains('a', 'Logout').click();
+  cy.contains('a', 'Account').click();
+  cy.get('.settings-footer a.btn').click();
 };
 
 const changeLanguage = () => {
