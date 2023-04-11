@@ -1,5 +1,6 @@
 import { isClient } from 'app/utils';
 import NProgress from 'nprogress';
+
 const loadingProgressBar = {
   requests: 0,
 
