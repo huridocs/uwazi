@@ -23,7 +23,8 @@ describe('Public Form', () => {
     cy.get('input[placeholder="Search item"]').type('Reporte');
     cy.contains('span', 'Reporte').click();
     cy.get('input[placeholder="Search item"]').clear();
-    cy.get('#collectionSettings .row').eq(16).scrollIntoView().toMatchImageSnapshot();
+    cy.get('#collectionSettings .row').eq(16).scrollIntoView();
+    cy.get('#collectionSettings .row').eq(16).toMatchImageSnapshot();
     cy.contains('button', 'Save').click();
     cy.get('.alert.alert-success').click();
   });

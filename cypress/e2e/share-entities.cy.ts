@@ -14,6 +14,10 @@ describe('Share Entities', () => {
     englishLoggedInUwazi();
   });
 
+  after(() => {
+    logout();
+  });
+
   it('should create a collaborator in the shared User Group', () => {
     createUser({
       username: 'colla',
