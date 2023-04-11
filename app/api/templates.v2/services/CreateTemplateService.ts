@@ -7,6 +7,7 @@ import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { BuildQuery, TemplateInput, TemplateMappers } from '../database/TemplateMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
+import { propertyTypes } from 'shared/propertyTypes';
 
 interface MatchQuery {
   templates: string[];
@@ -157,7 +158,19 @@ export class CreateTemplateService {
       .selectNewProperties(newTemplate)
       .filter(p => p instanceof RelationshipProperty)
       .map(p => p.name);
+    const updatedQueriesOrDenormalizations = oldTemplate
+      .selectUpdatedProperties(newTemplate)
+      .filter(info => info.oldProperty.type === propertyTypes.newRelationship)
+      .filter(
+        info =>
+          info.updatedAttributes.includes('query') ||
+          info.updatedAttributes.includes('denormalizedProperty')
+      )
+      .map(info => info.newProperty.name);
 
-    await this.markEntityMetadataAsObsolete(newTemplate.id, newRelationshipNames);
+    await this.markEntityMetadataAsObsolete(
+      newTemplate.id,
+      Array.from(new Set([...newRelationshipNames, ...updatedQueriesOrDenormalizations]))
+    );
   }
 }

@@ -30,16 +30,46 @@ const commonProperties: TemplateSchema['commonProperties'] = [
   },
 ];
 
+const oldQueryInDb = [
+  {
+    direction: 'out',
+    types: [fixtureFactory.id('relation')],
+    match: [
+      {
+        templates: [fixtureFactory.id('unrelated_template')],
+        traverse: [],
+      },
+    ],
+  },
+];
+
+const oldQueryInInput = [
+  {
+    direction: 'out',
+    types: [fixtureFactory.id('relation').toString()],
+    match: [
+      {
+        templates: [fixtureFactory.id('unrelated_template').toString()],
+        traverse: [],
+      },
+    ],
+  },
+];
+
 const fixtures: DBFixture = {
   relationtypes: [fixtureFactory.relationType('relation')],
   templates: [
-    fixtureFactory.template('existing_template', []),
+    fixtureFactory.template('existing_template', [
+      fixtureFactory.property('a_text_property', 'text'),
+    ]),
     fixtureFactory.template('template_with_existing_relationship', [
       fixtureFactory.property('existing_relationship', 'newRelationship', {
-        query: [],
+        query: oldQueryInDb,
       }),
     ]),
-    fixtureFactory.template('unrelated_template', []),
+    fixtureFactory.template('unrelated_template', [
+      fixtureFactory.property('a_text_property', 'text'),
+    ]),
   ],
   entities: [
     fixtureFactory.entity('entity1', 'existing_template'),
@@ -63,6 +93,32 @@ const fixtures: DBFixture = {
     },
   ],
 };
+
+const newQueryInput = [
+  {
+    direction: 'out',
+    types: [fixtureFactory.id('relation').toString()],
+    match: [
+      {
+        templates: [fixtureFactory.id('existing_template').toString()],
+        traverse: [],
+      },
+    ],
+  },
+];
+
+const newQueryInDb = [
+  {
+    direction: 'out',
+    types: [fixtureFactory.id('relation')],
+    match: [
+      {
+        templates: [fixtureFactory.id('existing_template')],
+        traverse: [],
+      },
+    ],
+  },
+];
 
 describe('template.save()', () => {
   beforeEach(async () => {
@@ -266,6 +322,7 @@ describe('template.save()', () => {
             {
               ...existingTemplate.properties![0],
               _id: existingTemplate.properties![0]._id!.toString(),
+              query: oldQueryInInput,
               label: 'new name',
               name: 'new_name',
             },
@@ -278,7 +335,7 @@ describe('template.save()', () => {
             type: 'newRelationship',
             label: 'new name',
             name: 'new_name',
-            query: [],
+            query: oldQueryInDb,
           },
         ]);
 
@@ -292,6 +349,109 @@ describe('template.save()', () => {
             new_name: [{ value: 'existing_value' }],
           },
         ]);
+      });
+
+      it('on query change, uwazi should save the query properly, and mark the metadata obsolete', async () => {
+        const [existingTemplate] = await templates.get({
+          name: 'template_with_existing_relationship',
+        });
+        const updatedTemplate = {
+          ...existingTemplate,
+          properties: [
+            {
+              ...existingTemplate.properties![0],
+              _id: existingTemplate.properties![0]._id!.toString(),
+              query: newQueryInput,
+            },
+          ],
+        };
+        const template = await templates.save(updatedTemplate, 'en');
+        expect(template.properties).toEqual([
+          {
+            _id: expect.any(ObjectId),
+            type: 'newRelationship',
+            label: 'existing_relationship',
+            name: 'existing_relationship',
+            query: newQueryInDb,
+          },
+        ]);
+
+        const relatedEntities = await db.mongodb
+          ?.collection('entities')
+          .find({ template: existingTemplate._id })
+          .toArray();
+
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
+      });
+
+      it('on denormalizedProperty change, uwazi should save the new one properly, and mark the metadata obsolete', async () => {
+        const [existingTemplate] = await templates.get({
+          name: 'template_with_existing_relationship',
+        });
+        const updatedTemplate = {
+          ...existingTemplate,
+          properties: [
+            {
+              ...existingTemplate.properties![0],
+              _id: existingTemplate.properties![0]._id!.toString(),
+              query: oldQueryInInput,
+              denormalizedProperty: 'a_text_property',
+            },
+          ],
+        };
+        const template = await templates.save(updatedTemplate, 'en');
+        expect(template.properties).toEqual([
+          {
+            _id: expect.any(ObjectId),
+            type: 'newRelationship',
+            label: 'existing_relationship',
+            name: 'existing_relationship',
+            query: oldQueryInDb,
+            denormalizedProperty: 'a_text_property',
+          },
+        ]);
+
+        const relatedEntities = await db.mongodb
+          ?.collection('entities')
+          .find({ template: existingTemplate._id })
+          .toArray();
+
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
+      });
+
+      it('should handle query and denormalizedProperty update at the same time', async () => {
+        const [existingTemplate] = await templates.get({
+          name: 'template_with_existing_relationship',
+        });
+        const updatedTemplate = {
+          ...existingTemplate,
+          properties: [
+            {
+              ...existingTemplate.properties![0],
+              _id: existingTemplate.properties![0]._id!.toString(),
+              query: newQueryInput,
+              denormalizedProperty: 'a_text_property',
+            },
+          ],
+        };
+        const template = await templates.save(updatedTemplate, 'en');
+        expect(template.properties).toEqual([
+          {
+            _id: expect.any(ObjectId),
+            type: 'newRelationship',
+            label: 'existing_relationship',
+            name: 'existing_relationship',
+            query: newQueryInDb,
+            denormalizedProperty: 'a_text_property',
+          },
+        ]);
+
+        const relatedEntities = await db.mongodb
+          ?.collection('entities')
+          .find({ template: existingTemplate._id })
+          .toArray();
+
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
       });
     });
   });

@@ -1,6 +1,7 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MatchQueryNode, TemplateRecords } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';
+import _ from 'lodash';
 
 interface TraversalFilters {
   _id?: string;
@@ -72,6 +73,15 @@ export class TraversalQueryNode extends QueryNode {
 
   getParent() {
     return this.parent;
+  }
+
+  isSame(other: TraversalQueryNode): boolean {
+    return (
+      this.direction === other.direction &&
+      _.isEqual(this.filters, other.filters) &&
+      this.matches.length === other.matches.length &&
+      this.matches.every((match, index) => match.isSame(other.matches[index]))
+    );
   }
 
   chainsDecomposition(): TraversalQueryNode[] {

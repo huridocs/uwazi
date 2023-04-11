@@ -1,7 +1,7 @@
 import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { Property } from './Property';
+import { Property, PropertyUpdateInfo } from './Property';
 
 class RelationshipProperty extends Property {
   readonly query: MatchQueryNode['traversals'];
@@ -35,6 +35,19 @@ class RelationshipProperty extends Property {
 
   get inherits() {
     return this.denormalizedProperty !== undefined;
+  }
+
+  hasSameQuery(other: RelationshipProperty) {
+    return this.query.every((q, i) => q.isSame(other.query[i]));
+  }
+
+  updatedAttributes(other: RelationshipProperty): PropertyUpdateInfo {
+    const info = super.updatedAttributes(other);
+    if (!this.hasSameQuery(other)) info.updatedAttributes.push('query');
+    if (this.denormalizedProperty !== other.denormalizedProperty) {
+      info.updatedAttributes.push('denormalizedProperty');
+    }
+    return info;
   }
 }
 
