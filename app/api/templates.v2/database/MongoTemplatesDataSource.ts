@@ -135,4 +135,18 @@ export class MongoTemplatesDataSource
     }
     return this._allTemplatesById;
   }
+
+  async countQueriesUsing(templateId: string): Promise<number> {
+    const relprops = this.getAllRelationshipProperties();
+    let count = 0;
+    await relprops.forEach(p => {
+      const templatesInQuery = p.query
+        .map(t => t.getTemplates())
+        .flat()
+        .map(r => r.templates)
+        .flat();
+      if (templatesInQuery.includes(templateId)) count += 1;
+    });
+    return count;
+  }
 }

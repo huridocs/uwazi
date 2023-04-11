@@ -11,4 +11,5 @@ export interface TemplatesDataSource {
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
   getAllTemplates(): Promise<Template[]>;
   getTemplateIdIndex(): Promise<Record<string, Template>>;
+  countQueriesUsing(templateId: string): Promise<number>;
 }

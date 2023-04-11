@@ -305,6 +305,9 @@ export default {
     if (count > 0) {
       return Promise.reject({ key: 'documents_using_template', value: count }); // eslint-disable-line prefer-promise-reject-errors
     }
+
+    await v2.processNewRelationshipPropertiesOnDelete(template._id);
+
     const _id = ensure<string>(template._id);
     await translations.deleteContext(_id);
     await this.removePropsWithNonexistentId(_id);

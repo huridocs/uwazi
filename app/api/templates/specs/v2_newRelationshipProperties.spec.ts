@@ -6,6 +6,7 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
+import entities from 'api/entities';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -453,6 +454,30 @@ describe('template.save()', () => {
 
         expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
       });
+    });
+  });
+
+  describe('on template deletion', () => {
+    it('should throw an error, if the template is still used in any query', async () => {
+      const [template] = await templates.get({
+        name: 'unrelated_template',
+      });
+      const [entityUsing] = await entities.get({ template: template._id });
+      await entities.delete(entityUsing.sharedId);
+      await expect(templates.delete({ _id: template._id })).rejects.toThrow(
+        'The template is still used in a relationship property query.'
+      );
+    });
+
+    it('should delete the template, if it is not used in any query', async () => {
+      const [template] = await templates.get({
+        name: 'template_with_existing_relationship',
+      });
+      const [entityUsing] = await entities.get({ template: template._id });
+      await entities.delete(entityUsing.sharedId);
+      await templates.delete({ _id: template._id });
+      const stillInDb = await templates.get({ _id: template._id });
+      expect(stillInDb).toEqual([]);
     });
   });
 });

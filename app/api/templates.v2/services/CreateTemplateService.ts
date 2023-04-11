@@ -1,5 +1,6 @@
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { propertyTypes } from 'shared/propertyTypes';
 import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
@@ -7,7 +8,6 @@ import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { BuildQuery, TemplateInput, TemplateMappers } from '../database/TemplateMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
-import { propertyTypes } from 'shared/propertyTypes';
 
 interface MatchQuery {
   templates: string[];
@@ -172,5 +172,9 @@ export class CreateTemplateService {
       newTemplate.id,
       Array.from(new Set([...newRelationshipNames, ...updatedQueriesOrDenormalizations]))
     );
+  }
+
+  async countQueriesUsingTemplate(templateId: string): Promise<number> {
+    return this.templatesDataSource.countQueriesUsing(templateId);
   }
 }

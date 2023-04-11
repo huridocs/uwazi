@@ -44,4 +44,23 @@ const processNewRelationshipPropertiesOnUpdate = async (
   return _newTemplate;
 };
 
-export { processNewRelationshipProperties, processNewRelationshipPropertiesOnUpdate };
+const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSchema['_id']) => {
+  const client = getClient();
+  const transactionManager = new MongoTransactionManager(client);
+  if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
+    return;
+  }
+
+  const createTemplateService = CreateTemplateService();
+  const count = await createTemplateService.countQueriesUsingTemplate(templateId?.toString() || '');
+
+  if (count > 0) {
+    throw new Error('The template is still used in a relationship property query.');
+  }
+};
+
+export {
+  processNewRelationshipProperties,
+  processNewRelationshipPropertiesOnDelete,
+  processNewRelationshipPropertiesOnUpdate,
+};
