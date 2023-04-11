@@ -19,13 +19,7 @@ const labelEntityTitle = (
 
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
-  cy.get('div[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
-};
-
-const englishLoggedInUwazi = () => {
-  cy.visit('http://localhost:3000');
-  changeLanguage();
-  login('admin', 'admin');
+  cy.get('li[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
 };
 
 const navigateToMetadataExtractionPage = () => {
@@ -38,7 +32,7 @@ describe('Information Extraction', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
     cy.exec('yarn ix-config', { env });
-
+    cy.clearAllCookies();
     cy.visit('http://localhost:3000');
     changeLanguage();
     login('admin', 'admin');
@@ -64,16 +58,15 @@ describe('Information Extraction', () => {
   });
 
   it('should select all templates when from all templates button is clicked', () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
     cy.contains('button', 'From all templates').click();
     cy.get('.extractor-creation-modal').toMatchImageSnapshot();
+    cy.contains('button', 'Cancel').click();
   });
 
   it('should edit an extractor', () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
@@ -88,7 +81,6 @@ describe('Information Extraction', () => {
   });
 
   it('should show title initial suggestion states as Empty / Label', () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
     cy.get('.suggestion-templates span').eq(1).should('be.visible');
@@ -98,7 +90,6 @@ describe('Information Extraction', () => {
   });
 
   it('should find suggestions successfully', { defaultCommandTimeout: 6000 }, () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
     cy.get('.suggestion-templates span').eq(1).should('be.visible');
@@ -110,7 +101,6 @@ describe('Information Extraction', () => {
   });
 
   it('should show filters sidepanel', () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('a.btn-success.btn-xs').click();
     cy.get('.suggestion-templates span').eq(1).should('be.visible');
@@ -121,7 +111,6 @@ describe('Information Extraction', () => {
   });
 
   it('should delete an extractor', () => {
-    englishLoggedInUwazi();
     navigateToMetadataExtractionPage();
     cy.get('.extractor-checkbox input').click();
     cy.contains('button', 'Delete').click();
