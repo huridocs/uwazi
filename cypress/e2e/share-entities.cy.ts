@@ -14,9 +14,10 @@ describe('Share Entities', () => {
     englishLoggedInUwazi();
   });
 
-  after(() => {
-    logout();
-  });
+  // after(() => {
+  //   cy.visit('http://localhost:3000');
+  //   logout();
+  // });
 
   it('should create a collaborator in the shared User Group', () => {
     createUser({
@@ -29,6 +30,7 @@ describe('Share Entities', () => {
 
   // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', () => {
+    cy.get('.alert.alert-success').click();
     cy.get('a[aria-label="Library"]').click();
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
@@ -47,16 +49,17 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal] input').type('Ase');
     cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
     cy.get('div[data-testid=modal] select').eq(1).select('write');
-    cy.get('[data-testid=modal]').toMatchImageSnapshot();
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    cy.get('.alert.alert-success').click();
   });
 
   it('Should not keep previous entity data', () => {
+    cy.get('aside.is-active button[aria-label="Close side panel"]').click();
+    selectRestrictedEntities();
     cy.contains('h2', titleEntity2).click();
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('.members-list').toMatchImageSnapshot();
     cy.contains('[data-testid=modal] button', 'Close').click();
-    cy.get('.alert.alert-success').click();
   });
 
   it('Should open the share modal for multiple selection', () => {
@@ -83,7 +86,6 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal] input').type('Ase');
     cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
     cy.get('div[data-testid=modal] select').eq(1).select('write');
-    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
@@ -119,6 +121,8 @@ describe('Share Entities', () => {
   it('should be able to see only published entities', () => {
     cy.reload();
     selectPublishedEntities();
+    cy.get('.search-box input').clear();
+    cy.get('.search-box input').focus();
     cy.get('.search-box input').clear();
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();

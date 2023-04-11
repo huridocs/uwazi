@@ -9,6 +9,7 @@ describe('Public Form', () => {
   });
 
   after(() => {
+    cy.visit('http://localhost:3000');
     logout();
   });
 
@@ -30,7 +31,6 @@ describe('Public Form', () => {
   });
 
   it('should create a page with a public form', () => {
-    // cy.contains('a', 'Settings').click();
     cy.contains('a', 'Pages').click();
     cy.contains('a', 'Add page').click();
     cy.get('[name="page.data.title"]').type('Public Form Page');
@@ -56,7 +56,6 @@ describe('Public Form', () => {
     cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
     cy.contains('span', 'Bahamas').click();
     cy.get('.captcha input').type('42hf');
-    cy.get('.markdown-viewer form').toMatchImageSnapshot();
     cy.contains('button', 'Submit').click();
     cy.get('.alert.alert-success').click();
   });

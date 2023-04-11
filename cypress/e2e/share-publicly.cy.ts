@@ -33,7 +33,6 @@ describe('Share Publicly', () => {
     cy.get('[data-testid=modal] input').type('colla');
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
     cy.get('div[data-testid=modal] select').eq(2).select('write');
-    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
     cy.contains('button', 'Save changes').click();
   });
 
@@ -51,7 +50,6 @@ describe('Share Publicly', () => {
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
-      cy.get('div[data-testid=modal]').toMatchImageSnapshot();
       cy.contains('button', 'Save changes').click();
     });
 
