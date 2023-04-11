@@ -1339,10 +1339,6 @@ input:checked + .toggle-bg {
   height: 1.25rem;
 }
 
-.h-5\/6 {
-  height: 83.333333%;
-}
-
 .h-6 {
   height: 1.5rem;
 }
@@ -1357,6 +1353,10 @@ input:checked + .toggle-bg {
 
 .h-96 {
   height: 24rem;
+}
+
+.h-\[calc\(100\%-5\.4rem\)\] {
+  height: calc(100% - 5.4rem);
 }
 
 .h-auto {
@@ -2651,6 +2651,10 @@ input:checked + .toggle-bg {
 
 .pl-3 {
   padding-left: 0.75rem;
+}
+
+.pl-5 {
+  padding-left: 1.25rem;
 }
 
 .pl-8 {

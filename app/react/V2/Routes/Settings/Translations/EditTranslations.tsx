@@ -216,7 +216,7 @@ const EditTranslations = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="h-full px-5 pt-5">
+      <div className="h-full pt-5 pl-5">
         <div className="pb-4">
           <NavigationHeader backUrl="/settings/translations">
             <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
@@ -235,7 +235,10 @@ const EditTranslations = () => {
           </ToggleButton>
         </div>
 
-        <form onSubmit={handleSubmit(submitFunction)} className="flex flex-col h-5/6">
+        <form
+          onSubmit={handleSubmit(submitFunction)}
+          className="flex flex-col h-[calc(100%-5.4rem)]"
+        >
           <div className="flex-grow">
             {tablesData.length ? (
               <TranslationsTables
