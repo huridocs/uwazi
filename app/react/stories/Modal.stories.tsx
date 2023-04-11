@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Modal } from 'V2/Components/UI/Modal';
 import { Button } from 'app/V2/Components/UI/Button';
@@ -26,9 +26,7 @@ Basic.args = {
   children: (
     <>
       <Modal.Header>
-        <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-          Do you want to continue?
-        </h3>
+        <h3 className="text-xl font-medium text-gray-900">Do you want to continue?</h3>
         <Modal.CloseButton />
       </Modal.Header>
       <Modal.Body>
@@ -54,11 +52,11 @@ Warning.args = {
       <div className="flex justify-center w-full">
         <InformationCircleIcon className="h-10 text-gray-400" />
       </div>
-      <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+      <h3 className="mb-5 text-lg font-normal text-gray-500">
         Are you sure you want to delete this product?
       </h3>
       <div className="flex justify-center gap-4">
-        <Button buttonStyle="danger">Yes, I'm sure</Button>
+        <Button buttonStyle="danger">Yes, I&apos;m sure</Button>
         <Button buttonStyle="tertiary">No, cancel</Button>
       </div>
     </Modal.Body>

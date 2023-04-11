@@ -17,7 +17,6 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
   Partial<UseSortByColumnProps<T>> & {
-    key: string | number;
     disableSortBy?: boolean;
     className?: string;
   };
@@ -57,7 +56,7 @@ const Table = ({ columns, data, title }: TableProps) => {
   return (
     <FlowbiteTable {...getTableProps()}>
       {title && (
-        <caption className="p-5 text-lg font-semibold text-left bg-white text-gray-900">
+        <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
           {title}
         </caption>
       )}
@@ -66,7 +65,6 @@ const Table = ({ columns, data, title }: TableProps) => {
           headerGroup.headers.map((column: any) => (
             <FlowbiteTable.HeadCell
               {...column.getHeaderProps(column.getSortByToggleProps())}
-              key={column.key}
               className={column.className}
             >
               <div className={`text-gray-500 ${!column.disableSortBy ? 'flex flex-row' : ''}`}>
@@ -83,7 +81,7 @@ const Table = ({ columns, data, title }: TableProps) => {
           return (
             <FlowbiteTable.Row {...row.getRowProps()}>
               {row.cells.map(cell => (
-                <FlowbiteTable.Cell key={cell.column.key.toString() + cell.row.id}>
+                <FlowbiteTable.Cell {...cell.getCellProps()}>
                   {cell.render('Cell')}
                 </FlowbiteTable.Cell>
               ))}

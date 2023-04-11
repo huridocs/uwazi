@@ -15,7 +15,8 @@ const Template: ComponentStory<typeof InputField> = args => (
         label={<p className="text-lg mb-2">{args.label}</p>}
         disabled={args.disabled}
         hideLabel={args.hideLabel}
-        buttonAction={args.buttonAction}
+        hasErrors={args.hasErrors}
+        clearFieldAction={args.clearFieldAction}
         placeholder={args.placeholder}
       />
     </div>
@@ -30,12 +31,13 @@ Basic.args = {
   label: 'Input field label',
   disabled: false,
   hideLabel: false,
+  hasErrors: false,
   placeholder: 'Users can get a hint of what value is expected in this field',
 };
 
 WithClearFieldButton.args = {
   ...Basic.args,
-  buttonAction: () => {},
+  clearFieldAction: () => {},
 };
 
 export { Basic, WithClearFieldButton };

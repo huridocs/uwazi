@@ -30,10 +30,10 @@ const actionsCell = () => (
 Basic.args = {
   title: 'Table name',
   columns: [
-    { key: '1', id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title' },
-    { key: '3', Header: 'Description', accessor: 'description', disableSortBy: true },
-    { key: '4', Header: 'Date added', accessor: 'created', disableSortBy: true },
+    { id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
+    { Header: 'Title', accessor: 'title', id: 'title' },
+    { Header: 'Description', accessor: 'description', disableSortBy: true },
+    { Header: 'Date added', accessor: 'created', disableSortBy: true },
   ],
   data: [
     { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -55,29 +55,25 @@ WithActions.args = {
   ...Basic.args,
   columns: [
     {
-      key: '1',
       id: 'select',
       Header: '',
       Cell: checkboxCell,
       disableSortBy: true,
     },
-    { key: '2', Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
+    { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
     {
-      key: '4',
       Header: 'Date added',
       accessor: 'created',
       disableSortBy: true,
       className: 'w-1/3',
     },
     {
-      key: '3',
       Header: 'Description',
       accessor: 'description',
       disableSortBy: true,
       className: 'w-1/3',
     },
     {
-      key: '5',
       id: 'action',
       Header: 'Actions',
       Cell: actionsCell,
