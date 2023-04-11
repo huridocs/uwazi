@@ -2,7 +2,7 @@ import React from 'react';
 import { RecoilRoot, useSetRecoilState } from 'recoil';
 import { mount } from '@cypress/react18';
 import { modalAtom, showModalAtom } from 'app/V2/atoms';
-import { Button } from 'app/V2/Components/UI/Button';
+import { Button } from 'app/V2/Components/UI';
 import { ModalContainer } from '../ModalContainer';
 import { Modal } from '../Modal';
 
