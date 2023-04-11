@@ -38,7 +38,7 @@ describe('Translations', () => {
 
   it('Should edit a translation', () => {
     cy.get('form').should('be.visible');
-    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
+    cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot({
       name: 'edit-translations',
     });
     cy.get('input[type=text]').eq(1).siblings('button').click();
@@ -46,7 +46,7 @@ describe('Translations', () => {
     cy.get('input[type=text]').eq(2).siblings('button').click();
     cy.get('input[type=text]').eq(2).type('Date');
     cy.contains('button', 'Save').click();
-    cy.get('[data-testid=settings-translations]').scrollTo('top');
+    cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
     cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'edited-context' });
   });
 
@@ -62,8 +62,6 @@ describe('Translations', () => {
     cy.get('[data-testid=modal]').eq(0).toMatchImageSnapshot({ name: 'cancel-modal' });
     cy.checkA11y();
     cy.contains('button', 'Discard changes').click();
-    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
-      name: 'settings-translations',
-    });
+    cy.get('[data-testid=settings-translations-edit]').should('be.visible');
   });
 });

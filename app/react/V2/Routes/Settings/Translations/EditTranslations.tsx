@@ -214,7 +214,7 @@ const EditTranslations = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-translations"
+      data-testid="settings-translations-edit"
     >
       <div className="flex flex-col h-full">
         <div className="flex-grow px-5 pt-5">
