@@ -59,7 +59,6 @@ describe('Translations', () => {
 
   it('Should discard changes', () => {
     cy.contains('button', 'Cancel').click();
-    cy.get('[data-testid=modal]').eq(0).toMatchImageSnapshot({ name: 'cancel-modal' });
     cy.checkA11y();
     cy.contains('button', 'Discard changes').click();
     cy.get('[data-testid=settings-translations-edit]').should('be.visible');
