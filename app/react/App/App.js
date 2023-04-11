@@ -77,7 +77,7 @@ const App = ({ customParams }) => {
           </h1>
           <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
         </header>
-        <div className="app-content container-fluid">
+        <main className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>
             <Confirm {...confirmOptions} />
             <TranslateForm />
@@ -85,7 +85,7 @@ const App = ({ customParams }) => {
             <GoogleAnalytics />
             <Matomo />
           </AppMainContext.Provider>
-        </div>
+        </main>
       </div>
       <NotificationsContainer />
       <ModalContainer />
