@@ -76,6 +76,7 @@ const App = ({ customParams }) => {
             <SiteName />
           </h1>
           <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
+          <div className="nprogress-container" />
         </header>
         <main className="app-content container-fluid">
           <AppMainContext.Provider value={appContext}>

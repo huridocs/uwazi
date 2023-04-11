@@ -38,15 +38,32 @@ describe('Translations', () => {
 
   it('Should edit a translation', () => {
     cy.get('form').should('be.visible');
-    cy.contains('caption', 'Fecha').should('be.visible');
-    cy.get('table').eq(0).should('be.visible');
     cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
       name: 'edit-translations',
     });
-    cy.get('input[type=text]').eq(0).clear();
-    cy.get('input[type=text]').eq(0).type('Fecha edited');
+    cy.get('input[type=text]').eq(1).siblings('button').click();
+    cy.get('input[type=text]').eq(1).type('Data');
+    cy.get('input[type=text]').eq(2).siblings('button').click();
+    cy.get('input[type=text]').eq(2).type('Date');
     cy.contains('button', 'Save').click();
     cy.get('[data-testid=settings-translations]').scrollTo('top');
     cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'edited-context' });
+  });
+
+  it('Should filter out edited translations', () => {
+    cy.contains('label', 'Untranslated Terms').click();
+    cy.get('input[type=text]').eq(1).siblings('button').click();
+    cy.get('input[type=text]').eq(1).type('Fecha in Arabic?');
+    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'filtered-context' });
+  });
+
+  it('Should discard changes', () => {
+    cy.contains('button', 'Cancel').click();
+    cy.get('[data-testid=modal]').eq(0).toMatchImageSnapshot({ name: 'cancel-modal' });
+    cy.checkA11y();
+    cy.contains('button', 'Discard changes').click();
+    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
+      name: 'settings-translations',
+    });
   });
 });

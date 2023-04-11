@@ -27,6 +27,7 @@ const Modal = ({ show, children, size }: ModalProps) => {
         md:inset-0 md:h-full items-center justify-center flex bg-gray-900 bg-opacity-50`}
       data-testid="modal"
       role="dialog"
+      aria-label="Modal"
     >
       <div className={`relative h-full w-full p-4 md:h-auto ${sizes[size]}`}>
         <div className="relative rounded-lg bg-white shadow">{children}</div>

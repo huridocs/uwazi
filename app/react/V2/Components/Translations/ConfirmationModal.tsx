@@ -12,9 +12,9 @@ type confirmationModalType = {
 const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) => (
   <>
     <Modal.Header>
-      <h3 className="text-xl font-medium text-gray-900">
+      <h1 className="text-xl font-medium text-gray-900">
         <Translate>Discard changes?</Translate>
-      </h3>
+      </h1>
       <Modal.CloseButton onClick={() => setShowModal(false)} />
     </Modal.Header>
     <Modal.Body>

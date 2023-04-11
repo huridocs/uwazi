@@ -1,3 +1,4 @@
+import { Translate } from 'app/I18N';
 import React, { ChangeEventHandler, Ref } from 'react';
 
 interface InputFieldProps {
@@ -76,6 +77,7 @@ const InputField = ({
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
+            <Translate className="sr-only">Clear</Translate>
           </button>
         )}
       </div>

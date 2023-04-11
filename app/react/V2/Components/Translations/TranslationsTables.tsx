@@ -4,6 +4,7 @@ import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-ho
 import { Table } from '../UI';
 import { FormInput } from './FormInput';
 import { LanguagePill } from './LanguagePill';
+import { Translate } from 'app/I18N';
 
 type translationsTableType = {
   tablesData: any[];
@@ -26,15 +27,15 @@ const TranslationsTables = ({
   );
 
   const columns = [
-    { Header: 'Language', accessor: 'language', disableSortBy: true },
+    { Header: <Translate>Language</Translate>, accessor: 'language', disableSortBy: true },
     {
-      Header: '',
+      Header: <Translate className="sr-only">Language Code</Translate>,
       accessor: 'translationStatus',
       Cell: LanguagePill,
       disableSortBy: true,
     },
     {
-      Header: 'Current Value',
+      Header: <Translate>Current Value</Translate>,
       accessor: 'fieldKey',
       Cell: memoizedInput,
       disableSortBy: true,

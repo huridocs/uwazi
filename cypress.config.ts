@@ -10,6 +10,7 @@ export default defineConfig({
       initPlugin(on, config);
     },
     video: false,
+    testIsolation: false,
   },
   component: {
     devServer: {

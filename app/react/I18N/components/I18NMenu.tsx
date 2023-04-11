@@ -87,9 +87,8 @@ const i18NMenuComponent = ({
   );
 
   return (
-    <div
+    <li
       className={languageMap!.size === 1 ? 'menuNav-I18NMenu one-language' : 'menuNav-I18NMenu'}
-      role="navigation"
       aria-label="Languages"
       ref={menuRef}
     >
@@ -159,7 +158,7 @@ const i18NMenuComponent = ({
           </ul>
         </div>
       )}
-    </div>
+    </li>
   );
 };
 
