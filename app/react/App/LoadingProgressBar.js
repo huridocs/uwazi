@@ -13,7 +13,7 @@ const loadingProgressBar = {
         minimum: 0.2,
         barSelector: '[role="progressbar "]',
         spinnerSelector: '[role="spinner"]',
-        parent: '.nprogress-container',
+        parent: document.querySelector('.nprogress-container') || document.body,
         template:
           '<div class="bar" role="progressbar "><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
       });
