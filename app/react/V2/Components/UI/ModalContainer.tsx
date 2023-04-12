@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { modalAtom, showModalAtom } from 'app/V2/atoms';
+import { modalAtom, showModalAtom } from 'V2/atoms';
 import { Modal } from 'V2/Components/UI/Modal';
 
 const ModalContainer = () => {

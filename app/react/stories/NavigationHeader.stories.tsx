@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-import { LEGACY_createStore as createStore } from 'app/V2/shared/testingHelpers';
+import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 
 const NavigationHeaderStory = {
   title: 'Components/NavigationHeader',

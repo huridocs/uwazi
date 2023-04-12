@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Modal } from 'V2/Components/UI/Modal';
-import { Button } from 'app/V2/Components/UI/Button';
+import { Button } from 'V2/Components/UI/Button';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 const ModalStory = {

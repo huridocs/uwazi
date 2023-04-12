@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useResetRecoilState } from 'recoil';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom } from 'V2/atoms';
 import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationsContainer = () => {
