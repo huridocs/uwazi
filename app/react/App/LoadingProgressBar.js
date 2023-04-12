@@ -6,6 +6,10 @@ const loadingProgressBar = {
 
   start: () => {
     if (isClient) {
+      const parent = document.querySelector('.nprogress-container')
+        ? '.nprogress-container'
+        : 'body';
+
       NProgress.configure({
         showSpinner: false,
         easing: 'ease',
@@ -13,7 +17,7 @@ const loadingProgressBar = {
         minimum: 0.2,
         barSelector: '[role="progressbar "]',
         spinnerSelector: '[role="spinner"]',
-        parent: '.nprogress-container' || 'body',
+        parent,
         template:
           '<div class="bar" role="progressbar "><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
       });
