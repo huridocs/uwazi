@@ -152,6 +152,7 @@ describe('Entities', () => {
       await expect(page).toClick('.item-name span', {
         text: 'Entity with media files',
       });
+      await page.waitForSelector('#tabpanel-metadata video');
       await expect(page).toMatchElement('.metadata-name-descripci_n > dd > div > p', {
         text: 'A description of the report',
       });
@@ -167,7 +168,7 @@ describe('Entities', () => {
 
       await checkStringValuesInSelectors([
         { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
-        { selector: videoFieldSource, expected: /^\/api\/files\/\w+\.mp4$/ },
+        { selector: videoFieldSource, expected: /^blob:http:\/\/localhost:3000\/[\w-]+$/ },
       ]);
 
       const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');

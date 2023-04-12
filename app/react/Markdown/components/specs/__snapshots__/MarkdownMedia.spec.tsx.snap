@@ -1,0 +1,434 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkdownMedia render should render an iframe with the correct video id 1`] = `
+<DocumentFragment>
+  <div
+    class="video-container "
+  >
+    <div>
+      <div
+        class="react-player"
+        style="width: 100%; height: 360px;"
+      >
+        <video
+          controls=""
+          preload="auto"
+          src="blob:abc"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
+    </div>
+    <div>
+      <div
+        class="timelink"
+        title="A rude awakening"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:02:10
+          </b>
+          <span>
+            A rude awakening
+          </span>
+        </div>
+      </div>
+      <div
+        class="timelink"
+        title="Finally, you are up!"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:05:30
+          </b>
+          <span>
+            Finally, you are up!
+          </span>
+        </div>
+      </div>
+    </div>
+    <p
+      class="print-view-alt"
+    >
+      https://www.vimeo.com/253530307
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`MarkdownMedia render should render the edition mode 1`] = `
+<DocumentFragment>
+  <div
+    class="video-container "
+  >
+    <div>
+      <div
+        class="react-player"
+        style="width: 100%; height: 360px;"
+      >
+        <video
+          controls=""
+          preload="auto"
+          src="blob:abc"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
+    </div>
+    <div
+      class="timelinks-form"
+    >
+      <button
+        class="add-timelink"
+        type="button"
+      >
+        <span
+          class="translation active"
+        >
+          Add timelink
+        </span>
+      </button>
+      <h5>
+        <span
+          class="translation active"
+        >
+          Timelinks
+        </span>
+      </h5>
+      <div
+        class="new-timelink"
+      >
+        <div
+          class="timestamp"
+        >
+          <input
+            class="timestamp-hours"
+            name="timelines.0.timeHours"
+            placeholder="00"
+            type="text"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-minutes"
+            name="timelines.0.timeMinutes"
+            placeholder="00"
+            type="text"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-seconds"
+            name="timelines.0.timeSeconds"
+            placeholder="00"
+            type="text"
+          />
+        </div>
+        <input
+          class="timestamp-label"
+          name="timelines.0.label"
+          placeholder="Enter title"
+          type="text"
+        />
+        <button
+          class="delete-timestamp-btn"
+          title="Remove timelink"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-trash-alt fa-w-14 "
+            data-icon="trash-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="new-timelink"
+      >
+        <div
+          class="timestamp"
+        >
+          <input
+            class="timestamp-hours"
+            name="timelines.1.timeHours"
+            placeholder="00"
+            type="text"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-minutes"
+            name="timelines.1.timeMinutes"
+            placeholder="00"
+            type="text"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-seconds"
+            name="timelines.1.timeSeconds"
+            placeholder="00"
+            type="text"
+          />
+        </div>
+        <input
+          class="timestamp-label"
+          name="timelines.1.label"
+          placeholder="Enter title"
+          type="text"
+        />
+        <button
+          class="delete-timestamp-btn"
+          title="Remove timelink"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-trash-alt fa-w-14 "
+            data-icon="trash-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="new-timelink"
+      >
+        <div
+          class="timestamp"
+        >
+          <input
+            class="timestamp-hours"
+            placeholder="00"
+            required=""
+            type="text"
+            value="00"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-minutes"
+            placeholder="00"
+            required=""
+            type="text"
+            value="00"
+          />
+          <span
+            class="seperator"
+          >
+            :
+          </span>
+          <input
+            class="timestamp-seconds"
+            placeholder="00"
+            required=""
+            type="text"
+            value="00"
+          />
+        </div>
+        <input
+          class="timestamp-label"
+          placeholder="Enter title"
+          type="text"
+          value=""
+        />
+        <button
+          class="new-timestamp-btn"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <p
+      class="print-view-alt"
+    >
+      https://www.vimeo.com/253530307
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`MarkdownMedia render should use compact class name if compact prop is set 1`] = `
+<DocumentFragment>
+  <div
+    class="video-container compact"
+  >
+    <div>
+      <div
+        class="react-player"
+        style="width: 100%; height: 100%;"
+      >
+        <video
+          controls=""
+          preload="auto"
+          src="blob:abc"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
+    </div>
+    <div>
+      <div
+        class="timelink"
+        title="A rude awakening"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:02:10
+          </b>
+          <span>
+            A rude awakening
+          </span>
+        </div>
+      </div>
+      <div
+        class="timelink"
+        title="Finally, you are up!"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:05:30
+          </b>
+          <span>
+            Finally, you are up!
+          </span>
+        </div>
+      </div>
+    </div>
+    <p
+      class="print-view-alt"
+    >
+      https://www.vimeo.com/253530307
+    </p>
+  </div>
+</DocumentFragment>
+`;

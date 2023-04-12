@@ -1,4 +1,6 @@
 import { groupBy } from 'lodash';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream } from 'fs';
 import { WithId } from 'api/odm';
 import { files as filesAPI, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
@@ -11,8 +13,6 @@ import { MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import { TypeOfFile } from 'shared/types/fileSchema';
 import { FileAttachment } from './entitySavingManager';
-// eslint-disable-next-line node/no-restricted-import
-import { createReadStream } from 'fs';
 
 const prepareNewFiles = async (
   entity: EntityWithFilesSchema,
@@ -148,6 +148,10 @@ const bindAttachmentToMetadataProperty = (
     values[0].value = attachments[_values[0].attachment]
       ? `/api/files/${attachments[_values[0].attachment].filename}`
       : '';
+    if (_values[0].timeLinks !== undefined && _values[0].timeLinks.length > 0) {
+      const timeLinks = _values[0].timeLinks.replace(/([()])/g, '');
+      values[0].value = `(${values[0].value}, ${timeLinks})`;
+    }
   }
   return values;
 };
@@ -160,6 +164,7 @@ const handleAttachmentInMetadataProperties = (
     if (_values && _values.length) {
       const values = bindAttachmentToMetadataProperty(_values, attachments);
       delete values[0].attachment;
+      delete values[0].timeLinks;
     }
   });
 
