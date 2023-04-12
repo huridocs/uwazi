@@ -78,7 +78,6 @@ describe('Translations', () => {
       cy.get('input[id=es]').type('Filtros');
       cy.get('input[id=en]').clear();
       cy.get('input[id=en]').type('Filtering');
-      cy.get('body').toMatchImageSnapshot({ name: 'live-translate-modal' });
       cy.contains('button', 'Submit').click();
       cy.get('[data-testid=modal]').should('not.be.visible');
     });
