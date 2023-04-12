@@ -1,5 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
-import { englishLoggedInUwazi } from './helpers/login';
+import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
   const titleEntity1 =
@@ -11,8 +11,7 @@ describe('Share Entities', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
-    cy.clearAllCookies();
-    englishLoggedInUwazi();
+    clearCookiesAndLogin();
   });
 
   it('should create a collaborator in the shared User Group', () => {
@@ -95,7 +94,7 @@ describe('Share Entities', () => {
   };
 
   it('should be able to see and edit entities as a collaborator', () => {
-    englishLoggedInUwazi('colla', 'borator');
+    clearCookiesAndLogin('colla', 'borator');
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
     checkCanEdit(titleEntity1, false);
