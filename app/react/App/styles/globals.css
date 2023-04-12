@@ -2657,10 +2657,6 @@ input:checked + .toggle-bg {
   padding-right: 2.5rem;
 }
 
-.pr-12 {
-  padding-right: 3rem;
-}
-
 .pr-3 {
   padding-right: 0.75rem;
 }
@@ -3563,11 +3559,6 @@ input:checked + .toggle-bg {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.hover\:text-primary-700:hover {
-  --tw-text-opacity: 1;
-  color: rgb(67 56 202 / var(--tw-text-opacity));
-}
-
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
@@ -3852,6 +3843,11 @@ input:checked + .toggle-bg {
 .disabled\:text-gray-400:disabled {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+
+.disabled\:text-gray-500:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity));
 }
 
 .disabled\:text-primary-300:disabled {

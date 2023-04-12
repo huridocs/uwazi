@@ -28,12 +28,13 @@ const InputField = ({
   clearFieldAction,
 }: InputFieldProps) => {
   const hasClearFieldButton = Boolean(clearFieldAction);
-  const textColor = disabled ? 'text-gray-500' : 'text-gray-900';
-  const buttonStyles = hasClearFieldButton ? 'pr-12' : '';
-  const fieldBorderStyles = hasErrors ? 'border-error-300 border-2' : 'border-gray-300 border';
-  const clearFieldBorderStyles = hasErrors
-    ? 'border-red-300 border-l-2 top-0.5'
-    : 'border-gray-300 border-l top-px';
+  let fieldBorderStyles = 'border-gray-300 border';
+  let clearFieldBorderStyles = 'border-gray-300 border-l top-px';
+
+  if (hasErrors) {
+    fieldBorderStyles = 'border-error-300 border-2';
+    clearFieldBorderStyles = 'border-red-300 border-l-2 top-0.5';
+  }
 
   const { onChange, onBlur, name, ref } = inputControls || {
     onChange: () => {},
@@ -56,7 +57,7 @@ const InputField = ({
           name={name}
           ref={ref}
           disabled={disabled}
-          className={`${textColor} ${buttonStyles} ${fieldBorderStyles} rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
+          className={`${fieldBorderStyles} text-gray-900 disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
           placeholder={placeholder}
         />
         {hasClearFieldButton && (
@@ -64,8 +65,8 @@ const InputField = ({
             type="button"
             onClick={clearFieldAction}
             disabled={disabled}
-            className={`${textColor} ${clearFieldBorderStyles} absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-            hover:text-primary-700 focus:outline-none`}
+            className={`${clearFieldBorderStyles} text-gray-900 disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
+            enabled:hover:text-primary-700 focus:outline-none`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
