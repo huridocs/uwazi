@@ -2,24 +2,23 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { screen, RenderResult } from '@testing-library/react';
+import { screen, RenderResult, act, fireEvent } from '@testing-library/react';
 import MediaField from 'app/Forms/components/MediaField';
 import { MediaModalType } from 'app/Metadata/components/MediaModal';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 
 describe('MediaField', () => {
+  let renderResult: RenderResult;
+
   const typeAttachment: 'attachment' | 'document' = 'attachment';
-  const props = {
+  const baseProps = {
     isOpen: false,
     onClose: () => jest.fn(),
     attachments: [],
-    onChange: (_id: any) => jest.fn(),
+    onChange: jest.fn(),
     selectedUrl: 'url',
     formModel: 'publicForm',
-    formField: 'image',
-    type: MediaModalType.Image,
     multipleEdition: false,
-    value: 'uiea1s32zqg',
     localAttachments: [
       {
         _id: '624b6b139ef04f56db7ebff4',
@@ -41,23 +40,49 @@ describe('MediaField', () => {
         entity: '6n7iqvz7p2s',
         fileLocalID: 'uiea1s32zqg',
       },
+      {
+        _id: '',
+        originalname: 'video.mp4',
+        filename: 'video.mp4',
+        serializedFile: 'data:video/mp4;base64,aGVsbG8=',
+        type: typeAttachment,
+        mimetype: 'video/mp4',
+        entity: '6n7iqvz7p2s',
+        fileLocalID: 'aoe2t67yrq',
+      },
     ],
     name: '',
   };
+  const imageProps = {
+    value: 'uiea1s32zqg',
+    formField: 'image',
+    type: MediaModalType.Image,
+    name: '',
+  };
+
+  const mediaProps = {
+    value: 'aoe2t67yrq',
+    formField: 'media',
+    type: MediaModalType.Media,
+    name: '',
+  };
+
+  const render = (otherProps = {}) => {
+    ({ renderResult } = renderConnectedContainer(
+      <MediaField
+        formField=""
+        type={MediaModalType.Image}
+        value={null}
+        {...{ ...baseProps, ...otherProps }}
+      />,
+      () => defaultState
+    ));
+  };
 
   describe('Object URL handling', () => {
-    const file = new File(['hello'], 'hello.png', { type: 'image/png' });
-
     const mockedCreateObjectURL: jest.Mock = jest.fn();
     const mockedRevokeObjectURL: jest.Mock = jest.fn();
-    let renderResult: RenderResult;
 
-    const render = (otherProps = {}) => {
-      ({ renderResult } = renderConnectedContainer(
-        <MediaField {...{ ...props, ...otherProps }} />,
-        () => defaultState
-      ));
-    };
     beforeAll(() => {
       URL.createObjectURL = mockedCreateObjectURL;
       mockedCreateObjectURL.mockReturnValue('blob:abc');
@@ -70,16 +95,60 @@ describe('MediaField', () => {
     });
 
     it('should create an object URL with the file', async () => {
-      render();
+      const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+      render(imageProps);
       const img = screen.getByRole('img') as HTMLImageElement;
       expect(img.src).toEqual('blob:abc');
       expect(mockedCreateObjectURL).toHaveBeenCalledWith(file);
     });
 
     it('should revoke the created URL', async () => {
-      render();
+      render(imageProps);
       renderResult.unmount();
       expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
+    });
+
+    it('should change the media value according with markdownmedia variations', async () => {
+      render(mediaProps);
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Add timelink').parentElement!);
+      });
+      await act(async () => {
+        const inputs = screen.getAllByRole('textbox');
+        const hourInput = inputs.find(
+          x => (x as HTMLInputElement).name === 'timelines.0.timeHours'
+        )!;
+        fireEvent.change(hourInput, {
+          target: { value: '03' },
+        });
+        expect(baseProps.onChange).toHaveBeenLastCalledWith(
+          '(aoe2t67yrq, {"timelinks":{"03:00:00":""}})'
+        );
+      });
+      await act(async () => {
+        fireEvent.click(screen.getByText('Add timelink').parentElement!);
+      });
+      await act(async () => {
+        const inputs = screen.getAllByRole('textbox');
+        const hourInput = inputs.find(
+          x => (x as HTMLInputElement).name === 'timelines.1.timeMinutes'
+        )!;
+        fireEvent.change(hourInput, {
+          target: { value: '35' },
+        });
+        expect(baseProps.onChange).toHaveBeenLastCalledWith(
+          '(aoe2t67yrq, {"timelinks":{"03:00:00":"","00:35:00":""}})'
+        );
+      });
+      await act(async () => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'Remove timelink' })[0]);
+        expect(baseProps.onChange).toHaveBeenLastCalledWith(
+          '(aoe2t67yrq, {"timelinks":{"00:35:00":""}})'
+        );
+        fireEvent.click(screen.getAllByRole('button', { name: 'Remove timelink' })[0]);
+        expect(baseProps.onChange).toHaveBeenLastCalledWith('(aoe2t67yrq, {"timelinks":{}})');
+      });
     });
   });
 });
