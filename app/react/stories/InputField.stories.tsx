@@ -1,5 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Provider } from 'react-redux';
+import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { InputField } from 'V2/Components/UI/InputField';
 
 const InputFieldStory = {
@@ -8,19 +10,21 @@ const InputFieldStory = {
 };
 
 const Template: ComponentStory<typeof InputField> = args => (
-  <div className="tw-content">
-    <div className="md:w-1/2">
-      <InputField
-        fieldID={args.fieldID}
-        label={<p className="text-lg mb-2">{args.label}</p>}
-        disabled={args.disabled}
-        hideLabel={args.hideLabel}
-        hasErrors={args.hasErrors}
-        clearFieldAction={args.clearFieldAction}
-        placeholder={args.placeholder}
-      />
+  <Provider store={createStore()}>
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <InputField
+          fieldID={args.fieldID}
+          label={<p className="text-lg mb-2">{args.label}</p>}
+          disabled={args.disabled}
+          hideLabel={args.hideLabel}
+          hasErrors={args.hasErrors}
+          clearFieldAction={args.clearFieldAction}
+          placeholder={args.placeholder}
+        />
+      </div>
     </div>
-  </div>
+  </Provider>
 );
 
 const Basic = Template.bind({});
