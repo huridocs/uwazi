@@ -1,4 +1,4 @@
-import { logout, englishLoggedInUwazi } from './helpers';
+import { englishLoggedInUwazi } from './helpers';
 
 const labelEntityTitle = (
   entityPos: number,
@@ -22,15 +22,12 @@ describe('Information Extraction', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
     cy.exec('yarn ix-config', { env });
+    cy.clearAllCookies();
 
     englishLoggedInUwazi();
     labelEntityTitle(0, 'Lorem Ipsum');
     cy.get('a[aria-label="Library"]').click();
     labelEntityTitle(1, 'Uwazi Heroes Investigation');
-  });
-
-  after(() => {
-    logout();
   });
 
   it('Should create an extractor', () => {

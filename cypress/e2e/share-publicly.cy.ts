@@ -2,7 +2,6 @@ import {
   selectPublishedEntities,
   selectRestrictedEntities,
   createUser,
-  logout,
   englishLoggedInUwazi,
 } from './helpers';
 
@@ -12,6 +11,7 @@ describe('Share Publicly', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.clearAllCookies();
     englishLoggedInUwazi();
   });
 
@@ -63,7 +63,6 @@ describe('Share Publicly', () => {
   describe('as a collaborator', () => {
     it('should not be able to unshare entities publicly', () => {
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      logout();
       englishLoggedInUwazi('colla', 'borator');
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
@@ -94,7 +93,6 @@ describe('Share Publicly', () => {
 
     it('should show mixed access', () => {
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      logout();
       englishLoggedInUwazi();
       cy.contains('header a', 'Uwazi').click();
       cy.get('input[name="library.search.searchTerm"]').type('test 2016');

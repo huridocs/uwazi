@@ -61,6 +61,34 @@ describe('Translations', () => {
     cy.contains('button', 'Cancel').click();
     cy.checkA11y();
     cy.contains('button', 'Discard changes').click();
-    cy.get('[data-testid=settings-translations-edit]').should('be.visible');
+    cy.get('[data-testid=settings-translations]').should('be.visible');
+  });
+
+  describe('Live translations', () => {
+    //The translations modal has not been tested with checkA11y since is not yet rewritten
+    it('Should navigate to library and active live translate', () => {
+      cy.contains('a', 'Library').click();
+      cy.contains('button', 'English').click();
+      cy.contains('button', 'Live translate').click();
+    });
+
+    it('should translate a text', () => {
+      cy.contains('span', 'Filters').click();
+      cy.get('input[id=es]').clear();
+      cy.get('input[id=es]').type('Filtros');
+      cy.get('input[id=en]').clear();
+      cy.get('input[id=en]').type('Filtering');
+      cy.get('body').toMatchImageSnapshot({ name: 'live-translate-modal' });
+      cy.contains('button', 'Submit').click();
+      cy.get('[data-testid=modal]').should('not.be.visible');
+    });
+
+    it('should deactive the live translate and check the translatations in english and spanish', () => {
+      cy.get('button[aria-label="Turn off inline translation"]').click();
+      cy.contains('span', 'Filtering');
+      cy.contains('button', 'English').click();
+      cy.contains('a', 'Español').click();
+      cy.contains('span', 'Filtros');
+    });
   });
 });

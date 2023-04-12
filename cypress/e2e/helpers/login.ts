@@ -5,15 +5,9 @@ const login = (username: string, password: string) => {
   cy.get('button[type="submit"').click();
 };
 
-const logout = () => {
-  cy.get('.only-desktop a[aria-label="Settings"]').click();
-  cy.contains('a', 'Account').click();
-  cy.get('.settings-footer a.btn').click();
-};
-
 const changeLanguage = () => {
   cy.get('.menuNav-language > .dropdown').click();
-  cy.get('div[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
+  cy.get('li[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
 };
 
 const englishLoggedInUwazi = (username = 'admin', password = 'admin') => {
@@ -23,4 +17,4 @@ const englishLoggedInUwazi = (username = 'admin', password = 'admin') => {
   cy.get('.item-document').should('have.length.above', 3);
 };
 
-export { login, logout, englishLoggedInUwazi, changeLanguage };
+export { login, englishLoggedInUwazi, changeLanguage };

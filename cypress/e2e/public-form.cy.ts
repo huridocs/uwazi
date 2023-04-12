@@ -5,12 +5,8 @@ describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.clearAllCookies();
     englishLoggedInUwazi();
-  });
-
-  after(() => {
-    cy.visit('http://localhost:3000');
-    logout();
   });
 
   it('should white list the templates', () => {
