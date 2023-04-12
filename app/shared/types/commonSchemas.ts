@@ -117,6 +117,7 @@ export const metadataObjectSchema = {
     provenance: { type: 'string', enum: Object.values(provenanceTypes) },
     inheritedValue: { type: 'array', items: inheritedValueSchema },
     inheritedType: { type: 'string' },
+    timeLinks: { type: 'string' },
   },
 };
 
