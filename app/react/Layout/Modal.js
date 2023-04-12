@@ -17,7 +17,7 @@ export default class Modal extends Component {
         contentLabel=""
         ariaHideApp={false}
       >
-        <div className="modal-content" data-cy="modal">
+        <div className="modal-content" data-testid="modal">
           {children}
         </div>
       </ReactModal>
