@@ -24,9 +24,12 @@ class Captcha extends Component {
   async refresh() {
     const { remote } = this.props;
     const url = remote ? 'remotecaptcha' : 'captcha';
-    const response = await api.get(url);
-
-    this.setState(response.json);
+    try {
+      const response = await api.get(url);
+      this.setState(response.json);
+    } catch (ex) {
+      console.log('error on captcha');
+    }
   }
 
   render() {
