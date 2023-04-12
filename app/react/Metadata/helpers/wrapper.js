@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
 
 const prepareFiles = async (mediaProperties, values) => {
@@ -51,7 +52,18 @@ function wrapEntityMetadata(entity) {
     );
 
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-    const newFileMetadataValue = newFileMetadataValues[entity.metadata[key]];
+    let fileLocalID;
+    let timeLinks;
+    if (isString(entity.metadata[key])) {
+      [, fileLocalID, timeLinks] = entity.metadata[key].match(/([\w+]{10,20}), ({.+})/) || [
+        '',
+        entity.metadata[key],
+      ];
+    }
+    if (fileLocalID && timeLinks) {
+      newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
+    }
+    const newFileMetadataValue = newFileMetadataValues[fileLocalID];
     return {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])

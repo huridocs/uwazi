@@ -67,6 +67,73 @@ describe('wrapEntityMetadata', () => {
       ],
     });
   });
+
+  it('should return correct entity metadata with timelinks', () => {
+    const entity = {
+      title: 'A title',
+      metadata: {
+        media1:
+          '(/api/files/1681177668034i5lntk7hak.mp4, {"timelinks":{"00:00:13":"Check point 1","00:00:27":"Check point 2"}})',
+        media2: '(9032yptqzo5, {"timelinks":{"00:00:09":"Check point 1"}})',
+        multidate: [1681257600, 1682121600, 1682467200],
+      },
+      attachments: [
+        {
+          filename: '1681177668034i5lntk7hak.mp4',
+          mimetype: 'video/mp4',
+          originalname: 'SunsetWavesMediumOriginal.mp4',
+          size: 92827254,
+          type: 'attachment',
+          _id: '6434bc45e6b71f2c150a18d5',
+        },
+        {
+          entity: 'A title',
+          fileLocalID: '9032yptqzo5',
+          originalname: 'SunsetWavesMedium.mp4',
+          filename: 'SunsetWavesMedium.mp4',
+          type: 'attachment',
+          serializedFile:
+            'data:video/mp4;base64,AAAAGGZ0eXBtcDQyAAAAAG1wNDJtcDQxAAA6Nm1vb3YAAABsbXZoZAAAAADR7qsT',
+        },
+      ],
+    };
+    const wrappedEntity = wrapEntityMetadata(entity);
+    expect(wrappedEntity).toEqual({
+      title: 'A title',
+
+      metadata: {
+        media1: [
+          {
+            value:
+              '(/api/files/1681177668034i5lntk7hak.mp4, {"timelinks":{"00:00:13":"Check point 1","00:00:27":"Check point 2"}})',
+          },
+        ],
+        media2: [
+          { attachment: 0, timeLinks: '{"timelinks":{"00:00:09":"Check point 1"}}', value: '' },
+        ],
+        multidate: [{ value: 1681257600 }, { value: 1682121600 }, { value: 1682467200 }],
+      },
+      attachments: [
+        {
+          filename: '1681177668034i5lntk7hak.mp4',
+          mimetype: 'video/mp4',
+          originalname: 'SunsetWavesMediumOriginal.mp4',
+          size: 92827254,
+          type: 'attachment',
+          _id: '6434bc45e6b71f2c150a18d5',
+        },
+        {
+          entity: 'A title',
+          fileLocalID: '9032yptqzo5',
+          originalname: 'SunsetWavesMedium.mp4',
+          filename: 'SunsetWavesMedium.mp4',
+          type: 'attachment',
+          serializedFile:
+            'data:video/mp4;base64,AAAAGGZ0eXBtcDQyAAAAAG1wNDJtcDQxAAA6Nm1vb3YAAABsbXZoZAAAAADR7qsT',
+        },
+      ],
+    });
+  });
 });
 
 describe('prepareMetadataAndFiles', () => {
