@@ -55,7 +55,7 @@ exports[`Paginator should render a previous button and next button based on the 
                   translationKey="Previous"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Previous
@@ -97,7 +97,7 @@ exports[`Paginator should render a previous button and next button based on the 
                   translationKey="Next"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Next
@@ -168,7 +168,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
                   translationKey="Previous"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Previous
@@ -210,7 +210,7 @@ exports[`Paginator when base Url already has the query string "?" should add the
                   translationKey="Next"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Next
@@ -284,7 +284,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
                   translationKey="Previous"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Previous
@@ -326,7 +326,7 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
                   translationKey="Next"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Next
@@ -397,7 +397,7 @@ exports[`Paginator when on last page should disable the next link 1`] = `
                   translationKey="Previous"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Previous
@@ -442,7 +442,7 @@ exports[`Paginator when on last page should disable the next link 1`] = `
                   translationKey="Next"
                 >
                   <span
-                    className=" translation active"
+                    className="translation active"
                     onClick={[Function]}
                   >
                     Next

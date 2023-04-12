@@ -65,7 +65,7 @@ describe('Translate', () => {
         </Translate>
       );
       expect(component.find('span').html()).toBe(
-        '<span class=" translation">this<br/>      is<br/>      multiline<br/>      text</span>'
+        '<span class="translation">this<br/>      is<br/>      multiline<br/>      text</span>'
       );
     });
 
@@ -83,7 +83,7 @@ describe('Translate', () => {
       );
       expect(component.find('span').html()).toBe(
         // eslint-disable-next-line max-len
-        '<span class=" translation">this<br/>      is<br/>      <i>an italic</i><br/>      text and <br/>      this is <strong>a highlighted</strong> text. *discarted*<br/>      <i>Markdown</i><br/>      </span>'
+        '<span class="translation">this<br/>      is<br/>      <i>an italic</i><br/>      text and <br/>      this is <strong>a highlighted</strong> text. *discarted*<br/>      <i>Markdown</i><br/>      </span>'
       );
     });
   });

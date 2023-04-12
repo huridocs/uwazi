@@ -12,7 +12,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
   >
     <h4>
       <span
-        class=" translation active"
+        class="translation active"
       >
         Supporting files
       </span>
@@ -38,7 +38,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
       </svg>
       <span>
         <span
-          class=" translation active"
+          class="translation active"
         >
           Cancel
         </span>
@@ -62,7 +62,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
           style=""
         >
           <span
-            class=" translation active"
+            class="translation active"
           >
             Upload from computer
           </span>
@@ -77,7 +77,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
           style="font-weight: bold;"
         >
           <span
-            class=" translation active"
+            class="translation active"
           >
             Add from web
           </span>
@@ -155,7 +155,7 @@ exports[`Attachments Modal Attachment from web Should match render of web form 1
                 </svg>
                   
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Add from URL
                 </span>
@@ -181,7 +181,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
   >
     <h4>
       <span
-        class=" translation active"
+        class="translation active"
       >
         Supporting files
       </span>
@@ -207,7 +207,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
       </svg>
       <span>
         <span
-          class=" translation active"
+          class="translation active"
         >
           Cancel
         </span>
@@ -231,7 +231,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
           style="font-weight: bold;"
         >
           <span
-            class=" translation active"
+            class="translation active"
           >
             Upload from computer
           </span>
@@ -245,7 +245,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
           role="tab"
         >
           <span
-            class=" translation active"
+            class="translation active"
           >
             Add from web
           </span>
@@ -286,7 +286,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
               </svg>
                 
               <span
-                class=" translation active"
+                class="translation active"
               >
                 Upload and select file
               </span>
@@ -300,7 +300,7 @@ exports[`Attachments Modal Should match render of upload form 1`] = `
               class="attachments-modal__dropzone-title"
             >
               <span
-                class=" translation active"
+                class="translation active"
               >
                 Drag and drop file in this window to upload
               </span>

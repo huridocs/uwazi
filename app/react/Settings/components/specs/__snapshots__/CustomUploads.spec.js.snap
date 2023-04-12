@@ -46,14 +46,14 @@ Object {
                 class="btn-label"
               >
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Back
                 </span>
               </span>
             </a>
             <span
-              class=" translation active"
+              class="translation active"
             >
               Custom Uploads
             </span>
@@ -94,7 +94,7 @@ Object {
                   type="button"
                 >
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     Browse files to upload
                   </span>
@@ -102,7 +102,7 @@ Object {
                 <span>
                    
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     or drop your files here.
                   </span>
@@ -132,7 +132,7 @@ Object {
                     type="button"
                   >
                     <span
-                      class=" translation active"
+                      class="translation active"
                     >
                       Delete
                     </span>
@@ -161,7 +161,7 @@ Object {
                     type="button"
                   >
                     <span
-                      class=" translation active"
+                      class="translation active"
                     >
                       Delete
                     </span>
@@ -207,14 +207,14 @@ Object {
               class="btn-label"
             >
               <span
-                class=" translation active"
+                class="translation active"
               >
                 Back
               </span>
             </span>
           </a>
           <span
-            class=" translation active"
+            class="translation active"
           >
             Custom Uploads
           </span>
@@ -255,7 +255,7 @@ Object {
                 type="button"
               >
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Browse files to upload
                 </span>
@@ -263,7 +263,7 @@ Object {
               <span>
                  
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   or drop your files here.
                 </span>
@@ -293,7 +293,7 @@ Object {
                   type="button"
                 >
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     Delete
                   </span>
@@ -322,7 +322,7 @@ Object {
                   type="button"
                 >
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     Delete
                   </span>
@@ -425,14 +425,14 @@ Object {
                 class="btn-label"
               >
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Back
                 </span>
               </span>
             </a>
             <span
-              class=" translation active"
+              class="translation active"
             >
               Custom Uploads
             </span>
@@ -473,7 +473,7 @@ Object {
                   type="button"
                 >
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     Browse files to upload
                   </span>
@@ -481,7 +481,7 @@ Object {
                 <span>
                    
                   <span
-                    class=" translation active"
+                    class="translation active"
                   >
                     or drop your files here.
                   </span>
@@ -506,7 +506,7 @@ Object {
                   />
                 </svg>
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Uploading ...
                 </span>
@@ -551,14 +551,14 @@ Object {
               class="btn-label"
             >
               <span
-                class=" translation active"
+                class="translation active"
               >
                 Back
               </span>
             </span>
           </a>
           <span
-            class=" translation active"
+            class="translation active"
           >
             Custom Uploads
           </span>
@@ -599,7 +599,7 @@ Object {
                 type="button"
               >
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   Browse files to upload
                 </span>
@@ -607,7 +607,7 @@ Object {
               <span>
                  
                 <span
-                  class=" translation active"
+                  class="translation active"
                 >
                   or drop your files here.
                 </span>
@@ -632,7 +632,7 @@ Object {
                 />
               </svg>
               <span
-                class=" translation active"
+                class="translation active"
               >
                 Uploading ...
               </span>

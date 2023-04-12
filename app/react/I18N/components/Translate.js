@@ -47,7 +47,7 @@ class Translate extends Component {
     const lines = this.props.children.split('\n');
     const className = this.props.i18nmode ? 'translation active' : 'translation';
     return (
-      <span onClick={this.onClick} className={`${this.props.className} ${className}`}>
+      <span onClick={this.onClick} className={`${className} ${this.props.className}`.trim()}>
         {lines.map((line, index) => {
           const boldMatches = parseMarkdownBoldMarker(line);
           const italicMatches = parseMarkdownItalicMarker(line);
