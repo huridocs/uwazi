@@ -3,12 +3,5 @@
   "compilerOptions": {
     "types": ["cypress", "cypress-plugin-snapshots"]
   },
-  "paths": {},
-  "include": [
-    "node_modules/cypress",
-    "cypress.d.ts",
-    "support/commands.js",
-    "../app/react/v2/**/*.cy.tsx",
-    "./**/*.ts"
-  ]
+  "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx"]
 }

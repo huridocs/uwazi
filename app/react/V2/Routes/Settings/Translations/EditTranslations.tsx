@@ -235,13 +235,9 @@ const EditTranslations = () => {
               </div>
             </ToggleButton>
           </div>
-          <form
-            onSubmit={handleSubmit(submitFunction)}
-            className="flex flex-col h-[calc(100%-5.4rem)]"
-            id="edit-translations"
-          >
-            <div className="flex-grow">
-              {tablesData.length ? (
+          <div className="flex-grow">
+            {tablesData.length ? (
+              <form onSubmit={handleSubmit(submitFunction)} id="edit-translations">
                 <TranslationsTables
                   tablesData={tablesData}
                   submitting={isSubmitting}
@@ -249,16 +245,16 @@ const EditTranslations = () => {
                   setValue={setValue}
                   getFieldState={getFieldState}
                 />
-              ) : (
-                <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
-                  <InformationCircleIcon className="w-10 text-primary-800" />
-                  <span className="text-primary-800">
-                    <Translate>There are no untranslated terms</Translate>
-                  </span>
-                </div>
-              )}
-            </div>
-          </form>
+              </form>
+            ) : (
+              <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
+                <InformationCircleIcon className="w-10 text-primary-800" />
+                <span className="text-primary-800">
+                  <Translate>There are no untranslated terms</Translate>
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">

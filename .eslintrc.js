@@ -194,7 +194,6 @@ module.exports = {
     },
     {
       files: ['app/**/specs/*'],
-      excludedFiles: './**/*.cy.tsx',
       rules: {
         'max-lines-per-function': 'off',
         'max-lines': 'off',

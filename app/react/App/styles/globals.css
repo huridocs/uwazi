@@ -1355,10 +1355,6 @@ input:checked + .toggle-bg {
   height: 24rem;
 }
 
-.h-\[calc\(100\%-5\.4rem\)\] {
-  height: calc(100% - 5.4rem);
-}
-
 .h-auto {
   height: auto;
 }
@@ -2651,10 +2647,6 @@ input:checked + .toggle-bg {
 
 .pl-3 {
   padding-left: 0.75rem;
-}
-
-.pl-5 {
-  padding-left: 1.25rem;
 }
 
 .pl-8 {
