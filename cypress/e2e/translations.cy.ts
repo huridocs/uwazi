@@ -1,10 +1,5 @@
-import { login } from './helpers';
+import { changeLanguage, clearCookiesAndLogin } from './helpers';
 import 'cypress-axe';
-
-const changeLanguage = () => {
-  cy.get('.menuNav-language > .dropdown').click();
-  cy.get('li[aria-label="Languages"]  li.menuNav-item:nth-child(2) a').click();
-};
 
 const navigateToTranslationsPage = () => {
   cy.get('.only-desktop a[aria-label="Settings"]').click();
@@ -15,18 +10,12 @@ describe('Translations', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
-
-    cy.clearAllCookies();
-    cy.visit('http://localhost:3000');
-    changeLanguage();
-    login('admin', 'admin');
+    clearCookiesAndLogin();
   });
 
   it('Translations page should be accessible', () => {
     navigateToTranslationsPage();
-    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot({
-      name: 'settings-translations',
-    });
+    cy.get('[data-testid=settings-translations]').toMatchImageSnapshot();
     cy.injectAxe();
     cy.checkA11y();
   });
@@ -38,23 +27,21 @@ describe('Translations', () => {
 
   it('Should edit a translation', () => {
     cy.get('form').should('be.visible');
-    cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot({
-      name: 'edit-translations',
-    });
-    cy.get('input[type=text]').eq(1).siblings('button').click();
-    cy.get('input[type=text]').eq(1).type('Data');
+    cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot();
+    cy.get('input[type=text]').eq(0).siblings('button').click();
+    cy.get('input[type=text]').eq(0).type('Date');
     cy.get('input[type=text]').eq(2).siblings('button').click();
-    cy.get('input[type=text]').eq(2).type('Date');
+    cy.get('input[type=text]').eq(2).type('تاريخ');
     cy.contains('button', 'Save').click();
     cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
-    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'edited-context' });
+    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
   });
 
   it('Should filter out edited translations', () => {
     cy.contains('label', 'Untranslated Terms').click();
-    cy.get('input[type=text]').eq(1).siblings('button').click();
-    cy.get('input[type=text]').eq(1).type('Fecha in Arabic?');
-    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot({ name: 'filtered-context' });
+    cy.get('input[type=text]').eq(0).siblings('button').click();
+    cy.get('input[type=text]').eq(0).type('Admissibility report');
+    cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
   });
 
   it('Should discard changes', () => {
@@ -85,8 +72,7 @@ describe('Translations', () => {
     it('should deactive the live translate and check the translatations in english and spanish', () => {
       cy.get('button[aria-label="Turn off inline translation"]').click();
       cy.contains('span', 'Filtering');
-      cy.contains('button', 'English').click();
-      cy.contains('a', 'Español').click();
+      changeLanguage('Español');
       cy.contains('span', 'Filtros');
     });
   });
