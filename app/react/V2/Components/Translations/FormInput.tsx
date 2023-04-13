@@ -24,7 +24,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         disabled={submitting}
         clearFieldAction={reset}
         hasErrors={hasErrors}
-        inputControls={{
+        fieldControls={{
           ...register(data.cell.value, {
             required: true,
           }),
