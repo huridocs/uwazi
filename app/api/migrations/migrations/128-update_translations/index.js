@@ -1,6 +1,6 @@
 const newKeys = [
   { key: 'Discard changes?' },
-  { key: 'You have unsaved changes, do you want to continue?' },
+  { key: 'You have unsaved changes. Do you want to continue?' },
   { key: 'Language Code' },
   { key: 'Clear' },
   { key: 'Navigate back' },

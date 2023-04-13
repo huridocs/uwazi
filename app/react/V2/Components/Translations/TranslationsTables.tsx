@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import { Translate } from 'app/I18N';
 import { Table } from '../UI';
 import { FormInput } from './FormInput';
 import { LanguagePill } from './LanguagePill';
-import { Translate } from 'app/I18N';
 
 type translationsTableType = {
   tablesData: any[];
@@ -35,7 +35,7 @@ const TranslationsTables = ({
       disableSortBy: true,
     },
     {
-      Header: <Translate>Current Value</Translate>,
+      Header: <Translate>Value</Translate>,
       accessor: 'fieldKey',
       Cell: memoizedInput,
       disableSortBy: true,
