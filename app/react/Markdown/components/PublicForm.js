@@ -22,13 +22,10 @@ class PublicFormComponent extends Component {
   static renderTitle(template) {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
     const useGeneratedId = Boolean(titleProperty.get('generatedId'));
-
     let input = <Control.text id="title" className="form-control" model=".title" />;
-
     if (useGeneratedId) {
       input = React.cloneElement(input, { defaultValue: generateID(3, 4, 4) });
     }
-
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
@@ -197,7 +194,6 @@ class PublicFormComponent extends Component {
   render() {
     const { template, thesauris, file, attachments } = this.props;
     const { submiting } = this.state;
-
     return (
       <LocalForm
         validators={this.validators}
