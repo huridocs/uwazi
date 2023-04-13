@@ -260,7 +260,7 @@
     "@cypress/webpack-dev-server": "^3.4.0",
     "@cypress/webpack-preprocessor": "^5.17.0",
     "@mdx-js/loader": "^2.3.0",
-    "@storybook/addon-actions": "^6.5.16",
+    "@storybook/addon-actions": "^7.0.4",
     "@storybook/addon-essentials": "^6.5.16",
     "@storybook/addon-interactions": "^7.0.2",
     "@storybook/addon-links": "^6.5.16",
