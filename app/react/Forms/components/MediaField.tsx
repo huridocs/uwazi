@@ -73,12 +73,6 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(null);
   };
 
-  const getAndCompareFileMimeType = (file: any, mediaType: 'image/*' | 'video/*') => {
-    const mimetype = file.mimetype;
-    const replaced = mimetype.replace(/(.+)\/.+/, '$1/*');
-    return replaced === mediaType;
-  };
-
   const file = prepareValue(value, localAttachments);
 
   const constructTimelinksString = (timelinks: TimeLink[]) => {
@@ -94,6 +88,7 @@ const MediaField = (props: MediaFieldProps) => {
   };
 
   const updateTimeLinks = (timelinks: TimeLink[]) => {
+    console.log('TImelinks: ', constructTimelinksString(timelinks));
     onChange(constructTimelinksString(timelinks));
   };
 
@@ -139,12 +134,9 @@ const MediaField = (props: MediaFieldProps) => {
               }}
             />
           );
-        } else {
-          if (file.fileURL) {
-            return (
-              <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />
-            );
-          }
+        }
+        if (file.fileURL) {
+          return <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />;
         }
       })()}
 
