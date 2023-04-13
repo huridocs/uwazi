@@ -14,11 +14,6 @@ describe('Share Entities', () => {
     englishLoggedInUwazi();
   });
 
-  // after(() => {
-  //   cy.visit('http://localhost:3000');
-  //   logout();
-  // });
-
   it('should create a collaborator in the shared User Group', () => {
     createUser({
       username: 'colla',
