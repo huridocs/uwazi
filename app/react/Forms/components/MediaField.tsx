@@ -4,8 +4,8 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'app/UI';
 import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
-import { MediaModal, MediaModalProps } from 'app/Metadata/components/MediaModal';
-import MarkdownMedia from 'app/Markdown/components/MarkdownMedia';
+import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
+import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: File } | null;
@@ -76,11 +76,21 @@ const MediaField = (props: MediaFieldProps) => {
 
   const file = prepareValue(value, localAttachments);
 
-  useEffect(() => {
-    if (file.originalValue && !file.supportingFile && file.type === 'uploadId') {
-      handleImageRemove();
-    }
-  }, [localAttachments]);
+  const constructTimelinksString = (timelinks: TimeLink[]) => {
+    const timelinksObj = timelinks.reduce((current: any, timelink) => {
+      current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
+        timelink.label;
+      return current;
+    }, {});
+    const [, fileLocalID] = file.originalValue.match(
+      /([\w+]{10,20}|'{0,1}\/api\/files\/\w+\.\w+'{0,1}), ({.+})/
+    ) || ['', file.originalValue];
+    return `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`;
+  };
+
+  const updateTimeLinks = (timelinks: TimeLink[]) => {
+    onChange(constructTimelinksString(timelinks));
+  };
 
   useEffect(
     () => () => {

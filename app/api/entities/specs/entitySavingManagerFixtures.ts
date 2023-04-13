@@ -133,6 +133,12 @@ const fixtures: DBFixture = {
           type: 'image',
           name: 'image',
         },
+        {
+          _id: db.id(),
+          label: 'Video',
+          type: 'media',
+          name: 'video',
+        },
       ],
     },
   ],
