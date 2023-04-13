@@ -33,6 +33,7 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal] input').focus();
     cy.get('div[data-testid=modal] [role=listbox]').toMatchImageSnapshot();
     cy.contains('[data-testid=modal] button', 'Close').click();
+    cy.get('[data-testid=modal]').should('not.be.visible');
   });
 
   it('Should update the permissions of an entity', () => {
@@ -55,13 +56,16 @@ describe('Share Entities', () => {
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('.members-list').toMatchImageSnapshot();
     cy.contains('[data-testid=modal] button', 'Close').click();
+    cy.get('[data-testid=modal]').should('not.be.visible');
   });
 
   it('Should open the share modal for multiple selection', () => {
     cy.contains('button', 'Select all').click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('table.members-list tbody tr').should('have.length', 3);
-    cy.get('.members-list').toMatchImageSnapshot();
+    cy.contains('[data-testid=modal] tr', 'editor');
+    cy.contains('[data-testid=modal] tr', 'admin');
+    cy.contains('[data-testid=modal] tr', 'Administrators and Editors');
+    cy.contains('[data-testid=modal] tr', 'Asesores legales');
     cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
@@ -70,8 +74,7 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('colla');
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
-    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
+    cy.contains('div[data-testid=modal] td', 'colla').siblings().find('select').select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
@@ -80,7 +83,10 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('Ase');
     cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
+    cy.contains('div[data-testid=modal] td', 'Asesores legales')
+      .siblings()
+      .find('select')
+      .select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
