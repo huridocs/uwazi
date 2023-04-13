@@ -75,7 +75,7 @@ const Table = ({ columns, data, title }: TableProps) => {
           ))
         )}
       </FlowbiteTable.Head>
-      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900">
+      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900 divide-y">
         {rows.map(row => {
           prepareRow(row);
           return (
