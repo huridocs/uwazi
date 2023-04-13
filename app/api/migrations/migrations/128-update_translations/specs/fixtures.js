@@ -31,7 +31,7 @@ const fixturesDB = {
             {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
-            }
+            },
           ],
         },
         templateContext,
@@ -50,7 +50,7 @@ const fixturesDB = {
             {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
-            }
+            },
           ],
         },
         templateContext,
@@ -69,7 +69,7 @@ const fixturesDB = {
             {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
-            }
+            },
           ],
         },
         templateContext,
