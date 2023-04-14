@@ -30,8 +30,12 @@ describe('Share Entities', () => {
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
+
     cy.get('[data-testid=modal] input').focus();
-    cy.get('div[data-testid=modal] [role=listbox]').toMatchImageSnapshot();
+    cy.contains('.userGroupsLookupField', 'Activistas');
+    cy.contains('.userGroupsLookupField', 'Asesores legales');
+    cy.contains('.userGroupsLookupField', 'Public');
+
     cy.contains('[data-testid=modal] button', 'Close').click();
     cy.get('[data-testid=modal]').should('not.be.visible');
   });
