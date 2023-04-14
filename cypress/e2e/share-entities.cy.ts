@@ -114,8 +114,7 @@ describe('Share Entities', () => {
 
   it('should be able to see only published entities', () => {
     selectPublishedEntities();
-    cy.get('.search-box input').type('something');
-    cy.get('.search-box input').clear();
+    cy.get('.item-document').should('have.length', 30);
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
     cy.contains(
