@@ -1909,12 +1909,12 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.18.6"
 
-"@babel/plugin-transform-react-constant-elements@7.18.9":
-  version "7.18.9"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.18.9.tgz#ff6aeedd38f57ba6b41dcf824fcc8bcedb3e783f"
-  integrity sha512-IrTYh1I3YCEL1trjknnlLKTp5JggjzhKl/d3ibzPc97JhpFcDTr38Jdek/oX4cFbS6By0bXJcOkpRvJ5ZHK2wQ==
+"@babel/plugin-transform-react-constant-elements@7.21.3":
+  version "7.21.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.21.3.tgz#b32a5556100d424b25e388dd689050d78396884d"
+  integrity sha512-4DVcFeWe/yDYBLp0kBmOGFJ6N2UYg7coGid1gdxb4co62dy/xISDMaYBXBVXEDhfgMk7qkbcYiGtwd5Q/hwDDQ==
   dependencies:
-    "@babel/helper-plugin-utils" "^7.18.9"
+    "@babel/helper-plugin-utils" "^7.20.2"
 
 "@babel/plugin-transform-react-display-name@^7.18.6":
   version "7.18.6"
