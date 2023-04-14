@@ -100,7 +100,7 @@ async function updateTranslations(dbKeyValues, language, outdir) {
   return new Promise(resolve => {
     const { locale, repositoryTranslations, obsoleteTranslations, missingTranslations } = language;
     const dirname = outdir || __dirname;
-    const fileName = path.resolve(dirname, `${locale}-${new Date().toISOString()}.csv`);
+    const fileName = path.resolve(dirname, `${locale}.csv`);
     const csvFile = fs.createWriteStream(fileName);
     const csvStream = csv.format({ headers: true });
     csvStream.pipe(csvFile).on('finish', csvFile.end);
@@ -192,7 +192,7 @@ async function compareTranslations(locale, update, outdir) {
         if (report.obsolete > 0 || report.missing > 0) {
           process.stdout.write(
             // eslint-disable-next-line max-len
-            '\x1b[0m Run \x1b[7m sudo node ./scripts/compareTranslations.js --update --outdir=PATH \x1b[0m to generate files with updates for missing and obsolete keys. \n'
+            '\x1b[0m Run \x1b[7m yarn compare-translations --update --outdir=PATH/uwazi-contents/ui-translation \x1b[0m to generate files with updates for missing and obsolete keys. \n'
           );
           process.exit(1);
         } else {
