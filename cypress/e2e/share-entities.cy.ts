@@ -118,6 +118,10 @@ describe('Share Entities', () => {
     cy.get('.search-box input').clear();
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
+    cy.contains(
+      '.item-name',
+      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+    );
     cy.get('.item-document').should('have.length', 1);
   });
 });
