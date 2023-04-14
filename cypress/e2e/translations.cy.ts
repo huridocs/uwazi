@@ -36,18 +36,43 @@ describe('Translations', () => {
       cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
     });
 
-    it('Should filter out edited translations', () => {
-      cy.contains('label', 'Untranslated Terms').click();
-      cy.get('input[type=text]').eq(0).siblings('button').click();
-      cy.get('input[type=text]').eq(0).type('Admissibility report');
-      cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
+    it('should disable the form and buttons, and emit a notification when saving', () => {
+      cy.contains('button', 'Save').click();
+      cy.contains('button', 'Save').should('be.disabled');
+      cy.contains('button', 'Cancel').should('be.disabled');
+      cy.get('input[type=text]').should('be.disabled');
     });
 
-    it('Should discard changes', () => {
-      cy.contains('button', 'Cancel').click();
-      cy.checkA11y();
-      cy.contains('button', 'Discard changes').click();
-      cy.get('[data-testid=settings-translations]').should('be.visible');
+    it('Should filter translations that have no untranslated terms', () => {
+      cy.contains('caption', 'Fecha');
+      cy.get('input[type=text]').eq(0).should('have.value', 'Date');
+      cy.contains('label', 'Untranslated Terms').click();
+      cy.contains('caption', 'Informe de admisibilidad');
+      cy.get('input[type=text]').eq(0).should('have.value', 'Informe de admisibilidad');
+    });
+
+    describe('discard changes', () => {
+      it('should unfilter the from and clear the first field', () => {
+        cy.contains('label', 'Untranslated Terms').click();
+        cy.get('input[type=text]').eq(0).siblings('button').click();
+      });
+
+      it('should alert about unsaved changes when navigating', () => {
+        cy.contains('a', 'Account').click();
+        cy.contains('h1', 'Discard changes?');
+        cy.checkA11y();
+        cy.get('button[aria-label="Close modal"]').click();
+      });
+
+      it('Should discard changes', () => {
+        cy.get('input[type=text]').eq(0).type('unwanted change');
+        cy.contains('button', 'Cancel').click();
+        cy.contains('button', 'Discard changes').click();
+        cy.get('[data-testid=settings-translations]').should('be.visible');
+        cy.contains('[data-testid=content] button', 'Translate').click();
+        cy.get('form').should('be.visible');
+        cy.get('input[type=text]').eq(0).should('have.value', 'Date');
+      });
     });
   });
 

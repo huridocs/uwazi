@@ -153,7 +153,7 @@ const Notification = ({
           className={`${dismissClass} bg-transparent border hover:text-white focus:ring-4 focus:outline-none 
           font-medium rounded-lg text-xs px-3 mr-2 py-1.5 text-center`}
           data-dismiss-target="#alert-additional-content-1"
-          aria-label="Close"
+          aria-label="Dismiss notification"
           onClick={dismissAction}
         >
           <Translate>Dismiss</Translate>
