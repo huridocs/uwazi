@@ -10,6 +10,7 @@ interface InputFieldProps {
     name?: string;
     ref?: Ref<any>;
   };
+  value?: string;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
@@ -25,15 +26,21 @@ const InputField = ({
   hideLabel,
   placeholder,
   hasErrors,
+  value,
   clearFieldAction,
 }: InputFieldProps) => {
   const hasClearFieldButton = Boolean(clearFieldAction);
-  let fieldBorderStyles = 'border-gray-300 border';
-  let clearFieldBorderStyles = 'border-gray-300 border-l top-px';
+  let fieldStyles = 'border-gray-300 border text-gray-900';
+  let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
 
   if (hasErrors) {
-    fieldBorderStyles = 'border-error-300 border-2';
-    clearFieldBorderStyles = 'border-red-300 border-l-2 top-0.5';
+    fieldStyles =
+      'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-red-900';
+    clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
+  }
+
+  if (hasClearFieldButton) {
+    fieldStyles = `${fieldStyles} pr-10`;
   }
 
   const { onChange, onBlur, name, ref } = inputControls || {
@@ -57,7 +64,8 @@ const InputField = ({
           name={name}
           ref={ref}
           disabled={disabled}
-          className={`${fieldBorderStyles} text-gray-900 disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
+          value={value}
+          className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
           placeholder={placeholder}
         />
         {hasClearFieldButton && (
@@ -65,8 +73,8 @@ const InputField = ({
             type="button"
             onClick={clearFieldAction}
             disabled={disabled}
-            className={`${clearFieldBorderStyles} text-gray-900 disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-            enabled:hover:text-primary-700 focus:outline-none`}
+            className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
+             focus:outline-none`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

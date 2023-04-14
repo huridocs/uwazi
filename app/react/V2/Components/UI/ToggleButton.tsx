@@ -8,7 +8,7 @@ interface ToggleButtonProps {
 }
 
 const ToggleButton = ({ children, onToggle, value, disabled }: ToggleButtonProps) => {
-  const checkedColor = disabled ? 'peer-checked:bg-teal-600' : 'peer-checked:bg-blue-600';
+  const checkedColor = disabled ? 'peer-checked:bg-primary-300' : 'peer-checked:bg-primary-600';
   return (
     <label className="relative inline-flex items-center cursor-pointer">
       <input

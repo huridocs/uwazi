@@ -21,6 +21,7 @@ const Template: ComponentStory<typeof InputField> = args => (
           hasErrors={args.hasErrors}
           clearFieldAction={args.clearFieldAction}
           placeholder={args.placeholder}
+          value={args.value}
         />
       </div>
     </div>
@@ -29,6 +30,7 @@ const Template: ComponentStory<typeof InputField> = args => (
 
 const Basic = Template.bind({});
 const WithClearFieldButton = Template.bind({});
+const WithError = Template.bind({});
 
 Basic.args = {
   fieldID: '1',
@@ -42,8 +44,17 @@ Basic.args = {
 WithClearFieldButton.args = {
   ...Basic.args,
   clearFieldAction: () => {},
+  value:
+    'This is a very long value that will not show over the clear field button even if it is very long',
 };
 
-export { Basic, WithClearFieldButton };
+WithError.args = {
+  ...Basic.args,
+  hasErrors: true,
+  value: 'This value has errors',
+  clearFieldAction: () => {},
+};
+
+export { Basic, WithClearFieldButton, WithError };
 
 export default InputFieldStory as ComponentMeta<typeof InputField>;
