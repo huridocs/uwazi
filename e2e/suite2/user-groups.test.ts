@@ -19,7 +19,7 @@ describe('User groups', () => {
   it('Should show a list of existing groups with the count of their members', async () => {
     await expect(page).toClick('.react-tabs__tab:nth-child(2) > span', { text: 'Groups' });
     const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
-    expect(groupRows).toEqual(['Activistas 2', 'Asesores legales 1']);
+    expect(groupRows).toEqual(['Activistas 2', 'Asesores legales 2']);
   });
 
   describe('Edition of user group', () => {
@@ -40,10 +40,13 @@ describe('User groups', () => {
           username: item.textContent,
         }))
       );
-      expect(users[0].username?.trim()).toEqual('editor');
+
+      expect(users[0].username?.trim()).toEqual('colla');
       expect(users[0].checked).toBe(true);
-      expect(users[1].username?.trim()).toEqual('admin');
-      expect(users[1].checked).toBe(false);
+      expect(users[1].username?.trim()).toEqual('editor');
+      expect(users[1].checked).toBe(true);
+      expect(users[2].username?.trim()).toEqual('admin');
+      expect(users[2].checked).toBe(false);
     });
 
     it('Should update the name and members of the group', async () => {
@@ -52,7 +55,7 @@ describe('User groups', () => {
       await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('.side-panel', { hidden: true });
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
-      expect(groupRows).toEqual(['Activistas 2', 'new name 2']);
+      expect(groupRows).toEqual(['Activistas 2', 'new name 3']);
     });
   });
 
@@ -64,7 +67,7 @@ describe('User groups', () => {
       await expect(page).toClick('button', { text: 'Save' });
       await page.waitForSelector('tbody tr:nth-child(3)');
       const groupRows = await page.$$eval('tbody tr', rows => rows.map(row => row.textContent));
-      expect(groupRows).toEqual(['Activistas 2', 'new name 2', 'New group 1']);
+      expect(groupRows).toEqual(['Activistas 2', 'new name 3', 'New group 1']);
     });
   });
 });
