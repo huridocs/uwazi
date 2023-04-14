@@ -1,9 +1,4 @@
-import {
-  selectPublishedEntities,
-  selectRestrictedEntities,
-  createUser,
-  clearCookiesAndLogin,
-} from './helpers';
+import { selectPublishedEntities, selectRestrictedEntities, clearCookiesAndLogin } from './helpers';
 
 describe('Permisions system', () => {
   const entityTitle =
@@ -14,18 +9,7 @@ describe('Permisions system', () => {
     clearCookiesAndLogin();
   });
 
-  it('should create a colaborator in the shared User Group', () => {
-    cy.get('a[aria-label="Library"]').click();
-    createUser({
-      username: 'colla',
-      password: 'borator',
-      email: 'rock@stone.com',
-      group: 'Asesores legales',
-    });
-  });
-
   it('should share an entity with the collaborator', () => {
-    cy.get('a[aria-label="Library"]').click();
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();

@@ -1,4 +1,4 @@
-import { selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
+import { selectPublishedEntities, selectRestrictedEntities } from './helpers';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
@@ -14,19 +14,8 @@ describe('Share Entities', () => {
     clearCookiesAndLogin();
   });
 
-  it('should create a collaborator in the shared User Group', () => {
-    createUser({
-      username: 'colla',
-      password: 'borator',
-      email: 'rock@stone.com',
-      group: 'Asesores legales',
-    });
-  });
-
   // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', () => {
-    cy.get('.alert.alert-success').click();
-    cy.get('a[aria-label="Library"]').click();
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
@@ -112,7 +101,7 @@ describe('Share Entities', () => {
     checkCanEdit(titleEntity4);
   });
 
-  it('should be able to edit a save', () => {
+  it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Edit').click();
     cy.get('aside.is-active textarea').eq(0).clear();
@@ -120,10 +109,10 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
+    cy.get('aside.is-active button[aria-label="Close side panel"]').click();
   });
 
   it('should be able to see only published entities', () => {
-    cy.reload();
     selectPublishedEntities();
     cy.get('.search-box input').type('something');
     cy.get('.search-box input').clear();
