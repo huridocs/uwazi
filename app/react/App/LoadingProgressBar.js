@@ -6,7 +6,21 @@ const loadingProgressBar = {
 
   start: () => {
     if (isClient) {
-      NProgress.configure({ showSpinner: false, easing: 'ease', speed: 800, minimum: 0.2 });
+      const parent = document.querySelector('.nprogress-container')
+        ? '.nprogress-container'
+        : 'body';
+
+      NProgress.configure({
+        showSpinner: false,
+        easing: 'ease',
+        speed: 800,
+        minimum: 0.2,
+        barSelector: '[role="progressbar "]',
+        spinnerSelector: '[role="spinner"]',
+        parent,
+        template:
+          '<div class="bar" role="progressbar "><div class="peg"></div></div><div class="spinner" role="spinner"><div class="spinner-icon"></div></div>',
+      });
       NProgress.start();
       loadingProgressBar.requests += 1;
     }

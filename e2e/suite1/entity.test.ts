@@ -39,8 +39,8 @@ const addSupportingFile = async (filePath: string) => {
   await uploadSupportingFileToEntity(filePath);
 };
 
-const saveEntityAndClosePanel = async () => {
-  await expect(page).toClick('button', { text: 'Save' });
+const saveEntityAndClosePanel = async (text?: string) => {
+  await expect(page).toClick('button', { text: text || 'Save' });
   await expect(page).toClick('.alert.alert-success');
   await refreshIndex();
   await expect(page).toClick('.is-active button.closeSidepanel');
@@ -315,7 +315,7 @@ describe('Entities', () => {
 
       await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
 
-      await saveEntityAndClosePanel();
+      await saveEntityAndClosePanel('Guardar');
     });
 
     it('should check the values for the entity in Spanish', async () => {

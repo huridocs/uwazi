@@ -18,6 +18,12 @@ import {
   UseRowStateCellProps,
   UseSortByColumnOptions,
   UseSortByColumnProps,
+  UseGroupByRowProps,
+  UseExpandedHooks,
+  UseExpandedInstanceProps,
+  UseExpandedOptions,
+  UseExpandedRowProps,
+  UseExpandedState,
 } from 'react-table';
 
 interface CustomColumn {
@@ -25,11 +31,18 @@ interface CustomColumn {
 }
 
 declare module 'react-table' {
+  export interface Hooks<D extends object = {}>
+    extends UseExpandedHooks<D>,
+      UseGroupByHooks<D>,
+      UseRowSelectHooks<D>,
+      UseSortByHooks<D> {}
+
   export interface TableOptions<D extends object>
     extends UseExpandedOptions<D>,
       UseFiltersOptions<D>,
       UseRowSelectOptions<D>,
       UseRowStateOptions<D>,
+      UseGroupByOptions<D>,
       UseSortByOptions<D>,
       UsePaginationOptions<D> {}
 
@@ -39,6 +52,7 @@ declare module 'react-table' {
       UseFiltersInstanceProps<D>,
       UseRowSelectInstanceProps<D>,
       UseRowStateInstanceProps<D>,
+      UseGroupByInstanceProps<D>,
       UseSortByInstanceProps<D>,
       UsePaginationInstanceProps<D> {}
 
@@ -49,6 +63,7 @@ declare module 'react-table' {
       UsePaginationState<D>,
       UseRowSelectState<D>,
       UseRowStateState<D>,
+      UseGroupByState<D>,
       UseSortByState<D>,
       UsePaginationState<D> {}
 
@@ -56,6 +71,7 @@ declare module 'react-table' {
     extends UseFiltersColumnOptions<D>,
       UseFiltersColumnOptions<D>,
       UseRowSelectOptions<D>,
+      UseGroupByColumnOptions<D>,
       UseSortByColumnOptions<D>,
       CustomColumn {}
 
@@ -67,5 +83,12 @@ declare module 'react-table' {
       UseRowStateCellProps<D>,
       UseSortByColumnProps<D> {}
 
-  export interface ColumnInstance<D extends object = {}> extends UseFiltersColumnProps<D> {}
+  export interface Cell<D extends object = {}>
+    extends UseGroupByCellProps<D>,
+      UseRowStateCellProps<D> {}
+
+  export interface ColumnInstance<D extends object = {}>
+    extends UseGroupByColumnProps<D>,
+      UseSortByColumnProps<D>,
+      UseFiltersColumnProps<D> {}
 }
