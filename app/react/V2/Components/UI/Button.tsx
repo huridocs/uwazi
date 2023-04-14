@@ -48,7 +48,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border-2 focus:outline-none focus:ring-4 focus:ring-indigo-200`}
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200`}
       form={formId}
     >
       {children}
