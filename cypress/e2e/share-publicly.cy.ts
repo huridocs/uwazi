@@ -85,28 +85,28 @@ describe('Permisions system', () => {
   });
 
   describe('mixed permissions', () => {
-    it('should show mixed access', () => {
+    it('should login as admin and perform a search', () => {
       clearCookiesAndLogin('admin', 'admin');
-      cy.contains('header a', 'Uwazi').click();
       cy.get('input[name="library.search.searchTerm"]').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 3);
+    });
+
+    it('should show mixed access', () => {
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
       cy.contains('div[data-testid=modal] button', 'Close').click();
+      cy.get('div[data-testid=modal]').should('not.be.visible');
     });
 
     it('should keep publishing status if mixed access selected', () => {
-      cy.get('input[name="library.search.searchTerm"]').clear();
-      cy.get('input[name="library.search.searchTerm"]').type('test 2016');
-      cy.get('[aria-label="Search button"]').click();
-      cy.get('.item-document').should('have.length', 3);
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
       cy.get('div[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
+      cy.get('div[data-testid=modal]').should('not.be.visible');
       cy.get('.item-document').should('have.length', 3);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });
