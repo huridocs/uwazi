@@ -1,16 +1,3 @@
-const newKeys = [
-  { key: 'Discard changes?' },
-  { key: 'You have unsaved changes. Do you want to continue?' },
-  { key: 'Language Code' },
-  { key: 'Clear' },
-  { key: 'Navigate back' },
-  { key: 'Dismiss' },
-  { key: 'View less' },
-  { key: 'View more' },
-];
-
-const deletedKeys = [{ key: 'User Interface' }];
-
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };
   const newTranslation = keysToUpdate.find(row => row.key === currentTranslation.key);
@@ -30,11 +17,10 @@ export default {
 
   name: 'update_translations',
 
-  description: 'Updates translations for new Translatinos UI',
+  description: 'Insert added key',
 
   async up(db) {
-    const keysToInsert = newKeys;
-    const keysToDelete = deletedKeys;
+    const keysToInsert = [{ key: 'Remote Server Unreachable' }];
     const translations = await db.collection('translations').find().toArray();
     const locToSystemContext = {};
     translations.forEach(tr => {
@@ -44,13 +30,8 @@ export default {
     const alreadyInDB = [];
     Object.entries(locToSystemContext).forEach(([loc, context]) => {
       const contextValues = context.values.reduce((newValues, currentTranslation) => {
-        const deleted = keysToDelete.find(
-          deletedTranslation => deletedTranslation.key === currentTranslation.key
-        );
-        if (!deleted) {
-          const translation = updateTranslation(currentTranslation, [], loc);
-          newValues.push(translation);
-        }
+        const translation = updateTranslation(currentTranslation, [], loc);
+        newValues.push(translation);
         keysToInsert.forEach(newEntry => {
           if (newEntry.key === currentTranslation.key) {
             alreadyInDB.push(currentTranslation.key);

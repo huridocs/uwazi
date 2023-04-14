@@ -2,7 +2,7 @@ import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures, { templateContext } from './fixtures.js';
 
-describe('migration update translations of new Translations UI', () => {
+describe('migration update translations of settings tooltips', () => {
   beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
@@ -30,19 +30,14 @@ describe('migration update translations of new Translations UI', () => {
     };
 
     const addedKeys = [
-      { key: 'Discard changes?' },
-      { key: 'You have unsaved changes. Do you want to continue?' },
-      { key: 'Language Code' },
-      { key: 'Clear' },
-      { key: 'Navigate back' },
-      { key: 'Dismiss' },
-      { key: 'View less' },
-      { key: 'View more' },
-    ].map(key => ({ ...key, value: key.key }));
-
+      {
+        key: 'Remote Server Unreachable',
+        value: 'Remote Server Unreachable',
+      },
+    ];
     const defaultContextContent = expect.objectContaining({
       type: 'Uwazi UI',
-      values: expect.arrayContaining([previousSystemValues, ...addedKeys]),
+      values: [previousSystemValues, ...addedKeys],
     });
     expect(uwaziUI).toMatchObject([
       expect.objectContaining({
