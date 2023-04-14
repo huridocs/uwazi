@@ -4,7 +4,7 @@ import React, { ChangeEventHandler, Ref } from 'react';
 interface InputFieldProps {
   fieldID: string;
   label: string | React.ReactNode;
-  inputControls?: {
+  fieldControls?: {
     onChange?: ChangeEventHandler;
     onBlur?: ChangeEventHandler;
     name?: string;
@@ -21,7 +21,7 @@ interface InputFieldProps {
 const InputField = ({
   fieldID,
   label,
-  inputControls,
+  fieldControls,
   disabled,
   hideLabel,
   placeholder,
@@ -43,7 +43,7 @@ const InputField = ({
     fieldStyles = `${fieldStyles} pr-10`;
   }
 
-  const { onChange, onBlur, name, ref } = inputControls || {
+  const { onChange, onBlur, name, ref } = fieldControls || {
     onChange: () => {},
     onBlur: () => {},
     name: '',

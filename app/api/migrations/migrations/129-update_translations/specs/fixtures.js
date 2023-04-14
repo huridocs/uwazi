@@ -32,6 +32,11 @@ const fixturesDB = {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
             },
+            {
+              _id: db.id(),
+              key: 'User Interface',
+              value: 'User Interface',
+            },
           ],
         },
         templateContext,
@@ -51,6 +56,11 @@ const fixturesDB = {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
             },
+            {
+              _id: db.id(),
+              key: 'User Interface',
+              value: 'User Interface',
+            },
           ],
         },
         templateContext,
@@ -69,6 +79,11 @@ const fixturesDB = {
             {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
+            },
+            {
+              _id: db.id(),
+              key: 'User Interface',
+              value: 'User Interface',
             },
           ],
         },

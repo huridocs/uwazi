@@ -31,7 +31,7 @@ const pill = ({ cell }: any) => (
 );
 
 const columns = [
-  { Header: 'View', accessor: 'label', disableSortBy: true, className: 'w-1/3' },
+  { Header: 'Name', accessor: 'label', className: 'w-1/3' },
   { Header: 'Type', accessor: 'type', Cell: pill, className: 'w-2/3' },
   {
     Header: 'Action',

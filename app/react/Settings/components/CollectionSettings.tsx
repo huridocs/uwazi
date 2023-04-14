@@ -280,18 +280,20 @@ const CollectionSettings = ({
                 setValue('allowedPublicTemplates', []);
               }}
             >
-              <SettingsFormElement
-                label="Public Form submit URL"
-                tip={tips.publicForm[1]}
-                labelClassName="larger-label"
-                inputsClassName="smaller-inputs"
-              >
-                <input
-                  type="text"
-                  {...register('publicFormDestination')}
-                  className="form-control"
-                />
-              </SettingsFormElement>
+              <div className={`${errors.publicFormDestination ? 'has-error' : ''}`}>
+                <SettingsFormElement
+                  label="Public Form submit URL"
+                  tip={tips.publicForm[1]}
+                  labelClassName="larger-label"
+                  inputsClassName="smaller-inputs"
+                >
+                  <input
+                    placeholder="https://example.io"
+                    {...register('publicFormDestination', { pattern: /^https?:\/\/.+$/ })}
+                    className="form-control"
+                  />
+                </SettingsFormElement>
+              </div>
 
               <SettingsFormElement
                 label="Whitelisted Templates"

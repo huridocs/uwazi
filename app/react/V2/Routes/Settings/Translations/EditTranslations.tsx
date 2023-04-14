@@ -1,6 +1,12 @@
 /* eslint-disable max-lines */
-import React, { useRef, useState } from 'react';
-import { Params, useLoaderData, LoaderFunction, useNavigate } from 'react-router-dom';
+import React, { useMemo, useRef, useState } from 'react';
+import {
+  Params,
+  useLoaderData,
+  LoaderFunction,
+  unstable_useBlocker as useBlocker,
+  Link,
+} from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -137,7 +143,6 @@ const EditTranslations = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const setModal = useSetRecoilState(modalAtom);
   const setShowModal = useSetRecoilState(showModalAtom);
-  const navigate = useNavigate();
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
   const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
@@ -149,6 +154,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
+    reset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { isDirty, errors, isSubmitting },
   } = useForm({
@@ -156,19 +162,19 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
+  const blocker = useBlocker(isDirty);
 
-  const cancel = () => {
-    if (isDirty) {
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
       setModal({
         size: 'md',
-        children: <ConfirmationModal setShowModal={setShowModal} navigate={navigate} />,
+        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
       });
-      return setShowModal(true);
+      setShowModal(true);
     }
+  }, [blocker.proceed, blocker.state, setModal, setShowModal]);
 
-    return navigate('/settings/translations');
-  };
+  const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
 
   const submitFunction = async (data: { formData: formDataType }) => {
     const values = prepareValuesToSave(data.formData, translations);
@@ -180,6 +186,7 @@ const EditTranslations = () => {
           type: 'sucess',
           text: <Translate>Translations saved</Translate>,
         });
+        reset({}, { keepValues: true });
       } catch (e) {
         setNotifications({
           type: 'error',
@@ -281,15 +288,11 @@ const EditTranslations = () => {
                 </>
               )}
             </div>
-            <Button
-              onClick={cancel}
-              size="small"
-              buttonStyle="tertiary"
-              type="button"
-              disabled={isSubmitting}
-            >
-              <Translate>Cancel</Translate>
-            </Button>
+            <Link to="/settings/translations">
+              <Button size="small" buttonStyle="tertiary" type="button" disabled={isSubmitting}>
+                <Translate>Cancel</Translate>
+              </Button>
+            </Link>
             <Button
               size="small"
               buttonStyle="primary"
