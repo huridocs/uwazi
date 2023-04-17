@@ -47,6 +47,8 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
+      - name: update chromium 
+        run: sudo apt install -y chromium-browser chromium-chromedriver      
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
