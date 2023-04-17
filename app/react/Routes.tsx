@@ -1,11 +1,10 @@
 /* eslint-disable max-lines */
 import React from 'react';
-import { IncomingHttpHeaders } from 'http';
 import { createRoutesFromElements, Route } from 'react-router-dom';
+import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
-import { EditTranslations } from 'app/I18N/EditTranslations';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
@@ -27,7 +26,6 @@ import {
   RelationTypesList,
   Settings,
   ThesauriList,
-  TranslationsList,
   Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
@@ -41,6 +39,14 @@ import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
+import {
+  TranslationsList,
+  translationsListLoader,
+} from 'V2/Routes/Settings/Translations/TranslationsList';
+import {
+  EditTranslations,
+  editTranslationsLoader,
+} from 'V2/Routes/Settings/Translations/EditTranslations';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -111,8 +117,16 @@ const getRoutesLayout = (
       </Route>
       <Route path="languages" element={adminsOnlyRoute(<LanguageList />)} />
       <Route path="translations">
-        <Route index element={adminsOnlyRoute(<TranslationsList />)} />
-        <Route path="edit/:context" element={adminsOnlyRoute(<EditTranslations />)} />
+        <Route
+          index
+          element={adminsOnlyRoute(<TranslationsList />)}
+          loader={translationsListLoader(headers)}
+        />
+        <Route
+          path="edit/:context"
+          element={adminsOnlyRoute(<EditTranslations />)}
+          loader={editTranslationsLoader(headers)}
+        />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
       <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />

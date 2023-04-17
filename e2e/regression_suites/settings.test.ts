@@ -113,11 +113,6 @@ describe('Settings', () => {
     await testSelectorShot('.panel.panel-default.settings-content');
   });
 
-  it('should display Translations', async () => {
-    await selectSettingsPage('Translations');
-    await testSettingsContent();
-  });
-
   afterAll(async () => {
     await logout();
   });

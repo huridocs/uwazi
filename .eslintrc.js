@@ -53,7 +53,7 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'jest/no-focused-tests': 'error',
     'object-curly-spacing': ['warn', 'always'],
-    'max-len': ['error', 150],
+    'max-len': ['error', 150, { ignoreStrings: true }],
     'no-unused-vars': [
       'error',
       {
@@ -194,7 +194,6 @@ module.exports = {
     },
     {
       files: ['app/**/specs/*'],
-      excludedFiles: './**/*.cy.tsx',
       rules: {
         'max-lines-per-function': 'off',
         'max-lines': 'off',

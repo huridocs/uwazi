@@ -15,13 +15,13 @@ import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/serve
 import { RecoilRoot } from 'recoil';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Settings } from 'shared/types/settingsType';
-import translationsApi from '../api/i18n/translations';
+import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { I18NUtils, t, Translate } from './I18N';
-import { ClientTranslationSchema, IStore } from './istore';
+import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createStore from './store';
 
@@ -32,7 +32,7 @@ class ServerRenderingFetchError extends Error {
   }
 }
 
-const onlySystemTranslations = (translations: ClientTranslationSchema[]) => {
+const onlySystemTranslations = (translations: IndexedTranslations[]) => {
   const rows = translations.map(translation => {
     const systemTranslation = translation?.contexts?.find(c => c.id === 'System');
     return { ...translation, contexts: [systemTranslation] };

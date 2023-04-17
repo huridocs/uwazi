@@ -1,5 +1,5 @@
-import { selectPublishedEntities, selectRestrictedEntities, createUser } from './helpers';
-import { englishLoggedInUwazi, logout } from './helpers/login';
+import { createUser, selectPublishedEntities, selectRestrictedEntities } from './helpers';
+import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
   const titleEntity1 =
@@ -11,28 +11,22 @@ describe('Share Entities', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
-    englishLoggedInUwazi();
-  });
-
-  it('should create a collaborator in the shared User Group', () => {
-    createUser({
-      username: 'colla',
-      password: 'borator',
-      email: 'rock@stone.com',
-      group: 'Asesores legales',
-    });
+    clearCookiesAndLogin();
   });
 
   // eslint-disable-next-line max-statements
   it('Should list available collaborators of an entity', () => {
-    cy.get('.alert.alert-success').click();
-    cy.get('a[aria-label="Library"]').click();
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
+
     cy.get('[data-testid=modal] input').focus();
-    cy.get('div[data-testid=modal] [role=listbox]').toMatchImageSnapshot();
+    cy.contains('.userGroupsLookupField', 'Activistas');
+    cy.contains('.userGroupsLookupField', 'Asesores legales');
+    cy.contains('.userGroupsLookupField', 'Public');
+
     cy.contains('[data-testid=modal] button', 'Close').click();
+    cy.get('[data-testid=modal]').should('not.be.visible');
   });
 
   it('Should update the permissions of an entity', () => {
@@ -55,13 +49,16 @@ describe('Share Entities', () => {
     cy.contains('button', 'Share').should('be.visible').click();
     cy.get('.members-list').toMatchImageSnapshot();
     cy.contains('[data-testid=modal] button', 'Close').click();
+    cy.get('[data-testid=modal]').should('not.be.visible');
   });
 
   it('Should open the share modal for multiple selection', () => {
     cy.contains('button', 'Select all').click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('table.members-list tbody tr').should('have.length', 3);
-    cy.get('.members-list').toMatchImageSnapshot();
+    cy.contains('[data-testid=modal] tr', 'editor');
+    cy.contains('[data-testid=modal] tr', 'admin');
+    cy.contains('[data-testid=modal] tr', 'Administrators and Editors');
+    cy.contains('[data-testid=modal] tr', 'Asesores legales');
     cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
@@ -70,8 +67,7 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('colla');
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
-    cy.get('div[data-testid=modal]').toMatchImageSnapshot();
+    cy.contains('div[data-testid=modal] td', 'colla').siblings().find('select').select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
@@ -80,7 +76,10 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('Ase');
     cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
+    cy.contains('div[data-testid=modal] td', 'Asesores legales')
+      .siblings()
+      .find('select')
+      .select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
@@ -94,8 +93,7 @@ describe('Share Entities', () => {
   };
 
   it('should be able to see and edit entities as a collaborator', () => {
-    logout();
-    englishLoggedInUwazi('colla', 'borator');
+    clearCookiesAndLogin('colla', 'borator');
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
     checkCanEdit(titleEntity1, false);
@@ -103,7 +101,7 @@ describe('Share Entities', () => {
     checkCanEdit(titleEntity4);
   });
 
-  it('should be able to edit a save', () => {
+  it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Edit').click();
     cy.get('aside.is-active textarea').eq(0).clear();
@@ -111,15 +109,18 @@ describe('Share Entities', () => {
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
+    cy.get('aside.is-active button[aria-label="Close side panel"]').click();
   });
 
   it('should be able to see only published entities', () => {
-    cy.reload();
     selectPublishedEntities();
-    cy.get('.search-box input').type('something');
-    cy.get('.search-box input').clear();
+    cy.get('.item-document').should('have.length', 30);
     cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
+    cy.contains(
+      '.item-name',
+      'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+    );
     cy.get('.item-document').should('have.length', 1);
   });
 });
