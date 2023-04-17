@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import { Db } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 import request from 'supertest';
 
 import { errorLog } from 'api/log';
@@ -46,6 +46,12 @@ const existingExtractors = [
     templates: [fixturesFactory.id('template1')],
   },
 ];
+
+const existingExtractorsOutput = existingExtractors.map(extractor => ({
+  ...extractor,
+  _id: extractor._id.toString(),
+  templates: extractor.templates.map(template => template.toString()),
+}));
 
 const fixtures: DBFixture = {
   settings: [
@@ -216,13 +222,16 @@ describe('extractor routes', () => {
       {
         updateTarget: 'adding template',
         change: {
-          templates: [fixturesFactory.id('template1'), fixturesFactory.id('template2')],
+          templates: [
+            fixturesFactory.id('template1').toString(),
+            fixturesFactory.id('template2').toString(),
+          ],
         },
       },
       {
         updateTarget: 'changing template',
         change: {
-          templates: [fixturesFactory.id('template2')],
+          templates: [fixturesFactory.id('template2').toString()],
         },
       },
       {
@@ -230,19 +239,34 @@ describe('extractor routes', () => {
         change: {
           name: 'new_extractor_name',
           property: 'number_property',
-          templates: [fixturesFactory.id('template2')],
+          templates: [fixturesFactory.id('template2').toString()],
         },
       },
     ])('should update $updateTarget', async ({ change }) => {
-      const input: any = { ...extractorToUpdate, ...change };
+      const input: any = { ...existingExtractorsOutput[0], ...change };
+      const inDb = {
+        ...input,
+        _id: new ObjectId(input._id),
+        templates: input.templates.map((t: string) => new ObjectId(t)),
+      };
       const response = await request(app).put('/api/ixextractors').send(input).expect(200);
       expect(response.body).toMatchObject(input);
       const extractors = await db?.collection('ixextractors').find().toArray();
-      expect(extractors?.[0]).toMatchObject(input);
+      expect(extractors?.[0]).toMatchObject(inDb);
     });
   });
 
   describe('DELETE /api/ixextractors', () => {
+    it('should reject malformed input', async () => {
+      const input = {
+        ids: { _id: { $exists: 1 } },
+      };
+      const response = await request(app).delete('/api/ixextractors').query(input).expect(400);
+      expect(response.body.error).toContain('validation failed');
+      const extractors = await db?.collection('ixextractors').find().toArray();
+      expect(extractors?.length).toBe(3);
+    });
+
     it('should reject non existing _id', async () => {
       const input = {
         ids: [
@@ -273,9 +297,9 @@ describe('extractor routes', () => {
     it('should return all extractors', async () => {
       const response = await request(app).get('/api/ixextractors').expect(200);
       expect(response.body).toMatchObject([
-        { ...existingExtractors[0], _id: existingExtractors[0]._id.toString() },
-        { ...existingExtractors[1], _id: existingExtractors[1]._id.toString() },
-        { ...existingExtractors[2], _id: existingExtractors[2]._id.toString() },
+        existingExtractorsOutput[0],
+        existingExtractorsOutput[1],
+        existingExtractorsOutput[2],
       ]);
     });
     it('should return an extractor based on a query filter', async () => {
@@ -283,7 +307,7 @@ describe('extractor routes', () => {
         .get('/api/ixextractors')
         .query({ id: fixturesFactory.id('extractor1').toString() })
         .expect(200);
-      expect(response.body).toMatchObject([existingExtractors[0]]);
+      expect(response.body).toMatchObject([existingExtractorsOutput[0]]);
     });
   });
 });

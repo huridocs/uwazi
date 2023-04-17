@@ -12,7 +12,26 @@ import { ArrangeThesauriError } from '../arrangeThesauri';
 
 const loader = new CSVLoader();
 
+const getMetadataProperties = (propertyName, entityList, prop) =>
+  Object.fromEntries(
+    entityList
+      .map(e => [
+        e.title,
+        e.metadata[propertyName]?.length
+          ? e.metadata[propertyName].map(v => v[prop]).join('|')
+          : undefined,
+      ])
+      .filter(e => e[1])
+  );
+
+const getMetadataLabels = (propertyName, entityList) =>
+  getMetadataProperties(propertyName, entityList, 'label');
+
+const getMetadataValues = (propertyName, entityList) =>
+  getMetadataProperties(propertyName, entityList, 'value');
+
 describe('loader', () => {
+  let actualEntities;
   let selectThesaurus;
   let selectLabels;
   let selectLabelsSet;
@@ -21,7 +40,7 @@ describe('loader', () => {
   let multiselectLabelsSet;
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv_loader.index');
+    await testingEnvironment.setUp(fixtures, 'csv_loader_selects.index');
     await loader.load(
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
@@ -32,28 +51,15 @@ describe('loader', () => {
     multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
     multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
     multiselectLabelsSet = new Set(multiselectLabels);
-  });
+  }, 10000);
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
 
   it('should create values in thesauri', async () => {
-    expect(selectLabels).toEqual(['A', 'B', 'Bes', 'C', 'Ces', 'd', 'des', 'Aes']);
-    expect(multiselectLabels).toEqual([
-      'A',
-      'B',
-      'Aes',
-      'Bes',
-      'c',
-      'ces',
-      'D',
-      'E',
-      'g',
-      'Des',
-      'Ees',
-      'ges',
-    ]);
+    expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
+    expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
   });
 
   it('should not add new values where there is none', async () => {
@@ -64,10 +70,8 @@ describe('loader', () => {
   });
 
   it('should not repeat case sensitive values', async () => {
-    ['a', 'aes', 'b', 'bes', 'c', 'ces', 'D', 'Des'].forEach(letter =>
-      expect(selectLabelsSet.has(letter)).toBe(false)
-    );
-    ['a', 'aes', 'b', 'bes', 'C', 'Ces', 'd', 'des', 'e', 'ees', 'G', 'Ges'].forEach(letter =>
+    ['a', 'b', 'c', 'D'].forEach(letter => expect(selectLabelsSet.has(letter)).toBe(false));
+    ['a', 'b', 'C', 'd', 'e', 'G'].forEach(letter =>
       expect(multiselectLabelsSet.has(letter)).toBe(false)
     );
   });
@@ -86,52 +90,112 @@ describe('loader', () => {
     expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
   });
 
-  it('should check that the thesauri saving saves all contexts properly', async () => {
+  it('should save all translation contexts properly', async () => {
     const trs = await translations.get();
-    trs.forEach(tr => {
-      expect(tr.contexts.find(c => c.label === 'Select Thesaurus').values).toMatchObject({
-        A: 'A',
-        Aes: 'Aes',
-        B: 'B',
-        Bes: 'Bes',
-        C: 'C',
-        Ces: 'Ces',
-        d: 'd',
-        des: 'des',
-        'Select Thesaurus': 'Select Thesaurus',
-      });
-      expect(tr.contexts.find(c => c.label === 'multiselect_thesaurus').values).toMatchObject({
-        A: 'A',
-        Aes: 'Aes',
-        B: 'B',
-        Bes: 'Bes',
-        D: 'D',
-        Des: 'Des',
-        E: 'E',
-        Ees: 'Ees',
-        c: 'c',
-        ces: 'ces',
-        g: 'g',
-        ges: 'ges',
-        multiselect_thesaurus: 'multiselect_thesaurus',
-      });
+    const english = trs.find(tr => tr.locale === 'en');
+    const spanish = trs.find(tr => tr.locale === 'es');
+    const englishSelectValues = english.contexts.find(c => c.label === 'Select Thesaurus').values;
+    const spanishSelectValues = spanish.contexts.find(c => c.label === 'Select Thesaurus').values;
+    const englishMultiselectValues = english.contexts.find(
+      c => c.label === 'multiselect_thesaurus'
+    ).values;
+    const spanishMultiSelectValues = spanish.contexts.find(
+      c => c.label === 'multiselect_thesaurus'
+    ).values;
+    expect(englishSelectValues).toEqual({
+      A: 'A',
+      B: 'B',
+      C: 'C',
+      d: 'd',
+      'Select Thesaurus': 'Select Thesaurus',
+    });
+    expect(spanishSelectValues).toEqual({
+      A: 'Aes',
+      B: 'Bes',
+      C: 'Ces',
+      d: 'des',
+      'Select Thesaurus': 'Select Thesaurus',
+    });
+    expect(englishMultiselectValues).toEqual({
+      A: 'A',
+      B: 'B',
+      D: 'D',
+      E: 'E',
+      c: 'c',
+      g: 'g',
+      multiselect_thesaurus: 'multiselect_thesaurus',
+    });
+    expect(spanishMultiSelectValues).toEqual({
+      A: 'Aes',
+      B: 'Bes',
+      D: 'Des',
+      E: 'Ees',
+      c: 'ces',
+      g: 'ges',
+      multiselect_thesaurus: 'multiselect_thesaurus',
     });
   });
 
+  it('should save metadata labels properly', async () => {
+    const english = await entities.get({ language: 'en' });
+    const spanish = await entities.get({ language: 'es' });
+    const englishSelectLabels = getMetadataLabels('select_property', english);
+    expect(englishSelectLabels).toMatchObject({
+      select_1: 'B',
+      select_2: 'C',
+      select_3: 'B',
+      select_4: 'B',
+      select_5: 'd',
+      select_6: 'd',
+      select_7: 'B',
+      multiselect_1: 'A',
+    });
+    const spanishSelectValues = getMetadataLabels('select_property', spanish);
+    expect(spanishSelectValues).toMatchObject({
+      select_1: 'Bes',
+      select_2: 'Ces',
+      select_3: 'Bes',
+      select_4: 'Bes',
+      select_5: 'des',
+      select_6: 'des',
+      select_7: 'Bes',
+      multiselect_1: 'Aes',
+    });
+    const englishMultiselectLabels = getMetadataLabels('multiselect_property', english);
+    expect(englishMultiselectLabels).toMatchObject({
+      existing_entity_id: '|',
+      select_8: 'A',
+      multiselect_1: 'B',
+      multiselect_2: 'c',
+      multiselect_3: 'A|B',
+      multiselect_4: 'A|B|c',
+      multiselect_5: 'A|B',
+      multiselect_7: 'A|B|c|D|E|g',
+    });
+    const spanishMultiselectLabels = getMetadataLabels('multiselect_property', spanish);
+    expect(spanishMultiselectLabels).toMatchObject({
+      select_8: 'Aes',
+      multiselect_1: 'Bes',
+      multiselect_2: 'ces',
+      multiselect_3: 'Aes|Bes',
+      multiselect_4: 'Aes|Bes|ces',
+      multiselect_5: 'Aes|Bes',
+      multiselect_7: 'Aes|Bes|ces|Des|Ees|ges',
+    });
+  });
+
+  it('should share metadata values (thesauri value pointers) across languages', async () => {
+    const english = await entities.get({ language: 'en' });
+    const spanish = await entities.get({ language: 'es' });
+    const englishSelectValues = getMetadataValues('select_property', english);
+    const spanishSelectValues = getMetadataValues('select_property', spanish);
+    expect(englishSelectValues).toEqual(spanishSelectValues);
+    const englishMultiselectValues = getMetadataValues('multiselect_property', english);
+    const spanishMultiselectValues = getMetadataValues('multiselect_property', spanish);
+    expect(englishMultiselectValues).toEqual(spanishMultiselectValues);
+  });
+
   describe('nested thesaurus', () => {
-    let actualEntities;
-
-    const getMetadataValues = propertyName =>
-      actualEntities.reduce(
-        (result, e) => ({
-          ...result,
-          ...(e.metadata[propertyName]?.length
-            ? { [e.title]: e.metadata[propertyName].map(v => v.label).join('|') }
-            : {}),
-        }),
-        {}
-      );
-
     beforeAll(async () => {
       actualEntities = await entities.get({
         template: fixtureFactory.id('template'),
@@ -233,7 +297,7 @@ describe('loader', () => {
     });
 
     it('should import a nested value for a select property', async () => {
-      const selectValues = getMetadataValues('nested_select_property');
+      const selectValues = getMetadataLabels('nested_select_property', actualEntities);
       expect(selectValues).toEqual({
         select_1: 'D',
         select_2: '1',
@@ -247,7 +311,7 @@ describe('loader', () => {
     });
 
     it('should import nested values for a multiselect property', async () => {
-      const multiSelectValues = getMetadataValues('nested_multiselect_property');
+      const multiSelectValues = getMetadataLabels('nested_multiselect_property', actualEntities);
       expect(multiSelectValues).toEqual({
         select_1: '1|X',
         select_2: 'Z|O',

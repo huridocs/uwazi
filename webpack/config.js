@@ -43,7 +43,7 @@ module.exports = production => {
       extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
     },
     resolveLoader: {
-      modules: ['node_modules', path.join(__dirname, '/webpackLoaders')],
+      modules: ['node_modules'],
       extensions: ['.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
@@ -97,7 +97,7 @@ module.exports = production => {
         },
         {
           test: /world-countries/,
-          loader: 'country-loader',
+          loader: path.join(__dirname, '/webpackLoaders/country-loader.js'),
         },
       ],
     },

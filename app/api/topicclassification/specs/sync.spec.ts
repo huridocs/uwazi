@@ -18,6 +18,7 @@ async function fakeTopicClassification(url: string) {
         models: ['undefined-topmovies'],
         error: '',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   if (url === `${topicClassification.tcServer}/models?model=undefined-topmovies`) {
@@ -28,6 +29,7 @@ async function fakeTopicClassification(url: string) {
       json: {
         preferred: '123',
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   if (url === `${topicClassification.tcServer}/classify?model=undefined-topmovies`) {
@@ -55,6 +57,7 @@ async function fakeTopicClassification(url: string) {
           },
         ],
       },
+      endpoint: { url, method: 'GET' },
     };
   }
   return {
@@ -62,6 +65,7 @@ async function fakeTopicClassification(url: string) {
     headers: new Headers(),
     cookie: 'cookie',
     json: {},
+    endpoint: { url, method: 'GET' },
   };
 }
 

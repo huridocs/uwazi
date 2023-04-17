@@ -67,6 +67,8 @@ describe('JSONRequest', () => {
           })
           .catch(response => {
             expect(response.json.error).toBe('error!');
+            expect(response.endpoint.url).toBe('http://localhost:3000/api/test');
+            expect(response.endpoint.method).toBe('POST');
             expect(response.status).toBe(400);
             done();
           });

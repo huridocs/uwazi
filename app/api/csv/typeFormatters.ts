@@ -53,7 +53,8 @@ export const formatters: {
           relationship.inheritedValue.length &&
           relationship.inheritedType
         ) {
-          return formatters[relationship.inheritedType](relationship.inheritedValue, {});
+          const inheritedFormatter = formatters[relationship.inheritedType] || formatters.default;
+          return inheritedFormatter(relationship.inheritedValue, {});
         }
         return relationship.label;
       })

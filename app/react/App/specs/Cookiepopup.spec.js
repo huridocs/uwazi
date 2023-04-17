@@ -6,19 +6,23 @@ import { shallow } from 'enzyme';
 import * as Cookie from 'tiny-cookie';
 import { Cookiepopup } from '../Cookiepopup';
 
-describe('Cookiepopup', () => {
-  let component;
-  let props;
-  let getCookie;
-  let setCookie;
-  let instance;
+let cookieValue;
+const mockCookieGet = jest.fn().mockImplementation(() => cookieValue);
+jest.mock('tiny-cookie', () => ({
+  ...jest.requireActual('tiny-cookie'),
+  set: jest.fn(),
+  get: _name => mockCookieGet(),
+}));
 
+let component;
+let props;
+let instance;
+
+describe('Cookiepopup', () => {
   beforeEach(() => {
     props = {
       cookiepolicy: true,
     };
-    getCookie = spyOn(Cookie, 'get');
-    setCookie = spyOn(Cookie, 'set');
   });
 
   const render = () => {
@@ -43,7 +47,7 @@ describe('Cookiepopup', () => {
 
   describe('when the cookie already exists', () => {
     it('should not render a notification', () => {
-      getCookie.and.returnValue(1);
+      cookieValue = 1;
       render();
       expect(component).toMatchSnapshot();
     });
@@ -53,7 +57,7 @@ describe('Cookiepopup', () => {
     it('should set the cookie', () => {
       render();
       instance.close();
-      expect(setCookie).toHaveBeenCalledWith('cookiepolicy', 1, { expires: 3650 });
+      expect(Cookie.set).toHaveBeenCalledWith('cookiepolicy', 1, { expires: 3650 });
     });
   });
 });

@@ -23,6 +23,7 @@ describe('entities get searchString', () => {
         status: 200,
         headers: new Headers(),
         cookie: 'cooke',
+        endpoint: { url: 'fake url', method: 'GET' },
       })
     );
   });

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from 'app/UI';
+import { Translate } from 'app/I18N';
 import api from '../../utils/api';
 
 class Captcha extends Component {
@@ -9,7 +11,7 @@ class Captcha extends Component {
     const { refresh } = this.props;
 
     refresh(this.refresh.bind(this));
-    this.state = { svg: '', id: '' };
+    this.state = { svg: '', id: '', remoteUnreachable: false };
   }
 
   componentDidMount() {
@@ -24,19 +26,32 @@ class Captcha extends Component {
   async refresh() {
     const { remote } = this.props;
     const url = remote ? 'remotecaptcha' : 'captcha';
-    const response = await api.get(url);
-
-    this.setState(response.json);
+    try {
+      const response = await api.get(url);
+      this.setState(response.json);
+    } catch (ex) {
+      if (remote) {
+        this.setState({ remoteUnreachable: true });
+      }
+    }
   }
 
   render() {
     const { value } = this.props;
-    const { svg } = this.state;
+    const { svg, remoteUnreachable } = this.state;
 
+    if (!remoteUnreachable) {
+      return (
+        <div className="captcha">
+          <div dangerouslySetInnerHTML={{ __html: svg }} />
+          <input className="form-control" onChange={this.onChange} value={value.text} />
+        </div>
+      );
+    }
     return (
-      <div className="captcha">
-        <div dangerouslySetInnerHTML={{ __html: svg }} />
-        <input className="form-control" onChange={this.onChange} value={value.text} />
+      <div className="alert-danger">
+        <Icon icon="info-circle" />
+        &nbsp;<Translate>Remote Server Unreachable</Translate>.
       </div>
     );
   }

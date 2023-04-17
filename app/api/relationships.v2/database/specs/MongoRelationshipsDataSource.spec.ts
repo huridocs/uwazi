@@ -104,8 +104,8 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query, 'en').all();
     expect(result).toMatchObject([
-      { _id: factory.id('hub1-en'), sharedId: 'hub1' },
-      { _id: factory.id('hub2-en'), sharedId: 'hub2' },
+      { _id: factory.id('hub1-en').toString(), sharedId: 'hub1' },
+      { _id: factory.id('hub2-en').toString(), sharedId: 'hub2' },
     ]);
   });
 
@@ -122,10 +122,10 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query, 'en').all();
     expect(result).toMatchObject([
-      { _id: factory.id('entity3-en'), sharedId: 'entity3' },
-      { _id: factory.id('entity4-en'), sharedId: 'entity4' },
-      { _id: factory.id('entity5-en'), sharedId: 'entity5' },
-      { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      { _id: factory.id('entity3-en').toString(), sharedId: 'entity3' },
+      { _id: factory.id('entity4-en').toString(), sharedId: 'entity4' },
+      { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
+      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
     ]);
   });
 
@@ -142,8 +142,8 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query, 'en').page(2, 2);
     expect(result).toMatchObject([
-      { _id: factory.id('entity5-en'), sharedId: 'entity5' },
-      { _id: factory.id('entity6-en'), sharedId: 'entity6' },
+      { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
+      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
     ]);
   });
 
@@ -168,7 +168,9 @@ describe('When getting by query', () => {
     ]);
 
     const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toMatchObject([{ _id: factory.id('entity6-en'), sharedId: 'entity6' }]);
+    expect(result).toMatchObject([
+      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
+    ]);
   });
 
   it('should allow to query branches', async () => {
@@ -195,8 +197,8 @@ describe('When getting by query', () => {
 
     const result = await ds.getByQuery(query, 'en').all();
     expect(result).toMatchObject([
-      { _id: factory.id('entity6-en'), sharedId: 'entity6' },
-      { _id: factory.id('entity7-en'), sharedId: 'entity7' },
+      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
+      { _id: factory.id('entity7-en').toString(), sharedId: 'entity7' },
     ]);
   });
 
@@ -225,12 +227,12 @@ describe('When getting by query', () => {
     const resultInEnglish = await ds.getByQuery(query, 'en').all();
     const resultInSpanish = await ds.getByQuery(query, 'es').all();
     expect(resultInEnglish).toMatchObject([
-      { _id: factory.id('entity6-en'), sharedId: 'entity6' },
-      { _id: factory.id('entity7-en'), sharedId: 'entity7' },
+      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
+      { _id: factory.id('entity7-en').toString(), sharedId: 'entity7' },
     ]);
     expect(resultInSpanish).toMatchObject([
-      { _id: factory.id('entity6-es'), sharedId: 'entity6' },
-      { _id: factory.id('entity7-es'), sharedId: 'entity7' },
+      { _id: factory.id('entity6-es').toString(), sharedId: 'entity6' },
+      { _id: factory.id('entity7-es').toString(), sharedId: 'entity7' },
     ]);
   });
 });
