@@ -254,7 +254,7 @@ class MetadataFormFields extends Component {
             formModel={formModel}
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
-            type={MediaModalType.Image}
+            type={MediaModalType.All}
             multipleEdition={multipleEdition}
           />
         );

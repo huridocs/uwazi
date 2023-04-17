@@ -88,7 +88,6 @@ const MediaField = (props: MediaFieldProps) => {
   };
 
   const updateTimeLinks = (timelinks: TimeLink[]) => {
-    console.log('TImelinks: ', constructTimelinksString(timelinks));
     onChange(constructTimelinksString(timelinks));
   };
 

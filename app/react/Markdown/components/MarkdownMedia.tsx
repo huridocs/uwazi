@@ -76,10 +76,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     name: 'timelines',
   });
 
-  useEffect(() => {
-    setErrorFlag(false);
-  }, [props.config]);
-
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
     playerRef.current?.seekTo(seconds);
@@ -267,7 +263,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    if (mediaURL === '' && config.url) {
+    if (config.url) {
       fetch(config.url)
         .then(async res => res.blob())
         .then(blob => {
@@ -275,14 +271,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         })
         .catch(_e => {});
     }
-  }, [config.url, mediaURL]);
 
-  useEffect(
-    () => () => {
-      URL.revokeObjectURL(mediaURL);
-    },
-    [mediaURL]
-  );
+    return () => {
+      setErrorFlag(false);
+      return URL.revokeObjectURL(mediaURL);
+    };
+  }, [config.url]);
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
@@ -315,6 +309,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             setVideoPlaying(true);
           }}
           onError={() => {
+            setMediaURL('');
             setErrorFlag(true);
           }}
         />
