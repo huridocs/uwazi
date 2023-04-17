@@ -8,7 +8,6 @@ import LanguageList from './components/LanguageList';
 import NavlinksSettings from './components/NavlinksSettings';
 import { RelationTypesList } from './components/RelationTypesList';
 import ThesauriList from './components/ThesauriList';
-import TranslationsList from './components/TranslationsList';
 import { Settings } from './Settings';
 import SettingsAPI from './SettingsAPI';
 import { Dashboard } from './components/Dashboard';
@@ -26,7 +25,6 @@ export {
   EntityTypesList,
   RelationTypesList,
   ThesauriList,
-  TranslationsList,
   FiltersForm,
   LanguageList,
   Customisation,

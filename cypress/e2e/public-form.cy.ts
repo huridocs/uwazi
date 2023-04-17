@@ -1,16 +1,11 @@
 import { selectRestrictedEntities } from './helpers';
-import { englishLoggedInUwazi, logout } from './helpers/login';
+import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
-    englishLoggedInUwazi();
-  });
-
-  after(() => {
-    cy.visit('http://localhost:3000');
-    logout();
+    clearCookiesAndLogin();
   });
 
   it('should white list the templates', () => {

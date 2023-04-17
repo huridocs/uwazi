@@ -17,5 +17,6 @@ export default defineConfig({
       framework: 'react',
       bundler: 'webpack',
     },
+    specPattern: 'app/react/**/*.cy.tsx',
   },
 });

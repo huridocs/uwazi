@@ -19,6 +19,8 @@ async function getFiles(dir) {
     .filter(
       file =>
         !file.match('.spec') &&
+        !file.match('.stories') &&
+        !file.match('.cy') &&
         (file.endsWith('.js') ||
           file.endsWith('.ts') ||
           file.endsWith('.tsx') ||

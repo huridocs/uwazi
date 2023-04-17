@@ -6,10 +6,8 @@ import { getContentBySelector } from '../helpers/selectorUtils';
 
 const selectors = {
   searchInLibrary: '.library-header .library-toolbar .header-bottom .toggle-button.only-mobile',
-  sidePanelFiltersTitle:
-    '#app > div.content > div > div > div > aside.is-active > div.sidepanel-body > div.sidepanel-title > div:nth-child(1) > span',
-  firstEntityView:
-    '#app > div.content > div > div > div > main > div.documents-list > div > div.item-group > div:nth-child(1) > div.item-actions > div > a > span',
+  sidePanelFiltersTitle: '.sidepanel-title > div > span',
+  firstEntityView: '.documents-list > div > .item-group > div > .item-actions > div > a > span',
 };
 
 describe('Side panels', () => {
