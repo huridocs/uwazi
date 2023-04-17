@@ -10,7 +10,7 @@ module.exports = {
     devtools: false,
     args: [
       '--disable-infobars',
-      '--disable-gpu',
+      '--use-gl=egl',
       `--window-size=${config.BROWSER_WINDOW_SIZE.width},${config.BROWSER_WINDOW_SIZE.height}`,
     ],
   },
