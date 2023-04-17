@@ -1,4 +1,4 @@
-import { createUser, selectPublishedEntities, selectRestrictedEntities } from './helpers';
+import { selectPublishedEntities, selectRestrictedEntities } from './helpers';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
