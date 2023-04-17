@@ -88,7 +88,7 @@ class Root extends Component {
       : determineAssets(assets, languageData);
 
     return (
-      <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'}>
+      <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
         {headTag(head, CSS, reduxData)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: content }} />

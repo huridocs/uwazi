@@ -1,13 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Column,
   HeaderGroup,
-  Row,
-  useFilters,
   useRowSelect,
   useRowState,
-  usePagination,
   useTable,
   useSortBy,
   UseSortByOptions,
@@ -19,12 +16,15 @@ import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/re
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>>;
+  Partial<UseSortByColumnProps<T>> & {
+    disableSortBy?: boolean;
+    className?: string;
+  };
 
 interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
-  title?: string;
+  title?: string | React.ReactNode;
 }
 
 const getIcon = (column: TableColumn<any>) => {
@@ -40,14 +40,15 @@ const getIcon = (column: TableColumn<any>) => {
 };
 
 const Table = ({ columns, data, title }: TableProps) => {
+  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedData = useMemo(() => data, [data]);
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
-      columns,
-      data,
+      columns: memoizedColumns,
+      data: memoizedData,
     },
-    useFilters,
     useSortBy,
-    usePagination,
     useRowSelect,
     useRowState
   );
@@ -62,8 +63,11 @@ const Table = ({ columns, data, title }: TableProps) => {
       <FlowbiteTable.Head>
         {headerGroups.map((headerGroup: HeaderGroup<any>) =>
           headerGroup.headers.map((column: any) => (
-            <FlowbiteTable.HeadCell {...column.getHeaderProps(column.getSortByToggleProps())}>
-              <div className="flex flex-row">
+            <FlowbiteTable.HeadCell
+              {...column.getHeaderProps(column.getSortByToggleProps())}
+              className={column.className}
+            >
+              <div className={`text-gray-500 ${!column.disableSortBy ? 'flex flex-row' : ''}`}>
                 {column.render('Header')}
                 {column.Header && !column.disableSortBy && getIcon(column)}
               </div>
@@ -71,13 +75,15 @@ const Table = ({ columns, data, title }: TableProps) => {
           ))
         )}
       </FlowbiteTable.Head>
-      <FlowbiteTable.Body {...getTableBodyProps()}>
-        {rows.map((row: Row<any>) => {
+      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900 divide-y">
+        {rows.map(row => {
           prepareRow(row);
           return (
             <FlowbiteTable.Row {...row.getRowProps()}>
               {row.cells.map(cell => (
-                <FlowbiteTable.Cell>{cell.render('Cell')}</FlowbiteTable.Cell>
+                <FlowbiteTable.Cell {...cell.getCellProps()}>
+                  {cell.render('Cell')}
+                </FlowbiteTable.Cell>
               ))}
             </FlowbiteTable.Row>
           );
