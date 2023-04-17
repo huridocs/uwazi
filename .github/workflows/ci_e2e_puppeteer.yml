@@ -83,7 +83,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
+      - run: xvfb-run -a  yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
