@@ -184,8 +184,8 @@ const update = async (translation: TranslationType | IndexedTranslations) => {
 
 export default {
   prepareContexts,
-  async get(query = {}) {
-    const translations = await model.get(query);
+  async get(query = {}, selector = {}) {
+    const translations = await model.get(query, selector);
     return translations.map(
       translation =>
         ({

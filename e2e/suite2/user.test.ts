@@ -27,7 +27,8 @@ describe('User', () => {
     await page.waitForSelector('tbody tr:nth-child(1)');
     const userRows = await getListRows();
     expect(userRows[0]).toEqual(['admin', 'Password', 'Admin', ' Activistas']);
-    expect(userRows[1]).toEqual(['editor', 'Password', 'Editor', ' Activistas Asesores legales']);
+    expect(userRows[1]).toEqual(['colla', 'Password', 'collaborator', ' Asesores legales']);
+    expect(userRows[2]).toEqual(['editor', 'Password', 'Editor', ' Activistas Asesores legales']);
   });
 
   describe('Editing user', () => {
@@ -76,24 +77,20 @@ describe('User', () => {
   describe('Creation of user', () => {
     it('Should create a new user', async () => {
       await expect(page).toClick('button', { text: 'Add user' });
-      await expect(page).toFill('#email_field > input', 'newuser@email.test');
-      await expect(page).toFill('#password_field > input', 'collaboratorPass');
-      await expect(page).toFill('#username_field > input', 'collaboratorUser');
+      await expect(page).toFill('#email_field > input', 'aaron@email.test');
+      await expect(page).toFill('#password_field > input', 'newUserPass');
+      await expect(page).toFill('#username_field > input', 'Aaron');
       await expect(page).toClick('li', { text: 'Asesores legales' });
       await expect(page).toClick('button', { text: 'Save' });
-      await page.waitForSelector('tbody tr:nth-child(3)');
+      await expect(page).toMatchElement('.user-list > table > tbody > tr > td', { text: 'Aaron' });
+
       const userRows = await getListRows();
-      expect(userRows[1]).toEqual([
-        'collaboratorUser',
-        'Password',
-        'collaborator',
-        ' Asesores legales',
-      ]);
+      expect(userRows[0]).toEqual(['Aaron', 'Password', 'collaborator', ' Asesores legales']);
     });
 
     it('should be able to login with new user credentials', async () => {
       await logout();
-      await login('collaboratorUser', 'collaboratorPass');
+      await login('Aaron', 'newUserPass');
     });
   });
 });
