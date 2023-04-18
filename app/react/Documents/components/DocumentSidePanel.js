@@ -489,7 +489,7 @@ class DocumentSidePanel extends Component {
         : 'metadata-sidepanel';
 
     return (
-      <SidePanel open={this.props.open} className={className}>
+      <SidePanel data-testid="metadata-sidepanel" open={this.props.open} className={className}>
         {this.renderHeader(tab, doc, isEntity)}
         <ShowIf if={(this.props.tab === 'metadata' || !this.props.tab) && !this.state.copyFrom}>
           <div className="sidepanel-footer">

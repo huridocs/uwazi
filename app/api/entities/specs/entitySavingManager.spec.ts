@@ -13,6 +13,7 @@ import { ObjectId } from 'mongodb';
 import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import waitForExpect from 'wait-for-expect';
+import { Logger } from 'winston';
 import entities from '../entities';
 import {
   anotherTextFile,
@@ -29,7 +30,6 @@ import {
   template2Id,
   textFile,
 } from './entitySavingManagerFixtures';
-import { Logger } from 'winston';
 
 const validPdfString = `
 %PDF-1.0
@@ -277,9 +277,19 @@ describe('entitySavingManager', () => {
         destination: tmpDir(''),
       };
 
+      const newVideoFile = {
+        originalname: 'video.mov',
+        mimetype: 'video/quicktime',
+        size: 47495791,
+        filename: 'generatedVideo.pdf',
+        path: tmpDir('generatedVideo.pdf'),
+        destination: tmpDir(''),
+      };
+
       it('should allow to set an image metadata field referencing an attached file that is not yet saved', async () => {
         await writeFile(newImageFile.path!, 'sample content');
         await writeFile(newPdfFile.path!, validPdfString);
+        await writeFile(newVideoFile.path!, 'test info');
         const entity = {
           title: 'newEntity',
           template: template2Id,
@@ -290,6 +300,13 @@ describe('entitySavingManager', () => {
                 value: 'a text',
               },
             ],
+            video: [
+              {
+                value: '',
+                attachment: 2,
+                timeLinks: '{"timelinks":{"00:00:10":"a"}}',
+              },
+            ],
           },
         };
 
@@ -298,6 +315,7 @@ describe('entitySavingManager', () => {
           files: [
             { ...newImageFile, fieldname: 'attachments[0]' },
             { ...newPdfFile, fieldname: 'attachments[1]' },
+            { ...newVideoFile, fieldname: 'attachments[2]' },
           ],
         });
 
@@ -310,6 +328,7 @@ describe('entitySavingManager', () => {
         expect(sortedSavedFiles).toEqual([
           expect.objectContaining({ originalname: 'image.jpg' }),
           expect.objectContaining({ originalname: 'pdf.pdf' }),
+          expect.objectContaining({ originalname: 'video.mov' }),
         ]);
 
         expect(savedEntity.metadata?.image?.[0].value).toBe(
@@ -317,6 +336,9 @@ describe('entitySavingManager', () => {
         );
 
         expect(savedEntity.metadata?.image?.[0].attachment).toBe(undefined);
+        expect(savedEntity.metadata?.video?.[0].value).toBe(
+          '(/api/files/generatedVideo.pdf, {"timelinks":{"00:00:10":"a"}})'
+        );
       });
 
       it('should work when updating existing entities with other existing attachments', async () => {

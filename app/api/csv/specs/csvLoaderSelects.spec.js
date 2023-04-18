@@ -51,7 +51,7 @@ describe('loader', () => {
     multiselectThesaurus = await thesauri.getById(fixtureFactory.id('multiselect_thesaurus'));
     multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
     multiselectLabelsSet = new Set(multiselectLabels);
-  });
+  }, 10000);
 
   afterAll(async () => {
     await testingEnvironment.tearDown();

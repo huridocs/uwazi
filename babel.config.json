@@ -34,10 +34,11 @@
       "module-resolver",
       {
         "alias": {
+          "api": "./app/api",
           "app": "./app/react",
           "shared": "./app/shared",
-          "api": "./app/api",
-          "UI": "./app/react/UI"
+          "UI": "./app/react/UI",
+          "V2": "./app/react/V2"
         }
       }
     ]
