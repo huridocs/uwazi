@@ -18,6 +18,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
+import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -254,6 +255,8 @@ function getFixturesFactory() {
       state: SuggestionState.valueEmpty,
       ...otherProps,
     }),
+
+    v2: getV2FixturesFactoryElements(idMapper),
   });
 }
 

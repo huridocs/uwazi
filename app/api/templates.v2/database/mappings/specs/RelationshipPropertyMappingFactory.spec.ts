@@ -12,8 +12,8 @@ describe('when creating mappings for denormalied properties', () => {
   const getAllPropertiesMock = jest
     .fn()
     .mockResolvedValue([
-      new Property(fixtureFactory.id('prop1').toString(), 'date', 'prop1', 'prop1', 'template1'),
-      new Property(fixtureFactory.id('prop2').toString(), 'numeric', 'prop2', 'prop2', 'template2'),
+      fixtureFactory.v2.application.property('prop1', 'date', 'template1'),
+      fixtureFactory.v2.application.property('prop2', 'numeric', 'template2'),
     ]);
   const templatesDataSourceMock = partialImplementation<TemplatesDataSource>({
     getAllProperties: () =>
