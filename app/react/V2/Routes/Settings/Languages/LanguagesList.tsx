@@ -21,12 +21,9 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 );
 
 const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
-  <>
-    <Button buttonStyle={row.original.default ? 'tertiary' : 'primary'}>
-      <StarIcon color="blue" />
-    </Button>
-    <StarIcon color="blue" />
-  </>
+  <Button buttonStyle={row.original.default ? 'primary' : 'tertiary'}>
+    <StarIcon color="blue" className="w-6 text-white" />
+  </Button>
 );
 const resetButton = ({ row }: { row: Row<LanguageSchema> }) => (
   <Button buttonStyle={row.original.key === 'es' ? 'tertiary' : 'primary'}>
