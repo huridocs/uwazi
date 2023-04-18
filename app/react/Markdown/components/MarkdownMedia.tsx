@@ -267,6 +267,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       fetch(config.url)
         .then(async res => res.blob())
         .then(blob => {
+          setErrorFlag(false);
           setMediaURL(URL.createObjectURL(blob));
         })
         .catch(_e => {});
@@ -308,9 +309,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           onPlay={() => {
             setVideoPlaying(true);
           }}
-          onError={() => {
-            setMediaURL('');
-            setErrorFlag(true);
+          onError={e => {
+            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+              setMediaURL('');
+              setErrorFlag(true);
+            }
           }}
         />
       </div>
