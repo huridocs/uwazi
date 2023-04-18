@@ -123,7 +123,12 @@ const MediaField = (props: MediaFieldProps) => {
             </div>
           );
         }
-        if (type === MediaModalType.Image) {
+        if (
+          (file.originalValue &&
+            file.supportingFile &&
+            file.supportingFile.mimetype?.search(/image\/*/) !== -1) ||
+          type === MediaModalType.Image
+        ) {
           return (
             <img
               src={file.fileURL}

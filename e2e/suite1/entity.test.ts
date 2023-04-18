@@ -11,6 +11,7 @@ import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { refreshIndex } from '../helpers/elastichelpers';
 import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 import { changeLanguage } from '../helpers/changeLanguage';
+import { host } from '../config';
 
 const entityTitle = 'Entity with supporting files';
 const webAttachments = {
@@ -149,6 +150,8 @@ describe('Entities', () => {
     });
 
     it('should check the entity', async () => {
+      await page.goto(`${host}/library`);
+      await goToRestrictedEntities();
       await expect(page).toClick('.item-name span', {
         text: 'Entity with media files',
       });
