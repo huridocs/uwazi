@@ -120,7 +120,7 @@ const fixtures: DBFixture = {
   ],
 };
 
-const disableFeatures = () =>
+const disableFeatures = async () =>
   testingDB.mongodb?.collection('settings').updateOne({}, { $set: { features: {} } });
 
 beforeAll(() => {
@@ -585,7 +585,7 @@ describe(`On ${FileUpdatedEvent.name}`, () => {
     expect(updateSpy).not.toHaveBeenCalled();
   });
 
-  it('should update ix suggestions if extractedMetada changes', async () => {
+  it('should update ix suggestions if extractedMetadata changes', async () => {
     const updateSpy = jest.spyOn(Suggestions, 'updateStates');
 
     await applicationEventsBus.emit(

@@ -38,7 +38,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
 
   async all() {
     const results = await this.mongoCursor.toArray();
-    const mapped = await Promise.all(results.map(item => this.mapper(item)));
+    const mapped = await Promise.all(results.map(async item => this.mapper(item)));
     return mapped;
   }
 
