@@ -49,7 +49,7 @@ export default {
     process.stdout.write(`${this.name}...\r\n`);
     const systemKeys = [
       {
-        key: 'This file type is not supported in image fields',
+        key: 'This file type is not supported on image fields',
       },
       { key: 'This file type is not supported on media fields' },
     ];

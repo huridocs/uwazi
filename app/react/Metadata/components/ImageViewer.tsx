@@ -14,7 +14,7 @@ const ImageViewer = (props: ImageViewerProps) => {
   if (errorFlag) {
     return (
       <div className="media-error">
-        <Translate>This file type is not supported in image fields</Translate>
+        <Translate>This file type is not supported on image fields</Translate>
       </div>
     );
   }
