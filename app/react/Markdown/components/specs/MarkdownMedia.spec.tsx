@@ -66,10 +66,10 @@ describe('MarkdownMedia', () => {
       expect(renderResult.asFragment()).toMatchSnapshot();
       expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
     });
-    it('should revoke the created URL', async () => {
+    it('should revoke the created URL and reset it to empty', async () => {
       await render();
       renderResult.unmount();
-      expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
+      expect(mockedRevokeObjectURL).toHaveBeenCalledWith('');
     });
     it('should render the edition mode', async () => {
       await render({ editing: true });

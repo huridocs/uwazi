@@ -19,10 +19,21 @@ import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
 enum MediaModalType {
   Image,
   Media,
+  All,
 }
 
-const getAcceptedFileTypes = (type: MediaModalType) =>
-  type === MediaModalType.Image ? 'image/*' : 'video/*,audio/*';
+const getAcceptedFileTypes = (type: MediaModalType) => {
+  switch (type) {
+    case MediaModalType.Image:
+      return 'image/*';
+    case MediaModalType.Media:
+      return 'video/*';
+    case MediaModalType.All:
+      return '*/*';
+    default:
+      return '*/*';
+  }
+};
 
 interface MediaModalProps {
   isOpen: boolean;
