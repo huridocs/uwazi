@@ -47,6 +47,8 @@ import {
   EditTranslations,
   editTranslationsLoader,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+import { LanguagesList } from 'V2/Routes/Settings/Languages/LanguagesList';
+
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -115,7 +117,7 @@ const getRoutesLayout = (
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
         <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
       </Route>
-      <Route path="languages" element={adminsOnlyRoute(<LanguageList />)} />
+      <Route path="languages" element={adminsOnlyRoute(<LanguagesList />)} />
       <Route path="translations">
         <Route
           index
