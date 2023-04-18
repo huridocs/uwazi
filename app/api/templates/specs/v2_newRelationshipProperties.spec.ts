@@ -1,35 +1,15 @@
 import { ObjectId } from 'mongodb';
 
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import entities from 'api/entities';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
-import entities from 'api/entities';
 
 const fixtureFactory = getFixturesFactory();
 
-const commonProperties: TemplateSchema['commonProperties'] = [
-  {
-    label: 'Title',
-    name: 'title',
-    isCommonProperty: true,
-    type: 'text',
-  },
-  {
-    label: 'Date added',
-    name: 'creationDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-  {
-    label: 'Date modified',
-    name: 'editDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-];
+const commonProperties = fixtureFactory.commonProperties();
 
 const oldQueryInDb = [
   {

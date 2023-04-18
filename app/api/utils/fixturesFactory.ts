@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
@@ -168,6 +170,8 @@ function getFixturesFactory() {
       type,
       ...props,
     }),
+
+    commonProperties: () => _.cloneDeep(commonProperties),
 
     metadataValue: (value: PropertyValueSchema): MetadataObjectSchema => ({
       value,
