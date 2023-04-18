@@ -7,13 +7,14 @@ let cookie;
 
 class FetchResponseError extends Error {
   // eslint-disable-next-line no-shadow
-  constructor(message, { json, status, cookie, headers } = {}) {
+  constructor(message, { json, status, cookie, headers, endpoint } = {}) {
     super(message);
     this.name = 'FetchResponseError';
     this.json = json;
     this.status = status;
     this.cookie = cookie;
     this.headers = headers;
+    this.endpoint = endpoint;
   }
 }
 
@@ -121,6 +122,7 @@ const _fetch = (url, data, method, _headers) => {
         status: response.status,
         cookie: setCookie,
         headers: responseHeaders,
+        endpoint: { method, url },
       };
 
       if (response.status > 399) {

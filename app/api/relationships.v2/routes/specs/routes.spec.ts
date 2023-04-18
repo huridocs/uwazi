@@ -179,7 +179,7 @@ describe('POST relationships', () => {
         _id: onDb![1]._id.toHexString(),
         from: {
           entity: 'entity1',
-          file: factory.id('file1'),
+          file: factory.id('file1').toString(),
 
           text: 'some text',
           selections: [

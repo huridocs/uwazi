@@ -9,7 +9,6 @@ import Dropzone from 'react-dropzone';
 import PropTypes from 'prop-types';
 import { LocalForm } from 'app/Forms/Form';
 import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
-import { Captcha } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
 import { FormGroup } from 'app/Forms';
@@ -17,18 +16,16 @@ import { Icon } from 'UI';
 import { Loader } from 'app/components/Elements/Loader';
 import './scss/public-form.scss';
 import { generateID } from 'shared/IDGenerator';
+import { FormCaptcha } from './FormCaptcha';
 
 class PublicFormComponent extends Component {
   static renderTitle(template) {
     const titleProperty = template.get('commonProperties').find(p => p.get('name') === 'title');
     const useGeneratedId = Boolean(titleProperty.get('generatedId'));
-
     let input = <Control.text id="title" className="form-control" model=".title" />;
-
     if (useGeneratedId) {
       input = React.cloneElement(input, { defaultValue: generateID(3, 4, 4) });
     }
-
     return (
       <FormGroup key="title" model=".title">
         <ul className="search__filter">
@@ -68,6 +65,9 @@ class PublicFormComponent extends Component {
       .get('commonProperties')
       .find(p => p.get('name') === 'title' && p.get('generatedId') === true);
     this.state = { submiting: false, files: [], generatedIdTitle };
+    this.refreshFn = refresh => {
+      this.refreshCaptcha = refresh;
+    };
   }
 
   async handleSubmit(_values) {
@@ -191,30 +191,6 @@ class PublicFormComponent extends Component {
     );
   }
 
-  renderCaptcha() {
-    return (
-      <FormGroup key="captcha" model=".captcha">
-        <ul className="search__filter">
-          <li>
-            <label>
-              <Translate>Captcha</Translate>
-              <span className="required">*</span>
-            </label>
-          </li>
-          <li className="wide">
-            <Captcha
-              remote={this.props.remote}
-              refresh={refresh => {
-                this.refreshCaptcha = refresh;
-              }}
-              model=".captcha"
-            />
-          </li>
-        </ul>
-      </FormGroup>
-    );
-  }
-
   render() {
     const { template, thesauris, file, attachments } = this.props;
     const { submiting } = this.state;
@@ -239,7 +215,7 @@ class PublicFormComponent extends Component {
             />
             {file ? this.renderFileField('file', { accept: '.pdf' }) : false}
             {attachments ? this.renderFileField('attachments', { multiple: 'multiple' }) : false}
-            {this.renderCaptcha()}
+            <FormCaptcha remote={this.props.remote} refresh={this.refreshFn} />
             <button type="submit" className="btn btn-success">
               <Translate>Submit</Translate>
             </button>

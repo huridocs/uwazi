@@ -11,19 +11,22 @@ function labelNotNull(label: string | null): label is string {
   return label !== null;
 }
 
-function splitMultiselectLabels(labelString: string): { [k: string]: string } {
+function splitMultiselectLabels(labelString: string): {
+  labels: string[];
+  normalizedLabelToLabel: Record<string, string>;
+} {
   const labels = labelString
     .split('|')
     .map(l => l.trim())
     .filter(l => l.length > 0);
-  const result: { [k: string]: string } = {};
+  const normalizedLabelToLabel: { [k: string]: string } = {};
   labels.forEach(label => {
     const normalizedLabel = normalizeThesaurusLabel(label);
-    if (labelNotNull(normalizedLabel) && !result.hasOwnProperty(normalizedLabel)) {
-      result[normalizedLabel] = label;
+    if (labelNotNull(normalizedLabel) && !normalizedLabelToLabel.hasOwnProperty(normalizedLabel)) {
+      normalizedLabelToLabel[normalizedLabel] = label;
     }
   });
-  return result;
+  return { labels, normalizedLabelToLabel };
 }
 
 function normalizeMultiselectLabels(labelArray: string[]): string[] {
@@ -37,7 +40,9 @@ const multiselect = async (
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
 
-  const values = splitMultiselectLabels(entityToImport[ensure<string>(property.name)]);
+  const values = splitMultiselectLabels(
+    entityToImport[ensure<string>(property.name)]
+  ).normalizedLabelToLabel;
   const thesaurusValues = flatThesaurusValues(currentThesauri);
 
   return Object.keys(values)

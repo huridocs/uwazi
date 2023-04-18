@@ -118,12 +118,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
       value="option1"
     />
     <label
-      className="multiselectItem-label"
+      className="multiselectItem-label multiselectItem-option"
       htmlFor="option1"
+      onClick={[Function]}
     >
       <span
         className="multiselectItem-icon"
-        onClick={[Function]}
       >
         <Connect(Icon)
           className="checkbox-empty"
@@ -195,12 +195,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
       value="option2"
     />
     <label
-      className="multiselectItem-label"
+      className="multiselectItem-label multiselectItem-option"
       htmlFor="option2"
+      onClick={[Function]}
     >
       <span
         className="multiselectItem-icon"
-        onClick={[Function]}
       >
         <Connect(Icon)
           className="checkbox-empty"
@@ -273,12 +273,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
         type="checkbox"
       />
       <label
-        className="multiselectItem-label"
+        className="multiselectItem-label multiselectItem-option"
         htmlFor="Group"
+        onClick={[Function]}
       >
         <span
           className="multiselectItem-icon"
-          onClick={[Function]}
         >
           <Connect(Icon)
             className="checkbox-empty"
@@ -364,12 +364,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
             value="group-option1"
           />
           <label
-            className="multiselectItem-label"
+            className="multiselectItem-label multiselectItem-option"
             htmlFor="group-option1"
+            onClick={[Function]}
           >
             <span
               className="multiselectItem-icon"
-              onClick={[Function]}
             >
               <Connect(Icon)
                 className="checkbox-empty"
@@ -441,12 +441,12 @@ exports[`MultiSelect should not render an empty group 1`] = `
             value="group-option2"
           />
           <label
-            className="multiselectItem-label"
+            className="multiselectItem-label multiselectItem-option"
             htmlFor="group-option2"
+            onClick={[Function]}
           >
             <span
               className="multiselectItem-icon"
-              onClick={[Function]}
             >
               <Connect(Icon)
                 className="checkbox-empty"
