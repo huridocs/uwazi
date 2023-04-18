@@ -44,7 +44,7 @@ class Translate extends Component {
   }
 
   render() {
-    const lines = this.props.children.split('\n');
+    const lines = this.props.children ? this.props.children.split('\n') : [];
     const className = this.props.i18nmode ? 'translation active' : 'translation';
     return (
       <span onClick={this.onClick} className={`${className} ${this.props.className}`.trim()}>
