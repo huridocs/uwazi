@@ -131,7 +131,7 @@ exports[`Metadata should render an image field 1`] = `
   <dd
     className=""
   >
-    <img
+    <ImageViewer
       alt="Image Label"
       className="multimedia-img cover"
       key="http://some.url.com/image.jpg"
