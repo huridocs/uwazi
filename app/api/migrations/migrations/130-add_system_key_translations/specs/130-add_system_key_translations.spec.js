@@ -9,8 +9,8 @@ const newKeyValues = [
     value: 'This file type is not supported on media fields',
   },
   {
-    key: 'This file type is not supported in image fields',
-    value: 'This file type is not supported in image fields',
+    key: 'This file type is not supported on image fields',
+    value: 'This file type is not supported on image fields',
   },
 ];
 const alreadyInAllContexts = {
