@@ -326,7 +326,7 @@
     "babel-loader": "9.1.2",
     "babel-plugin-module-resolver": "5.0.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
-    "canvas": "^2.11.0",
+    "canvas": "^2.11.2",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.3",
