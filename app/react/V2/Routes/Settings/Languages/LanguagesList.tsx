@@ -1,6 +1,6 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction } from 'react-router-dom';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate, I18NApi } from 'app/I18N';
@@ -10,6 +10,7 @@ import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Row } from 'react-table';
+import { intersectionBy, keyBy, merge, values } from 'lodash';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -22,7 +23,7 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 
 const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
   <Button buttonStyle={row.original.default ? 'primary' : 'tertiary'}>
-    <StarIcon color="blue" className="w-6 text-white" />
+    <StarIcon color="white" className="w-5 stroke-blue" />
   </Button>
 );
 const resetButton = ({ row }: { row: Row<LanguageSchema> }) => (
@@ -37,7 +38,13 @@ const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) => (
   </Button>
 );
 const columns = [
-  { Header: 'Language', accessor: 'label', Cell: languageLabel, className: 'w-9/12' },
+  {
+    Header: 'Language',
+    accessor: 'label',
+    Cell: languageLabel,
+    disableSortBy: true,
+    className: 'w-9/12',
+  },
   {
     accessor: 'default',
     Cell: defaultButton,
@@ -59,7 +66,12 @@ const columns = [
 ];
 
 const LanguagesList = () => {
-  const { languages = [] } = useRecoilValue(settingsAtom);
+  const { languages: collectionLanguages = [] } = useRecoilValue(settingsAtom);
+  const availableLanguages = useLoaderData() as LanguageSchema[];
+  const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
+  const languages = values(
+    merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
+  );
 
   return (
     <div

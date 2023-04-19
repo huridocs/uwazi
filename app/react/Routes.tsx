@@ -21,7 +21,6 @@ import {
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  LanguageList,
   NavlinksSettings,
   RelationTypesList,
   Settings,
@@ -47,7 +46,7 @@ import {
   EditTranslations,
   editTranslationsLoader,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
-import { LanguagesList } from 'V2/Routes/Settings/Languages/LanguagesList';
+import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
@@ -117,7 +116,11 @@ const getRoutesLayout = (
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
         <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
       </Route>
-      <Route path="languages" element={adminsOnlyRoute(<LanguagesList />)} />
+      <Route
+        path="languages"
+        element={adminsOnlyRoute(<LanguagesList />)}
+        loader={languagesListLoader(headers)}
+      />
       <Route path="translations">
         <Route
           index
