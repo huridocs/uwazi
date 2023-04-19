@@ -41,7 +41,9 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.get('[name="page.data.title"]').type('Public Form Page');
-      cy.get('.markdownEditor textarea').type('<PublicForm template="58ada34c299e82674854504b" />');
+      cy.get('.markdownEditor textarea').type(
+        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
+      );
       cy.contains('button', 'Save').click();
       cy.get('.alert.alert-success').click();
 
@@ -59,6 +61,8 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       cy.contains('a', 'Public Form Link').click();
+      cy.contains('h1', 'Public form submition');
+      cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Test public submit entity');
       cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
       cy.contains('span', 'Bahamas').click();
@@ -75,26 +79,32 @@ describe('Public Form', () => {
       cy.contains('a', 'Public Form Page').click();
       cy.get('.markdownEditor textarea').invoke('val').should('not.be.empty');
       cy.get('.markdownEditor textarea').clear();
-      cy.get('.markdownEditor textarea').type('<PublicForm template="624b29b432bdcda07b3854b9" />');
+      cy.get('.markdownEditor textarea').type(
+        '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />'
+      );
       cy.contains('button', 'Save').click();
       cy.get('.alert.alert-success').click();
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
       cy.contains('a', 'Public Form Link').click();
+      cy.contains('h1', 'Public form submition');
+      cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields');
       cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10');
       cy.get('textarea').type('A description for the report');
     });
 
-    it('should fill the media and image fields', () => {
-      cy.get('.image button[type=button]').eq(0).click();
+    it('should fill the Fotografía field', () => {
+      cy.contains('.image button[type=button]', 'Add file').eq(0).click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+    });
 
+    it('should fill the Video field', () => {
       cy.get('.media button[type=button]').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
@@ -103,8 +113,10 @@ describe('Public Form', () => {
           force: true,
         }
       );
+    });
 
-      cy.get('.image button[type=button]').eq(2).click();
+    it('should fill the Imagen adicional field', () => {
+      cy.contains('.image button[type=button]', 'Add file').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
