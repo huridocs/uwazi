@@ -23,14 +23,17 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 
 const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
   <Button buttonStyle={row.original.default ? 'primary' : 'tertiary'}>
-    <StarIcon color="white" className="w-5 stroke-blue" />
+    <StarIcon className="w-5 stroke-cyan-500" />
   </Button>
 );
-const resetButton = ({ row }: { row: Row<LanguageSchema> }) => (
-  <Button buttonStyle={row.original.key === 'es' ? 'tertiary' : 'primary'}>
-    <Translate>Reset</Translate>
-  </Button>
-);
+const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
+  row.original.translationAvailable ? (
+    <Button buttonStyle={row.original.key === 'es' ? 'tertiary' : 'primary'}>
+      <Translate>Reset</Translate>
+    </Button>
+  ) : (
+    <> </>
+  );
 
 const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) => (
   <Button buttonStyle={row.original.default ? 'tertiary' : 'primary'}>
