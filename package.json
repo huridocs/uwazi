@@ -377,7 +377,7 @@
     "tailwindcss": "^3.2.7",
     "terser-webpack-plugin": "^5.3.7",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.2",
+    "tsconfig-paths": "^4.2.0",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.76.2",
     "webpack-bundle-analyzer": "^4.8.0",
