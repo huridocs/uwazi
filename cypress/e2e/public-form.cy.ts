@@ -96,13 +96,15 @@ describe('Public Form', () => {
       cy.get('textarea').type('A description for the report');
     });
 
-    it('should fill the media and image fields', () => {
-      cy.get('.image button[type=button]').eq(0).click();
+    it('should fill the Fotografía field', () => {
+      cy.contains('.image button[type=button]', 'Add file').eq(0).click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+    });
 
+    it('should fill the Video field', () => {
       cy.get('.media button[type=button]').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
@@ -111,8 +113,10 @@ describe('Public Form', () => {
           force: true,
         }
       );
+    });
 
-      cy.get('.image button[type=button]').eq(2).click();
+    it('should fill the Imagen adicional field', () => {
+      cy.contains('.image button[type=button]', 'Add file').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
