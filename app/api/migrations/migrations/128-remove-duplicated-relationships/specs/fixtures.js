@@ -126,3 +126,12 @@ export const fixtures = {
     ...withRepetitionNoProp,
   ],
 };
+
+export {
+  withRepetitionHub1Prop1,
+  withRepetitionHub2Prop1,
+  withRepetitionProp2,
+  withoutRepetitionProp2,
+  withRepetitionProp3,
+  withRepetitionNoProp,
+};

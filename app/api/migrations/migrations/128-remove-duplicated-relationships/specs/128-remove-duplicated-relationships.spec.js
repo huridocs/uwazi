@@ -1,10 +1,18 @@
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import {
+  fixtures,
+  withRepetitionHub1Prop1,
+  withRepetitionHub2Prop1,
+  withRepetitionNoProp,
+  withRepetitionProp2,
+  withRepetitionProp3,
+  withoutRepetitionProp2,
+} from './fixtures.js';
 
 describe('migration remove-duplicated-relationships', () => {
   beforeEach(async () => {
-    // jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
   });
 
@@ -16,36 +24,77 @@ describe('migration remove-duplicated-relationships', () => {
     expect(migration.delta).toBe(128);
   });
 
-  it('should remove the duplicated relationships in hubs used by relationship properties', async () => {
-    await migration.up(testingDB.mongodb);
-    const relationships = await testingDB.mongodb.collection('connections').find({}).toArray();
-    expect(relationships).toEqual([
-      fixtures.connections[0],
-      fixtures.connections[1],
-      fixtures.connections[2],
-      // fixtures.connections[3],
-      // fixtures.connections[4],
-      fixtures.connections[5],
-      fixtures.connections[6],
-      fixtures.connections[7],
-      // fixtures.connections[8],
-      // fixtures.connections[9],
-      fixtures.connections[10],
-      fixtures.connections[11],
-      // fixtures.connections[12],
-      // fixtures.connections[13],
-      // fixtures.connections[14],
-      fixtures.connections[15],
-      fixtures.connections[16],
-      fixtures.connections[17],
-      fixtures.connections[18],
-      fixtures.connections[19],
-      // fixtures.connections[20],
-      fixtures.connections[21],
-      fixtures.connections[22],
-      fixtures.connections[23],
-      fixtures.connections[24],
-    ]);
+  describe('when removing the duplicated relationships in hubs', () => {
+    let relationships;
+
+    beforeAll(async () => {
+      await migration.up(testingDB.mongodb);
+      relationships = await testingDB.mongodb.collection('connections').find({}).toArray();
+    });
+
+    it('should not affect hubs not linked to properties', () => {
+      expect(relationships).toEqual(expect.arrayContaining(withRepetitionNoProp));
+    });
+
+    it('should deduplicate hubs based in entity and relationtype', () => {
+      expect(relationships).not.toEqual(
+        expect.arrayContaining([withRepetitionHub1Prop1[3], withRepetitionHub1Prop1[4]])
+      );
+
+      expect(relationships).not.toEqual(
+        expect.arrayContaining([withRepetitionHub2Prop1[3], withRepetitionHub2Prop1[4]])
+      );
+
+      expect(relationships).not.toEqual(
+        expect.arrayContaining([
+          withRepetitionProp2[2],
+          withRepetitionProp2[3],
+          withRepetitionProp2[4],
+        ])
+      );
+
+      expect(relationships).not.toEqual(expect.arrayContaining([withRepetitionProp3[2]]));
+    });
+
+    it('should keep all relationships not duplicated within a hub or not related to a property.', () => {
+      expect(relationships.length).toBe(17);
+
+      expect(relationships).toEqual(
+        expect.arrayContaining([
+          withRepetitionHub1Prop1[0],
+          withRepetitionHub1Prop1[1],
+          withRepetitionHub1Prop1[2],
+        ])
+      );
+      expect(relationships).toEqual(
+        expect.arrayContaining([
+          withRepetitionHub2Prop1[0],
+          withRepetitionHub2Prop1[1],
+          withRepetitionHub2Prop1[2],
+        ])
+      );
+      expect(relationships).toEqual(
+        expect.arrayContaining([withRepetitionProp2[0], withRepetitionProp2[1]])
+      );
+      expect(relationships).toEqual(
+        expect.arrayContaining([
+          withoutRepetitionProp2[0],
+          withoutRepetitionProp2[1],
+          withoutRepetitionProp2[2],
+        ])
+      );
+      expect(relationships).toEqual(
+        expect.arrayContaining([withRepetitionProp3[0], withRepetitionProp3[1]])
+      );
+      expect(relationships).toEqual(
+        expect.arrayContaining([
+          withRepetitionNoProp[0],
+          withRepetitionNoProp[1],
+          withRepetitionNoProp[2],
+          withRepetitionNoProp[3],
+        ])
+      );
+    });
   });
 
   it('should check if a reindex is needed', async () => {
