@@ -60,6 +60,11 @@ const createRightRelationshipGroups = (
         }
 
         const entityRelationships = relationship.get('relationships');
+
+        if (!entityRelationships.size) {
+          return undefined;
+        }
+
         return (
           <Collapsible
             header={header}
@@ -69,20 +74,22 @@ const createRightRelationshipGroups = (
             key={(parentEntity.get('_id') as string).toString() + index.toString()}
           >
             <>
-              {entityRelationships.map((rel: any, entityRelationshipsIndex: number) => (
-                <div
-                  className="sidepanel-relationship-right-entity"
-                  key={index.toString() + entityRelationshipsIndex.toString()}
-                  onClick={() => selectConnection(rel.get('entityData'))}
-                >
-                  <Item
-                    active={false}
-                    doc={rel.get('entityData')}
-                    className="item-collapsed"
-                    noMetadata
-                  />
-                </div>
-              ))}
+              {entityRelationships
+                .filter((rel: any) => rel.get('entity') !== parentEntity.get('sharedId'))
+                .map((rel: any, entityRelationshipsIndex: number) => (
+                  <div
+                    className="sidepanel-relationship-right-entity"
+                    key={index.toString() + entityRelationshipsIndex.toString()}
+                    onClick={() => selectConnection(rel.get('entityData'))}
+                  >
+                    <Item
+                      active={false}
+                      doc={rel.get('entityData')}
+                      className="item-collapsed"
+                      noMetadata
+                    />
+                  </div>
+                ))}
             </>
           </Collapsible>
         );
