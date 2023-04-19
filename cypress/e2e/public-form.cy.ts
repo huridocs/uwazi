@@ -8,51 +8,64 @@ describe('Public Form', () => {
     clearCookiesAndLogin();
   });
 
-  it('should white list the templates', () => {
-    cy.contains('a', 'Settings').click();
-    cy.contains('a', 'Collection').click();
-    cy.get('.settings-content').scrollTo('bottom');
-    cy.get('#collectionSettings label.toggleButton').eq(9).click();
-    cy.get('input[placeholder="Search item"]').type('Mecanismo');
-    cy.contains('span', 'Mecanismo').click();
-    cy.get('input[placeholder="Search item"]').clear();
-    cy.get('input[placeholder="Search item"]').type('Reporte');
-    cy.contains('span', 'Reporte').click();
-    cy.get('input[placeholder="Search item"]').clear();
-    cy.get('#collectionSettings .row').eq(16).scrollIntoView();
-    cy.get('#collectionSettings .row').eq(16).toMatchImageSnapshot();
-    cy.contains('button', 'Save').click();
-    cy.get('.alert.alert-success').click();
-  });
+  describe('whitelist templates', () => {
+    it('should navigate to collection settings', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Collection').click();
+    });
 
-  it('should create a page with a public form', () => {
-    cy.contains('a', 'Pages').click();
-    cy.contains('a', 'Add page').click();
-    cy.get('[name="page.data.title"]').type('Public Form Page');
-    cy.get('.markdownEditor textarea').type('<PublicForm template="58ada34c299e82674854504b" />');
-    cy.contains('button', 'Save').click();
-    cy.get('.alert.alert-success').click();
-    cy.get('.alert-info:nth-child(2) a').then($element => {
-      const url = $element.attr('href')!.replace('http://localhost:3000', '');
+    it('should whitelist Mecanismo', () => {
+      cy.get('.settings-content').scrollTo('bottom');
+      cy.get('#collectionSettings label.toggleButton').eq(9).click();
+      cy.get('input[placeholder="Search item"]').type('Mecanismo');
+      cy.contains('span', 'Mecanismo').click();
+    });
 
-      cy.contains('a', 'Menu').click();
-      cy.contains('button', 'Add link').click();
-      cy.get('.input-group:nth-child(2) input').clear();
-      cy.get('.input-group:nth-child(2) input').type('Public Form Link');
-      cy.get('.input-group:nth-child(1) input').type(url);
+    it('should whitelist Reporte', () => {
+      cy.get('input[placeholder="Search item"]').clear();
+      cy.get('input[placeholder="Search item"]').type('Reporte');
+      cy.contains('span', 'Reporte').click();
+    });
+
+    it('should save and check the changes', () => {
       cy.contains('button', 'Save').click();
       cy.get('.alert.alert-success').click();
+      cy.get('input[placeholder="Search item"]').clear();
+      cy.get('[title="Mecanismo"]').children().first().should('have.attr', 'data-state', '2');
+      cy.get('[title="Reporte"]').children().first().should('have.attr', 'data-state', '2');
     });
   });
 
-  it('should visit the page and do a submit for the first template', () => {
-    cy.contains('a', 'Public Form Link').click();
-    cy.get('input[name="publicform.title"]').type('Test public submit entity');
-    cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
-    cy.contains('span', 'Bahamas').click();
-    cy.get('.captcha input').type('42hf');
-    cy.contains('button', 'Submit').click();
-    cy.get('.alert.alert-success').click();
+  describe('create a page', () => {
+    it('should create a page with a public form and add it to the navbar', () => {
+      cy.contains('a', 'Pages').click();
+      cy.contains('a', 'Add page').click();
+      cy.get('[name="page.data.title"]').type('Public Form Page');
+      cy.get('.markdownEditor textarea').type('<PublicForm template="58ada34c299e82674854504b" />');
+      cy.contains('button', 'Save').click();
+      cy.get('.alert.alert-success').click();
+
+      cy.get('.alert-info:nth-child(2) a').then($element => {
+        const url = $element.attr('href')!.replace('http://localhost:3000', '');
+        cy.contains('a', 'Menu').click();
+        cy.contains('button', 'Add link').click();
+        cy.get('.input-group:nth-child(2) input').clear();
+        cy.get('.input-group:nth-child(2) input').type('Public Form Link');
+        cy.get('.input-group:nth-child(1) input').type(url);
+        cy.contains('button', 'Save').click();
+        cy.get('.alert.alert-success').click();
+      });
+    });
+
+    it('should visit the page and do a submit for the first template', () => {
+      cy.contains('a', 'Public Form Link').click();
+      cy.get('input[name="publicform.title"]').type('Test public submit entity');
+      cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
+      cy.contains('span', 'Bahamas').click();
+      cy.get('.captcha input').type('42hf');
+      cy.contains('button', 'Submit').click();
+      cy.get('.alert.alert-success').click();
+    });
   });
 
   describe('public form with image and media files', () => {
@@ -73,21 +86,32 @@ describe('Public Form', () => {
       cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10');
       cy.get('textarea').type('A description for the report');
+    });
+
+    it('should fill the media and image fields', () => {
       cy.get('.image button[type=button]').eq(0).click();
+      cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+
       cy.get('.media button[type=button]').click();
+      cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
         `${__dirname}/test_files/short-video.mp4`,
         {
           force: true,
         }
       );
+
       cy.get('.image button[type=button]').eq(2).click();
+      cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+    });
+
+    it('should fill the captcha and save', () => {
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
       cy.get('.alert.alert-success').click();
