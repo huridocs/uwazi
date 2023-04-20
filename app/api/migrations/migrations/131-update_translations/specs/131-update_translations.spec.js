@@ -2,7 +2,7 @@ import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
 import fixtures, { templateContext } from './fixtures.js';
 
-describe('migration update translations of settings tooltips', () => {
+describe('migration update translations of new Translations UI', () => {
   beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
@@ -13,7 +13,7 @@ describe('migration update translations of settings tooltips', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(128);
+    expect(migration.delta).toBe(131);
   });
 
   it('should update the keys that have changed', async () => {
@@ -30,14 +30,19 @@ describe('migration update translations of settings tooltips', () => {
     };
 
     const addedKeys = [
-      {
-        key: 'Remote Server Unreachable',
-        value: 'Remote Server Unreachable',
-      },
-    ];
+      { key: 'Discard changes?' },
+      { key: 'You have unsaved changes. Do you want to continue?' },
+      { key: 'Language Code' },
+      { key: 'Clear' },
+      { key: 'Navigate back' },
+      { key: 'Dismiss' },
+      { key: 'View less' },
+      { key: 'View more' },
+    ].map(key => ({ ...key, value: key.key }));
+
     const defaultContextContent = expect.objectContaining({
       type: 'Uwazi UI',
-      values: [previousSystemValues, ...addedKeys],
+      values: expect.arrayContaining([previousSystemValues, ...addedKeys]),
     });
     expect(uwaziUI).toMatchObject([
       expect.objectContaining({
