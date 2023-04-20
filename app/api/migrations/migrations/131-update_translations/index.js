@@ -24,7 +24,7 @@ const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
 };
 
 export default {
-  delta: 130,
+  delta: 131,
 
   reindex: false,
 
