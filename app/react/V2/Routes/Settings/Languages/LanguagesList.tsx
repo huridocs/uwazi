@@ -79,9 +79,10 @@ const LanguagesList = () => {
       <> </>
     );
 
-  const formatRowProps: (state: Row<LanguageSchema>) => RowPropGetter<LanguageSchema> = state => ({
-    onClick: () => setActionableLanguage(state.values),
-  });
+  const formatRowProps: (state: Row<LanguageSchema>) => RowPropGetter<LanguageSchema> = state =>
+    ({
+      onClick: () => setActionableLanguage(state.values),
+    } as RowPropGetter<LanguageSchema>);
 
   const columns = [
     {

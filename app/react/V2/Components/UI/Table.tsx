@@ -27,7 +27,7 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
-  formatRowProps: (row: Row<any>) => RowPropGetter<any>;
+  formatRowProps?: (row: Row<any>) => RowPropGetter<any>;
 }
 
 const getIcon = (column: TableColumn<any>) => {
