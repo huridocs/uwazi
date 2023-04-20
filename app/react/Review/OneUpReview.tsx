@@ -29,7 +29,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 type OneUpReviewProps = {
   entity?: IImmutable<EntitySchema>;
   oneUpState?: IImmutable<OneUpState>;
-  location?: { query: { q?: string } };
+  location?: { search: { q?: string } };
   mainContext: { confirm: Function };
 };
 
