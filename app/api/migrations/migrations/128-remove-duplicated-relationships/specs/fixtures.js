@@ -65,6 +65,12 @@ const template1 = {
   properties: [
     {
       _id: db.id(),
+      name: 'text1',
+      label: 'text1',
+      type: 'text',
+    },
+    {
+      _id: db.id(),
       name: 'prop1',
       label: 'prop1',
       type: 'relationship',
@@ -98,7 +104,7 @@ const template2 = {
 };
 
 export const fixtures = {
-  templates: [template1, template2],
+  templates: [targetTemplate, template1, template2],
   entities: [
     { _id: db.id(), language: 'en', sharedId: 'entity1', template: template1._id },
     { _id: db.id(), language: 'en', sharedId: 'entity2', template: targetTemplate._id },
