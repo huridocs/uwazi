@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
-import { withContext } from 'app/componentWrappers';
+import { withContext, withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';
 import { Loader } from 'app/components/Elements/Loader';
@@ -26,10 +26,10 @@ import { IImmutable } from 'shared/types/Immutable';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-export type OneUpReviewProps = {
+type OneUpReviewProps = {
   entity?: IImmutable<EntitySchema>;
   oneUpState?: IImmutable<OneUpState>;
-  location?: { query: { q?: string } };
+  location?: { search: { q?: string } };
   mainContext: { confirm: Function };
 };
 
@@ -90,7 +90,7 @@ function buildInitialOneUpState(
   };
 }
 
-export class OneUpReviewBase extends RouteHandler {
+class OneUpReviewBase extends RouteHandler {
   static async requestState(requestParams: RequestParams, state: any) {
     const documentsRequest = requestParams.set({
       ...processQuery(requestParams.data, state),
@@ -130,7 +130,9 @@ export class OneUpReviewBase extends RouteHandler {
   }
 
   urlHasChanged(nextProps: any) {
-    return nextProps.location.query.q !== this.props.location.query.q;
+    const nextSearchParams = new URLSearchParams(nextProps.location.search);
+    const currentSearchParams = new URLSearchParams(this.props.location.search);
+    return nextSearchParams.get('q') !== currentSearchParams.get('q');
   }
 
   componentWillUnmount() {
@@ -172,10 +174,13 @@ interface OneUpReviewStore {
   };
 }
 
-export default connect(
-  (state: OneUpReviewStore) =>
-    ({
-      entity: state.entityView.entity,
-      oneUpState: state.oneUpReview.state,
-    } as OneUpReviewProps)
-)(withContext(OneUpReviewBase));
+const mapStateToProps = (state: OneUpReviewStore) =>
+  ({
+    entity: state.entityView.entity,
+    oneUpState: state.oneUpReview.state,
+  } as OneUpReviewProps);
+
+export type { OneUpReviewProps };
+export { OneUpReviewBase };
+//@ts-ignore
+export default connect(mapStateToProps)(withRouter(withContext(OneUpReviewBase)));
