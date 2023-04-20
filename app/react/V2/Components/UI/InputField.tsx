@@ -1,33 +1,37 @@
 import { Translate } from 'app/I18N';
 import React, { ChangeEventHandler, Ref } from 'react';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 
 interface InputFieldProps {
-  fieldID: string;
-  label: string | React.ReactNode;
-  fieldControls?: {
-    onChange?: ChangeEventHandler;
-    onBlur?: ChangeEventHandler;
-    name?: string;
-    ref?: Ref<any>;
-  };
+  fieldID?: string;
+  label?: string | React.ReactNode;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLInputElement>;
+  name?: string;
+  ref?: Ref<any>;
   value?: string;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
   hasErrors?: boolean;
   clearFieldAction?: () => any;
+  className?: string;
 }
 
 const InputField = ({
   fieldID,
   label,
-  fieldControls,
   disabled,
   hideLabel,
   placeholder,
   hasErrors,
   value,
   clearFieldAction,
+  className,
+  onChange = () => {},
+  onBlur = () => {},
+  name = '',
+  ref = undefined,
 }: InputFieldProps) => {
   const hasClearFieldButton = Boolean(clearFieldAction);
   let fieldStyles = 'border-gray-300 border text-gray-900';
@@ -43,15 +47,8 @@ const InputField = ({
     fieldStyles = `${fieldStyles} pr-10`;
   }
 
-  const { onChange, onBlur, name, ref } = fieldControls || {
-    onChange: () => {},
-    onBlur: () => {},
-    name: '',
-    ref: undefined,
-  };
-
   return (
-    <div>
+    <div className={className}>
       <label htmlFor={fieldID} className={hideLabel ? 'sr-only' : ''}>
         {label}
       </label>
@@ -73,19 +70,11 @@ const InputField = ({
             type="button"
             onClick={clearFieldAction}
             disabled={disabled}
+            data-testid="clear-field-button"
             className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
              focus:outline-none`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2.5"
-              stroke="currentColor"
-              className="w-5 h-5"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <XMarkIcon className="w-5" />
             <Translate className="sr-only">Clear</Translate>
           </button>
         )}

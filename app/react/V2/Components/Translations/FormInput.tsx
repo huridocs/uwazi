@@ -15,6 +15,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
   const { error } = getFieldState(data.cell.value);
   const hasErrors = Boolean(error);
   const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
+  const { onBlur, onChange, ref, name } = register(data.cell.value, { required: true });
   return (
     <div>
       <InputField
@@ -24,11 +25,10 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         disabled={submitting}
         clearFieldAction={reset}
         hasErrors={hasErrors}
-        fieldControls={{
-          ...register(data.cell.value, {
-            required: true,
-          }),
-        }}
+        onChange={onChange}
+        onBlur={onBlur}
+        name={name}
+        ref={ref}
       />
       {hasErrors && (
         <div className="mt-2 text-error-700 font-bold">
