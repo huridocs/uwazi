@@ -9,6 +9,8 @@ import {
   useSortBy,
   UseSortByOptions,
   UseSortByColumnProps,
+  Row,
+  RowPropGetter,
 } from 'react-table';
 
 import { Table as FlowbiteTable } from 'flowbite-react';
@@ -25,6 +27,7 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  formatRowProps: (row: Row<any>) => RowPropGetter<any>;
 }
 
 const getIcon = (column: TableColumn<any>) => {
@@ -39,7 +42,7 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const Table = ({ columns, data, title }: TableProps) => {
+const Table = ({ columns, data, title, formatRowProps }: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
@@ -79,7 +82,7 @@ const Table = ({ columns, data, title }: TableProps) => {
         {rows.map(row => {
           prepareRow(row);
           return (
-            <FlowbiteTable.Row {...row.getRowProps()}>
+            <FlowbiteTable.Row {...row.getRowProps(formatRowProps && formatRowProps(row))}>
               {row.cells.map(cell => (
                 <FlowbiteTable.Cell {...cell.getCellProps()}>
                   {cell.render('Cell')}

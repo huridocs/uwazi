@@ -1103,6 +1103,10 @@ input:checked + .toggle-bg {
   right: 0px;
 }
 
+.-top-3 {
+  top: -0.75rem;
+}
+
 .top-0 {
   top: 0px;
 }
@@ -1872,6 +1876,10 @@ input:checked + .toggle-bg {
 
 .border-b {
   border-bottom-width: 1px;
+}
+
+.border-b-0 {
+  border-bottom-width: 0px;
 }
 
 .border-b-2 {
@@ -2678,6 +2686,10 @@ input:checked + .toggle-bg {
 
 .pb-4 {
   padding-bottom: 1rem;
+}
+
+.pb-6 {
+  padding-bottom: 1.5rem;
 }
 
 .pl-0 {
@@ -4515,6 +4527,11 @@ input:checked + .toggle-bg {
 :is(.dark .dark\:text-purple-900) {
   --tw-text-opacity: 1;
   color: rgb(74 29 150 / var(--tw-text-opacity));
+}
+
+:is(.dark .dark\:text-red-400) {
+  --tw-text-opacity: 1;
+  color: rgb(249 128 128 / var(--tw-text-opacity));
 }
 
 :is(.dark .dark\:text-red-500) {
