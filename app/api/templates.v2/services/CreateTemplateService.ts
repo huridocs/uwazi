@@ -147,6 +147,27 @@ export class CreateTemplateService {
     return TemplateMappers.ApiToApp(template);
   }
 
+  async validateUpdateActions(_oldTemplate: TemplateInput, _newTemplate: TemplateInput) {
+    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
+    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+
+    const updatedProperties = oldTemplate
+      .selectUpdatedProperties(newTemplate)
+      .filter(info => info.oldProperty.type === propertyTypes.newRelationship);
+
+    const updatesDenormalizedProperty = updatedProperties.filter(info =>
+      info.updatedAttributes.includes('denormalizedProperty')
+    );
+
+    if (updatesDenormalizedProperty.length) {
+      throw new Error(
+        `Cannot update denormalized property of a relationship property. The following properties try to do so: ${updatesDenormalizedProperty
+          .map(info => info.newProperty.name)
+          .join(', ')}`
+      );
+    }
+  }
+
   async handleRelationshipPropertyUpdates(
     _oldTemplate: TemplateInput,
     _newTemplate: TemplateInput
@@ -158,19 +179,17 @@ export class CreateTemplateService {
       .selectNewProperties(newTemplate)
       .filter(p => p instanceof RelationshipProperty)
       .map(p => p.name);
-    const updatedQueriesOrDenormalizations = oldTemplate
+    const updatedProperties = oldTemplate
       .selectUpdatedProperties(newTemplate)
-      .filter(info => info.oldProperty.type === propertyTypes.newRelationship)
-      .filter(
-        info =>
-          info.updatedAttributes.includes('query') ||
-          info.updatedAttributes.includes('denormalizedProperty')
-      )
+      .filter(info => info.oldProperty.type === propertyTypes.newRelationship);
+
+    const updatesQuery = updatedProperties
+      .filter(info => info.updatedAttributes.includes('query'))
       .map(info => info.newProperty.name);
 
     await this.markEntityMetadataAsObsolete(
       newTemplate.id,
-      Array.from(new Set([...newRelationshipNames, ...updatedQueriesOrDenormalizations]))
+      Array.from(new Set([...newRelationshipNames, ...updatesQuery]))
     );
   }
 

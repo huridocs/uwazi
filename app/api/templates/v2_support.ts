@@ -1,9 +1,12 @@
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { WithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty';
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
+import { ensure } from 'shared/tsUtils';
 import { TemplateSchema } from 'shared/types/templateType';
+import templates from './templates';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
   const client = getClient();
@@ -24,6 +27,13 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
       return createTemplateService.createRelationshipProperty(relationshipProperty);
     })
   );
+
+  if (template._id) {
+    const currentTemplate = ensure<WithId<TemplateSchema>>(
+      await templates.getById(ensure(template._id))
+    );
+    await createTemplateService.validateUpdateActions(currentTemplate, template);
+  }
 
   return { ...template, properties: mappedProperties };
 };

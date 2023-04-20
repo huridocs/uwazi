@@ -365,7 +365,7 @@ describe('template.save()', () => {
         expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
       });
 
-      it('on denormalizedProperty change, uwazi should save the new one properly, and mark the metadata obsolete', async () => {
+      it('on denormalizedProperty change should throw an error and not mark the metadata', async () => {
         const [existingTemplate] = await templates.get({
           name: 'template_with_existing_relationship',
         });
@@ -380,59 +380,21 @@ describe('template.save()', () => {
             },
           ],
         };
-        const template = await templates.save(updatedTemplate, 'en');
-        expect(template.properties).toEqual([
-          {
-            _id: expect.any(ObjectId),
-            type: 'newRelationship',
-            label: 'existing_relationship',
-            name: 'existing_relationship',
-            query: oldQueryInDb,
-            denormalizedProperty: 'a_text_property',
-          },
-        ]);
+        try {
+          await templates.save(updatedTemplate, 'en');
+          throw new Error('should have thrown a validation error');
+        } catch (e) {
+          expect(e.message).toBe(
+            'Cannot update denormalized property of a relationship property. The following properties try to do so: existing_relationship'
+          );
+        }
 
         const relatedEntities = await db.mongodb
           ?.collection('entities')
           .find({ template: existingTemplate._id })
           .toArray();
 
-        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
-      });
-
-      it('should handle query and denormalizedProperty update at the same time', async () => {
-        const [existingTemplate] = await templates.get({
-          name: 'template_with_existing_relationship',
-        });
-        const updatedTemplate = {
-          ...existingTemplate,
-          properties: [
-            {
-              ...existingTemplate.properties![0],
-              _id: existingTemplate.properties![0]._id!.toString(),
-              query: newQueryInput,
-              denormalizedProperty: 'a_text_property',
-            },
-          ],
-        };
-        const template = await templates.save(updatedTemplate, 'en');
-        expect(template.properties).toEqual([
-          {
-            _id: expect.any(ObjectId),
-            type: 'newRelationship',
-            label: 'existing_relationship',
-            name: 'existing_relationship',
-            query: newQueryInDb,
-            denormalizedProperty: 'a_text_property',
-          },
-        ]);
-
-        const relatedEntities = await db.mongodb
-          ?.collection('entities')
-          .find({ template: existingTemplate._id })
-          .toArray();
-
-        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([[]]);
       });
     });
   });
