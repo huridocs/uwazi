@@ -178,7 +178,7 @@ const EditTranslations = () => {
         const response = await translationsAPI.post(values, contextId);
         setTranslationsState(response);
         setNotifications({
-          type: 'sucess',
+          type: 'success',
           text: <Translate>Translations saved</Translate>,
         });
         reset({}, { keepValues: true });
@@ -199,7 +199,7 @@ const EditTranslations = () => {
         const response = await translationsAPI.importTranslations(file, 'System');
         setTranslationsState(response);
         setNotifications({
-          type: 'sucess',
+          type: 'success',
           text: <Translate>Translations imported.</Translate>,
         });
       } catch (e) {

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { Row, RowPropGetter } from 'react-table';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { StarIcon } from '@heroicons/react/20/solid';
@@ -13,7 +13,7 @@ import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-
+import { notificationAtom } from 'V2/atoms';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
 const languagesListLoader =
@@ -28,6 +28,8 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useRecoilValue(settingsAtom);
+  const setNotifications = useSetRecoilState(notificationAtom);
+
   const availableLanguages = useLoaderData() as LanguageSchema[];
   const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
   const languages = values(
@@ -36,7 +38,7 @@ const LanguagesList = () => {
 
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const [actionableLanguage, setActionableLanguage] = useState({});
+  const [actionableLanguage, setActionableLanguage] = useState<LanguageSchema>();
 
   const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
     row.original.translationAvailable ? (
@@ -50,9 +52,27 @@ const LanguagesList = () => {
             cancelButton: 'No, cancel',
             warningText: 'Other users will be affected by this action!',
             confirmWord: 'CONFIRM',
-            onAcceptClick: () => {
+            onAcceptClick: async () => {
               setShowModal(false);
-              console.log(actionableLanguage);
+              setNotifications({
+                type: 'success',
+                text: <Translate>Language reset success</Translate>,
+              });
+              try {
+                await I18NApi.populateTranslations(
+                  new RequestParams({ locale: actionableLanguage!.key })
+                );
+                setNotifications({
+                  type: 'success',
+                  text: <Translate>Language reset success</Translate>,
+                });
+              } catch (e) {
+                setNotifications({
+                  type: 'error',
+                  text: <Translate>An error occurred</Translate>,
+                  details: e.json.error,
+                });
+              }
             },
             onCancelClick: () => setShowModal(false),
             size: 'max-w-md',
@@ -81,7 +101,7 @@ const LanguagesList = () => {
 
   const formatRowProps: (state: Row<LanguageSchema>) => RowPropGetter<LanguageSchema> = state =>
     ({
-      onClick: () => setActionableLanguage(state.values),
+      onClick: () => setActionableLanguage(state.values as LanguageSchema),
     } as RowPropGetter<LanguageSchema>);
 
   const columns = [
