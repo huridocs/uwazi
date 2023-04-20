@@ -182,4 +182,5 @@ const mapStateToProps = (state: OneUpReviewStore) =>
 
 export type { OneUpReviewProps };
 export { OneUpReviewBase };
+//@ts-ignore
 export default connect(mapStateToProps)(withRouter(withContext(OneUpReviewBase)));
