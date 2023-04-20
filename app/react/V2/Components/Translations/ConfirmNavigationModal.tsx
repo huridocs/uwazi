@@ -1,16 +1,18 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
 import { SetterOrUpdater } from 'recoil';
-import { NavigateFunction } from 'react-router-dom';
 import { Button, Modal } from '../UI';
 
 type confirmationModalType = {
   setShowModal: SetterOrUpdater<boolean>;
-  navigate: NavigateFunction;
+  onComfirm?: () => void;
 };
 
-const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) => (
-  <>
+const ConfirmNavigationModal = ({
+  setShowModal,
+  onComfirm = () => undefined,
+}: confirmationModalType) => (
+  <Modal size="md">
     <Modal.Header>
       <h1 className="text-xl font-medium text-gray-900">
         <Translate>Discard changes?</Translate>
@@ -24,7 +26,7 @@ const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) =>
       <Button
         onClick={() => {
           setShowModal(false);
-          navigate('/settings/translations');
+          onComfirm();
         }}
       >
         <Translate>Discard changes</Translate>
@@ -33,7 +35,7 @@ const ConfirmationModal = ({ setShowModal, navigate }: confirmationModalType) =>
         <Translate>Cancel</Translate>
       </Button>
     </Modal.Footer>
-  </>
+  </Modal>
 );
 
-export { ConfirmationModal };
+export { ConfirmNavigationModal };

@@ -7,7 +7,7 @@ import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 
 const ConfirmationModalStory = {
-  title: 'Components/ConfirmationModal',
+  title: 'Components/Modal',
   component: Modal,
 };
 
@@ -24,7 +24,7 @@ const Template: ComponentStory<typeof ConfirmationModal> = args => (
           onCancelClick={args.onCancelClick}
           warningText={args.warningText}
           confirmWord={args.confirmWord}
-          size="max-w-md"
+          size="md"
         />
       </div>
     </div>

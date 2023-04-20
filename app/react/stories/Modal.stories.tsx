@@ -12,9 +12,7 @@ const ModalStory = {
 const Template: ComponentStory<typeof Modal> = args => (
   <div className="tw-content">
     <div className=" w-10 h10 container">
-      <Modal show={args.show} size={args.size}>
-        {args.children}
-      </Modal>
+      <Modal size={args.size}>{args.children}</Modal>
     </div>
   </div>
 );
@@ -39,7 +37,6 @@ Basic.args = {
       </Modal.Footer>
     </>
   ),
-  show: true,
   size: 'sm',
 };
 
@@ -61,7 +58,6 @@ Warning.args = {
       </div>
     </Modal.Body>
   ),
-  show: true,
   size: 'sm',
 };
 

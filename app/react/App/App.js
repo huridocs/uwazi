@@ -5,7 +5,7 @@ import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
-import { NotificationsContainer, ModalContainer } from 'V2/Components/UI';
+import { NotificationsContainer } from 'V2/Components/UI';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -88,7 +88,6 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
-      <ModalContainer />
     </div>
   );
 };

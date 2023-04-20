@@ -5,7 +5,6 @@ import { Pill } from './Pill';
 import { Table } from './Table';
 import { ToggleButton } from './ToggleButton';
 import { InputField } from './InputField';
-import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
 import { Sidepanel } from './Sidepanel';
 
@@ -17,7 +16,6 @@ export {
   Table,
   ToggleButton,
   InputField,
-  ModalContainer,
   NotificationsContainer,
   Sidepanel,
 };

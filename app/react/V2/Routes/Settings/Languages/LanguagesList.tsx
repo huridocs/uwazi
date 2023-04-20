@@ -133,7 +133,7 @@ const LanguagesList = () => {
       </div>
       {showModal && (
         <div className="container w-10 h10">
-          <ConfirmationModal {...modalProps} />
+          <ConfirmationModal {...modalProps} size="md" />
         </div>
       )}
     </div>
