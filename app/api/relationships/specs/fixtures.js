@@ -108,13 +108,13 @@ export default {
           name: 'friend',
           type: 'relationship',
           label: 'friend',
-          relationType: friend,
+          relationType: friend.toString(),
         },
         {
           name: 'family',
           type: 'relationship',
           label: 'family',
-          relationType: family,
+          relationType: family.toString(),
         },
         {
           name: 'dictionarySelect',
