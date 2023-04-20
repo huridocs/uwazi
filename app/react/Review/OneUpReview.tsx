@@ -130,7 +130,9 @@ class OneUpReviewBase extends RouteHandler {
   }
 
   urlHasChanged(nextProps: any) {
-    return nextProps.location.query.q !== this.props.location.query.q;
+    const nextSearchParams = new URLSearchParams(nextProps.location.search);
+    const currentSearchParams = new URLSearchParams(this.props.location.search);
+    return nextSearchParams.get('q') !== currentSearchParams.get('q');
   }
 
   componentWillUnmount() {
