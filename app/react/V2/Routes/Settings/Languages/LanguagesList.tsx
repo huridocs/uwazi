@@ -63,37 +63,45 @@ const LanguagesList = () => {
       }
     };
 
-  const resetModal = (row: Row<LanguageSchema>) => {
+  const confirmAction = (
+    row: Row<LanguageSchema>,
+    message: string,
+    acceptLabel: string,
+    handleAcceptedAction: () => void
+  ) => {
     setActionableLanguage(row.values as LanguageSchema);
 
     setModalProps({
       header: 'Are you sure?',
-      body: 'You are about to reset a language.',
-      acceptButton: 'Reset',
+      body: message,
+      acceptButton: acceptLabel,
       cancelButton: 'No, cancel',
       warningText: 'Other users will be affected by this action!',
       confirmWord: 'CONFIRM',
-      onAcceptClick: handleAction('Language reset success', I18NApi.populateTranslations, 'locale'),
+      onAcceptClick: handleAcceptedAction,
       onCancelClick: () => setShowModal(false),
       size: 'md',
     });
     setShowModal(true);
   };
 
-  const uninstallModal = (row: Row<LanguageSchema>) => {
+  const resetModal = (row: Row<LanguageSchema>) => {
+    confirmAction(
+      row,
+      'You are about to reset a language.',
+      'Reset',
+      handleAction('Language reset success', I18NApi.populateTranslations, 'locale')
+    );
     setActionableLanguage(row.values as LanguageSchema);
-    setModalProps({
-      header: 'Are you sure?',
-      body: 'You are about to uninstall a language.',
-      acceptButton: 'Uninstall',
-      cancelButton: 'No, cancel',
-      warningText: 'Other users will be affected by this action!',
-      confirmWord: 'CONFIRM',
-      onAcceptClick: handleAction('Language uninstalled success', I18NApi.deleteLanguage, 'key'),
-      onCancelClick: () => setShowModal(false),
-      size: 'md',
-    });
-    setShowModal(true);
+  };
+
+  const uninstallModal = (row: Row<LanguageSchema>) => {
+    confirmAction(
+      row,
+      'You are about to uninstall a language.',
+      'Uninstall',
+      handleAction('Language uninstalled success', I18NApi.deleteLanguage, 'locale')
+    );
   };
 
   const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
