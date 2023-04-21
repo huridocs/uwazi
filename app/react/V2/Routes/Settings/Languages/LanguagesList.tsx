@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { Row, RowPropGetter } from 'react-table';
+import { Row } from 'react-table';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate, I18NApi } from 'app/I18N';
@@ -40,69 +40,85 @@ const LanguagesList = () => {
   const [showModal, setShowModal] = useState(false);
   const [actionableLanguage, setActionableLanguage] = useState<LanguageSchema>();
 
+  const handleAction =
+    (
+      successMessage: string,
+      action: { (requestParams: RequestParams): Promise<void> },
+      key: string
+    ) =>
+    async () => {
+      setShowModal(false);
+      try {
+        await action(new RequestParams({ [key]: actionableLanguage!.key }));
+        setNotifications({
+          type: 'success',
+          text: <Translate>{successMessage}</Translate>,
+        });
+      } catch (e) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: e.json.error,
+        });
+      }
+    };
+
+  const resetModal = (row: Row<LanguageSchema>) => {
+    setActionableLanguage(row.values as LanguageSchema);
+
+    setModalProps({
+      header: 'Are you sure?',
+      body: 'You are about to reset a language.',
+      acceptButton: 'Reset',
+      cancelButton: 'No, cancel',
+      warningText: 'Other users will be affected by this action!',
+      confirmWord: 'CONFIRM',
+      onAcceptClick: handleAction('Language reset success', I18NApi.populateTranslations, 'locale'),
+      onCancelClick: () => setShowModal(false),
+      size: 'md',
+    });
+    setShowModal(true);
+  };
+
+  const uninstallModal = (row: Row<LanguageSchema>) => {
+    setActionableLanguage(row.values as LanguageSchema);
+    setModalProps({
+      header: 'Are you sure?',
+      body: 'You are about to uninstall a language.',
+      acceptButton: 'Uninstall',
+      cancelButton: 'No, cancel',
+      warningText: 'Other users will be affected by this action!',
+      confirmWord: 'CONFIRM',
+      onAcceptClick: handleAction('Language uninstalled success', I18NApi.deleteLanguage, 'key'),
+      onCancelClick: () => setShowModal(false),
+      size: 'md',
+    });
+    setShowModal(true);
+  };
+
   const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
     row.original.translationAvailable ? (
-      <Button
-        buttonStyle="secondary"
-        onClick={() => {
-          setModalProps({
-            header: 'Are you sure?',
-            body: 'You are about to reset a language.',
-            acceptButton: 'Reset',
-            cancelButton: 'No, cancel',
-            warningText: 'Other users will be affected by this action!',
-            confirmWord: 'CONFIRM',
-            onAcceptClick: async () => {
-              setShowModal(false);
-              setNotifications({
-                type: 'success',
-                text: <Translate>Language reset success</Translate>,
-              });
-              try {
-                await I18NApi.populateTranslations(
-                  new RequestParams({ locale: actionableLanguage!.key })
-                );
-                setNotifications({
-                  type: 'success',
-                  text: <Translate>Language reset success</Translate>,
-                });
-              } catch (e) {
-                setNotifications({
-                  type: 'error',
-                  text: <Translate>An error occurred</Translate>,
-                  details: e.json.error,
-                });
-              }
-            },
-            onCancelClick: () => setShowModal(false),
-            size: 'max-w-md',
-          });
-          setShowModal(true);
-        }}
-      >
+      <Button buttonStyle="secondary" onClick={() => resetModal(row)}>
         <Translate>Reset</Translate>
       </Button>
     ) : (
       <> </>
     );
+
   const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
     <Button buttonStyle={row.original.default ? 'primary' : 'tertiary'}>
       <StarIcon className="w-5 stroke-cyan-500" />
     </Button>
   );
+
   const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) =>
-    row.original.translationAvailable ? (
-      <Button buttonStyle="secondary">
+    !row.original.default ? (
+      <Button buttonStyle="secondary" onClick={() => uninstallModal(row)}>
         <Translate>Uninstall</Translate>
       </Button>
     ) : (
       <> </>
     );
-
-  const formatRowProps: (state: Row<LanguageSchema>) => RowPropGetter<LanguageSchema> = state =>
-    ({
-      onClick: () => setActionableLanguage(state.values as LanguageSchema),
-    } as RowPropGetter<LanguageSchema>);
 
   const columns = [
     {
@@ -137,19 +153,28 @@ const LanguagesList = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-languages"
     >
-      <div className="p-5">
-        <NavigationHeader backUrl="/settings">
-          <h1 className="text-base text-gray-700">
-            <Translate>Languages</Translate>
-          </h1>
-        </NavigationHeader>
-        <div className="mt-4" data-testid="languages">
-          <Table
-            columns={columns}
-            data={languages}
-            title={<Translate>Active languages</Translate>}
-            formatRowProps={state => formatRowProps(state)}
-          />
+      <div className="flex flex-col h-full">
+        <div className="flex-grow p-5">
+          <NavigationHeader backUrl="/settings">
+            <h1 className="text-base text-gray-700">
+              <Translate>Languages</Translate>
+            </h1>
+          </NavigationHeader>
+          <div className="mt-4" data-testid="languages">
+            <Table
+              columns={columns}
+              data={languages}
+              title={<Translate>Active languages</Translate>}
+            />
+          </div>
+        </div>
+
+        <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+          <div className="flex gap-2 p-2 pt-1">
+            <Button buttonStyle="primary">
+              <Translate>Install language</Translate>
+            </Button>
+          </div>
         </div>
       </div>
       {showModal && (
