@@ -42,7 +42,7 @@ describe('Library', () => {
     props = {
       entity,
       oneUpState,
-      location: { query: { q: '(a:1)' } },
+      location: { search: { q: '(a:1)' } },
       mainContext: { confirm: jest.fn },
     };
     dispatchCallsOrder = [];
@@ -74,13 +74,13 @@ describe('Library', () => {
   describe('urlHasChanged', () => {
     it('return true when q has changed', () => {
       render();
-      const nextProps = { location: { query: { q: '(a:2)' } } };
+      const nextProps = { location: { search: { q: '(a:2)' } } };
       expect(component.instance().urlHasChanged(nextProps)).toBe(true);
     });
 
     it('should not update if "q" is the same', () => {
       render();
-      const nextProps = { location: { query: { q: '(a:1)' } } };
+      const nextProps = { location: { search: { q: '(a:1)' } } };
       expect(component.instance().urlHasChanged(nextProps)).toBe(false);
     });
   });
