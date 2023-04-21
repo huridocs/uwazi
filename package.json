@@ -259,7 +259,7 @@
     "@babel/preset-typescript": "7.21.4",
     "@babel/register": "^7.21.0",
     "@babel/traverse": "^7.21.4",
-    "@cfaester/enzyme-adapter-react-18": "^0.6.0",
+    "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
     "@cypress/webpack-dev-server": "^3.4.0",
     "@cypress/webpack-preprocessor": "^5.17.0",
