@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Immutable, { fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import { Tabs } from 'react-tabs-redux';
 
 import { ConnectionsGroups } from 'app/ConnectionsList';
@@ -21,9 +21,9 @@ describe('DocumentSidePanel', () => {
   beforeEach(() => {
     props = {
       mainContext: { confirm: jasmine.createSpy('confirm') },
-      doc: Immutable.fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
+      doc: fromJS({ metadata: [], attachments: [], type: 'document', file: {} }),
       rawDoc: fromJS({}),
-      templates: Immutable.fromJS([]),
+      templates: fromJS([]),
       showModal: jasmine.createSpy('showModal'),
       openPanel: jasmine.createSpy('openPanel'),
       startNewConnection: jasmine.createSpy('startNewConnection'),
@@ -33,14 +33,14 @@ describe('DocumentSidePanel', () => {
       resetForm: jasmine.createSpy('resetForm'),
       excludeConnectionsTab: true,
       storeKey: 'library',
-      references: Immutable.fromJS(['reference']),
-      connections: Immutable.fromJS(['connections']),
+      references: fromJS(['reference']),
+      connections: fromJS(['connections']),
       formPath: 'formPath',
-      connectionsGroups: Immutable.fromJS([
+      connectionsGroups: fromJS([
         { key: 'connection1', templates: [{ count: 1 }, { count: 2 }] },
         { key: 'connection2', templates: [{ count: 3 }, { count: 4 }] },
       ]),
-      hubs: Immutable.fromJS([
+      hubs: fromJS([
         {
           hub: '1',
           rightRelationships: [
@@ -87,19 +87,19 @@ describe('DocumentSidePanel', () => {
 
     describe('when doc passed is an entity', () => {
       it('should set metadata as selected if tab is toc', () => {
-        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+        props.doc = fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'toc';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should set metadata as selected if tab is references', () => {
-        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+        props.doc = fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.tab = 'references';
         render();
         expect(component.find(Tabs).at(0).props().selectedTab).toBe('metadata');
       });
       it('should pass to entityForm the initial templateId', () => {
-        props.doc = Immutable.fromJS({ type: 'entity', template: 'templateId' });
+        props.doc = fromJS({ type: 'entity', template: 'templateId' });
         props.docBeingEdited = true;
         render();
         expect(component.find('EntityForm').props().initialTemplateId).toBe('templateId');
@@ -108,7 +108,7 @@ describe('DocumentSidePanel', () => {
 
     describe('when doc passed is a document', () => {
       it('should pass to documentForm the initial templateId', () => {
-        props.doc = Immutable.fromJS({
+        props.doc = fromJS({
           type: 'document',
           template: 'templateId',
           documents: [{ filename: 'file1' }],
@@ -127,18 +127,18 @@ describe('DocumentSidePanel', () => {
         expect(component.find(ShowToc).props().toc).toEqual(toc);
       }
       it('should set toc of the loaded file if doc is a new entity', () => {
-        props.doc = Immutable.fromJS({ metadata: [], attachments: [], type: 'entity' });
+        props.doc = fromJS({ metadata: [], attachments: [], type: 'entity' });
         props.file = { toc };
         expectToCValuesAreTheProvidedInProps();
       });
       it('should set the toc of the default document if doc is a loaded entity', () => {
         const documents = [{ toc }];
         entityDefaultDocument.mockReturnValue(documents[0]);
-        props.doc = Immutable.fromJS({ documents, attachments: [], type: 'entity' });
+        props.doc = fromJS({ documents, attachments: [], type: 'entity' });
         expectToCValuesAreTheProvidedInProps();
       });
       it('should set the toc of the defaultDoc of document if doc is not an entity', () => {
-        props.doc = Immutable.fromJS({
+        props.doc = fromJS({
           type: 'document',
           defaultDoc: { toc },
           documents: [{ filename: 'file1' }],
@@ -210,11 +210,11 @@ describe('DocumentSidePanel', () => {
 
     beforeEach(() => {
       state = {
-        documentViewer: { targetDoc: Immutable.fromJS({ _id: null }) },
+        documentViewer: { targetDoc: fromJS({ _id: null }) },
         relationships: { list: { connectionsGroups: ['connectionsGroups'] } },
-        relationTypes: Immutable.fromJS(['a', 'b']),
-        settings: { collection: Immutable.fromJS({ languages }) },
-        library: { sidepanel: { metadata: {} } },
+        relationTypes: fromJS(['a', 'b']),
+        settings: { collection: fromJS({ languages }) },
+        library: { sidepanel: { metadata: {} }, ui: fromJS({ selectedDocuments: [] }) },
       };
       spyOn(viewerModule.selectors, 'parseReferences').and.callFake(
         (doc, refs) => `Parsed ${doc} refs: ${refs}`
@@ -244,7 +244,7 @@ describe('DocumentSidePanel', () => {
 
     it('should map selected target references from viewer when no ownProps and targetDoc', () => {
       const ownProps = { storeKey: 'library' };
-      state.documentViewer.targetDoc = Immutable.fromJS({ _id: 'targetDocId' });
+      state.documentViewer.targetDoc = fromJS({ _id: 'targetDocId' });
       state.relationships.list.connectionsGroups = [];
       expect(mapStateToProps(state, ownProps).references).toBe(
         'Target references selector used correctly'
