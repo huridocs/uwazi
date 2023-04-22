@@ -2559,6 +2559,14 @@ input:checked + .toggle-bg {
   fill: #E3A008;
 }
 
+.stroke-gray-300 {
+  stroke: #D1D5DB;
+}
+
+.stroke-2 {
+  stroke-width: 2;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;

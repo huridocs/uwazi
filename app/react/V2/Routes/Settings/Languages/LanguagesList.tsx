@@ -44,22 +44,26 @@ const LanguagesList = () => {
     (
       successMessage: string,
       action: { (requestParams: RequestParams): Promise<void> },
-      key: string
+      key: string,
+      currentLanguage?: LanguageSchema
     ) =>
     async () => {
       setShowModal(false);
-      try {
-        await action(new RequestParams({ [key]: actionableLanguage!.key }));
-        setNotifications({
-          type: 'success',
-          text: <Translate>{successMessage}</Translate>,
-        });
-      } catch (e) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
-        });
+      const selectedLanguage = currentLanguage || actionableLanguage;
+      if (selectedLanguage) {
+        try {
+          await action(new RequestParams({ [key]: selectedLanguage.key }));
+          setNotifications({
+            type: 'success',
+            text: <Translate>{successMessage}</Translate>,
+          });
+        } catch (e) {
+          setNotifications({
+            type: 'error',
+            text: <Translate>An error occurred</Translate>,
+            details: e.json?.error ? e.json.error : '',
+          });
+        }
       }
     };
 
@@ -95,6 +99,15 @@ const LanguagesList = () => {
     setActionableLanguage(row.values as LanguageSchema);
   };
 
+  const setDefaultLanguage = async (row: Row<LanguageSchema>) => {
+    await handleAction(
+      'Default language change success',
+      I18NApi.setDefaultLanguage,
+      'key',
+      row.values as LanguageSchema
+    )();
+  };
+
   const uninstallModal = (row: Row<LanguageSchema>) => {
     confirmAction(
       row,
@@ -114,8 +127,15 @@ const LanguagesList = () => {
     );
 
   const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
-    <Button buttonStyle={row.original.default ? 'primary' : 'tertiary'}>
-      <StarIcon className="w-5 stroke-cyan-500" />
+    <Button
+      buttonStyle={row.original.default ? 'primary' : 'tertiary'}
+      onClick={async () => setDefaultLanguage(row)}
+    >
+      <StarIcon
+        className={`${
+          !row.original.default ? ' w-5 text-white stroke-current stroke-gray-300 stroke-2' : 'w-5'
+        }`}
+      />
     </Button>
   );
 
