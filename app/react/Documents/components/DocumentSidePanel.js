@@ -52,12 +52,7 @@ class DocumentSidePanel extends Component {
 
   async componentDidUpdate(prevProps) {
     const sharedId = this.props.doc.get('sharedId');
-    if (
-      this.props.doc.get('_id') &&
-      prevProps.doc.get('_id') !== this.props.doc.get('_id') &&
-      this.props.connectionsChanged &&
-      getDocumentReferences
-    ) {
+    if (this.props.doc.get('_id') && prevProps.doc.get('_id') !== this.props.doc.get('_id')) {
       this.updateRelationships(sharedId);
     }
   }
@@ -81,8 +76,10 @@ class DocumentSidePanel extends Component {
   }
 
   updateRelationships(sharedId) {
-    this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
-    this.props.connectionsChanged(sharedId);
+    if (sharedId && this.props.connectionsChanged && getDocumentReferences) {
+      this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
+      this.props.connectionsChanged(sharedId);
+    }
   }
 
   deleteDocument() {
