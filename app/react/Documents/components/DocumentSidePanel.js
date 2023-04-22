@@ -706,6 +706,7 @@ DocumentSidePanel.defaultProps = {
   raw: false,
   file: {},
   leaveEditMode: () => {},
+  selectedDocument: undefined,
 };
 
 DocumentSidePanel.propTypes = {
@@ -755,7 +756,7 @@ DocumentSidePanel.propTypes = {
     search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
-  selectedDocument: PropTypes.instanceOf(Immutable).isRequired,
+  selectedDocument: PropTypes.instanceOf(Immutable),
 };
 
 const mapStateToProps = (state, ownProps) => {
