@@ -23,16 +23,17 @@ const ConfirmNavigationModal = ({
       <Translate>You have unsaved changes. Do you want to continue?</Translate>
     </Modal.Body>
     <Modal.Footer>
+      <Button buttonStyle="tertiary" onClick={() => setShowModal(false)} className="grow">
+        <Translate>Cancel</Translate>
+      </Button>
       <Button
         onClick={() => {
           setShowModal(false);
           onComfirm();
         }}
+        className="grow"
       >
         <Translate>Discard changes</Translate>
-      </Button>
-      <Button buttonStyle="tertiary" onClick={() => setShowModal(false)}>
-        <Translate>Cancel</Translate>
       </Button>
     </Modal.Footer>
   </Modal>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
+import { isString } from 'lodash';
 import { Button, Modal } from '../UI';
 import { modalSizeType } from './Modal';
 
@@ -11,7 +12,7 @@ type confirmationModalType = {
   onCancelClick?: () => void;
   acceptButton?: string | React.ReactNode;
   cancelButton?: string | React.ReactNode;
-  warningText?: string;
+  warningText?: string | React.ReactNode;
   confirmWord?: string;
 };
 
@@ -28,13 +29,14 @@ const ConfirmationModal = ({
 }: confirmationModalType) => {
   const [confirmed, setConfirmed] = useState(confirmWord === undefined);
 
+  const renderChild = (child: string | React.ReactNode) =>
+    isString(child) ? <Translate>{child}</Translate> : child;
+
   return (
     <Modal size={size}>
       <div className="relative bg-white rounded-lg shadow">
         <Modal.Header className="border-b-0">
-          <h1 className="text-xl font-medium text-gray-900">
-            <Translate>{header}</Translate>
-          </h1>
+          <h1 className="text-xl font-medium text-gray-900">{renderChild(header)}</h1>
           <Modal.CloseButton onClick={onCancelClick} />
         </Modal.Header>
         {warningText && (
@@ -42,12 +44,12 @@ const ConfirmationModal = ({
             className="p-4 mb-4 text-sm text-red-800 border-t border-b border-red-300 top--3 bg-red-50 dark:bg-gray-800 dark:text-red-400"
             role="alert"
           >
-            <Translate>{warningText}</Translate>
+            {renderChild(warningText)}
           </div>
         )}
         <div className="px-6 pb-6" data-testid="modal-body">
           <span className="text-gray-500 p- whitespace-nowrap dark:text-gray-400">
-            <Translate>{body}</Translate>
+            {renderChild(body)}
           </span>
           {confirmWord && (
             <div className="py-4">
@@ -64,11 +66,16 @@ const ConfirmationModal = ({
           )}
         </div>
         <Modal.Footer>
-          <Button buttonStyle="tertiary" onClick={onCancelClick}>
-            <Translate>{cancelButton}</Translate>
+          <Button buttonStyle="tertiary" onClick={onCancelClick} className="grow">
+            {renderChild(cancelButton)}
           </Button>
-          <Button onClick={onAcceptClick} disabled={!confirmed}>
-            <Translate>{acceptButton}</Translate>
+          <Button
+            onClick={onAcceptClick}
+            disabled={!confirmed}
+            buttonStyle={!warningText ? 'primary' : 'danger'}
+            className="grow"
+          >
+            {renderChild(acceptButton)}
           </Button>
         </Modal.Footer>
       </div>

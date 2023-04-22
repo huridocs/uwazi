@@ -28,7 +28,7 @@ const Modal = ({ children, size }: ModalProps) => {
       aria-label="Modal"
     >
       <div className={`relative h-full w-full p-4 md:h-auto ${sizes[size]}`}>
-        <div className="relative rounded-lg bg-white shadow">{children}</div>
+        <div className="relative bg-white rounded-lg shadow">{children}</div>
       </div>
     </div>
   );
@@ -56,7 +56,7 @@ Modal.Body = ({ children }: ModalChildrenProps) => (
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex items-center space-x-2 rounded-b border-gray-200 p-6 border-t">
+  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
     {children}
   </div>
 );
