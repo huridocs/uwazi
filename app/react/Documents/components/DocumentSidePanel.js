@@ -39,8 +39,15 @@ class DocumentSidePanel extends Component {
     this.state = { copyFrom: false, copyFromProps: [], relationshipsExpanded: true };
     this.toggleCopyFrom = this.toggleCopyFrom.bind(this);
     this.onCopyFromSelect = this.onCopyFromSelect.bind(this);
+    this.updateRelationships = this.updateRelationships.bind(this);
     this.deleteDocument = this.deleteDocument.bind(this);
     this.toggleSharing = this.toggleSharing.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.selectedDocument) {
+      this.updateRelationships(this.props.selectedDocument.get('sharedId'));
+    }
   }
 
   async componentDidUpdate(prevProps) {
@@ -51,8 +58,7 @@ class DocumentSidePanel extends Component {
       this.props.connectionsChanged &&
       getDocumentReferences
     ) {
-      this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
-      this.props.connectionsChanged(sharedId);
+      this.updateRelationships(sharedId);
     }
   }
 
@@ -72,6 +78,11 @@ class DocumentSidePanel extends Component {
       }
     }
     return defaultDocumentToC;
+  }
+
+  updateRelationships(sharedId) {
+    this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
+    this.props.connectionsChanged(sharedId);
   }
 
   deleteDocument() {
@@ -474,6 +485,7 @@ class DocumentSidePanel extends Component {
     const { attachments, documents, language, defaultDoc } = jsDoc;
 
     const isEntity = !documents || !documents.length;
+
     const defaultDocumentToC =
       isEntity || !defaultDoc
         ? this.getDefaultDocumentToC(isEntity, documents, language, defaultLanguage)
@@ -746,6 +758,7 @@ DocumentSidePanel.propTypes = {
     search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
+  selectedDocument: PropTypes.instanceOf(Immutable).isRequired,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -761,6 +774,11 @@ const mapStateToProps = (state, ownProps) => {
     .find(l => l.get('default'))
     .get('key');
 
+  const selectedDocument =
+    state.library.ui.get('selectedDocuments').size === 1
+      ? state.library.ui.get('selectedDocuments').get(0)
+      : null;
+
   return {
     references,
     excludeConnectionsTab: Boolean(state.relationships.list.connectionsGroups.length),
@@ -770,6 +788,7 @@ const mapStateToProps = (state, ownProps) => {
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
     currentSidepanelView: state.library.sidepanel.view,
+    selectedDocument,
   };
 };
 
