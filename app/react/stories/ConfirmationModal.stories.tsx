@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
-
 import { Modal } from 'V2/Components/UI/Modal';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
@@ -9,6 +9,11 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 const ConfirmationModalStory = {
   title: 'Components/Modal',
   component: Modal,
+  parameters: {
+    actions: {
+      handles: ['keyup'],
+    },
+  },
 };
 
 const Template: ComponentStory<typeof ConfirmationModal> = args => (
@@ -20,11 +25,11 @@ const Template: ComponentStory<typeof ConfirmationModal> = args => (
           body={args.body}
           acceptButton={args.acceptButton}
           cancelButton={args.cancelButton}
-          onAcceptClick={args.onAcceptClick}
-          onCancelClick={args.onCancelClick}
           warningText={args.warningText}
           confirmWord={args.confirmWord}
           size="md"
+          onAcceptClick={args.onAcceptClick}
+          onCancelClick={args.onCancelClick}
         />
       </div>
     </div>
@@ -40,6 +45,8 @@ Confirmation.args = {
   cancelButton: 'No, cancel',
   warningText: 'Other users will be affected by this action',
   confirmWord: 'CONFIRM',
+  onAcceptClick: action('accepted'),
+  onCancelClick: action('canceled'),
 };
 
 export { Confirmation };
