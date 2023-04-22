@@ -2334,10 +2334,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cfaester/enzyme-adapter-react-18@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@cfaester/enzyme-adapter-react-18/-/enzyme-adapter-react-18-0.6.0.tgz#38994075edc1a4d1cd12fc6818d8b7d74f6b765f"
-  integrity sha512-68pqLvXsH0OVr6vWYvjTybEAM4piLqpeIYR5wuPnFzjPGKy7oZdIjJAMwMoBCvvio1zMjyzBzj5dCbg4O2JQnA==
+"@cfaester/enzyme-adapter-react-18@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@cfaester/enzyme-adapter-react-18/-/enzyme-adapter-react-18-0.7.0.tgz#92d81903855ed542ab54d2241a787c1b95883d0a"
+  integrity sha512-24rdgq6ncwmuyHizvKpdPUSczx5PjIhSr+LfXH/q5/Y28WbNZB6iGIqQ2iSiXp41qs+lutRIQQgwRJIf/a1N9w==
   dependencies:
     enzyme-shallow-equal "^1.0.0"
     react-is "^18.0.0"
@@ -10219,21 +10219,13 @@ envinfo@^7.7.3:
   resolved "https://registry.yarnpkg.com/envinfo/-/envinfo-7.8.1.tgz#06377e3e5f4d379fea7ac592d5ad8927e0c4d475"
   integrity sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw==
 
-enzyme-shallow-equal@^1.0.0:
+enzyme-shallow-equal@^1.0.0, enzyme-shallow-equal@^1.0.1:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/enzyme-shallow-equal/-/enzyme-shallow-equal-1.0.5.tgz#5528a897a6ad2bdc417c7221a7db682cd01711ba"
   integrity sha512-i6cwm7hN630JXenxxJFBKzgLC3hMTafFQXflvzHgPmDhOBhxUWDe8AeRv1qp2/uWJ2Y8z5yLWMzmAfkTOiOCZg==
   dependencies:
     has "^1.0.3"
     object-is "^1.1.5"
-
-enzyme-shallow-equal@^1.0.1:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/enzyme-shallow-equal/-/enzyme-shallow-equal-1.0.4.tgz"
-  integrity sha512-MttIwB8kKxypwHvRynuC3ahyNc+cFbR8mjVIltnmzQ0uKGqmsfO4bfBuLxb0beLNPhjblUEYvEbsg+VSygvF1Q==
-  dependencies:
-    has "^1.0.3"
-    object-is "^1.1.2"
 
 enzyme-to-json@^3.6.2:
   version "3.6.2"
@@ -16696,7 +16688,7 @@ object-is@^1.0.1, object-is@^1.1.5:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
 
-object-is@^1.0.2, object-is@^1.1.2:
+object-is@^1.0.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/object-is/-/object-is-1.1.2.tgz"
   integrity sha512-5lHCz+0uufF6wZ7CRFWJN3hp8Jqblpgve06U5CMQ3f//6iDjPr2PEo9MWCjEssDsa+UZEL4PkFpr+BMop6aKzQ==
