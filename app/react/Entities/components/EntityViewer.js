@@ -27,6 +27,7 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
+import { V2NewRelationshipsCrud } from './V2NewRelationshipsCrud';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
@@ -193,7 +194,9 @@ class EntityViewer extends Component {
               <ConnectionsList deleteConnection={this.deleteConnection} searchCentered />
             </TabContent>
             {this.props.newRelationshipsEnabled && (
-              <TabContent for="newrelationships">New relationships tab active</TabContent>
+              <TabContent for="newrelationships">
+                <V2NewRelationshipsCrud />
+              </TabContent>
             )}
           </Tabs>
         </main>
