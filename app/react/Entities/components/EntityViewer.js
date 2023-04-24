@@ -192,6 +192,9 @@ class EntityViewer extends Component {
             <TabContent for="relationships">
               <ConnectionsList deleteConnection={this.deleteConnection} searchCentered />
             </TabContent>
+            {this.props.newRelationshipsEnabled && (
+              <TabContent for="newrelationships">New relationships tab active</TabContent>
+            )}
           </Tabs>
         </main>
 
@@ -290,6 +293,25 @@ class EntityViewer extends Component {
                     </I18NLink>
                   </TabLink>
                 </li>
+                {this.props.newRelationshipsEnabled && (
+                  <li>
+                    <TabLink
+                      to="newrelationships"
+                      role="button"
+                      tabIndex="0"
+                      aria-label="New Relationships"
+                      component="div"
+                    >
+                      <I18NLink
+                        className={this.linkClassNames(['newrelationships'])}
+                        to={`/entity/${rawEntity.sharedId}/newrelationships`}
+                      >
+                        <Icon icon="exchange-alt" />
+                        <span className="tab-link-tooltip">New Relationships</span>
+                      </I18NLink>
+                    </TabLink>
+                  </li>
+                )}
               </ul>
             </Tabs>
           </div>
@@ -353,6 +375,8 @@ EntityViewer.defaultProps = {
   hasPageView: false,
   user: Immutable.fromJS({}),
   locale: 'en',
+  // v2
+  newRelationshipsEnabled: false,
 };
 
 EntityViewer.propTypes = {
@@ -377,6 +401,8 @@ EntityViewer.propTypes = {
     confirm: PropTypes.func,
   }).isRequired,
   navigate: PropTypes.func,
+  // v2
+  newRelationshipsEnabled: PropTypes.bool,
 };
 
 const selectRelationTypes = createSelector(
@@ -403,6 +429,8 @@ const mapStateToProps = state => {
     locale: state.locale,
     // Is this used at all?
     library: state.library,
+    // v2
+    newRelationshipsEnabled: state.settings.collection.get('features').get('newRelationships'),
   };
 };
 
