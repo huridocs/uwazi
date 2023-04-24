@@ -37,7 +37,7 @@ async function insertSystemKeys(db, newKeys) {
 }
 
 export default {
-  delta: 131,
+  delta: 132,
 
   reindex: false,
 

@@ -17,6 +17,7 @@ interface InputFieldProps {
   clearFieldAction?: () => any;
   className?: string;
 }
+
 const InputField = React.forwardRef(
   (
     {

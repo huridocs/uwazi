@@ -15,9 +15,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
   const { error } = getFieldState(data.cell.value);
   const hasErrors = Boolean(error);
   const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
-  const something = register(data.cell.value, { required: true });
-  console.log(something);
-  const { onChange, onBlur, name, ref } = something;
+  const { onChange, onBlur, name, ref } = register(data.cell.value, { required: true });
 
   return (
     <div>
