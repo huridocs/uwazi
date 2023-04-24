@@ -148,6 +148,7 @@ const EditTranslations = () => {
     handleSubmit,
     setValue,
     getFieldState,
+    reset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { isDirty, errors, isSubmitting },
   } = useForm({
@@ -155,17 +156,17 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  // const blocker = useBlocker(isDirty);
+  const blocker = useBlocker(isDirty && !isSubmitting);
 
-  // useMemo(() => {
-  //   if (blocker.state === 'blocked') {
-  //     setModal({
-  //       size: 'md',
-  //       children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
-  //     });
-  //     setShowModal(true);
-  //   }
-  // }, [blocker.proceed, blocker.state, setModal, setShowModal]);
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      setModal({
+        size: 'md',
+        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
+      });
+      setShowModal(true);
+    }
+  }, [blocker, setModal, setShowModal]);
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
 
@@ -174,6 +175,7 @@ const EditTranslations = () => {
 
     try {
       submit({ data: JSON.stringify(values) }, { method: 'post' });
+      reset({}, { keepValues: true });
       setNotifications({
         type: 'sucess',
         text: <Translate>Translations saved</Translate>,
