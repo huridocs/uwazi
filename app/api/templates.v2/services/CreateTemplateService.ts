@@ -143,13 +143,9 @@ export class CreateTemplateService {
     await this.entitiesDataSource.markMetadataAsChanged([{ template: templateId, properties }]);
   }
 
-  static readTemplateInput(template: TemplateInput) {
-    return TemplateInputMappers.toApp(template);
-  }
-
   async validateUpdateActions(_oldTemplate: TemplateInput, _newTemplate: TemplateInput) {
-    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
-    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
+    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
 
     const updatedProperties = oldTemplate
       .selectUpdatedProperties(newTemplate)
@@ -172,8 +168,8 @@ export class CreateTemplateService {
     _oldTemplate: TemplateInput,
     _newTemplate: TemplateInput
   ) {
-    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
-    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
+    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
 
     const newRelationshipNames = oldTemplate
       .selectNewProperties(newTemplate)
@@ -194,6 +190,6 @@ export class CreateTemplateService {
   }
 
   async countQueriesUsingTemplate(templateId: string): Promise<number> {
-    return this.templatesDataSource.countQueriesUsing(templateId);
+    return this.templatesDataSource.countQueriesUsingTemplate(templateId);
   }
 }

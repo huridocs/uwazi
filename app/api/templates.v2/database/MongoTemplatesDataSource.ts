@@ -115,28 +115,7 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
-  async getAllTemplates(forceRefresh: boolean = false): Promise<Template[]> {
-    if (!this._allTemplates || forceRefresh) {
-      const rawTemplates = await this.getCollection()
-        .find({}, { session: this.getSession() })
-        .toArray();
-      this._allTemplates = rawTemplates.map(t => TemplateMappers.toApp(t));
-    }
-    return this._allTemplates;
-  }
-
-  async getTemplateIdIndex(forceRefresh: boolean = false): Promise<Record<string, Template>> {
-    if (!this._allTemplatesById || forceRefresh) {
-      this._allTemplatesById = objectIndex(
-        await this.getAllTemplates(forceRefresh),
-        t => t.id,
-        t => t
-      );
-    }
-    return this._allTemplatesById;
-  }
-
-  async countQueriesUsing(templateId: string): Promise<number> {
+  async countQueriesUsingTemplate(templateId: string): Promise<number> {
     const relprops = this.getAllRelationshipProperties();
     let count = 0;
     await relprops.forEach(p => {
