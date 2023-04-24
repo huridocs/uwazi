@@ -140,7 +140,7 @@ export class CreateTemplateService {
   }
 
   async markEntityMetadataAsObsolete(templateId: string, properties: string[]) {
-    await this.entitiesDataSource.markMetadataAsChangedByTemplate(templateId, properties);
+    await this.entitiesDataSource.markMetadataAsChanged([{ template: templateId, properties }]);
   }
 
   static readTemplateInput(template: TemplateInput) {

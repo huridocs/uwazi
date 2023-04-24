@@ -100,26 +100,23 @@ export class MongoEntitiesDataSource
     return countInExistence === sharedIds.length * languages.length;
   }
 
-  async markMetadataAsChanged(propData: { sharedId: string; property: string }[]) {
+  async markMetadataAsChanged(
+    propData: Parameters<EntitiesDataSource['markMetadataAsChanged']>[0]
+  ) {
     const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
+
+      const filter =
+        'template' in data
+          ? { template: MongoIdHandler.mapToDb(data.template) }
+          : { sharedId: data.sharedId };
+      const update = 'properties' in data ? { $each: data.properties } : data.property;
+
       // eslint-disable-next-line no-await-in-loop
-      await stream.updateMany(
-        { sharedId: data.sharedId },
-        { $addToSet: { obsoleteMetadata: data.property } }
-      );
+      await stream.updateMany(filter, { $addToSet: { obsoleteMetadata: update } });
     }
     await stream.flush();
-  }
-
-  async markMetadataAsChangedByTemplate(_templateId: string, properties: string[]): Promise<void> {
-    const templateId = MongoIdHandler.mapToDb(_templateId);
-    const collection = this.getCollection();
-    await collection.updateMany(
-      { template: templateId },
-      { $addToSet: { obsoleteMetadata: { $each: properties } } }
-    );
   }
 
   getByIds(sharedIds: string[], language?: string) {
