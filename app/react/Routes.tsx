@@ -46,6 +46,7 @@ import {
 import {
   EditTranslations,
   editTranslationsLoader,
+  editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
@@ -126,6 +127,7 @@ const getRoutesLayout = (
           path="edit/:context"
           element={adminsOnlyRoute(<EditTranslations />)}
           loader={editTranslationsLoader(headers)}
+          action={editTranslationsAction(headers)}
         />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />

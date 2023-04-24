@@ -6,6 +6,8 @@ import {
   LoaderFunction,
   unstable_useBlocker as useBlocker,
   Link,
+  useSubmit,
+  ActionFunction,
 } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
@@ -20,14 +22,6 @@ import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translation
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
-
-const editTranslationsLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }: { params: Params }) => {
-    const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
-    return { translations, settings };
-  };
 
 type formDataType = {
   _id?: string;
@@ -138,23 +132,22 @@ const EditTranslations = () => {
     settings: Settings;
   };
 
-  const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
   const setModal = useSetRecoilState(modalAtom);
   const setShowModal = useSetRecoilState(showModalAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+  const submit = useSubmit();
 
-  const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
+  const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
-  const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
+  const formData = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
   const {
     register,
     handleSubmit,
     setValue,
     getFieldState,
-    reset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { isDirty, errors, isSubmitting },
   } = useForm({
@@ -162,38 +155,35 @@ const EditTranslations = () => {
     mode: 'onSubmit',
   });
 
-  const blocker = useBlocker(isDirty);
+  // const blocker = useBlocker(isDirty);
 
-  useMemo(() => {
-    if (blocker.state === 'blocked') {
-      setModal({
-        size: 'md',
-        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
-      });
-      setShowModal(true);
-    }
-  }, [blocker.proceed, blocker.state, setModal, setShowModal]);
+  // useMemo(() => {
+  //   if (blocker.state === 'blocked') {
+  //     setModal({
+  //       size: 'md',
+  //       children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
+  //     });
+  //     setShowModal(true);
+  //   }
+  // }, [blocker.proceed, blocker.state, setModal, setShowModal]);
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
 
   const submitFunction = async (data: { formData: formDataType }) => {
     const values = prepareValuesToSave(data.formData, translations);
-    if (values && contextId) {
-      try {
-        const response = await translationsAPI.post(values, contextId);
-        setTranslationsState(response);
-        setNotifications({
-          type: 'sucess',
-          text: <Translate>Translations saved</Translate>,
-        });
-        reset({}, { keepValues: true });
-      } catch (e) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
-        });
-      }
+
+    try {
+      submit({ data: JSON.stringify(values) }, { method: 'post' });
+      setNotifications({
+        type: 'sucess',
+        text: <Translate>Translations saved</Translate>,
+      });
+    } catch (e) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: e.json.error,
+      });
     }
   };
 
@@ -201,8 +191,7 @@ const EditTranslations = () => {
     const file = event.target.files?.[0];
     if (file) {
       try {
-        const response = await translationsAPI.importTranslations(file, 'System');
-        setTranslationsState(response);
+        await translationsAPI.importTranslations(file, 'System');
         setNotifications({
           type: 'sucess',
           text: <Translate>Translations imported.</Translate>,
@@ -309,4 +298,27 @@ const EditTranslations = () => {
   );
 };
 
-export { EditTranslations, editTranslationsLoader };
+const editTranslationsLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params }: { params: Params }) => {
+    const translations = await translationsAPI.get(headers, params);
+    const settings = await settingsAPI.get(headers);
+    return { translations, settings };
+  };
+
+const editTranslationsAction =
+  (headers?: IncomingHttpHeaders): ActionFunction =>
+  async ({ params, request }) => {
+    const formData = await request.formData();
+    const { context } = params;
+    const data = JSON.parse(formData.get('data'));
+
+    if (data && context) {
+      const response = await translationsAPI.post(data, context);
+      return response;
+    }
+
+    return null;
+  };
+
+export { EditTranslations, editTranslationsLoader, editTranslationsAction };
