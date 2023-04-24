@@ -23,14 +23,14 @@ import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
 
-type formDataType = {
+type formValuesType = {
   _id?: string;
   locale?: string;
   values: { [index: number]: { [key: string]: string } };
 }[];
 
 const prepareValuesToSave = (
-  data: formDataType,
+  data: formValuesType,
   currentTranslations: ClientTranslationSchema[]
 ): ClientTranslationSchema[] =>
   data.map((language, index) => {
@@ -47,8 +47,8 @@ const prepareValuesToSave = (
     };
   });
 
-const composeTableValues = (formData: formDataType, termIndex: number) =>
-  formData.map((language, languageIndex) => {
+const composeTableValues = (formValues: formValuesType, termIndex: number) =>
+  formValues.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
@@ -56,9 +56,9 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
       language: languaLabel,
       translationStatus: {
         languageKey: language.locale,
-        status: formData[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
+        status: formValues[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
       },
-      fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
+      fieldKey: `formValues.${languageIndex}.values.${termIndex}.value`,
     };
   });
 
@@ -115,10 +115,10 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
 const filterTableValues = (values: any[]) =>
   values.filter(value => value.translationStatus.status !== 'translated');
 
-const calculateTableData = (terms: string[], formData: formDataType, hideTranslated: boolean) =>
+const calculateTableData = (terms: string[], formValues: formValuesType, hideTranslated: boolean) =>
   terms
     .map((term, index) => {
-      let values = composeTableValues(formData, index);
+      let values = composeTableValues(formValues, index);
       if (hideTranslated) values = filterTableValues(values);
       if (values.length === 1 && hideTranslated) return undefined;
       return { [term]: values };
@@ -141,7 +141,7 @@ const EditTranslations = () => {
 
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
-  const formData = prepareFormValues(translations, defaultLanguage?.key || 'en');
+  const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -152,7 +152,7 @@ const EditTranslations = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formState: { isDirty, errors, isSubmitting },
   } = useForm({
-    defaultValues: { formData },
+    defaultValues: { formValues },
     mode: 'onSubmit',
   });
 
@@ -168,18 +168,20 @@ const EditTranslations = () => {
     }
   }, [blocker, setModal, setShowModal]);
 
-  const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
+  const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
 
-  const submitFunction = async (data: { formData: formDataType }) => {
-    const values = prepareValuesToSave(data.formData, translations);
+  const submitFunction = async (data: { formValues: formValuesType }) => {
+    const formData = new FormData();
+    const values = prepareValuesToSave(data.formValues, translations);
+    formData.append('values', JSON.stringify(values));
 
     try {
-      submit({ data: JSON.stringify(values) }, { method: 'post' });
-      reset({}, { keepValues: true });
+      submit(formData, { method: 'post' });
       setNotifications({
         type: 'sucess',
         text: <Translate>Translations saved</Translate>,
       });
+      reset({}, { keepValues: true });
     } catch (e) {
       setNotifications({
         type: 'error',
@@ -313,7 +315,7 @@ const editTranslationsAction =
   async ({ params, request }) => {
     const formData = await request.formData();
     const { context } = params;
-    const data = JSON.parse(formData.get('data'));
+    const data = JSON.parse(formData.get('values'));
 
     if (data && context) {
       const response = await translationsAPI.post(data, context);
