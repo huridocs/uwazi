@@ -66,7 +66,7 @@ export class MongoTemplatesDataSource
         .find({}, { session: this.getSession() })
         .toArray();
       const properties = templates
-        .map(t => t.properties.map(p => TemplateMappers.propertyDBOToApp(p, t._id)) || [])
+        .map(t => t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
@@ -95,7 +95,7 @@ export class MongoTemplatesDataSource
     );
 
     return new MongoResultSet(cursor, template =>
-      TemplateMappers.propertyDBOToApp(template.properties, template._id)
+      TemplateMappers.propertyToApp(template.properties, template._id)
     );
   }
 
@@ -120,7 +120,7 @@ export class MongoTemplatesDataSource
       const rawTemplates = await this.getCollection()
         .find({}, { session: this.getSession() })
         .toArray();
-      this._allTemplates = rawTemplates.map(t => TemplateMappers.DBOToApp(t));
+      this._allTemplates = rawTemplates.map(t => TemplateMappers.toApp(t));
     }
     return this._allTemplates;
   }

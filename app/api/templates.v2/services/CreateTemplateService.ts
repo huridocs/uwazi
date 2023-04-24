@@ -6,7 +6,7 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
-import { BuildQuery, TemplateInput, TemplateMappers } from '../database/TemplateMappers';
+import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 
 interface MatchQuery {
@@ -131,7 +131,7 @@ export class CreateTemplateService {
   }
 
   async createRelationshipProperty(property: RelationshipPropertyData) {
-    const query = BuildQuery.build(property.query);
+    const query = TemplateInputMappers.queryToApp(property.query);
     await this.validateQuery(query, property.denormalizedProperty);
     return {
       ...property,
@@ -144,7 +144,7 @@ export class CreateTemplateService {
   }
 
   static readTemplateInput(template: TemplateInput) {
-    return TemplateMappers.ApiToApp(template);
+    return TemplateInputMappers.toApp(template);
   }
 
   async validateUpdateActions(_oldTemplate: TemplateInput, _newTemplate: TemplateInput) {
