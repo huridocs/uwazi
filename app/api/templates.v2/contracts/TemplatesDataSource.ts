@@ -8,5 +8,4 @@ export interface TemplatesDataSource {
   getAllProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
-  countQueriesUsingTemplate(templateId: string): Promise<number>;
 }

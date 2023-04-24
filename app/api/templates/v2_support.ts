@@ -62,9 +62,9 @@ const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSche
   }
 
   const createTemplateService = CreateTemplateService();
-  const count = await createTemplateService.countQueriesUsingTemplate(templateId?.toString() || '');
+  const isUsed = await createTemplateService.templateIsUsedInQueries(templateId?.toString() || '');
 
-  if (count > 0) {
+  if (isUsed) {
     throw new Error('The template is still used in a relationship property query.');
   }
 };

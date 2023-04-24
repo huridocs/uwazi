@@ -115,20 +115,6 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
-  async countQueriesUsingTemplate(templateId: string): Promise<number> {
-    const relprops = this.getAllRelationshipProperties();
-    let count = 0;
-    await relprops.forEach(p => {
-      const templatesInQuery = p.query
-        .map(t => t.getTemplates())
-        .flat()
-        .map(r => r.templates)
-        .flat();
-      if (templatesInQuery.includes(templateId)) count += 1;
-    });
-    return count;
-  }
-
   async countQueriesUsingRelType(relTypeId: string): Promise<number> {
     const relprops = this.getAllRelationshipProperties();
     let count = 0;

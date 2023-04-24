@@ -189,7 +189,8 @@ export class CreateTemplateService {
     );
   }
 
-  async countQueriesUsingTemplate(templateId: string): Promise<number> {
-    return this.templatesDataSource.countQueriesUsingTemplate(templateId);
+  async templateIsUsedInQueries(templateId: string) {
+    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    return relProps.some(property => property.queryUsesTemplate(templateId));
   }
 }

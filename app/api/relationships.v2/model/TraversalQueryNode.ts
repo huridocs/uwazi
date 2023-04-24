@@ -208,6 +208,10 @@ export class TraversalQueryNode extends QueryNode {
     return records;
   }
 
+  usesTemplate(templateId: string): boolean {
+    return this.matches.some(match => match.usesTemplate(templateId));
+  }
+
   getRelationTypes(
     path: number[] = [],
     _records: TemplateRecords | undefined = undefined

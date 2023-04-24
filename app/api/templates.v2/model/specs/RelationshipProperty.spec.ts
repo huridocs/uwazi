@@ -15,3 +15,43 @@ describe('buildQueryRootedInTemplate()', () => {
     );
   });
 });
+
+describe('queryUsesTemplate', () => {
+  it('should return true if the query is using the template', () => {
+    const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode(
+          {
+            templates: ['template2'],
+          },
+          [
+            new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+            new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+          ]
+        ),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode({ templates: ['template3'] })]),
+    ]);
+
+    expect(property.queryUsesTemplate('template2')).toBe(true);
+  });
+
+  it('should return false if the query is not using the template', () => {
+    const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
+      new TraversalQueryNode('out', {}, [
+        new MatchQueryNode(
+          {
+            templates: ['template3'],
+          },
+          [
+            new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+            new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+          ]
+        ),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.queryUsesTemplate('template2')).toBe(false);
+  });
+});
