@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["cypress", "cypress-plugin-snapshots"]
   },
-  "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx"]
+  "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx"],
+  "exclude": []
 }
