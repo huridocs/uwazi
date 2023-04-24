@@ -114,18 +114,4 @@ export class MongoTemplatesDataSource
     );
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
-
-  async countQueriesUsingRelType(relTypeId: string): Promise<number> {
-    const relprops = this.getAllRelationshipProperties();
-    let count = 0;
-    await relprops.forEach(p => {
-      const relTypesInQuery = p.query
-        .map(t => t.getRelationTypes())
-        .flat()
-        .map(r => r.templates)
-        .flat();
-      if (relTypesInQuery.includes(relTypeId)) count += 1;
-    });
-    return count;
-  }
 }

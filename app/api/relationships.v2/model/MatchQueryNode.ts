@@ -179,6 +179,10 @@ export class MatchQueryNode extends QueryNode {
     );
   }
 
+  usesType(typeId: string): boolean {
+    return this.traversals.some(traversal => traversal.usesType(typeId));
+  }
+
   getRelationTypes(
     path: number[] = [],
     _records: TemplateRecords | undefined = undefined

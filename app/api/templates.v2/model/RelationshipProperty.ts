@@ -53,6 +53,10 @@ class RelationshipProperty extends Property {
   queryUsesTemplate(templateId: string) {
     return this.query.some(traversal => traversal.usesTemplate(templateId));
   }
+
+  queryUsesRelationType(typeId: string): boolean {
+    return this.query.some(traversal => traversal.usesType(typeId));
+  }
 }
 
 export { RelationshipProperty };

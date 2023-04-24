@@ -193,4 +193,9 @@ export class CreateTemplateService {
     const relProps = this.templatesDataSource.getAllRelationshipProperties();
     return relProps.some(property => property.queryUsesTemplate(templateId));
   }
+
+  async relationTypeIsUsedInQueries(typeId: string) {
+    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    return relProps.some(property => property.queryUsesRelationType(typeId));
+  }
 }
