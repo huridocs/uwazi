@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import model from './model';
 
 function groupByHubs(references) {
@@ -46,7 +47,7 @@ async function getEntityReferencesByRelationshipTypes(sharedId, relationTypes) {
       {
         $match: {
           'rightSide.template': {
-            $in: relationTypes,
+            $in: relationTypes.map(t => new ObjectId(t)),
           },
         },
       },

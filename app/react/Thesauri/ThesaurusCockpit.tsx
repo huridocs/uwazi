@@ -11,6 +11,7 @@ import TemplatesAPI from 'app/Templates/TemplatesAPI';
 import { Notice } from 'app/Thesauri/Notice';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
+import { withRouter } from 'app/componentWrappers';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -381,4 +382,4 @@ export default connect(mapStateToProps, {
   updateCockpitData,
   startTraining,
   toggleEnableClassification,
-})(ThesaurusCockpitBase);
+})(withRouter(ThesaurusCockpitBase));

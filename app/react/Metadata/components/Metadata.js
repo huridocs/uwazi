@@ -8,6 +8,7 @@ import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeoloca
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
+import { ImageViewer } from './ImageViewer';
 
 const renderRelationshipLinks = (linksProp, compact) => {
   const formattedLinkValues = Array.isArray(linksProp.value) ? linksProp.value : [linksProp.value];
@@ -37,7 +38,7 @@ export const showByType = (prop, compact, templateId) => {
       break;
     case 'image':
       result = prop.value && (
-        <img
+        <ImageViewer
           key={prop.value}
           className={`multimedia-img ${prop.style}`}
           src={prop.value}

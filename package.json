@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.112.0-rc2",
+  "version": "1.113.0-rc4",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -89,7 +89,7 @@
     "@types/react-dom": "^18.0.9"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.310.0",
+    "@aws-sdk/client-s3": "3.315.0",
     "@aws-sdk/node-http-handler": "^3.306.0",
     "@elastic/elasticsearch": "7.17",
     "@fast-csv/format": "^4.3.5",
@@ -259,7 +259,7 @@
     "@babel/preset-typescript": "7.21.4",
     "@babel/register": "^7.21.0",
     "@babel/traverse": "^7.21.4",
-    "@cfaester/enzyme-adapter-react-18": "^0.6.0",
+    "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
     "@cypress/webpack-dev-server": "^3.4.0",
     "@cypress/webpack-preprocessor": "^5.17.0",
@@ -322,11 +322,11 @@
     "@typescript-eslint/eslint-plugin": "5.57.0",
     "@typescript-eslint/parser": "5.58.0",
     "assets-webpack-plugin": "7.1.1",
-    "babel-jest": "^29.4.1",
+    "babel-jest": "^29.5.0",
     "babel-loader": "9.1.2",
     "babel-plugin-module-resolver": "5.0.0",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
-    "canvas": "^2.11.0",
+    "canvas": "^2.11.2",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "^6.7.3",
@@ -362,7 +362,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nodemon": "^2.0.22",
     "plop": "^3.0.6",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.22",
     "prettier": "2.7.1",
     "puppeteer": "^13.5.2",
     "react-dnd-test-backend": "15.1.1",
@@ -377,7 +377,7 @@
     "tailwindcss": "^3.2.7",
     "terser-webpack-plugin": "^5.3.7",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.1.2",
+    "tsconfig-paths": "^4.2.0",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.76.2",
     "webpack-bundle-analyzer": "^4.8.0",
