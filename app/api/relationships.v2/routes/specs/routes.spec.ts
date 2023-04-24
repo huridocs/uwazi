@@ -54,6 +54,38 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+describe('GET relationships', () => {
+  it('should should throw a 404 if the feature toggle is not active', async () => {
+    await testingDB.mongodb
+      ?.collection('settings')
+      .updateOne({ _id: factory.id('settings') }, { $set: { features: {} } });
+
+    const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = undefined;
+      next();
+    });
+
+    await request(app).get(URL).expect(404);
+  });
+
+  it('should return the relationships', async () => {
+    const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = undefined;
+      next();
+    });
+
+    const response = await request(app).get(URL).expect(200);
+    expect(response.body).toEqual([
+      {
+        _id: factory.id('relationship1').toString(),
+        from: { entity: 'entity1' },
+        to: { entity: 'entity2' },
+        type: factory.id('type2').toString(),
+      },
+    ]);
+  });
+});
+
 describe('POST relationships', () => {
   it('should should throw a 404 if the feature toggle is not active', async () => {
     await testingDB.mongodb

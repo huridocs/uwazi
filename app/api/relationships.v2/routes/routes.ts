@@ -23,6 +23,10 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 };
 
 export default (app: Application) => {
+  app.get('/api/v2/relationships', featureRequired, async () => {
+    throw new Error('Not implemented');
+  });
+
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {
     const relationships = validateCreateRelationship(req.body);
     const service = CreateRelationshipService(req);

@@ -71,6 +71,15 @@ class Relationship {
     this.to = to;
     this.type = type;
   }
+
+  static getSharedIds(relationships: Relationship[]): Set<string> {
+    const entities = new Set<string>();
+    relationships.forEach(relationship => {
+      entities.add(relationship.from.entity);
+      entities.add(relationship.to.entity);
+    });
+    return entities;
+  }
 }
 
 export { Relationship, EntityPointer, TextReferencePointer, Selection };
