@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { Row } from 'react-table';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { StarIcon } from '@heroicons/react/20/solid';
@@ -14,7 +14,7 @@ import { InstallLanguagesModal } from 'app/V2/Components/Languages/InstallLangua
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-import { notificationAtom } from 'V2/atoms';
+import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { LanguageSchema } from 'shared/types/commonTypes';
 
 const languagesListLoader =
@@ -29,7 +29,7 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useRecoilValue(settingsAtom);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const { requestAction } = useApiCaller();
 
   const availableLanguages = useLoaderData() as LanguageSchema[];
   const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
@@ -48,7 +48,7 @@ const LanguagesList = () => {
   const handleAction =
     (
       successMessage: string,
-      action: { (requestParams: RequestParams): Promise<void> },
+      action: { (requestParams: RequestParams): Promise<Response> },
       key: string,
       currentLanguage?: LanguageSchema
     ) =>
@@ -56,19 +56,11 @@ const LanguagesList = () => {
       setShowModal(false);
       const selectedLanguage = currentLanguage || actionableLanguage;
       if (selectedLanguage) {
-        try {
-          await action(new RequestParams({ [key]: selectedLanguage.key }));
-          setNotifications({
-            type: 'success',
-            text: <Translate>{successMessage}</Translate>,
-          });
-        } catch (e) {
-          setNotifications({
-            type: 'error',
-            text: <Translate>An error occurred</Translate>,
-            details: e.json?.error ? e.json.error : '',
-          });
-        }
+        await requestAction(
+          action,
+          new RequestParams({ [key]: selectedLanguage.key }),
+          successMessage
+        );
       }
     };
 
@@ -158,7 +150,6 @@ const LanguagesList = () => {
       Header: 'Language',
       accessor: 'label',
       Cell: languageLabel,
-      disableSortBy: true,
       className: 'w-9/12',
     },
     {
@@ -198,6 +189,7 @@ const LanguagesList = () => {
               columns={columns}
               data={languages}
               title={<Translate>Active languages</Translate>}
+              initialState={{ sortBy: [{ id: 'label' }] }}
             />
           </div>
         </div>
