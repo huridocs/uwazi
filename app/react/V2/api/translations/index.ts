@@ -25,10 +25,14 @@ const get = async (
 };
 
 const post = async (updatedTranslations: ClientTranslationSchema[], contextId: string) => {
-  const translations = await Promise.all(
-    updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
-  );
-  return filterTranslationsByContext(translations, contextId);
+  try {
+    const translations = await Promise.all(
+      updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
+    );
+    return filterTranslationsByContext(translations, contextId);
+  } catch (e) {
+    return e;
+  }
 };
 
 const importTranslations = async (

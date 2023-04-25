@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Params,
   useLoaderData,
@@ -8,6 +8,7 @@ import {
   Link,
   useSubmit,
   ActionFunction,
+  useActionData,
 } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
@@ -22,6 +23,23 @@ import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translation
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
+
+const editTranslationsLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params }: { params: Params }) => {
+    const translations = await translationsAPI.get(headers, params);
+    const settings = await settingsAPI.get(headers);
+    return { translations, settings };
+  };
+
+const editTranslationsAction =
+  (): ActionFunction =>
+  async ({ params, request }) => {
+    const formData = await request.formData();
+    const { context } = params;
+    const data = JSON.parse(formData.get('values'));
+    return translationsAPI.post(data, context);
+  };
 
 type formValuesType = {
   _id?: string;
@@ -138,10 +156,28 @@ const EditTranslations = () => {
   const setShowModal = useSetRecoilState(showModalAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const submit = useSubmit();
+  const actionData = useActionData();
 
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+
+  useEffect(() => {
+    if (actionData?.json) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: actionData.json.error,
+      });
+    }
+
+    if (Array.isArray(actionData)) {
+      setNotifications({
+        type: 'sucess',
+        text: <Translate>Translations saved</Translate>,
+      });
+    }
+  }, [actionData, setNotifications]);
 
   const {
     register,
@@ -174,21 +210,9 @@ const EditTranslations = () => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
     formData.append('values', JSON.stringify(values));
+    submit(formData, { method: 'post' });
 
-    try {
-      submit(formData, { method: 'post' });
-      setNotifications({
-        type: 'sucess',
-        text: <Translate>Translations saved</Translate>,
-      });
-      reset({}, { keepValues: true });
-    } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: e.json.error,
-      });
-    }
+    reset({}, { keepValues: true });
   };
 
   const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -301,28 +325,5 @@ const EditTranslations = () => {
     </div>
   );
 };
-
-const editTranslationsLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }: { params: Params }) => {
-    const translations = await translationsAPI.get(headers, params);
-    const settings = await settingsAPI.get(headers);
-    return { translations, settings };
-  };
-
-const editTranslationsAction =
-  (headers?: IncomingHttpHeaders): ActionFunction =>
-  async ({ params, request }) => {
-    const formData = await request.formData();
-    const { context } = params;
-    const data = JSON.parse(formData.get('values'));
-
-    if (data && context) {
-      const response = await translationsAPI.post(data, context);
-      return response;
-    }
-
-    return null;
-  };
 
 export { EditTranslations, editTranslationsLoader, editTranslationsAction };

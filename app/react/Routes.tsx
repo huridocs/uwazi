@@ -127,7 +127,7 @@ const getRoutesLayout = (
           path="edit/:context"
           element={adminsOnlyRoute(<EditTranslations />)}
           loader={editTranslationsLoader(headers)}
-          action={editTranslationsAction(headers)}
+          action={editTranslationsAction()}
         />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
