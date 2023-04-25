@@ -195,7 +195,12 @@ export default {
   async get(query: { _id?: string; locale?: string } = {}, selector = {}) {
     const alreadyMigrated = await migrateTranslationsToV2();
     if (alreadyMigrated) {
-      return getTranslationsV2(query.locale);
+      let language = query.locale;
+      if (query._id) {
+        const [oldLanguage] = await model.get({ _id: query._id }, { locale: 1 });
+        language = oldLanguage.locale;
+      }
+      return getTranslationsV2(language);
     }
     const translations = await model.get(query, selector);
     return translations.map(
