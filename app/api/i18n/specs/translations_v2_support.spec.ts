@@ -572,4 +572,8 @@ describe('translations v2 support', () => {
       });
     });
   });
+
+  it('should fail because this is the next step', async () => {
+    fail('continue with check-types');
+  });
 });
