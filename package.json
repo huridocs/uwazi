@@ -370,7 +370,7 @@
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "^1.62.0",
     "sass-loader": "13.2.2",
-    "sharp": "^0.31.2",
+    "sharp": "^0.32.0",
     "stream-mock": "^2.0.5",
     "supertest": "6.3.3",
     "svg-inline-loader": "^0.8.2",
