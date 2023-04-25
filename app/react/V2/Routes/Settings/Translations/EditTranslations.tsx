@@ -9,6 +9,7 @@ import {
   useSubmit,
   ActionFunction,
   useActionData,
+  useNavigation,
 } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
@@ -156,11 +157,39 @@ const EditTranslations = () => {
   const setShowModal = useSetRecoilState(showModalAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const submit = useSubmit();
+  const navigation = useNavigation();
   const actionData = useActionData();
+
+  const isSubmitting = navigation.state === 'submitting';
 
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getFieldState,
+    reset,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    formState: { isDirty, errors, isSubmitting: formIsSubmitting },
+  } = useForm({
+    defaultValues: { formValues },
+    mode: 'onSubmit',
+  });
+
+  const blocker = useBlocker(isDirty && !formIsSubmitting);
+
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      setModal({
+        size: 'md',
+        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
+      });
+      setShowModal(true);
+    }
+  }, [blocker, setModal, setShowModal]);
 
   useEffect(() => {
     if (actionData?.json) {
@@ -178,31 +207,6 @@ const EditTranslations = () => {
       });
     }
   }, [actionData, setNotifications]);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getFieldState,
-    reset,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    formState: { isDirty, errors, isSubmitting },
-  } = useForm({
-    defaultValues: { formValues },
-    mode: 'onSubmit',
-  });
-
-  const blocker = useBlocker(isDirty && !isSubmitting);
-
-  useMemo(() => {
-    if (blocker.state === 'blocked') {
-      setModal({
-        size: 'md',
-        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
-      });
-      setShowModal(true);
-    }
-  }, [blocker, setModal, setShowModal]);
 
   const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
 
