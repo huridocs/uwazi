@@ -87,6 +87,7 @@ export interface ConnectionSchema {
               [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
+            timeLinks?: string;
             [k: string]: unknown | undefined;
           }[]
         | undefined;
@@ -151,6 +152,7 @@ export interface ConnectionSchema {
               [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
+            timeLinks?: string;
             [k: string]: unknown | undefined;
           }[]
         | undefined;

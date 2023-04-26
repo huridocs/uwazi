@@ -22,7 +22,7 @@ enum MediaModalType {
 }
 
 const getAcceptedFileTypes = (type: MediaModalType) =>
-  type === MediaModalType.Image ? 'image/*' : 'video/*';
+  type === MediaModalType.Image ? 'image/*' : 'video/*,audio/*';
 
 interface MediaModalProps {
   isOpen: boolean;

@@ -18,7 +18,12 @@ class LibraryFilters extends Component {
 
   render() {
     return (
-      <SidePanel className="library-filters" mode={this.props.sidePanelMode} open={this.props.open}>
+      <SidePanel
+        className="library-filters"
+        data-testid="library-filters"
+        mode={this.props.sidePanelMode}
+        open={this.props.open}
+      >
         <div className="sidepanel-body">
           <div className="sidepanel-title">
             <div>{t('System', 'Filters configuration')}</div>

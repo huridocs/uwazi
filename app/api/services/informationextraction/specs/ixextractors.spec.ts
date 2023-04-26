@@ -162,7 +162,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.labelEmpty,
-            entityTemplate: fixtureFactory.id('personTemplate'),
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
             status: 'ready',
@@ -174,7 +174,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.labelEmpty,
-            entityTemplate: fixtureFactory.id('personTemplate'),
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
       },
@@ -197,7 +197,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.valueEmpty,
-            entityTemplate: fixtureFactory.id('animalTemplate'),
+            entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
             status: 'ready',
@@ -209,7 +209,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.valueEmpty,
-            entityTemplate: fixtureFactory.id('animalTemplate'),
+            entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
             status: 'ready',
@@ -221,7 +221,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.valueEmpty,
-            entityTemplate: fixtureFactory.id('personTemplate'),
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
             status: 'ready',
@@ -233,7 +233,7 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: SuggestionState.valueEmpty,
-            entityTemplate: fixtureFactory.id('personTemplate'),
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
       },

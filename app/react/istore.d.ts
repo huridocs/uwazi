@@ -44,7 +44,7 @@ interface RelationshipTypesType {
 }
 
 interface ClientTranslationContextSchema extends Omit<TranslationContext, 'values'> {
-  values?: { [key: string]: string };
+  values: { [key: string]: string };
 }
 
 interface InlineEdit {
@@ -55,7 +55,8 @@ interface InlineEdit {
 }
 
 export interface ClientTranslationSchema extends Omit<TranslationType, 'contexts'> {
-  contexts?: ClientTranslationContextSchema[];
+  contexts: ClientTranslationContextSchema[];
+  locale: string;
 }
 
 export interface ClientPropertySchema extends PropertySchema {

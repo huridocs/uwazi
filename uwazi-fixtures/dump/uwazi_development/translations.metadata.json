@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.translations"}],"uuid":"e6ddfbf9f92b4b6b9eb3d5820b3ca89d","collectionName":"translations","type":"collection"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.translations"}],"uuid":"86b10245af924da8b0f5051e69aa86e7","collectionName":"translations","type":"collection"}
