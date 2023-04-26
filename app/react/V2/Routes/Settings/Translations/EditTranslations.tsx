@@ -38,8 +38,20 @@ const editTranslationsAction =
   async ({ params, request }) => {
     const formData = await request.formData();
     const { context } = params;
-    const data = JSON.parse(formData.get('values'));
-    return translationsAPI.post(data, context);
+
+    const file = formData.get('uploaded-file') as File | undefined;
+    const formValues = formData.get('form-values') as string | undefined;
+
+    if (file) {
+      return translationsAPI.importTranslations(file, 'System');
+    }
+
+    if (formValues && context) {
+      const data = JSON.parse(formValues);
+      return translationsAPI.post(data, context);
+    }
+
+    return null;
   };
 
 type formValuesType = {
@@ -152,16 +164,15 @@ const EditTranslations = () => {
   };
 
   const [hideTranslated, setHideTranslated] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const setModal = useSetRecoilState(modalAtom);
-  const setShowModal = useSetRecoilState(showModalAtom);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const submit = useSubmit();
   const navigation = useNavigation();
-  const actionData = useActionData();
+  const actionData = useActionData() as { [key: string]: any };
+  const setNotifications = useSetRecoilState(notificationAtom);
+  const setModal = useSetRecoilState(modalAtom);
+  const setShowModal = useSetRecoilState(showModalAtom);
 
   const isSubmitting = navigation.state === 'submitting';
-
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
@@ -210,32 +221,29 @@ const EditTranslations = () => {
 
   const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
 
-  const submitFunction = async (data: { formValues: formValuesType }) => {
+  const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
-    formData.append('values', JSON.stringify(values));
+    formData.set('form-values', JSON.stringify(values));
     submit(formData, { method: 'post' });
-
     reset({}, { keepValues: true });
   };
 
-  const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    const formData = new FormData();
+
     if (file) {
-      try {
-        await translationsAPI.importTranslations(file, 'System');
-        setNotifications({
-          type: 'sucess',
-          text: <Translate>Translations imported.</Translate>,
-        });
-      } catch (e) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
-        });
-      }
+      formData.set('uploaded-file', file);
+      submit(formData, { method: 'post', encType: 'multipart/form-data' });
+      return reset({}, { keepValues: true });
     }
+
+    return setNotifications({
+      type: 'error',
+      text: <Translate>An error occurred</Translate>,
+      details: <Translate>No file was found, please upload a valid .csv file</Translate>,
+    });
   };
 
   return (
@@ -265,7 +273,7 @@ const EditTranslations = () => {
           </div>
           <div className="flex-grow">
             {tablesData.length ? (
-              <form onSubmit={handleSubmit(submitFunction)} id="edit-translations">
+              <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
                 <TranslationsTables
                   tablesData={tablesData}
                   submitting={isSubmitting}
@@ -304,7 +312,7 @@ const EditTranslations = () => {
                     type="file"
                     accept="text/csv"
                     className="hidden"
-                    onChange={onFileImported}
+                    onChange={importFile}
                   />
                 </>
               )}
