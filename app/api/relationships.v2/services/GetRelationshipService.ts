@@ -15,7 +15,7 @@ class GetRelationshipService {
 
   async getByEntity(sharedId: string): Promise<Relationship[]> {
     const relationships = await this.relationshipsDS.getByEntities([sharedId]).all();
-     const filtered = await this.authService.filterRead(relationships);
+    //  const filtered = await this.authService.filterRead(relationships);
     return relationships;
   }
 }

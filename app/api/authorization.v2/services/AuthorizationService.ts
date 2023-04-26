@@ -22,6 +22,23 @@ export class AuthorizationService {
     return this.permissionsDS.getByEntities(sharedIds);
   }
 
+  async filterEntities(level: AccessLevels, sharedIds: string[]): Promise<string[]> {
+    if (this.isPrivileged()) {
+      return sharedIds;
+    }
+
+    const allEntitiesPermissions = this.getRelatedPermissionsSets(sharedIds);
+
+    if (this.authenticatedUser) {
+      const user = this.authenticatedUser;
+      return (await allEntitiesPermissions.all())
+        .filter(entityPermissions => entityPermissions.allowsUserTo(user, level))
+        .map(entityPermissions => entityPermissions.entity);
+    }
+
+    return [];
+  }
+
   async isAuthorized(level: AccessLevels, sharedIds: string[]) {
     if (this.isPrivileged()) {
       return true;
@@ -48,3 +65,5 @@ export class AuthorizationService {
     }
   }
 }
+
+export type { AccessLevels };
