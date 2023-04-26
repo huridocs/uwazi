@@ -4,6 +4,7 @@
 import 'mutationobserver-shim';
 import React from 'react';
 import { ReactWrapper } from 'enzyme';
+import * as t from 'app/I18N/t';
 import { SidePanel } from 'app/Layout';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import { UserSidePanel, UserSidePanelProps } from 'app/Users/components/UserSidePanel';
@@ -37,6 +38,9 @@ describe('UserSidePanel', () => {
   }
 
   beforeEach(() => {
+    jest
+      .spyOn(t, 'default')
+      .mockImplementation((_context, text, _component, _render) => `Translated_${text}`);
     defaultProps = {
       user: existingUser,
       users: [existingUser],
@@ -67,6 +71,12 @@ describe('UserSidePanel', () => {
       expect((emailInput.getDOMNode() as HTMLInputElement).value).toEqual(defaultProps.user.email);
       const roleInput = component.find({ id: 'role_field' }).find('select');
       expect((roleInput.getDOMNode() as HTMLInputElement).value).toEqual(defaultProps.user.role);
+      const roleOptions = roleInput.find('option').map(option => option.text());
+      expect(roleOptions).toEqual([
+        'Translated_Admin',
+        'Translated_Editor',
+        'Translated_Collaborator',
+      ]);
       const nameInput = component.find({ id: 'username_field' }).find('input');
       expect((nameInput.getDOMNode() as HTMLInputElement).value).toEqual(
         defaultProps.user.username
