@@ -202,6 +202,12 @@ describe('When filtering entities', () => {
       user: undefined,
       usertype: 'undefined',
       level: 'read',
+      expectedResult: ['entity3'],
+    },
+    {
+      user: undefined,
+      usertype: 'undefined',
+      level: 'write',
       expectedResult: [],
     },
   ])(

@@ -1,6 +1,7 @@
 import { User } from 'api/users.v2/model/User';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { UnauthorizedError } from '../errors/UnauthorizedError';
+import { EntityPermissions } from '../model/EntityPermissions';
 
 type AccessLevels = 'read' | 'write';
 
@@ -27,16 +28,24 @@ export class AuthorizationService {
       return sharedIds;
     }
 
-    const allEntitiesPermissions = this.getRelatedPermissionsSets(sharedIds);
+    const allEntitiesPermissions = await this.getRelatedPermissionsSets(sharedIds).all();
 
+    let filteredEntitiesPermissions: EntityPermissions[] = [];
     if (this.authenticatedUser) {
       const user = this.authenticatedUser;
-      return (await allEntitiesPermissions.all())
-        .filter(entityPermissions => entityPermissions.allowsUserTo(user, level))
-        .map(entityPermissions => entityPermissions.entity);
+      filteredEntitiesPermissions = allEntitiesPermissions.filter(entityPermissions =>
+        entityPermissions.allowsUserTo(user, level)
+      );
+    } else {
+      filteredEntitiesPermissions =
+        level === 'read'
+          ? allEntitiesPermissions.filter(entityPermissions =>
+              entityPermissions.allowsPublicReads()
+            )
+          : [];
     }
 
-    return [];
+    return filteredEntitiesPermissions.map(entityPermissions => entityPermissions.entity);
   }
 
   async isAuthorized(level: AccessLevels, sharedIds: string[]) {

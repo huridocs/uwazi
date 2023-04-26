@@ -1,8 +1,10 @@
+import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { GetRelationshipService } from '../GetRelationshipService';
@@ -12,8 +14,19 @@ const fixtureFactory = getFixturesFactory();
 const fixtures = {
   templates: [fixtureFactory.template('template1')],
   entities: [
-    fixtureFactory.entity('entity1', 'template1'),
-    fixtureFactory.entity('entity2', 'template1'),
+    fixtureFactory.entity(
+      'entity1',
+      'template1',
+      {},
+      { permissions: [{ refId: fixtureFactory.id('user'), level: 'read', type: 'user' }] }
+    ),
+    fixtureFactory.entity(
+      'entity2',
+      'template1',
+      {},
+      // @ts-ignore
+      { permissions: [{ refId: 'public', level: 'public', type: 'public' }] }
+    ),
     fixtureFactory.entity('entity3', 'template1'),
   ],
   relationships: [
@@ -35,17 +48,16 @@ const fixtures = {
   ],
 };
 
-const validateAccessMock = jest.fn().mockResolvedValue(undefined);
-
-const authServiceMock = partialImplementation<AuthorizationService>({
-  validateAccess: validateAccessMock,
-});
-
-const createService = () => {
+const createService = (_user?: User) => {
+  const user = _user || new User(fixtureFactory.id('user').toString(), 'admin', []);
   const connection = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
-  return new GetRelationshipService(relationshipsDS, authServiceMock);
+  const authService = new AuthorizationService(
+    new MongoPermissionsDataSource(connection, transactionManager),
+    user
+  );
+  return new GetRelationshipService(relationshipsDS, authService);
 };
 
 beforeEach(async () => {
@@ -67,12 +79,13 @@ describe('getByEntity()', () => {
   });
 
   it('should check for user read access in the involved entities', async () => {
-    const service = createService();
-    await service.getByEntity('entity2');
-
-    expect(validateAccessMock).toHaveBeenCalledWith(
-      'read',
-      expect.arrayContaining(['entity1', 'entity2', 'entity3'])
+    const service = createService(
+      new User(fixtureFactory.id('user').toString(), 'collaborator', [])
     );
+    const relationships = await service.getByEntity('entity2');
+
+    expect(relationships).toEqual([
+      fixtureFactory.v2.application.relationship('rel1', 'entity1', 'entity2', 'reltype'),
+    ]);
   });
 });
