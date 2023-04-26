@@ -4,9 +4,8 @@ import { Icon } from 'UI';
 import { t, Translate } from 'app/I18N';
 import { ConfirmButton, SidePanel } from 'app/Layout';
 import { UserRole } from 'shared/types/userSchema';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientUserSchema, ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { MultiSelect } from 'app/Forms/components/MultiSelect';
-import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { PermissionsList } from 'app/Users/components/PermissionsList';
 import { roleTranslationKey } from '../UserManagement';
 
@@ -43,7 +42,6 @@ export const UserSidePanel = ({
     formState: { errors },
   } = useForm({ defaultValues: user });
   const availableGroups = groups;
-  const userRoles = Object.values(UserRole).map(role => t('System', role, null, false));
 
   const saveUser = (userToSave: ClientUserSchema) => {
     const updatedGroups = groups
@@ -113,7 +111,7 @@ export const UserSidePanel = ({
               </button>
             </div>
             <select className="form-control" {...register('role')}>
-              {userRoles.map((role: string) => (
+              {Object.values(UserRole).map((role: string) => (
                 <option key={role} value={role}>
                   {t('System', roleTranslationKey[role], null, false)}
                 </option>
