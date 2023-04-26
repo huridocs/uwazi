@@ -1394,6 +1394,10 @@ input:checked + .toggle-bg {
   height: 1px;
 }
 
+.max-h-96 {
+  max-height: 24rem;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -1784,6 +1788,10 @@ input:checked + .toggle-bg {
 
 .overflow-x-scroll {
   overflow-x: scroll;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
 }
 
 .scroll-smooth {
@@ -2689,10 +2697,6 @@ input:checked + .toggle-bg {
 
 .pb-4 {
   padding-bottom: 1rem;
-}
-
-.pb-6 {
-  padding-bottom: 1.5rem;
 }
 
 .pl-0 {

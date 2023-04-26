@@ -6,9 +6,10 @@ import { Pill } from './Pill';
 interface SearchMultiselectProps {
   items: { label: string; value: string }[];
   onChange: (selectedItems: string[]) => void;
+  className?: string;
 }
 
-const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
+const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
@@ -24,13 +25,14 @@ const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
   };
 
   return (
-    <div>
+    <div className={className}>
       <div className="mb-4 sticky top-0 w-full">
         <InputField
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search"
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
+          hideLabel={true}
         />
       </div>
 

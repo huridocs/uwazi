@@ -49,8 +49,8 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
   </div>
 );
 
-Modal.Body = ({ children }: ModalChildrenProps) => (
-  <div className="p-6" data-testid="modal-body">
+Modal.Body = ({ children, className }: ModalChildrenProps) => (
+  <div className={`p-6 ${className}`} data-testid="modal-body">
     {children}
   </div>
 );

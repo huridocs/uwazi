@@ -7,6 +7,7 @@ import { ToggleButton } from './ToggleButton';
 import { InputField } from './InputField';
 import { NotificationsContainer } from './NotificationsContainer';
 import { Sidepanel } from './Sidepanel';
+import { SearchMultiselect } from './SearchMultiSelect';
 
 export {
   Button,
@@ -18,4 +19,5 @@ export {
   InputField,
   NotificationsContainer,
   Sidepanel,
+  SearchMultiselect,
 };

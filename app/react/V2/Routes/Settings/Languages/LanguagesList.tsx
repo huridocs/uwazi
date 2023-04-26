@@ -10,6 +10,7 @@ import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
+import { InstallLanguagesModal } from 'app/V2/Components/Languages/InstallLanguagesModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
@@ -32,12 +33,16 @@ const LanguagesList = () => {
 
   const availableLanguages = useLoaderData() as LanguageSchema[];
   const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
+  const notInstalledLanguages = availableLanguages.filter(
+    l => !collectionLanguages.find(cl => cl.key === l.key)
+  );
   const languages = values(
     merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
   );
 
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const [actionableLanguage, setActionableLanguage] = useState<LanguageSchema>();
 
   const handleAction =
@@ -199,7 +204,12 @@ const LanguagesList = () => {
 
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
           <div className="flex gap-2 p-2 pt-1">
-            <Button buttonStyle="primary">
+            <Button
+              buttonStyle="primary"
+              onClick={() => {
+                setShowInstallModal(true);
+              }}
+            >
               <Translate>Install language</Translate>
             </Button>
           </div>
@@ -209,6 +219,12 @@ const LanguagesList = () => {
         <div className="container w-10 h10">
           <ConfirmationModal {...modalProps} size="md" />
         </div>
+      )}
+      {showInstallModal && (
+        <InstallLanguagesModal
+          setShowModal={setShowInstallModal}
+          languages={notInstalledLanguages}
+        />
       )}
     </div>
   );
