@@ -5,6 +5,7 @@ import entities from 'api/entities';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import templates from '../templates';
 
 const fixtureFactory = getFixturesFactory();
@@ -51,6 +52,9 @@ const fixtures: DBFixture = {
     fixtureFactory.template('unrelated_template', [
       fixtureFactory.property('a_text_property', 'text'),
     ]),
+    fixtureFactory.template('unrelated_template2', [
+      fixtureFactory.property('a_text_property', 'text'),
+    ]),
   ],
   entities: [
     fixtureFactory.entity('entity1', 'existing_template'),
@@ -59,6 +63,27 @@ const fixtures: DBFixture = {
     fixtureFactory.entity('entity4', 'template_with_existing_relationship', {
       existing_relationship: [{ value: 'existing_value' }],
     }),
+    fixtureFactory.entity('entity5', 'unrelated_template2'),
+  ],
+  relationships: [
+    {
+      _id: fixtureFactory.id('rel1'),
+      from: { entity: 'entity1' },
+      to: { entity: 'entity3' },
+      type: fixtureFactory.id('relation'),
+    },
+    {
+      _id: fixtureFactory.id('rel2'),
+      from: { entity: 'entity2' },
+      to: { entity: 'entity3' },
+      type: fixtureFactory.id('relation'),
+    },
+    {
+      _id: fixtureFactory.id('rel3'),
+      from: { entity: 'entity4' },
+      to: { entity: 'entity5' },
+      type: fixtureFactory.id('relation'),
+    },
   ],
   settings: [
     {
@@ -81,7 +106,7 @@ const newQueryInput = [
     types: [fixtureFactory.id('relation').toString()],
     match: [
       {
-        templates: [fixtureFactory.id('existing_template').toString()],
+        templates: [fixtureFactory.id('unrelated_template2').toString()],
         traverse: [],
       },
     ],
@@ -94,7 +119,7 @@ const newQueryInDb = [
     types: [fixtureFactory.id('relation')],
     match: [
       {
-        templates: [fixtureFactory.id('existing_template')],
+        templates: [fixtureFactory.id('unrelated_template2')],
         traverse: [],
       },
     ],
@@ -103,7 +128,7 @@ const newQueryInDb = [
 
 describe('template.save()', () => {
   beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures, 'csv_loader.index');
+    await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');
   });
 
   afterAll(async () => {
@@ -220,9 +245,9 @@ describe('template.save()', () => {
       });
 
       it('should throw a validation error', async () => {
-        const [existingTemplates] = await templates.get({ name: 'existing_template' });
+        const [existingTemplate] = await templates.get({ name: 'existing_template' });
         const newTemplate = {
-          ...existingTemplates,
+          ...existingTemplate,
           properties: [
             {
               name: 'new_relationship',
@@ -253,7 +278,7 @@ describe('template.save()', () => {
                 {
                   direction: 'out',
                   types: [fixtureFactory.id('relation').toString()],
-                  match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+                  match: [{ templates: [fixtureFactory.id('unrelated_template').toString()] }],
                 },
               ],
             },
@@ -262,11 +287,12 @@ describe('template.save()', () => {
         };
         await templates.save(updatedTemplate, 'en');
         const allEntities = await db.mongodb?.collection('entities').find({}).toArray();
-        expect(allEntities?.map(e => e.obsoleteMetadata)).toEqual([
-          ['new_relationship'],
-          ['new_relationship'],
-          [],
-          [],
+        expect(allEntities?.map(e => e.metadata.new_relationship)).toMatchObject([
+          [{ value: 'entity3' }],
+          [{ value: 'entity3' }],
+          undefined,
+          undefined,
+          undefined,
         ]);
       });
     });
@@ -362,10 +388,18 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([['existing_relationship']]);
+        expect(relatedEntities?.map(e => e.metadata.existing_relationship)).toMatchObject([
+          [{ value: 'entity5' }],
+        ]);
+
+        await elasticTesting.refresh();
+        const indexed = (await elasticTesting.getIndexedEntities()).find(
+          e => e.template === existingTemplate._id.toString()
+        );
+        expect(indexed?.metadata?.existing_relationship).toMatchObject([{ value: 'entity5' }]);
       });
 
-      it('on denormalizedProperty change should throw an error and not mark the metadata', async () => {
+      it('on denormalizedProperty change should throw an error and not change the metadata', async () => {
         const [existingTemplate] = await templates.get({
           name: 'template_with_existing_relationship',
         });
@@ -394,7 +428,9 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toEqual([[]]);
+        expect(relatedEntities?.map(e => e.metadata.existing_relationship)).toEqual([
+          [{ value: 'existing_value' }],
+        ]);
       });
     });
   });

@@ -212,13 +212,13 @@ export default {
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = await model.save(template);
     if (templateStructureChanges) {
+      await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
       });
     }
-
-    await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
 
     await applicationEventsBus.emit(
       new TemplateUpdatedEvent({
