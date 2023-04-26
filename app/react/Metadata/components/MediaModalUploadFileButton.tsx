@@ -5,7 +5,7 @@ import { Translate } from 'app/I18N';
 
 type componentProps = {
   formModel: string;
-  acceptedFileTypes: 'image/*' | 'video/*' | 'video/*,audio/*';
+  acceptedFileTypes: 'image/*' | 'video/*' | 'video/*,audio/*' | '*/*';
   inputFileRef: React.MutableRefObject<HTMLInputElement | null>;
   handleUploadButtonClicked: () => void;
   handleFileInPublicForm: (event: React.FormEvent<HTMLInputElement>) => void;

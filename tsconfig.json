@@ -30,5 +30,5 @@
     "skipLibCheck": true
   },
   "include": ["app", "external_modules", "database", "e2e"],
-  "exclude": ["fixtures", "dist", "prod"]
+  "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
 }

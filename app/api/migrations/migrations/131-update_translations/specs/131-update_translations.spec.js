@@ -13,7 +13,7 @@ describe('migration update translations of new Translations UI', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(130);
+    expect(migration.delta).toBe(131);
   });
 
   it('should update the keys that have changed', async () => {
