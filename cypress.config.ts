@@ -10,11 +10,13 @@ export default defineConfig({
       initPlugin(on, config);
     },
     video: false,
+    testIsolation: false,
   },
   component: {
     devServer: {
       framework: 'react',
       bundler: 'webpack',
     },
+    specPattern: 'app/react/**/*.cy.tsx',
   },
 });

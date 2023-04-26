@@ -99,12 +99,8 @@ describe('I18NMenu', () => {
   it('should show live transtions for authorized user', async () => {
     render('editor');
     expect(screen.queryByText('Live translate')).toBeInTheDocument();
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems.map(item => item.textContent)).toEqual([
-      'English',
-      'Español',
-      'Live translate',
-    ]);
+    const listItems = screen.getAllByRole('link');
+    expect(listItems.map(item => item.textContent)).toEqual(['English', 'Español']);
   });
 
   it('should show as active the current locale', async () => {
@@ -136,7 +132,7 @@ describe('I18NMenu', () => {
     expect(screen.getByRole('button').parentElement!.textContent).toEqual('Live translate');
     const activeIcon = renderResult.container.getElementsByClassName('live-on');
     expect(activeIcon.length).toBe(1);
-    const listItems = screen.queryAllByRole('listitem');
+    const listItems = screen.queryAllByRole('link');
     expect(listItems).toEqual([]);
   });
 

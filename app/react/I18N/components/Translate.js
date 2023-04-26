@@ -44,12 +44,10 @@ class Translate extends Component {
   }
 
   render() {
-    const lines = this.props.children.split('\n');
+    const lines = this.props.children ? this.props.children.split('\n') : [];
+    const className = this.props.i18nmode ? 'translation active' : 'translation';
     return (
-      <span
-        onClick={this.onClick}
-        className={this.props.i18nmode ? 'translation active' : 'translation'}
-      >
+      <span onClick={this.onClick} className={`${className} ${this.props.className}`.trim()}>
         {lines.map((line, index) => {
           const boldMatches = parseMarkdownBoldMarker(line);
           const italicMatches = parseMarkdownItalicMarker(line);
@@ -73,6 +71,7 @@ Translate.defaultProps = {
   context: 'System',
   edit: false,
   translationKey: '',
+  className: '',
 };
 
 Translate.propTypes = {
@@ -81,6 +80,7 @@ Translate.propTypes = {
   edit: PropTypes.func,
   i18nmode: PropTypes.bool,
   children: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 
 const mapStateToProps = (state, props) => {

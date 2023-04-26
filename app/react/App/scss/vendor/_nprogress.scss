@@ -1,10 +1,14 @@
+.nprogress-container {
+  height: 4px;
+  margin-bottom: -4px;
+}
+
 #nprogress {
   transition: all 0ms !important;
   .bar {
-    height: 4px !important;
-    background: $c-primary !important;
+    height: 4px;
+    background: $c-primary;
     position: absolute;
-    top: 50px;
   }
 
   .peg {
