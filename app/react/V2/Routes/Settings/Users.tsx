@@ -6,7 +6,7 @@ import React from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import * as usersAPI from 'V2/api/users';
 
-const renderEditButton = ({ row }: any) => (
+const renderEditButton = () => (
   <Button buttonStyle="secondary">
     <Translate>Edit</Translate>
   </Button>
@@ -74,7 +74,6 @@ const columns = [
 
 const Users = () => {
   const users = (useLoaderData() as ClientUserSchema[]) || [];
-  console.log(users);
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <Table columns={columns} data={users} title={<Translate>Users</Translate>} />
@@ -82,13 +81,11 @@ const Users = () => {
   );
 };
 
-const usersLoader = (headers?: IncomingHttpHeaders): LoaderFunction => {
-  console.log('Loader loading');
-  return async ({ params }) => {
-    console.log('Loader called');
+const usersLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async () => {
     const users = await usersAPI.get(headers);
     return users;
   };
-};
 
 export { Users, usersLoader };
