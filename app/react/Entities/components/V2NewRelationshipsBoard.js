@@ -8,7 +8,11 @@ import { setTargetDocument } from 'app/Connections/actions/actions';
 import SearchForm from 'app/Connections/components/SearchForm';
 import SearchResults from 'app/Connections/components/SearchResults';
 import { Icon } from 'app/UI';
-import { getRelationshipsByEntity } from '../actions/specs/V2NewRelationshipsActions';
+import {
+  deleteRelationships,
+  getRelationshipsByEntity,
+  saveRelationship,
+} from '../actions/specs/V2NewRelationshipsActions';
 
 class V2NewRelationshipsBoard extends Component {
   constructor(props, context) {
@@ -17,17 +21,22 @@ class V2NewRelationshipsBoard extends Component {
     this.newEntryType = this.props.relationTypes[0]._id;
   }
 
-  componentDidMount() {
-    this.relationships = getRelationshipsByEntity(this.props.sharedId);
+  async componentDidMount() {
+    this.relationships = await getRelationshipsByEntity(this.props.sharedId);
+    this.forceUpdate();
   }
 
   selectType(event) {
     this.newEntryType = event.target.value;
   }
 
+  async saveRelationship() {
+    const { sharedId, targetDocument } = this.props;
+    await saveRelationship(this.newEntryType, sharedId, targetDocument);
+  }
+
   render() {
     const { sharedId, searchResults, uiState, relationTypes, targetDocument } = this.props;
-    console.log(targetDocument)
     return (
       <>
         <div>{sharedId}</div>
@@ -53,7 +62,9 @@ class V2NewRelationshipsBoard extends Component {
             value={targetDocument || 'select target entity'}
             disabled
           />
-          <button disabled={!this.newEntryTarget}>Save</button>
+          <button disabled={!targetDocument} onClick={this.saveRelationship.bind(this)}>
+            Save
+          </button>
           <SearchForm />
           <SearchResults
             results={searchResults}
@@ -71,7 +82,7 @@ V2NewRelationshipsBoard.defaultProps = {};
 
 V2NewRelationshipsBoard.propTypes = {
   sharedId: PropTypes.string.isRequired,
-  relationTypes: PropTypes.object.isRequired,
+  relationTypes: PropTypes.array.isRequired,
   searchResults: PropTypes.object,
   uiState: PropTypes.object,
   setTargetDocument: PropTypes.func,
