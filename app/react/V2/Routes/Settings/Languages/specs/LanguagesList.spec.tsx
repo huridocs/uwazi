@@ -147,6 +147,20 @@ describe('LanguagesList', () => {
         'Default language change success'
       );
     });
+    it('should allow to cancel an action', async () => {
+      await act(async () => {
+        fireEvent.click(within(rows[1].children[3] as HTMLElement).getByRole('button'));
+      });
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: 'CONFIRM' },
+        });
+        fireEvent.click(
+          within(screen.getByTestId('modal')).getByRole('button', { name: 'No, cancel' })
+        );
+        expect(requestActionMock).not.toHaveBeenCalledWith();
+      });
+    });
 
     it('should uninstall a language', async () => {
       await act(async () => {
