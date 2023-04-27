@@ -27,7 +27,7 @@ import { CopyFromEntity } from 'app/Metadata/components/CopyFromEntity';
 import { PageViewer } from 'app/Pages/components/PageViewer';
 
 import { ShowSidepanelMenu } from './ShowSidepanelMenu';
-import { V2NewRelationshipsCrud } from './V2NewRelationshipsCrud';
+import V2NewRelationshipsBoard from './V2NewRelationshipsBoard';
 import { deleteEntity } from '../actions/actions';
 import { showTab } from '../actions/uiActions';
 import EntityForm from '../containers/EntityForm';
@@ -195,7 +195,7 @@ class EntityViewer extends Component {
             </TabContent>
             {this.props.newRelationshipsEnabled && (
               <TabContent for="newrelationships">
-                <V2NewRelationshipsCrud />
+                <V2NewRelationshipsBoard sharedId={entity.get('sharedId')} />
               </TabContent>
             )}
           </Tabs>
@@ -309,7 +309,7 @@ class EntityViewer extends Component {
                         className={this.linkClassNames(['newrelationships'])}
                         to={`/entity/${rawEntity.sharedId}/newrelationships`}
                       >
-                        <Icon icon="exchange-alt" />
+                        <Icon icon="exchange-alt" />*
                         <span className="tab-link-tooltip">New Relationships</span>
                       </I18NLink>
                     </TabLink>
