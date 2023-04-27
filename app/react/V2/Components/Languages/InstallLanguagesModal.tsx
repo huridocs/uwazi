@@ -14,9 +14,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
 
   const items = languages.map(l => ({ label: l.localized_label || l.label, value: l.key }));
 
-  const install = () => {
-    console.log(selected);
-  };
+  const install = () => {};
 
   return (
     <Modal size="lg">
