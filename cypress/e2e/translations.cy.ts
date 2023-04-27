@@ -56,10 +56,12 @@ describe('Translations', () => {
       cy.clock();
       cy.intercept('POST', 'api/translations', {
         statusCode: 400,
-      });
+      }).as('api/translations');
       cy.contains('button', 'Save').click();
-      cy.contains('[data-testid="notifications-container"]', 'An error occurred');
-      cy.tick(10000);
+      cy.wait('@api/translations').then(() => {
+        cy.contains('[data-testid="notifications-container"]', 'An error occurred');
+        cy.tick(10000);
+      });
     });
 
     describe('discard changes', () => {
