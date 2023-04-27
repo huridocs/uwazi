@@ -6,10 +6,8 @@ import {
   LoaderFunction,
   unstable_useBlocker as useBlocker,
   Link,
-  useSubmit,
   ActionFunction,
-  useActionData,
-  useNavigation,
+  useFetcher,
 } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
@@ -17,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
@@ -39,16 +38,15 @@ const editTranslationsAction =
     const formData = await request.formData();
     const { context } = params;
 
-    const file = formData.get('uploaded-file') as File | undefined;
     const formValues = formData.get('form-values') as string | undefined;
-
-    if (file) {
-      return translationsAPI.importTranslations(file, 'System');
-    }
-
     if (formValues && context) {
       const data = JSON.parse(formValues);
       return translationsAPI.post(data, context);
+    }
+
+    const file = formData.get('uploaded-file') as File | undefined;
+    if (file) {
+      return translationsAPI.importTranslations(file, 'System');
     }
 
     return null;
@@ -165,14 +163,12 @@ const EditTranslations = () => {
 
   const [hideTranslated, setHideTranslated] = useState(false);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
-  const submit = useSubmit();
-  const navigation = useNavigation();
-  const actionData = useActionData() as { [key: string]: any };
+  const fetcher = useFetcher();
   const setNotifications = useSetRecoilState(notificationAtom);
   const setModal = useSetRecoilState(modalAtom);
   const setShowModal = useSetRecoilState(showModalAtom);
 
-  const isSubmitting = navigation.state === 'submitting';
+  const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
@@ -203,21 +199,21 @@ const EditTranslations = () => {
   }, [blocker, setModal, setShowModal]);
 
   useEffect(() => {
-    if (actionData?.json) {
+    if (fetcher.data instanceof FetchResponseError) {
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
-        details: actionData.json.error,
+        details: fetcher.data.json.error,
       });
     }
 
-    if (Array.isArray(actionData)) {
+    if (Array.isArray(fetcher.data)) {
       setNotifications({
         type: 'sucess',
         text: <Translate>Translations saved</Translate>,
       });
     }
-  }, [actionData, setNotifications]);
+  }, [fetcher.data, setNotifications]);
 
   const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
 
@@ -225,25 +221,19 @@ const EditTranslations = () => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
     formData.set('form-values', JSON.stringify(values));
-    submit(formData, { method: 'post' });
+    fetcher.submit(formData, { method: 'post' });
     reset({}, { keepValues: true });
   };
 
   const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    const formData = new FormData();
 
     if (file) {
+      const formData = new FormData();
       formData.set('uploaded-file', file);
-      submit(formData, { method: 'post', encType: 'multipart/form-data' });
-      return reset({}, { keepValues: true });
+      fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
+      reset({}, { keepValues: true });
     }
-
-    return setNotifications({
-      type: 'error',
-      text: <Translate>An error occurred</Translate>,
-      details: <Translate>No file was found, please upload a valid .csv file</Translate>,
-    });
   };
 
   return (
