@@ -14,7 +14,7 @@ const renderEditButton = ({ row }: any) => (
 
 const pill = ({ cell }: any) => (
   <div className="whitespace-nowrap">
-    <Pill color="gray">
+    <Pill color={cell.value === 'admin' ? 'primary' : 'gray'}>
       <Translate>{cell.value}</Translate>
     </Pill>
   </div>
