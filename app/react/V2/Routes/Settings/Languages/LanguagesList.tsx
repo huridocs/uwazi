@@ -16,6 +16,7 @@ import { Table } from 'V2/Components/UI/Table';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { Settings } from 'shared/types/settingsType';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -28,7 +29,7 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
-  const { languages: collectionLanguages = [] } = useRecoilValue(settingsAtom);
+  const { languages: collectionLanguages = [] } = useRecoilValue<Settings>(settingsAtom);
   const { requestAction } = useApiCaller();
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
