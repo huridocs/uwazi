@@ -1,14 +1,18 @@
+import { Request, Response, NextFunction } from 'express';
+import request from 'supertest';
+
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
-import { Request, Response, NextFunction } from 'express';
-import request from 'supertest';
+import { UserRole } from 'shared/types/userSchema';
 import routes from '../routes';
 
 const URL = '/api/v2/relationships';
 
 const factory = getFixturesFactory();
+
+const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
 
 const fixtures = {
   entities: [
@@ -44,6 +48,7 @@ const fixtures = {
     },
   ],
   files: [factory.file('file1', 'entity1', 'document', 'file1.pdf')],
+  users: [adminUser],
 };
 
 beforeEach(async () => {
@@ -70,11 +75,11 @@ describe('GET relationships', () => {
 
   it('should return the relationships', async () => {
     const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = undefined;
+      (req as any).user = adminUser;
       next();
     });
 
-    const response = await request(app).get(URL).expect(200);
+    const response = await request(app).get(`${URL}?sharedId=entity2`).expect(200);
     expect(response.body).toEqual([
       {
         _id: factory.id('relationship1').toString(),
