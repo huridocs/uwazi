@@ -43,7 +43,6 @@ const LanguagesList = () => {
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showInstallModal, setShowInstallModal] = useState(false);
-  const [actionableLanguage, setActionableLanguage] = useState<LanguageSchema>();
 
   const handleAction =
     (
@@ -54,24 +53,20 @@ const LanguagesList = () => {
     ) =>
     async () => {
       setShowModal(false);
-      const selectedLanguage = currentLanguage || actionableLanguage;
-      if (selectedLanguage) {
+      if (currentLanguage) {
         await requestAction(
           action,
-          new RequestParams({ [key]: selectedLanguage.key }),
+          new RequestParams({ [key]: currentLanguage.key }),
           successMessage
         );
       }
     };
 
   const confirmAction = (
-    row: Row<LanguageSchema>,
     message: string,
     acceptLabel: string,
     handleAcceptedAction: () => void
   ) => {
-    setActionableLanguage(row.values as LanguageSchema);
-
     setModalProps({
       header: 'Are you sure?',
       body: message,
@@ -88,12 +83,15 @@ const LanguagesList = () => {
 
   const resetModal = (row: Row<LanguageSchema>) => {
     confirmAction(
-      row,
       'You are about to reset a language.',
       'Reset',
-      handleAction('Language reset success', I18NApi.populateTranslations, 'locale')
+      handleAction(
+        'Language reset success',
+        I18NApi.populateTranslations,
+        'locale',
+        row.values as LanguageSchema
+      )
     );
-    setActionableLanguage(row.values as LanguageSchema);
   };
 
   const setDefaultLanguage = async (row: Row<LanguageSchema>) => {
@@ -107,10 +105,14 @@ const LanguagesList = () => {
 
   const uninstallModal = (row: Row<LanguageSchema>) => {
     confirmAction(
-      row,
       'You are about to uninstall a language.',
       'Uninstall',
-      handleAction('Language uninstalled success', I18NApi.deleteLanguage, 'locale')
+      handleAction(
+        'Language uninstalled success',
+        I18NApi.deleteLanguage,
+        'locale',
+        row.values as LanguageSchema
+      )
     );
   };
 

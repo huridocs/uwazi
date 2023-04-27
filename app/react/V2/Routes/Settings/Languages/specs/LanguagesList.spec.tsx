@@ -3,11 +3,12 @@
  */
 import React from 'react';
 import { MutableSnapshot, RecoilRoot } from 'recoil';
-import { screen, RenderResult, fireEvent } from '@testing-library/react';
+import { screen, RenderResult, fireEvent, within, act } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import { I18NApi } from 'app/I18N';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Settings } from 'shared/types/settingsType';
+import * as useApiCaller from 'app/V2/CustomHooks/useApiCaller';
 import { LanguagesList } from '../LanguagesList';
 
 const abkhazianLanguage = {
@@ -64,9 +65,15 @@ jest.mock('react-router-dom', () => ({
 
 describe('LanguagesList', () => {
   let renderResult: RenderResult;
+  const requestActionMock = jest.fn();
 
-  beforeEach(() => {
+  beforeAll(() => {
     spyOn(I18NApi, 'setDefaultLanguage').and.callFake(async () => Promise.resolve({}));
+    jest.spyOn(useApiCaller, 'useApiCaller').mockImplementation(() => ({
+      requestAction: requestActionMock,
+      data: undefined,
+      error: '',
+    }));
   });
 
   const recoilGlobalState = ({ set }: MutableSnapshot) => {
@@ -82,8 +89,8 @@ describe('LanguagesList', () => {
       () => defaultState
     ));
   };
-
   let rows: HTMLElement[];
+
   beforeAll(() => {
     render();
     rows = screen.getAllByRole('row');
@@ -112,13 +119,33 @@ describe('LanguagesList', () => {
       expect(rows[3].children[3].getElementsByTagName('button').length).toBe(0);
     });
   });
-
   describe('actions', () => {
     it('should set a language as default', () => {
       fireEvent.click(rows[1].children[1].getElementsByTagName('button')[0]);
-      expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith({ data: { key: 'ar' }, headers: {} });
+      expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith({
+        data: { key: 'ar' },
+        headers: {},
+      });
     });
 
-    it.todo('should notity success action');
+    it('should handle the api calls correctly', async () => {
+      await act(async () => {
+        fireEvent.click(within(rows[3].children[2] as HTMLElement).getByRole('button'));
+      });
+      await act(async () => {
+        fireEvent.change(within(screen.getByTestId('modal')).getByRole('textbox'), {
+          target: { value: 'CONFIRM' },
+        });
+        fireEvent.click(within(screen.getByTestId('modal')).getByRole('button', { name: 'Reset' }));
+        expect(requestActionMock).toHaveBeenCalledWith(
+          I18NApi.populateTranslations,
+          {
+            data: { locale: 'es' },
+            headers: {},
+          },
+          'Language reset success'
+        );
+      });
+    });
   });
 });
