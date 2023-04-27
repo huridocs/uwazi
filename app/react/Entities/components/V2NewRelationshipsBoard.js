@@ -2,8 +2,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import { Icon } from 'UI';
+import { setTargetDocument } from 'app/Connections/actions/actions';
+import SearchForm from 'app/Connections/components/SearchForm';
+import SearchResults from 'app/Connections/components/SearchResults';
+import { Icon } from 'app/UI';
 import { getRelationshipsByEntity } from '../actions/specs/V2NewRelationshipsActions';
 
 class V2NewRelationshipsBoard extends Component {
@@ -11,7 +15,6 @@ class V2NewRelationshipsBoard extends Component {
     super(props, context);
     this.relationships = [];
     this.newEntryType = this.props.relationTypes[0]._id;
-    this.newEntryTarget = undefined;
   }
 
   componentDidMount() {
@@ -23,9 +26,11 @@ class V2NewRelationshipsBoard extends Component {
   }
 
   render() {
+    const { sharedId, searchResults, uiState, relationTypes, targetDocument } = this.props;
+    console.log(targetDocument)
     return (
       <>
-        <div>{this.props.sharedId}</div>
+        <div>{sharedId}</div>
         <div>Existing:</div>
         <div>{JSON.stringify(this.relationships)}</div>
         <br />
@@ -36,7 +41,7 @@ class V2NewRelationshipsBoard extends Component {
             id="newEntryTypeSelector"
             onChange={this.selectType.bind(this)}
           >
-            {this.props.relationTypes.map(rt => (
+            {relationTypes.map(rt => (
               <option value={rt._id}>{rt.name}</option>
             ))}
           </select>
@@ -45,10 +50,17 @@ class V2NewRelationshipsBoard extends Component {
             type="text"
             id="newEntryTargetSelector"
             name="newEntryTargetSelector"
-            value={this.newEntryTarget ? this.newEntryTarget : 'select target entity'}
+            value={targetDocument || 'select target entity'}
             disabled
           />
-          <button disabled={this.newEntryTarget}>Save</button>
+          <button disabled={!this.newEntryTarget}>Save</button>
+          <SearchForm />
+          <SearchResults
+            results={searchResults}
+            searching={uiState.get('searching')}
+            selected={targetDocument}
+            onClick={this.props.setTargetDocument}
+          />
         </div>
       </>
     );
@@ -60,12 +72,23 @@ V2NewRelationshipsBoard.defaultProps = {};
 V2NewRelationshipsBoard.propTypes = {
   sharedId: PropTypes.string.isRequired,
   relationTypes: PropTypes.object.isRequired,
+  searchResults: PropTypes.object,
+  uiState: PropTypes.object,
+  setTargetDocument: PropTypes.func,
+  targetDocument: PropTypes.string,
 };
 
 export function mapStateToProps(state) {
   return {
     relationTypes: state.relationTypes.toJS(),
+    uiState: state.connections.uiState,
+    searchResults: state.connections.searchResults,
+    targetDocument: state.connections.connection.get('targetDocument'),
   };
 }
 
-export default connect(mapStateToProps)(V2NewRelationshipsBoard);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({ setTargetDocument }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(V2NewRelationshipsBoard);
