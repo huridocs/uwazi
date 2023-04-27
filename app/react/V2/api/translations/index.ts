@@ -41,7 +41,7 @@ const importTranslations = async (
 ): Promise<ClientTranslationSchema[]> => {
   loadingBar.start();
   const translations = (await httpRequest(
-    'translations/imported',
+    'translations/import',
     { context: contextId },
     {
       Accept: 'application/json',

@@ -29,11 +29,11 @@ export async function httpRequest(
 
     req
       .on('response', response => {
+        const data = JSON.parse(response.text);
         if (response.status === 200) {
-          const data = JSON.parse(response.text);
           resolve(data);
         } else {
-          reject(response.error);
+          reject(data);
         }
       })
       .end();
