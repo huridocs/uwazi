@@ -11,43 +11,28 @@ import { Settings } from 'shared/types/settingsType';
 import * as useApiCaller from 'app/V2/CustomHooks/useApiCaller';
 import { LanguagesList } from '../LanguagesList';
 
-const abkhazianLanguage = {
-  label: 'Abkhazian',
-  key: 'ab',
-  ISO639_3: 'abk',
-  localized_label: 'Abkhazian',
-  translationAvailable: false,
-};
+const languageDefinition = (
+  label: string,
+  key: string,
+  ISO639_3: string,
+  // eslint-disable-next-line camelcase
+  localized_label: string,
+  translationAvailable: boolean = false
+) => ({
+  label,
+  key,
+  ISO639_3,
+  // eslint-disable-next-line camelcase
+  localized_label,
+  translationAvailable,
+});
+const abkhazianLanguage = languageDefinition('Abkhazian', 'ab', 'abk', 'Abkhazian');
 const availableLanguages = [
   { ...abkhazianLanguage },
-  {
-    label: 'English',
-    key: 'en',
-    ISO639_3: 'eng',
-    localized_label: 'English',
-    translationAvailable: false,
-  },
-  {
-    label: 'Spanish',
-    key: 'es',
-    ISO639_3: 'spa',
-    localized_label: 'Español',
-    translationAvailable: true,
-  },
-  {
-    label: 'Afar',
-    key: 'aa',
-    ISO639_3: 'aar',
-    localized_label: 'Afar',
-    translationAvailable: false,
-  },
-  {
-    label: 'Thai',
-    key: 'th',
-    ISO639_3: 'tha',
-    localized_label: 'ไทย',
-    translationAvailable: true,
-  },
+  { ...languageDefinition('English', 'en', 'eng', 'English') },
+  { ...languageDefinition('Spanish', 'es', 'spa', 'Spanish', true) },
+  { ...languageDefinition('Afar', 'aa', 'aar', 'Afar') },
+  { ...languageDefinition('Thai', 'th', 'tha', 'ไทย', true) },
 ];
 
 const currentLanguages = [
@@ -65,16 +50,6 @@ jest.mock('react-router-dom', () => ({
 
 describe('LanguagesList', () => {
   let renderResult: RenderResult;
-  const requestActionMock = jest.fn();
-
-  beforeAll(() => {
-    spyOn(I18NApi, 'setDefaultLanguage').and.callFake(async () => Promise.resolve({}));
-    jest.spyOn(useApiCaller, 'useApiCaller').mockImplementation(() => ({
-      requestAction: requestActionMock,
-      data: undefined,
-      error: '',
-    }));
-  });
 
   const recoilGlobalState = ({ set }: MutableSnapshot) => {
     const settings: Partial<Settings> = { languages: currentLanguages };
@@ -91,9 +66,21 @@ describe('LanguagesList', () => {
   };
   let rows: HTMLElement[];
 
+  const requestActionMock = jest.fn();
+
   beforeAll(() => {
+    spyOn(I18NApi, 'setDefaultLanguage').and.callFake(async () => Promise.resolve({}));
+    spyOn(useApiCaller, 'useApiCaller').and.callFake(() => ({
+      requestAction: requestActionMock,
+      data: undefined,
+      error: '',
+    }));
     render();
     rows = screen.getAllByRole('row');
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe('render installed languages', () => {
@@ -120,7 +107,7 @@ describe('LanguagesList', () => {
     });
   });
   describe('actions', () => {
-    it('should set a language as default', () => {
+    it('should set a language as default', async () => {
       fireEvent.click(rows[1].children[1].getElementsByTagName('button')[0]);
       expect(I18NApi.setDefaultLanguage).toHaveBeenCalledWith({
         data: { key: 'ar' },

@@ -301,7 +301,7 @@ const EditTranslations = () => {
         </div>
       </div>
       {showModal && (
-        <ConfirmNavigationModal setShowModal={setShowModal} onComfirm={blocker.proceed} />
+        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
       )}
     </div>
   );

@@ -5,12 +5,12 @@ import { Button, Modal } from '../UI';
 
 type confirmationModalType = {
   setShowModal: SetterOrUpdater<boolean>;
-  onComfirm?: () => void;
+  onConfirm?: () => void;
 };
 
 const ConfirmNavigationModal = ({
   setShowModal,
-  onComfirm = () => undefined,
+  onConfirm = () => undefined,
 }: confirmationModalType) => (
   <Modal size="md">
     <Modal.Header>
@@ -29,7 +29,7 @@ const ConfirmNavigationModal = ({
       <Button
         onClick={() => {
           setShowModal(false);
-          onComfirm();
+          onConfirm();
         }}
         className="grow"
       >

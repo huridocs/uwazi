@@ -30,6 +30,9 @@ const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useRecoilValue(settingsAtom);
   const { requestAction } = useApiCaller();
+  const [modalProps, setModalProps] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   const availableLanguages = useLoaderData() as LanguageSchema[];
   const installedLanguages = intersectionBy(availableLanguages, collectionLanguages, 'key');
@@ -39,10 +42,6 @@ const LanguagesList = () => {
   const languages = values(
     merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
   );
-
-  const [modalProps, setModalProps] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [showInstallModal, setShowInstallModal] = useState(false);
 
   const handleAction =
     (
@@ -110,7 +109,7 @@ const LanguagesList = () => {
       handleAction(
         'Language uninstalled success',
         I18NApi.deleteLanguage,
-        'locale',
+        'key',
         row.values as LanguageSchema
       )
     );
