@@ -36,16 +36,16 @@ const editTranslationsAction =
   (): ActionFunction =>
   async ({ params, request }) => {
     const formData = await request.formData();
+    const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
     const { context } = params;
 
-    const formValues = formData.get('form-values') as string | undefined;
-    if (formValues && context) {
-      const data = JSON.parse(formValues);
-      return translationsAPI.post(data, context);
+    if (formIntent === 'form-submit' && context) {
+      const formValues = formData.get('data') as string;
+      return translationsAPI.post(JSON.parse(formValues), context);
     }
 
-    const file = formData.get('uploaded-file') as File | undefined;
-    if (file) {
+    if (formIntent === 'file-upload') {
+      const file = formData.get('data') as File;
       return translationsAPI.importTranslations(file, 'System');
     }
 
@@ -207,20 +207,28 @@ const EditTranslations = () => {
       });
     }
 
-    if (Array.isArray(fetcher.data)) {
+    if (fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data)) {
       setNotifications({
         type: 'sucess',
         text: <Translate>Translations saved</Translate>,
       });
     }
-  }, [fetcher.data, setNotifications]);
+
+    if (fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data)) {
+      setNotifications({
+        type: 'sucess',
+        text: <Translate>Translations imported.</Translate>,
+      });
+    }
+  }, [fetcher.data, fetcher.formData, setNotifications]);
 
   const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
 
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
-    formData.set('form-values', JSON.stringify(values));
+    formData.set('intent', 'form-submit');
+    formData.set('data', JSON.stringify(values));
     fetcher.submit(formData, { method: 'post' });
     reset({}, { keepValues: true });
   };
@@ -230,7 +238,8 @@ const EditTranslations = () => {
 
     if (file) {
       const formData = new FormData();
-      formData.set('uploaded-file', file);
+      formData.set('intent', 'file-upload');
+      formData.set('data', file);
       fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
       reset({}, { keepValues: true });
     }
