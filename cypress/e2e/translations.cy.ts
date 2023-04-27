@@ -41,6 +41,7 @@ describe('Translations', () => {
       cy.contains('button', 'Save').should('be.disabled');
       cy.contains('button', 'Cancel').should('be.disabled');
       cy.get('input[type=text]').should('be.disabled');
+      cy.contains('[data-testid="notifications-container"]', 'Translations saved');
     });
 
     it('Should filter translations that have no untranslated terms', () => {
@@ -49,6 +50,16 @@ describe('Translations', () => {
       cy.contains('label', 'Untranslated Terms').click();
       cy.contains('caption', 'Informe de admisibilidad');
       cy.get('input[type=text]').eq(0).should('have.value', 'Informe de admisibilidad');
+    });
+
+    it('should notify the user if there is an error', () => {
+      cy.clock();
+      cy.intercept('POST', 'api/translations', {
+        statusCode: 400,
+      });
+      cy.contains('button', 'Save').click();
+      cy.contains('[data-testid="notifications-container"]', 'An error occurred');
+      cy.tick(10000);
     });
 
     describe('discard changes', () => {
