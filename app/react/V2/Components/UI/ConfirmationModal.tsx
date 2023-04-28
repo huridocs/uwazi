@@ -60,21 +60,28 @@ const ConfirmationModal = ({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="text"
               onChange={e => setConfirmed(e.currentTarget.value === confirmWord)}
+              data-testid="confirm-input"
             />
           </div>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button buttonStyle="tertiary" onClick={onCancelClick} className="grow">
-          {renderChild(cancelButton)}
+        <Button
+          buttonStyle="tertiary"
+          onClick={onCancelClick}
+          className="grow"
+          data-testid="cancel-button"
+        >
+          {renderChild(cancelButton || 'Cancel')}
         </Button>
         <Button
           onClick={onAcceptClick}
           disabled={!confirmed}
           buttonStyle={!warningText ? 'primary' : 'danger'}
           className="grow"
+          data-testid="accept-button"
         >
-          {renderChild(acceptButton)}
+          {renderChild(acceptButton || 'Accept')}
         </Button>
       </Modal.Footer>
     </Modal>

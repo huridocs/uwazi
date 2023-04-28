@@ -1,3 +1,4 @@
+import '@testing-library/cypress/src/add-commands';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -132,6 +133,9 @@ Cypress.Commands.add(
     );
   }
 );
+Cypress.Commands.add('configureCypressTestingLibrary', config => {
+  cy.configureCypressTestingLibrary(config);
+});
 
 Cypress.on('window:before:load', window => {
   window.document.head.insertAdjacentHTML(

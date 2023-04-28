@@ -5,13 +5,14 @@ import { Provider } from 'react-redux';
 import { Modal } from 'V2/Components/UI/Modal';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
+import { Translate } from 'app/I18N';
 
 const ConfirmationModalStory = {
   title: 'Components/Modal',
   component: Modal,
   parameters: {
     actions: {
-      handles: ['keyup'],
+      handles: ['change'],
     },
   },
 };
@@ -36,19 +37,35 @@ const Template: ComponentStory<typeof ConfirmationModal> = args => (
   </Provider>
 );
 
-const Confirmation = Template.bind({});
+const BasicConfirmation = Template.bind({});
+const TextConfirmation = Template.bind({});
+const WarningConfirmation = Template.bind({});
 
-Confirmation.args = {
+BasicConfirmation.args = {
+  header: 'Delete Confirmation',
+  body: 'Are you sure you want to delete this product?',
+  onAcceptClick: action('accepted'),
+  onCancelClick: action('canceled'),
+};
+TextConfirmation.args = {
   header: 'Delete Confirmation',
   body: 'Are you sure you want to delete this product?',
   acceptButton: 'Yes',
   cancelButton: 'No, cancel',
+  confirmWord: 'CONFIRMATION_TEXT',
+  onAcceptClick: action('accepted'),
+  onCancelClick: action('canceled'),
+};
+WarningConfirmation.args = {
+  header: <Translate>Are you sure</Translate>,
+  body: "You can't undo this action",
+  acceptButton: 'Yes',
+  cancelButton: 'No',
   warningText: 'Other users will be affected by this action',
   confirmWord: 'CONFIRM',
   onAcceptClick: action('accepted'),
   onCancelClick: action('canceled'),
 };
-
-export { Confirmation };
+export { BasicConfirmation, TextConfirmation, WarningConfirmation };
 
 export default ConfirmationModalStory as ComponentMeta<typeof ConfirmationModal>;
