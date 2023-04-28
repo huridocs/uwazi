@@ -28,8 +28,8 @@ export default (app: Application) => {
   app.get('/api/v2/relationships', featureRequired, async (req, res) => {
     const { sharedId } = validateGetRelationships(req.query);
     const service = GetRelationshipService(req);
-    const relationships = await service.getByEntity(sharedId);
-    res.json(relationships);
+    const relationshipsData = await service.getByEntity(sharedId);
+    res.json(relationshipsData);
   });
 
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {

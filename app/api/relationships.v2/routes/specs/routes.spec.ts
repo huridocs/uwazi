@@ -80,14 +80,17 @@ describe('GET relationships', () => {
     });
 
     const response = await request(app).get(`${URL}?sharedId=entity2`).expect(200);
-    expect(response.body).toEqual([
-      {
-        _id: factory.id('relationship1').toString(),
-        from: { entity: 'entity1' },
-        to: { entity: 'entity2' },
-        type: factory.id('type2').toString(),
-      },
-    ]);
+    expect(response.body).toEqual({
+      relationships: [
+        {
+          _id: factory.id('relationship1').toString(),
+          from: { entity: 'entity1' },
+          to: { entity: 'entity2' },
+          type: factory.id('type2').toString(),
+        },
+      ],
+      titleMap: { entity1: 'entity1', entity2: 'entity2' },
+    });
   });
 });
 

@@ -23,10 +23,13 @@ class V2NewRelationshipsBoard extends Component {
     super(props, context);
     this.relationships = [];
     this.newEntryType = this.props.relationTypes[0]._id;
+    this.entityTitlesBySharedId = {};
   }
 
   async componentDidMount() {
-    this.relationships = await getRelationshipsByEntity(this.props.sharedId);
+    const { relationships, titleMap } = await getRelationshipsByEntity(this.props.sharedId);
+    this.relationships = relationships;
+    this.entityTitlesBySharedId = titleMap;
     this.forceUpdate();
   }
 
@@ -34,9 +37,17 @@ class V2NewRelationshipsBoard extends Component {
     this.newEntryType = event.target.value;
   }
 
+  appendTargetTitleToMap() {
+    const { targetDocument } = this.props;
+    const searchResults = this.props.searchResults.toJS();
+    const savedResult = searchResults.find(r => r.sharedId === targetDocument);
+    this.entityTitlesBySharedId[targetDocument] = savedResult.title;
+  }
+
   async saveRelationship() {
     const { sharedId, targetDocument } = this.props;
     const [saved] = await saveRelationship(this.newEntryType, sharedId, targetDocument);
+    this.appendTargetTitleToMap();
     this.relationships.push(saved);
     this.forceUpdate();
   }
@@ -65,7 +76,11 @@ class V2NewRelationshipsBoard extends Component {
             <div>
               {relTypesById[r.type].name}&emsp;
               <Icon icon="arrow-right" />
-              &emsp;{r.to.entity}&emsp;
+              &emsp;
+              {r.to.entity in this.entityTitlesBySharedId
+                ? this.entityTitlesBySharedId[r.to.entity]
+                : r.to.entity}
+              &emsp;
               <button onClick={this.deleteRelationship(r._id).bind(this)}>X</button>
             </div>
           ))}

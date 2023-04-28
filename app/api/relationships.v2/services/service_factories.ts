@@ -61,10 +61,11 @@ const GetRelationshipService = (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
+  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
 
-  const service = new GenericGetRelationshipService(relationshipsDS, authService);
+  const service = new GenericGetRelationshipService(relationshipsDS, authService, entitiesDS);
 
   return service;
 };
