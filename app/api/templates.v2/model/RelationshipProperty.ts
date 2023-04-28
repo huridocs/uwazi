@@ -38,7 +38,10 @@ class RelationshipProperty extends Property {
   }
 
   hasSameQuery(other: RelationshipProperty) {
-    return this.query.every((q, i) => q.isSame(other.query[i]));
+    return (
+      this.query.length === other.query.length &&
+      this.query.every((q, i) => q.isSame(other.query[i]))
+    );
   }
 
   updatedAttributes(other: RelationshipProperty): PropertyUpdateInfo {
