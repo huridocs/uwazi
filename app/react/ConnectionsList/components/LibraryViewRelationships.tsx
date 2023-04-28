@@ -59,7 +59,14 @@ const createRightRelationshipGroups = (
           );
         }
 
-        const entityRelationships = relationship.get('relationships');
+        const entityRelationships = relationship
+          .get('relationships')
+          .filter((rel: any) => rel.get('entity') !== parentEntity.get('sharedId'));
+
+        if (!entityRelationships.size) {
+          return undefined;
+        }
+
         return (
           <Collapsible
             header={header}
@@ -123,15 +130,15 @@ const LibraryViewRelationshipsComp = (props: ComponentProps) => {
   const { hubs, searchResults, parentEntity, parseResults } = props;
 
   useEffect(() => {
-    if (parentEntity) {
+    if (parentEntity && searchResults.get('rows').size) {
       parseResults(searchResults, parentEntity, false);
     }
-  }, [searchResults, parentEntity]);
+  }, [searchResults, parentEntity, parseResults]);
+
   return (
     <>
       <div className="sidepanel-relationships">
         {parentEntity &&
-          parentEntity.get('_id') &&
           hubs.map((hub: any, index: number) => createLabelGroups(props, hub, index))}
       </div>
       <LoadMoreRelationshipsButton />
