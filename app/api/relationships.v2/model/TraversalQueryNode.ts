@@ -1,7 +1,7 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
+import _ from 'lodash';
 import { MatchQueryNode, TemplateRecords } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';
-import _ from 'lodash';
 
 interface TraversalFilters {
   _id?: string;
@@ -206,6 +206,16 @@ export class TraversalQueryNode extends QueryNode {
     const records = _records || [];
     this.matches.forEach((m, index) => m.getTemplates([...path, index], records));
     return records;
+  }
+
+  usesTemplate(templateId: string): boolean {
+    return this.matches.some(match => match.usesTemplate(templateId));
+  }
+
+  usesType(typeId: string): boolean {
+    return (
+      this.filters.types?.includes(typeId) || this.matches.some(match => match.usesType(typeId))
+    );
   }
 
   getRelationTypes(

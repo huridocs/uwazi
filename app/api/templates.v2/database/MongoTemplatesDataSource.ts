@@ -66,7 +66,7 @@ export class MongoTemplatesDataSource
         .find({}, { session: this.getSession() })
         .toArray();
       const properties = templates
-        .map(t => t.properties.map(p => TemplateMappers.propertyDBOToApp(p, t._id)) || [])
+        .map(t => t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
         .flat();
       this._nameToPropertyMap = objectIndex(
         properties,
@@ -95,7 +95,7 @@ export class MongoTemplatesDataSource
     );
 
     return new MongoResultSet(cursor, template =>
-      TemplateMappers.propertyDBOToApp(template.properties, template._id)
+      TemplateMappers.propertyToApp(template.properties, template._id)
     );
   }
 
@@ -113,54 +113,5 @@ export class MongoTemplatesDataSource
       { projection: { _id: 1 }, session: this.getSession() }
     );
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
-  }
-
-  async getAllTemplates(forceRefresh: boolean = false): Promise<Template[]> {
-    if (!this._allTemplates || forceRefresh) {
-      const rawTemplates = await this.getCollection()
-        .find({}, { session: this.getSession() })
-        .toArray();
-      this._allTemplates = rawTemplates.map(t => TemplateMappers.DBOToApp(t));
-    }
-    return this._allTemplates;
-  }
-
-  async getTemplateIdIndex(forceRefresh: boolean = false): Promise<Record<string, Template>> {
-    if (!this._allTemplatesById || forceRefresh) {
-      this._allTemplatesById = objectIndex(
-        await this.getAllTemplates(forceRefresh),
-        t => t.id,
-        t => t
-      );
-    }
-    return this._allTemplatesById;
-  }
-
-  async countQueriesUsing(templateId: string): Promise<number> {
-    const relprops = this.getAllRelationshipProperties();
-    let count = 0;
-    await relprops.forEach(p => {
-      const templatesInQuery = p.query
-        .map(t => t.getTemplates())
-        .flat()
-        .map(r => r.templates)
-        .flat();
-      if (templatesInQuery.includes(templateId)) count += 1;
-    });
-    return count;
-  }
-
-  async countQueriesUsingRelType(relTypeId: string): Promise<number> {
-    const relprops = this.getAllRelationshipProperties();
-    let count = 0;
-    await relprops.forEach(p => {
-      const relTypesInQuery = p.query
-        .map(t => t.getRelationTypes())
-        .flat()
-        .map(r => r.templates)
-        .flat();
-      if (relTypesInQuery.includes(relTypeId)) count += 1;
-    });
-    return count;
   }
 }

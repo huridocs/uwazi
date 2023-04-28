@@ -6,7 +6,7 @@ import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
-import { BuildQuery, TemplateInput, TemplateMappers } from '../database/TemplateMappers';
+import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 
 interface MatchQuery {
@@ -131,7 +131,7 @@ export class CreateTemplateService {
   }
 
   async createRelationshipProperty(property: RelationshipPropertyData) {
-    const query = BuildQuery.build(property.query);
+    const query = TemplateInputMappers.queryToApp(property.query);
     await this.validateQuery(query, property.denormalizedProperty);
     return {
       ...property,
@@ -140,16 +140,12 @@ export class CreateTemplateService {
   }
 
   async markEntityMetadataAsObsolete(templateId: string, properties: string[]) {
-    await this.entitiesDataSource.markMetadataAsChangedByTemplate(templateId, properties);
-  }
-
-  static readTemplateInput(template: TemplateInput) {
-    return TemplateMappers.ApiToApp(template);
+    await this.entitiesDataSource.markMetadataAsChanged([{ template: templateId, properties }]);
   }
 
   async validateUpdateActions(_oldTemplate: TemplateInput, _newTemplate: TemplateInput) {
-    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
-    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
+    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
 
     const updatedProperties = oldTemplate
       .selectUpdatedProperties(newTemplate)
@@ -172,8 +168,8 @@ export class CreateTemplateService {
     _oldTemplate: TemplateInput,
     _newTemplate: TemplateInput
   ) {
-    const oldTemplate = CreateTemplateService.readTemplateInput(_oldTemplate);
-    const newTemplate = CreateTemplateService.readTemplateInput(_newTemplate);
+    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
+    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
 
     const newRelationshipNames = oldTemplate
       .selectNewProperties(newTemplate)
@@ -193,7 +189,13 @@ export class CreateTemplateService {
     );
   }
 
-  async countQueriesUsingTemplate(templateId: string): Promise<number> {
-    return this.templatesDataSource.countQueriesUsing(templateId);
+  async templateIsUsedInQueries(templateId: string) {
+    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    return relProps.some(property => property.queryUsesTemplate(templateId));
+  }
+
+  async relationTypeIsUsedInQueries(typeId: string) {
+    const relProps = this.templatesDataSource.getAllRelationshipProperties();
+    return relProps.some(property => property.queryUsesRelationType(typeId));
   }
 }

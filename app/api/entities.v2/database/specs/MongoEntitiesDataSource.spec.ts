@@ -192,9 +192,11 @@ describe('Relationship fields caching strategy', () => {
         transactionManager
       );
 
-      await ds.markMetadataAsChangedByTemplate(factory.id('template1').toString(), [
-        'relProp1',
-        'relProp2',
+      await ds.markMetadataAsChanged([
+        {
+          template: factory.id('template1').toString(),
+          properties: ['relProp1', 'relProp2'],
+        },
       ]);
 
       const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
