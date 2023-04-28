@@ -10,7 +10,7 @@ describe('ConfirmationModal', () => {
     mount(<BasicConfirmation />);
     cy.contains('Delete Confirmation').should('be.visible');
     cy.contains('Are you sure you want to delete this product?').should('be.visible');
-    cy.findByText('Please type').should('not.exist');
+    cy.contains('Please type').should('not.exist');
   });
 
   it('should check confirmation text to accept action', () => {
@@ -18,11 +18,12 @@ describe('ConfirmationModal', () => {
     cy.contains('Delete Confirmation').should('be.visible');
     cy.contains('Are you sure you want to delete this product?').should('be.visible');
     cy.contains('Please type in CONFIRMATION_TEXT:').should('be.visible');
-    cy.findByText('Yes').parent().should('be.disabled');
+
+    cy.contains('Yes').should('be.disabled');
     cy.get('[data-testid="confirm-input"]').type('CONFIRMATION_');
-    cy.findByText('Yes').parent().should('be.disabled');
+    cy.contains('Yes').should('be.disabled');
     cy.get('[data-testid="confirm-input"]').type('TEXT');
-    cy.findByText('Yes').parent().should('not.be.disabled');
+    cy.contains('Yes').should('not.be.disabled');
   });
 
   it('should show a warning', () => {
