@@ -12,8 +12,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
 <div
   className="PieChart custom-class"
 >
-  <ResponsiveContainer
-    debounce={0}
+  <ForwardRef
     height={222}
     width="100%"
   >
@@ -38,6 +37,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
+      syncMethod="index"
       width={222}
     >
       <Pie
@@ -96,6 +96,12 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
       </Pie>
       <Tooltip
         active={false}
+        allowEscapeViewBox={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -109,11 +115,17 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
-        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
+        reverseDirection={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         separator=" : "
+        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -126,7 +138,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
         wrapperStyle={Object {}}
       />
     </PieChart>
-  </ResponsiveContainer>
+  </ForwardRef>
 </div>
 `;
 
@@ -134,8 +146,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
 <div
   className="PieChart custom-class"
 >
-  <ResponsiveContainer
-    debounce={0}
+  <ForwardRef
     height={222}
     width="100%"
   >
@@ -160,6 +171,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
+      syncMethod="index"
       width={222}
     >
       <Pie
@@ -209,6 +221,12 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
       </Pie>
       <Tooltip
         active={false}
+        allowEscapeViewBox={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -222,11 +240,17 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
-        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
+        reverseDirection={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         separator=" : "
+        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -239,7 +263,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
         wrapperStyle={Object {}}
       />
     </PieChart>
-  </ResponsiveContainer>
+  </ForwardRef>
 </div>
 `;
 
@@ -247,8 +271,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
 <div
   className="PieChart custom-class"
 >
-  <ResponsiveContainer
-    debounce={0}
+  <ForwardRef
     height={222}
     width="100%"
   >
@@ -273,6 +296,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
+      syncMethod="index"
       width={222}
     >
       <Pie
@@ -322,6 +346,12 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
       </Pie>
       <Tooltip
         active={false}
+        allowEscapeViewBox={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -335,11 +365,17 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
-        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
+        reverseDirection={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         separator=" : "
+        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -352,7 +388,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
         wrapperStyle={Object {}}
       />
     </PieChart>
-  </ResponsiveContainer>
+  </ForwardRef>
 </div>
 `;
 
@@ -360,8 +396,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
 <div
   className="PieChart custom-class"
 >
-  <ResponsiveContainer
-    debounce={0}
+  <ForwardRef
     height={222}
     width="100%"
   >
@@ -386,6 +421,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
+      syncMethod="index"
       width={222}
     >
       <Pie
@@ -445,6 +481,12 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
       </Pie>
       <Tooltip
         active={false}
+        allowEscapeViewBox={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -458,11 +500,17 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
-        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
+        reverseDirection={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         separator=" : "
+        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -475,7 +523,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
         wrapperStyle={Object {}}
       />
     </PieChart>
-  </ResponsiveContainer>
+  </ForwardRef>
 </div>
 `;
 
@@ -483,8 +531,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
 <div
   className="PieChart custom-class"
 >
-  <ResponsiveContainer
-    debounce={0}
+  <ForwardRef
     height={222}
     width="100%"
   >
@@ -509,6 +556,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
       reverseStackOrder={false}
       stackOffset="none"
       startAngle={0}
+      syncMethod="index"
       width={222}
     >
       <Pie
@@ -567,6 +615,12 @@ exports[`PieChart Markdown component when passing scatter should display nested 
       </Pie>
       <Tooltip
         active={false}
+        allowEscapeViewBox={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         animationDuration={400}
         animationEasing="ease"
         contentStyle={Object {}}
@@ -580,11 +634,17 @@ exports[`PieChart Markdown component when passing scatter should display nested 
         cursorStyle={Object {}}
         filterNull={true}
         isAnimationActive={true}
-        itemSorter={[Function]}
         itemStyle={Object {}}
         labelStyle={Object {}}
         offset={10}
+        reverseDirection={
+          Object {
+            "x": false,
+            "y": false,
+          }
+        }
         separator=" : "
+        trigger="hover"
         useTranslate3d={false}
         viewBox={
           Object {
@@ -597,7 +657,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
         wrapperStyle={Object {}}
       />
     </PieChart>
-  </ResponsiveContainer>
+  </ForwardRef>
 </div>
 `;
 
