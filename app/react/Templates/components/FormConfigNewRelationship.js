@@ -58,9 +58,7 @@ class FormConfigNewRelationshipComponent extends Component {
           />
         </div>
         <div className="form-group">
-          <label>
-            <Translate>Denormalized property</Translate>
-          </label>
+          <label no-translate>Denormalized property</label>
           <Select
             model={`template.data.properties[${index}].denormalizedProperty`}
             options={templateProperties}
