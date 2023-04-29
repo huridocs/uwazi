@@ -4,6 +4,10 @@ import { Translate } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { RequestParams } from 'app/utils/RequestParams';
 
+interface ApiCallerResult {
+  data?: Promise<any | undefined>;
+  error?: Promise<string | undefined>;
+}
 const getData = async (res: Response) => (res.json ? res.json() : res);
 const getError = async (res: Response) => {
   const json = res.json ? await res.json() : undefined;
@@ -34,7 +38,7 @@ const useApiCaller = () => {
     action: (params: RequestParams) => Promise<Response>,
     requestParams: RequestParams,
     successAction: string
-  ) => {
+  ): Promise<ApiCallerResult> => {
     let data;
     let error;
     try {
@@ -47,10 +51,12 @@ const useApiCaller = () => {
     } catch (e) {
       error = handleError(e);
     }
-    return { data, error };
+    const result1: ApiCallerResult = { data, error: Promise.resolve(error) };
+    return result1;
   };
 
   return { requestAction };
 };
 
+export type { ApiCallerResult };
 export { useApiCaller };
