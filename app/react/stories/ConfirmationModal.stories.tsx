@@ -10,6 +10,10 @@ import { Translate } from 'app/I18N';
 const ConfirmationModalStory = {
   title: 'Components/Modal',
   component: Modal,
+  argTypes: {
+    onAcceptClick: { action: 'onAcceptClick' },
+    onCancelClick: { action: 'onCancelClick' },
+  },
   parameters: {
     actions: {
       handles: ['change'],

@@ -18,12 +18,25 @@ describe('ConfirmationModal', () => {
     cy.contains('Delete Confirmation').should('be.visible');
     cy.contains('Are you sure you want to delete this product?').should('be.visible');
     cy.contains('Please type in CONFIRMATION_TEXT:').should('be.visible');
-
     cy.contains('Yes').should('be.disabled');
     cy.get('[data-testid="confirm-input"]').type('CONFIRMATION_');
     cy.contains('Yes').should('be.disabled');
     cy.get('[data-testid="confirm-input"]').type('TEXT');
     cy.contains('Yes').should('not.be.disabled');
+  });
+
+  it('should execute accept action', () => {
+    const onAcceptClick = cy.stub().as('accept');
+    mount(<BasicConfirmation onAcceptClick={onAcceptClick} />);
+    cy.contains('Accept').click();
+    cy.get('@accept').should('have.been.called');
+  });
+
+  it('should execute cancel action', () => {
+    const onCancelClick = cy.stub().as('cancel');
+    mount(<BasicConfirmation onCancelClick={onCancelClick} />);
+    cy.contains('Cancel').click();
+    cy.get('@cancel').should('have.been.called');
   });
 
   it('should show a warning', () => {
