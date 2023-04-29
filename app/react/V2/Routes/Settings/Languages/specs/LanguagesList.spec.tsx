@@ -113,11 +113,15 @@ describe('LanguagesList', () => {
     });
   });
 
+  const clickOnAction = async (row: number, column: number) => {
+    await act(async () => {
+      fireEvent.click(within(rows[row].children[column] as HTMLElement).getByRole('button'));
+    });
+  };
+
   describe('actions', () => {
     it('should reset a language', async () => {
-      await act(async () => {
-        fireEvent.click(within(rows[3].children[2] as HTMLElement).getByRole('button'));
-      });
+      await clickOnAction(3, 2);
       await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: { value: 'CONFIRM' },
@@ -135,9 +139,7 @@ describe('LanguagesList', () => {
     });
 
     it('should set a language as default', async () => {
-      await act(() => {
-        fireEvent.click(rows[1].children[1].getElementsByTagName('button')[0]);
-      });
+      await clickOnAction(1, 1);
       expect(requestActionMock).toHaveBeenCalledWith(
         I18NApi.setDefaultLanguage,
         {
@@ -148,9 +150,7 @@ describe('LanguagesList', () => {
       );
     });
     it('should allow to cancel an action', async () => {
-      await act(async () => {
-        fireEvent.click(within(rows[1].children[3] as HTMLElement).getByRole('button'));
-      });
+      await clickOnAction(1, 3);
       await act(async () => {
         fireEvent.change(screen.getByRole('textbox'), {
           target: { value: 'CONFIRM' },

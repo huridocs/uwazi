@@ -25,16 +25,12 @@ describe('ConfirmationModal', () => {
     cy.contains('Yes').should('not.be.disabled');
   });
 
-  it('should execute accept action', () => {
+  it('should execute actions', () => {
     const onAcceptClick = cy.stub().as('accept');
-    mount(<BasicConfirmation onAcceptClick={onAcceptClick} />);
+    const onCancelClick = cy.stub().as('cancel');
+    mount(<BasicConfirmation onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />);
     cy.contains('Accept').click();
     cy.get('@accept').should('have.been.called');
-  });
-
-  it('should execute cancel action', () => {
-    const onCancelClick = cy.stub().as('cancel');
-    mount(<BasicConfirmation onCancelClick={onCancelClick} />);
     cy.contains('Cancel').click();
     cy.get('@cancel').should('have.been.called');
   });
