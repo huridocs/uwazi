@@ -1,10 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`StackedDualBarChart should allow overriding default data and label and map the Legend payload 1`] = `
-<ResponsiveContainer
-  debounce={0}
+<ForwardRef
   height={320}
-  width="100%"
 >
   <BarChart
     barCategoryGap="10%"
@@ -31,18 +29,13 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
     }
     reverseStackOrder={false}
     stackOffset="none"
+    syncMethod="index"
   >
     <XAxis
       allowDataOverflow={false}
       allowDecimals={true}
       allowDuplicatedCategory={true}
       dataKey="xAxisName"
-      domain={
-        Array [
-          0,
-          "auto",
-        ]
-      }
       height={30}
       hide={false}
       label=""
@@ -65,12 +58,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       allowDataOverflow={false}
       allowDecimals={true}
       allowDuplicatedCategory={true}
-      domain={
-        Array [
-          0,
-          "auto",
-        ]
-      }
       height={0}
       hide={false}
       mirror={false}
@@ -101,6 +88,12 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
     />
     <Tooltip
       active={false}
+      allowEscapeViewBox={
+        Object {
+          "x": false,
+          "y": false,
+        }
+      }
       animationDuration={400}
       animationEasing="ease"
       content={
@@ -131,11 +124,17 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       cursorStyle={Object {}}
       filterNull={true}
       isAnimationActive={true}
-      itemSorter={[Function]}
       itemStyle={Object {}}
       labelStyle={Object {}}
       offset={10}
+      reverseDirection={
+        Object {
+          "x": false,
+          "y": false,
+        }
+      }
       separator=" : "
+      trigger="hover"
       useTranslate3d={false}
       viewBox={
         Object {
@@ -159,8 +158,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       layout="vertical"
       legendType="rect"
       minPointSize={0}
-      onAnimationEnd={[Function]}
-      onAnimationStart={[Function]}
       shape={
         <ColoredBar
           color="default"
@@ -183,8 +180,6 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       layout="vertical"
       legendType="rect"
       minPointSize={0}
-      onAnimationEnd={[Function]}
-      onAnimationStart={[Function]}
       shape={
         <ColoredBar
           color="light"
@@ -218,14 +213,12 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       verticalAlign="bottom"
     />
   </BarChart>
-</ResponsiveContainer>
+</ForwardRef>
 `;
 
 exports[`StackedDualBarChart should render a BarChart with default values 1`] = `
-<ResponsiveContainer
-  debounce={0}
+<ForwardRef
   height={320}
-  width="100%"
 >
   <BarChart
     barCategoryGap="10%"
@@ -243,18 +236,13 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
     }
     reverseStackOrder={false}
     stackOffset="none"
+    syncMethod="index"
   >
     <XAxis
       allowDataOverflow={false}
       allowDecimals={true}
       allowDuplicatedCategory={true}
       dataKey="xAxisName"
-      domain={
-        Array [
-          0,
-          "auto",
-        ]
-      }
       height={30}
       hide={false}
       label=""
@@ -277,12 +265,6 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       allowDataOverflow={false}
       allowDecimals={true}
       allowDuplicatedCategory={true}
-      domain={
-        Array [
-          0,
-          "auto",
-        ]
-      }
       height={0}
       hide={false}
       mirror={false}
@@ -313,6 +295,12 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
     />
     <Tooltip
       active={false}
+      allowEscapeViewBox={
+        Object {
+          "x": false,
+          "y": false,
+        }
+      }
       animationDuration={400}
       animationEasing="ease"
       content={
@@ -334,11 +322,17 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       cursorStyle={Object {}}
       filterNull={true}
       isAnimationActive={true}
-      itemSorter={[Function]}
       itemStyle={Object {}}
       labelStyle={Object {}}
       offset={10}
+      reverseDirection={
+        Object {
+          "x": false,
+          "y": false,
+        }
+      }
       separator=" : "
+      trigger="hover"
       useTranslate3d={false}
       viewBox={
         Object {
@@ -362,8 +356,6 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       layout="vertical"
       legendType="rect"
       minPointSize={0}
-      onAnimationEnd={[Function]}
-      onAnimationStart={[Function]}
       shape={
         <ColoredBar
           color="default"
@@ -386,8 +378,6 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       layout="vertical"
       legendType="rect"
       minPointSize={0}
-      onAnimationEnd={[Function]}
-      onAnimationStart={[Function]}
       shape={
         <ColoredBar
           color="light"
@@ -406,5 +396,5 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       verticalAlign="bottom"
     />
   </BarChart>
-</ResponsiveContainer>
+</ForwardRef>
 `;
