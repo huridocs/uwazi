@@ -70,7 +70,7 @@ class V2NewRelationshipsBoard extends Component {
     return (
       <>
         <div>{sharedId}</div>
-        <div>Existing:</div>
+        <div no-translate>Existing:</div>
         <div>
           {this.relationships.map(r => (
             <div>
@@ -81,12 +81,14 @@ class V2NewRelationshipsBoard extends Component {
                 ? this.entityTitlesBySharedId[r.to.entity]
                 : r.to.entity}
               &emsp;
-              <button onClick={this.deleteRelationship(r._id).bind(this)}>X</button>
+              <button onClick={this.deleteRelationship(r._id).bind(this)} no-translate>
+                X
+              </button>
             </div>
           ))}
         </div>
         <br />
-        <div>Add new:</div>
+        <div no-translate>Add new:</div>
         <div>
           <select
             name="newEntryTypeSelector"
@@ -108,7 +110,11 @@ class V2NewRelationshipsBoard extends Component {
             disabled
           />
           &emsp;
-          <button disabled={!targetDocument} onClick={this.saveRelationship.bind(this)}>
+          <button
+            disabled={!targetDocument}
+            onClick={this.saveRelationship.bind(this)}
+            no-translate
+          >
             Save
           </button>
           <SearchForm />

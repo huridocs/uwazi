@@ -310,7 +310,9 @@ class EntityViewer extends Component {
                         to={`/entity/${rawEntity.sharedId}/newrelationships`}
                       >
                         <Icon icon="exchange-alt" />*
-                        <span className="tab-link-tooltip">New Relationships</span>
+                        <span className="tab-link-tooltip" no-translate>
+                          New Relationships
+                        </span>
                       </I18NLink>
                     </TabLink>
                   </li>
