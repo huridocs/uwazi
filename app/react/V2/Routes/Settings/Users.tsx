@@ -1,6 +1,8 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Tab, Tabs } from 'app/V2/Components/UI';
+import { Checkbox } from 'flowbite-react';
+
 import 'react-tabs/style/react-tabs.css';
 import { ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
@@ -49,7 +51,18 @@ const protectionPill = ({ cell }: any) => {
   );
 };
 
+const selectRowComponent = ({ cell }: any) => {
+  return <Checkbox />;
+};
+
 const columns = [
+  {
+    Header: '',
+    accessor: 'select',
+    className: 'w-0',
+    Cell: selectRowComponent,
+    disableSortBy: true,
+  },
   { Header: 'USERNAME', accessor: 'username', className: 'w-1/3', disableSortBy: true },
   { Header: 'PROTECTION', accessor: 'using2fa', Cell: protectionPill, className: 'w-0' },
   {
