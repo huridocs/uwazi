@@ -1,16 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-pascal-case */
-import { Field, actions as formActions } from 'react-redux-form';
+import { Control, Field, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { createSelector } from 'reselect';
-
-import { Select } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
-import { Control } from 'react-redux-form';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { RelationshipsQueryBuilder } from './RelationshipsQueryBuilder/RelationshipsQueryBuilder';
 
@@ -31,7 +26,7 @@ class FormConfigNewRelationshipComponent extends Component {
   }
 
   render() {
-    const { index, type, labelError, templateProperties, inheritSelectPropertyType } = this.props;
+    const { index, type, labelError, inheritSelectPropertyType } = this.props;
 
     const labelClass = labelError ? 'form-group has-error' : 'form-group';
     const canBeFilter =
@@ -58,16 +53,10 @@ class FormConfigNewRelationshipComponent extends Component {
           />
         </div>
         <div className="form-group">
-          <label>
-            <Translate>Denormalized property</Translate>
-          </label>
-          <Select
-            model={`template.data.properties[${index}].denormalizedProperty`}
-            options={templateProperties}
-            onChange={this.onInheritTypeChange}
-            optionsLabel="label"
-            optionsValue="_id"
-          />
+          <label no-translate>Denormalized property</label>
+          <Field model={`template.data.properties[${index}].denormalizedProperty`}>
+            <input id="denormalizedProperty" className="form-control" />
+          </Field>
         </div>
         <PropertyConfigOptions canBeFilter={canBeFilter} index={index} type={type} />
       </div>
@@ -77,53 +66,21 @@ class FormConfigNewRelationshipComponent extends Component {
 
 FormConfigNewRelationshipComponent.defaultProps = {
   labelError: false,
-  relationTypeError: false,
-  showInheritOption: false,
   showInheritSelect: false,
-  templateId: null,
   inheritSelectPropertyType: null,
 };
 
 FormConfigNewRelationshipComponent.propTypes = {
-  templates: PropTypes.instanceOf(Immutable.List).isRequired,
-  relationTypes: PropTypes.instanceOf(Immutable.List).isRequired,
-  templateProperties: PropTypes.array.isRequired,
   index: PropTypes.number.isRequired,
   type: PropTypes.string.isRequired,
   labelError: PropTypes.bool,
-  relationTypeError: PropTypes.bool,
-  showInheritOption: PropTypes.bool,
   showInheritSelect: PropTypes.bool,
-  templateId: PropTypes.string,
   inheritSelectPropertyType: PropTypes.string,
   resetFormValue: PropTypes.func.isRequired,
 };
 
-const getTemplateProperties = createSelector(
-  state => state.templates,
-  (state, props) =>
-    state.template.formState.properties[props.index].content
-      ? state.template.formState.properties[props.index].content.value
-      : null,
-  (templates, content) => {
-    const targetTemplate = templates.find(template => template.get('_id') === content);
-    return targetTemplate ? targetTemplate.get('properties').toJS() : [];
-  }
-);
-
-const getInheritSelectPropertyType = createSelector(
-  getTemplateProperties,
-  (state, props) => state.template.data.properties[props.index].inherit?.property,
-  (templateProperties, inheritedPropertyId) => {
-    const inheritedProperty = templateProperties.find(p => p._id === inheritedPropertyId);
-    return inheritedProperty && inheritedProperty.type;
-  }
-);
-
 function mapStateToProps(state, props) {
   const { template, templates, relationTypes } = state;
-
-  const templateProperties = getTemplateProperties(state, props);
 
   return {
     labelError:
@@ -133,17 +90,6 @@ function mapStateToProps(state, props) {
     relationTypeError:
       template.formState.$form.errors[`properties.${props.index}.relationType.required`] &&
       template.formState.$form.submitFailed,
-
-    showInheritOption: Boolean(
-      template.formState.properties[props.index].content && templateProperties.length
-    ),
-
-    showInheritSelect: Boolean(
-      template.formState.properties[props.index].inherit?.property?.value &&
-        templateProperties.length
-    ),
-    inheritSelectPropertyType: getInheritSelectPropertyType(state, props),
-    templateProperties,
     templateId: template.data._id,
     templates,
     relationTypes,

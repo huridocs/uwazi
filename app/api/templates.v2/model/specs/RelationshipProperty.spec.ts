@@ -60,3 +60,104 @@ describe('queryUsesRelationType', () => {
     expect(property.queryUsesRelationType('relType3')).toBe(false);
   });
 });
+
+describe('hasSameQuery', () => {
+  const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
+    new TraversalQueryNode('out', { types: ['relType2'] }, [
+      new MatchQueryNode({}, [
+        new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+        new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+      ]),
+    ]),
+    new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+  ]);
+
+  it('should return true if the queries are the same', () => {
+    const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.hasSameQuery(property2)).toBe(true);
+  });
+
+  it('should return false if the queries differ in attributes', () => {
+    const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['different rel type'] }, [new MatchQueryNode()]),
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.hasSameQuery(property2)).toBe(false);
+  });
+
+  it('should return false if the queries have branches swap', () => {
+    const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.hasSameQuery(property2)).toBe(false);
+  });
+
+  it('should return false if the queries have different quantity of branches', () => {
+    const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+        ]),
+      ]),
+    ]);
+
+    const property3 = fixtureFactory.v2.application.relationshipProperty('prop3', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+      new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+    ]);
+
+    const property4 = fixtureFactory.v2.application.relationshipProperty('prop4', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    const property5 = fixtureFactory.v2.application.relationshipProperty('prop5', 'template1', [
+      new TraversalQueryNode('out', { types: ['relType2'] }, [
+        new MatchQueryNode({}, [
+          new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
+          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+          new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+        ]),
+      ]),
+      new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.hasSameQuery(property2)).toBe(false);
+    expect(property.hasSameQuery(property3)).toBe(false);
+    expect(property.hasSameQuery(property4)).toBe(false);
+    expect(property.hasSameQuery(property5)).toBe(false);
+  });
+});
