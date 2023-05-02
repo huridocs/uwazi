@@ -6669,10 +6669,10 @@ ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.12.4, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^8.0.0, ajv@^8.11.2, ajv@^8.8.0:
-  version "8.11.2"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.11.2.tgz#aecb20b50607acf2569b6382167b65a96008bb78"
-  integrity sha512-E4bfmKAhGiSTvMfL1Myyycaub+cUEU2/IvpylXkUu7CHBkBj1f/ikdzbD7YQ6FKUbixDxeYvB/xY4fvyroDlQg==
+ajv@^8.0.0, ajv@^8.12.0, ajv@^8.8.0:
+  version "8.12.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.12.0.tgz#d1a0527323e22f53562c567c00991577dfbe19d1"
+  integrity sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -10614,10 +10614,10 @@ eslint-module-utils@^2.7.3:
   dependencies:
     debug "^3.2.7"
 
-eslint-plugin-cypress@^2.13.2:
-  version "2.13.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-2.13.2.tgz#b42b763f449ff713cecf6bdf1903e7cee6e48bfc"
-  integrity sha512-LlwjnBTzuKuC0A4H0RxVjs0YeAWK+CD1iM9Dp8un3lzT713ePQxfpPstCD+9HSAss8emuE3b2hCNUST+NrUwKw==
+eslint-plugin-cypress@^2.13.3:
+  version "2.13.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-2.13.3.tgz#5fc1afdc939aaa7daa9181f651f2f35429733ff2"
+  integrity sha512-nAPjZE5WopCsgJwl3vHm5iafpV+ZRO76Z9hMyRygWhmg5ODXDPd+9MaPl7kdJ2azj+sO87H3P1PRnggIrz848g==
   dependencies:
     globals "^11.12.0"
 
