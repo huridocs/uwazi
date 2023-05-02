@@ -7,8 +7,11 @@ import { ToggleButton } from './ToggleButton';
 import { InputField } from './InputField';
 import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
+import { Tabs, Tab } from './Tabs';
 
 export {
+  Tab,
+  Tabs,
   Button,
   Modal,
   NavigationHeader,

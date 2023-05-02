@@ -1,8 +1,10 @@
+import React from 'react';
+import { IncomingHttpHeaders } from 'http';
+import { Tab, Tabs } from 'app/V2/Components/UI';
+import 'react-tabs/style/react-tabs.css';
 import { ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { Button, Pill, Table } from 'app/V2/Components/UI';
-import { IncomingHttpHeaders } from 'http';
-import React from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import * as usersAPI from 'V2/api/users';
 
@@ -36,7 +38,7 @@ const protectionPill = ({ cell }: any) => {
   if (cell.value) {
     return (
       <Pill color="gray">
-        <Translate>2fa</Translate>
+        <Translate>Password + 2fa</Translate>
       </Pill>
     );
   }
@@ -76,7 +78,16 @@ const Users = () => {
   const users = (useLoaderData() as ClientUserSchema[]) || [];
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
-      <Table columns={columns} data={users} title={<Translate>Users</Translate>} />
+      <div className="p-4">
+        <Tabs>
+          <Tab label="Users">
+            <Table columns={columns} data={users} title={<Translate>Users</Translate>} />
+          </Tab>
+          <Tab label="Groups">
+            <div>This is the groups tab</div>
+          </Tab>
+        </Tabs>
+      </div>
     </div>
   );
 };

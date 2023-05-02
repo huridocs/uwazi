@@ -23,7 +23,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
           <I18NLink to="settings/users" activeclassname="active" className="list-group-item">
-            <Translate>Users</Translate>
+            <Translate>Users & Groups</Translate>
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
