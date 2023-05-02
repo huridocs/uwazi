@@ -178,6 +178,65 @@ describe('Relationship fields caching strategy', () => {
         { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
       ]);
     });
+
+    it('should invalidate the cache for the provided properties in the provided template, in all languages', async () => {
+      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
+      const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
+      const db = getConnection();
+      const transactionManager = new MongoTransactionManager(getClient());
+      const ds = new MongoEntitiesDataSource(
+        db,
+        new MongoTemplatesDataSource(db, transactionManager),
+        relationshipsDsMock,
+        settingsDsMock,
+        transactionManager
+      );
+
+      await ds.markMetadataAsChanged([
+        {
+          template: factory.id('template1').toString(),
+          properties: ['relProp1', 'relProp2'],
+        },
+      ]);
+
+      const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
+      expect(
+        entities?.map(e => ({
+          sharedId: e.sharedId,
+          language: e.language,
+          obsoleteMetadata: e.obsoleteMetadata,
+        }))
+      ).toMatchObject([
+        { sharedId: 'entity1', language: 'en', obsoleteMetadata: ['relProp1', 'relProp2'] },
+        { sharedId: 'entity1', language: 'pt', obsoleteMetadata: ['relProp1', 'relProp2'] },
+        { sharedId: 'entity2', language: 'en', obsoleteMetadata: ['relProp1', 'relProp2'] },
+        { sharedId: 'entity2', language: 'pt', obsoleteMetadata: ['relProp1', 'relProp2'] },
+        {
+          sharedId: 'entity3',
+          language: 'en',
+          obsoleteMetadata: ['relProp3', 'relProp1', 'relProp2'],
+        },
+        {
+          sharedId: 'entity3',
+          language: 'pt',
+          obsoleteMetadata: ['relProp3', 'relProp1', 'relProp2'],
+        },
+        {
+          sharedId: 'entity4',
+          language: 'en',
+          obsoleteMetadata: ['relProp4', 'relProp1', 'relProp2'],
+        },
+        {
+          sharedId: 'entity4',
+          language: 'pt',
+          obsoleteMetadata: ['relProp4', 'relProp1', 'relProp2'],
+        },
+        { sharedId: 'inherit_target_1', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_1', language: 'pt', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
+      ]);
+    });
   });
 
   describe('When loading some entities', () => {

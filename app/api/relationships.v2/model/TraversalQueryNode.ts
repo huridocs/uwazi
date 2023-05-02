@@ -1,5 +1,6 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
-import { MatchQueryNode } from './MatchQueryNode';
+import _ from 'lodash';
+import { MatchQueryNode, TemplateRecords } from './MatchQueryNode';
 import { QueryNode } from './QueryNode';
 
 interface TraversalFilters {
@@ -72,6 +73,15 @@ export class TraversalQueryNode extends QueryNode {
 
   getParent() {
     return this.parent;
+  }
+
+  isSame(other: TraversalQueryNode): boolean {
+    return (
+      this.direction === other.direction &&
+      _.isEqual(this.filters, other.filters) &&
+      this.matches.length === other.matches.length &&
+      this.matches.every((match, index) => match.isSame(other.matches[index]))
+    );
   }
 
   chainsDecomposition(): TraversalQueryNode[] {
@@ -187,6 +197,42 @@ export class TraversalQueryNode extends QueryNode {
 
   shallowClone(matches?: MatchQueryNode[]) {
     return new TraversalQueryNode(this.direction, { ...this.filters }, matches ?? []);
+  }
+
+  getTemplates(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    this.matches.forEach((m, index) => m.getTemplates([...path, index], records));
+    return records;
+  }
+
+  usesTemplate(templateId: string): boolean {
+    return this.matches.some(match => match.usesTemplate(templateId));
+  }
+
+  usesType(typeId: string): boolean {
+    return (
+      this.filters.types?.includes(typeId) || this.matches.some(match => match.usesType(typeId))
+    );
+  }
+
+  getRelationTypes(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    records.push({
+      path,
+      templates: this.filters.types || [],
+    });
+    this.matches.forEach((m, index) => m.getRelationTypes([...path, index], records));
+    return records;
+  }
+
+  getTemplatesInLeaves(path: number[] = []): { path: number[]; templates: (string | 'ALL')[] }[] {
+    return this.matches.map((m, index) => m.getTemplatesInLeaves([...path, index])).flat();
   }
 
   static forRelationship(

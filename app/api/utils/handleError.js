@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
+import { ValidationError } from 'api/common.v2/validation/ValidationError';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -66,6 +67,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error.name === 'ValidationError') {
     result = { code: 422, message: error.message, validations: error.properties };
+  }
+
+  if (error instanceof ValidationError) {
+    result = { code: 422, message: error.message, validations: error.errors };
   }
 
   if (error instanceof UnauthorizedError) {

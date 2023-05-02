@@ -19,6 +19,7 @@ import FormConfigCommon from './FormConfigCommon';
 import FormConfigMultimedia from './FormConfigMultimedia';
 import { FormConfigDate } from './FormConfigDate';
 import Icons from './Icons';
+import { FormConfigNewRelationship } from './FormConfigNewRelationship';
 
 const isLabelDuplicated = (index, template, formState) => {
   const commonPropIndex = index + template.commonProperties.length;
@@ -86,14 +87,7 @@ class MetadataProperty extends Component {
 
       // relationships v2:
       case 'newRelationship':
-        defaultInput = (
-          <FormConfigInput
-            type={type}
-            index={index}
-            query={this.props.query}
-            denormalizedProperty={this.props.denormalizedProperty}
-          />
-        );
+        defaultInput = <FormConfigNewRelationship type={type} index={index} />;
         break;
 
       default:
