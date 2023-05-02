@@ -3,7 +3,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
-const getGroups = async (requestParams: RequestParams<ClientUserGroupSchema>) => {
+const getGroups = async (requestParams: RequestParams) => {
   const response = await api.get('usergroups', requestParams);
   return response.json;
 };
