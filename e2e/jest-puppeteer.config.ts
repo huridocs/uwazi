@@ -5,7 +5,7 @@ module.exports = {
   launch: {
     dumpio: false,
     headless: true,
-    slowMo: 5,
+    slowMo: 7,
     defaultViewport: null,
     devtools: false,
     args: [

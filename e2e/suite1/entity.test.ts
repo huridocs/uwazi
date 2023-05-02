@@ -11,6 +11,7 @@ import { goToRestrictedEntities } from '../helpers/publishedFilter';
 import { refreshIndex } from '../helpers/elastichelpers';
 import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 import { changeLanguage } from '../helpers/changeLanguage';
+import { host } from '../config';
 
 const entityTitle = 'Entity with supporting files';
 const webAttachments = {
@@ -142,13 +143,15 @@ describe('Entities', () => {
         '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       );
       await uploadFileInMetadataField(
-        `${__dirname}/../test_files/short-video.mp4`,
+        `${__dirname}/../test_files/short-video.webm`,
         'input[aria-label=fileInput]'
       );
       await saveEntityAndClosePanel();
     });
 
     it('should check the entity', async () => {
+      await page.goto(`${host}/library`);
+      await goToRestrictedEntities();
       await expect(page).toClick('.item-name span', {
         text: 'Entity with media files',
       });
@@ -172,7 +175,7 @@ describe('Entities', () => {
       ]);
 
       const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-      expect(fileList).toEqual(['batman.jpg', 'short-video.mp4']);
+      expect(fileList).toEqual(['batman.jpg', 'short-video.webm']);
     });
   });
 

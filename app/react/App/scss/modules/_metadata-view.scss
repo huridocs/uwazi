@@ -172,6 +172,11 @@ ul.comma-separated li {
   }
 }
 
+@mixin media-error {
+  padding: 10px;
+  border: 1px #ff775c solid;
+}
+
 dl.metadata-type-multimedia {
   dd {
     text-align: center;
@@ -185,6 +190,10 @@ dl.metadata-type-multimedia {
       max-width: calc(100% - 10px);
       margin: 5px;
     }
+  }
+
+  .media-error {
+    @include media-error();
   }
 }
 
@@ -200,6 +209,10 @@ dl.metadata-type-multimedia {
 
 .metadata-extractor-container {
   position: relative;
+
+  .media-error {
+    @include media-error();
+  }
 
   .multiselect-add-value {
     button {

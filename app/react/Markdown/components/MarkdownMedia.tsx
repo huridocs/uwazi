@@ -62,6 +62,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     timeSeconds: '00',
     label: '',
   });
+  const [errorFlag, setErrorFlag] = useState(false);
   const { options } = propsToConfig(props);
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
@@ -262,27 +263,34 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    if (mediaURL === '' && config.url) {
+    if (config.url) {
       fetch(config.url)
         .then(async res => res.blob())
         .then(blob => {
+          setErrorFlag(false);
           setMediaURL(URL.createObjectURL(blob));
         })
         .catch(_e => {});
     }
-  }, [config.url, mediaURL]);
 
-  useEffect(
-    () => () => {
-      URL.revokeObjectURL(mediaURL);
-    },
-    [mediaURL]
-  );
+    return () => {
+      setErrorFlag(false);
+      return URL.revokeObjectURL(mediaURL);
+    };
+  }, [config.url]);
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
   if (compact) {
     dimensions.height = '100%';
+  }
+
+  if (errorFlag) {
+    return (
+      <div className="media-error">
+        <Translate>This file type is not supported on media fields</Translate>
+      </div>
+    );
   }
 
   return (
@@ -301,8 +309,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           onPlay={() => {
             setVideoPlaying(true);
           }}
+          onError={e => {
+            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+              setMediaURL('');
+              setErrorFlag(true);
+            }
+          }}
         />
       </div>
+
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && (
         <div className="timelinks-form">

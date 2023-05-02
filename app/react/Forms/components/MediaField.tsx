@@ -59,6 +59,11 @@ const MediaField = (props: MediaFieldProps) => {
     multipleEdition,
   } = props;
   const [openModal, setOpenModal] = useState(false);
+  const [imageRenderError, setImageRenderError] = useState(false);
+
+  useEffect(() => {
+    setImageRenderError(false);
+  }, [localAttachments]);
 
   const handleCloseMediaModal = () => {
     setOpenModal(false);
@@ -110,12 +115,34 @@ const MediaField = (props: MediaFieldProps) => {
         )}
       </div>
 
-      {file.fileURL &&
-        (type === MediaModalType.Image ? (
-          <img src={file.fileURL} alt="" />
-        ) : (
-          <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />
-        ))}
+      {(() => {
+        if (imageRenderError) {
+          return (
+            <div className="media-error">
+              <Translate>This file type is not supported on media fields</Translate>
+            </div>
+          );
+        }
+        if (
+          (file.originalValue &&
+            file.supportingFile &&
+            file.supportingFile.mimetype?.search(/image\/*/) !== -1) ||
+          type === MediaModalType.Image
+        ) {
+          return (
+            <img
+              src={file.fileURL}
+              alt=""
+              onError={() => {
+                setImageRenderError(true);
+              }}
+            />
+          );
+        }
+        if (file.fileURL) {
+          return <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />;
+        }
+      })()}
 
       <MediaModal
         isOpen={openModal}
