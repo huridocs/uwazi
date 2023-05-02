@@ -4,6 +4,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/model/MatchQueryNode';
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
+import { createError } from 'api/utils';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
@@ -156,10 +157,11 @@ export class CreateTemplateService {
     );
 
     if (updatesDenormalizedProperty.length) {
-      throw new Error(
+      throw createError(
         `Cannot update denormalized property of a relationship property. The following properties try to do so: ${updatesDenormalizedProperty
           .map(info => info.newProperty.name)
-          .join(', ')}`
+          .join(', ')}`,
+        400
       );
     }
   }

@@ -14,6 +14,11 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
   optionalProperties: {
     _id: { type: 'string' },
     denormalizedProperty: { type: 'string' },
+    noLabel: { type: 'boolean' },
+    required: { type: 'boolean' },
+    showInCard: { type: 'boolean' },
+    filter: { type: 'boolean' },
+    defaultfilter: { type: 'boolean' },
   },
   definitions: {
     query: {

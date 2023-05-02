@@ -16,4 +16,9 @@ export interface RelationshipPropertyData {
   name: string;
   query: TraverseQuery[];
   denormalizedProperty?: string;
+  noLabel?: boolean;
+  required?: boolean;
+  showInCard?: boolean;
+  filter?: boolean;
+  defaultfilter?: boolean;
 }
