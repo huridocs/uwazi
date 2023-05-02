@@ -63,7 +63,7 @@ const PageContent = ({ withOverlay, title }: { withOverlay: boolean; title: stri
         className="border-2 rounded border-primary-400 p-1 bg-primary-400 text-white"
         onClick={() => setShowSidepanel(!showSidepanel)}
       >
-        Open/Close sidepanel button
+        Open/Close sidepanel
       </button>
     </main>
   );

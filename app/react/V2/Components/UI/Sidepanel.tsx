@@ -22,7 +22,12 @@ const Sidepanel = () => {
         >
           <div className="flex mb-2 text-gray-500">
             <h1 className="grow uppercase font-bold">{title}</h1>
-            <button type="button" className="justify-end" onClick={() => setIsOpen(false)}>
+            <button
+              type="button"
+              className="justify-end"
+              data-testid="Close sidepanel"
+              onClick={() => setIsOpen(false)}
+            >
               <span className="sr-only">
                 <Translate>Close</Translate>
               </span>
