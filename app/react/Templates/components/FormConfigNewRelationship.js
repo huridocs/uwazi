@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
-import { Select } from 'app/ReactReduxForms';
 import { Translate } from 'app/I18N';
 import PropertyConfigOptions from './PropertyConfigOptions';
 import { RelationshipsQueryBuilder } from './RelationshipsQueryBuilder/RelationshipsQueryBuilder';
