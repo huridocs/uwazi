@@ -13,10 +13,10 @@ const SidepanelStory = {
 
 const SidepanelContent = () => <p>The content of my sidepanel</p>;
 
-const PageContent = ({ withOverlay }: { withOverlay: boolean }) => {
+const PageContent = ({ withOverlay, title }: { withOverlay: boolean; title: string }) => {
   const [showSidepanel, setShowSidepanel] = useRecoilState(sidepanelShow);
   const setSidepanel = useSetRecoilState(sidepanelConfig);
-  setSidepanel({ content: <SidepanelContent />, withOverlay });
+  setSidepanel({ content: <SidepanelContent />, withOverlay, title });
 
   return (
     <main>
@@ -39,8 +39,16 @@ const PageContent = ({ withOverlay }: { withOverlay: boolean }) => {
       <p className="mb-1">
         Fusce id mi eu mauris bibendum dignissim nec in sem. Sed ultrices varius mauris quis
         placerat. Donec imperdiet sodales diam sed imperdiet. Aenean a nisl venenatis lectus mattis
-        pellentesque. Duis fermentum ante a ultricies feugiat. Proin dapibus luctus purus id
-        viverra. Aenean a aliquet nibh. Aenean facilisis justo quis sem auctor, nec mollis tortor
+        pellentesque. Duis fermentum ante a ultricies feugiat.&nbsp;
+        <a
+          href="http://www.duckduckgo.com"
+          target="_blank"
+          rel="noreferrer"
+          className="font-medium text-blue-600 underline"
+        >
+          Proin dapibus luctus purus id viverra.
+        </a>
+        &nbsp;Aenean a aliquet nibh. Aenean facilisis justo quis sem auctor, nec mollis tortor
         placerat. Cras eget enim mollis, mollis risus gravida, pharetra risus. Mauris dapibus
         malesuada mi, quis ornare felis imperdiet eget. Donec sed quam non dolor sodales hendrerit.
         Aenean suscipit, velit sed laoreet cursus, ante odio tristique lectus, a porta eros felis eu
@@ -65,7 +73,7 @@ const Template: ComponentStory<typeof PageContent> = args => (
   <RecoilRoot>
     <Provider store={createStore()}>
       <div className="tw-content">
-        <PageContent withOverlay={args.withOverlay} />
+        <PageContent withOverlay={args.withOverlay} title={args.title} />
         <Sidepanel />
       </div>
     </Provider>
@@ -74,7 +82,7 @@ const Template: ComponentStory<typeof PageContent> = args => (
 
 const Basic = Template.bind({});
 
-Basic.args = { withOverlay: false };
+Basic.args = { withOverlay: false, title: 'My sidepanel' };
 
 export { Basic };
 
