@@ -124,8 +124,16 @@ describe('create()', () => {
   it('should check for user write access in the involved entities', async () => {
     const service = createService();
     await service.create([
-      { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
-      { from: 'entity2', to: 'entity1', type: factory.id('rel2').toHexString() },
+      {
+        from: { type: 'entity', entity: 'entity1' },
+        to: { type: 'entity', entity: 'entity2' },
+        type: factory.id('rel1').toHexString(),
+      },
+      {
+        from: { type: 'entity', entity: 'entity2' },
+        to: { type: 'entity', entity: 'entity1' },
+        type: factory.id('rel2').toHexString(),
+      },
     ]);
     expect(validateAccessMock).toHaveBeenCalledWith(
       'write',
@@ -138,20 +146,26 @@ describe('create()', () => {
       const service = createService();
 
       return service.create([
-        { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
+        {
+          from: { type: 'entity', entity: 'entity1' },
+          to: { type: 'entity', entity: 'entity2' },
+          type: factory.id('rel1').toHexString(),
+        },
         {
           from: {
+            type: 'text',
             entity: 'entity2',
             file: factory.id('file2').toHexString(),
             text: 'text selection 2',
             selections: [{ page: 2, top: 2, left: 2, width: 2, height: 2 }],
           },
-          to: 'entity1',
+          to: { type: 'entity', entity: 'entity1' },
           type: factory.id('rel2').toHexString(),
         },
         {
-          from: 'entity3',
+          from: { type: 'entity', entity: 'entity3' },
           to: {
+            type: 'text',
             entity: 'entity1',
             file: factory.id('file1').toHexString(),
             text: 'text selection 1',
@@ -252,9 +266,21 @@ describe('create()', () => {
       const service = createService();
       try {
         await service.create([
-          { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
-          { from: 'entity2', to: 'non-existing', type: factory.id('rel2').toHexString() },
-          { from: 'entity3', to: 'entity1', type: factory.id('rel3').toHexString() },
+          {
+            from: { type: 'entity', entity: 'entity1' },
+            to: { type: 'entity', entity: 'entity2' },
+            type: factory.id('rel1').toHexString(),
+          },
+          {
+            from: { type: 'entity', entity: 'entity2' },
+            to: { type: 'entity', entity: 'non-existing' },
+            type: factory.id('rel2').toHexString(),
+          },
+          {
+            from: { type: 'entity', entity: 'entity3' },
+            to: { type: 'entity', entity: 'entity1' },
+            type: factory.id('rel3').toHexString(),
+          },
         ]);
         fail('should throw error');
       } catch (e) {
@@ -270,8 +296,16 @@ describe('create()', () => {
       const service = createService();
       try {
         await service.create([
-          { from: 'entity1', to: 'entity2', type: factory.id('rel1').toHexString() },
-          { from: 'entity2', to: 'entity1', type: factory.id('invalid').toHexString() },
+          {
+            from: { type: 'entity', entity: 'entity1' },
+            to: { type: 'entity', entity: 'entity2' },
+            type: factory.id('rel1').toHexString(),
+          },
+          {
+            from: { type: 'entity', entity: 'entity2' },
+            to: { type: 'entity', entity: 'entity1' },
+            type: factory.id('invalid').toHexString(),
+          },
         ]);
         fail('should throw error');
       } catch (e) {
@@ -289,12 +323,13 @@ describe('create()', () => {
         await service.create([
           {
             from: {
+              type: 'text',
               entity: 'entity1',
               file: factory.id('some file').toHexString(),
               text: 'some text',
               selections: [{ page: 1, top: 1, left: 1, width: 1, height: 1 }],
             },
-            to: 'entity2',
+            to: { type: 'entity', entity: 'entity2' },
             type: factory.id('rel1').toHexString(),
           },
         ]);
@@ -304,5 +339,13 @@ describe('create()', () => {
       }
       expect(denormalizeAfterCreatingRelationshipsMock).not.toHaveBeenCalled();
     });
+  });
+
+  it('should not fail if the input is empty', async () => {
+    const service = createService();
+
+    const result = await service.create([]);
+
+    expect(result).toEqual([]);
   });
 });
