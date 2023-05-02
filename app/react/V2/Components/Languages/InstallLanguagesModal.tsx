@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Translate } from 'app/I18N';
+import { Translate, I18NApi } from 'app/I18N';
 import { SetterOrUpdater } from 'recoil';
 import { Button, Modal, SearchMultiselect } from 'app/V2/Components/UI';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { RequestParams } from 'app/utils/RequestParams';
+import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
 
 type InstallLanguagesModalProps = {
   setShowModal: SetterOrUpdater<boolean>;
@@ -11,10 +13,17 @@ type InstallLanguagesModalProps = {
 
 const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModalProps) => {
   const [selected, setSelected] = useState<string[]>([]);
+  const { requestAction } = useApiCaller();
 
   const items = languages.map(l => ({ label: l.localized_label || l.label, value: l.key }));
 
-  const install = () => {};
+  const install = async () => {
+    await requestAction(
+      I18NApi.addLanguage,
+      new RequestParams(languages.filter(l => selected.includes(l.key))),
+      'Languages installed successfully'
+    );
+  };
 
   return (
     <Modal size="lg">
@@ -36,9 +45,9 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
           <Translate>Cancel</Translate>
         </Button>
         <Button
-          onClick={() => {
-            install();
+          onClick={async () => {
             setShowModal(false);
+            await install();
           }}
           className="grow"
         >
