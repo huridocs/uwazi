@@ -28,7 +28,13 @@ class V2NewRelationshipsBoard extends Component {
 
   async componentDidMount() {
     const { relationships, titleMap } = await getRelationshipsByEntity(this.props.sharedId);
-    this.relationships = relationships;
+    const [fromThis, toThis] = _.partition(
+      relationships,
+      r => r.from.entity === this.props.sharedId
+    );
+    fromThis.sort((a, b) => a.to.entity.localeCompare(b.to.entity));
+    toThis.sort((a, b) => a.from.entity.localeCompare(b.from.entity));
+    this.relationships = [...fromThis, ...toThis];
     this.entityTitlesBySharedId = titleMap;
     this.forceUpdate();
   }
@@ -60,8 +66,14 @@ class V2NewRelationshipsBoard extends Component {
     };
   }
 
+  showEntityName(sharedId) {
+    return sharedId in this.entityTitlesBySharedId
+      ? this.entityTitlesBySharedId[sharedId]
+      : sharedId;
+  }
+
   render() {
-    const { sharedId, searchResults, uiState, relationTypes, targetDocument } = this.props;
+    const { searchResults, uiState, relationTypes, targetDocument } = this.props;
     const relTypesById = objectIndex(
       relationTypes,
       rt => rt._id,
@@ -69,17 +81,17 @@ class V2NewRelationshipsBoard extends Component {
     );
     return (
       <>
-        <div>{sharedId}</div>
         <div no-translate>Existing:</div>
         <div>
           {this.relationships.map(r => (
             <div>
+              {this.showEntityName(r.from.entity)}&emsp;
+              <Icon icon="arrow-right" />
+              &emsp;
               {relTypesById[r.type].name}&emsp;
               <Icon icon="arrow-right" />
               &emsp;
-              {r.to.entity in this.entityTitlesBySharedId
-                ? this.entityTitlesBySharedId[r.to.entity]
-                : r.to.entity}
+              {this.showEntityName(r.to.entity)}
               &emsp;
               <button onClick={this.deleteRelationship(r._id).bind(this)} no-translate>
                 X
