@@ -264,7 +264,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const config = propsToConfig(props);
   useEffect(() => {
     if (config.url) {
-      if (config.url.includes('/api/files/')) {
+      if (config.url.startsWith('/api/files/')) {
         fetch(config.url)
           .then(async res => res.blob())
           .then(blob => {
