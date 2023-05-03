@@ -19,7 +19,7 @@ const Button = ({
   disabled,
   formId,
   onClick,
-  className,
+  className = '',
 }: ButtonProps) => {
   let classNames;
   const textStyles = size === 'small' ? 'text-xs px-3 py-1.5' : 'text-sm px-5 py-2.5';

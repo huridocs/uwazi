@@ -130,6 +130,7 @@ const LanguagesList = () => {
       buttonStyle={row.original.default ? 'primary' : 'tertiary'}
       onClick={async () => setDefaultLanguage(row)}
     >
+      <Translate className="sr-only">Default</Translate>
       <StarIcon
         className={`${
           !row.original.default ? ' w-5 text-white stroke-current stroke-gray-300 stroke-2' : 'w-5'
@@ -149,24 +150,27 @@ const LanguagesList = () => {
 
   const columns = [
     {
-      Header: 'Language',
+      Header: <Translate>Language</Translate>,
       accessor: 'label',
       Cell: languageLabel,
       className: 'w-9/12',
     },
     {
+      Header: <Translate className="sr-only">Default language</Translate>,
       accessor: 'default',
       Cell: defaultButton,
       disableSortBy: true,
       className: 'text-center w-1/12',
     },
     {
+      Header: <Translate className="sr-only">Reset language</Translate>,
       accessor: 'key',
       Cell: resetButton,
       disableSortBy: true,
       className: 'text-center w-1/12',
     },
     {
+      Header: <Translate className="sr-only">Uninstall language</Translate>,
       accessor: '_id',
       Cell: uninstallButton,
       disableSortBy: true,
