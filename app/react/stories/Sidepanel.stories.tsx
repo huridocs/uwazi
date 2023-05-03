@@ -16,7 +16,12 @@ const SidepanelContent = () => <p>The content of my sidepanel</p>;
 const PageContent = ({ withOverlay, title }: { withOverlay: boolean; title: string }) => {
   const [showSidepanel, setShowSidepanel] = useRecoilState(sidepanelShow);
   const setSidepanel = useSetRecoilState(sidepanelConfig);
-  setSidepanel({ content: <SidepanelContent />, withOverlay, title });
+  setSidepanel({
+    content: <SidepanelContent />,
+    closeSidepanelFunction: () => setShowSidepanel(false),
+    withOverlay,
+    title,
+  });
 
   return (
     <main>
