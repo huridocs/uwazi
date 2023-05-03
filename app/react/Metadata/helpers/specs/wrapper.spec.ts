@@ -75,6 +75,7 @@ describe('wrapEntityMetadata', () => {
         media1:
           '(/api/files/1681177668034i5lntk7hak.mp4, {"timelinks":{"00:00:13":"Check point 1","00:00:27":"Check point 2"}})',
         media2: '(9032yptqzo5, {"timelinks":{"00:00:09":"Check point 1"}})',
+        media3: '(https://youtu.be/f8eUd9BaTsI, {"timelinks":{"00:21:59":""}})',
         multidate: [1681257600, 1682121600, 1682467200],
       },
       attachments: [
@@ -110,6 +111,11 @@ describe('wrapEntityMetadata', () => {
         ],
         media2: [
           { attachment: 0, timeLinks: '{"timelinks":{"00:00:09":"Check point 1"}}', value: '' },
+        ],
+        media3: [
+          {
+            value: '(https://youtu.be/f8eUd9BaTsI, {"timelinks":{"00:21:59":""}})',
+          },
         ],
         multidate: [{ value: 1681257600 }, { value: 1682121600 }, { value: 1682467200 }],
       },

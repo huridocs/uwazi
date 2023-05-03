@@ -55,7 +55,7 @@ function wrapEntityMetadata(entity) {
     let fileLocalID;
     let timeLinks;
     if (isString(entity.metadata[key])) {
-      [, fileLocalID, timeLinks] = entity.metadata[key].match(/([\w+]{10,20}), ({.+})/) || [
+      [, fileLocalID, timeLinks] = entity.metadata[key].match(/^\(([\w+]{10,20}), ({.+})/) || [
         '',
         entity.metadata[key],
       ];
