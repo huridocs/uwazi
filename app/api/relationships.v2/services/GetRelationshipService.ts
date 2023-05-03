@@ -26,17 +26,12 @@ class GetRelationshipService {
   ): Promise<{ relationships: Relationship[]; titleMap: Record<string, string> }> {
     const relationships = await this.relationshipsDS.getByEntities([sharedId]).all();
 
-    const involvedSharedIds: Set<string> = new Set(
-      relationships.flatMap(relationship => [relationship.from.entity, relationship.to.entity])
+    const allowedRelationships = await Relationship.filterByAuthorization(
+      relationships,
+      this.authService,
+      'read'
     );
-    const allowedSharedIds = new Set(
-      await this.authService.filterEntities('read', [...involvedSharedIds])
-    );
-    const allowedRelationships = relationships.filter(
-      relationship =>
-        allowedSharedIds.has(relationship.from.entity) &&
-        allowedSharedIds.has(relationship.to.entity)
-    );
+    const allowedSharedIds = Relationship.getSharedIds(allowedRelationships);
     const allowedEntities = await this.entitiesDS.getByIds([...allowedSharedIds]).all();
     const titlesById = objectIndex(
       allowedEntities,

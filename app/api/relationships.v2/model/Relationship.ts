@@ -1,6 +1,11 @@
 /* eslint-disable max-params */
 /* eslint-disable max-classes-per-file */
 
+import {
+  AccessLevels,
+  AuthorizationService,
+} from 'api/authorization.v2/services/AuthorizationService';
+
 class Selection {
   readonly page: number;
 
@@ -73,12 +78,27 @@ class Relationship {
   }
 
   static getSharedIds(relationships: Relationship[]): Set<string> {
-    const entities = new Set<string>();
-    relationships.forEach(relationship => {
-      entities.add(relationship.from.entity);
-      entities.add(relationship.to.entity);
-    });
+    const entities = new Set(
+      relationships.flatMap(relationship => [relationship.from.entity, relationship.to.entity])
+    );
     return entities;
+  }
+
+  static async filterByAuthorization(
+    relationships: Relationship[],
+    authService: AuthorizationService,
+    accessLevel: AccessLevels
+  ) {
+    const involvedSharedIds: Set<string> = Relationship.getSharedIds(relationships);
+    const allowedSharedIds = new Set(
+      await authService.filterEntities(accessLevel, [...involvedSharedIds])
+    );
+    const allowedRelationships = relationships.filter(
+      relationship =>
+        allowedSharedIds.has(relationship.from.entity) &&
+        allowedSharedIds.has(relationship.to.entity)
+    );
+    return allowedRelationships;
   }
 }
 
