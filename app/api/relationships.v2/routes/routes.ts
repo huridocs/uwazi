@@ -4,13 +4,12 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import {
-  validateRelationshipInputArray,
-  validateStringArray,
-} from './schemas/relationshipInputValidators';
-import {
   CreateRelationshipService,
   DeleteRelationshipService,
 } from '../services/service_factories';
+import { validateCreateRelationship } from './validators/createRelationship';
+import { validateDeleteRelationships } from './validators/deleteRelationships';
+import { parseQuery } from 'api/utils';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -25,20 +24,16 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 
 export default (app: Application) => {
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {
-    const relationshipInputArray = req.body;
-    if (validateRelationshipInputArray(relationshipInputArray)) {
-      const service = CreateRelationshipService(req);
-      const created = await service.create(relationshipInputArray);
-      res.json(created);
-    }
+    const relationships = validateCreateRelationship(req.body);
+    const service = CreateRelationshipService(req);
+    const created = await service.create(relationships);
+    res.json(created);
   });
 
-  app.delete('/api/v2/relationships', featureRequired, async (req, res) => {
-    const idArray = Array.isArray(req.query.ids) ? req.query.ids : [req.query.ids];
-    if (validateStringArray(idArray)) {
-      const service = DeleteRelationshipService(req);
-      await service.delete(idArray);
-      res.status(200).send();
-    }
+  app.delete('/api/v2/relationships', featureRequired, parseQuery, async (req, res) => {
+    const relationshipsIds = validateDeleteRelationships(req.query);
+    const service = DeleteRelationshipService(req);
+    await service.delete(relationshipsIds.ids);
+    res.status(200).send();
   });
 };
