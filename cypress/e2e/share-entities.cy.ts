@@ -18,7 +18,7 @@ describe('Share Entities', () => {
   it('Should list available collaborators of an entity', () => {
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
-    cy.contains('button', 'Share').should('be.visible').click();
+    cy.contains('button', 'Share').click();
 
     cy.get('[data-testid=modal] input').focus();
     cy.contains('.userGroupsLookupField', 'Activistas');
