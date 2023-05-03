@@ -263,7 +263,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    if (config.url) {
+    if (mediaURL === '' && config.url) {
       if (config.url.startsWith('/api/files/')) {
         fetch(config.url)
           .then(async res => res.blob())
@@ -276,12 +276,13 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         setMediaURL(config.url);
       }
     }
-
     return () => {
+      if (mediaURL !== '') {
+        URL.revokeObjectURL(mediaURL);
+      }
       setErrorFlag(false);
-      return URL.revokeObjectURL(mediaURL);
     };
-  }, [config.url]);
+  }, [config.url, mediaURL]);
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
@@ -315,7 +316,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           }}
           onError={e => {
             if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-              setMediaURL('');
               setErrorFlag(true);
             }
           }}
