@@ -35,7 +35,7 @@ import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import { Users, usersLoader } from 'V2/Routes/Settings/Users';
+import { Users, usersLoader } from 'app/V2/Routes/Settings/Users/Users';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';

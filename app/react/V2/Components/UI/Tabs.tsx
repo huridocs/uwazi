@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 
-const Tabs = ({ children }: { children: any[] | any }) => {
+const Tabs = ({
+  children,
+  onTabSelected,
+}: {
+  children: any[] | any;
+  onTabSelected: (activeTab: string) => void;
+}) => {
   const [activeTab, setActiveTab] = useState(children[0].props.label);
 
-  const handleClick = (e: any, newActiveTab: any) => {
+  const handleClick = (e: any, newActiveTab: string) => {
     e.preventDefault();
     setActiveTab(newActiveTab);
+    onTabSelected(newActiveTab);
   };
 
   return (

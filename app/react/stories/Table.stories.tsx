@@ -1,6 +1,5 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { Checkbox } from 'flowbite-react';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -11,14 +10,17 @@ const TableStory = {
 
 const Template: ComponentStory<typeof Table> = args => (
   <div className="tw-content">
-    <Table columns={args.columns} data={args.data} title={args.title} />
+    <Table
+      columns={args.columns}
+      data={args.data}
+      title={args.title}
+      enableSelection={args.enableSelection}
+    />
   </div>
 );
 
 const Basic = Template.bind({});
 const WithActions = Template.bind({});
-
-const checkboxCell = () => <Checkbox />;
 
 const actionsCell = () => (
   <div className="flex gap-1">
@@ -29,8 +31,8 @@ const actionsCell = () => (
 
 Basic.args = {
   title: 'Table name',
+  enableSelection: true,
   columns: [
-    { id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
     { Header: 'Title', accessor: 'title', id: 'title' },
     { Header: 'Description', accessor: 'description', disableSortBy: true },
     { Header: 'Date added', accessor: 'created', disableSortBy: true },
@@ -54,12 +56,6 @@ Basic.args = {
 WithActions.args = {
   ...Basic.args,
   columns: [
-    {
-      id: 'select',
-      Header: '',
-      Cell: checkboxCell,
-      disableSortBy: true,
-    },
     { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
     {
       Header: 'Date added',

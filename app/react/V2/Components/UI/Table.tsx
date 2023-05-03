@@ -11,7 +11,7 @@ import {
   UseSortByColumnProps,
 } from 'react-table';
 
-import { Table as FlowbiteTable } from 'flowbite-react';
+import { Checkbox, Table as FlowbiteTable } from 'flowbite-react';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 type TableColumn<T extends object> = Column<T> &
@@ -25,6 +25,8 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  enableSelection?: boolean;
+  onRowSelected?: (items: any) => void;
 }
 
 const getIcon = (column: TableColumn<any>) => {
@@ -39,18 +41,79 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const Table = ({ columns, data, title }: TableProps) => {
+const Table = ({ columns, data, title, enableSelection, onRowSelected }: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    toggleAllRowsSelected,
+    toggleRowSelected,
+  } = useTable(
     {
       columns: memoizedColumns,
       data: memoizedData,
     },
     useSortBy,
     useRowSelect,
-    useRowState
+    useRowState,
+    hooks => {
+      if (enableSelection) {
+        hooks.visibleColumns.push(columns => [
+          {
+            id: 'selection',
+            disableSortBy: true,
+            Header: () => {
+              return (
+                <div className="w-0">
+                  <Checkbox
+                    onClick={e => {
+                      // @ts-ignore
+                      if (e.target.checked) {
+                        toggleAllRowsSelected(true);
+                      } else {
+                        toggleAllRowsSelected(false);
+                      }
+                      setTimeout(() => {
+                        if (onRowSelected) {
+                          onRowSelected(
+                            rows.filter(row => row.isSelected).map(row => row.original)
+                          );
+                        }
+                      }, 0);
+                    }}
+                  />
+                </div>
+              );
+            },
+            Cell: ({ row }) => {
+              return (
+                <div className="w-0">
+                  <Checkbox
+                    {...row.getToggleRowSelectedProps()}
+                    onClick={() => {
+                      toggleRowSelected(row.id, true);
+                      setTimeout(() => {
+                        if (onRowSelected) {
+                          onRowSelected(
+                            rows.filter(row => row.isSelected).map(row => row.original)
+                          );
+                        }
+                      }, 0);
+                    }}
+                  />
+                </div>
+              );
+            },
+          },
+          ...columns,
+        ]);
+      }
+    }
   );
 
   return (
