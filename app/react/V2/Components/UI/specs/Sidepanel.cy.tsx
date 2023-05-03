@@ -23,12 +23,21 @@ describe('Sidepanel', () => {
   });
 
   describe('with overlay', () => {
-    it('should not allow to click items under the overlay', done => {
+    beforeEach(() => {
       mount(<Basic withOverlay />);
       cy.contains('button', 'Open/Close sidepanel').click();
       cy.contains('h1', 'My sidepanel').should('exist');
+    });
+
+    it('should not allow to click items under the overlay', done => {
       cy.contains('button', 'Open/Close sidepanel').shouldNotBeActionable(done);
       cy.contains('a', 'Proin dapibus luctus purus id viverra.').shouldNotBeActionable(done);
+    });
+
+    it('should close the sidepanel when clicking outside', () => {
+      cy.get('.bg-gray-900').click();
+      cy.get('.bg-gray-900').should('not.exist');
+      cy.contains('h1', 'My sidepanel').should('not.exist');
     });
   });
 });

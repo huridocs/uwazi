@@ -36,7 +36,10 @@ const Sidepanel = () => {
   if (isOpen && withOverlay) {
     return (
       <div className="fixed h-full w-full top-0 left-0 flex">
-        <div className="bg-gray-900 bg-opacity-50 w-0 md:flex-grow" />
+        <div
+          className="bg-gray-900 bg-opacity-50 w-0 md:flex-grow"
+          onClick={closeSidepanelFunction}
+        />
         <aside className="bg-white w-full border-l-2 px-2 py-4 md:w-[400px]">
           {renderSidepanelContent(content, closeSidepanelFunction, title)}
         </aside>
