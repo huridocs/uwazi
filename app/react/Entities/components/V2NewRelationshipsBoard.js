@@ -1,4 +1,3 @@
-/* eslint-disable react/button-has-type */
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -14,7 +13,7 @@ import {
   deleteRelationships,
   getRelationshipsByEntity,
   saveRelationship,
-} from '../actions/specs/V2NewRelationshipsActions';
+} from '../actions/V2NewRelationshipsActions';
 
 const objectIndex = _.memoize(_objectIndex);
 
@@ -167,4 +166,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(V2NewRelationshipsBoard);
-export { mapStateToProps, mapDispatchToProps }
+export { mapStateToProps, mapDispatchToProps };

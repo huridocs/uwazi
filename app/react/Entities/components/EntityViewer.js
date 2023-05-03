@@ -435,7 +435,7 @@ const mapStateToProps = state => {
     // Is this used at all?
     library: state.library,
     // v2
-    newRelationshipsEnabled: state.settings.collection.get('features').get('newRelationships'),
+    newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
 
