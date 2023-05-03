@@ -2,6 +2,7 @@ import { User } from 'api/users.v2/model/User';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { UnauthorizedError } from '../errors/UnauthorizedError';
 import { EntityPermissions } from '../model/EntityPermissions';
+import { Relationship } from 'api/relationships.v2/model/Relationship';
 
 type AccessLevels = 'read' | 'write';
 
@@ -46,6 +47,19 @@ export class AuthorizationService {
     }
 
     return filteredEntitiesPermissions.map(entityPermissions => entityPermissions.entity);
+  }
+
+  async filterRelationships(relationships: Relationship[], accessLevel: AccessLevels) {
+    const involvedSharedIds: Set<string> = Relationship.getSharedIds(relationships);
+    const allowedSharedIds = new Set(
+      await this.filterEntities(accessLevel, [...involvedSharedIds])
+    );
+    const allowedRelationships = relationships.filter(
+      relationship =>
+        allowedSharedIds.has(relationship.from.entity) &&
+        allowedSharedIds.has(relationship.to.entity)
+    );
+    return allowedRelationships;
   }
 
   async isAuthorized(level: AccessLevels, sharedIds: string[]) {
