@@ -6,7 +6,6 @@ import { ClientFile } from 'app/istore';
 import { prepareHTMLMediaView } from 'shared/fileUploadUtils';
 import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/components/MediaModal';
 import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
-import { externalMediaFileURLRegExp } from 'app/Metadata';
 
 type MediaFieldProps = MediaModalProps & {
   value: string | { data: string; originalFile: File } | null;
@@ -48,7 +47,6 @@ const prepareValue = (
 
   return { ...values, supportingFile };
 };
-
 // eslint-disable-next-line max-statements
 const MediaField = (props: MediaFieldProps) => {
   const {
@@ -82,6 +80,10 @@ const MediaField = (props: MediaFieldProps) => {
         timelink.label;
       return current;
     }, {});
+    const externalMediaFileURLRegExp =
+      // eslint-disable-next-line max-len
+      /\(?(https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*))(, {)?/;
+
     const [, fileLocalID, , alternativeFileLocalID] = file.originalValue.match(
       `${/([\w+]{10,20}|'{0,1}\/api\/files\/\w+\.\w+'{0,1}), ({.+})/}|${externalMediaFileURLRegExp}`
     ) || ['', file.originalValue];
