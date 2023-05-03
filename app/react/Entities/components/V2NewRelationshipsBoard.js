@@ -147,13 +147,13 @@ V2NewRelationshipsBoard.defaultProps = {};
 V2NewRelationshipsBoard.propTypes = {
   sharedId: PropTypes.string.isRequired,
   relationTypes: PropTypes.array.isRequired,
-  searchResults: PropTypes.object,
-  uiState: PropTypes.object,
-  setTargetDocument: PropTypes.func,
-  targetDocument: PropTypes.string,
+  searchResults: PropTypes.object.isRequired,
+  uiState: PropTypes.object.isRequired,
+  setTargetDocument: PropTypes.func.isRequired,
+  targetDocument: PropTypes.string.isRequired,
 };
 
-export function mapStateToProps(state) {
+function mapStateToProps(state) {
   return {
     relationTypes: state.relationTypes.toJS(),
     uiState: state.connections.uiState,
@@ -167,3 +167,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(V2NewRelationshipsBoard);
+export { mapStateToProps, mapDispatchToProps }
