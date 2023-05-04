@@ -8,11 +8,6 @@ type sidePanelConfig = {
   withOverlay?: boolean;
 };
 
-const sidepanelShow = atom({
-  key: 'sidepanelShow',
-  default: false,
-});
-
 const sidepanelConfig = atom({
   key: 'sidepanelContent',
   default: {
@@ -23,4 +18,4 @@ const sidepanelConfig = atom({
   } as sidePanelConfig,
 });
 
-export { sidepanelShow, sidepanelConfig };
+export { sidepanelConfig };

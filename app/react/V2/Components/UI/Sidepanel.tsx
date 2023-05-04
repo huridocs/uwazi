@@ -2,7 +2,7 @@ import React from 'react';
 import { Transition } from '@headlessui/react';
 import { useRecoilValue } from 'recoil';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { sidepanelConfig, sidepanelShow } from 'app/V2/atoms';
+import { sidepanelConfig } from 'app/V2/atoms';
 import { Translate } from 'app/I18N';
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
@@ -22,8 +22,7 @@ const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactN
   </div>
 );
 
-const Sidepanel = () => {
-  const isOpen = useRecoilValue(sidepanelShow);
+const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
   const { content, closeSidepanelFunction, title, withOverlay } = useRecoilValue(sidepanelConfig);
 
   if (withOverlay) {
