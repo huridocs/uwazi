@@ -5157,8 +5157,8 @@ input:checked + .toggle-bg {
     width: 12rem;
   }
 
-  .md\:w-\[400px\] {
-    width: 400px;
+  .md\:w-\[500px\] {
+    width: 500px;
   }
 
   .md\:w-auto {
