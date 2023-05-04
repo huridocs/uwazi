@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil';
 import { Provider } from 'react-redux';
@@ -16,12 +16,15 @@ const SidepanelContent = () => <p>The content of my sidepanel</p>;
 const PageContent = ({ withOverlay, title }: { withOverlay: boolean; title: string }) => {
   const [showSidepanel, setShowSidepanel] = useRecoilState(sidepanelShow);
   const setSidepanel = useSetRecoilState(sidepanelConfig);
-  setSidepanel({
-    content: <SidepanelContent />,
-    closeSidepanelFunction: () => setShowSidepanel(false),
-    withOverlay,
-    title,
-  });
+
+  useEffect(() => {
+    setSidepanel({
+      content: <SidepanelContent />,
+      closeSidepanelFunction: () => setShowSidepanel(false),
+      withOverlay,
+      title,
+    });
+  }, [setShowSidepanel, setSidepanel, title, withOverlay]);
 
   return (
     <main>
