@@ -1,3 +1,4 @@
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
@@ -59,6 +60,13 @@ export class MongoRelationshipsDataSource
     const files = idsToDb(fileIds);
     const cursor = this.getCollection().find({
       $or: [{ 'from.file': { $in: files } }, { 'to.file': { $in: files } }],
+    });
+    return new MongoResultSet(cursor, RelationshipMappers.toModel);
+  }
+
+  getByEntities(sharedIds: string[]): ResultSet<Relationship> {
+    const cursor = this.getCollection().find({
+      $or: [{ 'from.entity': { $in: sharedIds } }, { 'to.entity': { $in: sharedIds } }],
     });
     return new MongoResultSet(cursor, RelationshipMappers.toModel);
   }
