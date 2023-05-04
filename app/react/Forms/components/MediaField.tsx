@@ -80,7 +80,7 @@ const MediaField = (props: MediaFieldProps) => {
         timelink.label;
       return current;
     }, {});
-    const [, fileLocalID] = file.originalValue.match(/(.*?)(, {|$)/) || ['', file.originalValue];
+    const [, fileLocalID] = file.originalValue.match(/\(?(.*?)(, {|$)/) || ['', file.originalValue];
 
     return `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`;
   };
@@ -138,7 +138,14 @@ const MediaField = (props: MediaFieldProps) => {
           );
         }
         if (file.fileURL) {
-          return <MarkdownMedia config={file.fileURL} editing onTimeLinkAdded={updateTimeLinks} />;
+          return (
+            <MarkdownMedia
+              config={file.fileURL}
+              editing
+              onTimeLinkAdded={updateTimeLinks}
+              type={file.type}
+            />
+          );
         }
       })()}
 

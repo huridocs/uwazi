@@ -12,6 +12,7 @@ interface MarkdownMediaProps {
   editing?: boolean;
   onTimeLinkAdded?: Function;
   config: string;
+  type?: string;
 }
 
 interface TimeLink {
@@ -68,6 +69,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const [mediaURL, setMediaURL] = useState('');
+  const [mediaType] = useState(props.type);
+  const [timeLinkEdition, setTimeLinkEdition] = useState(false);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -130,6 +133,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const updateParentForm = () => {
     if (props.onTimeLinkAdded) props.onTimeLinkAdded(getValues().timelines);
+    setTimeLinkEdition(true);
   };
 
   const appendTimelinkAndUpdateParent = (timelink?: TimeLink) => {
@@ -272,17 +276,31 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             setMediaURL(URL.createObjectURL(blob));
           })
           .catch(_e => {});
-      } else {
+      } else if (config.url.length > 15 || mediaType !== 'uploadId') {
         setMediaURL(config.url);
       }
     }
-    return () => {
-      if (mediaURL !== '') {
-        URL.revokeObjectURL(mediaURL);
-      }
-      setErrorFlag(false);
-    };
-  }, [config.url, mediaURL]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config, config.url]);
+
+  const unmount = () => {
+    if ((mediaURL !== '' && !timeLinkEdition) || !mediaType) {
+      URL.revokeObjectURL(mediaURL);
+      setMediaURL('');
+    } else {
+      setTimeLinkEdition(false);
+    }
+
+    setErrorFlag(false);
+  };
+  useEffect(
+    () => {
+      unmount();
+      return unmount;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mediaType]
+  );
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
