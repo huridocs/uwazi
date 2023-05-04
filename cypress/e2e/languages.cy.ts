@@ -73,7 +73,7 @@ describe('Languages', () => {
       cy.contains('table', '(view page)').contains('tr', 'Español').find('input').clear();
       cy.contains('table', '(view page)').contains('tr', 'Español').find('input').type('test');
       cy.contains('button', 'Save').click();
-      cy.wait('@saveTranslation');
+      cy.contains('Translations saved');
     });
 
     it('should reset the spanish language', () => {
