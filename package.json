@@ -62,7 +62,7 @@
     "eslint-fulldiff": "git diff-index --name-only origin/development | grep ^app/ | grep -v snap | xargs ls -d 2>/dev/null | xargs ./node_modules/.bin/eslint ",
     "prettier": "./node_modules/.bin/prettier --write 'app/**/*.{js,ts,tsx}'",
     "prestorybook": "yarn tailwind",
-    "storybook": "yarn tailwind-watch & start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false",
