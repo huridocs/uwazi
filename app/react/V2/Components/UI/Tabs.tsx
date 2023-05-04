@@ -46,6 +46,11 @@ const Tabs = ({
 };
 
 const Tab = ({ label, children }: { label: string; children: any[] | any }) => {
-  return <div className="hidden">{children}</div>;
+  return (
+    // @ts-ignore
+    <div className="hidden" label={label}>
+      {children}
+    </div>
+  );
 };
 export { Tabs, Tab };

@@ -15,6 +15,7 @@ const Template: ComponentStory<typeof Table> = args => (
       data={args.data}
       title={args.title}
       enableSelection={args.enableSelection}
+      onRowSelected={args.onRowSelected}
     />
   </div>
 );
@@ -32,6 +33,7 @@ const actionsCell = () => (
 Basic.args = {
   title: 'Table name',
   enableSelection: true,
+  onRowSelected: () => {},
   columns: [
     { Header: 'Title', accessor: 'title', id: 'title' },
     { Header: 'Description', accessor: 'description', disableSortBy: true },

@@ -9,7 +9,7 @@ const TabsStory = {
 
 const Template: ComponentStory<typeof Tabs> = args => (
   <div className="tw-content">
-    <Tabs>
+    <Tabs onTabSelected={args.onTabSelected}>
       <Tab label="Tab 1">
         <div className="py-4">
           <h2 className="text-lg font-medium mb-2">Tab 1 Content</h2>
@@ -34,7 +34,9 @@ const Template: ComponentStory<typeof Tabs> = args => (
 
 const Basic = Template.bind({});
 
-Basic.args = {};
+Basic.args = {
+  onTabSelected: () => {},
+};
 
 export { Basic };
 

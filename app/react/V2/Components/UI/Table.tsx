@@ -63,13 +63,14 @@ const Table = ({ columns, data, title, enableSelection, onRowSelected }: TablePr
     useRowState,
     hooks => {
       if (enableSelection) {
-        hooks.visibleColumns.push(columns => [
+        hooks.visibleColumns.push(visibleColumns => [
           {
             id: 'selection',
             disableSortBy: true,
+            className: 'w-0',
             Header: () => {
               return (
-                <div className="w-0">
+                <div>
                   <Checkbox
                     onClick={e => {
                       // @ts-ignore
@@ -90,17 +91,19 @@ const Table = ({ columns, data, title, enableSelection, onRowSelected }: TablePr
                 </div>
               );
             },
-            Cell: ({ row }) => {
+            Cell: ({ row: cellRow }) => {
               return (
-                <div className="w-0">
+                <div>
                   <Checkbox
-                    {...row.getToggleRowSelectedProps()}
+                    {...cellRow.getToggleRowSelectedProps()}
                     onClick={() => {
-                      toggleRowSelected(row.id, true);
+                      toggleRowSelected(cellRow.id, true);
                       setTimeout(() => {
                         if (onRowSelected) {
                           onRowSelected(
-                            rows.filter(row => row.isSelected).map(row => row.original)
+                            rows
+                              .filter(tableRow => tableRow.isSelected)
+                              .map(selectedRow => selectedRow.original)
                           );
                         }
                       }, 0);
@@ -110,7 +113,7 @@ const Table = ({ columns, data, title, enableSelection, onRowSelected }: TablePr
               );
             },
           },
-          ...columns,
+          ...visibleColumns,
         ]);
       }
     }
