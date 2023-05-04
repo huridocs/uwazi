@@ -103,7 +103,6 @@ jobs:
         with:
           browser: chrome
           component: false
-          headed: true
           config: defaultCommandTimeout=8000,requestTimeout=12000
         timeout-minutes: 25
         env:
