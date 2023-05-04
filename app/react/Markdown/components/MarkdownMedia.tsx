@@ -267,40 +267,27 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    if (mediaURL === '' && config.url) {
+    const validMediaUrlRegExp =
+      /(^(blob:)?https?:\/\/(?:www\.)?)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$/;
+    if (config.url.startsWith('/api/files/')) {
+      fetch(config.url)
+        .then(async res => res.blob())
+        .then(blob => {
+          setErrorFlag(false);
+          setMediaURL(URL.createObjectURL(blob));
+        })
+        .catch(_e => {});
+    } else if (config.url.match(validMediaUrlRegExp)) {
+      setMediaURL(config.url);
+    }
+
+    return () => {
+      setErrorFlag(false);
       if (config.url.startsWith('/api/files/')) {
-        fetch(config.url)
-          .then(async res => res.blob())
-          .then(blob => {
-            setErrorFlag(false);
-            setMediaURL(URL.createObjectURL(blob));
-          })
-          .catch(_e => {});
-      } else if (config.url.length > 15 || mediaType !== 'uploadId') {
-        setMediaURL(config.url);
+        URL.revokeObjectURL(mediaURL);
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, config.url]);
-
-  const unmount = () => {
-    if ((mediaURL !== '' && !timeLinkEdition) || !mediaType) {
-      URL.revokeObjectURL(mediaURL);
-      setMediaURL('');
-    } else {
-      setTimeLinkEdition(false);
-    }
-
-    setErrorFlag(false);
-  };
-  useEffect(
-    () => {
-      unmount();
-      return unmount;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mediaType]
-  );
+    };
+  }, [config.url]);
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };

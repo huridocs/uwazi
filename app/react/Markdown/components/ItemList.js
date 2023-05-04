@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Slider from './slider';
 
-export class ItemList extends Component {
+class ItemList extends Component {
   render() {
     const { items, link } = this.props;
     const { sort } = qs.parse(link.substring(link.indexOf('?')), { ignoreQueryPrefix: true });
@@ -26,11 +26,11 @@ export class ItemList extends Component {
         wrapDispatch(dispatch, 'library')
       );
 
-    const toRenderItems = items.map((item, index) => {
+    const toRenderItems = items.map(item => {
       const ConnectedItem = connect(null, mapDispatchToProps)(Doc);
       return (
         <ConnectedItem
-          key={index}
+          key={item._id}
           doc={Immutable(item)}
           searchParams={searchParams}
           storeKey="library"
@@ -52,7 +52,7 @@ export class ItemList extends Component {
       <div>
         {list}
         <div className="row">
-          <div className="col-sm-12 text-center">
+          <div className="text-center col-sm-12">
             <I18NLink to={`${link}`}>
               <button className="btn btn-default">{t('System', 'View in library')}</button>
             </I18NLink>
@@ -74,4 +74,5 @@ ItemList.propTypes = {
   link: PropTypes.string,
 };
 
+export { ItemList };
 export default ItemList;

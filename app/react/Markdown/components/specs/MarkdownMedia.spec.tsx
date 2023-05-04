@@ -78,6 +78,7 @@ describe('MarkdownMedia', () => {
         renderResult.unmount();
         expect(mockedRevokeObjectURL).toHaveBeenCalledWith('');
       });
+
       it('should render the edition mode', async () => {
         await render({ editing: true });
         expect(renderResult.asFragment()).toMatchSnapshot();
