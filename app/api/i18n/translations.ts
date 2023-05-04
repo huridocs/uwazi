@@ -406,8 +406,7 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const contentsClient = new DefaultTranslations();
-    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    const translationsCsv = await DefaultTranslations.retrievePredefinedTranslations(locale);
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     await pipeline(translationsCsv, createWriteStream(tmpCsv));
     const loader = new CSVLoader();
@@ -415,10 +414,9 @@ export default {
   },
 
   async availableLanguages() {
-    const contentsClient = new DefaultTranslations();
     let languagesWithTranslations: string[] = [];
     try {
-      languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();
+      languagesWithTranslations = await DefaultTranslations.retrieveAvailablePredefinedLanguages();
     } catch (e) {
       errorLog.error(prettifyError(e));
       return availableLanguages;

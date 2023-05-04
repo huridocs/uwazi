@@ -12,7 +12,7 @@ export class UITranslationNotAvailable extends Error {
 export class DefaultTranslations {
   static CONTENTS_DIRECTORY = 'contents/ui-translations';
 
-  async retrievePredefinedTranslations(locale: string) {
+  static async retrievePredefinedTranslations(locale: string) {
     try {
       return (await readFile(`${DefaultTranslations.CONTENTS_DIRECTORY}/${locale}.csv`)).toString();
     } catch (e) {
@@ -25,7 +25,7 @@ export class DefaultTranslations {
     }
   }
 
-  async retrieveAvailablePredefinedLanguages() {
+  static async retrieveAvailablePredefinedLanguages() {
     try {
       const files = await readdir(DefaultTranslations.CONTENTS_DIRECTORY);
       return files.map(f => f.replace('.csv', ''));
