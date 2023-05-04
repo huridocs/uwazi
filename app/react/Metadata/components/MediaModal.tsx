@@ -27,9 +27,8 @@ const getAcceptedFileTypes = (type: MediaModalType) => {
     case MediaModalType.Image:
       return 'image/*';
     case MediaModalType.Media:
-      return 'video/*';
+      return 'video/*,audio/*';
     case MediaModalType.All:
-      return '*/*';
     default:
       return '*/*';
   }

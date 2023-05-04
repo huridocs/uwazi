@@ -243,7 +243,7 @@ class MetadataFormFields extends Component {
             formModel={formModel}
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
-            type={MediaModalType.All}
+            type={MediaModalType.Media}
             multipleEdition={multipleEdition}
           />
         );
@@ -254,7 +254,7 @@ class MetadataFormFields extends Component {
             formModel={formModel}
             attachments={plainAttachments}
             localAttachments={plainLocalAttachments}
-            type={MediaModalType.All}
+            type={MediaModalType.Image}
             multipleEdition={multipleEdition}
           />
         );

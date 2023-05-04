@@ -47,7 +47,7 @@ const prepareValue = (
 
   return { ...values, supportingFile };
 };
-// eslint-disable-next-line max-statements
+
 const MediaField = (props: MediaFieldProps) => {
   const {
     value,
