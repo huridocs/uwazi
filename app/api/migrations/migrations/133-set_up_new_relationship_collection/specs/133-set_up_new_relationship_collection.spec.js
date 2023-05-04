@@ -6,7 +6,7 @@ describe('migration set_up_new_relationship_collection', () => {
   let db;
 
   beforeAll(async () => {
-    // jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
     await testingDB.setupFixturesAndContext(fixtures);
     db = testingDB.mongodb;
     await migration.up(db);
