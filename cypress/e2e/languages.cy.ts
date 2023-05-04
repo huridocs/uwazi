@@ -77,8 +77,8 @@ describe('Languages', () => {
     });
 
     it('should reset the spanish language', () => {
-      cy.contains('span', 'Languages').click();
       cy.intercept('POST', 'api/translations/populate').as('resetLanguage');
+      cy.contains('a span', 'Languages').click();
       cy.contains('tr', 'Spanish').contains('button', 'Reset').click();
       cy.get('[data-testid=modal] input').type('CONFIRM');
       cy.contains('[data-testid=modal] button', 'Reset').click();
