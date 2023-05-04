@@ -1,14 +1,18 @@
+import { Request, Response, NextFunction } from 'express';
+import request from 'supertest';
+
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB from 'api/utils/testing_db';
-import { Request, Response, NextFunction } from 'express';
-import request from 'supertest';
+import { UserRole } from 'shared/types/userSchema';
 import routes from '../routes';
 
 const URL = '/api/v2/relationships';
 
 const factory = getFixturesFactory();
+
+const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
 
 const fixtures = {
   entities: [
@@ -44,6 +48,7 @@ const fixtures = {
     },
   ],
   files: [factory.file('file1', 'entity1', 'document', 'file1.pdf')],
+  users: [adminUser],
 };
 
 beforeEach(async () => {
@@ -52,6 +57,41 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testingEnvironment.tearDown();
+});
+
+describe('GET relationships', () => {
+  it('should should throw a 404 if the feature toggle is not active', async () => {
+    await testingDB.mongodb
+      ?.collection('settings')
+      .updateOne({ _id: factory.id('settings') }, { $set: { features: {} } });
+
+    const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = undefined;
+      next();
+    });
+
+    await request(app).get(URL).expect(404);
+  });
+
+  it('should return the relationships', async () => {
+    const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = adminUser;
+      next();
+    });
+
+    const response = await request(app).get(`${URL}?sharedId=entity2`).expect(200);
+    expect(response.body).toEqual({
+      relationships: [
+        {
+          _id: factory.id('relationship1').toString(),
+          from: { entity: 'entity1' },
+          to: { entity: 'entity2' },
+          type: factory.id('type2').toString(),
+        },
+      ],
+      titleMap: { entity1: 'entity1', entity2: 'entity2' },
+    });
+  });
 });
 
 describe('POST relationships', () => {

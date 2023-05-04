@@ -2,7 +2,11 @@ import { ObjectId } from 'mongodb';
 
 import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
+import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relationship';
+
+const entityPointer = (entity: string): EntityPointer => new EntityPointer(entity);
 
 const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
   application: {
@@ -23,9 +27,31 @@ const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
         idMapper(template).toString(),
         denormalizedProperty
       ),
+
+    entityPointer,
+
+    relationship: (name: string, from: string, to: string, type: string): Relationship =>
+      new Relationship(
+        idMapper(name).toString(),
+        entityPointer(from),
+        entityPointer(to),
+        idMapper(type).toString()
+      ),
   },
 
-  database: {},
+  database: {
+    relationshipDBO: (
+      name: string,
+      from: string,
+      to: string,
+      type: string
+    ): RelationshipDBOType => ({
+      _id: idMapper(name),
+      from: { entity: from },
+      to: { entity: to },
+      type: idMapper(type),
+    }),
+  },
 
   api: {},
 });

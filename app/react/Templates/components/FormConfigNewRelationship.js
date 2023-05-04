@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-pascal-case */
-import { Field, actions as formActions, Control } from 'react-redux-form';
+import { Control, Field, actions as formActions } from 'react-redux-form';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
