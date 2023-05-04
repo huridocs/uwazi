@@ -9,12 +9,12 @@ export class UITranslationNotAvailable extends Error {
   }
 }
 
-export class ContentsClient {
+export class DefaultTranslations {
   static CONTENTS_DIRECTORY = 'contents/ui-translations';
 
   async retrievePredefinedTranslations(locale: string) {
     try {
-      return (await readFile(`${ContentsClient.CONTENTS_DIRECTORY}/${locale}.csv`)).toString();
+      return (await readFile(`${DefaultTranslations.CONTENTS_DIRECTORY}/${locale}.csv`)).toString();
     } catch (e) {
       if (e.code === 'ENOENT') {
         throw new UITranslationNotAvailable(
@@ -27,7 +27,7 @@ export class ContentsClient {
 
   async retrieveAvailablePredefinedLanguages() {
     try {
-      const files = await readdir(ContentsClient.CONTENTS_DIRECTORY);
+      const files = await readdir(DefaultTranslations.CONTENTS_DIRECTORY);
       return files.map(f => f.replace('.csv', ''));
     } catch (e) {
       if (e.code === 'ENOENT') {

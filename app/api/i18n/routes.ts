@@ -7,7 +7,7 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { Application, Request } from 'express';
-import { UITranslationNotAvailable } from 'api/i18n/contentsClient';
+import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 

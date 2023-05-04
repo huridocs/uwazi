@@ -9,7 +9,7 @@ import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
-import { ContentsClient } from 'api/i18n/contentsClient';
+import { DefaultTranslations } from 'api/i18n/defaultTranslations';
 import { availableLanguages } from 'shared/languagesList';
 import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
@@ -406,7 +406,7 @@ export default {
   },
 
   async importPredefined(locale: string) {
-    const contentsClient = new ContentsClient();
+    const contentsClient = new DefaultTranslations();
     const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
     const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
     await pipeline(translationsCsv, createWriteStream(tmpCsv));
@@ -415,7 +415,7 @@ export default {
   },
 
   async availableLanguages() {
-    const contentsClient = new ContentsClient();
+    const contentsClient = new DefaultTranslations();
     let languagesWithTranslations: string[] = [];
     try {
       languagesWithTranslations = await contentsClient.retrieveAvailablePredefinedLanguages();

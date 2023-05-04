@@ -11,7 +11,7 @@ import fixtures, {
   englishTranslation,
   entityTemplateId,
 } from './fixtures.js';
-import { UITranslationNotAvailable } from '../contentsClient';
+import { UITranslationNotAvailable } from '../defaultTranslations';
 
 describe('translations', () => {
   beforeEach(async () => {
