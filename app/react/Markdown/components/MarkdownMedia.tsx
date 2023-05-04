@@ -69,8 +69,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const [mediaURL, setMediaURL] = useState('');
-  const [mediaType] = useState(props.type);
-  const [timeLinkEdition, setTimeLinkEdition] = useState(false);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -133,7 +131,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const updateParentForm = () => {
     if (props.onTimeLinkAdded) props.onTimeLinkAdded(getValues().timelines);
-    setTimeLinkEdition(true);
   };
 
   const appendTimelinkAndUpdateParent = (timelink?: TimeLink) => {
