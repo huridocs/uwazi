@@ -245,7 +245,6 @@ describe('i18n translations routes', () => {
 
     describe('api/translations/languages', () => {
       it('should return the saved translation', async () => {
-        //shouldnt this fail?
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
         const response = await request(app).post('/api/translations/languages').send({
