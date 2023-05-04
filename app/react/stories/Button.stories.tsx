@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Button } from 'V2/Components/UI/Button';
 
 const ButtonStory = {
@@ -7,7 +7,7 @@ const ButtonStory = {
   component: Button,
 };
 
-const Template: ComponentStory<typeof Button> = args => (
+const Template: StoryFn<typeof Button> = args => (
   <div className="tw-content">
     <Button buttonStyle={args.buttonStyle} size={args.size} disabled={args.disabled}>
       {args.children}
@@ -26,4 +26,4 @@ Basic.args = {
 
 export { Basic };
 
-export default ButtonStory as ComponentMeta<typeof Button>;
+export default { component: ButtonStory };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Notification } from 'V2/Components/UI/Notification';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
@@ -9,7 +9,7 @@ const NotificationStory = {
   component: Notification,
 };
 
-const Template: ComponentStory<typeof Notification> = args => (
+const Template: StoryFn<typeof Notification> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="max-w-xl">
@@ -49,4 +49,4 @@ WithHeading.args = {
 
 export { Basic, WithHeading, WithDetails };
 
-export default NotificationStory as ComponentMeta<typeof Notification>;
+export default { component: NotificationStory };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -8,7 +8,7 @@ const TableStory = {
   component: Table,
 };
 
-const Template: ComponentStory<typeof Table> = args => (
+const Template: StoryFn<typeof Table> = args => (
   <div className="tw-content">
     <Table
       columns={args.columns}
@@ -83,4 +83,4 @@ WithActions.args = {
 
 export { Basic, WithActions };
 
-export default TableStory as ComponentMeta<typeof Table>;
+export default { component: TableStory };

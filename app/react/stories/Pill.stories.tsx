@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Pill } from 'V2/Components/UI/Pill';
 
 const PillStory = {
@@ -7,7 +7,7 @@ const PillStory = {
   component: Pill,
 };
 
-const Template: ComponentStory<typeof Pill> = args => (
+const Template: StoryFn<typeof Pill> = args => (
   <div className="tw-content">
     <Pill color={args.color}>{args.children}</Pill>
   </div>
@@ -22,4 +22,4 @@ Basic.args = {
 
 export { Basic };
 
-export default PillStory as ComponentMeta<typeof Pill>;
+export default { component: PillStory };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { ToggleButton } from 'V2/Components/UI/ToggleButton';
 
 const ToggleButtonStory = {
@@ -7,7 +7,7 @@ const ToggleButtonStory = {
   component: ToggleButton,
 };
 
-const Template: ComponentStory<typeof ToggleButton> = args => {
+const Template: StoryFn<typeof ToggleButton> = args => {
   const [show, setShow] = useState(false);
   return (
     <div className="tw-content">
@@ -28,4 +28,4 @@ Basic.args = {
 
 export { Basic };
 
-export default ToggleButtonStory as ComponentMeta<typeof ToggleButton>;
+export default { component: ToggleButtonStory };

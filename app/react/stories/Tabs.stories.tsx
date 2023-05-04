@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Tabs, Tab } from 'V2/Components/UI/Tabs';
 
 const TabsStory = {
@@ -7,7 +7,7 @@ const TabsStory = {
   component: Tabs,
 };
 
-const Template: ComponentStory<typeof Tabs> = args => (
+const Template: StoryFn<typeof Tabs> = args => (
   <div className="tw-content">
     <Tabs onTabSelected={args.onTabSelected}>
       <Tab label="Tab 1">
@@ -40,4 +40,4 @@ Basic.args = {
 
 export { Basic };
 
-export default TabsStory as ComponentMeta<typeof Tabs>;
+export default { component: TabsStory };

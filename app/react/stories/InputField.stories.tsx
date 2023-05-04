@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn, ComponentMeta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { InputField } from 'V2/Components/UI/InputField';
@@ -9,7 +9,7 @@ const InputFieldStory = {
   component: InputField,
 };
 
-const Template: ComponentStory<typeof InputField> = args => (
+const Template: StoryFn<typeof InputField> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -57,4 +57,4 @@ WithError.args = {
 
 export { Basic, WithClearFieldButton, WithError };
 
-export default InputFieldStory as ComponentMeta<typeof InputField>;
+export default { component: InputFieldStory };

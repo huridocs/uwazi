@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
@@ -17,7 +17,7 @@ const NavigationHeaderStory = {
   },
 };
 
-const Template: ComponentStory<typeof NavigationHeader> = args => (
+const Template: StoryFn<typeof NavigationHeader> = args => (
   <MemoryRouter>
     <Provider store={createStore()}>
       <div className="tw-content">
@@ -41,4 +41,4 @@ WithLink.args = {
 
 export { Basic, WithLink };
 
-export default NavigationHeaderStory as ComponentMeta<typeof NavigationHeader>;
+export default { component: NavigationHeaderStory };

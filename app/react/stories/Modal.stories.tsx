@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Modal } from 'V2/Components/UI/Modal';
 import { Button } from 'V2/Components/UI/Button';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
@@ -9,7 +9,7 @@ const ModalStory = {
   component: Modal,
 };
 
-const Template: ComponentStory<typeof Modal> = args => (
+const Template: StoryFn<typeof Modal> = args => (
   <div className="tw-content">
     <div className=" w-10 h10 container">
       <Modal show={args.show} size={args.size}>
@@ -67,4 +67,4 @@ Warning.args = {
 
 export { Basic, Warning };
 
-export default ModalStory as ComponentMeta<typeof Modal>;
+export default { component: ModalStory };
