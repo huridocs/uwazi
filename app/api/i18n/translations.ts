@@ -9,19 +9,12 @@ import { generateFileName } from 'api/files';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream/promises';
-import { ContentsClient, GithubFileNotFound } from 'api/i18n/contentsClient';
+import { ContentsClient } from 'api/i18n/contentsClient';
 import { availableLanguages } from 'shared/languagesList';
 import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
 import { ContextType } from 'shared/translationSchema';
 import model from './translationsModel';
-
-export class UITranslationNotAvailable extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UITranslationNotAvailable';
-  }
-}
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -414,20 +407,11 @@ export default {
 
   async importPredefined(locale: string) {
     const contentsClient = new ContentsClient();
-    try {
-      const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
-      const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
-      await pipeline(translationsCsv, createWriteStream(tmpCsv));
-      const loader = new CSVLoader();
-      await loader.loadTranslations(tmpCsv, 'System');
-    } catch (error) {
-      if (error instanceof GithubFileNotFound) {
-        throw new UITranslationNotAvailable(
-          `Predefined translation for locale ${locale} is not available`
-        );
-      }
-      throw error;
-    }
+    const translationsCsv = await contentsClient.retrievePredefinedTranslations(locale);
+    const tmpCsv = path.join(os.tmpdir(), generateFileName({ originalname: 'tmp-csv.csv' }));
+    await pipeline(translationsCsv, createWriteStream(tmpCsv));
+    const loader = new CSVLoader();
+    await loader.loadTranslations(tmpCsv, 'System');
   },
 
   async availableLanguages() {

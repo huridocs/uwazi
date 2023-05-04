@@ -7,9 +7,9 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { Application, Request } from 'express';
-import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/contentsClient';
+import { UITranslationNotAvailable } from 'api/i18n/contentsClient';
 import needsAuthorization from '../auth/authMiddleware';
-import translations, { UITranslationNotAvailable } from './translations';
+import translations from './translations';
 
 export default (app: Application) => {
   app.get('/api/translations', async (req, res) => {
@@ -108,10 +108,6 @@ export default (app: Application) => {
         await translations.importPredefined(locale);
         res.json(await translations.get({ locale }));
       } catch (error) {
-        if (error instanceof GithubQuotaExceeded || error instanceof GithubAuthenticationError) {
-          next(createError(error, 503));
-        }
-
         if (error instanceof UITranslationNotAvailable) {
           next(createError(error, 422));
         }

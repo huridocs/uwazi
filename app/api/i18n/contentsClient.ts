@@ -1,59 +1,39 @@
-import { config } from 'api/config';
+/* eslint-disable max-classes-per-file */
+// eslint-disable-next-line node/no-restricted-import
+import { readFile, readdir } from 'fs/promises';
 
-export class GithubQuotaExceeded extends Error {
+export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'GithubQuotaExceeded';
-  }
-}
-
-export class GithubAuthenticationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'GithubAuthenticationError';
-  }
-}
-
-export class GithubFileNotFound extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'GithubFileNotFound';
+    this.name = 'UITranslationNotAvailable';
   }
 }
 
 export class ContentsClient {
-  private readonly GITHUB_API_URL = 'https://api.github.com/repos/huridocs/uwazi-contents/contents';
-
-  private readonly baseHeaders = {
-    accept: 'application/vnd.github.v4.raw',
-  };
+  static CONTENTS_DIRECTORY = 'contents/ui-translations';
 
   async retrievePredefinedTranslations(locale: string) {
-    const response = await this.fetch(`${this.GITHUB_API_URL}/ui-translations/${locale}.csv`);
-    if (response.status === 404) throw new GithubFileNotFound(`${locale}.csv: File not found`);
-    return (await response.text()) || '';
+    try {
+      return (await readFile(`${ContentsClient.CONTENTS_DIRECTORY}/${locale}.csv`)).toString();
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        throw new UITranslationNotAvailable(
+          `Predefined translation for locale ${locale} is not available`
+        );
+      }
+      throw e;
+    }
   }
 
   async retrieveAvailablePredefinedLanguages() {
-    const response = await this.fetch(`${this.GITHUB_API_URL}/ui-translations/`);
-    if (response.status === 404) throw new GithubFileNotFound('File not found');
-    return ((await response.json()) as { name: string }[]).map(v => v.name.replace('.csv', ''));
-  }
-
-  private headers() {
-    if (config.githubToken) {
-      return { ...this.baseHeaders, Authorization: `Bearer ${config.githubToken}` };
+    try {
+      const files = await readdir(ContentsClient.CONTENTS_DIRECTORY);
+      return files.map(f => f.replace('.csv', ''));
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        throw new UITranslationNotAvailable('UI translations directory not found');
+      }
+      throw e;
     }
-
-    return this.baseHeaders;
-  }
-
-  private async fetch(url: string) {
-    const response = await fetch(url, { headers: this.headers() });
-    if (response.status === 403) throw new GithubQuotaExceeded('Translations could not be loaded');
-    if (response.status === 401) {
-      throw new GithubAuthenticationError('Github authentication failed');
-    }
-    return response;
   }
 }
