@@ -20,6 +20,7 @@ import { DefaultRelationshipDataSource } from '../database/data_source_defaults'
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
+import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
@@ -52,6 +53,19 @@ const DenormalizationService = (transactionManager: MongoTransactionManager) => 
     transactionManager,
     indexEntitiesCallback
   );
+
+  return service;
+};
+
+const GetRelationshipService = (request: Request) => {
+  const transactionManager = DefaultTransactionManager();
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const permissionsDS = DefaultPermissionsDataSource(transactionManager);
+  const entitiesDS = DefaultEntitiesDataSource(transactionManager);
+
+  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
+
+  const service = new GenericGetRelationshipService(relationshipsDS, authService, entitiesDS);
 
   return service;
 };
@@ -100,4 +114,9 @@ const DeleteRelationshipService = (request: Request) => {
   return service;
 };
 
-export { CreateRelationshipService, DeleteRelationshipService, DenormalizationService };
+export {
+  CreateRelationshipService,
+  DeleteRelationshipService,
+  GetRelationshipService,
+  DenormalizationService,
+};

@@ -200,6 +200,12 @@ module.exports = {
       },
     },
     {
+      files: ['app/react/stories/*.stories.tsx'],
+      rules: {
+        'react/no-multi-comp': 'off',
+      },
+    },
+    {
       files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
       excludedFiles: './**/*.cy.tsx',
       parser: '@typescript-eslint/parser',

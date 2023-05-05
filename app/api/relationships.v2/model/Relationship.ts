@@ -1,6 +1,5 @@
 /* eslint-disable max-params */
 /* eslint-disable max-classes-per-file */
-
 class Selection {
   readonly page: number;
 
@@ -70,6 +69,13 @@ class Relationship {
     this.from = from;
     this.to = to;
     this.type = type;
+  }
+
+  static getSharedIds(relationships: Relationship[]): Set<string> {
+    const entities = new Set(
+      relationships.flatMap(relationship => [relationship.from.entity, relationship.to.entity])
+    );
+    return entities;
   }
 }
 
