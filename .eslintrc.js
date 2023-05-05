@@ -1,4 +1,6 @@
+/* eslint-disable max-lines */
 const rules = require('./uwazi-eslint-rules');
+
 module.exports = {
   extends: ['airbnb', 'plugin:cypress/recommended', 'plugin:storybook/recommended'],
   env: {
@@ -7,23 +9,40 @@ module.exports = {
     jest: true,
     jasmine: true,
     es6: true,
-    'cypress/globals': true
+    'cypress/globals': true,
   },
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
   },
-  plugins: ['react', 'jest', '@typescript-eslint', 'prettier', 'node', 'react-hooks', 'eslint-plugin-cypress'],
+  plugins: [
+    'react',
+    'jest',
+    '@typescript-eslint',
+    'prettier',
+    'node',
+    'react-hooks',
+    'eslint-plugin-cypress',
+  ],
   rules: {
-    'prettier/prettier': ['error', {
-      requirePragma: false
-    }],
-    'node/no-restricted-import': ['error', [{
-      name: 'fs',
-      message: 'Please use { storage } from api/files'
-    }, {
-      name: 'fs/promises',
-      message: 'Please use { storage } from api/files'
-    }]],
+    'prettier/prettier': [
+      'error',
+      {
+        requirePragma: false,
+      },
+    ],
+    'node/no-restricted-import': [
+      'error',
+      [
+        {
+          name: 'fs',
+          message: 'Please use { storage } from api/files',
+        },
+        {
+          name: 'fs/promises',
+          message: 'Please use { storage } from api/files',
+        },
+      ],
+    ],
     indent: 'off',
     // handled by prettier
     'operator-linebreak': 'off',
@@ -43,16 +62,23 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'jest/no-focused-tests': 'error',
     'object-curly-spacing': ['warn', 'always'],
-    'max-len': ['error', 150, {
-      ignoreStrings: true
-    }],
-    'no-unused-vars': ['error', {
-      vars: 'all',
-      argsIgnorePattern: '^_',
-      args: 'all',
-      caughtErrors: 'none',
-      ignoreRestSiblings: true
-    }],
+    'max-len': [
+      'error',
+      150,
+      {
+        ignoreStrings: true,
+      },
+    ],
+    'no-unused-vars': [
+      'error',
+      {
+        vars: 'all',
+        argsIgnorePattern: '^_',
+        args: 'all',
+        caughtErrors: 'none',
+        ignoreRestSiblings: true,
+      },
+    ],
     //all warns are activated by default if removed
     'prefer-promise-reject-errors': ['warn'],
     'max-classes-per-file': ['warn'],
@@ -87,11 +113,15 @@ module.exports = {
     'max-lines': ['warn', 250],
     'max-params': ['warn', 4],
     'max-lines-per-function': 'off',
-    'max-statements': ['warn', {
-      max: 10
-    }, {
-      ignoreTopLevelFunctions: true
-    }],
+    'max-statements': [
+      'warn',
+      {
+        max: 10,
+      },
+      {
+        ignoreTopLevelFunctions: true,
+      },
+    ],
     'no-restricted-exports': ['warn'],
     //import
     'import/no-duplicates': ['warn'],
@@ -106,9 +136,12 @@ module.exports = {
     'import/order': ['warn'],
     'import/named': ['warn'],
     'import/no-cycle': ['warn'],
-    'import/no-extraneous-dependencies': ['error', {
-      devDependencies: true
-    }],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: true,
+      },
+    ],
     'import/no-import-module-exports': ['warn'],
     //react
     'react/static-property-placement': 'off',
@@ -128,10 +161,13 @@ module.exports = {
     // handled by prettier,
     'react/jsx-curly-brace-presence': ['warn'],
     'react/jsx-curly-newline': 'off',
-    'react/require-default-props': ['warn', {
-      forbidDefaultForRequired: false,
-      ignoreFunctionalComponents: true
-    }],
+    'react/require-default-props': [
+      'warn',
+      {
+        forbidDefaultForRequired: false,
+        ignoreFunctionalComponents: true,
+      },
+    ],
     'react/forbid-prop-types': ['warn'],
     'react/jsx-no-bind': ['warn'],
     'react/sort-comp': ['warn'],
@@ -148,19 +184,31 @@ module.exports = {
     'react/button-has-type': ['warn'],
     'react/no-access-state-in-setstate': ['warn'],
     'react/jsx-pascal-case': ['warn'],
-    'react/default-props-match-prop-types': ['error', {
-      allowRequiredDefaults: true
-    }],
-    'react/function-component-definition': [2, {
-      namedComponents: 'arrow-function',
-      unnamedComponents: 'arrow-function'
-    }],
-    'react/jsx-no-useless-fragment': [2, {
-      allowExpressions: true
-    }],
-    'react/no-unknown-property': ['error', {
-      ignore: ['no-translate']
-    }],
+    'react/default-props-match-prop-types': [
+      'error',
+      {
+        allowRequiredDefaults: true,
+      },
+    ],
+    'react/function-component-definition': [
+      2,
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
+    ],
+    'react/jsx-no-useless-fragment': [
+      2,
+      {
+        allowExpressions: true,
+      },
+    ],
+    'react/no-unknown-property': [
+      'error',
+      {
+        ignore: ['no-translate'],
+      },
+    ],
     //jsx-a11y
     'jsx-a11y/anchor-is-valid': ['warn'],
     'jsx-a11y/label-has-for': ['off'],
@@ -176,45 +224,47 @@ module.exports = {
     'jsx-a11y/label-has-associated-control': 'off',
     //react-hooks && recoil
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': ['warn', {
-      additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)'
-    }]
+    'react-hooks/exhaustive-deps': [
+      'warn',
+      {
+        additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)',
+      },
+    ],
   },
-  overrides: [{
-    files: ['app/**/*spec.js'],
-    rules: {
-      'max-lines-per-function': 'off'
-    }
-  }, {
-    files: ['app/**/specs/*'],
-    rules: {
-      'max-lines-per-function': 'off',
-      'max-lines': 'off'
-    }
+  overrides: [
+    {
+      files: ['app/**/specs/*'],
+      rules: {
+        'max-lines-per-function': 'off',
+        'max-lines': 'off',
+      },
+    },
     {
       files: ['app/react/stories/*.stories.tsx'],
       rules: {
         'react/no-multi-comp': 'off',
       },
     },
-  }, {
-    files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
-    excludedFiles: './**/*.cy.tsx',
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      project: './tsconfig.json'
+    {
+      files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
+      excludedFiles: './**/*.cy.tsx',
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './tsconfig.json',
+      },
+      rules: {
+        ...rules,
+      },
     },
-    rules: {
-      ...rules
-    }
-  }, {
-    files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
-    parser: '@typescript-eslint/parser',
-    parserOptions: {
-      project: './cypress/tsconfig.json'
+    {
+      files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: './cypress/tsconfig.json',
+      },
+      rules: {
+        ...rules,
+      },
     },
-    rules: {
-      ...rules
-    }
-  }]
+  ],
 };
