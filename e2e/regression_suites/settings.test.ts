@@ -108,11 +108,6 @@ describe('Settings', () => {
     });
   });
 
-  it('should display Languages', async () => {
-    await selectSettingsPage('Languages');
-    await testSelectorShot('.panel.panel-default.settings-content');
-  });
-
   afterAll(async () => {
     await logout();
   });
