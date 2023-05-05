@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Tab, Tabs } from 'app/V2/Components/UI';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button } from 'app/V2/Components/UI';
+import { Button, NavigationHeader, Tab, Tabs } from 'V2/Components/UI';
+import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
+import * as usersAPI from 'V2/api/users';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import * as usersAPI from 'V2/api/users';
 
 const Users = () => {
   const [activeTab, setActiveTab] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
   const [, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
-
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
+
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto', paddingTop: '12px' }}>
       <div className="p-4 h-full">
-        <h2 className="text-gray-700 font-normal mb-2">Users & Groups</h2>
+        <div className="pb-4">
+          <NavigationHeader backUrl="/settings">
+            <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
+              <Translate>Users & Groups</Translate>
+            </h1>
+          </NavigationHeader>
+        </div>
+
         <Tabs onTabSelected={tab => setActiveTab(tab)}>
           <Tab label="Users">
             <UsersTable
@@ -35,7 +42,8 @@ const Users = () => {
           </Tab>
         </Tabs>
       </div>
-      <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+
+      <SettingsFooter>
         <div className="flex gap-2 p-2 pt-1">
           {(() => {
             if (selectedUsers.length > 0) {
@@ -57,7 +65,7 @@ const Users = () => {
             );
           })()}
         </div>
-      </div>
+      </SettingsFooter>
     </div>
   );
 };

@@ -20,6 +20,7 @@ import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translation
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
+import { SettingsFooter } from 'app/V2/Components/Settings/SettingsFooter';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -264,7 +265,7 @@ const EditTranslations = () => {
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+        <SettingsFooter>
           <div className="flex justify-end gap-2 p-2 pt-1">
             <div className="flex-1">
               {contextId === 'System' && (
@@ -303,7 +304,7 @@ const EditTranslations = () => {
               <Translate>Save</Translate>
             </Button>
           </div>
-        </div>
+        </SettingsFooter>
       </div>
     </div>
   );
