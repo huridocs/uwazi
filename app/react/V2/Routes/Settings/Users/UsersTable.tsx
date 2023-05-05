@@ -5,6 +5,7 @@ import { ClientUserSchema } from 'app/apiResponseTypes';
 
 interface UsersTableProps {
   users: ClientUserSchema[];
+  editButtonAction: () => void;
   onUsersSelected: (selectedUsers: ClientUserSchema[]) => void;
 }
 
@@ -31,50 +32,48 @@ const pill = ({ cell }: any) => (
   </div>
 );
 
-const renderEditButton = () => (
-  <Button buttonStyle="secondary">
+const renderEditButton = (onclick: () => void) => (
+  <Button buttonStyle="secondary" onClick={onclick}>
     <Translate>Edit</Translate>
   </Button>
 );
 
-const groupPill = ({ cell }: any) => {
-  return (
-    <div>
-      {cell.value.map((group: any) => (
-        <Pill color="gray" key={group.name}>
-          <Translate>{group.name || group.username}</Translate>
-        </Pill>
-      ))}
-    </div>
-  );
-};
+const groupPill = ({ cell }: any) => (
+  <div>
+    {cell.value.map((group: any) => (
+      <Pill color="gray" key={group.name}>
+        <Translate>{group.name || group.username}</Translate>
+      </Pill>
+    ))}
+  </div>
+);
 
-const usersColumns = [
-  { Header: 'USERNAME', accessor: 'username', className: 'w-1/3', disableSortBy: true },
-  { Header: 'PROTECTION', accessor: 'using2fa', Cell: protectionPill, className: 'w-0' },
-  {
-    Header: 'ROLE',
-    accessor: 'role',
-    Cell: pill,
-    className: 'text-center w-0',
-  },
-  {
-    Header: 'GROUP',
-    accessor: 'groups',
-    Cell: groupPill,
-    disableSortBy: true,
-    className: 'w-1/3',
-  },
-  {
-    Header: 'ACTION',
-    accessor: '_id',
-    Cell: renderEditButton,
-    disableSortBy: true,
-    className: 'w-0',
-  },
-];
+const UsersTable = ({ users, onUsersSelected, editButtonAction }: UsersTableProps) => {
+  const usersColumns = [
+    { Header: 'USERNAME', accessor: 'username', className: 'w-1/3', disableSortBy: true },
+    { Header: 'PROTECTION', accessor: 'using2fa', Cell: protectionPill, className: 'w-0' },
+    {
+      Header: 'ROLE',
+      accessor: 'role',
+      Cell: pill,
+      className: 'text-center w-0',
+    },
+    {
+      Header: 'GROUP',
+      accessor: 'groups',
+      Cell: groupPill,
+      disableSortBy: true,
+      className: 'w-1/3',
+    },
+    {
+      Header: 'ACTION',
+      accessor: '_id',
+      Cell: renderEditButton(editButtonAction),
+      disableSortBy: true,
+      className: 'w-0',
+    },
+  ];
 
-const UsersTable = ({ users, onUsersSelected }: UsersTableProps) => {
   return (
     <Table
       columns={usersColumns}

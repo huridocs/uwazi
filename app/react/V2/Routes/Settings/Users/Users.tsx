@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, NavigationHeader, Tab, Tabs } from 'V2/Components/UI';
+import { Button, NavigationHeader, Sidepanel, Tab, Tabs } from 'V2/Components/UI';
 import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
 import { UsersTable } from './UsersTable';
@@ -12,6 +12,7 @@ import { GroupsTable } from './GroupsTable';
 const Users = () => {
   const [activeTab, setActiveTab] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
+  const [showSidepanel, setShowSidepanel] = useState(false);
   const [, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
@@ -31,12 +32,14 @@ const Users = () => {
           <Tab label="Users">
             <UsersTable
               users={users}
+              editButtonAction={() => setShowSidepanel(true)}
               onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
             />
           </Tab>
           <Tab label="Groups">
             <GroupsTable
               groups={groups}
+              editButtonAction={() => setShowSidepanel(true)}
               onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
             />
           </Tab>
@@ -59,13 +62,27 @@ const Users = () => {
               );
             }
             return (
-              <Button size="small" buttonStyle="primary" formId="edit-translations">
+              <Button
+                size="small"
+                buttonStyle="primary"
+                formId="edit-translations"
+                onClick={() => setShowSidepanel(true)}
+              >
                 <Translate>{`Add ${activeTab === 'Groups' ? 'group' : 'user'}`}</Translate>
               </Button>
             );
           })()}
         </div>
       </SettingsFooter>
+
+      <Sidepanel
+        isOpen={showSidepanel}
+        withOverlay
+        closeSidepanelFunction={() => setShowSidepanel(false)}
+        title={<Translate>User</Translate>}
+      >
+        Some form for users
+      </Sidepanel>
     </div>
   );
 };
