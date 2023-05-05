@@ -2,9 +2,11 @@ const newKeys = [
   { key: 'Active languages' },
   { key: 'Install' },
   { key: 'Install language' },
-  { key: 'Install Language' },
   { key: 'Please type in' },
   { key: 'Uninstall' },
+  { key: 'Default' },
+  { key: 'Default language' },
+  { key: 'Uninstall language' },
 ];
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {

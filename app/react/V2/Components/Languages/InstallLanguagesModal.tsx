@@ -29,7 +29,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
     <Modal size="lg">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          <Translate>Install Language</Translate>
+          <Translate>Install language</Translate>
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
