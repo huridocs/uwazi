@@ -61,7 +61,7 @@ function wrapEntityMetadata(entity) {
     let fileLocalID;
     let timeLinks;
     const fieldValue = entity.metadata[key].data || entity.metadata[key];
-    if (isString(fieldValue)) {
+    if (isString(fieldValue) && !fieldValue.startsWith('(/api/files/')) {
       [, fileLocalID, timeLinks] = fieldValue.match(/^\(([\w+]{10,20}), ({.+})/) || [
         '',
         fieldValue,
@@ -75,7 +75,7 @@ function wrapEntityMetadata(entity) {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])
         ? entity.metadata[key].map(v => ({ value: v }))
-        : [newFileMetadataValue || { value: entity.metadata[key] }],
+        : [newFileMetadataValue || { value: entity.metadata[key].data || entity.metadata[key] }],
     };
   }, {});
   // suggestedMetadata is always in metadata-object form.
