@@ -1,6 +1,6 @@
-/** @format */
+import ReactPlayer from 'react-player';
 
-export function notEmpty(val) {
+function notEmpty(val) {
   if (Array.isArray(val)) {
     return Boolean(val.length);
   }
@@ -14,7 +14,7 @@ export function notEmpty(val) {
   return !!val && val.trim() !== '';
 }
 
-export function labelAndUrl(val) {
+function labelAndUrl(val) {
   return (
     !notEmpty(val) ||
     !notEmpty(val.label) ||
@@ -23,7 +23,7 @@ export function labelAndUrl(val) {
   );
 }
 
-export function latAndLon(val) {
+function latAndLon(val) {
   return (
     !notEmpty(val) ||
     (notEmpty(val[0].lat) && notEmpty(val[0].lon)) ||
@@ -54,6 +54,14 @@ const linkValidation = property => {
   validationObject[`metadata.${property.name}`] = { required: labelAndUrl };
   return validationObject;
 };
+
+const validImageFile = file => file.mimetype && file.mimetype.includes('image');
+
+const validMediaFile = file =>
+  (file.mimetype && (file.mimetype.includes('video') || file.mimetype.includes('audio'))) ||
+  (file.url && ReactPlayer.canPlay(file.url));
+
+export { notEmpty, labelAndUrl, latAndLon, validImageFile, validMediaFile };
 
 export default {
   generate(template, noTitle = false) {

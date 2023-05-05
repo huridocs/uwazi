@@ -1,11 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-import { Translate } from 'app/I18N';
 import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
+import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
   compact?: boolean;
@@ -268,7 +267,13 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       /(^(blob:)?https?:\/\/(?:www\.)?)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$/;
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
-        .then(async res => res.blob())
+        .then(async res => {
+          if (validMediaFile(res)) {
+            return res.blob();
+          }
+          setErrorFlag(true);
+          throw new Error('Invalid file');
+        })
         .then(blob => {
           setErrorFlag(false);
           setMediaURL(URL.createObjectURL(blob));

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
 
@@ -13,7 +14,11 @@ const prepareFiles = async (mediaProperties, values) => {
           return Promise.resolve();
         }
         const { data, originalFile } = values.metadata[p.name];
-        const blob = await fetch(data).then(r => r.blob());
+        const validMediaUrlRegExp =
+          /^\(?(blob:?https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
+
+        const [, url, , timeLinks] = data.match(validMediaUrlRegExp) || ['', data];
+        const blob = await fetch(url).then(r => r.blob());
         const file = new File([blob], originalFile.name, { type: blob.type });
         const fileID = uniqueID();
 
@@ -25,6 +30,7 @@ const prepareFiles = async (mediaProperties, values) => {
           type: 'attachment',
           mimetype: blob.type,
           fileLocalID: fileID,
+          timeLinks,
         });
 
         files.push(file);
@@ -46,7 +52,7 @@ function wrapEntityMetadata(entity) {
     .reduce(
       (previousValue, attachment, index) => ({
         ...previousValue,
-        [attachment.fileLocalID]: { value: '', attachment: index },
+        [attachment.fileLocalID]: { value: '', attachment: index, timeLinks: attachment.timeLinks },
       }),
       {}
     );
@@ -54,16 +60,17 @@ function wrapEntityMetadata(entity) {
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
     let fileLocalID;
     let timeLinks;
-    if (isString(entity.metadata[key])) {
-      [, fileLocalID, timeLinks] = entity.metadata[key].match(/^\(([\w+]{10,20}), ({.+})/) || [
+    const fieldValue = entity.metadata[key].data || entity.metadata[key];
+    if (isString(fieldValue)) {
+      [, fileLocalID, timeLinks] = fieldValue.match(/^\(([\w+]{10,20}), ({.+})/) || [
         '',
-        entity.metadata[key],
+        fieldValue,
       ];
     }
     if (fileLocalID && timeLinks) {
       newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
     }
-    const newFileMetadataValue = newFileMetadataValues[fileLocalID];
+    const newFileMetadataValue = newFileMetadataValues[fileLocalID] || fileLocalID;
     return {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])

@@ -8,7 +8,7 @@ import { MediaModal, MediaModalProps, MediaModalType } from 'app/Metadata/compon
 import MarkdownMedia, { TimeLink } from 'app/Markdown/components/MarkdownMedia';
 
 type MediaFieldProps = MediaModalProps & {
-  value: string | { data: string; originalFile: File } | null;
+  value: string | { data: string; originalFile: Partial<File> } | null;
   localAttachments: ClientFile[];
   formModel: string;
   name: string;
@@ -24,24 +24,26 @@ const prepareValue = (
 ) => {
   const valueString = getValue(value);
   const values = {
-    originalValue: valueString,
+    data: valueString,
     fileURL: valueString,
     type: '',
+    originalFile: isObject(value) ? value.originalFile : undefined,
   };
 
-  if (/^[a-zA-Z\d_]*$/.test(values.originalValue)) {
+  if (/^[a-zA-Z\d_]*$/.test(values.data)) {
     values.type = 'uploadId';
   }
 
-  if (/^https?:\/\//.test(values.originalValue)) {
+  if (/^https?:\/\//.test(values.data)) {
     values.type = 'webUrl';
   }
 
   const supportingFile = localAttachments.find(
-    file => values.originalValue === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
+    file => values.data === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
 
   if (values.type === 'uploadId' && supportingFile) {
+    values.originalFile = supportingFile;
     values.fileURL = prepareHTMLMediaView(supportingFile);
   }
 
@@ -75,14 +77,20 @@ const MediaField = (props: MediaFieldProps) => {
 
   const file = prepareValue(value, localAttachments);
   const constructTimelinksString = (timelinks: TimeLink[]) => {
+    if (!file || !file.data) {
+      return null;
+    }
     const timelinksObj = timelinks.reduce((current: any, timelink) => {
       current[`${timelink.timeHours}:${timelink.timeMinutes}:${timelink.timeSeconds}`] =
         timelink.label;
       return current;
     }, {});
-    const [, fileLocalID] = file.originalValue.match(/\(?(.*?)(, {|$)/) || ['', file.originalValue];
+    const [, fileLocalID] = file.data.match(/\(?(.*?)(, {|$)/) || ['', file.data];
 
-    return `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`;
+    return {
+      data: `(${fileLocalID}, ${JSON.stringify({ timelinks: timelinksObj })})`,
+      originalFile: file.originalFile,
+    };
   };
 
   const updateTimeLinks = (timelinks: TimeLink[]) => {
@@ -91,7 +99,7 @@ const MediaField = (props: MediaFieldProps) => {
 
   useEffect(
     () => () => {
-      if (file.supportingFile?.serializedFile && file.fileURL) {
+      if (file && file.supportingFile?.serializedFile && file.fileURL) {
         URL.revokeObjectURL(file.fileURL);
       }
     },
@@ -105,7 +113,7 @@ const MediaField = (props: MediaFieldProps) => {
           <Icon icon="plus" /> <Translate>{value ? 'Update' : 'Add file'}</Translate>
         </button>
 
-        {file.originalValue && (
+        {file && file.data && (
           <button type="button" onClick={handleImageRemove} className="btn">
             <Icon icon="unlink" />
             &nbsp; <Translate>Unlink</Translate>
@@ -122,14 +130,15 @@ const MediaField = (props: MediaFieldProps) => {
           );
         }
         if (
-          (file.originalValue &&
+          (file &&
+            file.data &&
             file.supportingFile &&
             file.supportingFile.mimetype?.search(/image\/*/) !== -1) ||
           type === MediaModalType.Image
         ) {
           return (
             <img
-              src={file.fileURL}
+              src={file?.fileURL}
               alt=""
               onError={() => {
                 setImageRenderError(true);
@@ -137,13 +146,13 @@ const MediaField = (props: MediaFieldProps) => {
             />
           );
         }
-        if (file.fileURL) {
+        if (file?.fileURL) {
           return (
             <MarkdownMedia
-              config={file.fileURL}
+              config={file?.fileURL}
               editing
               onTimeLinkAdded={updateTimeLinks}
-              type={file.type}
+              type={file?.type}
             />
           );
         }
@@ -153,7 +162,7 @@ const MediaField = (props: MediaFieldProps) => {
         isOpen={openModal}
         onClose={handleCloseMediaModal}
         onChange={onChange}
-        selectedUrl={file.originalValue}
+        selectedUrl={file?.data}
         attachments={localAttachments}
         type={type}
         formModel={formModel}
