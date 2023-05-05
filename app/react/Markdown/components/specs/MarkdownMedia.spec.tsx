@@ -74,8 +74,13 @@ describe('MarkdownMedia', () => {
       });
 
       it('should revoke the created URL ', async () => {
-        await render();
-        renderResult.unmount();
+        await act(async () => {
+          await render();
+        });
+        await act(() => {
+          renderResult.unmount();
+        });
+
         expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
       });
 

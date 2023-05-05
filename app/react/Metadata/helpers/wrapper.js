@@ -43,7 +43,11 @@ const prepareFiles = async (mediaProperties, values) => {
   return { metadataFiles, entityAttachments, files };
 };
 
-function wrapEntityMetadata(entity) {
+function wrapEntityMetadata(entity, template) {
+  const mediaProperties = template.properties.filter(
+    prop => prop.type === 'image' || prop.type === 'media'
+  );
+
   if (!entity.metadata) {
     return { ...entity };
   }
@@ -60,15 +64,16 @@ function wrapEntityMetadata(entity) {
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
     let fileLocalID;
     let timeLinks;
-    const fieldValue = entity.metadata[key].data || entity.metadata[key];
-    if (isString(fieldValue) && !fieldValue.startsWith('(/api/files/')) {
-      [, fileLocalID, timeLinks] = fieldValue.match(/^\(([\w+]{10,20}), ({.+})/) || [
-        '',
-        fieldValue,
-      ];
-    }
-    if (fileLocalID && timeLinks) {
-      newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
+    const property = mediaProperties.find(p => p.name === key);
+    if (property) {
+      const fieldValue = entity.metadata[key].data || entity.metadata[key];
+      const mediaExpGroups = fieldValue.match(/^\(?([\w+]{10,15})(, ({.+})\))?|$/);
+      if (isString(fieldValue) && mediaExpGroups && mediaExpGroups[1]) {
+        [, fileLocalID, , timeLinks] = mediaExpGroups || ['', fieldValue];
+      }
+      if (fileLocalID && fileLocalID.length < 20 && timeLinks) {
+        newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
+      }
     }
     const newFileMetadataValue = newFileMetadataValues[fileLocalID] || fileLocalID;
     return {
@@ -87,7 +92,7 @@ const prepareMetadataAndFiles = async (values, attachedFiles, template) => {
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
   const fields = { ...values.metadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
-  const wrappedEntity = wrapEntityMetadata(entity);
+  const wrappedEntity = wrapEntityMetadata(entity, template);
   wrappedEntity.file = values.file ? values.file[0] : undefined;
   wrappedEntity.attachments = [];
   wrappedEntity.attachments.push(...files);

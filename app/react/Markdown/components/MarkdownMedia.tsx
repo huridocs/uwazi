@@ -282,14 +282,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     } else if (config.url.match(validMediaUrlRegExp)) {
       setMediaURL(config.url);
     }
-
-    return () => {
-      setErrorFlag(false);
-      if (config.url.startsWith('/api/files/')) {
-        URL.revokeObjectURL(mediaURL);
-      }
-    };
   }, [config.url]);
+
+  useEffect(() => () => {
+    setErrorFlag(false);
+    if (config.url.startsWith('/api/files/')) {
+      URL.revokeObjectURL(mediaURL);
+    }
+  });
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };

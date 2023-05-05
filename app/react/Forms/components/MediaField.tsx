@@ -141,7 +141,9 @@ const MediaField = (props: MediaFieldProps) => {
               src={file?.fileURL}
               alt=""
               onError={() => {
-                setImageRenderError(true);
+                if (file?.fileURL) {
+                  setImageRenderError(true);
+                }
               }}
             />
           );

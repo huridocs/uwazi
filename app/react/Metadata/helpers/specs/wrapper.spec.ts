@@ -6,18 +6,25 @@ import { ClientTemplateSchema } from 'app/istore';
 import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper';
 
 describe('wrapEntityMetadata', () => {
+  const template = {
+    _id: 'template1',
+    properties: [
+      { name: 'text', type: 'text' },
+      { name: 'image', type: 'image' },
+      { name: 'media1', type: 'media' },
+      { name: 'media2', type: 'media' },
+      { name: 'media3', type: 'media' },
+    ],
+  };
   it('should return entity as is if there is no metadata', () => {
     const entity = { title: 'title', template: 'template1' };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual(entity);
   });
   it('should return correct entity metadata with linked attachments to metadata fields', () => {
     const entity = {
       title: 'A title',
-      metadata: {
-        text: 'Texto 1',
-        image: 'k3rutmyxrdr',
-      },
+      metadata: { text: 'Texto 1', image: 'k3rutmyxrdr' },
       attachments: [
         {
           originalname: 'document.pdf',
@@ -34,22 +41,10 @@ describe('wrapEntityMetadata', () => {
         },
       ],
     };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual({
       title: 'A title',
-      metadata: {
-        text: [
-          {
-            value: 'Texto 1',
-          },
-        ],
-        image: [
-          {
-            value: '',
-            attachment: 1,
-          },
-        ],
-      },
+      metadata: { text: [{ value: 'Texto 1' }], image: [{ value: '', attachment: 1 }] },
       attachments: [
         {
           originalname: 'document.pdf',
@@ -98,7 +93,7 @@ describe('wrapEntityMetadata', () => {
         },
       ],
     };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual({
       title: 'A title',
 

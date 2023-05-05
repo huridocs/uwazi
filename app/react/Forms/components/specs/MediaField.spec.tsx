@@ -122,9 +122,10 @@ describe('MediaField', () => {
         fireEvent.change(hourInput, {
           target: { value: '03' },
         });
-        expect(baseProps.onChange).toHaveBeenLastCalledWith(
-          '(aoe2t67yrq, {"timelinks":{"03:00:00":""}})'
-        );
+        expect(baseProps.onChange).toHaveBeenLastCalledWith({
+          data: '(aoe2t67yrq, {"timelinks":{"03:00:00":""}})',
+          originalFile: baseProps.localAttachments[2],
+        });
       });
       await act(async () => {
         fireEvent.click(screen.getByText('Add timelink').parentElement!);
@@ -137,17 +138,22 @@ describe('MediaField', () => {
         fireEvent.change(hourInput, {
           target: { value: '35' },
         });
-        expect(baseProps.onChange).toHaveBeenLastCalledWith(
-          '(aoe2t67yrq, {"timelinks":{"03:00:00":"","00:35:00":""}})'
-        );
+        expect(baseProps.onChange).toHaveBeenLastCalledWith({
+          data: '(aoe2t67yrq, {"timelinks":{"03:00:00":"","00:35:00":""}})',
+          originalFile: baseProps.localAttachments[2],
+        });
       });
       await act(async () => {
         fireEvent.click(screen.getAllByRole('button', { name: 'Remove timelink' })[0]);
-        expect(baseProps.onChange).toHaveBeenLastCalledWith(
-          '(aoe2t67yrq, {"timelinks":{"00:35:00":""}})'
-        );
+        expect(baseProps.onChange).toHaveBeenLastCalledWith({
+          data: '(aoe2t67yrq, {"timelinks":{"00:35:00":""}})',
+          originalFile: baseProps.localAttachments[2],
+        });
         fireEvent.click(screen.getAllByRole('button', { name: 'Remove timelink' })[0]);
-        expect(baseProps.onChange).toHaveBeenLastCalledWith('(aoe2t67yrq, {"timelinks":{}})');
+        expect(baseProps.onChange).toHaveBeenLastCalledWith({
+          data: '(aoe2t67yrq, {"timelinks":{}})',
+          originalFile: baseProps.localAttachments[2],
+        });
       });
     });
   });
