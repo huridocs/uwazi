@@ -13,6 +13,12 @@ declare global {
     interface Chainable {
       selection(subject: string, fn: any): Chainable;
       setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      shouldNotBeActionable(
+        done: Mocha.Done,
+        clickOptions?: Partial<Cypress.ClickOptions> & {
+          position?: Cypress.PositionType;
+        }
+      ): Chainable<Element>;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

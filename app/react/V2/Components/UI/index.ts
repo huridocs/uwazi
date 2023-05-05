@@ -8,6 +8,7 @@ import { InputField } from './InputField';
 import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
 import { Tabs, Tab } from './Tabs';
+import { Sidepanel } from './Sidepanel';
 
 export {
   Tab,
@@ -21,4 +22,5 @@ export {
   InputField,
   ModalContainer,
   NotificationsContainer,
+  Sidepanel,
 };

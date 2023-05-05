@@ -191,6 +191,12 @@ module.exports = {
       'max-lines-per-function': 'off',
       'max-lines': 'off'
     }
+    {
+      files: ['app/react/stories/*.stories.tsx'],
+      rules: {
+        'react/no-multi-comp': 'off',
+      },
+    },
   }, {
     files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
     excludedFiles: './**/*.cy.tsx',
