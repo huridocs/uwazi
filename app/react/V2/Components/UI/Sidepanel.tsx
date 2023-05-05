@@ -1,11 +1,17 @@
 import React from 'react';
 import { Transition } from '@headlessui/react';
 import { useParams } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { availableLanguages } from 'shared/languagesList';
-import { sidepanelConfig } from 'app/V2/atoms';
 import { Translate } from 'app/I18N';
+
+interface SidePanelProps {
+  children: JSX.Element | React.ReactNode;
+  isOpen: boolean;
+  closeSidepanelFunction: () => any;
+  title?: React.ReactNode | string;
+  withOverlay?: boolean;
+}
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
   <div className="flex mb-2 text-gray-500">
@@ -24,10 +30,14 @@ const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactN
   </div>
 );
 
-const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
-  const { content, closeSidepanelFunction, title, withOverlay } = useRecoilValue(sidepanelConfig);
+const Sidepanel = ({
+  isOpen = false,
+  closeSidepanelFunction,
+  title,
+  withOverlay,
+  children,
+}: SidePanelProps) => {
   const { lang: languageKey } = useParams();
-
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? '-translate-x-[500px]' : '-translate-x-[-500px]';
 
@@ -49,7 +59,7 @@ const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
           leaveTo={transition}
         >
           {sidepanelHeader(closeSidepanelFunction, title)}
-          <div>{content}</div>
+          <div>{children}</div>
         </Transition.Child>
       </Transition>
     );
@@ -65,7 +75,7 @@ const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
       leaveTo={transition}
     >
       {sidepanelHeader(closeSidepanelFunction, title)}
-      <div>{content}</div>
+      <div>{children}</div>
     </Transition>
   );
 };
