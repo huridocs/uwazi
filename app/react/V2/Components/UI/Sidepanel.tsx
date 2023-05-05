@@ -1,7 +1,9 @@
 import React from 'react';
 import { Transition } from '@headlessui/react';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { availableLanguages } from 'shared/languagesList';
 import { sidepanelConfig } from 'app/V2/atoms';
 import { Translate } from 'app/I18N';
 
@@ -24,6 +26,10 @@ const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactN
 
 const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
   const { content, closeSidepanelFunction, title, withOverlay } = useRecoilValue(sidepanelConfig);
+  const { lang: languageKey } = useParams();
+
+  const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
+  const transition = isRigthToLeft ? '-translate-x-[500px]' : '-translate-x-[-500px]';
 
   if (withOverlay) {
     return (
@@ -38,9 +44,9 @@ const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
         <Transition.Child
           as="aside"
           className="transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full md:w-[500px]"
-          enterFrom="-translate-x-[-500px]"
+          enterFrom={transition}
           enterTo="translate-x-0"
-          leaveTo="-translate-x-[-500px]"
+          leaveTo={transition}
         >
           {sidepanelHeader(closeSidepanelFunction, title)}
           <div>{content}</div>
@@ -54,9 +60,9 @@ const Sidepanel = ({ isOpen = false }: { isOpen: boolean }) => {
       show={isOpen}
       as="aside"
       className="transition transform ease-in duration-200 fixed h-full w-full top-0 right-0 bg-white border-l-2 px-2 py-4 shadow-lg z-10 md:w-[500px]"
-      enterFrom="-translate-x-[-500px]"
+      enterFrom={transition}
       enterTo="translate-x-0"
-      leaveTo="-translate-x-[-500px]"
+      leaveTo={transition}
     >
       {sidepanelHeader(closeSidepanelFunction, title)}
       <div>{content}</div>
