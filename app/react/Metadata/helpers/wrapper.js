@@ -44,9 +44,8 @@ const prepareFiles = async (mediaProperties, values) => {
 };
 
 function wrapEntityMetadata(entity, template) {
-  const mediaProperties = template.properties.filter(
-    prop => prop.type === 'image' || prop.type === 'media'
-  );
+  const mediaProperties =
+    template.properties?.filter(prop => prop.type === 'image' || prop.type === 'media') || [];
 
   if (!entity.metadata) {
     return { ...entity };
@@ -80,7 +79,7 @@ function wrapEntityMetadata(entity, template) {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])
         ? entity.metadata[key].map(v => ({ value: v }))
-        : [newFileMetadataValue || { value: entity.metadata[key].data || entity.metadata[key] }],
+        : [newFileMetadataValue || { value: entity.metadata[key]?.data || entity.metadata[key] }],
     };
   }, {});
   // suggestedMetadata is always in metadata-object form.

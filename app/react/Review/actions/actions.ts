@@ -46,7 +46,7 @@ export function toggleOneUpFullEdit() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     const template = state.templates.filter(
-      t => t?.get('_id') === state.entityView.entityForm.get('_id')
+      t => t?.get('_id') === state.entityView.entityForm.template
     );
     const oneUpState = state.oneUpReview.state?.toJS();
     if (oneUpState && oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
@@ -102,7 +102,7 @@ export function switchOneUpEntity(delta: number, save: boolean) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
     const template = state.templates
-      .filter(t => t?.get('_id') === state.entityView.entityForm)
+      .filter(t => t?.get('_id') === state.entityView.entityForm.template)
       .toJS();
     const oneUpState = state.oneUpReview.state?.toJS();
     if (!oneUpState) {
