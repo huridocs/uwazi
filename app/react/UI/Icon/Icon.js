@@ -6,14 +6,14 @@ import { connect } from 'react-redux';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { availableLanguages as languagesList } from 'shared/languagesList';
-import { loadIcons } from './library';
+import { loadIcons,inForceLTR } from './library';
 
 loadIcons();
 
 const Icon = ({ locale, directionAware, ...ownProps }) => {
   const languageData = languagesList.find(l => l.key === locale);
   return (
-    <FontAwesomeIcon {...ownProps} flip={languageData && languageData.rtl ? 'horizontal' : null} />
+    <FontAwesomeIcon {...ownProps} flip={ languageData && languageData.rtl && !inForceLTR(ownProps.icon) ? 'horizontal' : null} />
   );
 };
 

@@ -243,6 +243,14 @@ const icons = {
   faColumns,
 };
 
+const forceLTR=[
+  "check",
+];
+
+export const inForceLTR = (icon) => {
+  return forceLTR.includes(icon);
+};
+
 export const loadIcons = () => {
   library.add(...Object.keys(icons).map(key => icons[key]));
 };
