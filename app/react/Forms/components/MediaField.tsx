@@ -136,7 +136,7 @@ const MediaField = (props: MediaFieldProps) => {
             file.supportingFile.mimetype?.search(/image\/*/) !== -1) ||
           type === MediaModalType.Image
         ) {
-          return (
+          return file?.fileURL ? (
             <img
               src={file?.fileURL}
               alt=""
@@ -146,6 +146,9 @@ const MediaField = (props: MediaFieldProps) => {
                 }
               }}
             />
+          ) : (
+            // eslint-disable-next-line react/jsx-no-useless-fragment
+            <></>
           );
         }
         if (file?.fileURL) {

@@ -14,28 +14,30 @@ const prepareFiles = async (mediaProperties, values) => {
           return Promise.resolve();
         }
         const { data, originalFile } = values.metadata[p.name];
-        const validMediaUrlRegExp =
-          /^\(?(blob:?https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
+        if (originalFile) {
+          const validBlobUrlRegExp =
+            /^\(?(blob:https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
 
-        const [, url, , timeLinks] = data.match(validMediaUrlRegExp) || ['', data];
-        const blob = await fetch(url).then(r => r.blob());
-        const file = new File([blob], originalFile.name, { type: blob.type });
-        const fileID = uniqueID();
+          const [, url, , timeLinks] = data.match(validBlobUrlRegExp) || ['', data];
+          const blob = await fetch(url).then(r => r.blob());
+          const file = new File([blob], originalFile.name, { type: blob.type });
+          const fileID = uniqueID();
 
-        metadataFiles[p.name] = fileID;
+          metadataFiles[p.name] = fileID;
 
-        entityAttachments.push({
-          originalname: file.name,
-          filename: file.name,
-          type: 'attachment',
-          mimetype: blob.type,
-          fileLocalID: fileID,
-          timeLinks,
-        });
+          entityAttachments.push({
+            originalname: file.name,
+            filename: file.name,
+            type: 'attachment',
+            mimetype: blob.type,
+            fileLocalID: fileID,
+            timeLinks,
+          });
 
-        files.push(file);
+          files.push(file);
 
-        return URL.revokeObjectURL(values.metadata[p.name]);
+          return URL.revokeObjectURL(values.metadata[p.name]);
+        }
       })
     );
   }
