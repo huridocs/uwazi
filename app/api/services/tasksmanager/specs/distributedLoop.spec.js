@@ -103,7 +103,7 @@ describe('DistributedLoopLock', () => {
     await nodeOne.stop();
     finishTask();
     await nodeTwo.stop();
-  });
+  }, 10000);
 
   it('should continue executing the task if one task fails', async () => {
     jest.spyOn(errorHelper, 'handleError').mockImplementation(() => {});

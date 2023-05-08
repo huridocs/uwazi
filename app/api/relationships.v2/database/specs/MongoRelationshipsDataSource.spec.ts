@@ -236,3 +236,40 @@ describe('When getting by query', () => {
     ]);
   });
 });
+
+describe('getByEntities()', () => {
+  it('should return the relationships of the given entities', async () => {
+    const ds = new MongoRelationshipsDataSource(
+      testingDB.mongodb!,
+      new MongoTransactionManager(getClient())
+    );
+
+    const result = await ds.getByEntities(['entity1', 'entity2']).all();
+    expect(result).toMatchObject([
+      {
+        _id: factory.id('rel1').toString(),
+        from: { entity: 'entity1' },
+        to: { entity: 'hub1' },
+        type: factory.id('nullType').toString(),
+      },
+      {
+        _id: factory.id('rel4').toString(),
+        from: { entity: 'entity1' },
+        to: { entity: 'hub2' },
+        type: factory.id('nullType').toString(),
+      },
+      {
+        _id: factory.id('rel7').toString(),
+        from: { entity: 'entity2' },
+        to: { entity: 'hub3' },
+        type: factory.id('relType4').toString(),
+      },
+      {
+        _id: factory.id('rel9').toString(),
+        from: { entity: 'entity7' },
+        to: { entity: 'entity1' },
+        type: factory.id('relType5').toString(),
+      },
+    ]);
+  });
+});

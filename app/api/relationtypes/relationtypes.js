@@ -5,7 +5,7 @@ import { createError } from 'api/utils';
 import { ContextType } from 'shared/translationSchema';
 import { generateNames, getUpdatedNames, getDeletedProperties } from '../templates/utils';
 import model from './model';
-import { getNewRelationshipCount } from './v2_support';
+import * as v2 from './v2_support';
 
 const checkDuplicated = relationtype =>
   model.get().then(response => {
@@ -114,9 +114,10 @@ export default {
     await validateTypeInTemplates(id);
 
     const connectionCount = await relationships.countByRelationType(id);
-    const newRelationshipCount = await getNewRelationshipCount(id);
+    const newRelationshipCount = await v2.getNewRelationshipCount(id);
+    const relationTypeIsUsedInQueries = await v2.relationTypeIsUsedInQueries(id);
 
-    if (connectionCount === 0 && newRelationshipCount === 0) {
+    if (connectionCount === 0 && newRelationshipCount === 0 && !relationTypeIsUsedInQueries) {
       await translations.deleteContext(id);
       await model.delete(id);
       return true;

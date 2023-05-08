@@ -2,6 +2,7 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
@@ -99,15 +100,21 @@ export class MongoEntitiesDataSource
     return countInExistence === sharedIds.length * languages.length;
   }
 
-  async markMetadataAsChanged(propData: { sharedId: string; property: string }[]) {
+  async markMetadataAsChanged(
+    propData: Parameters<EntitiesDataSource['markMetadataAsChanged']>[0]
+  ) {
     const stream = this.createBulkStream();
     for (let i = 0; i < propData.length; i += 1) {
       const data = propData[i];
+
+      const filter =
+        'template' in data
+          ? { template: MongoIdHandler.mapToDb(data.template) }
+          : { sharedId: data.sharedId };
+      const update = 'properties' in data ? { $each: data.properties } : data.property;
+
       // eslint-disable-next-line no-await-in-loop
-      await stream.updateMany(
-        { sharedId: data.sharedId },
-        { $addToSet: { obsoleteMetadata: data.property } }
-      );
+      await stream.updateMany(filter, { $addToSet: { obsoleteMetadata: update } });
     }
     await stream.flush();
   }

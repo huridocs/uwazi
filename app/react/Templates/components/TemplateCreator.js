@@ -60,6 +60,14 @@ class TemplateCreator extends Component {
                           disabled={this.props.noRelationtypes}
                         />
                       )}
+                      {this.props.newRelationshipsFeatureEnabled &&
+                        environment !== 'relationship' && (
+                          <PropertyOption
+                            label="New Relationship"
+                            type="newRelationship"
+                            disabled={this.props.noRelationtypes}
+                          />
+                        )}
                       <PropertyOption label="Date" type="date" />
                       <PropertyOption label="Rich Text" type="markdown" />
                       <PropertyOption label="Link" type="link" />
@@ -98,6 +106,7 @@ TemplateCreator.defaultProps = {
   noRelationtypes: true,
   project: '',
   syncedTemplate: false,
+  newRelationshipsFeatureEnabled: false,
 };
 
 TemplateCreator.propTypes = {
@@ -108,6 +117,7 @@ TemplateCreator.propTypes = {
   syncedTemplate: PropTypes.bool,
   noRelationtypes: PropTypes.bool,
   project: PropTypes.string,
+  newRelationshipsFeatureEnabled: PropTypes.bool,
 };
 
 TemplateCreator.contextTypes = {
@@ -120,6 +130,7 @@ function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = ({ settings, relationTypes, thesauris, template }, props) => ({
   project: settings.collection.toJS().project,
+  newRelationshipsFeatureEnabled: settings.collection.toJS().features?.newRelationships,
   noRelationtypes: !relationTypes.size,
   noDictionaries: !thesauris.size,
   syncedTemplate: !props.relationType && template.data.synced,
