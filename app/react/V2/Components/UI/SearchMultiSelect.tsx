@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { InputField } from './InputField';
+import { InputField } from '../Forms';
 import { Pill } from './Pill';
 
 interface SearchMultiselectProps {

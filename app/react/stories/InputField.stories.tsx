@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { InputField } from 'V2/Components/UI/InputField';
+import { InputField } from 'V2/Components/Forms';
 
 const InputFieldStory = {
   title: 'Components/InputField',
