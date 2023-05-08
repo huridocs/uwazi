@@ -8,11 +8,46 @@ import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
+import { UserForm, GroupForm } from 'app/V2/Components/Settings/UsersAndGroups';
+
+type activeTab = 'Groups' | 'Users';
+
+const getSidePanelContent = (
+  activeTab: activeTab,
+  selected?: ClientUserSchema | ClientUserGroupSchema
+) => {
+  if (activeTab === 'Users') {
+    return <UserForm user={selected} />;
+  }
+
+  if (activeTab === 'Groups') {
+    return <GroupForm user={selected} />;
+  }
+};
+
+const getSidepanelTitle = (
+  activeTab: activeTab,
+  selected?: ClientUserSchema | ClientUserGroupSchema
+) => {
+  switch (true) {
+    case activeTab === 'Users' && selected !== undefined:
+      return <Translate>Edit user</Translate>;
+
+    case activeTab === 'Groups' && selected !== undefined:
+      return <Translate>Edit group</Translate>;
+
+    case activeTab === 'Groups':
+      return <Translate>New group</Translate>;
+
+    default:
+      return <Translate>New user</Translate>;
+  }
+};
 
 const Users = () => {
-  const [activeTab, setActiveTab] = useState('');
+  const [activeTab, setActiveTab] = useState<activeTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
-  const [dirtyUser, setDirtyUser] = useState<ClientUserSchema | null>();
+  const [selected, setSelected] = useState<ClientUserSchema | ClientUserGroupSchema | undefined>();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
   const { users, groups } =
@@ -29,12 +64,12 @@ const Users = () => {
           </NavigationHeader>
         </div>
 
-        <Tabs onTabSelected={tab => setActiveTab(tab)}>
+        <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
           <Tab label="Users">
             <UsersTable
               users={users}
-              editButtonAction={userBeingEdited => {
-                setDirtyUser(userBeingEdited);
+              editButtonAction={selectedUser => {
+                setSelected(selectedUser);
                 setShowSidepanel(true);
               }}
               onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
@@ -43,7 +78,10 @@ const Users = () => {
           <Tab label="Groups">
             <GroupsTable
               groups={groups}
-              editButtonAction={() => setShowSidepanel(true)}
+              editButtonAction={selectedGroup => {
+                setSelected(selectedGroup);
+                setShowSidepanel(true);
+              }}
               onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
             />
           </Tab>
@@ -52,40 +90,42 @@ const Users = () => {
 
       <SettingsFooter>
         <div className="flex gap-2 p-2 pt-1">
-          {(() => {
-            if (selectedUsers.length > 0) {
-              return (
-                <>
-                  <Button size="small" buttonStyle="tertiary" formId="edit-translations">
-                    <Translate>Reset password</Translate>
-                  </Button>
-                  <Button size="small" buttonStyle="danger" formId="edit-translations">
-                    <Translate>Delete</Translate>
-                  </Button>
-                </>
-              );
-            }
-            return (
-              <Button
-                size="small"
-                buttonStyle="primary"
-                formId="edit-translations"
-                onClick={() => setShowSidepanel(true)}
-              >
-                <Translate>{`Add ${activeTab === 'Groups' ? 'group' : 'user'}`}</Translate>
+          {selectedUsers.length > 0 ? (
+            <>
+              <Button size="small" buttonStyle="tertiary" formId="edit-translations">
+                <Translate>Reset password</Translate>
               </Button>
-            );
-          })()}
+              <Button size="small" buttonStyle="danger" formId="edit-translations">
+                <Translate>Delete</Translate>
+              </Button>
+            </>
+          ) : (
+            <Button
+              size="small"
+              buttonStyle="primary"
+              formId="edit-translations"
+              onClick={() => setShowSidepanel(true)}
+            >
+              {activeTab === 'Users' ? (
+                <Translate>Add user</Translate>
+              ) : (
+                <Translate>Add group</Translate>
+              )}
+            </Button>
+          )}
         </div>
       </SettingsFooter>
 
       <Sidepanel
         isOpen={showSidepanel}
         withOverlay
-        closeSidepanelFunction={() => setShowSidepanel(false)}
-        title={<Translate>User</Translate>}
+        closeSidepanelFunction={() => {
+          setSelected(undefined);
+          setShowSidepanel(false);
+        }}
+        title={getSidepanelTitle(activeTab, selected)}
       >
-        {JSON.stringify(dirtyUser)}
+        {getSidePanelContent(activeTab, selected)}
       </Sidepanel>
     </div>
   );

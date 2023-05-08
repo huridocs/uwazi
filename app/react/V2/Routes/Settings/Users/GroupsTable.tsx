@@ -5,7 +5,7 @@ import React from 'react';
 
 interface GroupsTableProps {
   groups: ClientUserGroupSchema[];
-  editButtonAction: () => void;
+  editButtonAction: (selectedGroup: ClientUserGroupSchema) => void;
   onGroupsSelected: (selectedGroups: ClientUserGroupSchema[]) => void;
 }
 
