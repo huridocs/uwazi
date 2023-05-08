@@ -21,4 +21,10 @@ describe('Tabas', () => {
     cy.contains('button', 'Tab 3').click();
     cy.contains('h2', 'Tab 3 Content');
   });
+
+  it('should no render other tabs', () => {
+    cy.contains('button', 'Tab 2').click();
+    cy.contains('h2', 'Tab 3 Content').should('not.exist');
+    cy.contains('h2', 'Tab 1 Content').should('not.exist');
+  });
 });
