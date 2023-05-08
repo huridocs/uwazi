@@ -13,7 +13,7 @@ describe('migration update translations of new Languages UI', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(133);
+    expect(migration.delta).toBe(134);
   });
 
   it('should update the keys that have changed', async () => {
@@ -36,6 +36,9 @@ describe('migration update translations of new Languages UI', () => {
       { key: 'Install Language' },
       { key: 'Please type in' },
       { key: 'Uninstall' },
+      { key: 'Default' },
+      { key: 'Default language' },
+      { key: 'Uninstall language' },
     ].map(key => ({ ...key, value: key.key }));
 
     const defaultContextContent = expect.objectContaining({
