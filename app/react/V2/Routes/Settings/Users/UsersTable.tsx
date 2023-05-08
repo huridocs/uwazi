@@ -5,7 +5,7 @@ import { ClientUserSchema } from 'app/apiResponseTypes';
 
 interface UsersTableProps {
   users: ClientUserSchema[];
-  editButtonAction: () => void;
+  editButtonAction: (userBeingEdited: ClientUserSchema) => void;
   onUsersSelected: (selectedUsers: ClientUserSchema[]) => void;
 }
 
@@ -32,8 +32,8 @@ const pill = ({ cell }: any) => (
   </div>
 );
 
-const renderEditButton = (onclick: () => void) => (
-  <Button buttonStyle="secondary" onClick={onclick}>
+const renderEditButton = (user: ClientUserSchema, onclick: (user: ClientUserSchema) => void) => (
+  <Button buttonStyle="secondary" onClick={() => onclick(user)}>
     <Translate>Edit</Translate>
   </Button>
 );
@@ -68,7 +68,7 @@ const UsersTable = ({ users, onUsersSelected, editButtonAction }: UsersTableProp
     {
       Header: 'ACTION',
       accessor: '_id',
-      Cell: renderEditButton(editButtonAction),
+      Cell: ({ cell }: any) => renderEditButton(cell.row.original, editButtonAction),
       disableSortBy: true,
       className: 'w-0',
     },

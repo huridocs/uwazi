@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Sidepanel } from 'V2/Components/UI';
@@ -11,7 +11,7 @@ const SidepanelStory = {
 
 const SidepanelContent = () => <p>The content of my sidepanel</p>;
 
-const Template: ComponentStory<typeof Sidepanel> = args => {
+const Template: StoryFn<typeof Sidepanel> = args => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
   return (
@@ -88,4 +88,4 @@ Basic.args = { withOverlay: false, title: 'My sidepanel' };
 
 export { Basic };
 
-export default SidepanelStory as ComponentMeta<typeof Sidepanel>;
+export default { component: SidepanelStory };

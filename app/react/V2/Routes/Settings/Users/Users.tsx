@@ -12,6 +12,7 @@ import { GroupsTable } from './GroupsTable';
 const Users = () => {
   const [activeTab, setActiveTab] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
+  const [dirtyUser, setDirtyUser] = useState<ClientUserSchema | null>();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
   const { users, groups } =
@@ -32,7 +33,10 @@ const Users = () => {
           <Tab label="Users">
             <UsersTable
               users={users}
-              editButtonAction={() => setShowSidepanel(true)}
+              editButtonAction={userBeingEdited => {
+                setDirtyUser(userBeingEdited);
+                setShowSidepanel(true);
+              }}
               onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
             />
           </Tab>
@@ -81,7 +85,7 @@ const Users = () => {
         closeSidepanelFunction={() => setShowSidepanel(false)}
         title={<Translate>User</Translate>}
       >
-        Some form for users
+        {JSON.stringify(dirtyUser)}
       </Sidepanel>
     </div>
   );
