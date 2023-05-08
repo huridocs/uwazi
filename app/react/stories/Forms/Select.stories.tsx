@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Select } from 'V2/Components/Forms';
 
 const InputFieldStory = {
@@ -7,7 +7,7 @@ const InputFieldStory = {
   component: Select,
 };
 
-const Template: ComponentStory<typeof Select> = args => (
+const Template: StoryFn<typeof Select> = args => (
   <div className="tw-content">
     <div className="md:w-1/2">
       <Select
@@ -41,4 +41,4 @@ Basic.args = {
 
 export { Basic };
 
-export default InputFieldStory as ComponentMeta<typeof Select>;
+export default { component: InputFieldStory };

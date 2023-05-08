@@ -1,5 +1,5 @@
 import React from 'react';
-import { StoryFn, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { InputField } from 'V2/Components/Forms';
@@ -14,7 +14,7 @@ const Template: StoryFn<typeof InputField> = args => (
     <div className="tw-content">
       <div className="md:w-1/2">
         <InputField
-          id={args.id}
+          id="1"
           label={<p className="text-lg mb-2">{args.label}</p>}
           disabled={args.disabled}
           hideLabel={args.hideLabel}
@@ -33,7 +33,6 @@ const WithClearFieldButton = Template.bind({});
 const WithError = Template.bind({});
 
 Basic.args = {
-  id: '1',
   label: 'Input field label',
   disabled: false,
   hideLabel: false,
