@@ -16,6 +16,7 @@ yarn babel -D -d prod/scripts --extensions .js,.ts,.tsx scripts
 
 cp ./server.js ./prod/server.js
 cp ./package.json ./prod/package.json
+cp -R ./contents ./prod/contents
 yarn install --production=true --modules-folder=./prod/node_modules
 mkdir ./prod/log
 mkdir ./prod/uploaded_documents

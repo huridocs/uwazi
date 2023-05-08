@@ -7,11 +7,11 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
 import backend from 'fetch-mock';
-import { config } from 'api/config';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { availableLanguages } from 'shared/languagesList';
 import { errorLog } from 'api/log';
 import { Logger } from 'winston';
+import { DefaultTranslations } from '../defaultTranslations';
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -181,20 +181,7 @@ describe('i18n translations routes', () => {
 
     describe('api/languages', () => {
       it('should return the available languages', async () => {
-        const githubResponse = [{ name: 'ar.csv' }, { name: 'es.csv' }, { name: 'fr.csv' }];
-
-        config.githubToken = 'gh_token';
-
-        backend.get(
-          (url, opts) =>
-            url ===
-              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/' &&
-            // @ts-ignore
-            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-            // @ts-ignore
-            opts?.headers?.accept === 'application/vnd.github.v4.raw',
-          { body: githubResponse }
-        );
+        DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/1`;
 
         const response = await request(app).get('/api/languages').expect(200);
 
@@ -212,11 +199,7 @@ describe('i18n translations routes', () => {
       describe('when github returns any error', () => {
         it('should return an unaltered version of the languages list', async () => {
           jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
-          backend.restore();
-          backend.get(
-            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/',
-            404
-          );
+          DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/non_valid`;
 
           const responseLanguages = await request(app).get('/api/languages').expect(200);
 
@@ -262,22 +245,7 @@ describe('i18n translations routes', () => {
 
     describe('api/translations/languages', () => {
       it('should return the saved translation', async () => {
-        const chineseCsv = `Key,Chinese
-      Search,搜索`;
-
-        config.githubToken = 'gh_token';
-        backend.restore();
-
-        backend.get(
-          (url, opts) =>
-            url ===
-              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/ch.csv' &&
-            // @ts-ignore
-            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-            // @ts-ignore
-            opts?.headers?.accept === 'application/vnd.github.v4.raw',
-          { body: chineseCsv }
-        );
+        DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
         const response = await request(app).post('/api/translations/languages').send({
           key: 'ch',
@@ -357,21 +325,7 @@ describe('i18n translations routes', () => {
       });
 
       it('should save the translations', async () => {
-        const spanishCsv = `Key,Spanish
-      Search,Buscar traducida`;
-
-        config.githubToken = 'gh_token';
-
-        backend.get(
-          (url, opts) =>
-            url ===
-              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
-            // @ts-ignore
-            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-            // @ts-ignore
-            opts?.headers?.accept === 'application/vnd.github.v4.raw',
-          { body: spanishCsv }
-        );
+        DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/2`;
 
         const response = await request(app)
           .post('/api/translations/populate')
@@ -402,49 +356,6 @@ describe('i18n translations routes', () => {
             locale: 'es',
           },
         ]);
-      });
-
-      it('should response with error when Github quota exceeded', async () => {
-        backend.get(
-          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
-          { status: 403 }
-        );
-        const response = await request(app)
-          .post('/api/translations/populate')
-          .send({ locale: 'es' })
-          .expect(503);
-
-        expect(response.body).toMatchObject({ error: 'Translations could not be loaded' });
-      });
-
-      it('should response with error when Github authentication failed', async () => {
-        backend.get(
-          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv',
-          { status: 401 }
-        );
-        const response = await request(app)
-          .post('/api/translations/populate')
-          .send({ locale: 'es' })
-          .expect(503);
-
-        expect(response.body).toMatchObject({
-          error: 'Github authentication failed',
-        });
-      });
-
-      it('should response with error when Github authentication failed', async () => {
-        backend.get(
-          'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/zh.csv',
-          { status: 404 }
-        );
-        const response = await request(app)
-          .post('/api/translations/populate')
-          .send({ locale: 'zh' })
-          .expect(422);
-
-        expect(response.body).toMatchObject({
-          error: 'Predefined translation for locale zh is not available',
-        });
       });
     });
 

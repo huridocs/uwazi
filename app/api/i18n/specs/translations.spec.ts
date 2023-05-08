@@ -1,16 +1,17 @@
 import db from 'api/utils/testing_db';
 
-import { config } from 'api/config';
 import thesauri from 'api/thesauri/thesauri.js';
-import backend from 'fetch-mock';
 import { ContextType } from 'shared/translationSchema';
-import translations, { UITranslationNotAvailable } from '../translations';
+// eslint-disable-next-line node/no-restricted-import
+import * as fs from 'fs';
+import translations from '../translations';
 import fixtures, {
   dictionaryId,
   documentTemplateId,
   englishTranslation,
   entityTemplateId,
 } from './fixtures.js';
+import { UITranslationNotAvailable } from '../defaultTranslations';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -507,27 +508,12 @@ describe('translations', () => {
   });
 
   describe('import predefined translation csv', () => {
-    afterEach(() => {
-      backend.restore();
-    });
-
     it('should download a translations csv based on iso key and import it when translation is available', async () => {
-      const spanishCsv = `Key, Español
-      Password, Password traducida
-      Account, Account traducida
-      Age, Age traducida`;
-
-      config.githubToken = 'gh_token';
-
-      backend.get(
-        (url, opts) =>
-          url ===
-            'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/es.csv' &&
-          // @ts-ignore
-          opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-          // @ts-ignore
-          opts?.headers?.accept === 'application/vnd.github.v4.raw',
-        { body: spanishCsv }
+      const readFileMock = jest.spyOn(fs.promises, 'readFile').mockResolvedValue(
+        Buffer.from(`Key, Español
+        Password, Password traducida
+        Account, Account traducida
+        Age, Age traducida`)
       );
 
       await translations.importPredefined('es');
@@ -540,13 +526,14 @@ describe('translations', () => {
       expect(ESTranslations.Password).toBe('Password traducida');
       expect(ESTranslations.Account).toBe('Account traducida');
       expect(ESTranslations.Age).toBe('Age traducida');
+
+      readFileMock.mockRestore();
     });
 
     it('should throw error when translation is not available', async () => {
-      backend.get(
-        'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/zh.csv',
-        404
-      );
+      const readFileMock = jest
+        .spyOn(fs.promises, 'readFile')
+        .mockRejectedValue({ code: 'ENOENT' });
 
       await expect(translations.importPredefined('zh')).rejects.toThrowError(
         UITranslationNotAvailable
@@ -560,6 +547,8 @@ describe('translations', () => {
       expect(ZHTranslations.Password).toBe('Password');
       expect(ZHTranslations.Account).toBe('Account');
       expect(ZHTranslations.Age).toBe('Age');
+
+      readFileMock.mockRestore();
     });
   });
 });
