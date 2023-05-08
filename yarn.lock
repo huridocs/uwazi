@@ -973,10 +973,10 @@
   dependencies:
     tslib "^2.5.0"
 
-"@babel/cli@7.21.0":
-  version "7.21.0"
-  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.21.0.tgz#1868eb70e9824b427fc607610cce8e9e7889e7e1"
-  integrity sha512-xi7CxyS8XjSyiwUGCfwf+brtJxjW1/ZTcBUkP10xawIEXLX5HzLn+3aXkgxozcP2UhRhtKTmQurw9Uaes7jZrA==
+"@babel/cli@7.21.5":
+  version "7.21.5"
+  resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.21.5.tgz#a685a5b50b785f2edfbf6e042c1265c653547d9d"
+  integrity sha512-TOKytQ9uQW9c4np8F+P7ZfPINy5Kv+pizDIUwSVH8X5zHgYHV4AA8HE5LA450xXeu4jEfmUckTYvv1I4S26M/g==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.17"
     commander "^4.0.1"
@@ -2389,10 +2389,10 @@
     tunnel-agent "^0.6.0"
     uuid "^8.3.2"
 
-"@cypress/webpack-dev-server@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@cypress/webpack-dev-server/-/webpack-dev-server-3.4.0.tgz#eb5bee8db3b0060c96e5d73ad9cdb9cc5e7f907d"
-  integrity sha512-FkWoqtI/Co5YyNu58DgZ4J7gI1ZGULvZHLWJpiQ4XreS5UOjFog46+HTEWa8MtP9GVdSpKBykuBJAF/aqvmB/Q==
+"@cypress/webpack-dev-server@^3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@cypress/webpack-dev-server/-/webpack-dev-server-3.4.1.tgz#d706437624a386022d75fd9c326b9f010fd3a854"
+  integrity sha512-S6IUklDXIkcajtkjtLZz8nzVMuG/kjEKnRVkAiIyJL3EZ+EHcXgrUQegfRb15poFlk4SZ/AMLRMqLSB6KCCxkg==
   dependencies:
     find-up "6.3.0"
     fs-extra "9.1.0"
@@ -8659,14 +8659,7 @@ content-type@~1.0.4, content-type@~1.0.5:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.5.tgz#8b773162656d1d1086784c8f23a54ce6d73d7918"
   integrity sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==
 
-convert-source-map@^1.1.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.8.0.tgz#f3373c32d21b4d780dd8004514684fb791ca4369"
-  integrity sha512-+OQdjP49zViI/6i7nIJpA8rAl4sV/JdPfU9nZs3VqOwGIgizICvuN2ru6fMd+4llL0tar18UYJXfZ/TWtmhUjA==
-  dependencies:
-    safe-buffer "~5.1.1"
-
-convert-source-map@^1.4.0:
+convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
   integrity sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==
@@ -11399,10 +11392,10 @@ file-uri-to-path@1.0.0:
   resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
   integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
-filesize@^10.0.6:
-  version "10.0.6"
-  resolved "https://registry.yarnpkg.com/filesize/-/filesize-10.0.6.tgz#5f4cd2721664cd925db3a7a5a87bbfd6ab5ebb1a"
-  integrity sha512-rzpOZ4C9vMFDqOa6dNpog92CoLYjD79dnjLk2TYDDtImRIyLTOzqojCb05Opd1WuiWjs+fshhCgTd8cl7y5t+g==
+filesize@^10.0.7:
+  version "10.0.7"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-10.0.7.tgz#2237a816ee60a83fd0c3382ae70800e54eced3ad"
+  integrity sha512-iMRG7Qo9nayLoU3PNCiLizYtsy4W1ClrapeCwEgtiQelOAOuRJiw4QaLI+sSr8xr901dgHv+EYP2bCusGZgoiA==
 
 fill-range@^4.0.0:
   version "4.0.0"

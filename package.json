@@ -140,7 +140,7 @@
     "express-http-proxy": "^1.6.2",
     "express-prom-bundle": "^6.6.0",
     "express-session": "1.17.3",
-    "filesize": "^10.0.6",
+    "filesize": "^10.0.7",
     "flag-icon-css": "^4.1.7",
     "flowbite": "^1.6.4",
     "flowbite-react": "^0.4.3",
@@ -240,7 +240,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@babel/cli": "7.21.0",
+    "@babel/cli": "7.21.5",
     "@babel/core": "7.21.4",
     "@babel/eslint-parser": "7.21.3",
     "@babel/helper-call-delegate": "^7.12.13",
@@ -262,7 +262,7 @@
     "@babel/traverse": "^7.21.4",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
-    "@cypress/webpack-dev-server": "^3.4.0",
+    "@cypress/webpack-dev-server": "^3.4.1",
     "@cypress/webpack-preprocessor": "^5.17.0",
     "@mdx-js/loader": "^2.3.0",
     "@storybook/addon-actions": "^6.5.16",
