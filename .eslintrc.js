@@ -137,7 +137,9 @@ module.exports = {
     'react/require-default-props': [
       'warn',
       {
-        functions: 'ignore',
+        forbidDefaultForRequired: false,
+        classes: 'defaultProps',
+        ignoreFunctionalComponents: true,
       },
     ],
     'react/forbid-prop-types': ['warn'],

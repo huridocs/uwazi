@@ -23,8 +23,6 @@ const Template: ComponentStory<typeof Select> = args => (
 );
 
 const Basic = Template.bind({});
-const WithClearFieldButton = Template.bind({});
-const WithError = Template.bind({});
 
 Basic.args = {
   label: 'Please select an option',
