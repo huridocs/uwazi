@@ -1,4 +1,4 @@
-import React, { Ref } from 'react';
+import React, { ChangeEventHandler, Ref } from 'react';
 
 interface SelectProps {
   id: string;
@@ -9,11 +9,24 @@ interface SelectProps {
   hasErrors?: boolean;
   className?: string;
   name?: string;
+  onChange?: ChangeEventHandler<HTMLSelectElement>;
+  onBlur?: ChangeEventHandler<HTMLSelectElement>;
 }
 
 const Select = React.forwardRef(
   (
-    { id, label, options, disabled, hideLabel, hasErrors, className, name = '' }: SelectProps,
+    {
+      id,
+      label,
+      options,
+      disabled,
+      hideLabel,
+      hasErrors,
+      className,
+      name = '',
+      onChange = () => {},
+      onBlur = () => {},
+    }: SelectProps,
     ref: Ref<any>
   ) => {
     const fieldStyles = hasErrors
@@ -27,11 +40,13 @@ const Select = React.forwardRef(
             {label}
           </label>
           <select
-            id={id}
-            name={name}
-            ref={ref}
-            disabled={disabled}
             className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
+            id={id}
+            disabled={disabled}
+            ref={ref}
+            name={name}
+            onBlur={onBlur}
+            onChange={onChange}
           >
             {options.map(({ key, value }) => (
               <option key={key} value={value}>
