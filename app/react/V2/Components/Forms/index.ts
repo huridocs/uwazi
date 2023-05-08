@@ -1,3 +1,4 @@
 import { InputField } from './InputField';
+import { Select } from './Select';
 
-export { InputField };
+export { InputField, Select };

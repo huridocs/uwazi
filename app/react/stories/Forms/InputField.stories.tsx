@@ -5,7 +5,7 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { InputField } from 'V2/Components/Forms';
 
 const InputFieldStory = {
-  title: 'Components/InputField',
+  title: 'Forms/InputField',
   component: InputField,
 };
 
