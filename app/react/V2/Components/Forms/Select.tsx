@@ -16,13 +16,9 @@ const Select = React.forwardRef(
     { id, label, options, disabled, hideLabel, hasErrors, className, name = '' }: SelectProps,
     ref: Ref<any>
   ) => {
-    let fieldStyles = 'border-gray-300 border text-gray-900';
-    let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
-
-    if (hasErrors) {
-      fieldStyles =
-        'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-red-900';
-    }
+    const fieldStyles = hasErrors
+      ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-red-900'
+      : 'border-gray-300 border text-gray-900';
 
     return (
       <div className={className}>

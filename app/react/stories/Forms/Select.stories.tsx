@@ -28,6 +28,9 @@ const WithError = Template.bind({});
 
 Basic.args = {
   label: 'Please select an option',
+  disabled: false,
+  hideLabel: false,
+  hasErrors: false,
   options: [
     { key: '1', value: 'Algeria' },
     { key: '2', value: 'Argentina' },
@@ -36,9 +39,6 @@ Basic.args = {
     { key: '5', value: 'Colombia' },
     { key: '6', value: 'Dinamarca' },
   ],
-  disabled: false,
-  hideLabel: false,
-  hasErrors: false,
 };
 
 export { Basic };
