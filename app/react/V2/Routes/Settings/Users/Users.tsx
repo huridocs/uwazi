@@ -6,24 +6,11 @@ import { Translate } from 'app/I18N';
 import { Button, NavigationHeader, Sidepanel, Tab, Tabs } from 'V2/Components/UI';
 import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
+import { UserForm, GroupForm } from 'V2/Components/Settings/UsersAndGroups';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
-import { UserForm, GroupForm } from 'app/V2/Components/Settings/UsersAndGroups';
 
 type activeTab = 'Groups' | 'Users';
-
-const getSidePanelContent = (
-  activeTab: activeTab,
-  selected?: ClientUserSchema | ClientUserGroupSchema
-) => {
-  if (activeTab === 'Users') {
-    return <UserForm user={selected} />;
-  }
-
-  if (activeTab === 'Groups') {
-    return <GroupForm user={selected} />;
-  }
-};
 
 const getSidepanelTitle = (
   activeTab: activeTab,
@@ -125,7 +112,7 @@ const Users = () => {
         }}
         title={getSidepanelTitle(activeTab, selected)}
       >
-        {getSidePanelContent(activeTab, selected)}
+        {activeTab === 'Users' ? <UserForm user={selected} /> : <GroupForm user={selected} />}
       </Sidepanel>
     </div>
   );

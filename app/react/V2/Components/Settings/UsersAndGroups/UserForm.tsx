@@ -6,28 +6,26 @@ interface UserFormProps {
   selected?: ClientUserSchema;
 }
 
-const UserForm = ({ selected }: UserFormProps) => {
-  return (
-    <>
-      <fieldset>
-        <legend>
-          <Translate>General Information</Translate>
-        </legend>
-      </fieldset>
+const UserForm = ({ selected }: UserFormProps) => (
+  <>
+    <fieldset>
+      <legend>
+        <Translate>General Information</Translate>
+      </legend>
+    </fieldset>
 
-      <fieldset>
-        <legend>
-          <Translate>Secuiry</Translate>
-        </legend>
-      </fieldset>
+    <fieldset>
+      <legend>
+        <Translate>Secuiry</Translate>
+      </legend>
+    </fieldset>
 
-      <fieldset>
-        <legend>
-          <Translate>Groups</Translate>
-        </legend>
-      </fieldset>
-    </>
-  );
-};
+    <fieldset>
+      <legend>
+        <Translate>Groups</Translate>
+      </legend>
+    </fieldset>
+  </>
+);
 
 export { UserForm };

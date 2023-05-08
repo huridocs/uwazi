@@ -6,22 +6,20 @@ interface GroupFormProps {
   selected?: ClientUserGroupSchema;
 }
 
-const GroupForm = ({ selected }: GroupFormProps) => {
-  return (
-    <>
-      <fieldset>
-        <legend>
-          <Translate>Group options</Translate>
-        </legend>
-      </fieldset>
+const GroupForm = ({ selected }: GroupFormProps) => (
+  <>
+    <fieldset>
+      <legend>
+        <Translate>Group options</Translate>
+      </legend>
+    </fieldset>
 
-      <fieldset>
-        <legend>
-          <Translate>Members</Translate>
-        </legend>
-      </fieldset>
-    </>
-  );
-};
+    <fieldset>
+      <legend>
+        <Translate>Members</Translate>
+      </legend>
+    </fieldset>
+  </>
+);
 
 export { GroupForm };
