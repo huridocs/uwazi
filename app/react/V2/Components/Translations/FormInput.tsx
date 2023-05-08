@@ -20,7 +20,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
   return (
     <div>
       <InputField
-        fieldID={data.cell.value}
+        id={data.cell.value}
         label={data.cell.row.values.language}
         hideLabel
         disabled={submitting}

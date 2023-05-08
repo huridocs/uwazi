@@ -3,36 +3,35 @@ import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
 interface InputFieldProps {
-  fieldID?: string;
-  label?: string | React.ReactNode;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLInputElement>;
-  name?: string;
-  ref?: Ref<any>;
-  value?: string;
+  id: string;
+  label: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
   hasErrors?: boolean;
-  clearFieldAction?: () => any;
+  value?: string;
   className?: string;
+  name?: string;
+  clearFieldAction?: () => any;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
 
 const InputField = React.forwardRef(
   (
     {
-      fieldID,
+      id,
       label,
       disabled,
       hideLabel,
       placeholder,
       hasErrors,
       value,
-      clearFieldAction,
       className,
+      name = '',
+      clearFieldAction,
       onChange = () => {},
       onBlur = () => {},
-      name = '',
     }: InputFieldProps,
     ref: Ref<any>
   ) => {
@@ -52,13 +51,13 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <label htmlFor={fieldID} className={hideLabel ? 'sr-only' : ''}>
+        <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
           {label}
         </label>
         <div className="relative w-full">
           <input
             type="text"
-            id={fieldID}
+            id={id}
             onChange={onChange}
             onBlur={onBlur}
             name={name}

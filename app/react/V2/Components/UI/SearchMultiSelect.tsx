@@ -27,6 +27,9 @@ const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
     <div>
       <div className="mb-4 sticky top-0 w-full">
         <InputField
+          id="search-multiselect"
+          label="search-multiselect"
+          hideLabel
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search"
           value={searchTerm}

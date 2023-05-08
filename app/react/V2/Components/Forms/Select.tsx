@@ -27,6 +27,9 @@ const Select = React.forwardRef(
     return (
       <div className={className}>
         <div className="relative w-full">
+          <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+            {label}
+          </label>
           <select
             id={id}
             name={name}
@@ -34,9 +37,6 @@ const Select = React.forwardRef(
             disabled={disabled}
             className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
           >
-            <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
-              {label}
-            </label>
             {options.map(({ key, value }) => (
               <option key={key} value={value}>
                 {value}
