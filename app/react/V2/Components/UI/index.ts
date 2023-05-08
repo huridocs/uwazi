@@ -6,11 +6,10 @@ import { Table } from './Table';
 import { ToggleButton } from './ToggleButton';
 import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
-import { Tabs, Tab } from './Tabs';
+import { Tabs } from './Tabs';
 import { Sidepanel } from './Sidepanel';
 
 export {
-  Tab,
   Tabs,
   Button,
   Modal,

@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
 
-const Tabs = ({
+const Tab = ({
+  id,
+  label,
   children,
-  onTabSelected,
 }: {
-  children: any[] | any;
-  onTabSelected: (activeTab: string) => void;
+  id: string;
+  label: React.ReactNode;
+  children: React.ReactNode;
 }) => {
-  const [activeTab, setActiveTab] = useState(children[0].props.label);
+  return (
+    <div className="hidden" id={id} data-label={label}>
+      {children}
+    </div>
+  );
+};
 
-  const handleClick = (e: any, newActiveTab: string) => {
+interface TabsProps {
+  children: React.ReactComponentElement<typeof Tab>[];
+  onTabSelected: (activeTab: string) => void;
+}
+
+const Tabs = ({ children, onTabSelected }: TabsProps) => {
+  const [activeTab, setActiveTab] = useState(children[0].props.id);
+
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    newActiveTab: string
+  ) => {
     e.preventDefault();
     setActiveTab(newActiveTab);
     onTabSelected(newActiveTab);
@@ -18,25 +36,25 @@ const Tabs = ({
   return (
     <>
       <div className="flex w-1/2">
-        {children.map((child: any, index: number) => (
+        {children.map((child, index: number) => (
           <button
-            key={child.props.label}
+            key={child.props.id}
             type="button"
             className={`${
-              activeTab === child.props.label ? ' bg-gray-50' : ''
+              activeTab === child.props.id ? ' bg-gray-50' : ''
             } flex-1 text-gray-700 font-medium py-2 w-80 h-14 border-b-2 ${
               index !== children.length - 1 ? 'border-r-2 border-primary-50' : ''
             }`}
-            onClick={e => handleClick(e, child.props.label)}
+            onClick={e => handleClick(e, child.props.id)}
           >
             {child.props.label}
           </button>
         ))}
       </div>
       <div className="py-4">
-        {children.map((child: any) => {
-          if (child.props.label === activeTab) {
-            return <div key={child.props.label}>{child.props.children}</div>;
+        {children.map(child => {
+          if (child.props.id === activeTab) {
+            return <div key={child.props.id}>{child.props.children}</div>;
           }
           return null;
         })}
@@ -45,12 +63,6 @@ const Tabs = ({
   );
 };
 
-const Tab = ({ label, children }: { label: string; children: any[] | any }) => {
-  return (
-    // @ts-ignore
-    <div className="hidden" label={label}>
-      {children}
-    </div>
-  );
-};
-export { Tabs, Tab };
+Tabs.Tab = Tab;
+
+export { Tabs };

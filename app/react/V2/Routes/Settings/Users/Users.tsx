@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, NavigationHeader, Sidepanel, Tab, Tabs } from 'V2/Components/UI';
+import { Button, NavigationHeader, Sidepanel, Tabs } from 'V2/Components/UI';
 import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
 import { UserForm, GroupForm } from 'V2/Components/Settings/UsersAndGroups';
@@ -52,7 +52,7 @@ const Users = () => {
         </div>
 
         <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
-          <Tab label="Users">
+          <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
             <UsersTable
               users={users}
               editButtonAction={selectedUser => {
@@ -61,8 +61,8 @@ const Users = () => {
               }}
               onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
             />
-          </Tab>
-          <Tab label="Groups">
+          </Tabs.Tab>
+          <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
             <GroupsTable
               groups={groups}
               editButtonAction={selectedGroup => {
@@ -71,7 +71,7 @@ const Users = () => {
               }}
               onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
             />
-          </Tab>
+          </Tabs.Tab>
         </Tabs>
       </div>
 
