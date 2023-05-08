@@ -136,11 +136,7 @@ module.exports = {
     'react/jsx-curly-newline': 'off',
     'react/require-default-props': [
       'warn',
-      {
-        forbidDefaultForRequired: false,
-        classes: 'defaultProps',
-        ignoreFunctionalComponents: true,
-      },
+      { forbidDefaultForRequired: false, ignoreFunctionalComponents: true },
     ],
     'react/forbid-prop-types': ['warn'],
     'react/jsx-no-bind': ['warn'],
