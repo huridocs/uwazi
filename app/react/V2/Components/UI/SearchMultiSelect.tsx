@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { InputField } from './InputField';
+import { InputField } from '../Forms';
 import { Pill } from './Pill';
 
 interface SearchMultiselectProps {
@@ -27,6 +27,9 @@ const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
     <div>
       <div className="mb-4 sticky top-0 w-full">
         <InputField
+          id="search-multiselect"
+          label="search-multiselect"
+          hideLabel
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search"
           value={searchTerm}

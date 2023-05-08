@@ -2,10 +2,10 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { InputField } from 'V2/Components/UI/InputField';
+import { InputField } from 'V2/Components/Forms';
 
 const InputFieldStory = {
-  title: 'Components/InputField',
+  title: 'Forms/InputField',
   component: InputField,
 };
 
@@ -14,7 +14,7 @@ const Template: ComponentStory<typeof InputField> = args => (
     <div className="tw-content">
       <div className="md:w-1/2">
         <InputField
-          fieldID={args.fieldID}
+          id={args.id}
           label={<p className="text-lg mb-2">{args.label}</p>}
           disabled={args.disabled}
           hideLabel={args.hideLabel}
@@ -33,7 +33,7 @@ const WithClearFieldButton = Template.bind({});
 const WithError = Template.bind({});
 
 Basic.args = {
-  fieldID: '1',
+  id: '1',
   label: 'Input field label',
   disabled: false,
   hideLabel: false,
