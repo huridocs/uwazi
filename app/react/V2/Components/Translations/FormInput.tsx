@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Translate } from 'app/I18N';
-import { InputField } from '../UI';
+import { InputField } from '../Forms';
 
 type fromPropsType = {
   register: UseFormRegister<any>;
@@ -20,7 +20,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
   return (
     <div>
       <InputField
-        fieldID={data.cell.value}
+        id={data.cell.value}
         label={data.cell.row.values.language}
         hideLabel
         disabled={submitting}
