@@ -9,12 +9,6 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 const NavigationHeaderStory = {
   title: 'Components/NavigationHeader',
   component: NavigationHeader,
-  parameters: {
-    viewport: {
-      viewports: INITIAL_VIEWPORTS,
-      defaultViewport: 'iphone6',
-    },
-  },
 };
 
 const Template: StoryFn<typeof NavigationHeader> = args => (
@@ -41,4 +35,12 @@ WithLink.args = {
 
 export { Basic, WithLink };
 
-export default { component: NavigationHeaderStory };
+export default {
+  component: NavigationHeaderStory,
+  parameters: {
+    viewport: {
+      viewports: INITIAL_VIEWPORTS,
+      defaultViewport: 'iphone6',
+    },
+  },
+};
