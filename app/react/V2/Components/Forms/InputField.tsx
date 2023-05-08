@@ -11,6 +11,7 @@ interface InputFieldProps {
   hasErrors?: boolean;
   value?: string;
   className?: string;
+  type?: 'text' | 'email';
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -28,6 +29,7 @@ const InputField = React.forwardRef(
       hasErrors,
       value,
       className,
+      type = 'text',
       name = '',
       clearFieldAction,
       onChange = () => {},
@@ -56,7 +58,7 @@ const InputField = React.forwardRef(
         </label>
         <div className="relative w-full">
           <input
-            type="text"
+            type={type}
             id={id}
             onChange={onChange}
             onBlur={onBlur}
