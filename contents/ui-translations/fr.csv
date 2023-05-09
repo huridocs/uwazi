@@ -1,4 +1,4 @@
-﻿Key,French
+Key,French
 % of sentences above threshold,% des phrases en-dessus du seuil
 (view page),(voir page)
 + click to select multiple cards.,+ click to select multiple cards.
@@ -15,7 +15,7 @@ Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
 Action,Action
 Activate this feature for enhanced account security,Activez cette fonction pour renforcer la sécurité du compte
-Active Languages,Langues actives
+Active languages,Active languages
 Activity log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
@@ -80,8 +80,6 @@ auto-created,créé automatiquement
 Auto-save,Sauvegarde automatique
 Automatic Table of Contents,Table des matières automatique
 Automatically generated,Généré automatiquement
-Available default translation,Available default translation
-Available Languages,Langues disponibles
 Back,Retour
 Back to,Retour à
 Back to dashboard,Retour au tableau de bord
@@ -134,7 +132,6 @@ Configure templates,Configure templates
 Confirm,Confirmer
 CONFIRM,CONFIRMER
 Confirm action,Confirm action
-Confirm add,Confirm add
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Confirmer supprimer plusieurs éléments
 confirm delete template,"Are you sure you want to delete this entity type?
@@ -151,7 +148,6 @@ Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Confirmer le nouveau mot de passe
 Confirm publish multiple items,Confirmer la publication de plusieurs éléments
-Confirm reset translation,Confirm reset translation
 Confirm suggestion acceptance,Confirmer l'acceptation des suggestions
 Connect to a document,Se connecter à un document
 Connect to a paragraph,Se connecter à un paragraphe
@@ -209,7 +205,9 @@ Date added,Date ajoutée
 Date format,Format de date
 Date modified,Date de modification
 Day,Jour
+Default,Default
 Default filter,Default filter
+Default language,Default language
 Default language change success,Succès du changement de langue par défaut
 Default template,Modèle par défaut
 Default view,Default view
@@ -219,7 +217,6 @@ Delete entities and documents,Delete entities and documents
 Delete file,Supprimer le fichier
 Delete Group,Supprimer un groupe
 Delete language,Supprimer la langue
-delete language warning,"This action may take some time, can not be undone and will delete all the information in that language."
 Delete Property,Supprimer la propriété
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -374,7 +371,9 @@ Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Hériter la propriété
+Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language,Install language
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Installez l'application Google Authenticator sur votre appareil mobile
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -563,6 +562,7 @@ Permission on entities explicitly shared with the user,Permission sur les entit�
 Permissions,Permissions
 Plain text,Texte brut
 Please contact an admin for details.,Veuillez contacter un administrateur pour plus de détails.
+Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Veuillez saisir les lettres et les chiffres de l'image pour lancer l'exportation.
 Precision,Précision
 Preserve,Preserve
@@ -640,7 +640,6 @@ Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
-reset language warning,Are you sure you want to reset translation for this language?
 Reset Password,Réinitialiser le mot de passe
 Restricted,Limité
 Return to login,Retourner à la connexion
@@ -676,13 +675,13 @@ Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Selected,Selected
 Select all,Tout sélectionner
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
 Select relationship type,Sélectionner le type de relation
 Select target paragraph,Sélectionner le paragraphe cible
 Select...,Sélectionner...
+Selected,Selected
 selected,Sélectionné
 selected of,sélectionné sur
 Semantic search,Recherche sémantique
@@ -779,7 +778,6 @@ Thesauri,Thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus sauvegardé
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Cette zone vous permet d'ajouter du Javascript personnalisé à la page. Cela ouvre un nouvel univers de possibilités.
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Ce contenu est généré automatiquement
@@ -837,6 +835,8 @@ You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,Type
 Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
 Unlink,Unlink
 Unsupported OCR language,Langage OCR non supporté
 Untranslated Terms,Untranslated Terms

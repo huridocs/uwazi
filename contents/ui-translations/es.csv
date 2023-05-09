@@ -15,7 +15,7 @@ Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Accuracy,Precisión
 Action,Acción
 Activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de tu cuenta
-Active Languages,Idiomas activos
+Active languages,Idiomas activos
 Activity log,Registro de actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
@@ -80,8 +80,6 @@ auto-created,autogenerado
 Auto-save,Guardado automático
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
-Available default translation,Traducción predeterminada disponible
-Available Languages,Idiomas disponibles
 Back,Volver
 Back to,Volver a
 Back to dashboard,Regresar al panel
@@ -133,7 +131,6 @@ Configure templates,Configurar plantillas
 Confirm,Confirmar
 CONFIRM,CONFIRMAR
 Confirm action,Confirmar acción
-Confirm add,Confirmar adicción
 Confirm delete connection,Confirmar eliminación de relación
 Confirm delete multiple items,Confirmar eliminación de múltiples elementos
 confirm delete template,"Estás seguro que quieres eliminar este tipo de entidad?
@@ -150,7 +147,6 @@ Confirm discard changes,Confirmar descartar cambios
 Confirm edit suggestion-enabled Thesaurus,Confirmar editar Tesauro sugerencia-habilitada
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Confirm reset translation,Confirmar el reseteo de traducciones
 Confirm suggestion acceptance,Aceptar las sugerencias
 Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
@@ -208,9 +204,11 @@ Date added,Fecha de creación
 Date format,Formato de fecha
 Date modified,Fecha de la modificación
 Day,Día
+Default,Predeterminado
 Default filter,Filtro predeterminado
+Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
-Default template,Plantilla por defecto
+Default template,Plantilla predeterminada
 Default view,Vista predeterminada
 Delete,Eliminar
 DELETE,Eliminar
@@ -218,7 +216,6 @@ Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
 Delete Group,Eliminar grupo
 Delete language,Eliminar idioma
-delete language warning,"Esta acción puede llevar algún tiempo, no puede ser reversada y eliminará toda la información en este idioma."
 Delete Property,Eliminar propiedad
 Deleted attachment,Archivo adjunto eliminado
 Deleted custom file,Archivo personalizado eliminado
@@ -373,7 +370,9 @@ Info,Información
 Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
+Install,Instalar
 Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
+Install language,Instalar idioma
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
@@ -562,6 +561,7 @@ Permission on entities explicitly shared with the user,Permiso sobre las entidad
 Permissions,Permisos
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
+Please type in,Por favor digite
 Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
 Precision,Precisión
 Preserve,Preservar
@@ -639,7 +639,6 @@ Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
-reset language warning,Estás seguro que quieres resetear las traducciones para este idioma?
 Reset Password,Restablecer contraseña
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
@@ -675,13 +674,13 @@ Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
 Select,Seleccionar
-Selected,Seleccionado
 Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
 Select target paragraph,Seleccionar párrafo de destino
 Select...,Seleccionar
+Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
 Semantic search,Búsqueda semántica
@@ -777,7 +776,6 @@ Thesauri,Tesauros
 Thesauri name,Nombre del Tesauro
 Thesaurus,Tesauro
 Thesaurus saved,Tesauro guardado
-This action may take some time while we add the extra language to the entire collection.,Esta acción puede llevar algún tiempo mientras agregamos el idioma adicional a toda la colección.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Esta área permite Añadir Javascript para personalizar la página. Esto abre un nuevo universo de posibilidades.
 This cannot be changed after saving,Esto no puede ser cambiado después de guardar
 This content is automatically generated,Este contenido se genera automáticamente.
@@ -835,6 +833,8 @@ Has configurado con éxito la verificación de dos pasos."
 Two-step verification token required,El token de verificación es obligatorio
 Type,Tipo
 Unexpected error,Error inesperado
+Uninstall,Desinstalar
+Uninstall language,Desinstalar idioma
 Unlink,Desenlazar
 Unsupported OCR language,Idioma no soportado para ROC
 Untranslated Terms,Términos sin traducir

@@ -15,7 +15,7 @@ Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
 Action,Eylem
 Activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirin
-Active Languages,Aktif Diller
+Active languages,Active languages
 Activity log,Sistem Günlüğü
 Add,Ekle
 Add / remove favorite,Favoriye ekle / Favoriden çıkarı
@@ -80,8 +80,6 @@ auto-created,otomatik oluşturulmuş
 Auto-save,Otomatik kaydetme
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
-Available default translation,Available default translation
-Available Languages,Mevcut Diller
 Back,Geriye git
 Back to,Geri dön
 Back to dashboard,Back to dashboard
@@ -135,7 +133,6 @@ Configure templates,Configure templates
 Confirm,Onayla
 CONFIRM,ONAYLA
 Confirm action,Confirm action
-Confirm add,Confirm add
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Birden çok öğeyi silin
 confirm delete template,"Are you sure you want to delete this entity type?
@@ -152,7 +149,6 @@ Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Yeni parolayı onayla
 Confirm publish multiple items,Birden çok öğe yayınlamayı onaylayın
-Confirm reset translation,Confirm reset translation
 Confirm suggestion acceptance,Confirm suggestion acceptance
 Connect to a document,Bir belgeye bağla
 Connect to a paragraph,Bir paragrafa bağla
@@ -210,7 +206,9 @@ Date added,Eklenme tarihi
 Date format,Tarih biçimi
 Date modified,Değiştirilme tarihi
 Day,Gün
+Default,Default
 Default filter,Default filter
+Default language,Default language
 Default language change success,Varsayılan dil değişikliği başarısı
 Default template,Varsayılan şablon
 Default view,Default view
@@ -220,7 +218,6 @@ Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete Group,Grubu Sil
 Delete language,Dili sil
-delete language warning,"This action may take some time, can not be undone and will delete all the information in that language."
 Delete Property,Özelliği Sil
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -375,7 +372,9 @@ Info,Bilgi
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Inherit property
+Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language,Install language
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -564,6 +563,7 @@ Permission on entities explicitly shared with the user,Kullanıcıyla açıkça 
 Permissions,İzinler
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
+Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,Dışa aktarmayı başlatmak için lütfen resimdeki harfleri ve sayıları girin.
 Precision,Kesinlik
 Preserve,Preserve
@@ -641,7 +641,6 @@ Required property,Gerekli özellik
 Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
-reset language warning,Are you sure you want to reset translation for this language?
 Reset Password,Parolayı sıfırla
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
@@ -677,13 +676,13 @@ Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Selected,Selected
 Select all,Hepsini seç
 Select files on your device,Cihazınızdaki dosyaları seçin
 Select from computer,Select from computer
 Select relationship type,İlişki türü seç
 Select target paragraph,Hedef paragraf seç
 Select...,Seç...
+Selected,Selected
 selected,seçilmiş
 selected of,arasından seçildi
 Semantic search,Anlamsal Arama
@@ -780,7 +779,6 @@ Thesauri,Thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus kaydedildi
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,"Bu alan, sayfaya özel Javascript eklemenizi sağlar. Bu, yeni bir olasılıklar evreni açar."
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Bu içerik otomatik olarak oluşturulur
@@ -838,6 +836,8 @@ You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,Tür
 Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
 Unlink,Unlink
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
