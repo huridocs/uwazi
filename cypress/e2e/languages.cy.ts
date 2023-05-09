@@ -29,30 +29,30 @@ describe('Languages', () => {
 
     it('should install new languages', () => {
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
-      cy.get('[data-testid=modal] input').type('Dansk');
-      cy.contains('button', 'Dansk').click();
+      cy.get('[data-testid=modal] input').type('Danish');
+      cy.contains('button', 'Danish').click();
 
       cy.get('[data-testid=modal] input').clear();
-      cy.get('[data-testid=modal] input').type('Esperanto');
-      cy.contains('button', 'Esperanto').click();
+      cy.get('[data-testid=modal] input').type('Basque');
+      cy.contains('button', 'Basque').click();
 
       cy.contains('[data-testid=modal] button', 'Install').click();
 
       cy.wait('@addLanguage');
-      cy.contains('Dansk');
-      cy.contains('Esperanto');
+      cy.contains('Danish');
+      cy.contains('Basque');
     });
   });
 
   describe('Uninstall Language', () => {
     it('should uninstall the language and remove it from the list', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
-      cy.contains('tr', 'Esperanto').contains('Uninstall').click();
+      cy.contains('tr', 'Basque').contains('Uninstall').click();
       cy.get('[data-testid=modal] input').type('CONFIRM');
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
-      cy.contains('Esperanto').should('not.exist');
+      cy.contains('Basque').should('not.exist');
     });
   });
 

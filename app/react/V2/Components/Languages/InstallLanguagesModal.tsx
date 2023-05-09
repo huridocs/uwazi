@@ -15,7 +15,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   const [selected, setSelected] = useState<string[]>([]);
   const { requestAction } = useApiCaller();
 
-  const items = languages.map(l => ({ label: l.localized_label || l.label, value: l.key }));
+  const items = languages.map(l => ({ label: l.label || l.label, value: l.key }));
 
   const install = async () => {
     await requestAction(
