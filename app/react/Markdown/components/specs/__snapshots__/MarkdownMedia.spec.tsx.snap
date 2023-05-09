@@ -1,6 +1,100 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MarkdownMedia render should render an iframe with the correct video id 1`] = `
+exports[`MarkdownMedia render external URLs should render an iframe with and point to the external resource 1`] = `
+<DocumentFragment>
+  <div
+    class="video-container "
+  >
+    <div>
+      <div
+        class="react-player"
+        style="width: 100%; height: 360px;"
+      >
+        <div
+          style="width: 100%; height: 100%; overflow: hidden;"
+        />
+      </div>
+    </div>
+    <div>
+      <div
+        class="timelink"
+        title="A rude awakening"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:02:10
+          </b>
+          <span>
+            A rude awakening
+          </span>
+        </div>
+      </div>
+      <div
+        class="timelink"
+        title="Finally, you are up!"
+      >
+        <b
+          class="timelink-icon"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-play fa-w-14 "
+            data-icon="play"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z"
+              fill="currentColor"
+            />
+          </svg>
+        </b>
+        <div
+          class="timelink-time-label"
+        >
+          <b>
+            00:05:30
+          </b>
+          <span>
+            Finally, you are up!
+          </span>
+        </div>
+      </div>
+    </div>
+    <p
+      class="print-view-alt"
+    >
+      https://www.vimeo.com/253530307
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`MarkdownMedia render uploaded files should render an iframe that displays the video from the blob resource 1`] = `
 <DocumentFragment>
   <div
     class="video-container "
@@ -91,13 +185,13 @@ exports[`MarkdownMedia render should render an iframe with the correct video id 
     <p
       class="print-view-alt"
     >
-      https://www.vimeo.com/253530307
+      /api/files/1683080859038pwqi670wk7r.mp4
     </p>
   </div>
 </DocumentFragment>
 `;
 
-exports[`MarkdownMedia render should render the edition mode 1`] = `
+exports[`MarkdownMedia render uploaded files should render the edition mode 1`] = `
 <DocumentFragment>
   <div
     class="video-container "
@@ -330,13 +424,13 @@ exports[`MarkdownMedia render should render the edition mode 1`] = `
     <p
       class="print-view-alt"
     >
-      https://www.vimeo.com/253530307
+      /api/files/1683080859038pwqi670wk7r.mp4
     </p>
   </div>
 </DocumentFragment>
 `;
 
-exports[`MarkdownMedia render should use compact class name if compact prop is set 1`] = `
+exports[`MarkdownMedia render uploaded files should use compact class name if compact prop is set 1`] = `
 <DocumentFragment>
   <div
     class="video-container compact"
@@ -427,7 +521,7 @@ exports[`MarkdownMedia render should use compact class name if compact prop is s
     <p
       class="print-view-alt"
     >
-      https://www.vimeo.com/253530307
+      /api/files/1683080859038pwqi670wk7r.mp4
     </p>
   </div>
 </DocumentFragment>
