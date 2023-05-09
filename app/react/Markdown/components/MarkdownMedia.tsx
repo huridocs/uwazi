@@ -264,13 +264,17 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const config = propsToConfig(props);
   useEffect(() => {
     if (config.url) {
-      fetch(config.url)
-        .then(async res => res.blob())
-        .then(blob => {
-          setErrorFlag(false);
-          setMediaURL(URL.createObjectURL(blob));
-        })
-        .catch(_e => {});
+      if (config.url.includes('/api/files/')) {
+        fetch(config.url)
+          .then(async res => res.blob())
+          .then(blob => {
+            setErrorFlag(false);
+            setMediaURL(URL.createObjectURL(blob));
+          })
+          .catch(_e => {});
+      } else {
+        setMediaURL(config.url);
+      }
     }
 
     return () => {
