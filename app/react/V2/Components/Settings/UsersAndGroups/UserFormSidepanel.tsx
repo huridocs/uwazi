@@ -3,16 +3,18 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router-dom';
 import { Translate } from 'app/I18N';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select } from 'V2/Components/Forms';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 
 interface UserFormSidepanelProps {
   selectedUser?: ClientUserSchema;
-  showSidepanel;
-  setShowSidepanel;
-  setSelected;
+  showSidepanel: boolean;
+  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelected: React.Dispatch<
+    React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
+  >;
 }
 
 const userRoles = [

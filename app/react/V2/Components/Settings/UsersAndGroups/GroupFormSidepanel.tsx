@@ -1,13 +1,15 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { ClientUserGroupSchema } from 'app/apiResponseTypes';
+import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Sidepanel } from 'V2/Components/UI';
 
 interface GroupFormSidepanelProps {
   selectedGroup?: ClientUserGroupSchema;
-  showSidepanel;
-  setShowSidepanel;
-  setSelected;
+  showSidepanel: boolean;
+  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelected: React.Dispatch<
+    React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
+  >;
 }
 
 const GroupFormSidepanel = ({
