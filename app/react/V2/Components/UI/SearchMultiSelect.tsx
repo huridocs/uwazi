@@ -26,7 +26,7 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
 
   return (
     <div className={className}>
-      <div className="mb-4 sticky top-0 w-full">
+      <div className="sticky top-0 w-full mb-4">
         <InputField
           id="search-multiselect"
           label="search-multiselect"
@@ -35,7 +35,6 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
           placeholder="Search"
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
-          hideLabel={true}
         />
       </div>
 
