@@ -112,7 +112,11 @@ const Users = () => {
         }}
         title={getSidepanelTitle(activeTab, selected)}
       >
-        {activeTab === 'Users' ? <UserForm user={selected} /> : <GroupForm user={selected} />}
+        {activeTab === 'Users' ? (
+          <UserForm selected={selected as ClientUserSchema} />
+        ) : (
+          <GroupForm selected={selected as ClientUserGroupSchema} />
+        )}
       </Sidepanel>
     </div>
   );

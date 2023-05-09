@@ -31,11 +31,11 @@ Basic.args = {
   hasErrors: false,
   options: [
     { key: '1', value: 'Algeria' },
-    { key: '2', value: 'Argentina' },
-    { key: '3', value: 'Bavaria' },
-    { key: '4', value: 'Bolivia' },
-    { key: '5', value: 'Colombia' },
-    { key: '6', value: 'Dinamarca' },
+    { key: '2', value: 'Argentina', selected: true },
+    { key: '3', value: 'Bavaria', selected: false },
+    { key: '4', value: 'Bolivia', selected: false },
+    { key: '5', value: 'Colombia', selected: false },
+    { key: '6', value: 'Dinamarca', selected: false },
   ],
 };
 
