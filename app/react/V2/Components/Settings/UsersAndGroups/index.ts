@@ -1,2 +1,2 @@
-export { UserForm } from './UserForm';
-export { GroupForm } from './GroupForm';
+export { UserFormSidepanel } from './UserFormSidepanel';
+export { GroupFormSidepanel } from './GroupFormSidepanel';

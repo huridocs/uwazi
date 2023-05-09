@@ -3,33 +3,14 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, NavigationHeader, Sidepanel, Tabs } from 'V2/Components/UI';
+import { Button, NavigationHeader, Tabs } from 'V2/Components/UI';
 import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
-import { UserForm, GroupForm } from 'V2/Components/Settings/UsersAndGroups';
+import { UserFormSidepanel, GroupFormSidepanel } from 'V2/Components/Settings/UsersAndGroups';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
 
 type activeTab = 'Groups' | 'Users';
-
-const getSidepanelTitle = (
-  activeTab: activeTab,
-  selected?: ClientUserSchema | ClientUserGroupSchema
-) => {
-  switch (true) {
-    case activeTab === 'Users' && selected !== undefined:
-      return <Translate>Edit user</Translate>;
-
-    case activeTab === 'Groups' && selected !== undefined:
-      return <Translate>Edit group</Translate>;
-
-    case activeTab === 'Groups':
-      return <Translate>New group</Translate>;
-
-    default:
-      return <Translate>New user</Translate>;
-  }
-};
 
 const Users = () => {
   const [activeTab, setActiveTab] = useState<activeTab>('Users');
@@ -103,21 +84,21 @@ const Users = () => {
         </div>
       </SettingsFooter>
 
-      <Sidepanel
-        isOpen={showSidepanel}
-        withOverlay
-        closeSidepanelFunction={() => {
-          setSelected(undefined);
-          setShowSidepanel(false);
-        }}
-        title={getSidepanelTitle(activeTab, selected)}
-      >
-        {activeTab === 'Users' ? (
-          <UserForm selected={selected as ClientUserSchema} />
-        ) : (
-          <GroupForm selected={selected as ClientUserGroupSchema} />
-        )}
-      </Sidepanel>
+      {activeTab === 'Users' ? (
+        <UserFormSidepanel
+          selectedUser={selected as ClientUserSchema}
+          showSidepanel={showSidepanel}
+          setShowSidepanel={setShowSidepanel}
+          setSelected={setSelected}
+        />
+      ) : (
+        <GroupFormSidepanel
+          selectedGroup={selected as ClientUserGroupSchema}
+          showSidepanel={showSidepanel}
+          setShowSidepanel={setShowSidepanel}
+          setSelected={setSelected}
+        />
+      )}
     </div>
   );
 };
