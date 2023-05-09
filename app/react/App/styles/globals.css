@@ -1905,6 +1905,10 @@ input:checked + .toggle-bg {
   border-right-width: 2px;
 }
 
+.border-r-8 {
+  border-right-width: 8px;
+}
+
 .border-t {
   border-top-width: 1px;
 }
