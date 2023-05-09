@@ -4,7 +4,7 @@ import { ClientUserGroupSchema } from 'app/apiResponseTypes';
 import { Sidepanel } from 'V2/Components/UI';
 
 interface GroupFormSidepanelProps {
-  selected?: ClientUserGroupSchema;
+  selectedGroup?: ClientUserGroupSchema;
   showSidepanel;
   setShowSidepanel;
   setSelected;

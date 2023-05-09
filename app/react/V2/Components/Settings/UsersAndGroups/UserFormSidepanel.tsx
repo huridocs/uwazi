@@ -44,7 +44,10 @@ const UserFormSidepanel = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: selectedUser });
+  } = useForm({
+    defaultValues: { username: '', email: '', password: '', groups: [] },
+    values: selectedUser,
+  });
 
   return (
     <Sidepanel
@@ -54,7 +57,7 @@ const UserFormSidepanel = ({
         setSelected(undefined);
         setShowSidepanel(false);
       }}
-      title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New group</Translate>}
+      title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
     >
       <form
         onSubmit={handleSubmit(data => {
