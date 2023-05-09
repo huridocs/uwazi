@@ -9,6 +9,19 @@ const newKeys = [
   { key: 'Uninstall language' },
 ];
 
+const deletedKeys = [
+  { key: 'Active Languages' },
+  { key: 'Available Languages' },
+  { key: 'Confirm add' },
+  {
+    key: 'This action may take some time while we add the extra language to the entire collection.',
+  },
+  { key: 'delete language warning' },
+  { key: 'Confirm reset translation' },
+  { key: 'reset language warning' },
+  { key: 'Available default translation' },
+];
+
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };
   const newTranslation = keysToUpdate.find(row => row.key === currentTranslation.key);
@@ -41,8 +54,13 @@ export default {
     const alreadyInDB = [];
     Object.entries(locToSystemContext).forEach(([loc, context]) => {
       const contextValues = context.values.reduce((newValues, currentTranslation) => {
-        const translation = updateTranslation(currentTranslation, [], loc);
-        newValues.push(translation);
+        const deleted = deletedKeys.find(
+          deletedTranslation => deletedTranslation.key === currentTranslation.key
+        );
+        if (!deleted) {
+          const translation = updateTranslation(currentTranslation, [], loc);
+          newValues.push(translation);
+        }
         keysToInsert.forEach(newEntry => {
           if (newEntry.key === currentTranslation.key) {
             alreadyInDB.push(currentTranslation.key);
@@ -57,7 +75,6 @@ export default {
         });
       context.values = contextValues;
     });
-
     await Promise.all(
       translations.map(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr))
     );

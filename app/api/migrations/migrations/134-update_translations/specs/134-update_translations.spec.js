@@ -33,7 +33,6 @@ describe('migration update translations of new Languages UI', () => {
       { key: 'Active languages' },
       { key: 'Install' },
       { key: 'Install language' },
-      { key: 'Install Language' },
       { key: 'Please type in' },
       { key: 'Uninstall' },
       { key: 'Default' },

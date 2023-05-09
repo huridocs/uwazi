@@ -32,6 +32,11 @@ const fixturesDB = {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
             },
+            {
+              _id: db.id(),
+              key: 'Available Languages',
+              value: 'Available Languages',
+            },
           ],
         },
         templateContext,
@@ -50,6 +55,11 @@ const fixturesDB = {
             {
               key: 'existing-key-in-system',
               value: 'existing-key-in-system',
+            },
+            {
+              _id: db.id(),
+              key: 'Available Languages',
+              value: 'Available Languages',
             },
           ],
         },
