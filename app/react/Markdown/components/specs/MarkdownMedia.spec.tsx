@@ -31,26 +31,31 @@ describe('MarkdownMedia', () => {
   const mockedCreateObjectURL: jest.Mock = jest.fn();
   const mockedRevokeObjectURL: jest.Mock = jest.fn();
 
-  beforeAll(() => {
+  beforeEach(() => {
     URL.createObjectURL = mockedCreateObjectURL;
     mockedCreateObjectURL.mockReturnValue('blob:abc');
     URL.revokeObjectURL = mockedRevokeObjectURL;
-    fetchMock.mock('https://www.vimeo.com/253530307', {}, { overwriteRoutes: true });
+    fetchMock.mock('/api/files/1683080859038pwqi670wk7r.mp4', {}, { overwriteRoutes: true });
+    fetchMock.mock(
+      'https://www.vimeo.com/253530307',
+      { throws: 'CORS error' },
+      { overwriteRoutes: true }
+    );
   });
 
-  afterAll(() => {
+  afterEach(() => {
     mockedCreateObjectURL.mockReset();
     mockedRevokeObjectURL.mockReset();
   });
   const onTimeLinkAdded = jest.fn();
   const render = async (
-    options: { compact?: boolean; editing?: boolean } = { compact: false, editing: false }
+    options: { compact?: boolean; editing?: boolean } = { compact: false, editing: false },
+    URL = '/api/files/1683080859038pwqi670wk7r.mp4'
   ) => {
     const props = {
       ...options,
       onTimeLinkAdded,
-      config:
-        '(https://www.vimeo.com/253530307, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})',
+      config: `${URL}, {"timelinks": {"02:10": "A rude awakening", "05:30": "Finally, you are up!"}})`,
     };
     await act(() => {
       ({ renderResult } = renderConnectedContainer(
@@ -61,23 +66,33 @@ describe('MarkdownMedia', () => {
   };
 
   describe('render', () => {
-    it('should render an iframe with the correct video id', async () => {
-      await render();
-      expect(renderResult.asFragment()).toMatchSnapshot();
-      expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
+    describe('uploaded files', () => {
+      it('should render an iframe that displays the video from the blob resource', async () => {
+        await render();
+        expect(renderResult.asFragment()).toMatchSnapshot();
+        expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
+      });
+
+      it('should revoke the created URL and reset it to empty', async () => {
+        await render();
+        renderResult.unmount();
+        expect(mockedRevokeObjectURL).toHaveBeenCalledWith('');
+      });
+      it('should render the edition mode', async () => {
+        await render({ editing: true });
+        expect(renderResult.asFragment()).toMatchSnapshot();
+      });
+      it('should use compact class name if compact prop is set', async () => {
+        await render({ compact: true });
+        expect(renderResult.asFragment()).toMatchSnapshot();
+      });
     });
-    it('should revoke the created URL and reset it to empty', async () => {
-      await render();
-      renderResult.unmount();
-      expect(mockedRevokeObjectURL).toHaveBeenCalledWith('');
-    });
-    it('should render the edition mode', async () => {
-      await render({ editing: true });
-      expect(renderResult.asFragment()).toMatchSnapshot();
-    });
-    it('should use compact class name if compact prop is set', async () => {
-      await render({ compact: true });
-      expect(renderResult.asFragment()).toMatchSnapshot();
+    describe('external URLs', () => {
+      it('should render an iframe with and point to the external resource', async () => {
+        await render({ compact: false, editing: false }, 'https://www.vimeo.com/253530307');
+        expect(renderResult.asFragment()).toMatchSnapshot();
+        expect(mockedCreateObjectURL).not.toBeCalled();
+      });
     });
 
     describe('Video timeline', () => {
