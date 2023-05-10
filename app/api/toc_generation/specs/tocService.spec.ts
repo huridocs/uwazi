@@ -1,4 +1,4 @@
-import { files, storage, uploadsPath } from 'api/files';
+import { files, storage } from 'api/files';
 import { errorLog } from 'api/log';
 import { tenants } from 'api/tenants';
 import { testingDB } from 'api/utils/testing_db';
