@@ -169,21 +169,25 @@ const UserFormSidepanel = ({
               </span>
 
               {selectedUser?._id && (
-                <div className="flex flex-col gap-1 md:gap-4 md:flex-row md:justify-start">
-                  <span className="shrink-0">
-                    <Button
-                      type="button"
-                      buttonStyle="tertiary"
-                      onClick={() => {
-                        console.log('reset password');
-                      }}
-                    >
-                      <Translate>Reset Password</Translate>
-                    </Button>
-                  </span>
-                  <Translate>
-                    Instructions will be sent to the user&apos;s email to reset the password
-                  </Translate>
+                <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+                  <Button
+                    type="button"
+                    buttonStyle="tertiary"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset password');
+                    }}
+                  >
+                    <Translate>Reset Password</Translate>
+                  </Button>
+                  <Button
+                    type="button"
+                    buttonStyle="tertiary"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset 2fa');
+                    }}
+                  >
+                    <Translate>Reset 2FA</Translate>
+                  </Button>
                 </div>
               )}
             </div>
