@@ -1,7 +1,8 @@
+import React from 'react';
+import { sortBy } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Button, Pill, Table } from 'app/V2/Components/UI';
 import { ClientUserGroupSchema } from 'app/apiResponseTypes';
-import React from 'react';
 
 interface GroupsTableProps {
   groups: ClientUserGroupSchema[];
@@ -31,18 +32,18 @@ const groupPill = ({ cell }: any) => (
 const GroupsTable = ({ groups, onGroupsSelected, editButtonAction }: GroupsTableProps) => {
   const groupsColumns = [
     {
-      Header: 'NAME',
+      Header: <Translate className="capitalize">Name</Translate>,
       accessor: 'name',
       className: 'w-0',
     },
     {
-      Header: 'MEMBERS',
+      Header: <Translate className="capitalize">Members</Translate>,
       accessor: 'members',
       className: 'w-1/3',
       Cell: groupPill,
     },
     {
-      Header: 'ACTION',
+      Header: <Translate className="capitalize">Action</Translate>,
       accessor: '_id',
       Cell: ({ cell }: any) => renderEditButton(cell.row.original, editButtonAction),
       disableSortBy: true,
@@ -50,10 +51,12 @@ const GroupsTable = ({ groups, onGroupsSelected, editButtonAction }: GroupsTable
     },
   ];
 
+  const sortedGroups = sortBy(groups, 'name');
+
   return (
     <Table
       columns={groupsColumns}
-      data={groups}
+      data={sortedGroups}
       title={<Translate>Groups</Translate>}
       enableSelection
       onRowSelected={onGroupsSelected}

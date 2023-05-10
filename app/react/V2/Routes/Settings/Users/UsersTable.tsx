@@ -1,4 +1,5 @@
 import React from 'react';
+import { sortBy } from 'lodash';
 import { Button, Pill, Table } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientUserSchema } from 'app/apiResponseTypes';
@@ -50,23 +51,31 @@ const groupPill = ({ cell }: any) => (
 
 const UsersTable = ({ users, onUsersSelected, editButtonAction }: UsersTableProps) => {
   const usersColumns = [
-    { Header: 'USERNAME', accessor: 'username', className: 'w-1/3', disableSortBy: true },
-    { Header: 'PROTECTION', accessor: 'using2fa', Cell: protectionPill, className: 'w-0' },
     {
-      Header: 'ROLE',
+      Header: <Translate className="capitalize">Usarname</Translate>,
+      accessor: 'username',
+      className: 'w-1/3',
+    },
+    {
+      Header: <Translate className="capitalize">Protection</Translate>,
+      accessor: 'using2fa',
+      Cell: protectionPill,
+      className: 'w-0',
+    },
+    {
+      Header: <Translate className="capitalize">Role</Translate>,
       accessor: 'role',
       Cell: pill,
       className: 'text-center w-0',
     },
     {
-      Header: 'GROUP',
+      Header: <Translate className="capitalize">Group</Translate>,
       accessor: 'groups',
       Cell: groupPill,
-      disableSortBy: true,
       className: 'w-1/3',
     },
     {
-      Header: 'ACTION',
+      Header: <Translate className="capitalize">Action</Translate>,
       accessor: '_id',
       Cell: ({ cell }: any) => renderEditButton(cell.row.original, editButtonAction),
       disableSortBy: true,
@@ -74,10 +83,12 @@ const UsersTable = ({ users, onUsersSelected, editButtonAction }: UsersTableProp
     },
   ];
 
+  const sortedUsers = sortBy(users, 'username');
+
   return (
     <Table
       columns={usersColumns}
-      data={users}
+      data={sortedUsers}
       title={<Translate>Users</Translate>}
       enableSelection
       onRowSelected={onUsersSelected}
