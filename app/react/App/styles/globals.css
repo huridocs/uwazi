@@ -1295,6 +1295,10 @@ input:checked + .toggle-bg {
   display: table;
 }
 
+.contents {
+  display: contents;
+}
+
 .hidden {
   display: none;
 }

@@ -40,6 +40,7 @@ const Sidepanel = ({
   const { lang: languageKey } = useParams();
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? '-translate-x-[500px]' : '-translate-x-[-500px]';
+  const contentsClasses = 'flex flex-col h-full overflow-y-auto';
 
   if (withOverlay) {
     return (
@@ -53,13 +54,15 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="aside"
-          className="transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full md:w-[500px]"
+          className="transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full h-full md:w-[500px]"
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
         >
-          {sidepanelHeader(closeSidepanelFunction, title)}
-          <div>{children}</div>
+          <div className={contentsClasses}>
+            {sidepanelHeader(closeSidepanelFunction, title)}
+            <div className="flex-grow">{children}</div>
+          </div>
         </Transition.Child>
       </Transition>
     );
@@ -74,8 +77,10 @@ const Sidepanel = ({
       enterTo="translate-x-0"
       leaveTo={transition}
     >
-      {sidepanelHeader(closeSidepanelFunction, title)}
-      <div>{children}</div>
+      <div className={contentsClasses}>
+        {sidepanelHeader(closeSidepanelFunction, title)}
+        <div className="flex-grow">{children}</div>
+      </div>
     </Transition>
   );
 };
