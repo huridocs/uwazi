@@ -63,6 +63,9 @@ const Users = () => {
               <Button size="small" buttonStyle="tertiary">
                 <Translate>Reset password</Translate>
               </Button>
+              <Button size="small" buttonStyle="tertiary">
+                <Translate>Reset 2FA</Translate>
+              </Button>
               <Button size="small" buttonStyle="danger">
                 <Translate>Delete</Translate>
               </Button>
