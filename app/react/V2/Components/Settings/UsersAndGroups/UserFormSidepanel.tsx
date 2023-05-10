@@ -167,6 +167,25 @@ const UserFormSidepanel = ({
                   <Translate>Password is too long</Translate>
                 )}
               </span>
+
+              {selectedUser?._id && (
+                <div className="flex flex-col gap-1 md:gap-4 md:flex-row md:justify-start">
+                  <span className="shrink-0">
+                    <Button
+                      type="button"
+                      buttonStyle="tertiary"
+                      onClick={() => {
+                        console.log('reset password');
+                      }}
+                    >
+                      <Translate>Reset Password</Translate>
+                    </Button>
+                  </span>
+                  <Translate>
+                    Instructions will be sent to the user&apos;s email to reset the password
+                  </Translate>
+                </div>
+              )}
             </div>
           </fieldset>
 
