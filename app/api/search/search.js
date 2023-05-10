@@ -14,6 +14,8 @@ import { UserRole } from 'shared/types/userSchema';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { QueryMapper } from 'api/templates.v2/database/QueryMapper';
+import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
@@ -131,22 +133,72 @@ function processFilters(filters, properties, dictionaries) {
   }, []);
 }
 
+function getContent(property, allProperties) {
+  if (property.type === propertyTypes.newRelationship) {
+    const query = MatchQueryNode.forAnyEntity(QueryMapper.toModel(property.query));
+    const templates = query
+      .getTemplatesInLeaves()
+      .map(record => record.templates)
+      .flat();
+
+    // if (templates.length !== 1) {
+    //   throw createError(
+    //     `Cannot aggregate with more than one template as content: ${property.name}`
+    //   );
+    // }
+
+    const [template] = templates;
+
+    return template;
+  }
+
+  return property.inherit
+    ? propertiesHelper.getInheritedProperty(property, allProperties).content
+    : property.content;
+}
+
+function getAggregatedIndexedPropertyName(property) {
+  if (property.type === propertyTypes.newRelationship) {
+    return `${property.name}.value`;
+  }
+
+  return property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`;
+}
+
+function toAggregationData(allProperties) {
+  return property => ({
+    ...property,
+    name: getAggregatedIndexedPropertyName(property),
+    content: getContent(property, allProperties),
+  });
+}
+
+function getTypeToAggregate(property, allProperties) {
+  if (property.type === propertyTypes.newRelationship) {
+    if (property.denormalizedProperty) {
+      return allProperties.find(p => p.name === property.denormalizedProperty).type;
+    }
+
+    return property.type;
+  }
+
+  return property.inherit ? property.inherit.type : property.type;
+}
+
 function aggregationProperties(propertiesToBeAggregated, allProperties) {
   return propertiesToBeAggregated
     .filter(property => {
-      const type = property.inherit ? property.inherit.type : property.type;
+      const type = getTypeToAggregate(property, allProperties);
 
       return (
-        type === 'select' || type === 'multiselect' || type === 'relationship' || type === 'nested'
+        type === 'select' ||
+        type === 'multiselect' ||
+        type === 'relationship' ||
+        type === 'nested' ||
+        type === propertyTypes.newRelationship
       );
     })
-    .map(property => ({
-      ...property,
-      name: property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`,
-      content: property.inherit
-        ? propertiesHelper.getInheritedProperty(property, allProperties).content
-        : property.content,
-    }));
+    .map(toAggregationData(allProperties));
 }
 
 function metadataSnippetsFromSearchHit(hit) {
@@ -265,7 +317,7 @@ const indexedDictionaryValues = dictionary =>
     }, {});
 
 const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
-  if (property.type === 'relationship') {
+  if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
     const bucketEntities = await entitiesModel.getUnrestricted(
@@ -352,6 +404,10 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
 
     if (property.inherit) {
       property = propertiesHelper.getInheritedProperty(property, properties);
+    }
+
+    if (property.denormalizedProperty) {
+      property = properties.find(p => p.name === property.denormalizedProperty);
     }
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
