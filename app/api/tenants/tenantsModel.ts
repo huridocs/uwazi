@@ -27,7 +27,6 @@ const mongoSchema = new mongoose.Schema({
   uploadedDocuments: String,
   attachments: String,
   customUploads: String,
-  temporalFiles: String,
   activityLogs: String,
 });
 
