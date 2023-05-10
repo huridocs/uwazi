@@ -15,7 +15,7 @@ interface SidePanelProps {
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
   <div className="flex mb-2 text-gray-500">
-    <h1 className="grow uppercase font-bold text-base">{title}</h1>
+    <h1 className="grow font-bold text-base">{title}</h1>
     <button
       type="button"
       className="justify-end"
