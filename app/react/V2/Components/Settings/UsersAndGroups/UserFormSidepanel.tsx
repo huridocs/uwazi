@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router-dom';
 import { Translate } from 'app/I18N';
@@ -45,20 +45,24 @@ const UserFormSidepanel = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isDirty, isSubmitting },
   } = useForm({
     defaultValues: { username: '', email: '', password: '', groups: [] },
     values: selectedUser,
   });
 
+  const closeSidePanel = useCallback(() => {
+    setSelected(undefined);
+    reset({ username: '', email: '', password: '', groups: [] });
+    setShowSidepanel(false);
+  }, [reset, setSelected, setShowSidepanel]);
+
   return (
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={() => {
-        setSelected(undefined);
-        setShowSidepanel(false);
-      }}
+      closeSidepanelFunction={closeSidePanel}
       title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
     >
       <form
@@ -66,58 +70,98 @@ const UserFormSidepanel = ({
           console.log(data);
         })}
       >
-        <fieldset className="border border-slate-800 rounded-lg p-2">
-          <legend>
-            <Translate>General Information</Translate>
+        <fieldset className="p-2 mb-2">
+          <legend className="mb-1">
+            <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
+              General Information
+            </Translate>
           </legend>
-          <InputField
-            label={<Translate>Username</Translate>}
-            id="username"
-            {...register('username', {
-              required: true,
-              validate: username => isUnique(username, selectedUser, users),
-              maxLength: 50,
-              minLength: 3,
-            })}
-          />
+          <div>
+            <InputField
+              label={<Translate className="font-bold block mb-1">Username</Translate>}
+              id="username"
+              hasErrors={Boolean(errors.username)}
+              className="mb-1"
+              {...register('username', {
+                required: true,
+                validate: username => isUnique(username, selectedUser, users),
+                maxLength: 50,
+                minLength: 3,
+              })}
+            />
+            <span className="text-error-700 font-bold">
+              {errors.username?.type === 'required' && <Translate>Username is required</Translate>}
+              {errors.username?.type === 'validate' && <Translate>Duplicated username</Translate>}
+              {errors.username?.type === 'maxLength' && <Translate>Username is too long</Translate>}
+              {errors.username?.type === 'minLength' && (
+                <Translate>Username is too short</Translate>
+              )}
+            </span>
+          </div>
+
           <Select
-            label={<Translate>User Role</Translate>}
+            label={<Translate className="font-bold block mb-1">User Role</Translate>}
             id="roles"
             options={userRoles}
             {...register('role')}
           />
-          <InputField
-            label={<Translate>Email</Translate>}
-            type="email"
-            id="email"
-            {...register('email', {
-              validate: email => isUnique(email, selectedUser, users),
-              maxLength: 256,
-            })}
-          />
+
+          <div>
+            <InputField
+              label={<Translate className="font-bold block mb-1">Email</Translate>}
+              type="email"
+              id="email"
+              className="mb-1"
+              hasErrors={Boolean(errors.email)}
+              {...register('email', {
+                required: true,
+                validate: email => isUnique(email, selectedUser, users),
+                maxLength: 256,
+              })}
+            />
+            <span className="text-error-700 font-bold">
+              {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
+              {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
+            </span>
+          </div>
         </fieldset>
 
-        <fieldset className="border border-slate-800 rounded-lg border-r-8 p-2">
-          <legend>
-            <Translate>Security</Translate>
+        <fieldset className="p-2 mb-2">
+          <legend className="mb-1">
+            <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
+              Security
+            </Translate>
           </legend>
-          <InputField
-            label={<Translate>Password</Translate>}
-            id="password"
-            type="password"
-            autoComplete="off"
-            {...register('password')}
-          />
+          <div>
+            <InputField
+              label={
+                <span className="font-bold mb-1">
+                  <Translate>Password</Translate>
+                </span>
+              }
+              id="password"
+              type="password"
+              autoComplete="off"
+              hasErrors={Boolean(errors.password)}
+              className="mb-1"
+              {...register('password', { maxLength: 50 })}
+            />
+            <span className="text-error-700 font-bold">
+              {errors.password?.type === 'maxLength' && <Translate>Password is too long</Translate>}
+            </span>
+          </div>
         </fieldset>
 
-        <fieldset className="border border-slate-800 rounded-lg border-r-8 p-2">
-          <legend>
-            <Translate>Groups</Translate>
+        <fieldset className="p-2 mb-2">
+          <legend className="mb-1">
+            <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
+              Groups
+            </Translate>
           </legend>
         </fieldset>
 
         <div>
-          <Button type="button" buttonStyle="secondary">
+          <Button type="button" buttonStyle="secondary" onClick={closeSidePanel}>
             <Translate>Cancel</Translate>
           </Button>
           <Button type="submit" buttonStyle="primary">

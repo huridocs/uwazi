@@ -60,10 +60,10 @@ const Users = () => {
         <div className="flex gap-2 p-2 pt-1">
           {selectedUsers.length > 0 ? (
             <>
-              <Button size="small" buttonStyle="tertiary" formId="edit-translations">
+              <Button size="small" buttonStyle="tertiary">
                 <Translate>Reset password</Translate>
               </Button>
-              <Button size="small" buttonStyle="danger" formId="edit-translations">
+              <Button size="small" buttonStyle="danger">
                 <Translate>Delete</Translate>
               </Button>
             </>
@@ -71,8 +71,9 @@ const Users = () => {
             <Button
               size="small"
               buttonStyle="primary"
-              formId="edit-translations"
-              onClick={() => setShowSidepanel(true)}
+              onClick={() => {
+                setShowSidepanel(true);
+              }}
             >
               {activeTab === 'Users' ? (
                 <Translate>Add user</Translate>
