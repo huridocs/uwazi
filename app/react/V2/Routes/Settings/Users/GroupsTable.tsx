@@ -9,8 +9,11 @@ interface GroupsTableProps {
   onGroupsSelected: (selectedGroups: ClientUserGroupSchema[]) => void;
 }
 
-const renderEditButton = (onClick: () => void) => (
-  <Button buttonStyle="secondary" onClick={onClick}>
+const renderEditButton = (
+  group: ClientUserGroupSchema,
+  onclick: (group: ClientUserGroupSchema) => void
+) => (
+  <Button buttonStyle="secondary" onClick={() => onclick(group)}>
     <Translate>Edit</Translate>
   </Button>
 );
@@ -41,7 +44,7 @@ const GroupsTable = ({ groups, onGroupsSelected, editButtonAction }: GroupsTable
     {
       Header: 'ACTION',
       accessor: '_id',
-      Cell: renderEditButton(editButtonAction),
+      Cell: ({ cell }: any) => renderEditButton(cell.row.original, editButtonAction),
       disableSortBy: true,
       className: 'w-0',
     },
