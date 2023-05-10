@@ -23,8 +23,7 @@ const attachmentsPath: pathFunction = (fileName = ''): FilePath =>
 const customUploadsPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().customUploads, fileName);
 
-const temporalFilesPath: pathFunction = (fileName = ''): FilePath =>
-  path.join(tenants.current().temporalFiles, fileName);
+const temporalFilesPath: pathFunction = (fileName = ''): FilePath => path.join('/tmp', fileName);
 
 const activityLogPath: pathFunction = (fileName = ''): FilePath =>
   path.join(tenants.current().activityLogs, fileName);
@@ -62,7 +61,6 @@ const testingUploadPaths = async (subPath: string = '') => {
     uploadedDocuments: `${__dirname}/specs/uploads/${subPath}`,
     attachments: `${__dirname}/specs/uploads/${subPath}`,
     customUploads: `${__dirname}/specs/customUploads/${subPath}`,
-    temporalFiles: `${__dirname}/specs/uploads/${subPath}`,
     activityLogs: `${__dirname}/specs/uploads/${subPath}`,
   };
 };
