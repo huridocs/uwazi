@@ -29,7 +29,6 @@ const testingTenants = {
       uploadedDocuments: '',
       attachments: '',
       customUploads: '',
-      temporalFiles: '',
       activityLogs: '',
       ...partial,
     };
