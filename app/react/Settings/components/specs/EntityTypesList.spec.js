@@ -1,8 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { renderConnected } from 'app/utils/test/renderConnected';
-import connectedComponet, { EntityTypesList } from '../EntityTypesList';
+import { EntityTypesList } from '../EntityTypesList';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
