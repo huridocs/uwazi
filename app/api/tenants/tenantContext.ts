@@ -10,10 +10,10 @@ export type Tenant = {
   uploadedDocuments: string;
   attachments: string;
   customUploads: string;
-  temporalFiles: string;
   activityLogs: string;
   featureFlags?: {
     s3Storage?: boolean;
+    onlyS3?: boolean;
   };
 };
 

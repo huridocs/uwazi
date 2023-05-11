@@ -67,7 +67,7 @@ export default (req: Request, _res: Response, next: NextFunction) => {
     storage
       .storeFile(
         `${tenants.current().name}_${entry.time}_activity.log`,
-        Readable.from([JSON.stringify(entry)]),
+        Readable.from([Buffer.from(JSON.stringify(entry))]),
         'activitylog'
       )
       .catch(e => {

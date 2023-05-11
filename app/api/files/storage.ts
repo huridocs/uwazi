@@ -54,7 +54,8 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
     const response = await s3().get(s3KeyWithPath(filename, type));
     return response.Body as Readable;
   } catch (e: unknown) {
-    if (e instanceof NoSuchKey) {
+    const onlyS3 = tenants.current().featureFlags?.onlyS3 || false;
+    if (e instanceof NoSuchKey && !onlyS3) {
       const start = Date.now();
       s3()
         .upload(s3KeyWithPath(filename, type), await readFile(paths[type](filename)))
@@ -91,12 +92,19 @@ export const storage = {
     return streamToBuffer(await this.readableFile(filename, type));
   },
   async removeFile(filename: string, type: FileTypes) {
-    await deleteFile(paths[type](filename));
+    if (!tenants.current().featureFlags?.onlyS3) {
+      await deleteFile(paths[type](filename));
+    }
     if (tenants.current().featureFlags?.s3Storage) {
       await s3().delete(s3KeyWithPath(filename, type));
     }
   },
   async storeFile(filename: string, file: Readable, type: FileTypes) {
+    if (tenants.current().featureFlags?.s3Storage && tenants.current().featureFlags?.onlyS3) {
+      await s3().upload(s3KeyWithPath(filename, type), await streamToBuffer(file));
+      return;
+    }
+
     await pipeline(file, createWriteStream(paths[type](filename)));
 
     if (tenants.current().featureFlags?.s3Storage) {
@@ -107,6 +115,20 @@ export const storage = {
     }
   },
   async fileExists(filename: string, type: FileTypes): Promise<boolean> {
+    if (tenants.current().featureFlags?.s3Storage && tenants.current().featureFlags?.onlyS3) {
+      try {
+        await readFromS3(filename, type);
+      } catch (err) {
+        if (err instanceof NoSuchKey) {
+          return false;
+        }
+        if (err) {
+          throw err;
+        }
+      }
+      return true;
+    }
+
     try {
       await access(paths[type](filename));
     } catch (err) {

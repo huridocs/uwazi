@@ -59,7 +59,6 @@ describe('Debug Log', () => {
       uploadedDocuments: '',
       attachments: '',
       customUploads: '',
-      temporalFiles: '',
       activityLogs: '',
     });
 
