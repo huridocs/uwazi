@@ -13,7 +13,7 @@ const Template: ComponentStory<typeof MultiSelect> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="md:w-1/2">
-        <MultiSelect label={args.label} options={args.options} />
+        <MultiSelect label={args.label} options={args.options} onOptionSelected={() => {}} />
       </div>
     </div>
   </Provider>
