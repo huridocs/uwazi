@@ -1,13 +1,15 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-import { EntityTypesList } from '../EntityTypesList';
+import { renderConnected } from 'app/utils/test/renderConnected';
+import connectedComponet, { EntityTypesList } from '../EntityTypesList';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   // eslint-disable-next-line jsx-a11y/anchor-has-content, react/prop-types
   Link: props => <a {...props} href={props.to} />,
 }));
+
 describe('EntityTypesList', () => {
   let component;
   let props;
@@ -18,6 +20,11 @@ describe('EntityTypesList', () => {
         { _id: 2, name: 'Ruling' },
         { _id: 1, name: 'Decision' },
         { _id: 3, name: 'Judge', isEntity: true },
+      ]),
+      locale: 'en',
+      languages: Immutable.fromJS([
+        { _id: 1, key: 'en', default: true },
+        { _id: 2, key: 'es' },
       ]),
       notify: jasmine.createSpy('notify'),
       deleteTemplate: jasmine
