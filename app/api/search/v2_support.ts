@@ -22,9 +22,9 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
   }
 
   return (hit: any) => {
-    const mappedMetadata: any = {};
+    const mappedMetadata = {} as any;
     Object.keys(hit._source.metadata || {}).forEach(propertyName => {
-      mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
+      mappedMetadata[propertyName] = (hit._source.metadata[propertyName] || []).map(
         ({ originalValue, ...rest }: any) => {
           if (originalValue) {
             return { ...originalValue, inheritedValue: [rest] };

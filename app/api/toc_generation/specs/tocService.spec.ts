@@ -1,4 +1,4 @@
-import { files, uploadsPath } from 'api/files';
+import { files, storage } from 'api/files';
 import { errorLog } from 'api/log';
 import { tenants } from 'api/tenants';
 import { testingDB } from 'api/utils/testing_db';
@@ -24,6 +24,7 @@ describe('tocService', () => {
       undefined,
       'tenant1'
     );
+    jest.spyOn(storage, 'fileContents').mockReturnValue(Promise.resolve(Buffer.from('content')));
     await testingDB.setupFixturesAndContext(fixtures, undefined, 'tenant2');
     testingDB.UserInContextMockFactory.restore();
   });
@@ -51,7 +52,7 @@ describe('tocService', () => {
     it('should use the service url configured', async () => {
       await tocService.processAllTenants();
       await tenants.run(async () => {
-        expect(requestMock).toHaveBeenCalledWith('url', 'pdf1.pdf', uploadsPath('pdf1.pdf'));
+        expect(requestMock).toHaveBeenCalledWith('url', 'pdf1.pdf', Buffer.from('content'));
       }, 'tenant1');
     });
 
