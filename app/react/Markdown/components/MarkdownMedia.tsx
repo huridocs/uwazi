@@ -263,8 +263,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    const validMediaUrlRegExp =
-      /(^(blob:)?https?:\/\/(?:www\.)?)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$/;
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
@@ -279,7 +277,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           setMediaURL(URL.createObjectURL(blob));
         })
         .catch(_e => {});
-    } else if (config.url.match(validMediaUrlRegExp)) {
+    } else {
       setMediaURL(config.url);
     }
   }, [config.url]);
