@@ -210,10 +210,6 @@ export class MatchQueryNode extends QueryNode {
   static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
     return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }
-
-  static forAnyEntity(traversals?: TraversalQueryNode[]) {
-    return new MatchQueryNode({}, traversals);
-  }
 }
 
 export type { TemplateRecordElement, TemplateRecords };

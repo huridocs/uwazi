@@ -101,33 +101,33 @@ function processFilters(filters, properties, dictionaries) {
   }, []);
 }
 
-function getContent(property, allProperties) {
+function getContent(property, allProperties, newRelationshipsEnabled) {
   return (
-    v2.deducePropertyContent(property) ||
+    v2.deducePropertyContent(property, newRelationshipsEnabled) ||
     (property.inherit
       ? propertiesHelper.getInheritedProperty(property, allProperties).content
       : property.content)
   );
 }
 
-function getAggregatedIndexedPropertyPath(property) {
+function getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled) {
   return (
-    v2.getAggregatedIndexedPropertyPath(property) ||
+    v2.getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled) ||
     (property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`)
   );
 }
 
-function toAggregationData(allProperties) {
+function toAggregationData(allProperties, newRelationshipsEnabled) {
   return property => ({
     ...property,
-    name: getAggregatedIndexedPropertyPath(property),
-    content: getContent(property, allProperties),
+    name: getAggregatedIndexedPropertyPath(property, newRelationshipsEnabled),
+    content: getContent(property, allProperties, newRelationshipsEnabled),
   });
 }
 
-function getTypeToAggregate(property, allProperties) {
+function getTypeToAggregate(property, allProperties, newRelationshipsEnabled) {
   return (
-    v2.getTypeToAggregate(property, allProperties) ||
+    v2.getTypeToAggregate(property, allProperties, newRelationshipsEnabled) ||
     (property.inherit ? property.inherit.type : property.type)
   );
 }
@@ -146,7 +146,7 @@ async function aggregationProperties(propertiesToBeAggregated, allProperties) {
         type === propertyTypes.newRelationship
       );
     })
-    .map(toAggregationData(allProperties));
+    .map(toAggregationData(allProperties, newRelationshipsEnabled));
 }
 
 function metadataSnippetsFromSearchHit(hit) {

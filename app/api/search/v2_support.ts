@@ -1,8 +1,6 @@
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { QueryMapper } from 'api/templates.v2/database/QueryMapper';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes';
 
@@ -40,21 +38,8 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
 
 function deducePropertyContent(property: PropertySchema, featureEnabled = false) {
   if (featureEnabled && property.type === propertyTypes.newRelationship) {
-    const query = MatchQueryNode.forAnyEntity(QueryMapper.toModel(property.query as any));
-    const templates = query
-      .getTemplatesInLeaves()
-      .map(record => record.templates)
-      .flat();
-
-    // if (templates.length !== 1) {
-    //   throw createError(
-    //     `Cannot aggregate with more than one template as content: ${property.name}`
-    //   );
-    // }
-
-    const [template] = templates;
-
-    return template;
+    // Placeholder: the content is not used if the aggregation values are entities.
+    return 'template';
   }
 
   return undefined;
