@@ -122,7 +122,7 @@ class EntityTypesList extends Component {
               <li key={index} className="list-group-item">
                 <span>
                   <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
-                  &#40;<Translate context={template._id}>{template.name}</Translate>&#41;
+                  &nbsp;&#40;<Translate context={template._id}>{template.name}</Translate>&#41;
                 </span>
                 {template.default ? this.defaultTemplateMessage() : ''}
                 {template.synced ? this.syncedTemplateMessage() : ''}
