@@ -491,7 +491,7 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-    await assignNewRelationshipFieldsValues([doc]);
+    if (doc) await assignNewRelationshipFieldsValues([doc]);
     return doc;
   },
 
