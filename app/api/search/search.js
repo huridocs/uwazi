@@ -11,9 +11,6 @@ import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
@@ -21,34 +18,6 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
-
-async function getRelationshipsV2PRocessor() {
-  const db = getConnection();
-  const client = getClient();
-
-  const transactionManager = new MongoTransactionManager(client);
-  const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
-
-  if (!settingsDataSource.readNewRelationshipsAllowed()) {
-    return hit => hit;
-  }
-
-  return hit => {
-    const mappedMetadata = {};
-    Object.keys(hit._source.metadata || {}).forEach(propertyName => {
-      mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
-        ({ originalValue, ...rest }) => {
-          if (originalValue) {
-            return { ...originalValue, inheritedValue: [rest] };
-          }
-          return rest;
-        }
-      );
-    });
-
-    return mappedMetadata;
-  };
-}
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -163,10 +132,11 @@ function getTypeToAggregate(property, allProperties) {
   );
 }
 
-function aggregationProperties(propertiesToBeAggregated, allProperties) {
+async function aggregationProperties(propertiesToBeAggregated, allProperties) {
+  const newRelationshipsEnabled = await v2.checkFeatureEnabled();
   return propertiesToBeAggregated
     .filter(property => {
-      const type = getTypeToAggregate(property, allProperties);
+      const type = getTypeToAggregate(property, allProperties, newRelationshipsEnabled);
 
       return (
         type === 'select' ||
@@ -339,6 +309,7 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
 
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allProperties(templates);
+  const newRelationshipsEnabled = v2.checkFeatureEnabled();
   return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
     const denormaLizedAgregations = await denormaLizedAgregationsPromise;
     if (
@@ -384,7 +355,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       property = propertiesHelper.getInheritedProperty(property, properties);
     }
 
-    property = v2.findDenormalizedProperty(property, properties);
+    property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
@@ -538,7 +509,9 @@ const permissionsInformation = (hit, user) => {
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
   const user = permissionsContext.getUserInContext();
-  const processRelationshipsV2InMetadata = await getRelationshipsV2PRocessor();
+  const processRelationshipsV2InMetadata = v2.createRelationshipsV2ResponseProcessor(
+    await v2.checkFeatureEnabled()
+  );
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -678,7 +651,7 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   }
 
   // this is where we decide which aggregations to send to elastic
-  const aggregations = aggregationProperties(properties, allProps);
+  const aggregations = await aggregationProperties(properties, allProps);
 
   const filters = processFilters(query.filters, [...allProps, ...properties], dictionaries);
   // this is where the query filters are built
