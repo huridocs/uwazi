@@ -14,14 +14,13 @@ import { UserRole } from 'shared/types/userSchema';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { QueryMapper } from 'api/templates.v2/database/QueryMapper';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
 import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
+import * as v2 from './v2_support';
 
 async function getRelationshipsV2PRocessor() {
   const db = getConnection();
@@ -134,55 +133,34 @@ function processFilters(filters, properties, dictionaries) {
 }
 
 function getContent(property, allProperties) {
-  if (property.type === propertyTypes.newRelationship) {
-    const query = MatchQueryNode.forAnyEntity(QueryMapper.toModel(property.query));
-    const templates = query
-      .getTemplatesInLeaves()
-      .map(record => record.templates)
-      .flat();
-
-    // if (templates.length !== 1) {
-    //   throw createError(
-    //     `Cannot aggregate with more than one template as content: ${property.name}`
-    //   );
-    // }
-
-    const [template] = templates;
-
-    return template;
-  }
-
-  return property.inherit
-    ? propertiesHelper.getInheritedProperty(property, allProperties).content
-    : property.content;
+  return (
+    v2.deducePropertyContent(property) ||
+    (property.inherit
+      ? propertiesHelper.getInheritedProperty(property, allProperties).content
+      : property.content)
+  );
 }
 
-function getAggregatedIndexedPropertyName(property) {
-  if (property.type === propertyTypes.newRelationship) {
-    return `${property.name}.value`;
-  }
-
-  return property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`;
+function getAggregatedIndexedPropertyPath(property) {
+  return (
+    v2.getAggregatedIndexedPropertyPath(property) ||
+    (property.inherit ? `${property.name}.inheritedValue.value` : `${property.name}.value`)
+  );
 }
 
 function toAggregationData(allProperties) {
   return property => ({
     ...property,
-    name: getAggregatedIndexedPropertyName(property),
+    name: getAggregatedIndexedPropertyPath(property),
     content: getContent(property, allProperties),
   });
 }
 
 function getTypeToAggregate(property, allProperties) {
-  if (property.type === propertyTypes.newRelationship) {
-    if (property.denormalizedProperty) {
-      return allProperties.find(p => p.name === property.denormalizedProperty).type;
-    }
-
-    return property.type;
-  }
-
-  return property.inherit ? property.inherit.type : property.type;
+  return (
+    v2.getTypeToAggregate(property, allProperties) ||
+    (property.inherit ? property.inherit.type : property.type)
+  );
 }
 
 function aggregationProperties(propertiesToBeAggregated, allProperties) {
@@ -406,9 +384,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       property = propertiesHelper.getInheritedProperty(property, properties);
     }
 
-    if (property.denormalizedProperty) {
-      property = properties.find(p => p.name === property.denormalizedProperty);
-    }
+    property = v2.findDenormalizedProperty(property, properties);
 
     const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
