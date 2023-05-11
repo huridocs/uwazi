@@ -1,10 +1,10 @@
 import { Translate } from 'app/I18N';
 import { Checkbox } from 'flowbite-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { number, option } from 'yargs';
+import React, { useRef, useState } from 'react';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string };
+type ContextOption = Option & { selected: boolean };
 
 interface MultiSelectProps {
   label: String;
@@ -12,7 +12,7 @@ interface MultiSelectProps {
 }
 
 interface ContextMenuProps {
-  options: Option[];
+  options: ContextOption[];
   show: boolean;
   location: { x: number; y: number };
   onOptionSelected: (options: Option[]) => void;
@@ -35,50 +35,57 @@ const icons = {
   ),
 };
 
-const ContextMenu = ({ options, show, location, onOptionSelected }: ContextMenuProps) => {
+const ContextMenuBase = (
+  { options, show, location, onOptionSelected }: ContextMenuProps,
+  ref: any
+) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
-  return (
+  return show ? (
     <ul
+      ref={ref}
       style={{
+        minWidth: '225px',
         position: 'absolute',
         top: `${location.y}px`,
         left: `${location.x}px`,
         boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
       }}
-      className={`bg-white p-4 min-h-screen border-r-4 border-gray-700 absolute flex flex-col ${
-        show ? '' : 'hidden'
-      }`}
+      className={`min-w-fit bg-white border-4 rounded-md p-4 font-medium border-gray-700 absolute flex flex-col`}
     >
-      {options.map((option: Option) => (
-        <li key={option.label}>
+      {options.map((option: ContextOption) => (
+        <li key={option.label} className="py-1">
           <Checkbox
+            checked={option.selected}
             onClick={e => {
+              let currentOptions = [...selectedOptions];
               // @ts-ignore
-              if (!e.target.checked) {
-                const options = [...selectedOptions, option];
-                setSelectedOptions(options);
+              if (e.target.checked) {
+                currentOptions.push(option);
               } else {
-                const options = selectedOptions.filter(
+                currentOptions = selectedOptions.filter(
                   (innerOption: Option) => innerOption.value !== option.value
                 );
-                setSelectedOptions(options);
               }
-              setTimeout(() => {
-                onOptionSelected(selectedOptions);
-              }, 1);
+              onOptionSelected(currentOptions);
+              setSelectedOptions(currentOptions);
             }}
           />
-          {option.label}
+          <span className="ml-2">{option.label}</span>
         </li>
       ))}
     </ul>
+  ) : (
+    <></>
   );
 };
+
+const ContextMenu = React.forwardRef(ContextMenuBase);
 
 const MultiSelect = ({ label, options }: MultiSelectProps) => {
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
   const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [menu, showMenu] = useState(false);
+  const contextMenuRef = useRef<HTMLLIElement>();
   const MENU_OFFSET = 15;
 
   return (
@@ -90,9 +97,27 @@ const MultiSelect = ({ label, options }: MultiSelectProps) => {
             type="button"
             className="text-indigo-700"
             onClick={(e: any) => {
-              const x = e.clientX + MENU_OFFSET;
-              const y = e.clientY + MENU_OFFSET;
-              setMenuLocation({ x, y });
+              setTimeout(() => {
+                // Viewport width
+                const totalWidth = e.view.innerWidth;
+                const totalHeight = e.view.innerHeight;
+                const contextMenuWidth = contextMenuRef.current?.clientWidth || 0;
+                const contextMenuHeight = contextMenuRef.current?.clientHeight || 0;
+
+                let x = e.clientX;
+                let y = e.clientY;
+
+                if (x + contextMenuWidth > totalWidth) {
+                  // Context menu will go out of the viewport
+                  x -= contextMenuWidth + MENU_OFFSET; // Display CM offset towards the view port
+                }
+
+                if (y + contextMenuHeight > totalHeight) {
+                  // Context menu will go out of the viewport
+                  y = -y; // Display CM offset towards the view port
+                }
+                setMenuLocation({ x, y });
+              }, 0);
               showMenu(!menu);
             }}
           >
@@ -100,11 +125,21 @@ const MultiSelect = ({ label, options }: MultiSelectProps) => {
           </button>
         </div>
       </div>
-      <div className="min-h-fit p-6">
+      <div className="min-h-fit p-6 flex flex-wrap">
         {selectedOptions.length > 0 ? (
           selectedOptions.map((option: Option) => (
             <Pill color="gray" key={option.value}>
               {option.label}
+              <button
+                className="p-[10px] ml-1 text-gray-400 font-bold"
+                onClick={() => {
+                  setSelectedOptions(currentSelectedOptions =>
+                    currentSelectedOptions.filter(opt => opt.value !== option.value)
+                  );
+                }}
+              >
+                x
+              </button>
             </Pill>
           ))
         ) : (
@@ -112,11 +147,16 @@ const MultiSelect = ({ label, options }: MultiSelectProps) => {
         )}
       </div>
       <ContextMenu
+        ref={contextMenuRef}
         location={menuLocation}
         show={menu}
-        options={options}
+        options={options.map(opt => {
+          if (selectedOptions.find(o => o.value === opt.value)) {
+            return { ...opt, selected: true };
+          }
+          return { ...opt, selected: false };
+        })}
         onOptionSelected={(options: Option[]) => {
-          console.log(options);
           setSelectedOptions(options);
         }}
       />
