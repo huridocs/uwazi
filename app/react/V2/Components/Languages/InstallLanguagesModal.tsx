@@ -29,7 +29,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
     <Modal size="lg">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          <Translate>Install language</Translate>
+          <Translate>Install language(s)</Translate>
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
@@ -50,8 +50,9 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
             await install();
           }}
           className="grow"
+          disabled={!selected.length}
         >
-          <Translate>Install</Translate>
+          <Translate>Install</Translate> {selected.length ? `(${selected.length})` : ''}
         </Button>
       </Modal.Footer>
     </Modal>

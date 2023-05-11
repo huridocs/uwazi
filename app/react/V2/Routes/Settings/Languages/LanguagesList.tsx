@@ -208,7 +208,7 @@ const LanguagesList = () => {
                 setShowInstallModal(true);
               }}
             >
-              <Translate>Install language</Translate>
+              <Translate>Install language(s)</Translate>
             </Button>
           </div>
         </div>
