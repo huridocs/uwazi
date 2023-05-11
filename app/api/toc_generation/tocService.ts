@@ -1,4 +1,4 @@
-import { files, uploadsPath } from 'api/files';
+import { files, storage } from 'api/files';
 import { prettifyError } from 'api/utils/handleError';
 import { errorLog } from 'api/log';
 import request from 'shared/JSONRequest';
@@ -28,8 +28,12 @@ const saveToc = async (file: FileType, toc: TocSchema[]) => {
   );
 };
 
-const generateToc = async (url: string, file: FileType): Promise<TocSchema[]> => {
-  const response = await request.uploadFile(url, file.filename, uploadsPath(file.filename));
+const generateToc = async (
+  url: string,
+  filename: string,
+  fileContents: Buffer
+): Promise<TocSchema[]> => {
+  const response = await request.uploadFile(url, filename, fileContents);
 
   let toc = JSON.parse(response.text);
   if (!toc.length) {
@@ -70,9 +74,16 @@ const tocService = {
       { sort: { _id: 1 }, limit: 1 }
     );
 
-    if (nextFile) {
+    if (nextFile && nextFile.filename) {
       try {
-        await saveToc(nextFile, await generateToc(url, nextFile));
+        await saveToc(
+          nextFile,
+          await generateToc(
+            url,
+            nextFile.filename,
+            await storage.fileContents(nextFile.filename, 'document')
+          )
+        );
       } catch (e) {
         await handleError(e, nextFile);
         errorLog.error(prettifyError(e).prettyMessage);

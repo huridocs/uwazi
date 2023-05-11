@@ -6,7 +6,6 @@ const {
   ROOT_PATH,
   UPLOADS_FOLDER,
   CUSTOM_UPLOADS_FOLDER,
-  TEMPORAL_FILES_FOLDER,
   ACTIVITY_LOGS_FOLDER,
   USER_SESSION_SECRET,
   MONGO_URI,
@@ -58,7 +57,6 @@ export const config = {
     uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
     attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,
-    temporalFiles: TEMPORAL_FILES_FOLDER || `${filesRootPath}/temporal_files/`,
     activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
     featureFlags: {
       s3Storage: false,
