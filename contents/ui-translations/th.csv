@@ -80,6 +80,7 @@ auto-created,สร้างขึ้นอัตโนมัติ
 Auto-save,บันทึกอัตโนมัติ
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
+Available default translation,Available default translation
 Back,ย้อนกลับ
 Back to,กลับไปยัง
 Back to dashboard,Back to dashboard
@@ -374,7 +375,7 @@ Inherit,Inherit
 Inherit property,ก็อปปี้คุณสมบัตินี้
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language,Install language
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,กรุณาติดตั้งแอป Google Authenticator บนอุปกรณ์มือถือของคุณ
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.

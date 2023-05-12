@@ -1,7 +1,7 @@
 const newKeys = [
   { key: 'Active languages' },
   { key: 'Install' },
-  { key: 'Install language' },
+  { key: 'Install language(s)' },
   { key: 'Please type in' },
   { key: 'Uninstall' },
   { key: 'Default' },
@@ -19,7 +19,6 @@ const deletedKeys = [
   { key: 'delete language warning' },
   { key: 'Confirm reset translation' },
   { key: 'reset language warning' },
-  { key: 'Available default translation' },
 ];
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {

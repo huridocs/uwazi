@@ -32,7 +32,7 @@ describe('migration update translations of new Languages UI', () => {
     const addedKeys = [
       { key: 'Active languages' },
       { key: 'Install' },
-      { key: 'Install language' },
+      { key: 'Install language(s)' },
       { key: 'Please type in' },
       { key: 'Uninstall' },
       { key: 'Default' },

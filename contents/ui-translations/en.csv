@@ -80,6 +80,7 @@ auto-created,auto-created
 Auto-save,Auto-save
 Automatic Table of Contents,Automatic Table of Contents
 Automatically generated,Automatically generated
+Available default translation,Available default translation
 Back,Back
 Back to,Back to
 Back to dashboard,Back to dashboard
@@ -376,7 +377,7 @@ Inherit,Inherit
 Inherit property,Inherit property
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language,Install language
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Install the Google Authenticator app on your mobile device
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.

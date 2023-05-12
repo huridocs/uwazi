@@ -80,6 +80,7 @@ auto-created,자동 생성 완료
 Auto-save,자동 저장
 Automatic Table of Contents,자동 생성 목차
 Automatically generated,자동 생성됨
+Available default translation,Available default translation
 Back,뒤로
 Back to,이전으로
 Back to dashboard,Back to dashboard
@@ -374,7 +375,7 @@ Inherit,Inherit
 Inherit property,속성 이어받기
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language,Install language
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.

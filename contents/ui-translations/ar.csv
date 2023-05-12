@@ -80,6 +80,7 @@ auto-created,منشأ تلقائياً
 Auto-save,حفظ تلقائي
 Automatic Table of Contents,جدول محتويات تلقائي
 Automatically generated,منشأ تلقائياً
+Available default translation,Available default translation
 Back,عودة
 Back to,العودة إلى
 Back to dashboard,العودة الى لوحة القيادة
@@ -373,7 +374,7 @@ Inherit,Inherit
 Inherit property,وراثة خاصية
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language,Install language
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,ثبت تطبيق Google Authenticator على جهازك المحمول
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.

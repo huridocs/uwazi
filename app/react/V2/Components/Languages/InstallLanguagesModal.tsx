@@ -15,7 +15,10 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   const [selected, setSelected] = useState<string[]>([]);
   const { requestAction } = useApiCaller();
 
-  const items = languages.map(l => ({ label: l.label || l.label, value: l.key }));
+  const items = languages.map(l => ({
+    label: `${l.translationAvailable ? ' * ' : ''}${l.label} (${l.key})`,
+    value: l.key,
+  }));
 
   const install = async () => {
     await requestAction(
@@ -35,25 +38,32 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
       </Modal.Header>
       <Modal.Body>
         <SearchMultiselect
-          className="max-h-96 overflow-y-scroll"
+          className="overflow-y-scroll max-h-96"
           items={items}
           onChange={s => setSelected(s)}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button buttonStyle="tertiary" onClick={() => setShowModal(false)} className="grow">
-          <Translate>Cancel</Translate>
-        </Button>
-        <Button
-          onClick={async () => {
-            setShowModal(false);
-            await install();
-          }}
-          className="grow"
-          disabled={!selected.length}
-        >
-          <Translate>Install</Translate> {selected.length ? `(${selected.length})` : ''}
-        </Button>
+        <div className="flex flex-col w-full">
+          <p className="w-full pt-0 pb-3 text-sm font-normal text-gray-500 dark:text-gray-400">
+            * <Translate>Available default translation</Translate>
+          </p>
+          <div className="flex">
+            <Button buttonStyle="tertiary" onClick={() => setShowModal(false)} className="grow">
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button
+              onClick={async () => {
+                setShowModal(false);
+                await install();
+              }}
+              className="grow"
+              disabled={!selected.length}
+            >
+              <Translate>Install</Translate> {selected.length ? `(${selected.length})` : ''}
+            </Button>
+          </div>
+        </div>
       </Modal.Footer>
     </Modal>
   );

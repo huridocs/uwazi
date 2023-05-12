@@ -386,7 +386,7 @@ exports[`LanguagesList render installed languages should show a list of installe
             <span
               class="translation active"
             >
-              Install language
+              Install language(s)
             </span>
           </button>
         </div>

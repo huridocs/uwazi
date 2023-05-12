@@ -80,6 +80,7 @@ auto-created,otomatik oluşturulmuş
 Auto-save,Otomatik kaydetme
 Automatic Table of Contents,Otomatik İçindekiler
 Automatically generated,Otomatik olarak oluşturuldu
+Available default translation,Available default translation
 Back,Geriye git
 Back to,Geri dön
 Back to dashboard,Back to dashboard
@@ -374,7 +375,7 @@ Inherit,Inherit
 Inherit property,Inherit property
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language,Install language
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
