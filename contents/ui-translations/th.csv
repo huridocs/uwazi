@@ -15,7 +15,7 @@ Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
 Action,เริ่มทำ
 Activate this feature for enhanced account security,เปิดใช้งานคุณสมบัตินี้เพื่อความปลอดภัยของบัญชีขั้นสูง
-Active Languages,Active Languages
+Active languages,Active languages
 Activity log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
@@ -81,7 +81,6 @@ Auto-save,บันทึกอัตโนมัติ
 Automatic Table of Contents,สารบัญอัตโนมัติ
 Automatically generated,สร้างขึ้นโดยอัตโนมัติ
 Available default translation,Available default translation
-Available Languages,Available Languages
 Back,ย้อนกลับ
 Back to,กลับไปยัง
 Back to dashboard,Back to dashboard
@@ -135,7 +134,6 @@ Configure templates,Configure templates
 Confirm,ยืนยัน
 CONFIRM,ยืนยัน
 Confirm action,Confirm action
-Confirm add,Confirm add
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,ยืนยันลบหลายรายการ
 confirm delete template,"Are you sure you want to delete this entity type?
@@ -152,7 +150,6 @@ Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,ยืนยันรหัสผ่านใหม่
 Confirm publish multiple items,ยืนยันเผยแพร่หลายรายการ
-Confirm reset translation,Confirm reset translation
 Confirm suggestion acceptance,Confirm suggestion acceptance
 Connect to a document,เชื่อมต่อเอกสาร
 Connect to a paragraph,เชื่อมต่อย่อหน้า
@@ -210,7 +207,9 @@ Date added,เพิ่ม ณ วันที่
 Date format,รูปแบบวันที่
 Date modified,แก้ไข ณ วันที่
 Day,วัน
+Default,Default
 Default filter,Default filter
+Default language,Default language
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
 Default template,เทมเพลตเริ่มต้น
 Default view,Default view
@@ -220,7 +219,6 @@ Delete entities and documents,Delete entities and documents
 Delete file,Delete file
 Delete Group,ลบกลุ่ม
 Delete language,ลบภาษา
-delete language warning,"Are you sure you want to delete this language? This action may take some time, cannot be undone and will delete all the information available in this language."
 Delete Property,ลบคุณสมบัติ
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -375,7 +373,9 @@ Info,ข้อมูล
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ก็อปปี้คุณสมบัตินี้
+Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,กรุณาติดตั้งแอป Google Authenticator บนอุปกรณ์มือถือของคุณ
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -565,6 +565,7 @@ Permission on entities explicitly shared with the user,สิทธิการ�
 Permissions,สิทธิการเข้าถึง
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
+Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,กรุณาพิมพ์ตัวอักษรและตัวเลขจากภาพเพื่อเริ่มการส่งออก
 Precision,ความแม่นยำ
 Preserve,Preserve
@@ -641,7 +642,6 @@ Required property,คุณสมบัติที่จำเป็น
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
-reset language warning,Are you sure you want to reset translation for this language?
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
@@ -782,7 +782,6 @@ Thesauri,thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,พื้นที่นี้อนุญาตให้คุณใส่โค้ดจาว่าสคริปได้ มันจะช่วยให้คุณสามารถค้นพบความเป็นไปได้ใหม่ๆ
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,เนื้อหานี้ถูกสร้างขึ้นโดยอัตโนมัติ
@@ -841,6 +840,8 @@ You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,ประเภท
 Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
 Unlink,Unlink
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms

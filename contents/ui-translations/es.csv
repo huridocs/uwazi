@@ -15,7 +15,7 @@ Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Accuracy,Precisión
 Action,Acción
 Activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de tu cuenta
-Active Languages,Active Languages
+Active languages,Active languages
 Activity log,Registro de actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
@@ -81,7 +81,6 @@ Auto-save,Guardado automático
 Automatic Table of Contents,Tabla de contenidos automática.
 Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
-Available Languages,Available Languages
 Back,Volver
 Back to,Volver a
 Back to dashboard,Regresar al panel
@@ -133,7 +132,6 @@ Configure templates,Configurar plantillas
 Confirm,Confirmar
 CONFIRM,CONFIRMAR
 Confirm action,Confirmar acción
-Confirm add,Confirm add
 Confirm delete connection,Confirmar eliminación de relación
 Confirm delete multiple items,Confirmar eliminación de múltiples elementos
 confirm delete template,"Estás seguro que quieres eliminar este tipo de entidad?
@@ -150,7 +148,6 @@ Confirm discard changes,Confirmar descartar cambios
 Confirm edit suggestion-enabled Thesaurus,Confirmar editar Tesauro sugerencia-habilitada
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Confirm reset translation,Confirm reset translation
 Confirm suggestion acceptance,Aceptar las sugerencias
 Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
@@ -208,7 +205,9 @@ Date added,Fecha de creación
 Date format,Formato de fecha
 Date modified,Fecha de la modificación
 Day,Día
+Default,Default
 Default filter,Filtro predeterminado
+Default language,Default language
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
 Default view,Vista predeterminada
@@ -218,7 +217,6 @@ Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
 Delete Group,Eliminar grupo
 Delete language,Eliminar idioma
-delete language warning,"Are you sure you want to delete this language? This action may take some time, cannot be undone and will delete all the information available in this language."
 Delete Property,Eliminar propiedad
 Deleted attachment,Archivo adjunto eliminado
 Deleted custom file,Archivo personalizado eliminado
@@ -373,7 +371,9 @@ Info,Información
 Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
+Install,Install
 Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
@@ -563,6 +563,7 @@ Permission on entities explicitly shared with the user,Permiso sobre las entidad
 Permissions,Permisos
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
+Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
 Precision,Precisión
 Preserve,Preservar
@@ -639,7 +640,6 @@ Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
-reset language warning,Are you sure you want to reset translation for this language?
 Reset Password,Restablecer contraseña
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
@@ -777,7 +777,6 @@ Thesauri,Tesauros
 Thesauri name,Nombre del Tesauro
 Thesaurus,Tesauro
 Thesaurus saved,Tesauro guardado
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Esta área permite Añadir Javascript para personalizar la página. Esto abre un nuevo universo de posibilidades.
 This cannot be changed after saving,Esto no puede ser cambiado después de guardar
 This content is automatically generated,Este contenido se genera automáticamente.
@@ -836,6 +835,8 @@ Has configurado con éxito la verificación de dos pasos."
 Two-step verification token required,El token de verificación es obligatorio
 Type,Tipo
 Unexpected error,Error inesperado
+Uninstall,Uninstall
+Uninstall language,Uninstall language
 Unlink,Desenlazar
 Unsupported OCR language,Idioma no soportado para ROC
 Untranslated Terms,Términos sin traducir
