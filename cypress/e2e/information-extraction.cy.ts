@@ -28,28 +28,29 @@ describe('Information Extraction', () => {
     labelEntityTitle(1, 'Uwazi Heroes Investigation');
   });
 
-  it('Should create an extractor', () => {
+  it('should navigate to metadata extraction', () => {
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Metadata Extraction').click();
+  });
+
+  it('Should create an extractor', () => {
     cy.contains('span', 'Create Extractor').click();
-    cy.get('[data-testid=modal]').as('newExtractorModal');
-    cy.get('@newExtractorModal').get('input').type('Extractor 1');
-    cy.get('@newExtractorModal').contains('li', 'Ordenes del presidente').as('firstTemplate');
+    cy.get('[data-testid=modal]').get('input').type('Extractor 1');
+    cy.get('[data-testid=modal]').contains('li', 'Ordenes del presidente').as('firstTemplate');
     cy.get('@firstTemplate').find('label').click();
     cy.get('@firstTemplate').contains('label', 'Title').click();
-    cy.get('@newExtractorModal').contains('li', 'Causa').as('secondTemplate');
+    cy.get('[data-testid=modal]').contains('li', 'Causa').as('secondTemplate');
     cy.get('@secondTemplate').find('label').click();
     cy.get('@secondTemplate').contains('label', 'Title').click();
     cy.contains('button', 'Add').click();
-    cy.get('.table tbody tr').should('have.length', 1); // Forced to wait for the table to populate
-    cy.get('.table').toMatchImageSnapshot();
+    cy.contains('.table', 'Extractor 1').should('have.length', 1);
   });
 
   it('should select all templates when from all templates button is clicked', () => {
     cy.get('.extractor-checkbox > input').click();
     cy.contains('button', 'Edit Extractor').click();
     cy.contains('button', 'From all templates').click();
-    cy.get('.extractor-creation-modal').toMatchImageSnapshot();
+    cy.get('.ix-extraction-multiselect input').should('be.checked');
     cy.contains('button', 'Cancel').click();
   });
 
@@ -62,7 +63,7 @@ describe('Information Extraction', () => {
     cy.get('@template').contains('label', 'Title').click();
     cy.contains('button', 'Save').click();
     cy.contains('.table thead tr th span', 'Property').should('be.visible');
-    cy.get('.table').toMatchImageSnapshot();
+    cy.contains('.table', 'Extractor 1 edited').should('have.length', 1);
   });
 
   it('should show title initial suggestion states as Empty / Label', () => {

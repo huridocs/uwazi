@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
@@ -12,7 +13,7 @@ import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import { matchRoutes, RouteObject } from 'react-router-dom';
 import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
-import { RecoilRoot } from 'recoil';
+import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Settings } from 'shared/types/settingsType';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
@@ -20,6 +21,7 @@ import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
+import { settingsAtom } from './V2/atoms/settingsAtom';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -259,10 +261,14 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   resetTranslations();
 
+  const recoilGlobalState = ({ set }: MutableSnapshot) => {
+    set(settingsAtom, settings);
+  };
+
   const componentHtml = ReactDOMServer.renderToString(
     <Provider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <RecoilRoot>
+        <RecoilRoot initializeState={recoilGlobalState}>
           <React.StrictMode>
             <StaticRouterProvider
               router={router}
