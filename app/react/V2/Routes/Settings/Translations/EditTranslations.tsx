@@ -16,10 +16,10 @@ import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
-import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translations';
+import { ConfirmNavigationModal, TranslationsTables } from 'V2/Components/Translations';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
+import { notificationAtom } from 'V2/atoms';
 import { SettingsFooter } from 'app/V2/Components/Settings/SettingsFooter';
 
 const editTranslationsLoader =
@@ -142,8 +142,7 @@ const EditTranslations = () => {
   const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
-  const setModal = useSetRecoilState(modalAtom);
-  const setShowModal = useSetRecoilState(showModalAtom);
+  const [showModal, setShowModal] = useState(false);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
   const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
@@ -167,13 +166,9 @@ const EditTranslations = () => {
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
-      setModal({
-        size: 'md',
-        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
-      });
       setShowModal(true);
     }
-  }, [blocker.proceed, blocker.state, setModal, setShowModal]);
+  }, [blocker, setShowModal]);
 
   const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
 
@@ -184,7 +179,7 @@ const EditTranslations = () => {
         const response = await translationsAPI.post(values, contextId);
         setTranslationsState(response);
         setNotifications({
-          type: 'sucess',
+          type: 'success',
           text: <Translate>Translations saved</Translate>,
         });
         reset({}, { keepValues: true });
@@ -205,7 +200,7 @@ const EditTranslations = () => {
         const response = await translationsAPI.importTranslations(file, 'System');
         setTranslationsState(response);
         setNotifications({
-          type: 'sucess',
+          type: 'success',
           text: <Translate>Translations imported.</Translate>,
         });
       } catch (e) {
@@ -306,6 +301,9 @@ const EditTranslations = () => {
           </div>
         </SettingsFooter>
       </div>
+      {showModal && (
+        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };

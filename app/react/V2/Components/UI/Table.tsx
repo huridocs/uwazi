@@ -9,6 +9,7 @@ import {
   useSortBy,
   UseSortByOptions,
   UseSortByColumnProps,
+  TableState,
 } from 'react-table';
 
 import { Checkbox, Table as FlowbiteTable } from 'flowbite-react';
@@ -25,6 +26,7 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  initialState?: Partial<TableState<any>>;
   enableSelection?: boolean;
   onRowSelected?: (items: any) => void;
 }
@@ -41,7 +43,14 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const Table = ({ columns, data, title, enableSelection, onRowSelected }: TableProps) => {
+const Table = ({
+  columns,
+  data,
+  title,
+  initialState,
+  enableSelection,
+  onRowSelected,
+}: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
@@ -57,6 +66,7 @@ const Table = ({ columns, data, title, enableSelection, onRowSelected }: TablePr
     {
       columns: memoizedColumns,
       data: memoizedData,
+      initialState,
     },
     useSortBy,
     useRowSelect,
