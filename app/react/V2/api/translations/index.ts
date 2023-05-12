@@ -50,4 +50,6 @@ const importTranslations = async (
   return filterTranslationsByContext(translations, contextId);
 };
 
-export { get, post, importTranslations };
+const { getLanguages } = I18NApi;
+
+export { get, post, importTranslations, getLanguages };
