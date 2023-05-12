@@ -103,6 +103,7 @@ jobs:
         with:
           browser: chrome
           component: false
+          config: defaultCommandTimeout=8000,requestTimeout=12000
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}

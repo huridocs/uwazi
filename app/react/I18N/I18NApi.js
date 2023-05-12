@@ -25,8 +25,8 @@ export default {
     return api.post('translations/setasdeafult', requestParams).then(response => response.json);
   },
 
-  getLanguages: async () => {
-    const { json: response } = await api.get('languages');
+  getLanguages: async requestParams => {
+    const { json: response } = await api.get('languages', requestParams);
     return response;
   },
 
