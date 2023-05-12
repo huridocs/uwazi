@@ -166,9 +166,9 @@ export class TraversalQueryNode extends QueryNode {
       this.matches[0].wouldMatch(toMatchAfterTraverse);
 
     if (matchesRelationship) {
-      return MatchQueryNode.forEntity(toMatchBeforeTraverse, [
-        TraversalQueryNode.forRelationship(relationship, this.direction, [
-          MatchQueryNode.forEntity(toMatchAfterTraverse),
+      return MatchQueryNode.forEntity(toMatchBeforeTraverse.sharedId, [
+        TraversalQueryNode.forRelationship(relationship._id, this.direction, [
+          MatchQueryNode.forEntity(toMatchAfterTraverse.sharedId),
         ]),
       ]);
     }
@@ -185,7 +185,7 @@ export class TraversalQueryNode extends QueryNode {
     this.validateIsChain();
 
     if (this.matches[0].wouldMatch(entity)) {
-      return this.shallowClone([MatchQueryNode.forEntity(entity)]);
+      return this.shallowClone([MatchQueryNode.forEntity(entity.sharedId)]);
     }
 
     const nextReaches = this.matches[0].reachesEntity(entity);
@@ -236,10 +236,10 @@ export class TraversalQueryNode extends QueryNode {
   }
 
   static forRelationship(
-    relationship: Relationship,
+    relationship: Relationship['_id'],
     direction: 'in' | 'out',
     matches?: MatchQueryNode[]
   ) {
-    return new TraversalQueryNode(direction, { _id: relationship._id }, matches);
+    return new TraversalQueryNode(direction, { _id: relationship }, matches);
   }
 }
