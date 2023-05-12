@@ -16,7 +16,7 @@ async function checkFeatureEnabled() {
 
 function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
   if (!featureEnabled) {
-    return (hit: unknown) => hit;
+    return (hit: any) => hit._source.metadata;
   }
 
   return (hit: any) => {
