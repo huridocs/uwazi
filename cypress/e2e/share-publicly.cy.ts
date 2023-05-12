@@ -15,18 +15,18 @@ describe('Permisions system', () => {
     cy.contains('button', 'Share').click();
     cy.get('[data-testid=modal] input').type('colla');
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.contains('div[data-testid=modal] td', 'colla').siblings().find('select').select('write');
+    cy.contains('[data-testid=modal] td', 'colla').siblings().find('select').select('write');
     cy.contains('button', 'Save changes').click();
-    cy.get('div[data-testid=modal]').should('not.be.visible');
+    cy.get('[data-testid=modal]').should('not.exist');
   });
 
   describe('make entities private', () => {
     it('should unshare entities publicly', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
-      cy.get('div[data-testid=modal] select').eq(1).select('delete');
+      cy.get('[data-testid=modal] select').eq(1).select('delete');
       cy.contains('button', 'Save changes').click();
-      cy.get('div[data-testid=modal]').should('not.be.visible');
+      cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
 
@@ -43,7 +43,7 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] input').focus();
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.contains('button', 'Save changes').click();
-      cy.get('div[data-testid=modal]').should('not.be.visible');
+      cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
 
@@ -78,8 +78,8 @@ describe('Permisions system', () => {
       cy.contains('h2', 'Test title').click();
       cy.contains('button', 'Share').click();
       cy.contains('td', 'Public').should('not.exist');
-      cy.get('div[data-testid=modal] select').should('have.length', 2);
-      cy.contains('div[data-testid=modal] button', 'Close').click();
+      cy.get('[data-testid=modal] select').should('have.length', 2);
+      cy.contains('[data-testid=modal] button', 'Close').click();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
   });
@@ -96,17 +96,17 @@ describe('Permisions system', () => {
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
-      cy.contains('div[data-testid=modal] button', 'Close').click();
-      cy.get('div[data-testid=modal]').should('not.be.visible');
+      cy.contains('[data-testid=modal] button', 'Close').click();
+      cy.get('[data-testid=modal]').should('not.exist');
     });
 
     it('should keep publishing status if mixed access selected', () => {
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
-      cy.get('div[data-testid=modal] select').eq(1).select('read');
+      cy.get('[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
-      cy.get('div[data-testid=modal]').should('not.be.visible');
+      cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.item-document').should('have.length', 3);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });

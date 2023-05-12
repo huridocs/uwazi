@@ -1,13 +1,15 @@
 import { NoSuchKey } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
-import { tenants } from 'api/tenants';
 import { errorLog } from 'api/log';
+import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readFile } from 'fs/promises';
+import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
 import {
   activityLogPath,
   attachmentsPath,
@@ -16,8 +18,6 @@ import {
   uploadsPath,
 } from './filesystem';
 import { S3Storage } from './S3Storage';
-import { pipeline } from 'stream/promises';
-import path from 'path';
 
 type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
@@ -46,8 +46,13 @@ const streamToBuffer = async (stream: Readable): Promise<Buffer> =>
     stream.on('error', (err: unknown) => reject(err));
   });
 
-const s3KeyWithPath = (filename: string, type: FileTypes) =>
-  path.join(tenants.current().name, paths[type](filename).split('/').slice(-2).join('/'));
+const s3KeyWithPath = (filename: string, type: FileTypes) => {
+  const sliceValue = type === 'segmentation' ? -3 : -2;
+  return path.join(
+    tenants.current().name,
+    paths[type](filename).split('/').slice(sliceValue).join('/')
+  );
+};
 
 const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> => {
   try {
