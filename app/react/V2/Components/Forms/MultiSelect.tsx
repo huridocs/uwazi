@@ -2,6 +2,7 @@ import { Translate } from 'app/I18N';
 import { Checkbox } from 'flowbite-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { Pill } from '../UI';
+import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 
 type Option = { label: string; value: string };
 type ContextOption = Option & { selected: boolean };
@@ -19,23 +20,6 @@ interface ContextMenuProps {
   onOptionSelected: (options: ContextOption[]) => void;
 }
 
-const icons = {
-  fillPlus: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="w-6 h-6"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-        clip-rule="evenodd"
-      />
-    </svg>
-  ),
-};
-
 const ContextMenuBase = (
   { options, show, location, onOptionSelected }: ContextMenuProps,
   ref: any
@@ -50,7 +34,7 @@ const ContextMenuBase = (
         left: `${location.x}px`,
         boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
       }}
-      className={`min-w-fit bg-white border-4 rounded-md p-4 font-medium border-gray-700 absolute flex flex-col`}
+      className="min-w-fit bg-white border-4 rounded-md p-4 font-medium  absolute flex flex-col"
     >
       {options.map((option: ContextOption) => (
         <li key={option.label} className="py-1">
@@ -74,6 +58,7 @@ const ContextMenuBase = (
       ))}
     </ul>
   ) : (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     <></>
   );
 };
@@ -130,17 +115,17 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
               showMenu(!menu);
             }}
           >
-            {icons.fillPlus}
+            <PlusCircleIcon className="text-lg w-6" />
           </button>
         </div>
       </div>
-      <div className="min-h-fit p-6 flex flex-wrap">
+      <div className="min-h-fit p-2 flex flex-wrap">
         {getSelectedOptions().length > 0 ? (
           getSelectedOptions().map((option: Option) => (
-            <Pill color="gray" key={option.value}>
-              {option.label}
+            <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
+              <span className="flex items-center">{option.label}</span>
               <button
-                className="p-[10px] ml-1 text-gray-400 font-bold"
+                className="ml-1 text-gray-400 font-bold content-center justify-center"
                 onClick={() => {
                   setInnerOptions(
                     innerOptions.map(opt =>
@@ -150,7 +135,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
                   onOptionSelected(getSelectedOptions());
                 }}
               >
-                x
+                <XMarkIcon className="text-lg w-6" />
               </button>
             </Pill>
           ))
@@ -163,8 +148,8 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
         location={menuLocation}
         show={menu}
         options={innerOptions}
-        onOptionSelected={(options: ContextOption[]) => {
-          setInnerOptions(options);
+        onOptionSelected={(ops: ContextOption[]) => {
+          setInnerOptions(ops);
           onOptionSelected(getSelectedOptions());
         }}
       />
