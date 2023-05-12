@@ -171,7 +171,7 @@ export default {
     }
 
     if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Username can not contain spaces.', 400));
+      return Promise.reject(createError('Usernames can not contain spaces.', 400));
     }
 
     const { using2fa, secret, ...userToSave } = user;
@@ -194,7 +194,7 @@ export default {
       model.get({ email: user.email }),
     ]);
     if (user.username && user.username.includes(' ')) {
-      return Promise.reject(createError('Username can not contain spaces.', 400));
+      return Promise.reject(createError('Usernames can not contain spaces.', 400));
     }
     if (userNameMatch.length || emailMatch.length) {
       const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';

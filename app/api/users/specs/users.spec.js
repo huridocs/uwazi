@@ -118,7 +118,7 @@ describe('Users', () => {
       };
       await expect(users.save(userdata, currentUser)).rejects.toEqual({
         code: 400,
-        message: 'Username can not contain spaces.',
+        message: 'Usernames can not contain spaces.',
       });
     });
 
@@ -256,7 +256,7 @@ describe('Users', () => {
         };
         await expect(users.newUser(userdata, domain)).rejects.toEqual({
           code: 400,
-          message: 'Username can not contain spaces.',
+          message: 'Usernames can not contain spaces.',
         });
       });
     });
