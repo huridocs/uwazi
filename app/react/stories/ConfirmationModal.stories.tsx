@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { Modal } from 'V2/Components/UI/Modal';
@@ -21,7 +21,7 @@ const ConfirmationModalStory = {
   },
 };
 
-const Template: ComponentStory<typeof ConfirmationModal> = args => (
+const Template: StoryFn<typeof ConfirmationModal> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="container w-10 h10">
@@ -51,6 +51,7 @@ BasicConfirmation.args = {
   onAcceptClick: action('accepted'),
   onCancelClick: action('canceled'),
 };
+
 TextConfirmation.args = {
   header: 'Delete Confirmation',
   body: 'Are you sure you want to delete this product?',
@@ -60,6 +61,7 @@ TextConfirmation.args = {
   onAcceptClick: action('accepted'),
   onCancelClick: action('canceled'),
 };
+
 WarningConfirmation.args = {
   header: <Translate>Are you sure</Translate>,
   body: "You can't undo this action",
@@ -70,6 +72,7 @@ WarningConfirmation.args = {
   onAcceptClick: action('accepted'),
   onCancelClick: action('canceled'),
 };
+
 export { BasicConfirmation, TextConfirmation, WarningConfirmation };
 
-export default ConfirmationModalStory as ComponentMeta<typeof ConfirmationModal>;
+export default { component: ConfirmationModalStory };
