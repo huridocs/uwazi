@@ -7,13 +7,11 @@ key,value
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
-Accept,ตกลง
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,บัญชี
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
-Action,เริ่มทำ
 Activate this feature for enhanced account security,เปิดใช้งานคุณสมบัตินี้เพื่อความปลอดภัยของบัญชีขั้นสูง
 Active languages,Active languages
 Activity log,บันทึกกิจกรรม
@@ -25,12 +23,10 @@ Add file,เพิ่มไฟล์
 Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
 Add group,เพิ่มกลุ่ม
-add icon,เพิ่มไอคอน
 Add language,เพิ่มภาษา
 Add link,เพิ่มลิงค์
 Add page,เพิ่มหน้า
 Add PDF,Add PDF
-Add people or groups,เพิ่มผู้คนหรือกลุ่ม
 Add properties,Add properties
 Add relationship,Add relationship
 Add relationship type,Add relationship type
@@ -52,7 +48,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,คุณสมบัติของตำแหน่งทางภูมิศาสตร์ที่อยู่ติดกันจะแสดงบนแผนที่เดียวกัน
 Admin,ผู้ดูแลระบบ
-Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
@@ -84,15 +79,12 @@ Available default translation,Available default translation
 Back,ย้อนกลับ
 Back to,กลับไปยัง
 Back to dashboard,Back to dashboard
-Back to search,กลับไปที่การค้นหา
 Back to thesauri,กลับไปที่กลุ่มคำอธิบาย
 Back to thesaurus,กลับไปที่กลุ่มคำอธิบาย
 Bad Request,Bad Request
 Body,เนื้อหา
 Browse files to upload,เรียกดูไฟล์ที่จะอัปโหลด
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-Can edit,แก้ไขได้
-Can see,มองเห็นได้
 Can view,มองเห็นได้
 Cancel,ยกเลิก
 Canceling...,Canceling...
@@ -117,13 +109,11 @@ Check to make this instance private (only logged-in users can access the data),�
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear coordinates,ลบจุดพิกัด
-Clear Filters,ล้างตัวกรอง
 Clear PDF selection,Clear PDF selection
 Click,Click
 Click here,คลิกที่นี่
 Click to fill,คลิกเพื่อใส่ค่า
 Close,ปิด
-Collaborator,ผู้ประสานงาน
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
 Collection name,Collection name
@@ -161,10 +151,7 @@ Content translations,Content translations
 Context,Context
 Conversion failed,การแปลงล้มเหลว
 Copied to clipboard,Copied to clipboard
-Copy From,คัดลอกจาก
-Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
-Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -205,13 +192,10 @@ Dashboard,Dashboard
 Data imported,ข้อมูลที่ถูกอิมพอร์ท
 Date added,เพิ่ม ณ วันที่
 Date format,รูปแบบวันที่
-Date modified,แก้ไข ณ วันที่
-Day,วัน
 Default,Default
 Default filter,Default filter
 Default language,Default language
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
-Default template,เทมเพลตเริ่มต้น
 Default view,Default view
 Delete,ลบ
 DELETE,ลบ
@@ -234,7 +218,6 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
-Description,คำอธิบาย
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -244,7 +227,6 @@ Document and entity types,ประเภทเอกสารและราย
 Document contents,เนื้อหาของเอกสาร
 Document OCR trigger,Document OCR trigger
 Document Title,ชื่อเอกสาร
-Documentation,เอกสาร
 documents,เอกสาร
 Documents,เอกสาร
 documents before training (30 per topic).,เอกสารก่อนการเรียนรู้ (30 ต่อหัวข้อ)
@@ -269,7 +251,6 @@ Edit all documents matching this criteria,แก้ไขเอกสารท�
 Edit Extractor,Edit Extractor
 Edit metadata of entities,Edit metadata of entities
 Editor,บรรณาธิการ
-editor,บรรณาธิการ
 Email,อีเมล
 Email address,ที่อยู่อีเมล
 Email is required,จำเป็นต้องใช้อีเมล
@@ -282,13 +263,11 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
-Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
 Enter the 6-digit verification code generated by your Authenticator app:,ป้อนรหัสการยืนยันตัวตน 6 หลักที่สร้างขึ้นโดยแอป Authenticator ของคุณ
 Entities,รายการ
 entities,รายการ
 Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",รายการสามารถถูกแสดงในหน้าที่สร้างเอง ในกรณีนี้ จะต้องสร้างหน้าขึ้นมาเองในเพจและเลือกที่นี่
-Entity,รายการ
 Entity deleted,Entity deleted
 Entity saved,Entity saved
 Entity types,ประเภทรายการ
@@ -296,7 +275,6 @@ Entity updated,Entity updated
 Error,ข้อผิดพลาด
 Expand all,Expand all
 Exploration,ค้นหา
-Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,Extension Token
 Extract information from your documents,ดึงข้อมูลออกมาจากเอกสารของคุณ
@@ -320,7 +298,6 @@ Filters configuration,การกำหนดค่าตัวกรอง
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,ตัวอย่างการกำหนดค่าตัวกรอง
 Filters OR operator,ตัวกรอง ประเภท หรือ
-Find,หา
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions
 Fine tune,ปรับแต่ง
@@ -334,7 +311,6 @@ From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
 General,ข้อมูลทั่วไป
-Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
@@ -344,7 +320,6 @@ Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
 Group updated,Group updated
-Groups,กลุ่ม
 help,ช่วยเหลือ
 here,here
 Hide actions,Hide actions
@@ -357,10 +332,8 @@ Icon,ไอคอน
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
-Import,นำเข้า
 Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
-Import instructions,คำแนะนำการนำเข้าข้อมูล
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,การนำเข้าข้อมูลที่กำลังดำเนินอยู่
@@ -411,12 +384,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,ภาษา
 Language Code,Language Code
 Language deleted,ลบภาษาแล้ว
-Languages,ภาษา
 Last updated,Last updated
 Latitude,พิกัดละติจูด
 Learn more,เรียนรู้เพิ่มเติม
 Learning...,กำลังประมวลผล
-Legend,กลุ่ม
 Lengthy reindex process,Lengthy reindex process
 Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
@@ -452,7 +423,6 @@ Match / Label,Match / Label
 Match / Value,Match / Value
 Matching,Matching
 Matomo Analytics,Matomo Analytics
-Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
 Message sent,Message sent
@@ -468,7 +438,6 @@ Mismatch / Value,Mismatch / Value
 mismatched passwords,Passwords don't match
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
-Month,เดือน
 more options.,ตัวเลือกเพิ่มเติม
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -482,7 +451,6 @@ Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
 Name of the group,ชื่อของกลุ่ม
-Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
 Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
@@ -548,8 +516,6 @@ Order,คำสั่ง
 Other,อื่น
 other,อื่น
 out of,ออกไปจาก
-Page,หน้า
-Page Javascript,หน้าจาวาสคริปต์
 Page name,Page name
 Pages,หน้า
 Password,รหัสผ่าน
@@ -572,7 +538,6 @@ Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,กด Enter เพื่อเพิ่ม
-Preview,ดูตัวอย่าง
 Previous,ก่อนหน้า
 Primary Documents,เอกสารหลัก
 Priority sorting,เรียงลำดับตามลำดับความสำคัญ
@@ -602,9 +567,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,ปกป้องบัญชีของคุณ
 Protection,การป้องกัน
-ProTip!,โปรทิป!
 Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
@@ -630,7 +593,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
-Remove,ลบ
+Remote Server Unreachable,Remote Server Unreachable
 remove icon,ลบไอคอน
 Removed language,Removed language
 Rename,เปลี่ยนชื่อ
@@ -642,7 +605,6 @@ Required property,คุณสมบัติที่จำเป็น
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
-Reset Password,สร้าง รหัสผ่าน ใหม่
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Return to the thesaurus page when you finished labeling to start learning.,กลับไปที่หน้าคำอธิบายกลุ่มคำเมื่อคุณแยกประเภทเสร็จสิ้นเพื่อเริ่มการเรียนรู้
@@ -677,12 +639,10 @@ Search Tips: proximity,เคล็ดลับการค้นหา: คำ�
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Select all,เลือกทั้งหมด
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
 Select from computer,Select from computer
 Select relationship type,เลือกประเภทความสัมพันธ์
 Select target paragraph,เลือกย่อหน้าที่ต้องการ
-Select...,เลือก...
 Selected,Selected
 selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
@@ -699,28 +659,23 @@ Sending email description,This is the email address that will appear as the send
 Sending labeled data...,Sending labeled data...
 Sentences above threshold,ประโยคที่เกินเกณฑ์ที่กำหนด
 Services,Services
-Set as default,ตั้งเป็นค่าเริ่มต้น
 Set default language,Set default language
 Set default template,Set default template
 Set the default starting point for your geolocation properties.,ตั้งค่าจุดเริ่มต้นอัตโนมัติสำหรับคุณสมบัติทางภูมิศาสตร์ของคุณ
 Settings,การตั้งค่า
 settings,การตั้งค่า
 Settings updated,การตั้งค่าถูกอัปเดตแล้ว
-Share,แบ่งปัน
 Share edit access with other users,Share edit access with other users
 Share entities with the public,Share entities with the public
-Share with people and groups,แบ่งปันกับผู้คนและกลุ่ม
 Shared as editor,แบ่งปันสิทธิ์การแก้ไข
 Shared as viewer,แบ่งปันสิทธิ์การมอง
 Show actions,Show actions
-Show cookie policy,แสดงนโยบายคุกกี้
 Show filters,แสดงตัวกรอง
 Show Filters,Show Filters
 Show in cards,Show in cards
 Show more,แสดงมากขึ้น
 Show Suggestions,แสดงคำแนะนำ
 Show toolbar,Show toolbar
-shown of,แสดงโดย
 Sign in,เข้าสู่ระบบ
 Single date,Single date
 Single date range,Single date range
@@ -748,7 +703,6 @@ Success,Success
 Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestions,คำแนะนำ
-Supporting files,รองรับไฟล์
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
@@ -757,7 +711,6 @@ System translations,System translations
 Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
-Table view,มุมมองตาราง
 Template,แม่แบบ
 Template conflict,Template conflict
 Template name,Template name
@@ -775,7 +728,6 @@ The import process threw an error:,กระบวนการนำเข้า
 The request could not be processed.,The request could not be processed.
 The template contains errors,มีข้อผิดพลาดที่แม่แบบ
 The token does not validate against the secret key!,The token does not validate against the secret key!
-There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,thesauri
@@ -789,10 +741,8 @@ This content is automatically generated,เนื้อหานี้ถูก�
 This entity is not public.,รายการนี้ไม่ได้เปิดการเข้าถึงแบบสาธารณะ
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
-This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
 This property will be inherited from the related entities and shown as metadata of this type of entities.,คุณสมบัตินี้จะถูกโอนย้ายมาจากรายการที่เกี่ยวข้องและจะถูกแสดงเป็นเมตาดาต้าสำหรับประเภทรายการนี้
 This property will be shown using all the width available.,คุณสมบัตินี้จะถูกแสดงโดยใช้พื้นที่ทั้งหมดที่มีอยู่
@@ -806,7 +756,6 @@ This will cancel the finding suggestion process,This will cancel the finding sug
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 This will update the entity across all languages,This will update the entity across all languages
 Threshold,เกณฑ์
-Time,เวลา
 Timelinks,Timelinks
 Title,ชื่อหัวข้อ
 "To bring you a better experience, this site uses cookies.",เพื่อประสบการณ์ที่ดีของคุณ เว็บไซต์ของเราจะทำการเก็บคุกกี้
@@ -834,7 +783,6 @@ Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,การตรวจสอบสองขั้นตอนล้มเหลว
-Two-step verification,การตรวจสอบสองขั้นตอน
 Two-step verification successfully,"Congratulations!
 You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
@@ -855,10 +803,8 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
-Upload a ZIP or CSV file.,นำเข้าไฟล์ zip หรือ csv
 Upload and select file,นำเข้าและเลือกไฟล์
 Upload from computer,นำเข้าจากคอมพิวเตอร์
-Upload PDF,นำเข้า PDF
 Upload PDF(s) to create,นำเข้า PDF เพื่อสร้าง
 Uploaded attachment,Uploaded attachment
 Uploaded custom file,Uploaded custom file
@@ -883,7 +829,6 @@ Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi กำลังเรียนรู้โดยใช้เอกสารที่ถูกจำแนกประเภท 
 มันอาจจะใช้เวลาไม่เกิน 2 ชั่วโมง และเมื่อเสร็จสมบูรณ์คุณจะสามารถตรวจสอบ
 คำแนะนำของ Uwazi ที่มีให้กับคอลเลกชันของคุณ"
-Uwazi UI,uwazi ui
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
@@ -911,16 +856,12 @@ with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!
 x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
-Year,ปี
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also improve the model by providing more labeled documents.,นอกจากนี้คุณยังสามารถพัฒนาโมเดลได้โดยใช้เอกสารที่ถูกจำแนกประเภทในจำนวนที่มากขึ้น
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
 You have labeled,คุณได้แยกประเภทแล้ว
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
-You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
 Your account is protected by 2fa.,บัญชีของคุณได้รับการคุ้มครองโดย 2FA
-Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
-Zoom out,ขยายออก
 Zoom out library view,ขยายออกไปยังมุมมองไลบรารี

@@ -7,13 +7,11 @@ key,value
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,A generated ID will be the default title.
-Accept,Accept
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Account
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
-Action,Action
 Activate this feature for enhanced account security,Activate this feature for enhanced account security
 Active languages,Active languages
 Activity log,Activity log
@@ -25,12 +23,10 @@ Add file,Add file
 Add from URL,Add from URL
 Add from web,Add from web
 Add group,Add group
-add icon,add icon
 Add language,Add language
 Add link,Add link
 Add page,Add page
 Add PDF,Add PDF
-Add people or groups,Add people or groups
 Add properties,Add properties
 Add relationship,Add relationship
 Add relationship type,Add relationship type
@@ -52,7 +48,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
-Administrators and Editors,Administrators and Editors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -84,15 +79,12 @@ Available default translation,Available default translation
 Back,Back
 Back to,Back to
 Back to dashboard,Back to dashboard
-Back to search,Back to search
 Back to thesauri,Back to thesauri
 Back to thesaurus,Back to thesaurus
 Bad Request,Bad Request
 Body,Body
 Browse files to upload,Browse files to upload
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-Can edit,Can edit
-Can see,Can see
 Can view,Can view
 Cancel,Cancel
 Canceling...,Canceling...
@@ -119,13 +111,11 @@ Check to make this instance private (only logged-in users can access the data),C
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear coordinates,Clear coordinates
-Clear Filters,Clear Filters
 Clear PDF selection,Clear PDF selection
 Click,Click
 Click here,Click here
 Click to fill,Click to fill
 Close,Close
-Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
 Collection name,Collection name
@@ -163,10 +153,7 @@ Content translations,Content translations
 Context,Context
 Conversion failed,Conversion failed
 Copied to clipboard,Copied to clipboard
-Copy From,Copy From
-Copy Highlighted,Copy Highlighted
 Copy link,Copy link
-Copy properties to this entity from,Copy properties to this entity from
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -207,13 +194,10 @@ Dashboard,Dashboard
 Data imported,Data imported
 Date added,Date added
 Date format,Date format
-Date modified,Date modified
-Day,Day
 Default,Default
 Default filter,Default filter
 Default language,Default language
 Default language change success,Default language change success
-Default template,Default template
 Default view,Default view
 Delete,Delete
 DELETE,DELETE
@@ -236,7 +220,6 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
-Description,Description
 Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -246,7 +229,6 @@ Document and entity types,Document and entity types
 Document contents,Document contents
 Document OCR trigger,Document OCR trigger
 Document Title,Document Title
-Documentation,Documentation
 documents,documents
 Documents,Documents
 documents before training (30 per topic).,documents before training (30 per topic).
@@ -271,7 +253,6 @@ Edit all documents matching this criteria,Edit all documents matching this crite
 Edit Extractor,Edit Extractor
 Edit metadata of entities,Edit metadata of entities
 Editor,Editor
-editor,editor
 Email,Email
 Email address,Email address
 Email is required,Email is required
@@ -284,13 +265,11 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
-Enable this page to be used as an entity view page:,Enable this page to be used as an entity view page:
 Enter the 6-digit verification code generated by your Authenticator app:,Enter the 6-digit verification code generated by your Authenticator app:
 Entities,Entities
 entities,entities
 Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here."
-Entity,Entity
 Entity deleted,Entity deleted
 Entity saved,Entity saved
 Entity types,Entity types
@@ -298,7 +277,6 @@ Entity updated,Entity updated
 Error,Error
 Expand all,Expand all
 Exploration,Exploration
-Export CSV,Export CSV
 Exporting entities to CSV,Exporting entities to CSV
 Extension Token,Extension Token
 Extract information from your documents,Extract information from your documents
@@ -322,7 +300,6 @@ Filters configuration,Filters
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,"select ""Create group"" below to group filters under a label e.g (""Documents ""or ""People"")"
 Filters OR operator,OR
-Find,Find
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions
 Fine tune,Fine tune
@@ -336,7 +313,6 @@ From all templates,From all templates
 Full edit mode,Full edit mode
 Full width,Full width
 General,General
-Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
@@ -346,7 +322,6 @@ Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
 Group updated,Group updated
-Groups,Groups
 help,help
 here,here
 Hide actions,Hide actions
@@ -359,10 +334,8 @@ Icon,Icon
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
 Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
-Import,Import
 Import completed,Import completed. Number of entities created:
 Import CSV,Import CSV
-Import instructions,Import instructions
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,Importing data in progress
@@ -413,12 +386,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Language
 Language Code,Language Code
 Language deleted,Language deleted
-Languages,Languages
 Last updated,Last updated
 Latitude,Latitude
 Learn more,Learn more
 Learning...,Learning...
-Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Library
 library list view,library list view
@@ -454,7 +425,6 @@ Match / Label,Match / Label
 Match / Value,Match / Value
 Matching,Matching
 Matomo Analytics,Matomo Analytics
-Members,Members
 Menu,Menu
 Message,Message
 Message sent,Message sent
@@ -470,7 +440,6 @@ Mismatch / Value,Mismatch / Value
 mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
-Month,Month
 more options.,more options.
 Multimedia fill description,"will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -484,7 +453,6 @@ Name is required,Name is required
 Name is too long,Name is too long
 Name is too short,Name is too short
 Name of the group,Name of the group
-Narrow down your searches,Narrow down your searches
 Narrow your search,Narrow your search
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
@@ -550,8 +518,6 @@ Order,Order
 Other,Other
 other,other
 out of,out of
-Page,Page
-Page Javascript,Page Javascript
 Page name,Page name
 Pages,Pages
 Password,Password
@@ -574,7 +540,6 @@ Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Press enter to add
-Preview,Preview
 Previous,Previous
 Primary Documents,Primary Documents
 Priority sorting,Priority sorting
@@ -604,9 +569,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,Protect your account
 Protection,Protection
-ProTip!,ProTip!
 Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
@@ -632,7 +595,7 @@ relationships,relationships
 Relationships,Relationships
 Relationships saved,Relationships saved
 RelationType saved,RelationType saved
-Remove,Remove
+Remote Server Unreachable,Remote Server Unreachable
 remove icon,remove icon
 Removed language,Removed language
 Rename,Rename
@@ -644,7 +607,6 @@ Required property,Required property
 Reset,Reset
 Reset 2FA,Reset 2FA
 Reset default translation,Reset default translation
-Reset Password,Reset Password
 Restricted,Restricted
 Return to login,Return to login
 Return to the thesaurus page when you finished labeling to start learning.,Return to the thesaurus page when you finished labeling to start learning.
@@ -679,12 +641,10 @@ Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Select all,Select all
 Select files on your device,Select files on your device
 Select from computer,Select from computer
 Select relationship type,Select relationship type
 Select target paragraph,Select target paragraph
-Select...,Select...
 Selected,Selected
 selected,selected
 selected of,selected of
@@ -701,28 +661,23 @@ Sending email description,This is the email address that will appear as the send
 Sending labeled data...,Sending labeled data...
 Sentences above threshold,Sentences above threshold
 Services,Services
-Set as default,Set as default
 Set default language,Set default language
 Set default template,Set default template
 Set the default starting point for your geolocation properties.,Set the default starting point for your geolocation properties.
 Settings,Settings
 settings,settings
 Settings updated,Settings updated.
-Share,Share
 Share edit access with other users,Share edit access with other users
 Share entities with the public,Share entities with the public
-Share with people and groups,Share with people and groups
 Shared as editor,Shared as editor
 Shared as viewer,Shared as viewer
 Show actions,Show actions
-Show cookie policy,Show cookie policy
 Show filters,Show filters
 Show Filters,Show Filters
 Show in cards,Show in cards
 Show more,Show more
 Show Suggestions,Show Suggestions
 Show toolbar,Show toolbar
-shown of,shown of
 Sign in,Sign in
 Single date,Single date
 Single date range,Single date range
@@ -750,7 +705,6 @@ Success,Success
 Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestions,Suggestions
-Supporting files,Supporting files
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
@@ -759,7 +713,6 @@ System translations,System translations
 Table,Table
 Table of Contents,Table of Contents
 Table of contents,Table of contents
-Table view,Table view
 Template,Template
 Template conflict,Template conflict
 Template name,Template name
@@ -775,7 +728,6 @@ The import process threw an error:,The import process threw an error:
 The request could not be processed.,The request could not be processed.
 The template contains errors,The template contains errors
 The token does not validate against the secret key!,The token does not validate against the secret key!
-There are no pages enabled for entity view,There are no pages enabled for entity view
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
@@ -789,10 +741,8 @@ This content is automatically generated,This content is automatically generated
 This entity is not public.,This entity is not public.
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
-This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,This property will be inherited from the related entities and shown as metadata of this type of entities.
 This property will be shown using all the width available.,This property will be shown using all the width available.
@@ -806,7 +756,6 @@ This will cancel the finding suggestion process,This will cancel the finding sug
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 This will update the entity across all languages,This will update the entity across all languages
 Threshold,Threshold
-Time,Time
 Timelinks,Timelinks
 Title,Title
 "To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
@@ -834,7 +783,6 @@ Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,Two-factor verification failed
-Two-step verification,Two-step verification
 Two-step verification successfully,"Congratulations!
 You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
@@ -855,10 +803,8 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
-Upload a ZIP or CSV file.,Upload a ZIP or CSV file.
 Upload and select file,Upload and select file
 Upload from computer,Upload from computer
-Upload PDF,Upload PDF
 Upload PDF(s) to create,Upload PDF(s) to create
 Uploaded attachment,Uploaded attachment
 Uploaded custom file,Uploaded custom file
@@ -881,7 +827,6 @@ Users,Users
 Using Google Authenticator,Using Google Authenticator
 Uwazi is developed by,Uwazi is developed by
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection."
-Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
@@ -909,16 +854,12 @@ with,with
 With great power comes great responsibility!,With great power comes great responsibility!
 x less,less
 x more,more
-Year,Year
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.
 You can create metadata templates in,You can create metadata templates in
 You have labeled,You have labeled
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
-You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 Your account is protected by 2fa.,Your account is protected by 2fa.
-Zoom in,Zoom in
 Zoom in library view,Zoom in library view
-Zoom out,Zoom out
 Zoom out library view,Zoom out library view

@@ -7,13 +7,11 @@ key,value
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan başlık olacaktır."
-Accept,Kabul Et
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Hesap
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
-Action,Eylem
 Activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirin
 Active languages,Active languages
 Activity log,Sistem Günlüğü
@@ -25,12 +23,10 @@ Add file,Dosya ekle
 Add from URL,URL'den ekle
 Add from web,WEB'ten ekle
 Add group,Grup ekle
-add icon,simge ekle
 Add language,Dil ekle
 Add link,Link ekle
 Add page,Sayfa ekle
 Add PDF,Add PDF
-Add people or groups,Kişi veya grup ekle
 Add properties,Add properties
 Add relationship,Add relationship
 Add relationship type,Add relationship type
@@ -52,7 +48,6 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
 Admin,Yönetici
-Administrators and Editors,Yöneticiler ve Editörler
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -84,15 +79,12 @@ Available default translation,Available default translation
 Back,Geriye git
 Back to,Geri dön
 Back to dashboard,Back to dashboard
-Back to search,Aramaya geri dön
 Back to thesauri,Thesauri'ye geri dön
 Back to thesaurus,Thesaurus'a geri dön
 Bad Request,Bad Request
 Body,Body
 Browse files to upload,Yüklenecek dosyalara göz atın
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
-Can edit,Düzenleyebilir
-Can see,Görebilir
 Can view,Görüntüleyebilir
 Cancel,İptal et
 Canceling...,Canceling...
@@ -117,13 +109,11 @@ Check to make this instance private (only logged-in users can access the data),B
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear coordinates,Koordinatları temizle
-Clear Filters,Filtreleri Temizle
 Clear PDF selection,Clear PDF selection
 Click,Click
 Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
-Collaborator,Katkı Sunan
 Collapse all,Collapse all
 Collection,Koleksiyon
 Collection name,Collection name
@@ -161,10 +151,7 @@ Content translations,Content translations
 Context,Context
 Conversion failed,Dönüştürülemedi
 Copied to clipboard,Copied to clipboard
-Copy From,Formu Kopyala
-Copy Highlighted,Vurgulananları Kopyala
 Copy link,Bağlantıyı kopyala
-Copy properties to this entity from,Özellikleri şuradan bu varlığa kopyala
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -205,13 +192,10 @@ Dashboard,Dashboard
 Data imported,İçe aktarılan veri
 Date added,Eklenme tarihi
 Date format,Tarih biçimi
-Date modified,Değiştirilme tarihi
-Day,Gün
 Default,Default
 Default filter,Default filter
 Default language,Default language
 Default language change success,Varsayılan dil değişikliği başarısı
-Default template,Varsayılan şablon
 Default view,Default view
 Delete,Sil
 DELETE,Sil
@@ -234,7 +218,6 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
-Description,Tanım
 Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -244,7 +227,6 @@ Document and entity types,Belge ve varlık türü
 Document contents,Belge içeriği
 Document OCR trigger,Document OCR trigger
 Document Title,Belge Başlığı
-Documentation,Dokümantasyon
 documents,Belgeler
 Documents,Belgeler
 documents before training (30 per topic).,eğitimden önceki belgeler (konu başına 30).
@@ -269,7 +251,6 @@ Edit all documents matching this criteria,Bu kriterlere uyan tüm belgeleri düz
 Edit Extractor,Edit Extractor
 Edit metadata of entities,Edit metadata of entities
 Editor,Editör
-editor,Editör
 Email,E-posta
 Email address,E-posta adresi
 Email is required,E-posta gerekli
@@ -282,13 +263,11 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
-Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
 Enter the 6-digit verification code generated by your Authenticator app:,"""Authenticator"" uygulamanız tarafından oluşturulan 6 haneli doğrulama kodunu girin:"
 Entities,Varlıklar
 entities,Varlıklar
 Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",Varlıklar özel bir sayfada görüntülenebilir. Bunun için Sayfalar'da özel bir sayfa oluşturulmalı ve ardından burada seçilmelidir.
-Entity,Varlık
 Entity deleted,Entity deleted
 Entity saved,Entity saved
 Entity types,Varlık türü
@@ -296,7 +275,6 @@ Entity updated,Entity updated
 Error,Hata
 Expand all,Expand all
 Exploration,Arama
-Export CSV,CSV'yi dışa aktar
 Exporting entities to CSV,Varlıkları CSV'ye dışa aktarma
 Extension Token,Extension Token
 Extract information from your documents,Belgelerinizden bilgi ayıklayın
@@ -320,7 +298,6 @@ Filters configuration,Filtreler
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Filtreler Yapılandırma Örneği
 Filters OR operator,YA DA
-Find,Bul
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions
 Fine tune,İnce ayar
@@ -334,7 +311,6 @@ From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
-Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics Kimliği
@@ -344,7 +320,6 @@ Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
 Group updated,Group updated
-Groups,Gruplar
 help,yardım
 here,here
 Hide actions,Hide actions
@@ -357,10 +332,8 @@ Icon,Simge
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
-Import,İçe aktar
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV'yi içe aktar
-Import instructions,Talimatları içe aktar
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,İçeri veri aktarma devam etmekte
@@ -411,12 +384,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Dil
 Language Code,Language Code
 Language deleted,Dil silindi
-Languages,Diller
 Last updated,Last updated
 Latitude,Enlem
 Learn more,Daha fazla bilgi edin
 Learning...,Öğreniyor...
-Legend,Gösterge
 Lengthy reindex process,Lengthy reindex process
 Library,Kütüphane
 library list view,kütüphane listesi görünümü
@@ -452,7 +423,6 @@ Match / Label,Match / Label
 Match / Value,Match / Value
 Matching,Matching
 Matomo Analytics,Matomo Analytics
-Members,Üyeler
 Menu,Menü
 Message,Mesaj
 Message sent,Message sent
@@ -468,7 +438,6 @@ Mismatch / Value,Mismatch / Value
 mismatched passwords,Passwords don't match
 Mixed access,Karma erişim
 ML TOC,ML TOC
-Month,Ay
 more options.,daha fazla seçenek.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -482,7 +451,6 @@ Name is required,Ad gerekli
 Name is too long,Ad çok uzun
 Name is too short,Ad çok kısa
 Name of the group,Grubun adı
-Narrow down your searches,Aramalarınızı daraltın
 Narrow your search,Aramanızı daraltın
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
@@ -548,8 +516,6 @@ Order,Düzen
 Other,Diğer
 other,Diğer
 out of,dışında
-Page,Sayfa
-Page Javascript,Sayfa Javascript
 Page name,Page name
 Pages,Sayfalar
 Password,Parola
@@ -572,7 +538,6 @@ Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Eklemek için enter'a basın
-Preview,Ön izleme
 Previous,Önceki
 Primary Documents,BİRİNCİL BELGELER
 Priority sorting,Öncelik sıralaması
@@ -602,9 +567,7 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,Hesabınızı Koruyun
 Protection,Koruma
-ProTip!,Uzman İpucu!
 Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
@@ -630,7 +593,7 @@ relationships,İlişkiler
 Relationships,İlişkiler
 Relationships saved,Relationships saved
 RelationType saved,İlişki türü kaydedildi
-Remove,Kaldır
+Remote Server Unreachable,Remote Server Unreachable
 remove icon,simgeyi kaldır
 Removed language,Removed language
 Rename,Yeniden adlandır
@@ -642,7 +605,6 @@ Required property,Gerekli özellik
 Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
-Reset Password,Parolayı sıfırla
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
 Return to the thesaurus page when you finished labeling to start learning.,Öğrenmeye başlamak için etiketlemeyi bitirdiğinizde Thesaurus sayfasına dönün.
@@ -677,12 +639,10 @@ Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Select all,Hepsini seç
 Select files on your device,Cihazınızdaki dosyaları seçin
 Select from computer,Select from computer
 Select relationship type,İlişki türü seç
 Select target paragraph,Hedef paragraf seç
-Select...,Seç...
 Selected,Selected
 selected,seçilmiş
 selected of,arasından seçildi
@@ -699,28 +659,23 @@ Sending email description,This is the email address that will appear as the send
 Sending labeled data...,Sending labeled data...
 Sentences above threshold,Eşik üstünde cümle
 Services,Services
-Set as default,Varsayılan olarak ayarla
 Set default language,Set default language
 Set default template,Set default template
 Set the default starting point for your geolocation properties.,Coğrafi konum özellikleriniz için varsayılan başlangıç noktasını ayarlayın.
 Settings,Ayarlar
 settings,Ayarlar
 Settings updated,Ayarlar güncellendi.
-Share,Paylaş
 Share edit access with other users,Share edit access with other users
 Share entities with the public,Share entities with the public
-Share with people and groups,Kişiler ve gruplarla paylaşın
 Shared as editor,Editör olarak paylaş
 Shared as viewer,Görüntüleyici olarak paylaş
 Show actions,Show actions
-Show cookie policy,Çerez politikasını göster
 Show filters,Filtreleri göster
 Show Filters,Show Filters
 Show in cards,Fişte göster
 Show more,Daha fazla göster
 Show Suggestions,Önerileri Göster
 Show toolbar,Show toolbar
-shown of,gösterilen
 Sign in,Oturum aç
 Single date,Single date
 Single date range,Single date range
@@ -748,7 +703,6 @@ Success,Success
 Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestions,Öneriler
-Supporting files,Destekleyici belgeler
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
@@ -757,7 +711,6 @@ System translations,System translations
 Table,Tablo
 Table of Contents,İçindekiler
 Table of contents,İçindekiler
-Table view,Tablo görünümü
 Template,Şablon
 Template conflict,Template conflict
 Template name,Template name
@@ -773,7 +726,6 @@ The import process threw an error:,İçe aktarma işlemi bir hata verdi:
 The request could not be processed.,The request could not be processed.
 The template contains errors,Şablon hatalar içeriyor
 The token does not validate against the secret key!,The token does not validate against the secret key!
-There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
@@ -787,10 +739,8 @@ This content is automatically generated,Bu içerik otomatik olarak oluşturulur
 This entity is not public.,Bu varlık açık değil.
 This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
-This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
 This property will appear in the library cards as part of the basic info.,"Bu özellik, temel bilgilerin bir parçası olarak kütüphane fişlerinde görünecektir."
 This property will be inherited from the related entities and shown as metadata of this type of entities.,"Bu özellik, ilgili varlıklardan devralınacak ve bu tür varlıkların meta verileri olarak gösterilecektir."
 This property will be shown using all the width available.,"Bu özellik, mevcut tüm genişlik kullanılarak gösterilecektir."
@@ -804,7 +754,6 @@ This will cancel the finding suggestion process,This will cancel the finding sug
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 This will update the entity across all languages,This will update the entity across all languages
 Threshold,Eşik
-Time,Saat
 Timelinks,Timelinks
 Title,Başlık
 "To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
@@ -832,7 +781,6 @@ Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,İki faktörlü doğrulama başarısız oldu
-Two-step verification,İki faktörlü doğrulama
 Two-step verification successfully,"Congratulations!
 You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
@@ -853,10 +801,8 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
-Upload a ZIP or CSV file.,Bir ZIP veya CSV dosyası yükleyin.
 Upload and select file,Dosya yükle ve seç
 Upload from computer,Bilgisayardan yükle
-Upload PDF,PDF Yükle
 Upload PDF(s) to create,Oluşturmak için PDF(leri) yükleyin
 Uploaded attachment,Uploaded attachment
 Uploaded custom file,Uploaded custom file
@@ -879,7 +825,6 @@ Users,Kullanıcılar
 Using Google Authenticator,Google Authenticator Kullanma
 Uwazi is developed by,Uwazi tarafından geliştirildi
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi etiketli belgeleri kullanarak öğreniyor. Bu işlem 2 saat kadar sürebilir ve tamamlandıktan sonra koleksiyonunuz için Uwazi tarafından yapılan önerileri inceleyebilirsiniz.
-Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
@@ -907,16 +852,12 @@ with,ile
 With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!
 x less,daha az
 x more,daha az
-Year,Yıl
 "You can also embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, çizelgeler ve varlık listeleri gibi gelişmiş bileşenleri de yerleştirebilirsiniz."
 You can also improve the model by providing more labeled documents.,Ayrıca daha fazla etiketli belge sağlayarak modeli iyileştirebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
 You have labeled,Etiketledin
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
-You should activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirmelisiniz
 Your account is protected by 2fa.,Hesabınız iki adımlı doğrulama ile korunmaktadır.
-Zoom in,Yakınlaştır
 Zoom in library view,Kütüphane görünümünü yakınlaştır
-Zoom out,Uzaklaştır
 Zoom out library view,Kütüphane görünümünü uzaklaştır

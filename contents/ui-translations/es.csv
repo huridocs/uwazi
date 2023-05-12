@@ -7,13 +7,11 @@ key,value
 2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
 2fa QA scan tip,"Escanea el siguiente código QR seleccionando la opción ""escanear código de barras"":"
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
-Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
 Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo electrónico para desbloquearla.
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Accuracy,Precisión
-Action,Acción
 Activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de tu cuenta
 Active languages,Active languages
 Activity log,Registro de actividad
@@ -25,12 +23,10 @@ Add file,Añadir archivo
 Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
 Add group,Añadir grupo
-add icon,Añadir ícono
 Add language,Añadir idioma
 Add link,Añadir enlace
 Add page,Añadir página
 Add PDF,Añadir PDF
-Add people or groups,Añadir personas o grupos
 Add properties,Añadir propiedades
 Add relationship,Añadir relación
 Add relationship type,Añadir tipo de relación
@@ -52,7 +48,6 @@ added to hub with the following errors:,añadido al nodo con los siguientes erro
 added to hub.,añadido al nodo.
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
-Administrators and Editors,Administradores y Editores.
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
@@ -84,15 +79,12 @@ Available default translation,Traducción predeterminada disponible
 Back,Volver
 Back to,Volver a
 Back to dashboard,Regresar al panel
-Back to search,Volver a la búsqueda
 Back to thesauri,Volver al Thesauri
 Back to thesaurus,Volver al Tesauro
 Bad Request,Petición incorrecta
 Body,Cuerpo
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
-Can edit,Puede editar
-Can see,Puede visualizar
 Can view,Puede visualizar
 Cancel,Cancelar
 Canceling...,Cancelando
@@ -115,13 +107,11 @@ Check to make this instance private (only logged-in users can access the data),S
 Chrome extension store link,Enlace de la tienda de extensiones de Chrome
 Clear,Limpiar
 Clear coordinates,Limpiar coordenadas
-Clear Filters,Limpiar filtros
 Clear PDF selection,Limpiar la selección PDF
 Click,Click
 Click here,Haz click aquí
 Click to fill,Click para completar
 Close,Cerrar
-Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
 Collection name,Nombre de la colección
@@ -159,10 +149,7 @@ Content translations,Traducciones de contenido
 Context,Contexto
 Conversion failed,La conversión ha fallado
 Copied to clipboard,Copiado al clipboard
-Copy From,Copiar desde
-Copy Highlighted,Copiar lo resaltado
 Copy link,Copiar enlace
-Copy properties to this entity from,Copiar las propiedades a esta entidad desde
 Copy token,Copiar token
 Could not be processed,El proceso no ha sido posible
 Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
@@ -203,13 +190,10 @@ Dashboard,Tablero
 Data imported,Datos importados
 Date added,Fecha de creación
 Date format,Formato de fecha
-Date modified,Fecha de la modificación
-Day,Día
 Default,Default
 Default filter,Filtro predeterminado
 Default language,Default language
 Default language change success,Cambio de idioma predeterminado exitoso
-Default template,Plantilla predeterminada
 Default view,Vista predeterminada
 Delete,Eliminar
 DELETE,Eliminar
@@ -232,7 +216,6 @@ Deleted thesaurus,Tesauro eliminado
 Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
-Description,Descripción
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
@@ -242,7 +225,6 @@ Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
-Documentation,Documentación
 documents,Documentos
 Documents,Documentos
 documents before training (30 per topic).,documentos antes del entrenamiento (30 por tema).
@@ -267,7 +249,6 @@ Edit all documents matching this criteria,Editar todos los documentos que coinci
 Edit Extractor,Edit Extractor
 Edit metadata of entities,Editar metadatos de entidades
 Editor,Editor
-editor,Editor
 Email,Correo electrónico
 Email address,Dirección de correo electrónico
 Email is required,La dirección de correo electrónico es obligatorio
@@ -280,13 +261,11 @@ Empty / Value,Vacío / Valor
 empty property tip,No podrás guardar una entidad si esta propiedad está vacía.
 emptyDesc,"El valor actual y la sugerencia están vacíos. Puedes dar click para llenar los valores y la selección de texto y así se convertirá en un ""vacío / etiqueta"" que será usado como ejemplo de entrenamiento."
 emptyMismatchDesc,"No hay un valor actual y el modelo está sugiriendo un valor. Aceptar la sugerencia reemplazará el valor (vacío) actual y la selección de texto con los sugeridos, convirtiéndose en un ""coincidencia / etiqueta"" que será usada como un ejemplo para el entrenamiento. Alternativamente puedes ignorar la sugerencia y dar click para ingresar la selección de texto convirtiéndose en un ""discordancia / etiqueta"" que será usada como un ejemplo para el entrenamiento."
-Enable this page to be used as an entity view page:,Habilitar a esta página para que se use como página de vista de entidad:
 Enter the 6-digit verification code generated by your Authenticator app:,Ingrese el código de verificación de 6 dígitos generado por su aplicación de autenticación
 Entities,Entidades
 entities,Entidades
 Entities across all languages,Entidades en todos los idiomas
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Las entidades se pueden mostrar en una página personalizada. Para eso, una página personalizada debe crearse en Páginas y luego seleccionarse aquí."
-Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity saved,Entidad grabada
 Entity types,Tipos de entidades
@@ -294,7 +273,6 @@ Entity updated,Entidad actualizada
 Error,Error
 Expand all,Expandir todo
 Exploration,Exploración
-Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
 Extract information from your documents,Extraer información de sus documentos
@@ -318,7 +296,6 @@ Filters configuration,Configuración de filtros
 Filters configuration description,"Por omisión, los usuarios pueden filtrar las entidades en la colección basados en los tipos que has definido. Sin embargo, puedes configurar cómo estos tipos de entidades se mostrarán."
 Filters configuration example,"selecciona Crear grupo"" a continuación, para agrupar filtros bajo una etiqueta, por ejemplo (""Documentos"" o ""Personas"")"
 Filters OR operator,OR
-Find,Encontrar
 Find suggestions,Encontrar sugerencias
 Finding suggestions,Encontrando sugerencias
 Fine tune,Afinar búsqueda
@@ -332,7 +309,6 @@ From all templates,From all templates
 Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
-Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
 Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
@@ -342,7 +318,6 @@ Group created,Grupo creado
 Group deleted,Grupo eliminado
 Group name,Nombre del grupo
 Group updated,Grupo actualizado
-Groups,Grupos
 help,ayuda
 here,aquí
 Hide actions,Ocultar acciones
@@ -355,10 +330,8 @@ Icon,Icono
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
-Import,Importar
 Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
-Import instructions,Instrucciones de importación
 Imported entities from file,Entidades importadas desde el archivo
 Imported translations from file,Traducciones importadas desde el archivo
 Importing data in progress,Importación de datos en curso
@@ -409,12 +382,10 @@ Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nom
 Language,Idioma
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
-Languages,Idiomas
 Last updated,Última actualización
 Latitude,Latitud
 Learn more,Aprender más
 Learning...,Aprendiendo...
-Legend,Leyenda
 Lengthy reindex process,Proceso de reindexación largo
 Library,Colección
 library list view,vista de lista de la colección
@@ -450,7 +421,6 @@ Match / Label,Coincidencia / Etiqueta
 Match / Value,Coincidencia / Valor
 Matching,Coincidencia
 Matomo Analytics,Analíticas de Matomo
-Members,Miembros
 Menu,Menú
 Message,Mensaje
 Message sent,Mensaje enviado
@@ -466,7 +436,6 @@ Mismatch / Value,Mismatch / Value
 mismatched passwords,Las contraseñas no coinciden
 Mixed access,Acceso mixto
 ML TOC,ML TdC
-Month,Mes
 more options.,más opciones.
 Multimedia fill description,"intentará llenar el contenedor, utilizando todo su ancho. En las tarjetas, es probable que se produzcan recortes."
 Multimedia fit description,mostrará todo el contenido multimedia dentro del contenedor.
@@ -480,7 +449,6 @@ Name is required,Se requiere el nombre
 Name is too long,El nombre es demasiado largo
 Name is too short,El nombre es muy corto
 Name of the group,Nombre del grupo
-Narrow down your searches,Reducir tus búsquedas
 Narrow your search,Reducir tu búsqueda
 Navigate back,Navegar hacia atrás
 Navigation menu tool tip part 1,"Si utilizas una URL interna de este sitio web, asegúrate de eliminar la primera parte."
@@ -546,8 +514,6 @@ Order,Orden
 Other,Otro
 other,Otro
 out of,fuera de
-Page,Página
-Page Javascript,Página JavaScript
 Page name,Nombre de la página
 Pages,Páginas
 Password,Contraseña
@@ -570,7 +536,6 @@ Preserve,Preservar
 Preserve Extension,Extensión Preservar
 Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el enlace a continuación y completa la información requerida."
 Press enter to add,Pulsa ENTER para añadir
-Preview,Previsualizar
 Previous,Anterior
 Primary Documents,Documentos primarios
 Priority sorting,Ordenamiento prioritario
@@ -600,9 +565,7 @@ property preview,Pre visualización
 property relationship,Relación
 property select,Selección
 property text,Texto
-Protect your account,Protege tu cuenta
 Protection,Protección
-ProTip!,¡Consejo avanzado!
 Public Endpoints,Destino final público
 Public entities description,AVISO: Las entidades seleccionadas serán **públicas**. Cualquier persona podrá visualizaras.
 Public form settings description,Aquí puedes configurar el destino del formulario público y la lista blanca de plantillas
@@ -628,7 +591,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
-Remove,Eliminar
+Remote Server Unreachable,Remote Server Unreachable
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
 Rename,Renombrar
@@ -640,7 +603,6 @@ Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
-Reset Password,Restablecer contraseña
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
 Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
@@ -675,12 +637,10 @@ Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
 Select,Seleccionar
-Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
 Select relationship type,Seleccionar tipo de relación
 Select target paragraph,Seleccionar párrafo de destino
-Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
@@ -697,28 +657,23 @@ Sending email description,Esta es la dirección de correo electrónico que apare
 Sending labeled data...,Enviando datos etiquetados…
 Sentences above threshold,Palabras por encima del límite
 Services,Servicios
-Set as default,Establecer como predeterminado
 Set default language,Establecer idioma predeterminado
 Set default template,Establecer plantilla predeterminada
 Set the default starting point for your geolocation properties.,Configurar el punto de inicio para la geolocalización
 Settings,Configuración
 settings,Configuración
 Settings updated,Configuración actualizada
-Share,Compartir
 Share edit access with other users,Compartir acceso de edición con otros usuarios
 Share entities with the public,Compartir entidades públicamente
-Share with people and groups,Compartir con personas o grupos
 Shared as editor,Compartido como editor
 Shared as viewer,Compartido como observador
 Show actions,Mostrar acciones
-Show cookie policy,Mostrar política de cookies
 Show filters,Mostrar filtros
 Show Filters,Show Filters
 Show in cards,Mostrar en tarjetas
 Show more,Mostrar más
 Show Suggestions,Mostrar sugerencias
 Show toolbar,Mostrar la barra de herramientas
-shown of,listados de
 Sign in,Registrarse
 Single date,Fecha única
 Single date range,Rango de fechas únicas
@@ -746,7 +701,6 @@ Success,Exito
 Suggested labels description,"Uwazi tiene etiquetas sugeridas para tu colección. Revísalas usando el botón ""Ver sugerencias"" junto a cada tema. Deshabilita las sugerencias desactivando  ""Mostrar sugerencias""."
 Suggestion,Sugerencia
 Suggestions,Sugerencias
-Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
 syncedTemplateListMessage,La fuente de esta plantilla es una sincronización. Todas las opciones de edición estarán deshabilitadas.
@@ -755,7 +709,6 @@ System translations,Traducciones del sistema
 Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
-Table view,Vista de Tabla
 Template,Plantilla
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
@@ -770,7 +723,6 @@ The import process threw an error:,El proceso de importación tiene un error.
 The request could not be processed.,La petición no pudo ser procesada.
 The template contains errors,La plantilla contiene errores
 The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
-There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
 There are no untranslated terms,No hay términos sin traducir
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,Hay cambios sin guardar. Estas seguro que quieres descartarlos y cambiar a un documento diferente?
 Thesauri,Tesauros
@@ -784,10 +736,8 @@ This content is automatically generated,Este contenido se genera automáticament
 This entity is not public.,Esta entidad no es pública.
 This entity is restricted from public view.,Esta entidad está restringida de la vista pública.
 This field is required,Este campo es obligatorio
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
-This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
 This property will appear in the library cards as part of the basic info.,Esta propiedad aparecerá en las tarjetas de la biblioteca como parte de la información básica.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,Esta propiedad será heredada desde las entidades relacionadas y se mostrará como metadato de este tipo de entidad.
 This property will be shown using all the width available.,Esta propiedad se mostrará utilizando todo el espacio disponible.
@@ -801,7 +751,6 @@ This will cancel the finding suggestion process,Esto cancelará el proceso de b�
 This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
 This will update the entity across all languages,Esto actualizará la entidad en todos los idiomas
 Threshold,Límite
-Time,Tiempo
 Timelinks,Líneas de tiempo
 Title,Título
 "To bring you a better experience, this site uses cookies.","Para una mejor experiencia de usuario, este sitio utiliza cookies."
@@ -829,7 +778,6 @@ Two-factor authentication enabled,Doble factor de autenticación habilitado
 Two-factor authentication failed.,Doble factor de autenticación fallido.
 Two-factor authentication secret,Secreto doble factor autenticación
 Two-factor verification failed,Fallo en la verificación del doble factor de autenticación
-Two-step verification,Verificación de dos pasos.
 Two-step verification successfully,"¡Felicidades!
 Has configurado con éxito la verificación de dos pasos."
 Two-step verification token required,El token de verificación es obligatorio
@@ -850,10 +798,8 @@ Updated relationships,Relaciones actualizadas
 Updated settings,Configuración actualizada
 Updated translations,Traducciones actualizadas
 Updated user,Usuario actualizado
-Upload a ZIP or CSV file.,Subir un archivo ZIP o CSV.
 Upload and select file,Sube y selecciona un archivo
 Upload from computer,Subir desde la computadora
-Upload PDF,Subir PDF
 Upload PDF(s) to create,Subir PDFs
 Uploaded attachment,Archivo adjunto cargado
 Uploaded custom file,Archivo personalizado cargado
@@ -876,7 +822,6 @@ Users,Usuarios
 Using Google Authenticator,Usando Google Authenticator
 Uwazi is developed by,Uwazi es desarrollado por
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi está aprendiendo a utilizar documentos con etiquetas. Este proceso puede tomar hasta 2 horas y una vez completo, podrás revisar las sugerencias realizadas por Uwazi para tu colección."
-Uwazi UI,Uwazi UI
 Value,valor
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 valueEmptyDesc,"Aceptar no está disponible porque no hay ninguna sugerencia. Si el valor es correcto, aún puedes hacer click para completar la selección de texto, para que se convierta en una ""etiqueta/discordancia"" que se usará como muestra de entrenamiento."
@@ -904,16 +849,12 @@ with,con
 With great power comes great responsibility!,"¡Con un gran poder, viene una gran responsabilidad!"
 x less,menos
 x more,más
-Year,Año
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also improve the model by providing more labeled documents.,Puedes mejorar el modelo proporcionando más documentos con etiquetas.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
 You have labeled,Has etiquetado
 "You have not connected an Uwazi instance, yet","No has conectado una instancia Uwazi, todavía"
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
-You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
 Your account is protected by 2fa.,Tu cuenta está protegida por 2FA.
-Zoom in,Aumentar zoom
 Zoom in library view,Aumentar zoom en la colección
-Zoom out,Reducir zoom
 Zoom out library view,Reducir zoom en la colección
