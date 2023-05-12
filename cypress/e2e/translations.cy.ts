@@ -91,7 +91,7 @@ describe('Translations', () => {
       cy.get('input[id=en]').clear();
       cy.get('input[id=en]').type('Filtering');
       cy.contains('button', 'Submit').click();
-      cy.get('[data-testid=modal]').should('not.be.visible');
+      cy.get('[data-testid=modal]').should('not.exist');
     });
 
     it('should deactive the live translate and check the translatations in english and spanish', () => {
