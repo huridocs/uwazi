@@ -29,7 +29,7 @@ const WithHeading = Template.bind({});
 const WithDetails = Template.bind({});
 
 Basic.args = {
-  type: 'sucess',
+  type: 'success',
   text: `This is the text for the notification with a rather larger text that should eventually break to a new line. Then it has even more text.
   Then it has a next line because it's a long text. Then it has even more text.`,
   details: '',

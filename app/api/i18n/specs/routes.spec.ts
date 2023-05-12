@@ -247,10 +247,23 @@ describe('i18n translations routes', () => {
       it('should return the saved translation', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
-        const response = await request(app).post('/api/translations/languages').send({
-          key: 'ch',
-          label: 'Chinese',
-        });
+        backend.get(
+          (url, opts) =>
+            url ===
+              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/jp.csv' &&
+            // @ts-ignore
+            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
+            // @ts-ignore
+            opts?.headers?.accept === 'application/vnd.github.v4.raw',
+          { status: 404 }
+        );
+
+        const response = await request(app)
+          .post('/api/translations/languages')
+          .send([
+            { key: 'ch', label: 'Chinese' },
+            { key: 'jp', label: 'Japanese' },
+          ]);
 
         const newSettings = {
           _id: expect.anything(),
@@ -272,6 +285,11 @@ describe('i18n translations routes', () => {
               key: 'ch',
               label: 'Chinese',
             },
+            {
+              _id: expect.anything(),
+              key: 'jp',
+              label: 'Japanese',
+            },
           ],
           mapStartingPoint: [
             {
@@ -284,7 +302,6 @@ describe('i18n translations routes', () => {
         };
         expect(response.body).toEqual(newSettings);
         expect(iosocket.emit.mock.calls).toEqual([
-          ['updateSettings', newSettings],
           [
             'translationsChange',
             {
@@ -315,6 +332,37 @@ describe('i18n translations routes', () => {
               __v: 0,
             },
           ],
+          [
+            'translationsChange',
+            {
+              locale: 'jp',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'User Interface',
+                  type: 'Uwazi UI',
+                  values: [
+                    {
+                      key: 'Search',
+                      value: 'Search',
+                      _id: expect.anything(),
+                    },
+                  ],
+                  _id: expect.anything(),
+                },
+                {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: [{ key: 'title', value: 'Template 1', _id: expect.anything() }],
+                  _id: expect.anything(),
+                },
+              ],
+              _id: expect.anything(),
+              __v: 0,
+            },
+          ],
+          ['updateSettings', newSettings],
         ]);
       });
     });

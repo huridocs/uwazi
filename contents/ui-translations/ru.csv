@@ -15,7 +15,7 @@ Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
 Action,Действие
 Activate this feature for enhanced account security,"Активируйте эту функцию, чтобы укрепить безопасность учетной записи"
-Active Languages,Активные языки
+Active languages,Active languages
 Activity log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
@@ -81,7 +81,6 @@ Auto-save,Автосохранение
 Automatic Table of Contents,Автоматическое оглавление
 Automatically generated,Генерируется автоматически
 Available default translation,Available default translation
-Available Languages,Доступные языки
 Back,Назад
 Back to,Назад к
 Back to dashboard,Вернуться к приборной панели
@@ -132,7 +131,6 @@ Configure templates,Configure templates
 Confirm,Подтвердить
 CONFIRM,Подтвердить
 Confirm action,Confirm action
-Confirm add,Confirm add
 Confirm delete connection,Confirm delete connection
 Confirm delete multiple items,Подтвердить удаление нескольких элементов
 confirm delete template,"Are you sure you want to delete this entity type?
@@ -149,7 +147,6 @@ Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Подтвердите новый пароль
 Confirm publish multiple items,Подтвердить публикацию нескольких элементов
-Confirm reset translation,Confirm reset translation
 Confirm suggestion acceptance,Подвердить принятие предложения
 Connect to a document,Подключиться к документу
 Connect to a paragraph,Подключиться к абзацу
@@ -207,7 +204,9 @@ Date added,Дата добавления
 Date format,Формат даты
 Date modified,Дата изменена
 Day,День
+Default,Default
 Default filter,Default filter
+Default language,Default language
 Default language change success,Изменение языка по умолчанию прошло успешно
 Default template,Шаблон по умолчанию
 Default view,Default view
@@ -217,7 +216,6 @@ Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
 Delete Group,Удалить группу
 Delete language,Удалить язык
-delete language warning,"This action may take some time, can not be undone and will delete all the information in that language."
 Delete Property,Удалить свойство
 Deleted attachment,Deleted attachment
 Deleted custom file,Deleted custom file
@@ -372,7 +370,9 @@ Info,Информация
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Перенять свойство
+Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language(s),Install language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Установите приложение Google Authenticator на своем мобильном устройстве
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -561,6 +561,7 @@ Permission on entities explicitly shared with the user,"Разрешение н�
 Permissions,Разрешения
 Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
+Please type in,Please type in
 Please type in letters and numbers from the image to start the export.,"Пожалуйста, введите буквы и цифры с изображения для того, чтобы начать экспорт."
 Precision,Точность
 Preserve,Preserve
@@ -638,7 +639,6 @@ Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
-reset language warning,Are you sure you want to reset translation for this language?
 Reset Password,Сбросить пароль
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
@@ -674,13 +674,13 @@ Search Tips: proximity,Советы по поиску: близость
 Search Tips: wildcard,Советы по поиску: подстановочный знак
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
-Selected,Selected
 Select all,Выбрать все
 Select files on your device,Выбрать файлы на вашем устройстве
 Select from computer,Select from computer
 Select relationship type,Выберите тип взаимосвязей
 Select target paragraph,Выберите целевой абзац
 Select...,Выбрать...
+Selected,Selected
 selected,выбранный
 selected of,выбран из
 Semantic search,Семантический поиск
@@ -777,7 +777,6 @@ Thesauri,Предметный указатель
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Предметный указатель сохранен
-This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Эта область позволяет добавить пользовательский JavaScript на страницу. Это откроет большую сферу новых возможностей.
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Этот контент генерируется автоматически
@@ -835,6 +834,8 @@ You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,Тип
 Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
 Unlink,Unlink
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов
 Untranslated Terms,Untranslated Terms
