@@ -78,6 +78,11 @@ describe('ThesaurisList', () => {
           ],
         },
       ]),
+      locale: 'en',
+      languages: Immutable.fromJS([
+        { _id: 1, key: 'en', default: true },
+        { _id: 2, key: 'es' },
+      ]),
     };
   });
 
