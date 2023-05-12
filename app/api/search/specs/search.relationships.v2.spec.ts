@@ -23,6 +23,9 @@ beforeEach(async () => {
           fixturesFactory.property('relProp3', 'newRelationship', {
             query: [],
           }),
+          fixturesFactory.property('nullprop', 'newRelationship', {
+            query: [],
+          }),
         ]),
         fixturesFactory.template('template2', [fixturesFactory.property('textProp1', 'text', {})]),
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
@@ -56,6 +59,8 @@ beforeEach(async () => {
                 inheritedType: 'text',
               },
             ],
+            // @ts-ignore
+            nullprop: null,
           },
           { published: true }
         ),
