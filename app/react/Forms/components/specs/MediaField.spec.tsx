@@ -156,5 +156,14 @@ describe('MediaField', () => {
         });
       });
     });
+
+    it('should show and error if the image is not valid', async () => {
+      render(imageProps);
+      const img = renderResult.container.getElementsByTagName('img')[0];
+      fireEvent.error(img);
+      expect(
+        await screen.findByText('This file type is not supported on media fields')
+      ).toBeInTheDocument();
+    });
   });
 });
