@@ -42,7 +42,6 @@ describe('TwitterIntegration', () => {
       uploadedDocuments: `${__dirname}/uploads`,
       attachments: `${__dirname}/uploads`,
       customUploads: `${__dirname}/uploads`,
-      temporalFiles: `${__dirname}/uploads`,
       activityLogs: `${__dirname}/uploads`,
     };
 

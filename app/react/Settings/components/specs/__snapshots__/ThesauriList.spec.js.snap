@@ -42,13 +42,6 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
               >
                 Continents
               </Link>
-                (
-              <Connect(Translate)
-                context="thesaurusUnderscoreId1"
-              >
-                Continents
-              </Connect(Translate)>
-              )
             </th>
             <td>
               <div
@@ -108,13 +101,6 @@ exports[`ThesaurisList render should match the snapshot 1`] = `
               >
                 Issues
               </Link>
-                (
-              <Connect(Translate)
-                context="thesaurusUnderscoreId2"
-              >
-                Issues
-              </Connect(Translate)>
-              )
             </th>
             <td>
               <div

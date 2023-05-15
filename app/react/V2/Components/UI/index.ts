@@ -4,9 +4,9 @@ import { NavigationHeader } from './NavigationHeader';
 import { Pill } from './Pill';
 import { Table } from './Table';
 import { ToggleButton } from './ToggleButton';
-import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
 import { Sidepanel } from './Sidepanel';
+import { SearchMultiselect } from './SearchMultiSelect';
 
 export {
   Button,
@@ -15,7 +15,7 @@ export {
   Pill,
   Table,
   ToggleButton,
-  ModalContainer,
   NotificationsContainer,
   Sidepanel,
+  SearchMultiselect,
 };

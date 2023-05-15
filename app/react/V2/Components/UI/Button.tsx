@@ -8,6 +8,7 @@ interface ButtonProps {
   disabled?: boolean;
   formId?: string;
   onClick?: MouseEventHandler;
+  className?: string;
 }
 
 const Button = ({
@@ -18,6 +19,7 @@ const Button = ({
   disabled,
   formId,
   onClick,
+  className = '',
 }: ButtonProps) => {
   let classNames;
   const textStyles = size === 'small' ? 'text-xs px-3 py-1.5' : 'text-sm px-5 py-2.5';
@@ -48,7 +50,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       className={`${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200`}
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 ${className}`}
       form={formId}
     >
       {children}

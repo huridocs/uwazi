@@ -35,7 +35,7 @@ async function getRelationshipsV2PRocessor() {
   return hit => {
     const mappedMetadata = {};
     Object.keys(hit._source.metadata || {}).forEach(propertyName => {
-      mappedMetadata[propertyName] = hit._source.metadata[propertyName].map(
+      mappedMetadata[propertyName] = (hit._source.metadata[propertyName] || []).map(
         ({ originalValue, ...rest }) => {
           if (originalValue) {
             return { ...originalValue, inheritedValue: [rest] };
