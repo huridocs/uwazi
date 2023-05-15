@@ -23,8 +23,29 @@ describe('MultiSelect', () => {
 
   it('should close when clicking outside of the component', () => {
     cy.get('[data-testid="multiselect-comp"] button').click();
-    cy.get('Multiselect component').click();
+    cy.contains('h1', 'Multiselect component').click();
     cy.get('ul li').should('not.exist');
+  });
+
+  it('should not close when clicking elements within the component', () => {
+    cy.get('[data-testid="multiselect-comp"] button').click();
+    cy.get('ul li').get('input').eq(1).click();
+    cy.get('ul li').get('input').eq(2).click();
+
+    cy.contains('div', 'Groups').click();
+    cy.get('[data-testid="pill-comp"]')
+      .eq(0)
+      .within(() => {
+        cy.get('button').click();
+      });
+
+    cy.get('ul li').should('have.length', 4);
+  });
+
+  it('should position the menu inside the viewport', () => {
+    cy.viewport('iphone-6');
+    cy.get('[data-testid="multiselect-comp"] button').click();
+    cy.get('ul li').should('have.length', 4);
   });
 
   describe('Main area', () => {

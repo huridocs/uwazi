@@ -3,6 +3,7 @@ import { Translate } from 'app/I18N';
 import { Checkbox } from 'flowbite-react';
 import React, { useRef, useState } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import { useOnClickOutside } from 'V2/shared/useOnClickOutside';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string };
@@ -21,10 +22,7 @@ interface ContextMenuProps {
   onOptionSelected: (options: ContextOption[]) => void;
 }
 
-const ContextMenuBase = (
-  { options, show, location, onOptionSelected }: ContextMenuProps,
-  ref: any
-) =>
+const ContextMenuBase = ({ options, show, location, onOptionSelected }: ContextMenuProps, ref) =>
   show ? (
     <ul
       ref={ref}
@@ -66,16 +64,22 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
   const [innerOptions, setInnerOptions] = useState<ContextOption[]>(
     options.map(opt => ({ ...opt, selected: false }))
   );
-
   const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [menu, showMenu] = useState(false);
   const contextMenuRef = useRef<HTMLLIElement>();
+  const containerRef = useRef(null);
   const MENU_OFFSET = 15;
 
   const getSelectedOptions = () => innerOptions.filter(opt => opt.selected);
 
+  useOnClickOutside<HTMLDivElement>(containerRef, () => showMenu(false));
+
   return (
-    <div className="border rounded-lg border-gray-50" data-testid="multiselect-comp">
+    <div
+      className="border rounded-lg border-gray-50"
+      data-testid="multiselect-comp"
+      ref={containerRef}
+    >
       <div className="border-b border-gray-50 bg-gray-50 p-4 flex justify-between">
         <div className="text-indigo-700 text-base">{label}</div>
         <div className="left-0">
@@ -84,11 +88,6 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
             className="text-indigo-700"
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
               setTimeout(() => {
-                // Viewport width
-                // @ts-ignore
-                const totalWidth = e.view.innerWidth;
-                // @ts-ignore
-                const totalHeight = e.view.innerHeight;
                 const contextMenuWidth = contextMenuRef.current?.clientWidth;
                 const contextMenuHeight = contextMenuRef.current?.clientHeight;
 
@@ -97,15 +96,10 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
                 let x = e.clientX;
                 let y = e.clientY;
 
-                if (x + contextMenuWidth > totalWidth) {
-                  // Context menu will go out of the viewport
-                  x -= contextMenuWidth + MENU_OFFSET; // Display CM offset towards the view port
-                }
+                if (x + contextMenuWidth > e.view.innerWidth) x -= contextMenuWidth + MENU_OFFSET;
 
-                if (y + contextMenuHeight > totalHeight) {
-                  // Context menu will go out of the viewport
-                  y = -y; // Display CM offset towards the view port
-                }
+                if (y + contextMenuHeight > e.view.innerHeight) y = -y;
+
                 setMenuLocation({ x: x + MENU_OFFSET, y: y + MENU_OFFSET });
               }, 0);
               showMenu(!menu);
@@ -154,4 +148,5 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
   );
 };
 
+export type { MultiSelectProps };
 export { MultiSelect };
