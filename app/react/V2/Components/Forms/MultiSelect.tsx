@@ -8,7 +8,7 @@ type Option = { label: string; value: string };
 type ContextOption = Option & { selected: boolean };
 
 interface MultiSelectProps {
-  label: String;
+  label: String | React.ReactNode;
   options: Option[];
   onOptionSelected: (options: Option[]) => void;
 }
@@ -34,7 +34,7 @@ const ContextMenuBase = (
         left: `${location.x}px`,
         boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
       }}
-      className="min-w-fit bg-white border-4 rounded-md p-4 font-medium  absolute flex flex-col"
+      className="min-w-fit bg-white rounded-md p-4 font-medium  absolute flex flex-col"
     >
       {options.map((option: ContextOption) => (
         <li key={option.label} className="py-1">
