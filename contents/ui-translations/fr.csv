@@ -7,11 +7,13 @@ key,value
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,Un identifiant généré sera le titre par défaut.
+Accept,Accept
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Compte
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Accuracy,Accuracy
+Action,Action
 Activate this feature for enhanced account security,Activez cette fonction pour renforcer la sécurité du compte
 Active languages,Active languages
 Activity log,Journal d'activité
@@ -23,10 +25,12 @@ Add file,Ajouter le fichier
 Add from URL,Ajouter à partir d'une url
 Add from web,Ajouter à partir du web
 Add group,Ajouter un groupe
+add icon,add icon
 Add language,Ajouter une langue
 Add link,Ajouter un lien
 Add page,Ajouter une page
 Add PDF,Add PDF
+Add people or groups,Add people or groups
 Add properties,Add properties
 Add relationship,Add relationship
 Add relationship type,Add relationship type
@@ -48,6 +52,7 @@ added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
+Administrators and Editors,Administrators and Editors
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -79,12 +84,15 @@ Available default translation,Available default translation
 Back,Retour
 Back to,Retour à
 Back to dashboard,Retour au tableau de bord
+Back to search,Back to search
 Back to thesauri,Retour aux thésaurus
 Back to thesaurus,Retour au thésaurus
 Bad Request,Bad Request
 Body,Corps
 Browse files to upload,Parcourir les fichiers à télécharger
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+Can edit,Can edit
+Can see,Can see
 Can view,Peut voir
 Cancel,Annuler
 Canceling...,Canceling...
@@ -108,11 +116,13 @@ Check to make this instance private (only logged-in users can access the data),C
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear coordinates,Effacer les coordonnées
+Clear Filters,Clear Filters
 Clear PDF selection,Clear PDF selection
 Click,Click
 Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
+Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
 Collection name,Nom de la collection
@@ -150,7 +160,10 @@ Content translations,Content translations
 Context,Context
 Conversion failed,Échec de la conversion
 Copied to clipboard,Copied to clipboard
+Copy From,Copy From
+Copy Highlighted,Copy Highlighted
 Copy link,Copier le lien
+Copy properties to this entity from,Copy properties to this entity from
 Copy token,Copy token
 Could not be processed,N'a pas pu être traité
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -191,10 +204,13 @@ Dashboard,Dashboard
 Data imported,Données importées
 Date added,Date ajoutée
 Date format,Format de date
+Date modified,Date modified
+Day,Day
 Default,Default
 Default filter,Default filter
 Default language,Default language
 Default language change success,Succès du changement de langue par défaut
+Default template,Default template
 Default view,Default view
 Delete,Effacer
 DELETE,Effacer
@@ -217,6 +233,7 @@ Deleted thesaurus,Deleted thesaurus
 Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
+Description,Description
 Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -226,6 +243,7 @@ Document and entity types,Types de documents et d'entités
 Document contents,Contenu du document
 Document OCR trigger,Document OCR trigger
 Document Title,Titre du document
+Documentation,Documentation
 documents,Documents
 Documents,Documents
 documents before training (30 per topic).,documents avant la formation (30 par sujet).
@@ -250,6 +268,7 @@ Edit all documents matching this criteria,Modifier tous les documents correspond
 Edit Extractor,Edit Extractor
 Edit metadata of entities,Edit metadata of entities
 Editor,Éditeur
+editor,editor
 Email,E-mail
 Email address,Adresse e-mail
 Email is required,L'email est obligatoire
@@ -262,11 +281,13 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable this page to be used as an entity view page:,Enable this page to be used as an entity view page:
 Enter the 6-digit verification code generated by your Authenticator app:,Saisissez le code de vérification à 6 chiffres généré par votre application d'authentification :
 Entities,Entités
 entities,Entités
 Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Les entités peuvent être affichées dans une page personnalisée. Pour cela, une page personnalisée doit être créée dans Pages, puis sélectionnée ici."
+Entity,Entity
 Entity deleted,Entity deleted
 Entity saved,Entity saved
 Entity types,Types d'entités
@@ -274,6 +295,7 @@ Entity updated,Entity updated
 Error,Erreur
 Expand all,Expand all
 Exploration,Exploration
+Export CSV,Export CSV
 Exporting entities to CSV,Exporter des entités vers CSV
 Extension Token,Extension Token
 Extract information from your documents,Extraire des informations de vos documents
@@ -297,6 +319,7 @@ Filters configuration,Configuration des filtres
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Exemple de configuration des filtres
 Filters OR operator,OU
+Find,Find
 Find suggestions,Trouver des suggestions
 Finding suggestions,Finding suggestions
 Fine tune,Ajuster
@@ -310,6 +333,7 @@ From all templates,From all templates
 Full edit mode,Mode d'édition complet
 Full width,Full width
 General,Général
+Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,Indentifiant Google Analytics
@@ -319,6 +343,7 @@ Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
 Group updated,Group updated
+Groups,Groups
 help,Aide
 here,here
 Hide actions,Hide actions
@@ -331,8 +356,10 @@ Icon,Icône
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si c'est une URL externe, utilisez une URL complète. Par exemple, http://www.uwazi.io."
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
+Import,Import
 Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
+Import instructions,Import instructions
 Imported entities from file,Imported entities from file
 Imported translations from file,Imported translations from file
 Importing data in progress,Importation de données en cours
@@ -383,10 +410,12 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Langue
 Language Code,Language Code
 Language deleted,Language deleted
+Languages,Languages
 Last updated,Last updated
 Latitude,Latitude
 Learn more,Learn more
 Learning...,Learning...
+Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
@@ -422,6 +451,7 @@ Match / Label,Match / Label
 Match / Value,Match / Value
 Matching,Matching
 Matomo Analytics,Matomo Analytics
+Members,Members
 Menu,Menu
 Message,Message
 Message sent,Message sent
@@ -437,6 +467,7 @@ Mismatch / Value,Mismatch / Value
 mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
+Month,Month
 more options.,plus d'options.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -450,6 +481,7 @@ Name is required,Name is required
 Name is too long,Name is too long
 Name is too short,Name is too short
 Name of the group,Name of the group
+Narrow down your searches,Narrow down your searches
 Narrow your search,Narrow your search
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
@@ -515,6 +547,8 @@ Order,Organiser par
 Other,Autre
 other,Autre
 out of,hors de
+Page,Page
+Page Javascript,Page Javascript
 Page name,Page name
 Pages,Pages
 Password,Mot de passe
@@ -537,6 +571,7 @@ Preserve,Preserve
 Preserve Extension,Preserve Extension
 Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
 Press enter to add,Appuyez sur la touche Entrée pour ajouter
+Preview,Preview
 Previous,Précédent
 Primary Documents,Documents principaux
 Priority sorting,Tri prioritaire
@@ -566,7 +601,9 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
+Protect your account,Protect your account
 Protection,Protection
+ProTip!,ProTip!
 Public Endpoints,Points de terminaison publics
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
@@ -592,7 +629,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
-Remote Server Unreachable,Remote Server Unreachable
+Remove,Remove
 remove icon,Supprimer l'icône
 Removed language,Removed language
 Rename,Renommer
@@ -604,6 +641,7 @@ Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
+Reset Password,Reset Password
 Restricted,Limité
 Return to login,Retourner à la connexion
 Return to the thesaurus page when you finished labeling to start learning.,Revenez à la page du thésaurus lorsque vous avez terminé l'étiquetage pour commencer à apprendre.
@@ -638,10 +676,12 @@ Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
 secret key recommendation,(please keep this key secret and don't share it):
 Select,Select
+Select all,Select all
 Select files on your device,Sélectionnez les fichiers sur votre appareil
 Select from computer,Select from computer
 Select relationship type,Sélectionner le type de relation
 Select target paragraph,Sélectionner le paragraphe cible
+Select...,Select...
 Selected,Selected
 selected,Sélectionné
 selected of,sélectionné sur
@@ -658,23 +698,28 @@ Sending email description,This is the email address that will appear as the send
 Sending labeled data...,Sending labeled data...
 Sentences above threshold,Phrases au-dessus du seuil
 Services,Services
+Set as default,Set as default
 Set default language,Set default language
 Set default template,Set default template
 Set the default starting point for your geolocation properties.,Définissez le point de départ par défaut pour vos propriétés de géolocalisation.
 Settings,Paramètres
 settings,Paramètres
 Settings updated,Paramètres mis à jour
+Share,Share
 Share edit access with other users,Share edit access with other users
 Share entities with the public,Share entities with the public
+Share with people and groups,Share with people and groups
 Shared as editor,Partagé en tant qu'éditeur
 Shared as viewer,Partagé en tant que visualisateur
 Show actions,Show actions
+Show cookie policy,Show cookie policy
 Show filters,Afficher les filtres
 Show Filters,Show Filters
 Show in cards,Afficher sur les cartes
 Show more,Afficher plus
 Show Suggestions,Afficher les suggestions
 Show toolbar,Show toolbar
+shown of,shown of
 Sign in,S'identifier
 Single date,Single date
 Single date range,Single date range
@@ -702,6 +747,7 @@ Success,Success
 Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestions,Suggestions
+Supporting files,Supporting files
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
 syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
@@ -710,6 +756,7 @@ System translations,System translations
 Table,Tableau
 Table of Contents,Table des matières
 Table of contents,Table des matières
+Table view,Table view
 Template,Modèle
 Template conflict,Template conflict
 Template name,Template name
@@ -725,6 +772,7 @@ The import process threw an error:,Le processus d'importation a généré une er
 The request could not be processed.,The request could not be processed.
 The template contains errors,Le modèle contient des erreurs
 The token does not validate against the secret key!,The token does not validate against the secret key!
+There are no pages enabled for entity view,There are no pages enabled for entity view
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
@@ -738,8 +786,10 @@ This content is automatically generated,Ce contenu est généré automatiquement
 This entity is not public.,Cette entité n'est pas publique.
 This entity is restricted from public view.,Cette entité n'est pas accessible au public.
 This field is required,This field is required
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This property will appear in the library cards as part of the basic info.,Cette propriété apparaîtra dans les cartes de bibliothèque comme faisant partie des informations de base.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,Cette propriété sera héritée des entités liées et affichée comme métadonnées de ce type d'entités.
 This property will be shown using all the width available.,Cette propriété sera affichée en utilisant toute la largeur disponible.
@@ -753,6 +803,7 @@ This will cancel the finding suggestion process,This will cancel the finding sug
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 This will update the entity across all languages,This will update the entity across all languages
 Threshold,Seuil
+Time,Time
 Timelinks,Timelinks
 Title,Titre
 "To bring you a better experience, this site uses cookies.","Pour vous apporter une meilleure expérience, ce site utilise des cookies."
@@ -780,6 +831,7 @@ Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,Échec de la vérification à deux facteurs
+Two-step verification,Two-step verification
 Two-step verification successfully,"Congratulations!
 You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
@@ -800,8 +852,10 @@ Updated relationships,Updated relationships
 Updated settings,Updated settings
 Updated translations,Updated translations
 Updated user,Updated user
+Upload a ZIP or CSV file.,Upload a ZIP or CSV file.
 Upload and select file,Télécharger et sélectionner le fichier
 Upload from computer,Télécharger à partir de l'ordinateur
+Upload PDF,Upload PDF
 Upload PDF(s) to create,Télécharger le(s) PDF à créer
 Uploaded attachment,Uploaded attachment
 Uploaded custom file,Uploaded custom file
@@ -824,6 +878,7 @@ Users,Utilisateurs
 Using Google Authenticator,Utilisation de Google Authenticator
 Uwazi is developed by,Uwazi est développé par
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi apprend en utilisant les documents étiquetés. Cela peut prendre jusqu'à 2 heures, et une fois terminé, vous pouvez revoir les suggestions faites par Uwazi pour votre collection."
+Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
 valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
@@ -851,12 +906,16 @@ with,avec
 With great power comes great responsibility!,De grands pouvoirs impliquent de grandes responsabilités !
 x less,x en moins
 x more,x en plus
+Year,Year
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also improve the model by providing more labeled documents.,Vous pouvez également améliorer le modèle en fournissant davantage de documents étiquetés.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
 You have labeled,Vous avez étiqueté
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
 Your account is protected by 2fa.,Votre compte est protégé par 2fa.
+Zoom in,Zoom in
 Zoom in library view,Zoom avant sur la vue de la bibliothèque
+Zoom out,Zoom out
 Zoom out library view,Zoom arrière sur la vue de la bibliothèque
