@@ -170,6 +170,10 @@ export default {
       return Promise.reject(createError('Can not change your own role', 403));
     }
 
+    if (user.username && user.username.includes(' ')) {
+      return Promise.reject(createError('Usernames can not contain spaces.', 400));
+    }
+
     const { using2fa, secret, ...userToSave } = user;
 
     const updatedUser = await model.save({
@@ -189,6 +193,9 @@ export default {
       model.get({ username: user.username }),
       model.get({ email: user.email }),
     ]);
+    if (user.username && user.username.includes(' ')) {
+      return Promise.reject(createError('Usernames can not contain spaces.', 400));
+    }
     if (userNameMatch.length || emailMatch.length) {
       const message = userNameMatch.length ? 'Username already exists' : 'Email already exists';
       return Promise.reject(createError(message, 409));

@@ -300,6 +300,26 @@ describe('storage', () => {
     });
 
     describe('when onlyS3 is active', () => {
+      describe('when type is segmentation', () => {
+        it('should store it on a segmentation folder inside uploads path', async () => {
+          testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true, onlyS3: true } });
+          await storage.storeFile(
+            'file_created.txt',
+            createReadStream(uploadsPath('documento.txt')),
+            'segmentation'
+          );
+
+          const s3File = await s3.send(
+            new GetObjectCommand({
+              Bucket: 'uwazi-development',
+              Key: 'tenant1/uploads/segmentation/file_created.txt',
+            })
+          );
+          // @ts-ignore
+          expect(await streamToString(s3File.Body)).toBe('content created\n');
+        });
+      });
+
       it('should store it on s3 only', async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true, onlyS3: true } });
         await storage.storeFile(

@@ -19,10 +19,10 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
-import { ConfirmationModal, TranslationsTables } from 'V2/Components/Translations';
+import { ConfirmNavigationModal, TranslationsTables } from 'V2/Components/Translations';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
-import { notificationAtom, modalAtom, showModalAtom } from 'V2/atoms';
+import { notificationAtom } from 'V2/atoms';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -162,11 +162,10 @@ const EditTranslations = () => {
   };
 
   const [hideTranslated, setHideTranslated] = useState(false);
-  const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
   const fetcher = useFetcher();
   const setNotifications = useSetRecoilState(notificationAtom);
-  const setModal = useSetRecoilState(modalAtom);
-  const setShowModal = useSetRecoilState(showModalAtom);
+  const [showModal, setShowModal] = useState(false);
+  const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
@@ -190,13 +189,9 @@ const EditTranslations = () => {
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
-      setModal({
-        size: 'md',
-        children: <ConfirmationModal setShowModal={setShowModal} navigate={blocker.proceed} />,
-      });
       setShowModal(true);
     }
-  }, [blocker, setModal, setShowModal]);
+  }, [blocker, setShowModal]);
 
   useEffect(() => {
     if (fetcher.data instanceof FetchResponseError) {
@@ -209,14 +204,14 @@ const EditTranslations = () => {
 
     if (fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data)) {
       setNotifications({
-        type: 'sucess',
+        type: 'success',
         text: <Translate>Translations saved</Translate>,
       });
     }
 
     if (fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data)) {
       setNotifications({
-        type: 'sucess',
+        type: 'success',
         text: <Translate>Translations imported.</Translate>,
       });
     }
@@ -333,6 +328,9 @@ const EditTranslations = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };
