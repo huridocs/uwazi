@@ -75,7 +75,7 @@ class DocumentSidePanel extends Component {
     return defaultDocumentToC;
   }
 
-  updateRelationships(sharedId) {
+  async updateRelationships(sharedId) {
     if (sharedId && this.props.connectionsChanged && getDocumentReferences) {
       this.props.getDocumentReferences(sharedId, this.props.file._id, this.props.storeKey);
       this.props.connectionsChanged(sharedId);
