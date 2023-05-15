@@ -630,6 +630,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
 remove icon,ลบไอคอน
 Removed language,Removed language
@@ -789,7 +790,6 @@ This content is automatically generated,เนื้อหานี้ถูก�
 This entity is not public.,รายการนี้ไม่ได้เปิดการเข้าถึงแบบสาธารณะ
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.

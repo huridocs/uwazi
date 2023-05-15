@@ -627,6 +627,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
 remove icon,удалить иконку
 Removed language,Removed language
@@ -784,7 +785,6 @@ This content is automatically generated,Этот контент генериру
 This entity is not public.,Этот объект не является общедоступным.
 This entity is restricted from public view.,Этот объект ограничен для общедоступного просмотра.
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.

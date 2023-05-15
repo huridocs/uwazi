@@ -629,6 +629,7 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
 remove icon,إزالة الأيقونة
 Removed language,Removed language
@@ -786,7 +787,6 @@ This content is automatically generated,أنشئ هذا المحتوى تلقا�
 This entity is not public.,هذا الكيان (الإدخال) ليس عام
 This entity is restricted from public view.,هذا الكيان (الإدخال) ممنوع من المعاينة العامة
 This field is required,This field is required
-This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
