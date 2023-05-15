@@ -1398,6 +1398,11 @@ input:checked + .toggle-bg {
   max-height: 24rem;
 }
 
+.min-h-fit {
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -1497,6 +1502,11 @@ input:checked + .toggle-bg {
 
 .w-full {
   width: 100%;
+}
+
+.min-w-fit {
+  min-width: -moz-fit-content;
+  min-width: fit-content;
 }
 
 .max-w-2xl {
@@ -1656,6 +1666,10 @@ input:checked + .toggle-bg {
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.content-center {
+  align-content: center;
 }
 
 .items-start {
@@ -1876,6 +1890,10 @@ input:checked + .toggle-bg {
 
 .border-2 {
   border-width: 2px;
+}
+
+.border-4 {
+  border-width: 4px;
 }
 
 .\!border-b-0 {
