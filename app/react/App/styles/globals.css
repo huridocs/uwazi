@@ -1911,10 +1911,6 @@ input:checked + .toggle-bg {
   border-width: 2px;
 }
 
-.border-4 {
-  border-width: 4px;
-}
-
 .\!border-b-0 {
   border-bottom-width: 0px !important;
 }

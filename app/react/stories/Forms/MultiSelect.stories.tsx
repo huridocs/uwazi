@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { MultiSelect } from 'V2/Components/Forms';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Provider } from 'react-redux';
@@ -9,7 +9,7 @@ const MultiSelectStory = {
   component: MultiSelect,
 };
 
-const Template: ComponentStory<typeof MultiSelect> = args => (
+const Template: StoryFn<typeof MultiSelect> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -33,4 +33,4 @@ Basic.args = {
 
 export { Basic };
 
-export default MultiSelectStory as ComponentMeta<typeof MultiSelect>;
+export default { component: MultiSelectStory };
