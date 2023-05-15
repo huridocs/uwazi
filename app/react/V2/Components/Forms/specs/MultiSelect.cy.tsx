@@ -15,6 +15,18 @@ describe('MultiSelect', () => {
     cy.get('ul li').should('have.length', 4);
   });
 
+  it('should cose when clicking on the open button again', () => {
+    cy.get('[data-testid="multiselect-comp"] button').click();
+    cy.get('[data-testid="multiselect-comp"] button').click();
+    cy.get('ul li').should('not.exist');
+  });
+
+  it('should close when clicking outside of the component', () => {
+    cy.get('[data-testid="multiselect-comp"] button').click();
+    cy.get('Multiselect component').click();
+    cy.get('ul li').should('not.exist');
+  });
+
   describe('Main area', () => {
     beforeEach(() => {
       cy.get('[data-testid="multiselect-comp"] button').click();

@@ -1,8 +1,9 @@
+/* eslint-disable react/no-multi-comp */
 import { Translate } from 'app/I18N';
 import { Checkbox } from 'flowbite-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { Pill } from '../UI';
+import React, { useRef, useState } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import { Pill } from '../UI';
 
 type Option = { label: string; value: string };
 type ContextOption = Option & { selected: boolean };
@@ -23,8 +24,8 @@ interface ContextMenuProps {
 const ContextMenuBase = (
   { options, show, location, onOptionSelected }: ContextMenuProps,
   ref: any
-) => {
-  return show ? (
+) =>
+  show ? (
     <ul
       ref={ref}
       style={{
@@ -43,7 +44,7 @@ const ContextMenuBase = (
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               // @ts-ignore
               const isChecked = e.target.checked;
-              let currentOptions = [...options].map(opt => {
+              const currentOptions = [...options].map(opt => {
                 if (opt.value === option.value) {
                   return { ...opt, selected: isChecked };
                 }
@@ -57,24 +58,19 @@ const ContextMenuBase = (
         </li>
       ))}
     </ul>
-  ) : (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <></>
-  );
-};
+  ) : null;
 
 const ContextMenu = React.forwardRef(ContextMenuBase);
 
 const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => {
-  const [innerOptions, setInnerOptions] = useState<ContextOption[]>([]);
+  const [innerOptions, setInnerOptions] = useState<ContextOption[]>(
+    options.map(opt => ({ ...opt, selected: false }))
+  );
+
   const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [menu, showMenu] = useState(false);
   const contextMenuRef = useRef<HTMLLIElement>();
   const MENU_OFFSET = 15;
-
-  useEffect(() => {
-    setInnerOptions(options.map(opt => ({ ...opt, selected: false })));
-  }, [options]);
 
   const getSelectedOptions = () => innerOptions.filter(opt => opt.selected);
 
@@ -125,6 +121,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
             <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
               <span className="flex items-center">{option.label}</span>
               <button
+                type="button"
                 className="ml-1 text-gray-400 font-bold content-center justify-center"
                 onClick={() => {
                   setInnerOptions(

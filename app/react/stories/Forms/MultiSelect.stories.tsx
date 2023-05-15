@@ -13,6 +13,7 @@ const Template: StoryFn<typeof MultiSelect> = args => (
   <Provider store={createStore()}>
     <div className="tw-content">
       <div className="md:w-1/2">
+        <h1>Multiselect component</h1>
         <MultiSelect label={args.label} options={args.options} onOptionSelected={() => {}} />
       </div>
     </div>
