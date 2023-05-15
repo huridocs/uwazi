@@ -9,6 +9,7 @@ export default defineConfig({
       // implement node event listeners here
       initPlugin(on, config);
     },
+    baseUrl: 'http://localhost:3000',
     video: false,
     testIsolation: false,
   },
