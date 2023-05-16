@@ -151,6 +151,11 @@ export class TraversalQueryNode extends QueryNode {
   ): MatchQueryNode | undefined {
     this.validateIsChain();
 
+    const nextReaches = this.matches[0].reachesRelationship(relationship, entityData);
+    if (nextReaches) {
+      return this.parent!.shallowClone([this.shallowClone([nextReaches])]);
+    }
+
     const [toMatchBeforeTraverse, toMatchAfterTraverse] = this.sortEntitiesInTraversalOrder(
       entityData,
       relationship
@@ -166,16 +171,11 @@ export class TraversalQueryNode extends QueryNode {
       this.matches[0].wouldMatch(toMatchAfterTraverse);
 
     if (matchesRelationship) {
-      return MatchQueryNode.forEntity(toMatchBeforeTraverse, [
-        TraversalQueryNode.forRelationship(relationship, this.direction, [
-          MatchQueryNode.forEntity(toMatchAfterTraverse),
+      return MatchQueryNode.forEntity(toMatchBeforeTraverse.sharedId, [
+        TraversalQueryNode.forRelationship(relationship._id, this.direction, [
+          MatchQueryNode.forEntity(toMatchAfterTraverse.sharedId),
         ]),
       ]);
-    }
-
-    const nextReaches = this.matches[0].reachesRelationship(relationship, entityData);
-    if (nextReaches) {
-      return this.parent!.shallowClone([this.shallowClone([nextReaches])]);
     }
 
     return undefined;
@@ -184,14 +184,15 @@ export class TraversalQueryNode extends QueryNode {
   reachesEntity(entity: Entity) {
     this.validateIsChain();
 
-    if (this.matches[0].wouldMatch(entity)) {
-      return this.shallowClone([MatchQueryNode.forEntity(entity)]);
-    }
-
     const nextReaches = this.matches[0].reachesEntity(entity);
     if (nextReaches) {
       return this.shallowClone([nextReaches]);
     }
+
+    if (this.matches[0].wouldMatch(entity)) {
+      return this.shallowClone([MatchQueryNode.forEntity(entity.sharedId)]);
+    }
+
     return undefined;
   }
 
@@ -236,10 +237,10 @@ export class TraversalQueryNode extends QueryNode {
   }
 
   static forRelationship(
-    relationship: Relationship,
+    relationship: Relationship['_id'],
     direction: 'in' | 'out',
     matches?: MatchQueryNode[]
   ) {
-    return new TraversalQueryNode(direction, { _id: relationship._id }, matches);
+    return new TraversalQueryNode(direction, { _id: relationship }, matches);
   }
 }
