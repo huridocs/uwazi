@@ -9,6 +9,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { DenormalizationService } from '../DenormalizationService';
+import { OnlineDenormalizationStrategy } from '../DenormalizationStrategies/OnlineDenormalizationStrategy';
 
 const factory = getFixturesFactory();
 
@@ -323,7 +324,8 @@ beforeEach(async () => {
     templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
-    async () => {}
+    async () => {},
+    new OnlineDenormalizationStrategy(async () => {})
   );
 });
 

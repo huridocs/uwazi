@@ -22,6 +22,7 @@ import { CreateRelationshipService as GenericCreateRelationshipService } from '.
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
+import { OnlineDenormalizationStrategy } from './DenormalizationStrategies/OnlineDenormalizationStrategy';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -51,7 +52,8 @@ const DenormalizationService = (transactionManager: MongoTransactionManager) => 
     templatesDS,
     settingsDS,
     transactionManager,
-    indexEntitiesCallback
+    indexEntitiesCallback,
+    new OnlineDenormalizationStrategy(indexEntitiesCallback)
   );
 
   return service;

@@ -5,6 +5,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
+import { DenormalizationStrategy } from './DenormalizationStrategies/DenormalizationStrategy';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -23,13 +24,16 @@ export class DenormalizationService {
 
   private indexEntities: IndexEntitiesCallback;
 
+  private denormalizationStrategy: DenormalizationStrategy;
+
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
     templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,
-    indexEntitiesCallback: IndexEntitiesCallback
+    indexEntitiesCallback: IndexEntitiesCallback,
+    denormalizationStrategy: DenormalizationStrategy
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
@@ -37,6 +41,7 @@ export class DenormalizationService {
     this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
     this.indexEntities = indexEntitiesCallback;
+    this.denormalizationStrategy = denormalizationStrategy;
   }
 
   private async getCandidateEntities(
@@ -102,7 +107,7 @@ export class DenormalizationService {
     await this.entitiesDS.markMetadataAsChanged(candidates);
 
     this.transactionManager.onCommitted(async () => {
-      await this.indexEntities(candidates.map(c => c.sharedId));
+      await this.denormalizationStrategy.execute(candidates.map(c => c.sharedId));
     });
   }
 
