@@ -1,17 +1,17 @@
 /* eslint-disable react/no-multi-comp */
 import { Translate } from 'app/I18N';
 import { Checkbox } from 'flowbite-react';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { useOnClickOutside } from 'V2/shared/useOnClickOutside';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string };
-type ContextOption = Option & { selected: boolean };
+type ContextOption = { label: string; value: string; selected?: boolean };
 
 interface MultiSelectProps {
   label: String | React.ReactNode;
-  options: Option[];
+  options: ContextOption[];
   onOptionSelected: (options: Option[]) => void;
 }
 
@@ -59,6 +59,8 @@ const ContextMenuBase = ({ options, show, location, onOptionSelected }: ContextM
   ) : null;
 
 const ContextMenu = React.forwardRef(ContextMenuBase);
+const getSelectedOptions = (options: ContextOption[]) =>
+  options.filter(opt => opt.selected).map(opt => ({ label: opt.label, value: opt.value }));
 
 const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => {
   const [innerOptions, setInnerOptions] = useState<ContextOption[]>(
@@ -68,9 +70,11 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
   const [menu, showMenu] = useState(false);
   const contextMenuRef = useRef<HTMLLIElement>();
   const containerRef = useRef(null);
-  const MENU_OFFSET = 15;
+  const MENU_OFFSET = 25;
 
-  const getSelectedOptions = () => innerOptions.filter(opt => opt.selected);
+  useEffect(() => {
+    setInnerOptions(options);
+  }, [options]);
 
   useOnClickOutside<HTMLDivElement>(containerRef, () => showMenu(false));
 
@@ -80,7 +84,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
       data-testid="multiselect-comp"
       ref={containerRef}
     >
-      <div className="border-b border-gray-50 bg-gray-50 p-4 flex justify-between">
+      <div className="border-b border-gray-50 bg-gray-50 p-2 flex justify-between">
         <div className="text-indigo-700 text-base">{label}</div>
         <div className="left-0">
           <button
@@ -88,6 +92,8 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
             className="text-indigo-700"
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
               setTimeout(() => {
+                // @ts-ignore
+                const totalWidth = e.view.innerWidth;
                 const contextMenuWidth = contextMenuRef.current?.clientWidth;
                 const contextMenuHeight = contextMenuRef.current?.clientHeight;
 
@@ -96,11 +102,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
                 let x = e.clientX;
                 let y = e.clientY;
 
-                if (x + contextMenuWidth > e.view.innerWidth) x -= contextMenuWidth + MENU_OFFSET;
-
-                if (y + contextMenuHeight > e.view.innerHeight) y = -y;
-
-                setMenuLocation({ x: x + MENU_OFFSET, y: y + MENU_OFFSET });
+                setMenuLocation({ x: -(totalWidth - x - contextMenuWidth - MENU_OFFSET), y });
               }, 0);
               showMenu(!menu);
             }}
@@ -110,8 +112,8 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
         </div>
       </div>
       <div className="min-h-fit p-2 flex flex-wrap">
-        {getSelectedOptions().length > 0 ? (
-          getSelectedOptions().map((option: Option) => (
+        {getSelectedOptions(innerOptions).length > 0 ? (
+          getSelectedOptions(innerOptions).map((option: Option) => (
             <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
               <span className="flex items-center">{option.label}</span>
               <button
@@ -119,11 +121,14 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
                 className="ml-1 text-gray-400 font-bold content-center justify-center"
                 onClick={() => {
                   setInnerOptions(
-                    innerOptions.map(opt =>
-                      opt.value === option.value ? { ...opt, selected: false } : opt
-                    )
+                    innerOptions.map(opt => {
+                      return opt.value === option.value ? { ...opt, selected: false } : opt;
+                    })
                   );
-                  onOptionSelected(getSelectedOptions());
+                  const selectedOptions = innerOptions.filter(opt => {
+                    return opt.value !== option.value;
+                  });
+                  onOptionSelected(getSelectedOptions(selectedOptions));
                 }}
               >
                 <XMarkIcon className="text-lg w-6" />
@@ -141,7 +146,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
         options={innerOptions}
         onOptionSelected={(ops: ContextOption[]) => {
           setInnerOptions(ops);
-          onOptionSelected(getSelectedOptions());
+          onOptionSelected(getSelectedOptions(ops));
         }}
       />
     </div>

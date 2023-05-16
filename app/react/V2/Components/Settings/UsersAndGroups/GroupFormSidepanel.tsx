@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Sidepanel } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
+import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { ConfirmationModal } from './ConfirmationModal';
 
 interface GroupFormSidepanelProps {
@@ -34,8 +34,11 @@ const GroupFormSidepanel = ({
   setShowSidepanel,
   setSelected,
 }: GroupFormSidepanelProps) => {
-  const { groups } = useLoaderData() as { groups: ClientUserGroupSchema[] };
   const [showModal, setShowModal] = useState(false);
+  const { groups, users } = useLoaderData() as {
+    groups: ClientUserGroupSchema[];
+    users: ClientUserSchema[];
+  };
   const defaultValues = { name: '', members: [] } as ClientUserGroupSchema;
 
   const {
@@ -43,6 +46,7 @@ const GroupFormSidepanel = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty, isSubmitting },
+    setValue,
   } = useForm({
     defaultValues,
     values: selectedGroup,
@@ -113,14 +117,30 @@ const GroupFormSidepanel = ({
                 </div>
               </div>
             </fieldset>
-
             <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
-              <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
-                Members
-              </Translate>
+              <MultiSelect
+                label={
+                  <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
+                    Members
+                  </Translate>
+                }
+                onOptionSelected={options => {
+                  setValue(
+                    'members',
+                    options.map(option => ({ refId: option.value })),
+                    { shouldDirty: true }
+                  );
+                }}
+                options={users.map(user => {
+                  const members = selectedGroup?.members.map(member => member.refId) || [];
+                  if (members.includes(user._id || '')) {
+                    return { label: user.username, value: user._id as string, selected: true };
+                  }
+                  return { label: user.username, value: user._id as string };
+                })}
+              />
             </fieldset>
           </div>
-
           <div className="flex gap-2">
             <Button
               className="flex-grow"

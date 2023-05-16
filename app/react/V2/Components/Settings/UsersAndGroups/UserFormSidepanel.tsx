@@ -4,10 +4,11 @@ import { useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { InputField, Select } from 'V2/Components/Forms';
+import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
+import { group } from 'console';
 
 interface UserFormSidepanelProps {
   selectedUser?: ClientUserSchema;
@@ -41,8 +42,11 @@ const UserFormSidepanel = ({
   setShowSidepanel,
   setSelected,
 }: UserFormSidepanelProps) => {
-  const { users } = useLoaderData() as { users: ClientUserSchema[] };
   const [showModal, setShowModal] = useState(false);
+  const { users, groups } = useLoaderData() as {
+    users: ClientUserSchema[];
+    groups: ClientUserGroupSchema[];
+  };
   const defaultValues = {
     username: '',
     email: '',
@@ -56,6 +60,7 @@ const UserFormSidepanel = ({
     handleSubmit,
     reset,
     formState: { errors, isDirty, isSubmitting },
+    setValue,
   } = useForm({
     defaultValues,
     values: selectedUser,
@@ -203,12 +208,31 @@ const UserFormSidepanel = ({
                 )}
               </div>
             </fieldset>
-
             <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
-              <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
-                Groups
-              </Translate>
-              <div className="p-3">content</div>
+              <MultiSelect
+                label={
+                  <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
+                    Groups
+                  </Translate>
+                }
+                onOptionSelected={selectedGroups => {
+                  setValue(
+                    'groups',
+                    selectedGroups.map(grp => {
+                      const group = groups.find(originalGroup => originalGroup.name === grp.value);
+                      return { _id: group?._id as string, name: group?.name as string };
+                    }),
+                    { shouldDirty: true }
+                  );
+                }}
+                options={groups.map(group => {
+                  const userGroups = selectedUser?.groups?.map(grp => grp.name) || [];
+                  if (userGroups.includes(group.name)) {
+                    return { label: group.name, value: group.name, selected: true };
+                  }
+                  return { label: group.name, value: group.name };
+                })}
+              />
             </fieldset>
           </div>
 
