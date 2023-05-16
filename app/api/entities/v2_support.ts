@@ -73,7 +73,7 @@ const denormalizeAfterEntityCreation = async ({
 }) => {
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
-    const denormalizationService = DenormalizationService(transactionManager);
+    const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
   }
@@ -88,7 +88,7 @@ const denormalizeAfterEntityUpdate = async ({
 }) => {
   const transactionManager = new MongoTransactionManager(getClient());
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
-    const denormalizationService = DenormalizationService(transactionManager);
+    const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterUpdatingEntities([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
   }

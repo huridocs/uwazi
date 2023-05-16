@@ -35,4 +35,13 @@ export class MongoSettingsDataSource
     const settings = await this.readSettings();
     return !!settings?.features?.newRelationships;
   }
+
+  async getFeatureConfiguration(featureKey: string) {
+    const settings = await this.readSettings();
+    const featureConfiguration = settings?.features?.[featureKey];
+
+    return <Record<string, any>>(
+      (typeof featureConfiguration === 'object' ? featureConfiguration : {})
+    );
+  }
 }

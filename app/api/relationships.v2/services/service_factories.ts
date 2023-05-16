@@ -23,6 +23,7 @@ import { DeleteRelationshipService as GenericDeleteRelationshipService } from '.
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { OnlineDenormalizationStrategy } from './DenormalizationStrategies/OnlineDenormalizationStrategy';
+import { QueuedDenormalizationStrategy } from './DenormalizationStrategies/QueuedDenormalizationStrategy';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -40,11 +41,24 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
-const DenormalizationService = (transactionManager: MongoTransactionManager) => {
+const createDenormalizationStrategy = (strategyKey: string) => {
+  switch (strategyKey) {
+    case OnlineDenormalizationStrategy.name:
+      return new OnlineDenormalizationStrategy(indexEntitiesCallback);
+    case QueuedDenormalizationStrategy.name:
+      return new QueuedDenormalizationStrategy();
+    default:
+      throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
+  }
+};
+
+const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const settingsDS = DefaultSettingsDataSource(transactionManager);
+
+  const newRelationshipsSettings = await settingsDS.getFeatureConfiguration('newRelationships');
 
   const service = new GenericDenormalizationService(
     relationshipsDS,
@@ -53,7 +67,9 @@ const DenormalizationService = (transactionManager: MongoTransactionManager) => 
     settingsDS,
     transactionManager,
     indexEntitiesCallback,
-    new OnlineDenormalizationStrategy(indexEntitiesCallback)
+    createDenormalizationStrategy(
+      newRelationshipsSettings.denormalizationStrategy ?? 'OnlineDenormalizationStrategy'
+    )
   );
 
   return service;
@@ -72,7 +88,7 @@ const GetRelationshipService = (request: Request) => {
   return service;
 };
 
-const CreateRelationshipService = (request: Request) => {
+const CreateRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
@@ -82,7 +98,7 @@ const CreateRelationshipService = (request: Request) => {
   const filesDS = DefaultFilesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
-  const denormalizationService = DenormalizationService(transactionManager);
+  const denormalizationService = await DenormalizationService(transactionManager);
 
   const service = new GenericCreateRelationshipService(
     relationshipsDS,
@@ -98,13 +114,13 @@ const CreateRelationshipService = (request: Request) => {
   return service;
 };
 
-const DeleteRelationshipService = (request: Request) => {
+const DeleteRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
-  const denormService = DenormalizationService(transactionManager);
+  const denormService = await DenormalizationService(transactionManager);
 
   const service = new GenericDeleteRelationshipService(
     relationshipsDS,

@@ -280,7 +280,17 @@ const settingsSchema = {
             },
           },
         },
-        newRelationships: { type: 'boolean' },
+        newRelationships: {
+          oneOf: [
+            { type: 'boolean' },
+            {
+              type: 'object',
+              additionalProperties: false,
+              required: ['denormalizationStrategy'],
+              properties: { denormalizationStrategy: { type: 'string' } },
+            },
+          ],
+        },
       },
     },
     mapStartingPoint: geolocationSchema,

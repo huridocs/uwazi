@@ -105,7 +105,11 @@ export interface Settings {
         properties: string[];
       }[];
     };
-    newRelationships?: boolean;
+    newRelationships?:
+      | boolean
+      | {
+          denormalizationStrategy: string;
+        };
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {
