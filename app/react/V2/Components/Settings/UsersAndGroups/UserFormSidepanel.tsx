@@ -8,7 +8,6 @@ import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
-import { group } from 'console';
 
 interface UserFormSidepanelProps {
   selectedUser?: ClientUserSchema;
@@ -215,18 +214,20 @@ const UserFormSidepanel = ({
                     Groups
                   </Translate>
                 }
-                onOptionSelected={selectedGroups => {
+                onChange={selectedGroups => {
                   setValue(
                     'groups',
-                    selectedGroups.map(grp => {
-                      const group = groups.find(originalGroup => originalGroup.name === grp.value);
+                    selectedGroups.map(selectedGroup => {
+                      const group = groups.find(
+                        originalGroup => originalGroup.name === selectedGroup.value
+                      );
                       return { _id: group?._id as string, name: group?.name as string };
                     }),
                     { shouldDirty: true }
                   );
                 }}
                 options={groups.map(group => {
-                  const userGroups = selectedUser?.groups?.map(grp => grp.name) || [];
+                  const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name) || [];
                   if (userGroups.includes(group.name)) {
                     return { label: group.name, value: group.name, selected: true };
                   }

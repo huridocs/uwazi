@@ -1,89 +1,60 @@
-/* eslint-disable react/no-multi-comp */
-import { Translate } from 'app/I18N';
+import React, { useRef, useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import React, { useRef, useState, useEffect } from 'react';
+import { sortBy } from 'lodash';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import { Translate } from 'app/I18N';
 import { useOnClickOutside } from 'V2/shared/useOnClickOutside';
 import { Pill } from '../UI';
 
-type Option = { label: string; value: string };
-type ContextOption = { label: string; value: string; selected?: boolean };
+type Option = { label: string; value: string; selected?: boolean };
 
 interface MultiSelectProps {
   label: String | React.ReactNode;
-  options: ContextOption[];
-  onOptionSelected: (options: Option[]) => void;
+  options: Option[];
+  onChange?: (options: Option[]) => any;
 }
 
-interface ContextMenuProps {
-  options: ContextOption[];
-  show: boolean;
-  location: { x: number; y: number };
-  onOptionSelected: (options: ContextOption[]) => void;
-}
+const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
+  const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
 
-const ContextMenuBase = (
-  { options, show, location, onOptionSelected }: ContextMenuProps,
-  ref: any
-) =>
-  show ? (
-    <ul
-      ref={ref}
-      style={{
-        minWidth: '225px',
-        position: 'absolute',
-        top: `${location.y}px`,
-        left: `${location.x}px`,
-        boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
-      }}
-      className="min-w-fit bg-white rounded-md p-4 font-medium  absolute flex flex-col"
-    >
-      {options.map((option: ContextOption) => (
-        <li key={option.label} className="py-1">
-          <Checkbox
-            checked={option.selected}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              // @ts-ignore
-              const isChecked = e.target.checked;
-              const currentOptions = [...options].map(opt => {
-                if (opt.value === option.value) {
-                  return { ...opt, selected: isChecked };
-                }
-                return opt;
-              });
+  useOnClickOutside<HTMLDivElement>(containerRef, () => setShowMenu(false));
 
-              onOptionSelected(currentOptions);
-            }}
-          />
-          <span className="ml-2">{option.label}</span>
-        </li>
-      ))}
-    </ul>
-  ) : null;
+  const selectedOptions = optionsState.filter(option => option.selected);
 
-const ContextMenu = React.forwardRef(ContextMenuBase);
-const getSelectedOptions = (options: ContextOption[]) =>
-  options.filter(opt => opt.selected).map(opt => ({ label: opt.label, value: opt.value }));
+  const calculateChildVerticalPosition = () => {
+    if (containerRef.current) {
+      const parentPosition = containerRef.current.getBoundingClientRect();
 
-const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => {
-  const [innerOptions, setInnerOptions] = useState<ContextOption[]>(
-    options.map(opt => ({ ...opt, selected: false }))
-  );
-  const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [menu, showMenu] = useState(false);
-  const contextMenuRef = useRef<HTMLLIElement>();
-  const containerRef = useRef(null);
-  const MENU_OFFSET = 25;
+      let position = parentPosition.bottom;
 
-  useEffect(() => {
-    setInnerOptions(options);
-  }, [options]);
+      const spaceBelowParent = window.innerHeight - parentPosition.bottom;
 
-  useOnClickOutside<HTMLDivElement>(containerRef, () => showMenu(false));
+      if (spaceBelowParent >= 224) {
+        // Check if there's enough space below the parent
+        position = parentPosition.bottom;
+      } else if (parentPosition.top >= 224) {
+        // Check if there's enough space above the parent
+        position = parentPosition.top - 224;
+      } else {
+        // Not enough space above or below, default to opening downwards
+        position = parentPosition.bottom;
+      }
+
+      return position;
+    }
+
+    return null;
+  };
+
+  const verticalPosition = calculateChildVerticalPosition();
+
+  console.log('verticalPosition: ', verticalPosition);
 
   return (
     <div
-      className="border rounded-lg border-gray-50"
+      className="border rounded-lg border-gray-50 relative"
       data-testid="multiselect-comp"
       ref={containerRef}
     >
@@ -93,45 +64,32 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
           <button
             type="button"
             className="text-indigo-700"
-            onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              setTimeout(() => {
-                // @ts-ignore
-                const totalWidth = e.view.innerWidth;
-                const contextMenuWidth = contextMenuRef.current?.clientWidth;
-                const contextMenuHeight = contextMenuRef.current?.clientHeight;
-
-                if (!contextMenuHeight || !contextMenuWidth) return;
-
-                let x = e.clientX;
-                let y = e.clientY;
-
-                setMenuLocation({ x: -(totalWidth - x - contextMenuWidth - MENU_OFFSET), y });
-              }, 0);
-              showMenu(!menu);
+            onClick={() => {
+              setShowMenu(!showMenu);
             }}
           >
             <PlusCircleIcon className="text-lg w-6" />
           </button>
         </div>
       </div>
+
       <div className="min-h-fit p-2 flex flex-wrap">
-        {getSelectedOptions(innerOptions).length > 0 ? (
-          getSelectedOptions(innerOptions).map((option: Option) => (
+        {selectedOptions.length ? (
+          selectedOptions.map((option: Option) => (
             <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
               <span className="flex items-center">{option.label}</span>
               <button
                 type="button"
                 className="ml-1 text-gray-400 font-bold content-center justify-center"
                 onClick={() => {
-                  setInnerOptions(
-                    innerOptions.map(opt => {
-                      return opt.value === option.value ? { ...opt, selected: false } : opt;
-                    })
-                  );
-                  const selectedOptions = innerOptions.filter(opt => {
-                    return opt.value !== option.value;
+                  const selected = optionsState.map(opt => {
+                    if (opt.value === option.value) {
+                      return { value: opt.value, label: opt.label };
+                    }
+                    return opt;
                   });
-                  onOptionSelected(getSelectedOptions(selectedOptions));
+                  setOptionsState(selected);
+                  onChange(selected);
                 }}
               >
                 <XMarkIcon className="text-lg w-6" />
@@ -139,22 +97,38 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
             </Pill>
           ))
         ) : (
-          <Translate>No options</Translate>
+          <Translate>Nothing selected</Translate>
         )}
       </div>
-      <ContextMenu
-        ref={contextMenuRef}
-        location={menuLocation}
-        show={menu}
-        options={innerOptions}
-        onOptionSelected={(ops: ContextOption[]) => {
-          setInnerOptions(ops);
-          onOptionSelected(getSelectedOptions(ops));
-        }}
-      />
+
+      {showMenu ? (
+        <ul
+          style={{ top: verticalPosition || '32px' }}
+          className="bg-red-500 p-2 w-fit max-w-md rounded max-h-56 overflow-y-auto absolute right-8"
+        >
+          {optionsState.map((option: Option) => (
+            <li key={option.label} className="py-1 flex gap-1 align-top">
+              <Checkbox
+                checked={option.selected}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const isChecked = e.target.checked;
+                  const selected = optionsState.map(opt => {
+                    if (opt.value === option.value) {
+                      return { ...opt, selected: isChecked };
+                    }
+                    return opt;
+                  });
+                  setOptionsState(selected);
+                  onChange(selected);
+                }}
+              />
+              <span className="ml-2">{option.label}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 };
 
-export type { MultiSelectProps };
 export { MultiSelect };

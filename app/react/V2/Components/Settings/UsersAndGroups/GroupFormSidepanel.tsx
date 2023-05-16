@@ -124,7 +124,7 @@ const GroupFormSidepanel = ({
                     Members
                   </Translate>
                 }
-                onOptionSelected={options => {
+                onChange={options => {
                   setValue(
                     'members',
                     options.map(option => ({ refId: option.value })),
