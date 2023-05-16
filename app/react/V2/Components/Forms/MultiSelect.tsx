@@ -22,7 +22,10 @@ interface ContextMenuProps {
   onOptionSelected: (options: ContextOption[]) => void;
 }
 
-const ContextMenuBase = ({ options, show, location, onOptionSelected }: ContextMenuProps, ref) =>
+const ContextMenuBase = (
+  { options, show, location, onOptionSelected }: ContextMenuProps,
+  ref: any
+) =>
   show ? (
     <ul
       ref={ref}
