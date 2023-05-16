@@ -151,6 +151,11 @@ export class TraversalQueryNode extends QueryNode {
   ): MatchQueryNode | undefined {
     this.validateIsChain();
 
+    const nextReaches = this.matches[0].reachesRelationship(relationship, entityData);
+    if (nextReaches) {
+      return this.parent!.shallowClone([this.shallowClone([nextReaches])]);
+    }
+
     const [toMatchBeforeTraverse, toMatchAfterTraverse] = this.sortEntitiesInTraversalOrder(
       entityData,
       relationship
@@ -173,25 +178,21 @@ export class TraversalQueryNode extends QueryNode {
       ]);
     }
 
-    const nextReaches = this.matches[0].reachesRelationship(relationship, entityData);
-    if (nextReaches) {
-      return this.parent!.shallowClone([this.shallowClone([nextReaches])]);
-    }
-
     return undefined;
   }
 
   reachesEntity(entity: Entity) {
     this.validateIsChain();
 
-    if (this.matches[0].wouldMatch(entity)) {
-      return this.shallowClone([MatchQueryNode.forEntity(entity.sharedId)]);
-    }
-
     const nextReaches = this.matches[0].reachesEntity(entity);
     if (nextReaches) {
       return this.shallowClone([nextReaches]);
     }
+
+    if (this.matches[0].wouldMatch(entity)) {
+      return this.shallowClone([MatchQueryNode.forEntity(entity.sharedId)]);
+    }
+
     return undefined;
   }
 
