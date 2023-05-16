@@ -63,6 +63,7 @@ export default function () {
         'uploaded',
         'published',
         'relationships',
+        'obsoleteMetadata',
       ],
       excludes: ['documents.__v'],
     },

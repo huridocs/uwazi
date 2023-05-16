@@ -10,7 +10,6 @@ import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-import { Denormalizer } from './Denormalizer';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -85,12 +84,7 @@ export class MongoEntitiesDataSource
       { session: this.getSession() }
     );
 
-    const denormalizer = new Denormalizer(this, this.templatesDS, this.relationshipsDS);
-
-    return new MongoResultSet(cursor, async entity => {
-      const mappedMetadata = await denormalizer.execute(entity);
-      return EntityMappers.toModel({ ...entity, metadata: mappedMetadata });
-    });
+    return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
 
   async updateDenormalizedMetadataValues(

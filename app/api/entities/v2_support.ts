@@ -50,10 +50,6 @@ const assignNewRelationshipFieldsValues = async (entities: EntitySchema[]) => {
       });
     }
   }, Promise.resolve());
-
-  entities.forEach(entity => {
-    entity.obsoleteMetadata = [];
-  });
 };
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {

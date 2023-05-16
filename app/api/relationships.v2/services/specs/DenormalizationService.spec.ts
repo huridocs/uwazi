@@ -325,7 +325,7 @@ beforeEach(async () => {
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {},
-    new OnlineDenormalizationStrategy(async () => {})
+    new OnlineDenormalizationStrategy(async () => {}, { execute: async () => Promise.resolve() })
   );
 });
 

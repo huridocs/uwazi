@@ -1,8 +1,9 @@
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
+import { Template } from 'api/templates.v2/model/Template';
+import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { MongoEntitiesDataSource } from './MongoEntitiesDataSource';
 import { EntityJoinTemplate } from './schemas/EntityTypes';
 
@@ -36,43 +37,47 @@ export class Denormalizer {
     return new GraphQueryResultView();
   }
 
-  async execute(entity: EntityJoinTemplate) {
-    const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
+  async execute(sharedId: string) {
     const stream = this.entitiesDataSource.createBulkStream();
+    let template: Template;
+    await this.entitiesDataSource.getByIds([sharedId]).forEach(async entity => {
+      if (!template) {
+        template = await this.templatesDataSource.getById(entity.template);
+      }
 
-    await Promise.all(
-      // eslint-disable-next-line max-statements
-      entity.joinedTemplate[0]?.properties.map(async property => {
-        if (
-          property.type === 'newRelationship' &&
-          (entity.obsoleteMetadata || []).includes(property.name)
-        ) {
-          const configuredQuery = mapPropertyQuery(property.query);
-          const configuredView = await this.defineGraphView(property);
-          const results = await this.relationshipsDataSource
-            .getByQuery(
-              new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
-              entity.language
-            )
-            .all();
-          mappedMetadata[property.name] = configuredView.map(results);
+      const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
 
-          await stream.updateOne(
-            { sharedId: entity.sharedId, language: entity.language },
-            { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
-          );
-          return;
-        }
+      await Promise.all(
+        // eslint-disable-next-line max-statements
+        template.properties.map(async property => {
+          if (
+            property instanceof RelationshipProperty &&
+            (entity.obsoleteMetadata || []).includes(property.name)
+          ) {
+            const configuredView = await this.defineGraphView(property);
+            const results = await this.relationshipsDataSource
+              .getByQuery(
+                new MatchQueryNode({ sharedId: entity.sharedId }, property.query),
+                entity.language
+              )
+              .all();
+            mappedMetadata[property.name] = configuredView.map(results);
 
-        mappedMetadata[property.name] = entity.metadata[property.name];
-      }) || []
-    );
-    await stream.updateOne(
-      { sharedId: entity.sharedId, language: entity.language },
-      { $set: { obsoleteMetadata: [] } }
-    );
+            await stream.updateOne(
+              { sharedId: entity.sharedId, language: entity.language },
+              { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
+            );
+            return;
+          }
+
+          mappedMetadata[property.name] = entity.metadata[property.name];
+        }) || []
+      );
+      await stream.updateOne(
+        { sharedId: entity.sharedId, language: entity.language },
+        { $set: { obsoleteMetadata: [] } }
+      );
+    });
     await stream.flush();
-
-    return mappedMetadata;
   }
 }

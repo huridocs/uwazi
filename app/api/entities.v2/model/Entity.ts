@@ -15,13 +15,16 @@ export class Entity {
 
   readonly metadata: Metadata;
 
+  readonly obsoleteMetadata: string[];
+
   constructor(
     _id: string,
     sharedId: string,
     language: string,
     title: string,
     template: string,
-    metadata: Metadata
+    metadata: Metadata,
+    obsoleteMetadata?: string[]
   ) {
     this._id = _id;
     this.sharedId = sharedId;
@@ -29,6 +32,7 @@ export class Entity {
     this.title = title;
     this.template = template;
     this.metadata = metadata;
+    this.obsoleteMetadata = obsoleteMetadata ?? [];
   }
 }
 export type { Metadata, MetadataValue };
