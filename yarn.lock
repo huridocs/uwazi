@@ -12718,14 +12718,15 @@ html-tags@^3.1.0:
   resolved "https://registry.yarnpkg.com/html-tags/-/html-tags-3.2.0.tgz#dbb3518d20b726524e4dd43de397eb0a95726961"
   integrity sha512-vy7ClnArOZwCnqZgvv+ddgHgJiAFXe3Ge9ML5/mBctVJoUoYPCdxVucOywjDARn6CVoh3dRSFdPHy2sX80L0Wg==
 
-html-to-react@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/html-to-react/-/html-to-react-1.5.0.tgz#6e0cf47ae1b091ba2f28a3832389fbce4d199ccc"
-  integrity sha512-tjihXBgaJZRRYzmkrJZ/Qf9jFayilFYcb+sJxXXE2BVLk2XsNrGeuNCVvhXmvREULZb9dz6NFTBC96DTR/lQCQ==
+html-to-react@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/html-to-react/-/html-to-react-1.5.1.tgz#82ea8e5948ae15778a22888201add49e15bf8888"
+  integrity sha512-dFLZRBjpMk89Ukwa6Fq7oApinn3TEZD0gGFUkmI9DqNQxTjN7gF9owhyu+t8h+bpEZrX2DMxZLYjEfw0C/iL7A==
   dependencies:
     domhandler "^5.0"
     htmlparser2 "^8.0"
     lodash.camelcase "^4.3.0"
+    react "^18.0"
 
 html-void-elements@^1.0.0:
   version "1.0.5"
@@ -18826,7 +18827,7 @@ react-widgets@v4.6.1:
     uncontrollable "^7.1.1"
     warning "^3.0.0"
 
-react@^18.2.0:
+react@^18.0, react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
