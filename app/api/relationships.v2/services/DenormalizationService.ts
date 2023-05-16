@@ -107,6 +107,8 @@ export class DenormalizationService {
     await this.entitiesDS.markMetadataAsChanged(candidates);
 
     this.transactionManager.onCommitted(async () => {
+      const candidateIds = candidates.map(c => c.sharedId);
+      await this.indexEntities(candidateIds);
       await this.denormalizationStrategy.execute(candidates.map(c => c.sharedId));
     });
   }
