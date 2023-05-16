@@ -4,67 +4,13 @@ import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-
-async function defineGraphView(
-  templatesDS: MongoTemplatesDataSource,
-  property: EntityJoinTemplate['joinedTemplate'][0]['properties'][0]
-) {
-  if (property.denormalizedProperty) {
-    const denormalizedProperty = await templatesDS.getPropertyByName(property.denormalizedProperty);
-    return new GraphQueryResultView(denormalizedProperty);
-  }
-
-  return new GraphQueryResultView();
-}
-
-async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
-  const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
-  const stream = this.createBulkStream();
-
-  await Promise.all(
-    // eslint-disable-next-line max-statements
-    entity.joinedTemplate[0]?.properties.map(async property => {
-      if (
-        property.type === 'newRelationship' &&
-        (entity.obsoleteMetadata || []).includes(property.name)
-      ) {
-        const configuredQuery = mapPropertyQuery(property.query);
-        const configuredView = await defineGraphView(this.templatesDS, property);
-        const results = await this.relationshipsDS
-          .getByQuery(
-            new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
-            entity.language
-          )
-          .all();
-        mappedMetadata[property.name] = configuredView.map(results);
-
-        await stream.updateOne(
-          { sharedId: entity.sharedId, language: entity.language },
-          // @ts-ignore
-          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
-        );
-        return;
-      }
-
-      mappedMetadata[property.name] = entity.metadata[property.name];
-    }) || []
-  );
-  await stream.updateOne(
-    { sharedId: entity.sharedId, language: entity.language },
-    { $set: { obsoleteMetadata: [] } }
-  );
-  await stream.flush();
-  return EntityMappers.toModel({ ...entity, metadata: mappedMetadata });
-}
+import { Denormalizer } from './Denormalizer';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -139,7 +85,12 @@ export class MongoEntitiesDataSource
       { session: this.getSession() }
     );
 
-    return new MongoResultSet(cursor, entityMapper.bind(this));
+    const denormalizer = new Denormalizer(this, this.templatesDS, this.relationshipsDS);
+
+    return new MongoResultSet(cursor, async entity => {
+      const mappedMetadata = await denormalizer.execute(entity);
+      return EntityMappers.toModel({ ...entity, metadata: mappedMetadata });
+    });
   }
 
   async updateDenormalizedMetadataValues(

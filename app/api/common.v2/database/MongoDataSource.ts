@@ -22,7 +22,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     return this.transactionManager.getSession();
   }
 
-  protected createBulkStream() {
+  createBulkStream() {
     return new BulkWriteStream(this.getCollection(), this.getSession());
   }
 }
