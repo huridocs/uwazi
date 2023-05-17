@@ -22,7 +22,7 @@ export class OnlineDenormalizationStrategy implements DenormalizationStrategy {
 
   private transactionManager: TransactionManager;
 
-  static DELAY = 20000;
+  static DELAY = 0;
 
   constructor(
     indexEntities: IndexEntitiesCallback,
