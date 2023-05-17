@@ -16,6 +16,8 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
+import { Denormalizer } from 'api/entities.v2/database/Denormalizer';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
@@ -24,7 +26,6 @@ import { GetRelationshipService as GenericGetRelationshipService } from './GetRe
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { OnlineDenormalizationStrategy } from './DenormalizationStrategies/OnlineDenormalizationStrategy';
 import { QueuedDenormalizationStrategy } from './DenormalizationStrategies/QueuedDenormalizationStrategy';
-import { Denormalizer } from 'api/entities.v2/database/Denormalizer';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -43,9 +44,14 @@ const userFromRequest = (request: Request) => {
 };
 
 const createDenormalizationStrategy = (strategyKey: string, denormalizer: Denormalizer) => {
+  const transactionManager = new MongoTransactionManager(getClient());
   switch (strategyKey) {
     case OnlineDenormalizationStrategy.name:
-      return new OnlineDenormalizationStrategy(indexEntitiesCallback, denormalizer);
+      return new OnlineDenormalizationStrategy(
+        indexEntitiesCallback,
+        denormalizer,
+        transactionManager
+      );
     case QueuedDenormalizationStrategy.name:
       return new QueuedDenormalizationStrategy();
     default:

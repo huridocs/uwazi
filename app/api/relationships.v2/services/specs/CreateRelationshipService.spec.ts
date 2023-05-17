@@ -51,7 +51,6 @@ const createService = () => {
     new MongoEntitiesDataSource(
       connection,
       new MongoTemplatesDataSource(connection, transactionManager),
-      new MongoRelationshipsDataSource(connection, transactionManager),
       SettingsDataSource,
       transactionManager
     ),

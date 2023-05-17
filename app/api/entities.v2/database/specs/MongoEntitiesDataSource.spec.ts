@@ -1,7 +1,6 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -102,26 +101,6 @@ const fixtures = {
       { language: 'pt', title: 'inherit_target_3_pt' }
     ),
   ],
-  relationships: [
-    {
-      _id: factory.id('e3_to_it1'),
-      from: { entity: 'entity3' },
-      to: { entity: 'inherit_target_1' },
-      type: factory.id('reltypeid'),
-    },
-    {
-      _id: factory.id('e4_to_it2'),
-      from: { entity: 'entity4' },
-      to: { entity: 'inherit_target_2' },
-      type: factory.id('reltypeid'),
-    },
-    {
-      _id: factory.id('e5_to_it3'),
-      from: { entity: 'entity5' },
-      to: { entity: 'inherit_target_3' },
-      type: factory.id('reltypeid'),
-    },
-  ],
   relationtypes: [
     {
       _id: factory.id('reltypeid'),
@@ -173,14 +152,12 @@ afterAll(async () => {
 describe('Relationship fields caching strategy', () => {
   describe('When invalidating some field cache', () => {
     it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
-      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
-        relationshipsDsMock,
         settingsDsMock,
         transactionManager
       );
@@ -218,14 +195,12 @@ describe('Relationship fields caching strategy', () => {
     });
 
     it('should invalidate the cache for the provided properties in the provided template, in all languages', async () => {
-      const relationshipsDsMock = partialImplementation<MongoRelationshipsDataSource>({});
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
       const transactionManager = new MongoTransactionManager(getClient());
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
-        relationshipsDsMock,
         settingsDsMock,
         transactionManager
       );
@@ -298,7 +273,6 @@ describe('Relationship fields caching strategy', () => {
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, tm),
-        new MongoRelationshipsDataSource(db, tm),
         settingsDsMock,
         tm
       );
@@ -353,147 +327,37 @@ describe('Relationship fields caching strategy', () => {
       ]);
     });
 
-    it('should recalculate the invalidated values', async () => {
+    it('should include the obsolete fields', async () => {
       expect(entities).toMatchObject([
         {
           sharedId: 'entity3',
           language: 'en',
-          metadata: {
-            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_en' }],
-          },
+          obsoleteMetadata: ['relProp3'],
         },
         {
           sharedId: 'entity3',
           language: 'pt',
-          metadata: {
-            relProp3: [{ value: 'inherit_target_1', label: 'inherit_target_1_pt' }],
-          },
+          obsoleteMetadata: ['relProp3'],
         },
         {
           sharedId: 'entity4',
           language: 'en',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_2',
-                label: 'inherit_target_2_en',
-                inheritedValue: [{ value: 3 }],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
+          obsoleteMetadata: ['relProp4'],
         },
         {
           sharedId: 'entity4',
           language: 'pt',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_2',
-                label: 'inherit_target_2_pt',
-                inheritedValue: [{ value: 4 }],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
+          obsoleteMetadata: ['relProp4'],
         },
         {
           sharedId: 'entity5',
           language: 'en',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_3',
-                label: 'inherit_target_3_en',
-                inheritedValue: [],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
+          obsoleteMetadata: ['relProp4'],
         },
         {
           sharedId: 'entity5',
           language: 'pt',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_3',
-                label: 'inherit_target_3_pt',
-                inheritedValue: [],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-        },
-      ]);
-    });
-
-    it('should denormalize as empty array if the denormalized property is empty', () => {
-      expect(entities.filter(e => e.sharedId === 'entity5')).toMatchObject([
-        {
-          sharedId: 'entity5',
-          language: 'en',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_3',
-                label: 'inherit_target_3_en',
-                inheritedValue: [],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-        },
-        {
-          sharedId: 'entity5',
-          language: 'pt',
-          metadata: {
-            relProp4: [
-              {
-                value: 'inherit_target_3',
-                label: 'inherit_target_3_pt',
-                inheritedValue: [],
-                inheritedType: 'numeric',
-              },
-            ],
-          },
-        },
-      ]);
-    });
-
-    it('should leave other metadata properties untouched', async () => {
-      const dbEntities = await testingDB.mongodb
-        ?.collection('entities')
-        .find({ sharedId: { $in: ['entity3', 'entity4'] } })
-        .toArray();
-      expect(dbEntities).toMatchObject([
-        {
-          sharedId: 'entity3',
-          language: 'en',
-          metadata: {
-            numeric: [{ value: 1 }],
-          },
-        },
-        {
-          sharedId: 'entity3',
-          language: 'pt',
-          metadata: {
-            numeric: [{ value: 1 }],
-          },
-        },
-        {
-          sharedId: 'entity4',
-          language: 'en',
-          metadata: {
-            numeric: [{ value: 1 }],
-          },
-        },
-        {
-          sharedId: 'entity4',
-          language: 'pt',
-          metadata: {
-            numeric: [{ value: 1 }],
-          },
+          obsoleteMetadata: ['relProp4'],
         },
       ]);
     });
@@ -517,7 +381,6 @@ describe('When checking for the existence of entities', () => {
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
-        partialImplementation<MongoRelationshipsDataSource>({}),
         partialImplementation<MongoSettingsDataSource>({
           async getLanguageKeys() {
             return Promise.resolve(['en', 'pt']);
@@ -537,7 +400,6 @@ it('should return the sharedIds of the entities that have a particular id within
   const ds = new MongoEntitiesDataSource(
     db,
     new MongoTemplatesDataSource(db, transactionManager),
-    partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);
@@ -559,7 +421,6 @@ it('should update the denormalizations value in all related entities', async () 
   const ds = new MongoEntitiesDataSource(
     db,
     new MongoTemplatesDataSource(db, transactionManager),
-    partialImplementation<MongoRelationshipsDataSource>({}),
     partialImplementation<MongoSettingsDataSource>({
       async getLanguageKeys() {
         return Promise.resolve(['en', 'pt']);

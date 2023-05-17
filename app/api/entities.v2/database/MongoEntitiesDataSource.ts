@@ -3,7 +3,6 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
@@ -19,21 +18,17 @@ export class MongoEntitiesDataSource
 
   private settingsDS: MongoSettingsDataSource;
 
-  protected relationshipsDS: MongoRelationshipsDataSource;
-
   protected templatesDS: MongoTemplatesDataSource;
 
   constructor(
     db: Db,
     templatesDS: MongoTemplatesDataSource,
-    relationshipsDS: MongoRelationshipsDataSource,
     settingsDS: MongoSettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
-    this.relationshipsDS = relationshipsDS;
   }
 
   async entitiesExist(sharedIds: string[]) {

@@ -317,7 +317,6 @@ beforeEach(async () => {
     new MongoEntitiesDataSource(
       db,
       templatesDataSource,
-      relationshipsDataSource,
       new MongoSettingsDataSource(db, transactionManager),
       transactionManager
     ),
@@ -325,7 +324,11 @@ beforeEach(async () => {
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {},
-    new OnlineDenormalizationStrategy(async () => {}, { execute: async () => Promise.resolve() })
+    new OnlineDenormalizationStrategy(
+      async () => {},
+      { execute: async () => Promise.resolve() },
+      new MongoTransactionManager(getClient())
+    )
   );
 });
 
