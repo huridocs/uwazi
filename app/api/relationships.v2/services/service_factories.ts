@@ -24,8 +24,8 @@ import { CreateRelationshipService as GenericCreateRelationshipService } from '.
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
-import { OnlineDenormalizationStrategy } from './DenormalizationStrategies/OnlineDenormalizationStrategy';
-import { QueuedDenormalizationStrategy } from './DenormalizationStrategies/QueuedDenormalizationStrategy';
+import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -43,16 +43,21 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
-const createDenormalizationStrategy = (
-  strategyKey: string,
+const createUpdateStrategy = (
+  strategyKey: string | undefined,
   updater: EntityRelationshipsUpdateService
 ) => {
   const transactionManager = new MongoTransactionManager(getClient());
   switch (strategyKey) {
-    case OnlineDenormalizationStrategy.name:
-      return new OnlineDenormalizationStrategy(indexEntitiesCallback, updater, transactionManager);
-    case QueuedDenormalizationStrategy.name:
-      return new QueuedDenormalizationStrategy();
+    case QueuedRelationshipPropertyUpdateStrategy.name:
+      return new QueuedRelationshipPropertyUpdateStrategy();
+    case OnlineRelationshipPropertyUpdateStrategy.name:
+    case undefined:
+      return new OnlineRelationshipPropertyUpdateStrategy(
+        indexEntitiesCallback,
+        updater,
+        transactionManager
+      );
     default:
       throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
   }
@@ -73,8 +78,8 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
     settingsDS,
     transactionManager,
     indexEntitiesCallback,
-    createDenormalizationStrategy(
-      newRelationshipsSettings.denormalizationStrategy ?? 'OnlineDenormalizationStrategy',
+    createUpdateStrategy(
+      newRelationshipsSettings.updateStrategy,
       new EntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS)
     )
   );

@@ -1,6 +1,6 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { DenormalizationStrategy } from './DenormalizationStrategy';
+import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -12,14 +12,14 @@ async function delay(ms: number) {
   });
 }
 
-export class OnlineDenormalizationStrategy implements DenormalizationStrategy {
+export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
   private indexEntities: IndexEntitiesCallback;
 
   private updater: EntityRelationshipsUpdateService;
 
   private transactionManager: TransactionManager;
 
-  static DELAY = 0;
+  static DELAY = 20000;
 
   constructor(
     indexEntities: IndexEntitiesCallback,
@@ -31,13 +31,11 @@ export class OnlineDenormalizationStrategy implements DenormalizationStrategy {
     this.transactionManager = transactionManager;
   }
 
-  async execute(candidateIds: string[]) {
-    await delay(OnlineDenormalizationStrategy.DELAY);
+  async update(candidateIds: string[]) {
+    await delay(OnlineRelationshipPropertyUpdateStrategy.DELAY);
 
     await this.transactionManager.run(async () => {
       await candidateIds.reduce(async (previous, id) => {
-        console.log(`[${OnlineDenormalizationStrategy.name}] Denormalizing ${id}`);
-
         await previous;
         return this.updater.update(id);
       }, Promise.resolve());

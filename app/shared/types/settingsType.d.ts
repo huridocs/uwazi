@@ -108,7 +108,7 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          denormalizationStrategy: string;
+          updateStrategy: string;
         };
     [k: string]: unknown | undefined;
   };

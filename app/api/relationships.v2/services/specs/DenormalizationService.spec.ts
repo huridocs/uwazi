@@ -9,7 +9,9 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { DenormalizationService } from '../DenormalizationService';
-import { OnlineDenormalizationStrategy } from '../DenormalizationStrategies/OnlineDenormalizationStrategy';
+import { OnlineRelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 
 const factory = getFixturesFactory();
 
@@ -324,9 +326,9 @@ beforeEach(async () => {
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     async () => {},
-    new OnlineDenormalizationStrategy(
+    new OnlineRelationshipPropertyUpdateStrategy(
       async () => {},
-      { execute: async () => Promise.resolve() },
+      partialImplementation<EntityRelationshipsUpdateService>({}),
       new MongoTransactionManager(getClient())
     )
   );

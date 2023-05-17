@@ -286,8 +286,8 @@ const settingsSchema = {
             {
               type: 'object',
               additionalProperties: false,
-              required: ['denormalizationStrategy'],
-              properties: { denormalizationStrategy: { type: 'string' } },
+              required: ['updateStrategy'],
+              properties: { updateStrategy: { type: 'string' } },
             },
           ],
         },
