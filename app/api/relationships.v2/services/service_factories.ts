@@ -17,7 +17,7 @@ import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { EntityRelationshipsUpdater } from 'api/entities.v2/database/EntityRelationshipsUpdater';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
@@ -45,7 +45,7 @@ const userFromRequest = (request: Request) => {
 
 const createDenormalizationStrategy = (
   strategyKey: string,
-  updater: EntityRelationshipsUpdater
+  updater: EntityRelationshipsUpdateService
 ) => {
   const transactionManager = new MongoTransactionManager(getClient());
   switch (strategyKey) {
@@ -75,7 +75,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
     indexEntitiesCallback,
     createDenormalizationStrategy(
       newRelationshipsSettings.denormalizationStrategy ?? 'OnlineDenormalizationStrategy',
-      new EntityRelationshipsUpdater(entitiesDS, templatesDS, relationshipsDS)
+      new EntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS)
     )
   );
 

@@ -9,6 +9,7 @@ import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
+import { Entity, MetadataValue } from '../model/Entity';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -119,5 +120,30 @@ export class MongoEntitiesDataSource
     });
 
     return new MongoResultSet(result, entity => entity.sharedId);
+  }
+
+  async updateObsoleteMetadataValues(
+    id: Entity['_id'],
+    values: Record<string, MetadataValue[]>
+  ): Promise<void> {
+    const stream = this.createBulkStream();
+
+    await stream.updateOne(
+      { _id: MongoIdHandler.mapToDb(id) },
+      {
+        $set: Object.fromEntries(
+          Object.entries(values).map(([propertyName, metadataValues]) => [
+            `metadata.${propertyName}`,
+            metadataValues,
+          ])
+        ),
+      }
+    );
+    await stream.updateOne(
+      { _id: MongoIdHandler.mapToDb(id) },
+      { $pull: { obsoleteMetadata: { $in: Object.keys(values) } } }
+    );
+
+    await stream.flush();
   }
 }

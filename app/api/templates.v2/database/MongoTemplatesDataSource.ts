@@ -115,7 +115,7 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
-  async getById(id: string): Promise<Template> {
+  async getById(id: Template['id']): Promise<Template | undefined> {
     const [template] = await this.getCollection()
       .find({ _id: MongoIdHandler.mapToDb(id) })
       .toArray();
