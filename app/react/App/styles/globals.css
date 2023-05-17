@@ -1122,10 +1122,6 @@ input:checked + .toggle-bg {
   top: 50%;
 }
 
-.top-8 {
-  top: 2rem;
-}
-
 .top-px {
   top: 1px;
 }
@@ -1225,10 +1221,6 @@ input:checked + .toggle-bg {
 
 .mb-6 {
   margin-bottom: 1.5rem;
-}
-
-.mb-96 {
-  margin-bottom: 24rem;
 }
 
 .ml-0 {
@@ -2377,11 +2369,6 @@ input:checked + .toggle-bg {
 .bg-red-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(253 242 242 / var(--tw-bg-opacity));
-}
-
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
 }
 
 .bg-red-600 {

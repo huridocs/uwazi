@@ -14,43 +14,19 @@ interface MultiSelectProps {
   onChange?: (options: Option[]) => any;
 }
 
+const CONTEXT_MENU_MAX_HEIGHT = 224;
+
 const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const contextMenuRef = useRef<HTMLUListElement>(null);
+
   const [showMenu, setShowMenu] = useState(false);
+  const [verticalPosition, setVerticalPosition] = useState('0px');
   const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
 
   useOnClickOutside<HTMLDivElement>(containerRef, () => setShowMenu(false));
 
   const selectedOptions = optionsState.filter(option => option.selected);
-
-  const calculateChildVerticalPosition = () => {
-    if (containerRef.current) {
-      const parentPosition = containerRef.current.getBoundingClientRect();
-
-      let position = parentPosition.bottom;
-
-      const spaceBelowParent = window.innerHeight - parentPosition.bottom;
-
-      if (spaceBelowParent >= 224) {
-        // Check if there's enough space below the parent
-        position = parentPosition.bottom;
-      } else if (parentPosition.top >= 224) {
-        // Check if there's enough space above the parent
-        position = parentPosition.top - 224;
-      } else {
-        // Not enough space above or below, default to opening downwards
-        position = parentPosition.bottom;
-      }
-
-      return position;
-    }
-
-    return null;
-  };
-
-  const verticalPosition = calculateChildVerticalPosition();
-
-  console.log('verticalPosition: ', verticalPosition);
 
   return (
     <div
@@ -64,8 +40,26 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
           <button
             type="button"
             className="text-indigo-700"
-            onClick={() => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+              setVerticalPosition('0px');
               setShowMenu(!showMenu);
+              setTimeout(() => {
+                // @ts-ignore
+                const box = e.target.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                const contextMenu = contextMenuRef.current?.getBoundingClientRect();
+
+                const contextMenuHeight = contextMenu
+                  ? contextMenu.height
+                  : CONTEXT_MENU_MAX_HEIGHT;
+                const contextMenuBottom = box.bottom + contextMenuHeight;
+                if (contextMenuBottom >= windowHeight) {
+                  const yPosition = -contextMenuHeight;
+                  setVerticalPosition(`${yPosition + box.height}px`);
+                } else {
+                  setVerticalPosition(`${box.height}px`);
+                }
+              }, 0);
             }}
           >
             <PlusCircleIcon className="text-lg w-6" />
@@ -103,8 +97,9 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
 
       {showMenu ? (
         <ul
-          style={{ top: verticalPosition || '32px' }}
-          className="bg-red-500 p-2 w-fit max-w-md rounded max-h-56 overflow-y-auto absolute right-8"
+          ref={contextMenuRef}
+          style={{ top: verticalPosition || '0px' }}
+          className="p-2 w-fit max-w-md rounded max-h-56 overflow-y-auto absolute right-8 shadow-md bg-white"
         >
           {optionsState.map((option: Option) => (
             <li key={option.label} className="py-1 flex gap-1 align-top">
