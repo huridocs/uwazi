@@ -40,10 +40,7 @@ async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTem
         const configuredQuery = mapPropertyQuery(property.query);
         const configuredView = await defineGraphView(this.templatesDS, property);
         const results = await this.relationshipsDS
-          .getByQuery(
-            new MatchQueryNode({ sharedId: entity.sharedId }, configuredQuery),
-            entity.language
-          )
+          .getByQuery(MatchQueryNode.forEntity(entity.sharedId, configuredQuery), entity.language)
           .all();
         mappedMetadata[property.name] = configuredView.map(results);
 

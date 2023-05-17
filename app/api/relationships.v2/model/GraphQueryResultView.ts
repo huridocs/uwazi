@@ -24,7 +24,7 @@ class GraphQueryResultView {
   private buildInheritedInformation(entity: Entity) {
     if (this.inheritedProperty) {
       return {
-        inheritedValue: entity.metadata[this.inheritedProperty.name],
+        inheritedValue: entity.metadata[this.inheritedProperty.name] ?? [],
         inheritedType: this.inheritedProperty.type,
       };
     }
