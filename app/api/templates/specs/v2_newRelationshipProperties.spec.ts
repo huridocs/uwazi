@@ -287,9 +287,9 @@ describe('template.save()', () => {
         };
         await templates.save(updatedTemplate, 'en');
         const allEntities = await db.mongodb?.collection('entities').find({}).toArray();
-        expect(allEntities?.map(e => e.metadata.new_relationship)).toMatchObject([
-          [{ value: 'entity3' }],
-          [{ value: 'entity3' }],
+        expect(allEntities?.map(e => e.obsoleteMetadata)).toMatchObject([
+          ['new_relationship'],
+          ['new_relationship'],
           undefined,
           undefined,
           undefined,
@@ -388,15 +388,15 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        expect(relatedEntities?.map(e => e.metadata.existing_relationship)).toMatchObject([
-          [{ value: 'entity5' }],
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toMatchObject([
+          ['existing_relationship'],
         ]);
 
         await elasticTesting.refresh();
         const indexed = (await elasticTesting.getIndexedEntities()).find(
           e => e.template === existingTemplate._id.toString()
         );
-        expect(indexed?.metadata?.existing_relationship).toMatchObject([{ value: 'entity5' }]);
+        expect(indexed?.obsoleteMetadata).toMatchObject(['existing_relationship']);
       });
 
       it('on denormalizedProperty change should throw an error and not change the metadata', async () => {
