@@ -142,104 +142,46 @@ afterAll(async () => {
 });
 
 describe('entities.get()', () => {
-  const expected = [
-    {
-      _id: factory.id('entity1-en'),
-      sharedId: 'entity1',
-      metadata: {
-        relProp: [
-          { value: 'entity2', label: 'entity2-en' },
-          { value: 'entity3', label: 'entity3-en' },
-        ],
-      },
-    },
-    {
-      _id: factory.id('entity1-es'),
-      sharedId: 'entity1',
-      metadata: {
-        relProp: [
-          { value: 'entity2', label: 'entity2-es' },
-          { value: 'entity3', label: 'entity3-es' },
-        ],
-      },
-    },
-    {
-      _id: factory.id('entity2-en'),
-      sharedId: 'entity2',
-      metadata: {
-        relProp: [{ value: 'entity1', label: 'entity1-en' }],
-      },
-    },
-    {
-      _id: factory.id('entity2-es'),
-      sharedId: 'entity2',
-      metadata: {
-        relProp: [{ value: 'entity1', label: 'entity1-es' }],
-      },
-    },
-    {
-      _id: factory.id('entity3-en'),
-      sharedId: 'entity3',
-      metadata: {},
-    },
-    {
-      _id: factory.id('entity3-es'),
-      sharedId: 'entity3',
-      metadata: {},
-    },
-  ];
-
-  it('should denormalize newRelationship metadata', async () => {
+  it('should include the obsoleteMetadata field', async () => {
     const allEntities = await entities.get({ template: factory.id('template1') });
-    expect(allEntities).toMatchObject(expected);
-  });
-
-  it('should persist changes in the database', async () => {
-    let allEntities = await entities.get({ template: factory.id('template1') });
-    allEntities = await db
-      ?.collection('entities')
-      .find({ template: factory.id('template1') })
-      .toArray();
-    expect(allEntities).toMatchObject(expected);
-  });
-
-  it('should only read when not obsolete', async () => {
-    const allEntities = await entities.get({ template: factory.id('template2') });
     expect(allEntities).toMatchObject([
       {
-        sharedId: 'entity4',
-        language: 'en',
-        metadata: {
-          relProp2: [{ value: 'existing_value' }],
-        },
-        obsoleteMetadata: [],
+        _id: factory.id('entity1-en'),
+        sharedId: 'entity1',
+        obsoleteMetadata: ['relProp'],
       },
       {
-        sharedId: 'entity4',
-        language: 'es',
-        metadata: {
-          relProp2: [{ value: 'existing_value' }],
-        },
-        obsoleteMetadata: [],
+        _id: factory.id('entity1-es'),
+        sharedId: 'entity1',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity2-en'),
+        sharedId: 'entity2',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity2-es'),
+        sharedId: 'entity2',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity3-en'),
+        sharedId: 'entity3',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity3-es'),
+        sharedId: 'entity3',
+        obsoleteMetadata: ['relProp'],
       },
     ]);
-  });
-});
-
-describe('entities.getById()', () => {
-  it('should not fail on undefined sharedId input', async () => {
-    const entity = await entities.getById(undefined, 'en');
-    expect(entity).toBe(undefined);
   });
 });
 
 describe('entities.save()', () => {
   describe('when creating an entity', () => {
     it('should mark newRelationship metadata as obsolete on the created entity', async () => {
-      const performSpy = jest
-        .spyOn(v2Support, 'assignNewRelationshipFieldsValues')
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .mockImplementation(async (e: any) => Promise.resolve());
       const markSpy = jest
         .spyOn(v2Support, 'denormalizeAfterEntityCreation')
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -260,7 +202,6 @@ describe('entities.save()', () => {
       const inDb = await db?.collection('entities').find({ title: 'new_entity' }).toArray();
       expect(inDb).toMatchObject([expected, expected]);
 
-      performSpy.mockRestore();
       markSpy.mockRestore();
     });
   });
