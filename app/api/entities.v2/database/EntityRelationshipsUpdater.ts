@@ -7,7 +7,7 @@ import { RelationshipProperty } from 'api/templates.v2/model/RelationshipPropert
 import { MongoEntitiesDataSource } from './MongoEntitiesDataSource';
 import { EntityJoinTemplate } from './schemas/EntityTypes';
 
-export class Denormalizer {
+export class EntityRelationshipsUpdater {
   private entitiesDataSource: MongoEntitiesDataSource;
 
   private templatesDataSource: MongoTemplatesDataSource;

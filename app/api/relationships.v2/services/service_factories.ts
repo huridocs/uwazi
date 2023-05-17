@@ -16,8 +16,8 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { Denormalizer } from 'api/entities.v2/database/Denormalizer';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { EntityRelationshipsUpdater } from 'api/entities.v2/database/EntityRelationshipsUpdater';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
@@ -43,15 +43,14 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
-const createDenormalizationStrategy = (strategyKey: string, denormalizer: Denormalizer) => {
+const createDenormalizationStrategy = (
+  strategyKey: string,
+  updater: EntityRelationshipsUpdater
+) => {
   const transactionManager = new MongoTransactionManager(getClient());
   switch (strategyKey) {
     case OnlineDenormalizationStrategy.name:
-      return new OnlineDenormalizationStrategy(
-        indexEntitiesCallback,
-        denormalizer,
-        transactionManager
-      );
+      return new OnlineDenormalizationStrategy(indexEntitiesCallback, updater, transactionManager);
     case QueuedDenormalizationStrategy.name:
       return new QueuedDenormalizationStrategy();
     default:
@@ -76,7 +75,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
     indexEntitiesCallback,
     createDenormalizationStrategy(
       newRelationshipsSettings.denormalizationStrategy ?? 'OnlineDenormalizationStrategy',
-      new Denormalizer(entitiesDS, templatesDS, relationshipsDS)
+      new EntityRelationshipsUpdater(entitiesDS, templatesDS, relationshipsDS)
     )
   );
 
