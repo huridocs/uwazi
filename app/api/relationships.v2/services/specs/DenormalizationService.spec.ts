@@ -8,10 +8,10 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
-import { DenormalizationService } from '../DenormalizationService';
-import { OnlineRelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import { DenormalizationService } from '../DenormalizationService';
+import { OnlineRelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 
 const factory = getFixturesFactory();
 
