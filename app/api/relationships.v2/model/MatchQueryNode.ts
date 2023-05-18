@@ -1,4 +1,5 @@
 import { Relationship } from 'api/relationships.v2/model/Relationship';
+import _ from 'lodash';
 import { QueryNode } from './QueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
 
@@ -17,6 +18,13 @@ interface EntitiesMap {
   [sharedId: string]: Entity;
 }
 
+interface TemplateRecordElement {
+  path: number[];
+  templates: string[];
+}
+
+type TemplateRecords = TemplateRecordElement[];
+
 export class MatchQueryNode extends QueryNode {
   private filters: MatchFilters;
 
@@ -27,7 +35,10 @@ export class MatchQueryNode extends QueryNode {
   constructor(filters?: MatchFilters, traversals?: TraversalQueryNode[]) {
     super();
     this.filters = filters || {};
-    traversals?.forEach(t => this.addTraversal(t));
+    traversals?.forEach(t => {
+      this.traversals.push(t);
+      t.setParent(this);
+    });
   }
 
   protected getChildrenNodes(): QueryNode[] {
@@ -36,11 +47,6 @@ export class MatchQueryNode extends QueryNode {
 
   getFilters() {
     return { ...this.filters };
-  }
-
-  addTraversal(traversal: TraversalQueryNode) {
-    this.traversals.push(traversal);
-    traversal.setParent(this);
   }
 
   getTraversals() {
@@ -53,6 +59,14 @@ export class MatchQueryNode extends QueryNode {
 
   getParent() {
     return this.parent;
+  }
+
+  isSame(other: MatchQueryNode): boolean {
+    return (
+      _.isEqual(this.filters, other.filters) &&
+      this.traversals.length === other.traversals.length &&
+      this.traversals.every((traversal, index) => traversal.isSame(other.traversals[index]))
+    );
   }
 
   chainsDecomposition(): MatchQueryNode[] {
@@ -143,7 +157,59 @@ export class MatchQueryNode extends QueryNode {
     return this.invertingAlgorithm(subquery => subquery.reachesEntity(entity));
   }
 
+  getTemplates(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    records.push({
+      path,
+      templates: this.filters.templates || [],
+    });
+    if (this.traversals.length) {
+      this.traversals.forEach((t, index) => t.getTemplates([...path, index], records));
+    }
+    return records;
+  }
+
+  usesTemplate(templateId: string): boolean {
+    return (
+      this.filters.templates?.includes(templateId) ||
+      this.traversals.some(traversal => traversal.usesTemplate(templateId))
+    );
+  }
+
+  usesType(typeId: string): boolean {
+    return this.traversals.some(traversal => traversal.usesType(typeId));
+  }
+
+  getRelationTypes(
+    path: number[] = [],
+    _records: TemplateRecords | undefined = undefined
+  ): TemplateRecords {
+    const records = _records || [];
+    if (this.traversals.length) {
+      this.traversals.forEach((t, index) => t.getRelationTypes([...path, index], records));
+    }
+    return records;
+  }
+
+  getTemplatesInLeaves(path: number[] = []): TemplateRecords {
+    if (!this.traversals?.length) {
+      return [
+        {
+          path,
+          templates: this.filters.templates || [],
+        },
+      ];
+    }
+
+    return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
+  }
+
   static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
     return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
   }
 }
+
+export type { TemplateRecordElement, TemplateRecords };

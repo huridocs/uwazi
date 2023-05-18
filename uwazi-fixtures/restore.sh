@@ -7,7 +7,7 @@ HOST=${2:-${DBHOST:-127.0.0.1}}
 TRANSPILED=${3:-${TRANSPILED:-false}}
 
 echo -e "\n\nDeleting $DB database"
-mongo -host "$HOST" "$DB" --eval "db.dropDatabase()"
+mongosh --quiet -host "$HOST" "$DB" --eval "db.dropDatabase()"
 mongorestore -h "$HOST" uwazi-fixtures/dump/uwazi_development/ --db="$DB"
 
 echo "Restoring pdfs..."

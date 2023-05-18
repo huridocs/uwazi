@@ -7,6 +7,7 @@ import { ToggleButton } from './ToggleButton';
 import { InputField } from './InputField';
 import { ModalContainer } from './ModalContainer';
 import { NotificationsContainer } from './NotificationsContainer';
+import { Sidepanel } from './Sidepanel';
 
 export {
   Button,
@@ -18,4 +19,5 @@ export {
   InputField,
   ModalContainer,
   NotificationsContainer,
+  Sidepanel,
 };

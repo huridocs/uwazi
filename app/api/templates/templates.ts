@@ -26,6 +26,7 @@ import {
   getUpdatedNames,
   updateExtractedMetadataProperties,
 } from './utils';
+import * as v2 from './v2_support';
 
 const createTranslationContext = (template: TemplateSchema) => {
   const titleProperty = ensure<PropertySchema>(
@@ -163,13 +164,17 @@ export default {
     /* eslint-enable no-param-reassign */
 
     await validateTemplate(template);
-    await this.swapNamesValidation(template);
+    const mappedTemplate = await v2.processNewRelationshipProperties(template);
+
+    await this.swapNamesValidation(mappedTemplate);
 
     if (reindex) {
-      await updateMapping([template]);
+      await updateMapping([mappedTemplate]);
     }
 
-    return template._id ? this._update(template, language, reindex) : _save(template);
+    return mappedTemplate._id
+      ? this._update(mappedTemplate, language, reindex)
+      : _save(mappedTemplate);
   },
 
   async swapNamesValidation(template: TemplateSchema) {
@@ -207,6 +212,8 @@ export default {
     const generatedIdAdded = await checkAndFillGeneratedIdProperties(currentTemplate, template);
     const savedTemplate = await model.save(template);
     if (templateStructureChanges) {
+      await v2.processNewRelationshipPropertiesOnUpdate(currentTemplate, savedTemplate);
+
       await entities.updateMetadataProperties(template, currentTemplate, language, {
         reindex,
         generatedIdAdded,
@@ -298,6 +305,9 @@ export default {
     if (count > 0) {
       return Promise.reject({ key: 'documents_using_template', value: count }); // eslint-disable-line prefer-promise-reject-errors
     }
+
+    await v2.processNewRelationshipPropertiesOnDelete(template._id);
+
     const _id = ensure<string>(template._id);
     await translations.deleteContext(_id);
     await this.removePropsWithNonexistentId(_id);

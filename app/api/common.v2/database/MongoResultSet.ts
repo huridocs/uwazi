@@ -66,6 +66,21 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return counter > 0 && result;
   }
 
+  async some(predicate: (item: U) => boolean): Promise<boolean> {
+    let result = false;
+
+    while (await this.hasNext()) {
+      const item = await this.next();
+      if (predicate(item!) === true) {
+        result = true;
+        break;
+      }
+    }
+
+    await this.close();
+    return result;
+  }
+
   async first() {
     this.mongoCursor.limit(1);
     const [result] = await this.all();

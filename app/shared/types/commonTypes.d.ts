@@ -1,6 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 import { ObjectId } from 'mongodb';
+import { TraverseInputType } from 'shared/types/relationshipsQueryTypes'
 
 export interface AttachmentSchema {
   _id?: string | ObjectId;
@@ -184,9 +185,7 @@ export interface PropertySchema {
   showInCard?: boolean;
   style?: string;
   nestedProperties?: string[];
-  query?: {
-    [k: string]: unknown | undefined;
-  }[];
+  query?: unknown[];
   denormalizedProperty?: string;
 }
 

@@ -379,3 +379,35 @@ describe('when calling a method that only supports chain queries', () => {
     }
   );
 });
+
+describe('when getting the templates matched by the leaf nodes', () => {
+  it('should return an array containing the occurrences of the template ids', () => {
+    /* eslint-disable */
+    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+      new TraversalQueryNode('out', {}, [ // R -> A
+        new MatchQueryNode({}, [ // A
+          new TraversalQueryNode('out', {}, [ // A -> B
+            new MatchQueryNode({
+              templates: ['template1', 'template2']
+            }, []), //B
+          ]),
+          new TraversalQueryNode('out', {}, [ // A -> D
+            new MatchQueryNode({}, []), // D
+          ]),
+        ]),
+      ]),
+      new TraversalQueryNode('out', {}, [ // R -> C
+        new MatchQueryNode({ templates: ['template2'] }, []) // C
+      ]),
+    ]);
+    /* eslint-enable */
+
+    const templates = query.getTemplatesInLeaves();
+
+    expect(templates).toEqual([
+      { path: [0, 0, 0, 0], templates: ['template1', 'template2'] },
+      { path: [0, 0, 1, 0], templates: [] },
+      { path: [1, 0], templates: ['template2'] },
+    ]);
+  });
+});

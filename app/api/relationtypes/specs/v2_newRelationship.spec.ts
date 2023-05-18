@@ -5,6 +5,19 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 const factory = getFixturesFactory();
 
+const queryInDb = [
+  {
+    direction: 'out',
+    types: [factory.id('rtype_used_in_query')],
+    match: [
+      {
+        templates: [factory.id('template1')],
+        traverse: [],
+      },
+    ],
+  },
+];
+
 const fixtures = {
   entities: [
     factory.entity('entity1', 'template1'),
@@ -34,8 +47,17 @@ const fixtures = {
       _id: factory.id('rtype2'),
       name: 'rtype2',
     },
+    {
+      _id: factory.id('rtype_used_in_query'),
+      name: 'rtype_used_in_query',
+    },
   ],
-  templates: [factory.template('template1')],
+  templates: [
+    factory.template('template1'),
+    factory.template('template_with_query', [
+      factory.property('query', 'newRelationship', { query: queryInDb }),
+    ]),
+  ],
   settings: [
     {
       languages: [
@@ -76,6 +98,9 @@ describe('relationtypes.delete()', () => {
       {
         name: 'rtype2',
       },
+      {
+        name: 'rtype_used_in_query',
+      },
     ]);
   });
 
@@ -86,6 +111,26 @@ describe('relationtypes.delete()', () => {
     expect(inDb).toMatchObject([
       {
         name: 'rtype1',
+      },
+      {
+        name: 'rtype_used_in_query',
+      },
+    ]);
+  });
+
+  it('should not delete type when it is used in a query', async () => {
+    const answer = await relationtypes.delete(factory.id('rtype_used_in_query'));
+    const inDb = await db?.collection('relationtypes').find({}).toArray();
+    expect(answer).toBe(false);
+    expect(inDb).toMatchObject([
+      {
+        name: 'rtype1',
+      },
+      {
+        name: 'rtype2',
+      },
+      {
+        name: 'rtype_used_in_query',
       },
     ]);
   });

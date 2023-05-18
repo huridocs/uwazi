@@ -15,7 +15,7 @@ fi
 
 rm -rf $DB*
 tar xzf $OLDWD/$DB.tar.gz
-mongo -host $HOST $DB --eval "db.dropDatabase()"
+mongosh --quiet -host $HOST $DB --eval "db.dropDatabase()"
 mongorestore -h $HOST --gzip --db $DB $DB/$DB
 cp $DB/uploaded_documents/* $OLDWD/uploaded_documents
 

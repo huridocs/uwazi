@@ -16,6 +16,7 @@ import {
 import { DenormalizationService } from './DenormalizationService';
 
 interface ReferencePointerData {
+  type: 'text';
   entity: string;
   file: string;
   selections: {
@@ -28,16 +29,15 @@ interface ReferencePointerData {
   text: string;
 }
 
-interface CreateRelationshipData {
-  from: string | ReferencePointerData;
-  to: string | ReferencePointerData;
-  type: string;
+interface EntityPointerData {
+  type: 'entity';
+  entity: string;
 }
 
-function isReferencePointerData(
-  data: CreateRelationshipData['from' | 'to']
-): data is ReferencePointerData {
-  return typeof data === 'object';
+interface CreateRelationshipData {
+  from: EntityPointerData | ReferencePointerData;
+  to: EntityPointerData | ReferencePointerData;
+  type: string;
 }
 
 function mapDataToSelection(data: ReferencePointerData['selections']) {
@@ -54,14 +54,14 @@ function mapDataToSelection(data: ReferencePointerData['selections']) {
 }
 
 function mapDataToPointer(data: CreateRelationshipData['from' | 'to']) {
-  return isReferencePointerData(data)
+  return data.type === 'text'
     ? new TextReferencePointer(
         data.entity,
         data.file,
         mapDataToSelection(data.selections),
         data.text
       )
-    : new EntityPointer(data);
+    : new EntityPointer(data.entity);
 }
 
 function mapDataToRelationship(data: CreateRelationshipData, generateId: () => string) {
@@ -141,6 +141,10 @@ export class CreateRelationshipService {
   }
 
   async create(relationships: CreateRelationshipData[]) {
+    if (!relationships.length) {
+      return [];
+    }
+
     const { models, usedTypes, relatedEntities, relatedFilesForEntities } =
       this.processInput(relationships);
 

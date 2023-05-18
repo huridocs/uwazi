@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import { ObjectId } from 'mongodb';
+
 import db from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
@@ -17,6 +19,8 @@ import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
+import { TemplateSchema } from 'shared/types/templateType';
+import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -27,6 +31,27 @@ function getIdMapper() {
     return map.get(key)!;
   };
 }
+
+const commonProperties: TemplateSchema['commonProperties'] = [
+  {
+    label: 'Title',
+    name: 'title',
+    isCommonProperty: true,
+    type: 'text',
+  },
+  {
+    label: 'Date added',
+    name: 'creationDate',
+    isCommonProperty: true,
+    type: 'date',
+  },
+  {
+    label: 'Date modified',
+    name: 'editDate',
+    isCommonProperty: true,
+    type: 'date',
+  },
+];
 
 const thesaurusNestedValues = (
   rootValue: string,
@@ -47,10 +72,14 @@ function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
-    template: (name: string, properties: PropertySchema[] = []) => ({
+    template: (
+      name: string,
+      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
+    ) => ({
       _id: idMapper(name),
       name,
       properties,
+      commonProperties,
     }),
 
     entity: (
@@ -117,6 +146,11 @@ function getFixturesFactory() {
       extractedMetadata,
     }),
 
+    relationType: (name: string): { _id: ObjectId; name: string } => ({
+      _id: idMapper(name),
+      name,
+    }),
+
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),
@@ -136,6 +170,8 @@ function getFixturesFactory() {
       type,
       ...props,
     }),
+
+    commonProperties: () => _.cloneDeep(commonProperties),
 
     metadataValue: (value: PropertyValueSchema): MetadataObjectSchema => ({
       value,
@@ -223,6 +259,8 @@ function getFixturesFactory() {
       state: SuggestionState.valueEmpty,
       ...otherProps,
     }),
+
+    v2: getV2FixturesFactoryElements(idMapper),
   });
 }
 

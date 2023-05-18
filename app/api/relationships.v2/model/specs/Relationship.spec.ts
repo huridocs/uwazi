@@ -1,4 +1,15 @@
-import { TextReferencePointer, Selection } from '../Relationship';
+import { TextReferencePointer, Selection, Relationship, EntityPointer } from '../Relationship';
+
+describe('getEntities()', () => {
+  it('should return the entities from all relationships as a set', () => {
+    const relationships = [
+      new Relationship('1', new EntityPointer('1'), new EntityPointer('2'), 'type'),
+      new Relationship('2', new EntityPointer('2'), new EntityPointer('3'), 'type'),
+      new Relationship('3', new EntityPointer('3'), new EntityPointer('4'), 'type'),
+    ];
+    expect(Relationship.getSharedIds(relationships)).toEqual(new Set(['1', '2', '3', '4']));
+  });
+});
 
 describe('SelectionRectangle', () => {
   it.each([

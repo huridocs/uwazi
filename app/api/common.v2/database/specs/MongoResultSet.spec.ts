@@ -95,6 +95,29 @@ describe('when built from a $type cursor', () => {
     });
   });
 
+  describe('using some(...) to check a predicate against every item', () => {
+    it('should return true if it is true for at least one item', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.some(item => item === 'doc3')).toBe(true);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should return false if it is false for every item', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.some(item => item.startsWith('notDoc'))).toBe(false);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should return false if there are no items', async () => {
+      const cursor = buildCursor({ name: 'non-existing' });
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.some(item => item.startsWith('doc'))).toBe(false);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
   describe('using forEach(...)', () => {
     it('should execute the sync callback for every item', async () => {
       const cursor = buildCursor();

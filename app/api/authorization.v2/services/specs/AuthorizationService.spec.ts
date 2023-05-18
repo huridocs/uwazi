@@ -5,7 +5,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { AuthorizationService } from '../AuthorizationService';
+import { AccessLevels, AuthorizationService } from '../AuthorizationService';
 
 const factory = getFixturesFactory();
 
@@ -153,4 +153,74 @@ describe("When there's an authenticated user", () => {
       expect(await auth.isAuthorized(level, entities)).toBe(result);
     });
   });
+});
+
+describe('When filtering entities', () => {
+  it.each<{
+    user: User | undefined;
+    usertype: string;
+    level: AccessLevels;
+    expectedResult: string[];
+  }>([
+    {
+      user: new User(factory.id('user2').toHexString(), 'collaborator', []),
+      usertype: 'collaborator',
+      level: 'read',
+      expectedResult: ['entity1', 'entity2', 'entity3'],
+    },
+    {
+      user: new User(factory.id('user2').toHexString(), 'collaborator', []),
+      usertype: 'collaborator',
+      level: 'write',
+      expectedResult: ['entity2'],
+    },
+    {
+      user: new User(factory.id('user1').toHexString(), 'editor', []),
+      usertype: 'editor',
+      level: 'read',
+      expectedResult: ['entity1', 'entity2', 'entity3'],
+    },
+    {
+      user: new User(factory.id('user1').toHexString(), 'editor', []),
+      usertype: 'editor',
+      level: 'write',
+      expectedResult: ['entity1', 'entity2', 'entity3'],
+    },
+    {
+      user: new User(factory.id('user1').toHexString(), 'admin', []),
+      usertype: 'admin',
+      level: 'read',
+      expectedResult: ['entity1', 'entity2', 'entity3'],
+    },
+    {
+      user: new User(factory.id('user1').toHexString(), 'admin', []),
+      usertype: 'admin',
+      level: 'write',
+      expectedResult: ['entity1', 'entity2', 'entity3'],
+    },
+    {
+      user: undefined,
+      usertype: 'undefined',
+      level: 'read',
+      expectedResult: ['entity3'],
+    },
+    {
+      user: undefined,
+      usertype: 'undefined',
+      level: 'write',
+      expectedResult: [],
+    },
+  ])(
+    'should filter entities for a/an $usertype to $level',
+    async ({ user, level, expectedResult }) => {
+      const auth = new AuthorizationService(
+        new MongoPermissionsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        user
+      );
+
+      const filtered = await auth.filterEntities(level, ['entity1', 'entity2', 'entity3']);
+
+      expect(filtered).toEqual(expectedResult);
+    }
+  );
 });

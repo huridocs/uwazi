@@ -4,4 +4,5 @@ export interface ResultSet<T> {
   first(): Promise<T | null>;
   forEach(callback: (item: T) => Promise<void> | void): Promise<void>;
   every(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
+  some(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
 }

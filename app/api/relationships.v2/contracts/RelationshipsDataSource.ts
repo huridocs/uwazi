@@ -9,6 +9,7 @@ export interface RelationshipsDataSource {
   exists(_ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByFiles(fileIds: string[]): ResultSet<Relationship>;
+  getByEntities(entityIds: string[]): ResultSet<Relationship>;
   deleteByEntities(sharedIds: string[]): Promise<void>;
   deleteByReferencedFiles(fileIds: string[]): Promise<void>;
   countByType(type: string): Promise<number>;
