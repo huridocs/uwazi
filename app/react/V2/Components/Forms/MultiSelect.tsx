@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
 import { sortBy } from 'lodash';
+import { usePopper } from 'react-popper';
+import { Popover, Transition } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
-import { useOnClickOutside } from 'V2/shared/useOnClickOutside';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string; selected?: boolean };
@@ -14,56 +15,24 @@ interface MultiSelectProps {
   onChange?: (options: Option[]) => any;
 }
 
-const CONTEXT_MENU_MAX_HEIGHT = 224;
-
 const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contextMenuRef = useRef<HTMLUListElement>(null);
-
-  const [showMenu, setShowMenu] = useState(false);
-  const [verticalPosition, setVerticalPosition] = useState('0px');
   const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
-
-  useOnClickOutside<HTMLDivElement>(containerRef, () => setShowMenu(false));
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-end',
+  });
 
   const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <div
-      className="border rounded-lg border-gray-50 relative"
-      data-testid="multiselect-comp"
-      ref={containerRef}
-    >
+    <Popover className="border rounded-lg border-gray-50 relative" data-testid="multiselect-comp">
       <div className="border-b border-gray-50 bg-gray-50 p-2 flex justify-between">
         <div className="text-indigo-700 text-base">{label}</div>
         <div className="left-0">
-          <button
-            type="button"
-            className="text-indigo-700"
-            onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              setVerticalPosition('0px');
-              setShowMenu(!showMenu);
-              setTimeout(() => {
-                // @ts-ignore
-                const box = e.target.getBoundingClientRect();
-                const windowHeight = window.innerHeight;
-                const contextMenu = contextMenuRef.current?.getBoundingClientRect();
-
-                const contextMenuHeight = contextMenu
-                  ? contextMenu.height
-                  : CONTEXT_MENU_MAX_HEIGHT;
-                const contextMenuBottom = box.bottom + contextMenuHeight;
-                if (contextMenuBottom >= windowHeight) {
-                  const yPosition = -contextMenuHeight;
-                  setVerticalPosition(`${yPosition + box.height}px`);
-                } else {
-                  setVerticalPosition(`${box.height}px`);
-                }
-              }, 0);
-            }}
-          >
+          <Popover.Button ref={setReferenceElement} className="text-indigo-700">
             <PlusCircleIcon className="text-lg w-6" />
-          </button>
+          </Popover.Button>
         </div>
       </div>
 
@@ -95,11 +64,21 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
         )}
       </div>
 
-      {showMenu ? (
-        <ul
-          ref={contextMenuRef}
-          style={{ top: verticalPosition || '0px' }}
+      <Transition
+        enter="transition duration-100 ease-out"
+        enterFrom="transform scale-95 opacity-0"
+        enterTo="transform scale-100 opacity-100"
+        leave="transition duration-75 ease-out"
+        leaveFrom="transform scale-100 opacity-100"
+        leaveTo="transform scale-95 opacity-0"
+      >
+        <Popover.Panel
+          ref={setPopperElement}
+          style={styles.popper}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...attributes.popper}
           className="p-2 w-fit max-w-md rounded max-h-56 overflow-y-auto absolute right-8 shadow-md bg-white"
+          as="ul"
         >
           {optionsState.map((option: Option) => (
             <li key={option.label} className="py-1 flex gap-1 align-top">
@@ -120,9 +99,9 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
               <span className="ml-2">{option.label}</span>
             </li>
           ))}
-        </ul>
-      ) : null}
-    </div>
+        </Popover.Panel>
+      </Transition>
+    </Popover>
   );
 };
 
