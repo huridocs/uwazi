@@ -170,7 +170,6 @@ describe('when recalculating the relationships fields for some entities', () => 
       ?.collection('entities')
       .find({ sharedId: { $in: ids } })
       .toArray();
-    console.log(JSON.stringify(entities, null, 2));
 
     expect(entities).toMatchObject([
       {
