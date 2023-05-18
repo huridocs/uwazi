@@ -107,6 +107,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Edit').should('be.visible').click();
     addTimeLink(2000, 'Control point');
     saveEntity();
+    cy.get('.app-content').toMatchImageSnapshot();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });

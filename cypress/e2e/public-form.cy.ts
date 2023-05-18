@@ -4,7 +4,7 @@ import { clearCookiesAndLogin } from './helpers/login';
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    //cy.exec('yarn e2e-puppeteer-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -102,6 +102,13 @@ describe('Public Form', () => {
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+      cy.get('img').should('be.visible');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(200);
+      cy.get('.form-group image').scrollIntoView();
+      cy.get('.form-group image').toMatchImageSnapshot({
+        clip: { x: 0, y: 0, width: 100, height: 100 },
+      });
     });
 
     it('should fill the Video field', () => {
@@ -113,6 +120,11 @@ describe('Public Form', () => {
           force: true,
         }
       );
+      cy.get('video').should('be.visible');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(200);
+      cy.get('.form-group media').scrollIntoView();
+      cy.get('.form-group media').toMatchImageSnapshot();
     });
 
     it('should fill the Imagen adicional field', () => {
@@ -121,6 +133,7 @@ describe('Public Form', () => {
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+      cy.get('.form-group media', { timeout: 2000 }).scrollIntoView();
     });
 
     it('should fill the captcha and save', () => {
