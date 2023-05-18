@@ -22,78 +22,82 @@ const Users = () => {
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
 
   return (
-    <div className="tw-content" style={{ width: '100%', overflowY: 'auto', paddingTop: '12px' }}>
-      <div className="p-4 h-full">
-        <div className="pb-4">
-          <NavigationHeader backUrl="/settings">
-            <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
-              <Translate>Users & Groups</Translate>
-            </h1>
-          </NavigationHeader>
+    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
+      <div className="flex flex-col h-full">
+        <div className="flex-grow px-5 pt-5">
+          <div className="pb-4">
+            <NavigationHeader backUrl="/settings">
+              <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
+                <Translate>Users & Groups</Translate>
+              </h1>
+            </NavigationHeader>
+          </div>
+
+          <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
+            <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
+              <UsersTable
+                users={users}
+                editButtonAction={selectedUser => {
+                  setSelected(selectedUser);
+                  setShowSidepanel(true);
+                }}
+                onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
+              />
+            </Tabs.Tab>
+            <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
+              <GroupsTable
+                groups={groups}
+                editButtonAction={selectedGroup => {
+                  setSelected(selectedGroup);
+                  setShowSidepanel(true);
+                }}
+                onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
+              />
+            </Tabs.Tab>
+          </Tabs>
         </div>
 
-        <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
-          <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
-            <UsersTable
-              users={users}
-              editButtonAction={selectedUser => {
-                setSelected(selectedUser);
-                setShowSidepanel(true);
-              }}
-              onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
-            />
-          </Tabs.Tab>
-          <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
-            <GroupsTable
-              groups={groups}
-              editButtonAction={selectedGroup => {
-                setSelected(selectedGroup);
-                setShowSidepanel(true);
-              }}
-              onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
-            />
-          </Tabs.Tab>
-        </Tabs>
+        <SettingsFooter>
+          <div className="flex gap-2 p-2 pt-1">
+            {selectedUsers.length > 0 ? (
+              <>
+                <Button size="small" buttonStyle="tertiary">
+                  <Translate>Reset password</Translate>
+                </Button>
+                <Button size="small" buttonStyle="tertiary">
+                  <Translate>Reset 2FA</Translate>
+                </Button>
+                <Button size="small" buttonStyle="danger">
+                  <Translate>Delete</Translate>
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="small"
+                buttonStyle="primary"
+                onClick={() => {
+                  setShowSidepanel(true);
+                }}
+              >
+                {activeTab === 'Users' ? (
+                  <Translate>Add user</Translate>
+                ) : (
+                  <Translate>Add group</Translate>
+                )}
+              </Button>
+            )}
+          </div>
+        </SettingsFooter>
       </div>
-
-      <SettingsFooter>
-        <div className="flex gap-2 p-2 pt-1">
-          {selectedUsers.length > 0 ? (
-            <>
-              <Button size="small" buttonStyle="tertiary">
-                <Translate>Reset password</Translate>
-              </Button>
-              <Button size="small" buttonStyle="tertiary">
-                <Translate>Reset 2FA</Translate>
-              </Button>
-              <Button size="small" buttonStyle="danger">
-                <Translate>Delete</Translate>
-              </Button>
-            </>
-          ) : (
-            <Button
-              size="small"
-              buttonStyle="primary"
-              onClick={() => {
-                setShowSidepanel(true);
-              }}
-            >
-              {activeTab === 'Users' ? (
-                <Translate>Add user</Translate>
-              ) : (
-                <Translate>Add group</Translate>
-              )}
-            </Button>
-          )}
-        </div>
-      </SettingsFooter>
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
-          selectedUser={selected as ClientUserSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSelected}
+          selectedUser={selected as ClientUserSchema}
+          users={users}
+          groups={groups}
         />
       ) : (
         <GroupFormSidepanel
@@ -101,6 +105,8 @@ const Users = () => {
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSelected}
+          users={users}
+          groups={groups}
         />
       )}
     </div>

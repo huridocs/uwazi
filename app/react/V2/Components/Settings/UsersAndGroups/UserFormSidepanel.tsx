@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useLoaderData } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
@@ -10,12 +9,14 @@ import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
 
 interface UserFormSidepanelProps {
-  selectedUser?: ClientUserSchema;
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   setSelected: React.Dispatch<
     React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
   >;
+  selectedUser?: ClientUserSchema;
+  users?: ClientUserSchema[];
+  groups?: ClientUserGroupSchema[];
 }
 
 const userRoles = [
@@ -36,16 +37,15 @@ const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: Clie
   );
 
 const UserFormSidepanel = ({
-  selectedUser,
   showSidepanel,
   setShowSidepanel,
   setSelected,
+  selectedUser,
+  users,
+  groups,
 }: UserFormSidepanelProps) => {
   const [showModal, setShowModal] = useState(false);
-  const { users, groups } = useLoaderData() as {
-    users: ClientUserSchema[];
-    groups: ClientUserGroupSchema[];
-  };
+
   const defaultValues = {
     username: '',
     email: '',
@@ -218,7 +218,7 @@ const UserFormSidepanel = ({
                   setValue(
                     'groups',
                     selectedGroups.map(selectedGroup => {
-                      const group = groups.find(
+                      const group = groups?.find(
                         originalGroup => originalGroup.name === selectedGroup.value
                       );
                       return { _id: group?._id as string, name: group?.name as string };
@@ -226,7 +226,7 @@ const UserFormSidepanel = ({
                     { shouldDirty: true }
                   );
                 }}
-                options={groups.map(group => {
+                options={(groups || []).map(group => {
                   const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name) || [];
                   if (userGroups.includes(group.name)) {
                     return { label: group.name, value: group.name, selected: true };

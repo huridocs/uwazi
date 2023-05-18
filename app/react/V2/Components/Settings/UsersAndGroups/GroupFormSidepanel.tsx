@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
@@ -9,12 +8,14 @@ import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { ConfirmationModal } from './ConfirmationModal';
 
 interface GroupFormSidepanelProps {
-  selectedGroup?: ClientUserGroupSchema;
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   setSelected: React.Dispatch<
     React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
   >;
+  selectedGroup?: ClientUserGroupSchema;
+  users?: ClientUserSchema[];
+  groups?: ClientUserGroupSchema[];
 }
 
 const isUnique = (
@@ -33,12 +34,11 @@ const GroupFormSidepanel = ({
   showSidepanel,
   setShowSidepanel,
   setSelected,
+  groups,
+  users,
 }: GroupFormSidepanelProps) => {
   const [showModal, setShowModal] = useState(false);
-  const { groups, users } = useLoaderData() as {
-    groups: ClientUserGroupSchema[];
-    users: ClientUserSchema[];
-  };
+
   const defaultValues = { name: '', members: [] } as ClientUserGroupSchema;
 
   const {
@@ -131,7 +131,7 @@ const GroupFormSidepanel = ({
                     { shouldDirty: true }
                   );
                 }}
-                options={users.map(user => {
+                options={(users || []).map(user => {
                   const members = selectedGroup?.members.map(member => member.refId) || [];
                   if (members.includes(user._id || '')) {
                     return { label: user.username, value: user._id as string, selected: true };
