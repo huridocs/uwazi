@@ -5,7 +5,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
     clearCookiesAndLogin();
-    cy.viewport(1024, 900);
   });
 
   beforeEach(() => {
