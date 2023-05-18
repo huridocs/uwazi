@@ -15,7 +15,6 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
-import { FetchResponseError } from 'shared/JSONRequest';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
@@ -194,14 +193,6 @@ const EditTranslations = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    if (fetcher.data instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: fetcher.data.json.error,
-      });
-    }
-
     if (fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data)) {
       setNotifications({
         type: 'success',
@@ -213,6 +204,14 @@ const EditTranslations = () => {
       setNotifications({
         type: 'success',
         text: <Translate>Translations imported.</Translate>,
+      });
+    }
+
+    if (fetcher.data) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: fetcher.data.json ? fetcher.data.json : undefined,
       });
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
