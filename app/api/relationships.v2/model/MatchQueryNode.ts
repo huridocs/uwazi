@@ -207,8 +207,8 @@ export class MatchQueryNode extends QueryNode {
     return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
   }
 
-  static forEntity(entity: Entity, traversals?: TraversalQueryNode[]) {
-    return new MatchQueryNode({ sharedId: entity.sharedId }, traversals);
+  static forEntity(sharedId: string, traversals?: TraversalQueryNode[]) {
+    return new MatchQueryNode({ sharedId }, traversals);
   }
 }
 

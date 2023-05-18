@@ -13,7 +13,6 @@ import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { Readable } from 'stream';
-import waitForExpect from 'wait-for-expect';
 import {
   deleteFile,
   fileExistsOnPath,
@@ -83,23 +82,6 @@ describe('storage', () => {
         testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
       });
 
-      it('should store it on the s3 bucket and then return it as a readable', async () => {
-        await expect(
-          (await storage.fileContents('test_s3_file.txt', 'document')).toString()
-        ).toMatch('test content');
-        await waitForExpect(async () => {
-          const response = await s3.send(
-            new GetObjectCommand({
-              Bucket: 'uwazi-development',
-              Key: 'tenant1/uploads/test_s3_file.txt',
-            })
-          );
-          await expect((await streamToString(response.Body as Readable)).toString()).toMatch(
-            'test content'
-          );
-        });
-      });
-
       it('should return a file from s3 when it is already there', async () => {
         await s3.send(
           new PutObjectCommand({
@@ -113,39 +95,11 @@ describe('storage', () => {
           (await storage.fileContents('already_uploaded.txt', 'document')).toString()
         ).toMatch('already uploaded content');
       });
-    });
-
-    describe('readableFile when s3 feature active and onlyS3 flag is also active', () => {
-      beforeAll(async () => {
-        testingTenants.changeCurrentTenant({
-          name: 'onlyS3Tenant',
-          dbName: 'onlyS3Tenant',
-          indexName: 'index',
-          featureFlags: {
-            s3Storage: true,
-            onlyS3: true,
-          },
-        });
-      });
 
       it('should throw an error when file does not exists', async () => {
         await expect(storage.fileContents('test_s3_file.txt', 'document')).rejects.toBeInstanceOf(
           Error
         );
-      });
-
-      it('should return a file from s3 when it is already there', async () => {
-        await s3.send(
-          new PutObjectCommand({
-            Bucket: 'uwazi-development',
-            Key: 'onlyS3Tenant/uploads/already_uploaded.txt',
-            Body: Buffer.from('already uploaded content', 'utf-8'),
-          })
-        );
-
-        await expect(
-          (await storage.fileContents('already_uploaded.txt', 'document')).toString()
-        ).toMatch('already uploaded content');
       });
     });
 
@@ -177,18 +131,18 @@ describe('storage', () => {
 
   describe('removeFile', () => {
     beforeEach(async () => {
+      await storage.storeFile(
+        'file_to_be_deleted.txt',
+        Readable.from([Buffer.from('to delete content')]),
+        'document'
+      );
+
       testingTenants.changeCurrentTenant({
         name: 'tenant1',
         dbName: 'uwazi_development',
         indexName: 'index',
         featureFlags: { s3Storage: true },
       });
-
-      await storage.storeFile(
-        'file_to_be_deleted.txt',
-        Readable.from(['to delete content']),
-        'document'
-      );
 
       await s3.send(
         new PutObjectCommand({
@@ -200,32 +154,9 @@ describe('storage', () => {
     });
 
     describe('removeFile when s3 feature active', () => {
-      it('should remove it from disk and s3 bucket', async () => {
-        await storage.removeFile('file_to_be_deleted.txt', 'document');
-
-        expect(await fileExistsOnPath(uploadsPath('file_to_be_deleted.txt'))).toBe(false);
-        await expect(async () =>
-          s3.send(
-            new GetObjectCommand({
-              Bucket: 'uwazi-development',
-              Key: 'tenant1/uploads/file_to_be_deleted.txt',
-            })
-          )
-        ).rejects.toBeInstanceOf(NoSuchKey);
-      });
-    });
-
-    describe('when onlyS3 feature is active', () => {
       it('should remove it from s3 bucket', async () => {
-        testingTenants.changeCurrentTenant({
-          name: 'tenant1',
-          dbName: 'uwazi_development',
-          indexName: 'index',
-          featureFlags: { s3Storage: true, onlyS3: true },
-        });
         await storage.removeFile('file_to_be_deleted.txt', 'document');
 
-        expect(await fileExistsOnPath(uploadsPath('file_to_be_deleted.txt'))).toBe(true);
         await expect(async () =>
           s3.send(
             new GetObjectCommand({
@@ -278,16 +209,13 @@ describe('storage', () => {
     });
 
     describe('when s3 feature active', () => {
-      it('should store it on disk and on s3 bucket', async () => {
+      it('should store it on s3 bucket', async () => {
         await storage.storeFile(
           'file_created.txt',
           createReadStream(uploadsPath('documento.txt')),
           'document'
         );
 
-        expect(await streamToString(createReadStream(uploadsPath('file_created.txt')))).toBe(
-          'content created\n'
-        );
         const s3File = await s3.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
@@ -299,41 +227,19 @@ describe('storage', () => {
       });
     });
 
-    describe('when onlyS3 is active', () => {
-      describe('when type is segmentation', () => {
-        it('should store it on a segmentation folder inside uploads path', async () => {
-          testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true, onlyS3: true } });
-          await storage.storeFile(
-            'file_created.txt',
-            createReadStream(uploadsPath('documento.txt')),
-            'segmentation'
-          );
-
-          const s3File = await s3.send(
-            new GetObjectCommand({
-              Bucket: 'uwazi-development',
-              Key: 'tenant1/uploads/segmentation/file_created.txt',
-            })
-          );
-          // @ts-ignore
-          expect(await streamToString(s3File.Body)).toBe('content created\n');
-        });
-      });
-
-      it('should store it on s3 only', async () => {
-        testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true, onlyS3: true } });
+    describe('when type is segmentation', () => {
+      it('should store it on a segmentation folder inside uploads path', async () => {
+        testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: true } });
         await storage.storeFile(
           'file_created.txt',
           createReadStream(uploadsPath('documento.txt')),
-          'document'
+          'segmentation'
         );
-
-        expect(await fileExistsOnPath(uploadsPath('file_created.txt'))).toBe(false);
 
         const s3File = await s3.send(
           new GetObjectCommand({
             Bucket: 'uwazi-development',
-            Key: 'tenant1/uploads/file_created.txt',
+            Key: 'tenant1/uploads/segmentation/file_created.txt',
           })
         );
         // @ts-ignore
@@ -342,7 +248,7 @@ describe('storage', () => {
     });
 
     describe('when s3 feature is not active', () => {
-      it('should store it on disk and not on s3 bucket', async () => {
+      it('should store it on disk', async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { s3Storage: false } });
 
         await storage.storeFile('file_created.txt', Readable.from(['content created']), 'document');
@@ -363,29 +269,45 @@ describe('storage', () => {
   });
 
   describe('fileExists', () => {
-    beforeEach(async () => {
-      testingTenants.changeCurrentTenant({
-        name: 'tenant1',
-        dbName: 'uwazi_development',
-        indexName: 'index',
-        featureFlags: {
-          s3Storage: true,
-          onlyS3: true,
-        },
-      });
-      await storage.storeFile(
-        'file_created.txt',
-        createReadStream(uploadsPath('documento.txt')),
-        'document'
-      );
-    });
-
     afterEach(async () => {
       await storage.removeFile('file_created.txt', 'document');
     });
 
-    describe('when onlyS3 is active', () => {
+    describe('when s3 flag is active', () => {
       it('should check if object exists on s3', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: true,
+          },
+        });
+        await storage.storeFile(
+          'file_created.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
+        expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
+        expect(await storage.fileExists('non_existent.txt', 'document')).toBe(false);
+      });
+    });
+
+    describe('when s3 flag is not active', () => {
+      it('should check if object exists on disk', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+        await storage.storeFile(
+          'file_created.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
         expect(await storage.fileExists('non_existent.txt', 'document')).toBe(false);
       });

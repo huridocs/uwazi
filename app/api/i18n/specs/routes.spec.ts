@@ -6,7 +6,6 @@ import i18nRoutes from 'api/i18n/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { UserRole } from 'shared/types/userSchema';
-import backend from 'fetch-mock';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { availableLanguages } from 'shared/languagesList';
 import { errorLog } from 'api/log';
@@ -247,17 +246,6 @@ describe('i18n translations routes', () => {
       it('should return the saved translation', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
-        backend.get(
-          (url, opts) =>
-            url ===
-              'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/jp.csv' &&
-            // @ts-ignore
-            opts?.headers?.Authorization === `Bearer ${config.githubToken}` &&
-            // @ts-ignore
-            opts?.headers?.accept === 'application/vnd.github.v4.raw',
-          { status: 404 }
-        );
-
         const response = await request(app)
           .post('/api/translations/languages')
           .send([
@@ -368,10 +356,6 @@ describe('i18n translations routes', () => {
     });
 
     describe('api/translations/populate', () => {
-      afterEach(() => {
-        backend.restore();
-      });
-
       it('should save the translations', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/2`;
 
