@@ -50,16 +50,20 @@ export class EntityRelationshipsUpdateService {
     );
   }
 
-  async update(sharedId: string) {
-    let template: Template;
-    await this.entitiesDataSource.getByIds([sharedId]).forEach(async entity => {
-      if (!template) {
-        const foundTemplate = await this.templatesDataSource.getById(entity.template);
-        if (!foundTemplate) {
-          throw new Error('Template does not exist');
-        }
-        template = foundTemplate;
-      }
+  private async findTemplate(currentTemplate: Template | undefined, id: string) {
+    if (currentTemplate?.id === id) return currentTemplate;
+
+    const foundTemplate = await this.templatesDataSource.getById(id);
+    if (!foundTemplate) {
+      throw new Error('Template does not exist');
+    }
+    return foundTemplate;
+  }
+
+  async update(sharedIds: string[]) {
+    let template: Template | undefined;
+    await this.entitiesDataSource.getByIds(sharedIds).forEach(async entity => {
+      template = await this.findTemplate(template, entity.template);
 
       const metadataToUpdate: Record<string, MetadataValue[]> = {};
 
