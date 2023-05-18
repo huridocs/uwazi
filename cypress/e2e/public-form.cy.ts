@@ -4,7 +4,7 @@ import { clearCookiesAndLogin } from './helpers/login';
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    //cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-puppeteer-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -52,8 +52,8 @@ describe('Public Form', () => {
         cy.contains('a', 'Menu').click();
         cy.contains('button', 'Add link').click();
         cy.get('.input-group:nth-child(2) input').clear();
-        cy.get('.input-group:nth-child(2) input').eq(0).type('Public Form Link');
-        cy.get('.input-group:nth-child(1) input').eq(0).type(url);
+        cy.get('.input-group:nth-child(2) input').type('Public Form Link');
+        cy.get('.input-group:nth-child(1) input').type(url);
         cy.contains('button', 'Save').click();
         cy.get('.alert.alert-success').click();
       });
@@ -121,6 +121,7 @@ describe('Public Form', () => {
       cy.get('video').should('be.visible');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
+      cy.addTimeLink(2000, 'Control point');
       cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
       cy.get('.form-group.media').eq(0).toMatchImageSnapshot();
     });

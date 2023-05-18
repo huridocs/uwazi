@@ -86,26 +86,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
-  const addTimeLink = (duration: number, label: string, index: number = 0) => {
-    cy.get('.timelinks-form').scrollIntoView();
-    cy.get('video', { timeout: 2000 }).then(async $video => {
-      await $video[0].play();
-    });
-    cy.get('video')
-      .wait(duration)
-      .then(async $video => {
-        $video[0].pause();
-      });
-
-    cy.contains('button', 'Add timelink').should('be.visible').click();
-    const timeLinkSelector = `input[name="timelines.${index}.label"`;
-    cy.get(timeLinkSelector).type(label);
-  };
-
-  it('should allow add timelinks to an existing entity media property', () => {
+  it('should allow add timelinks to an existing entity media property temporal', () => {
     cy.contains('h2', 'Reporte audiovisual').click();
     cy.contains('button', 'Edit').should('be.visible').click();
-    addTimeLink(2000, 'Control point');
+    cy.addTimeLink(2000, 'Control point');
     saveEntity();
     cy.get('.app-content').toMatchImageSnapshot();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
@@ -115,7 +99,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   it('should allow media selection with timelinks on entity creation', () => {
     addEntity('Reporte audiovisual with timelinks');
     addVideo();
-    addTimeLink(2000, 'Second one');
+    cy.addTimeLink(2000, 'Second one');
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
@@ -123,7 +107,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   it('should allow edit media created with timelinks', () => {
     cy.contains('h2', 'Reporte audiovisual with timelinks').click();
     cy.contains('button', 'Edit').should('be.visible').click();
-    addTimeLink(4000, 'Second three', 1);
+    cy.addTimeLink(4000, 'Second three', 1);
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
