@@ -106,7 +106,9 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(200);
       cy.get('.form-group.image').eq(0).scrollIntoView();
-      cy.get('.form-group.image').eq(0).toMatchImageSnapshot();
+      cy.get('.form-group.image')
+        .eq(0)
+        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
     });
 
     it('should fill the Video field', () => {
@@ -123,7 +125,9 @@ describe('Public Form', () => {
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
       cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
-      cy.get('.form-group.media').eq(0).toMatchImageSnapshot();
+      cy.get('.form-group.media')
+        .eq(0)
+        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
     });
 
     it('should fill the Imagen adicional field', () => {

@@ -263,7 +263,7 @@ describe('MarkdownMedia', () => {
         ]);
       });
 
-      it('should update the default new timelink', async () => {
+      it('should render a message if resource is not supported', async () => {
         await render({ editing: true });
         const reactPlayer = renderResult.container.getElementsByTagName('video')[0];
         fireEvent.error(reactPlayer, { target: { error: new Error('Invalid file') } });

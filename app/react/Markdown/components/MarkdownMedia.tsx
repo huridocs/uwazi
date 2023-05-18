@@ -67,6 +67,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
+  const [temporalResource, setTemporalResource] = useState<string>();
   const [mediaURL, setMediaURL] = useState('');
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
@@ -75,6 +76,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     control,
     name: 'timelines',
   });
+
+  const validMediaUrlRegExp =
+    /(^(blob:)?https?:\/\/(?:www\.)?)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$/;
 
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
@@ -277,14 +281,31 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           setMediaURL(URL.createObjectURL(blob));
         })
         .catch(_e => {});
+    } else if (config.url.match(validMediaUrlRegExp)) {
+      setMediaURL(config.url);
+      setErrorFlag(false);
     } else {
+      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+        setTemporalResource(mediaURL);
+      }
       setMediaURL(config.url);
     }
   }, [config.url]);
 
+  useEffect(() => {
+    if (
+      temporalResource !== undefined &&
+      ReactPlayer.canPlay(temporalResource) &&
+      !mediaURL.match(validMediaUrlRegExp)
+    ) {
+      setErrorFlag(false);
+      setMediaURL(temporalResource);
+    }
+  }, [temporalResource, mediaURL]);
+
   useEffect(() => () => {
-    setErrorFlag(false);
     if (config.url.startsWith('/api/files/')) {
+      setErrorFlag(false);
       URL.revokeObjectURL(mediaURL);
     }
   });
