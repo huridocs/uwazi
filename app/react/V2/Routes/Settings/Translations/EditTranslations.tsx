@@ -193,26 +193,31 @@ const EditTranslations = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    if (fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data)) {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Translations saved</Translate>,
-      });
-    }
+    switch (true) {
+      case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
+        setNotifications({
+          type: 'success',
+          text: <Translate>Translations saved</Translate>,
+        });
+        break;
 
-    if (fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data)) {
-      setNotifications({
-        type: 'success',
-        text: <Translate>Translations imported.</Translate>,
-      });
-    }
+      case fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data):
+        setNotifications({
+          type: 'success',
+          text: <Translate>Translations imported.</Translate>,
+        });
+        break;
 
-    if (fetcher.data) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: fetcher.data.json ? fetcher.data.json : undefined,
-      });
+      case fetcher.data instanceof Error:
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: fetcher.data.message ? fetcher.data.message : undefined,
+        });
+        break;
+
+      default:
+        break;
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
 
