@@ -103,7 +103,7 @@
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
     "@remix-run/router": "^1.4.0",
-    "@sentry/node": "^7.48.0",
+    "@sentry/node": "^7.52.1",
     "@sentry/react": "7.48.0",
     "@sentry/tracing": "^7.48.0",
     "@socket.io/redis-adapter": "7.2.0",
