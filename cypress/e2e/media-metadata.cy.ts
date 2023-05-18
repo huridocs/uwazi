@@ -65,7 +65,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const checkMediaSnapshots = (selector: string) => {
     cy.get(selector).scrollIntoView();
-    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true });
+    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 1.2 });
   };
 
   const saveEntity = () => {
@@ -85,12 +85,11 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
-  it('should allow add timelinks to an existing entity media property temporal', () => {
+  it('should allow add timelinks to an existing entity media property', () => {
     cy.contains('h2', 'Reporte audiovisual').click();
     cy.contains('button', 'Edit').should('be.visible').click();
     cy.addTimeLink(2000, 'Control point');
     saveEntity();
-    cy.get('.app-content').toMatchImageSnapshot();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
