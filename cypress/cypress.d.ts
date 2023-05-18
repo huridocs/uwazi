@@ -13,6 +13,7 @@ declare global {
     interface Chainable {
       selection(subject: string, fn: any): Chainable;
       setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      clearAndType(selector: string, value: string): Chainable;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

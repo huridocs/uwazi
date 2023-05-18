@@ -89,6 +89,11 @@ Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   return cy.wrap(subject);
 });
 
+Cypress.Commands.add('clearAndType', (selector, value) => {
+  cy.get(selector).clear();
+  cy.get(selector).type(value);
+});
+
 Cypress.Commands.add('setSelection', { prevSubject: true }, (subject, query, endQuery) =>
   cy.wrap(subject).selection($el => {
     if (typeof query === 'string') {
