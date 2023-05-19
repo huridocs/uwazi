@@ -6,18 +6,25 @@ import { ClientTemplateSchema } from 'app/istore';
 import { wrapEntityMetadata, prepareMetadataAndFiles } from '../wrapper';
 
 describe('wrapEntityMetadata', () => {
+  const template = {
+    _id: 'template1',
+    properties: [
+      { name: 'text', type: 'text' },
+      { name: 'image', type: 'image' },
+      { name: 'media1', type: 'media' },
+      { name: 'media2', type: 'media' },
+      { name: 'media3', type: 'media' },
+    ],
+  };
   it('should return entity as is if there is no metadata', () => {
     const entity = { title: 'title', template: 'template1' };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual(entity);
   });
   it('should return correct entity metadata with linked attachments to metadata fields', () => {
     const entity = {
       title: 'A title',
-      metadata: {
-        text: 'Texto 1',
-        image: 'k3rutmyxrdr',
-      },
+      metadata: { text: 'Texto 1', image: 'k3rutmyxrdr' },
       attachments: [
         {
           originalname: 'document.pdf',
@@ -34,22 +41,10 @@ describe('wrapEntityMetadata', () => {
         },
       ],
     };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual({
       title: 'A title',
-      metadata: {
-        text: [
-          {
-            value: 'Texto 1',
-          },
-        ],
-        image: [
-          {
-            value: '',
-            attachment: 1,
-          },
-        ],
-      },
+      metadata: { text: [{ value: 'Texto 1' }], image: [{ value: '', attachment: 1 }] },
       attachments: [
         {
           originalname: 'document.pdf',
@@ -75,6 +70,7 @@ describe('wrapEntityMetadata', () => {
         media1:
           '(/api/files/1681177668034i5lntk7hak.mp4, {"timelinks":{"00:00:13":"Check point 1","00:00:27":"Check point 2"}})',
         media2: '(9032yptqzo5, {"timelinks":{"00:00:09":"Check point 1"}})',
+        media3: '(https://youtu.be/f8eUd9BaTsI, {"timelinks":{"00:21:59":""}})',
         multidate: [1681257600, 1682121600, 1682467200],
       },
       attachments: [
@@ -97,7 +93,7 @@ describe('wrapEntityMetadata', () => {
         },
       ],
     };
-    const wrappedEntity = wrapEntityMetadata(entity);
+    const wrappedEntity = wrapEntityMetadata(entity, template);
     expect(wrappedEntity).toEqual({
       title: 'A title',
 
@@ -110,6 +106,11 @@ describe('wrapEntityMetadata', () => {
         ],
         media2: [
           { attachment: 0, timeLinks: '{"timelinks":{"00:00:09":"Check point 1"}}', value: '' },
+        ],
+        media3: [
+          {
+            value: '(https://youtu.be/f8eUd9BaTsI, {"timelinks":{"00:21:59":""}})',
+          },
         ],
         multidate: [{ value: 1681257600 }, { value: 1682121600 }, { value: 1682467200 }],
       },
