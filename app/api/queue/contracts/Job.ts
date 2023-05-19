@@ -1,3 +1,7 @@
+export enum DeliveryGuarantee {
+  AtLeastOnce,
+}
 export interface Job {
-  handle(): Promise<void>;
+  deliveryGuarantee?: DeliveryGuarantee;
+  handle(heartbeat: () => Promise<void>): Promise<void>;
 }

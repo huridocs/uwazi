@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { Job } from '../contracts/Job';
+import { DeliveryGuarantee, Job } from '../contracts/Job';
 import { Queue } from './Queue';
 
 interface WorkerOptions {
@@ -29,26 +29,38 @@ export class QueueWorker {
   }
 
   private async pickJob() {
-    let job = await this.queue.pop();
+    let job = await this.queue.peek();
 
     while (!this.isStopping() && !job) {
       await this.sleep();
 
-      job = await this.queue.pop();
+      job = await this.queue.peek();
     }
 
     return job;
   }
 
-  private async handleJob(job: Job) {
-    await job.handle();
+  private async processAtLeastOnce(id: string, job: Job) {
+    const heartbeatCallback = async () => this.queue.progress(id);
+
+    await job.handle(heartbeatCallback);
+    await this.queue.complete(id);
+  }
+
+  private async processJob(id: string, job: Job) {
+    switch (job.deliveryGuarantee) {
+      case DeliveryGuarantee.AtLeastOnce:
+      default:
+        return this.processAtLeastOnce(id, job);
+    }
   }
 
   async start() {
-    let job = await this.pickJob();
-    while (job) {
-      await this.handleJob(job);
-      job = await this.pickJob();
+    let result = await this.pickJob();
+    while (result) {
+      const [id, job] = result;
+      await this.processJob(id, job);
+      result = await this.pickJob();
     }
     this.stopped();
   }

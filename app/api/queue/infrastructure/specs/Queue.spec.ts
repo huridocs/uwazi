@@ -39,7 +39,7 @@ it('should correctly serialize and deserialize a job', async () => {
 
   queue.register(SampleJob);
 
-  await queue.push(new SampleJob({ piece: ['a', 'b', 'c'] }, 2));
+  await queue.dispatch(new SampleJob({ piece: ['a', 'b', 'c'] }, 2));
 
   const job = await queue.pop();
   console.log(job);

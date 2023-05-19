@@ -1,21 +1,26 @@
 /* eslint-disable max-classes-per-file */
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import RedisSMQ from 'rsmq';
 import { Job } from 'api/queue/contracts/Job';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
+import { QueueAdapter } from '../QueueAdapter';
 
 it('should work', done => {
-  const buffer: any[] = [];
+  let _id = 0;
+  let buffer: { id: string; message: string }[] = [];
   const queue = new Queue(
     'asdf',
-    partialImplementation<RedisSMQ>({
+    partialImplementation<QueueAdapter>({
       async sendMessageAsync({ message }) {
-        buffer.push({ id: buffer.length, message });
-        return `${buffer.length - 1}`;
+        // eslint-disable-next-line no-plusplus
+        buffer.push({ id: `${_id++}`, message });
+        return `${_id}`;
       },
       async receiveMessageAsync() {
-        return buffer.shift() ?? {};
+        return buffer[0] ?? {};
+      },
+      async deleteMessageAsync({ id }) {
+        buffer = buffer.filter(item => item.id !== id);
       },
     })
   );
@@ -30,7 +35,7 @@ it('should work', done => {
     .catch(done.fail);
 
   class A {
-    do(){
+    do() {
       console.log('did');
     }
   }
@@ -62,7 +67,7 @@ it('should work', done => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   Promise.all(
     [1, 2, 3, 4, 5, 6].map(async n =>
-      queue.push(new SampleJob({ piece: '.'.repeat(n).split('') }, n))
+      queue.dispatch(new SampleJob({ piece: '.'.repeat(n).split('') }, n))
     )
   ).then(async () => {
     await new Promise(resolve => {
