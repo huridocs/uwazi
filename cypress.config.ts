@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
 export default defineConfig({
-  viewportWidth: 1366,
+  viewportWidth: 1280,
   viewportHeight: 768,
   e2e: {
     setupNodeEvents(on, config) {

@@ -73,11 +73,17 @@ describe('MarkdownMedia', () => {
         expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
       });
 
-      it('should revoke the created URL and reset it to empty', async () => {
-        await render();
-        renderResult.unmount();
-        expect(mockedRevokeObjectURL).toHaveBeenCalledWith('');
+      it('should revoke the created URL ', async () => {
+        await act(async () => {
+          await render();
+        });
+        await act(() => {
+          renderResult.unmount();
+        });
+
+        expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:abc');
       });
+
       it('should render the edition mode', async () => {
         await render({ editing: true });
         expect(renderResult.asFragment()).toMatchSnapshot();
@@ -140,7 +146,7 @@ describe('MarkdownMedia', () => {
         await playTimeLink(1, 5 * 60 + 30, 'play', spySeekTo);
         await playTimeLink(1, 5 * 60 + 30, 'pause', spySeekTo);
       });
-      const editTimeLink = async (inputs: HTMLElement[], value: string, field: string) => {
+      const editTimeLink = async (inputs: HTMLElement[], field: string, value: string) => {
         await act(async () => {
           fireEvent.change(inputs.find(x => (x as HTMLInputElement).name === field)!, {
             target: { value },
@@ -158,8 +164,8 @@ describe('MarkdownMedia', () => {
         await act(async () => {
           await editTimeLink(
             screen.getAllByRole('textbox'),
-            'Check at this!',
-            'timelines.2.label'
+            'timelines.2.label',
+            'Check at this!'
           )!;
           expect(onTimeLinkAdded).toHaveBeenCalledWith([
             { label: 'A rude awakening', timeHours: '00', timeMinutes: '02', timeSeconds: '10' },
@@ -183,9 +189,9 @@ describe('MarkdownMedia', () => {
         });
         await act(async () => {
           const inputs = screen.getAllByRole('textbox');
-          await editTimeLink(inputs, '04', 'timelines.0.timeHours');
-          await editTimeLink(inputs, '42', 'timelines.0.timeMinutes');
-          await editTimeLink(inputs, '56', 'timelines.0.timeSeconds');
+          await editTimeLink(inputs, 'timelines.0.timeHours', '04');
+          await editTimeLink(inputs, 'timelines.0.timeMinutes', '42');
+          await editTimeLink(inputs, 'timelines.0.timeSeconds', '56');
         });
         await act(async () => {
           expect(onTimeLinkAdded).toHaveBeenCalledWith([
@@ -206,10 +212,11 @@ describe('MarkdownMedia', () => {
           fireEvent.click(addLinkBtn);
         });
         const updatedInputs = screen.getAllByRole('textbox');
-        await editTimeLink(updatedInputs, '12', 'timelines.2.timeHours');
-        await editTimeLink(updatedInputs, '17', 'timelines.2.timeMinutes');
-        await editTimeLink(updatedInputs, '34', 'timelines.2.timeSeconds');
-        await editTimeLink(updatedInputs, 'new check point', 'timelines.2.label');
+
+        await editTimeLink(updatedInputs, 'timelines.2.timeHours', '12');
+        await editTimeLink(updatedInputs, 'timelines.2.timeMinutes', '17');
+        await editTimeLink(updatedInputs, 'timelines.2.timeSeconds', '34');
+        await editTimeLink(updatedInputs, 'timelines.2.label', 'new check point');
         expect(onTimeLinkAdded).toHaveBeenCalledWith([
           { label: 'A rude awakening', timeHours: '00', timeMinutes: '02', timeSeconds: '10' },
           {
@@ -219,6 +226,40 @@ describe('MarkdownMedia', () => {
             timeSeconds: '30',
           },
           { label: 'new check point', timeHours: '12', timeMinutes: '17', timeSeconds: '34' },
+        ]);
+      });
+
+      it('should update the default new timelink', async () => {
+        await render({ editing: true });
+
+        fireEvent.change(renderResult.container.getElementsByClassName('timestamp-hours')[2], {
+          target: { value: 11 },
+        });
+        fireEvent.change(renderResult.container.getElementsByClassName('timestamp-minutes')[2], {
+          target: { value: 36 },
+        });
+        fireEvent.change(renderResult.container.getElementsByClassName('timestamp-seconds')[2], {
+          target: { value: 45 },
+        });
+        fireEvent.change(renderResult.container.getElementsByClassName('timestamp-label')[2], {
+          target: { value: 'default check point' },
+        });
+
+        fireEvent.click(renderResult.container.getElementsByClassName('new-timestamp-btn')[0]);
+        expect(onTimeLinkAdded).toHaveBeenCalledWith([
+          { label: 'A rude awakening', timeHours: '00', timeMinutes: '02', timeSeconds: '10' },
+          {
+            label: 'Finally, you are up!',
+            timeHours: '00',
+            timeMinutes: '05',
+            timeSeconds: '30',
+          },
+          {
+            label: 'default check point',
+            timeHours: '11',
+            timeMinutes: '36',
+            timeSeconds: '45',
+          },
         ]);
       });
     });

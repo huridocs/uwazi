@@ -37,7 +37,6 @@ describe('Media Modal', () => {
       onClose: jasmine.createSpy('onClose'),
       onChange: jasmine.createSpy('onChange'),
       isOpen: true,
-      selectedUrl: null,
       attachments: [],
       formModel: 'library.sidepanel.metadata',
       formField: 'library.sidepanel.metadata.metadata.image',
