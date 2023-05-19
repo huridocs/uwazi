@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { isString } from 'lodash';
 import uniqueID from 'shared/uniqueID';
 
@@ -13,23 +14,30 @@ const prepareFiles = async (mediaProperties, values) => {
           return Promise.resolve();
         }
         const { data, originalFile } = values.metadata[p.name];
-        const blob = await fetch(data).then(r => r.blob());
-        const file = new File([blob], originalFile.name, { type: blob.type });
-        const fileID = uniqueID();
+        if (originalFile) {
+          const validBlobUrlRegExp =
+            /^\(?(blob:https?:\/\/(?:www\.)?[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])(, ({.+}))?/;
 
-        metadataFiles[p.name] = fileID;
+          const [, url, , timeLinks] = data.match(validBlobUrlRegExp) || ['', data];
+          const blob = await fetch(url).then(r => r.blob());
+          const file = new File([blob], originalFile.name, { type: blob.type });
+          const fileID = uniqueID();
 
-        entityAttachments.push({
-          originalname: file.name,
-          filename: file.name,
-          type: 'attachment',
-          mimetype: blob.type,
-          fileLocalID: fileID,
-        });
+          metadataFiles[p.name] = fileID;
 
-        files.push(file);
+          entityAttachments.push({
+            originalname: file.name,
+            filename: file.name,
+            type: 'attachment',
+            mimetype: blob.type,
+            fileLocalID: fileID,
+            timeLinks,
+          });
 
-        return URL.revokeObjectURL(values.metadata[p.name]);
+          files.push(file);
+
+          return URL.revokeObjectURL(values.metadata[p.name]);
+        }
       })
     );
   }
@@ -37,7 +45,10 @@ const prepareFiles = async (mediaProperties, values) => {
   return { metadataFiles, entityAttachments, files };
 };
 
-function wrapEntityMetadata(entity) {
+function wrapEntityMetadata(entity, template) {
+  const mediaProperties =
+    template.properties?.filter(prop => prop.type === 'image' || prop.type === 'media') || [];
+
   if (!entity.metadata) {
     return { ...entity };
   }
@@ -46,7 +57,7 @@ function wrapEntityMetadata(entity) {
     .reduce(
       (previousValue, attachment, index) => ({
         ...previousValue,
-        [attachment.fileLocalID]: { value: '', attachment: index },
+        [attachment.fileLocalID]: { value: '', attachment: index, timeLinks: attachment.timeLinks },
       }),
       {}
     );
@@ -54,21 +65,23 @@ function wrapEntityMetadata(entity) {
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
     let fileLocalID;
     let timeLinks;
-    if (isString(entity.metadata[key])) {
-      [, fileLocalID, timeLinks] = entity.metadata[key].match(/([\w+]{10,20}), ({.+})/) || [
-        '',
-        entity.metadata[key],
-      ];
+    const property = mediaProperties.find(p => p.name === key);
+    if (property && entity.metadata[key]) {
+      const fieldValue = entity.metadata[key].data || entity.metadata[key];
+      const mediaExpGroups = fieldValue.match(/^\(?([\w+]{10,15})(, ({.+})\))?|$/);
+      if (isString(fieldValue) && mediaExpGroups && mediaExpGroups[1]) {
+        [, fileLocalID, , timeLinks] = mediaExpGroups || ['', fieldValue];
+      }
+      if (fileLocalID && fileLocalID.length < 20 && timeLinks) {
+        newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
+      }
     }
-    if (fileLocalID && timeLinks) {
-      newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
-    }
-    const newFileMetadataValue = newFileMetadataValues[fileLocalID];
+    const newFileMetadataValue = newFileMetadataValues[fileLocalID] || fileLocalID;
     return {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])
         ? entity.metadata[key].map(v => ({ value: v }))
-        : [newFileMetadataValue || { value: entity.metadata[key] }],
+        : [newFileMetadataValue || { value: entity.metadata[key]?.data || entity.metadata[key] }],
     };
   }, {});
   // suggestedMetadata is always in metadata-object form.
@@ -80,7 +93,7 @@ const prepareMetadataAndFiles = async (values, attachedFiles, template) => {
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
   const fields = { ...values.metadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };
-  const wrappedEntity = wrapEntityMetadata(entity);
+  const wrappedEntity = wrapEntityMetadata(entity, template);
   wrappedEntity.file = values.file ? values.file[0] : undefined;
   wrappedEntity.attachments = [];
   wrappedEntity.attachments.push(...files);
