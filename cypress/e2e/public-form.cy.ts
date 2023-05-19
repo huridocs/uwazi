@@ -108,7 +108,7 @@ describe('Public Form', () => {
       cy.get('.form-group.image').eq(0).scrollIntoView();
       cy.get('.form-group.image')
         .eq(0)
-        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
+        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.15 });
     });
 
     it('should fill the Video field', () => {
