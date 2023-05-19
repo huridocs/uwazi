@@ -103,7 +103,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   });
 
   it('should allow media selection with timelinks on entity creation', () => {
-    addEntity('Reporte audiovisual with timelinks');
+    addEntity('Reporte audiovisual con lineas de tiempo');
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
@@ -111,7 +111,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   });
 
   it('should allow edit media created with timelinks', () => {
-    cy.contains('h2', 'Reporte audiovisual with timelinks').click();
+    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
     cy.contains('button', 'Edit').should('be.visible').click();
     cy.addTimeLink(4000, 'Second three', 1);
     saveEntity();
@@ -119,7 +119,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   });
 
   it('should allow remove a timelink from a media property', () => {
-    cy.contains('h2', 'Reporte audiovisual with timelinks').click();
+    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
     cy.contains('button', 'Edit').should('be.visible').click();
     cy.get('.timelinks-form').scrollIntoView();
     cy.get('.delete-timestamp-btn').eq(1).click();
@@ -128,7 +128,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   });
 
   it('should allow set an external link from a media property', () => {
-    addEntity('Reporte with external content');
+    addEntity('Reporte con contenido externo');
     addVideo(false);
     cy.contains('button', 'Add timelink').scrollIntoView();
     cy.contains('button', 'Add timelink').should('be.visible').click();
@@ -139,7 +139,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
   it('should show an error for an invalid property and allow to replace it for a valid one', () => {
-    addEntity('Reporte with external content');
+    addEntity('Reporte con propiedades audiovisuales corregidas');
     addInvalidFile('Fotografía');
     addInvalidFile('Video');
     clickMediaAction('Video', 'Unlink');
@@ -151,7 +151,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
   it('should allow unlink the value of a media property', () => {
-    cy.contains('h2', 'Reporte with external content').click();
+    cy.contains('h2', 'Reporte con propiedades audiovisuales corregidas').click();
     cy.contains('button', 'Edit').should('be.visible').click();
     clickMediaAction('Video', 'Unlink');
     cy.contains('button', 'Save').click();
