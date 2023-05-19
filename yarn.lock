@@ -10683,15 +10683,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.4.tgz#28d9969ea90661b5134259f312ab6aa7929ac5e2"
   integrity sha512-8/sOawo8tJ4QOBX8YlQBMxL8+RLZfxMQOif9o0KUKTNTjMYElWPE0r/m5VNFxTRd0NSw8qSy8dajrwX4RYI1Hw==
 
-flow-parser@0.*:
-  version "0.205.0"
-  resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.205.0.tgz#8756173b6488dedc31ab838e80c8f008d7a44e05"
-  integrity sha512-ZJ6VuLe/BoqeI4GsF+ZuzlpfGi3FCnBrb4xDYhgEJxRt7SAj3ibRuRSsuJSRcY+lQhPZRPNbNWiQqFMxramUzw==
-
-flowbite-react@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.4.3.tgz#f754355429bab6b7a19bfb6cf3a37e018d5bab86"
-  integrity sha512-WORJdG4G690m+IdBG4Tepevo60MwCJubAP2Ew0rllgeLFbj97frqfWfs4sraTFDNARbyCBT1pH3sEfpyTLrDrQ==
+flowbite-react@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.4.4.tgz#ff032f6b286ad7a4c5847a8ab6e530b2f91e754a"
+  integrity sha512-cDGtzRp8Ca6rOooNUlDzI7NwAQqzRFYENQ5tI5kRlgobUITxzCgPSv+S1laBlSyrHzlvaneBy4kkX3HrMtEn0A==
   dependencies:
     "@floating-ui/react" "^0.20.1"
     classnames "^2.3.2"
