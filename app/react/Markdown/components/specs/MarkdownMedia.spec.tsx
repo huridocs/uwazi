@@ -262,15 +262,6 @@ describe('MarkdownMedia', () => {
           },
         ]);
       });
-
-      it('should render a message if resource is not supported', async () => {
-        await render({ editing: true });
-        const reactPlayer = renderResult.container.getElementsByTagName('video')[0];
-        fireEvent.error(reactPlayer, { target: { error: new Error('Invalid file') } });
-        expect(
-          await screen.findByText('This file type is not supported on media fields')
-        ).toBeInTheDocument();
-      });
     });
   });
 });

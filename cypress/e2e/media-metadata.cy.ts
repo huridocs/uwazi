@@ -62,6 +62,18 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait(200);
     cy.get('img').should('be.visible');
   };
+  const addInvalidFile = (field: string) => {
+    cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').scrollIntoView();
+    cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').click();
+    cy.contains('button', 'Select from computer');
+    cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/valid.pdf', {
+      force: true,
+    });
+    cy.contains(field)
+      .parentsUntil('.form-group')
+      .contains('This file type is not supported on media fields')
+      .should('be.visible');
+  };
 
   const checkMediaSnapshots = (selector: string) => {
     cy.get(selector).scrollIntoView();
@@ -129,5 +141,11 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
+  });
+
+  it('should show an error for an invalid property', () => {
+    addEntity('Reporte with external content');
+    addInvalidFile('Fotografía');
+    addInvalidFile('Video');
   });
 });
