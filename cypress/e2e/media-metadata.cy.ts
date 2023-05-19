@@ -11,6 +11,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.intercept('POST', 'api/entities').as('saveEntity');
   });
 
+  const clickMediaAction = (field: string, action: string) => {
+    cy.contains(field).parentsUntil('.form-group').contains('button', action).scrollIntoView();
+    cy.contains(field).parentsUntil('.form-group').contains('button', action).click();
+  };
   const addEntity = (title: string) => {
     cy.contains('button', 'Create entity').click();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
@@ -23,11 +27,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const addVideo = (local: boolean = true) => {
-    cy.contains('Video')
-      .parentsUntil('.form-group')
-      .contains('button', 'Add file')
-      .scrollIntoView();
-    cy.contains('Video').parentsUntil('.form-group').contains('button', 'Add file').click();
+    clickMediaAction('Video', 'Add file');
 
     if (local) {
       cy.get('.upload-button input[type=file]')
@@ -48,11 +48,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const addImage = () => {
-    cy.contains('Fotografía')
-      .parentsUntil('.form-group')
-      .contains('button', 'Add file')
-      .scrollIntoView();
-    cy.contains('Fotografía').parentsUntil('.form-group').contains('button', 'Add file').click();
+    clickMediaAction('Fotografía', 'Add file');
     cy.contains('button', 'Select from computer');
     cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/batman.jpg', {
       force: true,
@@ -142,10 +138,16 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
-
-  it('should show an error for an invalid property', () => {
+  it('should show an error for an invalid property and allow to replace it for a valid one', () => {
     addEntity('Reporte with external content');
     addInvalidFile('Fotografía');
     addInvalidFile('Video');
+    clickMediaAction('Video', 'Unlink');
+    addVideo();
+    clickMediaAction('Fotografía', 'Unlink');
+    addImage();
+    saveEntity();
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 });
