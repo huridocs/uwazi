@@ -35,10 +35,7 @@ export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
     await delay(OnlineRelationshipPropertyUpdateStrategy.DELAY);
 
     await this.transactionManager.run(async () => {
-      await candidateIds.reduce(async (previous, id) => {
-        await previous;
-        return this.updater.update(id);
-      }, Promise.resolve());
+      await this.updater.update(candidateIds);
 
       this.transactionManager.onCommitted(async () => {
         await this.indexEntities(candidateIds);
