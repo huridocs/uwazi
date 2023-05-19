@@ -190,7 +190,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -200,7 +200,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class=" w-5 text-white stroke-current stroke-gray-300 stroke-2"
+                        class=" w-4 text-white stroke-current stroke-gray-300 stroke-2"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -225,7 +225,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -257,7 +257,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -267,7 +267,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class=" w-5 text-white stroke-current stroke-gray-300 stroke-2"
+                        class=" w-4 text-white stroke-current stroke-gray-300 stroke-2"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -292,7 +292,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -324,7 +324,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -334,7 +334,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class="w-5"
+                        class="w-4"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -353,7 +353,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
