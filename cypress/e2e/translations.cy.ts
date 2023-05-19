@@ -24,8 +24,15 @@ describe('Translations', () => {
       cy.checkA11y();
     });
 
+    it('should have breadcrumb navigation', () => {
+      cy.contains('h1 > a > .translation', 'Translations').click();
+      cy.contains('caption', 'System translations');
+      cy.contains('[data-testid=content] button', 'Translate').click();
+    });
+
     it('Should edit a translation', () => {
       cy.get('form').should('be.visible');
+      cy.get('input[type=text]').should('be.visible');
       cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot();
       cy.get('input[type=text]').eq(0).siblings('button').click();
       cy.get('input[type=text]').eq(0).type('Date');

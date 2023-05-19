@@ -2843,6 +2843,10 @@ input:checked + .toggle-bg {
   text-transform: uppercase;
 }
 
+.leading-4 {
+  line-height: 1rem;
+}
+
 .leading-none {
   line-height: 1;
 }
