@@ -13,6 +13,8 @@ declare global {
     interface Chainable {
       selection(subject: string, fn: any): Chainable;
       setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      clearAndType(selector: string, value: string): Chainable;
+      addTimeLink(duration: number, label: string, index?: number): Chainable;
       shouldNotBeActionable(
         done: Mocha.Done,
         clickOptions?: Partial<Cypress.ClickOptions> & {

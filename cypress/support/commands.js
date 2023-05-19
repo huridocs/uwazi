@@ -148,5 +148,25 @@ Cypress.on('window:before:load', window => {
   `
   );
 });
+Cypress.Commands.add('clearAndType', (selector, value) => {
+  cy.get(selector).clear();
+  cy.get(selector).type(value);
+});
+
+Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
+  cy.get('.timelinks-form').scrollIntoView();
+  cy.get('video', { timeout: 2000 }).then(async $video => {
+    await $video[0].play();
+  });
+  cy.get('video')
+    .wait(duration)
+    .then(async $video => {
+      $video[0].pause();
+    });
+
+  cy.contains('button', 'Add timelink').should('be.visible').click();
+  const timeLinkSelector = `input[name="timelines.${index}.label"`;
+  cy.get(timeLinkSelector).type(label);
+});
 
 export {};
