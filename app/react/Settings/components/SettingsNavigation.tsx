@@ -105,6 +105,17 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
             </I18NLink>
           </NeedAuthorization>
         </FeatureToggle>
+        <FeatureToggle feature="newRelationships">
+          <NeedAuthorization roles={['admin']}>
+            <I18NLink
+              to="/settings/newrelmigration"
+              activeclassname="active"
+              className="list-group-item"
+            >
+              <Translate>New Relationships Migration</Translate>
+            </I18NLink>
+          </NeedAuthorization>
+        </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
           <I18NLink to="settings/activitylog" activeclassname="active" className="list-group-item">
             <Translate>Activity log</Translate>
