@@ -1,6 +1,6 @@
 import { Job } from '../contracts/Job';
 import { JobsDispatcher } from '../contracts/JobsDispatcher';
-import { QueueAdapter } from './QueueAdapter';
+import { QueueAdapter } from '../contracts/QueueAdapter';
 
 interface JobConstructor<T extends Job> {
   new (...args: any[]): T;
@@ -8,30 +8,46 @@ interface JobConstructor<T extends Job> {
 
 interface Definition<T extends Job> {
   constructorFn: JobConstructor<T>;
-  dependenciesFactory?: () => Partial<T>;
+  dependenciesFactory?: (namespace: string) => Promise<Partial<T>>;
 }
+
+interface QueueOptions {
+  lockWindow?: number;
+  namespaceFactory?: (job: Job) => Promise<string>;
+}
+
+const optionsDefaults: Required<QueueOptions> = {
+  lockWindow: 1000,
+  namespaceFactory: async () => Promise.resolve(''),
+};
 
 export class Queue implements JobsDispatcher {
   private queueName: string;
 
   private adapter: QueueAdapter;
 
-  private lockWindow: number;
+  private options: Required<QueueOptions>;
 
   private definitions: Record<string, Definition<any>> = {};
 
-  constructor(queueName: string, adapter: QueueAdapter, lockWindow?: number) {
+  constructor(queueName: string, adapter: QueueAdapter, options: QueueOptions = {}) {
     this.queueName = queueName;
     this.adapter = adapter;
-    this.lockWindow = lockWindow ?? 1000;
+    this.options = {
+      ...optionsDefaults,
+      ...options,
+    };
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  private serializeJob(job: Job) {
-    return JSON.stringify({ name: job.constructor.name, data: job });
+  private async serializeJob(job: Job) {
+    return JSON.stringify({
+      name: job.constructor.name,
+      namespace: await this.options.namespaceFactory(job),
+      data: job,
+    });
   }
 
-  private deserializeJob(serialized: string) {
+  private async deserializeJob(id: string, serialized: string) {
     const data = JSON.parse(serialized);
 
     const definition = this.definitions[data.name];
@@ -51,7 +67,7 @@ export class Queue implements JobsDispatcher {
       {}
     );
 
-    const builtDependencies = definition.dependenciesFactory?.();
+    const builtDependencies = await definition.dependenciesFactory?.(data.namespace);
 
     const dependenciesDefinitions = builtDependencies
       ? Object.keys(builtDependencies).reduce(
@@ -66,43 +82,55 @@ export class Queue implements JobsDispatcher {
         )
       : {};
 
+    const managedFieldsDefinition = {
+      id: {
+        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'id'),
+        value: id,
+      },
+      namespace: {
+        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'namespace'),
+        value: data.namespace,
+      },
+    };
+
     return Object.create(definition.constructorFn.prototype, {
       ...propertyDefinitions,
       ...dependenciesDefinitions,
+      ...managedFieldsDefinition,
     }) as Job;
   }
 
   async dispatch(job: Job): Promise<void> {
     await this.adapter.sendMessageAsync({
       qname: this.queueName,
-      message: this.serializeJob(job),
+      message: await this.serializeJob(job),
     });
   }
 
   async peek() {
     const message = await this.adapter.receiveMessageAsync({ qname: this.queueName });
     if ('id' in message) {
-      return [message.id, this.deserializeJob(message.message)] as const;
+      return this.deserializeJob(message.id, message.message);
     }
 
     return null;
   }
 
-  async complete(id: string) {
-    await this.adapter.deleteMessageAsync({ qname: this.queueName, id });
+  async complete(job: Job) {
+    await this.adapter.deleteMessageAsync({ qname: this.queueName, id: job.id! });
   }
 
-  async progress(id: string) {
+  async progress(job: Job) {
     await this.adapter.changeMessageVisibilityAsync({
       qname: this.queueName,
-      id,
-      vt: this.lockWindow,
+      id: job.id!,
+      vt: job.lockWindow ?? this.options.lockWindow,
     });
   }
 
   register<T extends Job>(
     jobConstructor: JobConstructor<T>,
-    dependenciesFactory?: () => Partial<T>
+    dependenciesFactory?: (namespace: string) => Promise<Partial<T>>
   ) {
     this.definitions[jobConstructor.name] = {
       constructorFn: jobConstructor,

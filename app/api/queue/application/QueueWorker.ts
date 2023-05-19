@@ -40,27 +40,26 @@ export class QueueWorker {
     return job;
   }
 
-  private async processAtLeastOnce(id: string, job: Job) {
-    const heartbeatCallback = async () => this.queue.progress(id);
+  private async processAtLeastOnce(job: Job) {
+    const heartbeatCallback = async () => this.queue.progress(job);
 
     await job.handle(heartbeatCallback);
-    await this.queue.complete(id);
+    await this.queue.complete(job);
   }
 
-  private async processJob(id: string, job: Job) {
+  private async processJob(job: Job) {
     switch (job.deliveryGuarantee) {
       case DeliveryGuarantee.AtLeastOnce:
       default:
-        return this.processAtLeastOnce(id, job);
+        return this.processAtLeastOnce(job);
     }
   }
 
   async start() {
-    let result = await this.pickJob();
-    while (result) {
-      const [id, job] = result;
-      await this.processJob(id, job);
-      result = await this.pickJob();
+    let job = await this.pickJob();
+    while (job) {
+      await this.processJob(job);
+      job = await this.pickJob();
     }
     this.stopped();
   }
