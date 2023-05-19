@@ -12,6 +12,7 @@ import { pipeline } from 'stream/promises';
 import {
   activityLogPath,
   attachmentsPath,
+  createDirIfNotExists,
   customUploadsPath,
   deleteFile,
   uploadsPath,
@@ -100,5 +101,11 @@ export const storage = {
     }
 
     return true;
+  },
+
+  async createDirectory(dirPath: string) {
+    if (!tenants.current().featureFlags?.s3Storage) {
+      await createDirIfNotExists(dirPath);
+    }
   },
 };
