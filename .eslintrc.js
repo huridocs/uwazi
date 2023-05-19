@@ -1,7 +1,7 @@
 const rules = require('./uwazi-eslint-rules');
 
 module.exports = {
-  extends: ['airbnb', 'plugin:cypress/recommended'],
+  extends: ['airbnb', 'plugin:cypress/recommended', 'plugin:storybook/recommended'],
   env: {
     browser: true,
     node: true,
@@ -23,7 +23,12 @@ module.exports = {
     'eslint-plugin-cypress',
   ],
   rules: {
-    'prettier/prettier': ['error', { requirePragma: false }],
+    'prettier/prettier': [
+      'error',
+      {
+        requirePragma: false,
+      },
+    ],
     'node/no-restricted-import': [
       'error',
       [
@@ -37,9 +42,12 @@ module.exports = {
         },
       ],
     ],
-    indent: 'off', // handled by prettier
-    'operator-linebreak': 'off', // handled by prettier
-    'space-before-function-paren': 'off', // handled by prettier
+    indent: 'off',
+    // handled by prettier
+    'operator-linebreak': 'off',
+    // handled by prettier
+    'space-before-function-paren': 'off',
+    // handled by prettier
     'no-mixed-operators': 'off',
     'no-underscore-dangle': 'off',
     'comma-dangle': 'off',
@@ -53,7 +61,13 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'jest/no-focused-tests': 'error',
     'object-curly-spacing': ['warn', 'always'],
-    'max-len': ['error', 150, { ignoreStrings: true }],
+    'max-len': [
+      'error',
+      150,
+      {
+        ignoreStrings: true,
+      },
+    ],
     'no-unused-vars': [
       'error',
       {
@@ -64,7 +78,6 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
-
     //all warns are activated by default if removed
     'prefer-promise-reject-errors': ['warn'],
     'max-classes-per-file': ['warn'],
@@ -72,7 +85,8 @@ module.exports = {
     'consistent-return': ['warn'],
     'prefer-const': ['warn'],
     'arrow-body-style': ['warn'],
-    'arrow-parens': ['off'], // handled by prettier
+    'arrow-parens': ['off'],
+    // handled by prettier
     'prefer-template': ['warn'],
     'no-tabs': ['warn'],
     'object-shorthand': ['warn'],
@@ -98,10 +112,16 @@ module.exports = {
     'max-lines': ['warn', 250],
     'max-params': ['warn', 4],
     'max-lines-per-function': 'off',
-    'max-statements': ['warn', { max: 10 }, { ignoreTopLevelFunctions: true }],
-
+    'max-statements': [
+      'warn',
+      {
+        max: 10,
+      },
+      {
+        ignoreTopLevelFunctions: true,
+      },
+    ],
     'no-restricted-exports': ['warn'],
-
     //import
     'import/no-duplicates': ['warn'],
     'import/no-default-export': ['warn'],
@@ -115,9 +135,13 @@ module.exports = {
     'import/order': ['warn'],
     'import/named': ['warn'],
     'import/no-cycle': ['warn'],
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: true,
+      },
+    ],
     'import/no-import-module-exports': ['warn'],
-
     //react
     'react/static-property-placement': 'off',
     'react/no-deprecated': ['warn'],
@@ -125,18 +149,23 @@ module.exports = {
     'react/no-multi-comp': ['warn'],
     'react/jsx-closing-bracket-location': ['warn'],
     'react/jsx-boolean-value': ['warn'],
-    'react/jsx-indent': ['off'], // handled by prettier,
+    'react/jsx-indent': ['off'],
+    // handled by prettier,
     'react/jsx-indent-props': ['warn'],
     'react/no-array-index-key': ['warn'],
     'react/jsx-props-no-spreading': ['warn'],
     'react/jsx-first-prop-new-line': ['warn'],
     'react/no-unused-state': ['warn'],
-    'react/jsx-wrap-multilines': ['off'], // handled by prettier,
+    'react/jsx-wrap-multilines': ['off'],
+    // handled by prettier,
     'react/jsx-curly-brace-presence': ['warn'],
     'react/jsx-curly-newline': 'off',
     'react/require-default-props': [
       'warn',
-      { forbidDefaultForRequired: false, ignoreFunctionalComponents: true },
+      {
+        forbidDefaultForRequired: false,
+        ignoreFunctionalComponents: true,
+      },
     ],
     'react/forbid-prop-types': ['warn'],
     'react/jsx-no-bind': ['warn'],
@@ -154,14 +183,31 @@ module.exports = {
     'react/button-has-type': ['warn'],
     'react/no-access-state-in-setstate': ['warn'],
     'react/jsx-pascal-case': ['warn'],
-    'react/default-props-match-prop-types': ['error', { allowRequiredDefaults: true }],
+    'react/default-props-match-prop-types': [
+      'error',
+      {
+        allowRequiredDefaults: true,
+      },
+    ],
     'react/function-component-definition': [
       2,
-      { namedComponents: 'arrow-function', unnamedComponents: 'arrow-function' },
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
     ],
-    'react/jsx-no-useless-fragment': [2, { allowExpressions: true }],
-    'react/no-unknown-property': ['error', { ignore: ['no-translate'] }],
-
+    'react/jsx-no-useless-fragment': [
+      2,
+      {
+        allowExpressions: true,
+      },
+    ],
+    'react/no-unknown-property': [
+      'error',
+      {
+        ignore: ['no-translate'],
+      },
+    ],
     //jsx-a11y
     'jsx-a11y/anchor-is-valid': ['warn'],
     'jsx-a11y/label-has-for': ['off'],
@@ -175,7 +221,6 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
-
     //react-hooks && recoil
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': [
@@ -212,7 +257,9 @@ module.exports = {
       parserOptions: {
         project: './tsconfig.json',
       },
-      rules: { ...rules },
+      rules: {
+        ...rules,
+      },
     },
     {
       files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
@@ -220,7 +267,9 @@ module.exports = {
       parserOptions: {
         project: './cypress/tsconfig.json',
       },
-      rules: { ...rules },
+      rules: {
+        ...rules,
+      },
     },
   ],
 };
