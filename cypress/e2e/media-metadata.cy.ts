@@ -150,4 +150,12 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
+  it('should allow unlink the value of a media property', () => {
+    cy.contains('h2', 'Reporte with external content').click();
+    cy.contains('button', 'Edit').should('be.visible').click();
+    clickMediaAction('Video', 'Unlink');
+    cy.contains('button', 'Save').click();
+    cy.wait('@saveEntity');
+    cy.contains('Entity updated').should('be.visible');
+  });
 });

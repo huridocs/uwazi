@@ -66,7 +66,7 @@ function wrapEntityMetadata(entity, template) {
     let fileLocalID;
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
-    if (property) {
+    if (property && entity.metadata[key]) {
       const fieldValue = entity.metadata[key].data || entity.metadata[key];
       const mediaExpGroups = fieldValue.match(/^\(?([\w+]{10,15})(, ({.+})\))?|$/);
       if (isString(fieldValue) && mediaExpGroups && mediaExpGroups[1]) {
