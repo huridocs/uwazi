@@ -1,6 +1,7 @@
 import { Job } from '../contracts/Job';
 import { JobsDispatcher } from '../contracts/JobsDispatcher';
 import { QueueAdapter } from '../contracts/QueueAdapter';
+import { JobSerializer, NamespaceFactory } from './JobSerializer';
 
 interface JobConstructor<T extends Job> {
   new (...args: any[]): T;
@@ -13,7 +14,7 @@ interface Definition<T extends Job> {
 
 interface QueueOptions {
   lockWindow?: number;
-  namespaceFactory?: (job: Job) => Promise<string>;
+  namespaceFactory?: NamespaceFactory;
 }
 
 const optionsDefaults: Required<QueueOptions> = {
@@ -30,9 +31,17 @@ export class Queue implements JobsDispatcher {
 
   private definitions: Record<string, Definition<any>> = {};
 
-  constructor(queueName: string, adapter: QueueAdapter, options: QueueOptions = {}) {
+  private serializer: JobSerializer;
+
+  constructor(
+    queueName: string,
+    adapter: QueueAdapter,
+    serializer: JobSerializer,
+    options: QueueOptions = {}
+  ) {
     this.queueName = queueName;
     this.adapter = adapter;
+    this.serializer = serializer;
     this.options = {
       ...optionsDefaults,
       ...options,
@@ -40,64 +49,11 @@ export class Queue implements JobsDispatcher {
   }
 
   private async serializeJob(job: Job) {
-    return JSON.stringify({
-      name: job.constructor.name,
-      namespace: await this.options.namespaceFactory(job),
-      data: job,
-    });
+    return this.serializer.serialize(job, this.options.namespaceFactory);
   }
 
   private async deserializeJob(id: string, serialized: string) {
-    const data = JSON.parse(serialized);
-
-    const definition = this.definitions[data.name];
-
-    if (!definition) {
-      throw new Error(`Unregistered job ${data.name} in queue ${this.queueName}`);
-    }
-
-    const propertyDefinitions = Object.keys(data.data).reduce(
-      (properties, property) => ({
-        ...properties,
-        [property]: {
-          ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, property),
-          value: data.data[property],
-        },
-      }),
-      {}
-    );
-
-    const builtDependencies = await definition.dependenciesFactory?.(data.namespace);
-
-    const dependenciesDefinitions = builtDependencies
-      ? Object.keys(builtDependencies).reduce(
-          (properties, property) => ({
-            ...properties,
-            [property]: {
-              ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, property),
-              value: builtDependencies[property] as any,
-            },
-          }),
-          {}
-        )
-      : {};
-
-    const managedFieldsDefinition = {
-      id: {
-        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'id'),
-        value: id,
-      },
-      namespace: {
-        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'namespace'),
-        value: data.namespace,
-      },
-    };
-
-    return Object.create(definition.constructorFn.prototype, {
-      ...propertyDefinitions,
-      ...dependenciesDefinitions,
-      ...managedFieldsDefinition,
-    }) as Job;
+    return this.serializer.deserialize(id, serialized, this.definitions);
   }
 
   async dispatch(job: Job): Promise<void> {

@@ -5,6 +5,7 @@ import { Job } from 'api/queue/contracts/Job';
 import { QueueAdapter } from 'api/queue/contracts/QueueAdapter';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
+import { RSMQJobSerializer } from 'api/queue/infrastructure/RSMQJobSerializer';
 
 class A {
   private namespace: string;
@@ -61,7 +62,7 @@ function createQueueAdapter() {
 
 it('should work', done => {
   const adapter = createQueueAdapter();
-  const consumerQueue = new Queue('asdf', adapter);
+  const consumerQueue = new Queue('asdf', adapter, RSMQJobSerializer);
   const worker = new QueueWorker(consumerQueue);
 
   worker
@@ -74,7 +75,9 @@ it('should work', done => {
 
   consumerQueue.register(SampleJob, async namespace => ({ a: new A(namespace) }));
 
-  const producerQueue = new Queue('asdf', adapter, { namespaceFactory: async () => 'tenant1' });
+  const producerQueue = new Queue('asdf', adapter, RSMQJobSerializer, {
+    namespaceFactory: async () => 'tenant1',
+  });
 
   void Promise.all(
     [1, 2, 3, 4, 5, 6].map(async n =>
