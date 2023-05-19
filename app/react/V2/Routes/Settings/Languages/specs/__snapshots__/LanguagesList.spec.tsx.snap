@@ -65,9 +65,12 @@ exports[`LanguagesList render installed languages should show a list of installe
           data-testid="languages"
         >
           <div
-            class="relative overflow-x-auto shadow-md sm:rounded-lg"
+            class="relative"
             data-testid="table-element"
           >
+            <div
+              class="absolute bg-white dark:bg-black w-full h-full top-0 left-0 rounded-lg drop-shadow-md -z-10"
+            />
             <table
               class="w-full text-left text-sm text-gray-500 dark:text-gray-400"
               role="table"
@@ -82,11 +85,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </span>
               </caption>
               <thead
-                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+                class="group/head text-xs uppercase text-gray-700 dark:text-gray-400"
               >
                 <tr>
                   <th
-                    class="px-6 py-3 w-9/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 w-9/12"
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
@@ -116,7 +119,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -131,7 +134,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -146,7 +149,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -163,16 +166,16 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </tr>
               </thead>
               <tbody
-                class="text-gray-900 divide-y"
+                class="group/body text-gray-900 divide-y"
                 role="rowgroup"
               >
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -182,7 +185,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -211,13 +214,13 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -234,12 +237,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -249,7 +252,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -278,13 +281,13 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -301,12 +304,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -316,7 +319,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -345,7 +348,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
@@ -361,7 +364,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      
