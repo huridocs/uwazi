@@ -102,6 +102,13 @@ describe('Public Form', () => {
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+      cy.get('img').should('be.visible');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(200);
+      cy.get('.form-group.image').eq(0).scrollIntoView();
+      cy.get('.form-group.image')
+        .eq(0)
+        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.15 });
     });
 
     it('should fill the Video field', () => {
@@ -113,6 +120,14 @@ describe('Public Form', () => {
           force: true,
         }
       );
+      cy.get('video').should('be.visible');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(1000);
+      cy.addTimeLink(2000, 'Control point');
+      cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
+      cy.get('.form-group.media')
+        .eq(0)
+        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
     });
 
     it('should fill the Imagen adicional field', () => {
@@ -121,6 +136,7 @@ describe('Public Form', () => {
       cy.get('div[role=dialog] input[type=file]').selectFile(`${__dirname}/test_files/batman.jpg`, {
         force: true,
       });
+      cy.get('.form-group.image', { timeout: 200 }).eq(1).scrollIntoView();
     });
 
     it('should fill the captcha and save', () => {

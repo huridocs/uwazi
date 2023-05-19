@@ -1,17 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-import { Translate } from 'app/I18N';
 import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
+import { Translate } from 'app/I18N';
+import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
   compact?: boolean;
   editing?: boolean;
   onTimeLinkAdded?: Function;
   config: string;
+  type?: string;
 }
 
 interface TimeLink {
@@ -67,6 +67,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const originalTimelinks = formatTimeLinks(options?.timelinks || {});
   const [playingTimelinkIndex, setPlayingTimelinkIndex] = useState<number>(-1);
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
+  const [temporalResource, setTemporalResource] = useState<string>();
   const [mediaURL, setMediaURL] = useState('');
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
@@ -75,6 +76,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     control,
     name: 'timelines',
   });
+
+  const validMediaUrlRegExp =
+    /(^(blob:)?https?:\/\/(?:www\.)?)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]$/;
 
   const seekTo = (seconds: number) => {
     const playingStatus = isVideoPlaying;
@@ -263,25 +267,48 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   const config = propsToConfig(props);
   useEffect(() => {
-    if (config.url) {
-      if (config.url.includes('/api/files/')) {
-        fetch(config.url)
-          .then(async res => res.blob())
-          .then(blob => {
-            setErrorFlag(false);
-            setMediaURL(URL.createObjectURL(blob));
-          })
-          .catch(_e => {});
-      } else {
-        setMediaURL(config.url);
-      }
-    }
-
-    return () => {
+    if (config.url.startsWith('/api/files/')) {
+      fetch(config.url)
+        .then(async res => {
+          if (validMediaFile(res)) {
+            return res.blob();
+          }
+          setErrorFlag(true);
+          throw new Error('Invalid file');
+        })
+        .then(blob => {
+          setErrorFlag(false);
+          setMediaURL(URL.createObjectURL(blob));
+        })
+        .catch(_e => {});
+    } else if (config.url.match(validMediaUrlRegExp)) {
+      setMediaURL(config.url);
       setErrorFlag(false);
-      return URL.revokeObjectURL(mediaURL);
-    };
+    } else {
+      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+        setTemporalResource(mediaURL);
+      }
+      setMediaURL(config.url);
+    }
   }, [config.url]);
+
+  useEffect(() => {
+    if (
+      temporalResource !== undefined &&
+      ReactPlayer.canPlay(temporalResource) &&
+      !mediaURL.match(validMediaUrlRegExp)
+    ) {
+      setErrorFlag(false);
+      setMediaURL(temporalResource);
+    }
+  }, [temporalResource, mediaURL]);
+
+  useEffect(() => () => {
+    if (config.url.startsWith('/api/files/')) {
+      setErrorFlag(false);
+      URL.revokeObjectURL(mediaURL);
+    }
+  });
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
@@ -315,7 +342,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           }}
           onError={e => {
             if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-              setMediaURL('');
               setErrorFlag(true);
             }
           }}

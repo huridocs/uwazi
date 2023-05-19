@@ -40,7 +40,7 @@ class MetadataForm extends Component {
 
   onSubmit(entity) {
     this.props.onSubmit(
-      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity)),
+      wrapEntityMetadata(entitiesUtil.filterBaseProperties(entity), this.props.template.toJS()),
       this.props.model
     );
   }
