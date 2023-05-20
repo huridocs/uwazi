@@ -1,47 +1,127 @@
-import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import RedisSMQ from 'rsmq';
+/* eslint-disable max-statements */
 import { Job } from 'api/queue/contracts/Job';
+import { MemoryQueueAdapter } from 'api/queue/infrastructure/MemoryQueueAdapter';
+import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
 import { Queue } from '../Queue';
 
-it('should correctly serialize and deserialize a job', async () => {
-  const buffer: any[] = [];
-  const queue = new Queue(
-    'asdf',
-    partialImplementation<RedisSMQ>({
-      async sendMessageAsync({ message }) {
-        buffer.push({ id: buffer.length, message });
-        return `${buffer.length - 1}`;
-      },
-      async receiveMessageAsync() {
-        return buffer.shift();
-      },
-    })
-  );
+async function sleep(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
-  class SampleJob implements Job {
-    private data: { piece: string[] };
+class TestJob extends Job {
+  private data: { pieceOfData: string[] };
 
-    private aNumber: number;
+  private aNumber: number;
 
-    constructor(data: { piece: string[] }, aNumber: number) {
-      this.data = data;
-      this.aNumber = aNumber;
-    }
+  logger?: (message: string) => void;
 
-    private somePrivateMethod() {
-      console.log(this.aNumber, this.data.piece.join('|'));
-    }
+  lockWindow = 2;
 
-    async handle(): Promise<void> {
-      this.somePrivateMethod();
-    }
+  constructor(data: { pieceOfData: string[] }, aNumber: number) {
+    super();
+    this.data = data;
+    this.aNumber = aNumber;
   }
 
-  queue.register(SampleJob);
+  private somePrivateMethod() {
+    if (this.logger) {
+      return this.logger(`${this.aNumber}, ${this.data.pieceOfData.join('|')}`);
+    }
 
-  await queue.dispatch(new SampleJob({ piece: ['a', 'b', 'c'] }, 2));
+    throw new Error('missing logger dependency');
+  }
 
-  const job = await queue.pop();
-  console.log(job);
-  await job?.handle();
+  async handle(): Promise<void> {
+    this.somePrivateMethod();
+  }
+}
+
+it('should enqueue and dequeue a job, including the namespace and injecting the dependencies', async () => {
+  let namespace: string;
+  const output: string[] = [];
+
+  const adapter = new MemoryQueueAdapter();
+  const serializer = StringJobSerializer;
+  const queue = new Queue('queue name', adapter, serializer, {
+    namespaceFactory: async () => namespace,
+  });
+
+  queue.register(TestJob, async ns => ({
+    logger: (message: string) => {
+      output.push(`${ns} ${message}`);
+    },
+  }));
+
+  namespace = 'namespace';
+  await queue.dispatch(new TestJob({ pieceOfData: ['a', 'b', 'c'] }, 2));
+
+  const job = await queue.peek();
+  await job?.handle(async () => {});
+  expect(output).toEqual(['namespace 2, a|b|c']);
+});
+
+it('should return the job only once during the lockWindow', async () => {
+  const adapter = new MemoryQueueAdapter();
+  const serializer = StringJobSerializer;
+  const producer = new Queue('queue name', adapter, serializer);
+  const consumer1 = new Queue('queue name', adapter, serializer);
+  const consumer2 = new Queue('queue name', adapter, serializer);
+
+  [consumer1, consumer2].forEach(consumer => {
+    consumer.register(TestJob);
+  });
+
+  await producer.dispatch(new TestJob({ pieceOfData: ['a', 'b', 'c'] }, 2));
+
+  const job1 = await consumer1.peek();
+  let job2 = await consumer2.peek();
+  expect(job1).toBeInstanceOf(TestJob);
+  expect(job2).toBe(null);
+  await sleep(1000);
+  job2 = await consumer2.peek();
+  expect(job2).toBeInstanceOf(TestJob);
+});
+
+it('should refresh the lock if progress is reported', async () => {
+  const adapter = new MemoryQueueAdapter();
+  const serializer = StringJobSerializer;
+  const producer = new Queue('queue name', adapter, serializer);
+  const consumer1 = new Queue('queue name', adapter, serializer);
+  const consumer2 = new Queue('queue name', adapter, serializer);
+
+  [consumer1, consumer2].forEach(consumer => {
+    consumer.register(TestJob);
+  });
+
+  await producer.dispatch(new TestJob({ pieceOfData: ['a', 'b', 'c'] }, 2));
+
+  const job1 = await consumer1.peek();
+  let job2 = await consumer2.peek();
+  expect(job1).toBeInstanceOf(TestJob);
+  expect(job2).toBe(null);
+  await sleep(900); //Emulates doing some work
+  await consumer1.progress(job1!);
+  job2 = await consumer2.peek();
+  expect(job2).toBe(null);
+  await sleep(2100);
+  job2 = await consumer2.peek();
+  expect(job2).toBeInstanceOf(TestJob);
+});
+
+it('should delete a message if marked as completed', async () => {
+  const adapter = new MemoryQueueAdapter();
+  const serializer = StringJobSerializer;
+  const queue = new Queue('queue name', adapter, serializer);
+  queue.register(TestJob);
+
+  await queue.dispatch(new TestJob({ pieceOfData: ['a', 'b', 'c'] }, 2));
+  const job = await queue.peek();
+  expect(job).toBeInstanceOf(TestJob);
+  await queue.complete(job!);
+  await sleep(1000); // await for the lockWindow to expire
+
+  const job2 = await queue.peek();
+  expect(job2).toBe(null);
 });

@@ -18,7 +18,7 @@ interface QueueOptions {
 }
 
 const optionsDefaults: Required<QueueOptions> = {
-  lockWindow: 1000,
+  lockWindow: 1,
   namespaceFactory: async () => Promise.resolve(''),
 };
 
