@@ -1,7 +1,7 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
 import { Job } from 'api/queue/contracts/Job';
-import { MemoryQueue } from 'api/queue/infrastructure/MemoryQueue';
+import { MemoryQueueAdapter } from 'api/queue/infrastructure/MemoryQueueAdapter';
 import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
@@ -42,7 +42,7 @@ class SampleJob extends Job {
 }
 
 it('should work', done => {
-  const adapter = new MemoryQueue(0);
+  const adapter = new MemoryQueueAdapter();
   const consumerQueue = new Queue('asdf', adapter, StringJobSerializer);
   const worker = new QueueWorker(consumerQueue);
 

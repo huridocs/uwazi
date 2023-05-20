@@ -56,7 +56,18 @@ export class Queue implements JobsDispatcher {
     return this.serializer.deserialize(id, serialized, this.definitions);
   }
 
+  private async ensureQueue() {
+    try {
+      await this.adapter.createQueueAsync({ qname: this.queueName, vt: this.options.lockWindow });
+    } catch (e) {
+      if (e.name !== 'queueExists') {
+        throw e;
+      }
+    }
+  }
+
   async dispatch(job: Job): Promise<void> {
+    await this.ensureQueue();
     await this.adapter.sendMessageAsync({
       qname: this.queueName,
       message: await this.serializeJob(job),
@@ -64,6 +75,7 @@ export class Queue implements JobsDispatcher {
   }
 
   async peek() {
+    await this.ensureQueue();
     const message = await this.adapter.receiveMessageAsync({ qname: this.queueName });
     if ('id' in message) {
       return this.deserializeJob(message.id, message.message);
@@ -73,10 +85,12 @@ export class Queue implements JobsDispatcher {
   }
 
   async complete(job: Job) {
+    await this.ensureQueue();
     await this.adapter.deleteMessageAsync({ qname: this.queueName, id: job.id! });
   }
 
   async progress(job: Job) {
+    await this.ensureQueue();
     await this.adapter.changeMessageVisibilityAsync({
       qname: this.queueName,
       id: job.id!,
