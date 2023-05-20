@@ -1,11 +1,13 @@
 import { Definition, JobSerializer, NamespaceFactory } from '../application/JobSerializer';
 import { Job } from '../contracts/Job';
 
+const noOpNamespaceFactory = async () => Promise.resolve('');
+
 export const RSMQJobSerializer: JobSerializer = {
-  async serialize(job: Job, namespaceFactory: NamespaceFactory) {
+  async serialize(job: Job, namespaceFactory?: NamespaceFactory) {
     return JSON.stringify({
       name: job.constructor.name,
-      namespace: await namespaceFactory(job),
+      namespace: await (namespaceFactory ?? noOpNamespaceFactory)(job),
       data: job,
     });
   },
