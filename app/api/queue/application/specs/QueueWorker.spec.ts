@@ -1,11 +1,10 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { Job } from 'api/queue/contracts/Job';
-import { QueueAdapter } from 'api/queue/contracts/QueueAdapter';
+import { MemoryQueue } from 'api/queue/infrastructure/MemoryQueue';
+import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
-import { RSMQJobSerializer } from 'api/queue/infrastructure/RSMQJobSerializer';
 
 class A {
   private namespace: string;
@@ -42,27 +41,9 @@ class SampleJob extends Job {
   }
 }
 
-function createQueueAdapter() {
-  let _id = 0;
-  let queue: { id: string; message: string }[] = [];
-  return partialImplementation<QueueAdapter>({
-    async sendMessageAsync({ message }) {
-      _id += 1;
-      queue.push({ id: `${_id}`, message });
-      return `${_id}`;
-    },
-    async receiveMessageAsync() {
-      return queue[0] ?? {};
-    },
-    async deleteMessageAsync({ id }) {
-      queue = queue.filter(item => item.id !== id);
-    },
-  });
-}
-
 it('should work', done => {
-  const adapter = createQueueAdapter();
-  const consumerQueue = new Queue('asdf', adapter, RSMQJobSerializer);
+  const adapter = new MemoryQueue(0);
+  const consumerQueue = new Queue('asdf', adapter, StringJobSerializer);
   const worker = new QueueWorker(consumerQueue);
 
   worker
@@ -75,7 +56,7 @@ it('should work', done => {
 
   consumerQueue.register(SampleJob, async namespace => ({ a: new A(namespace) }));
 
-  const producerQueue = new Queue('asdf', adapter, RSMQJobSerializer, {
+  const producerQueue = new Queue('asdf', adapter, StringJobSerializer, {
     namespaceFactory: async () => 'tenant1',
   });
 

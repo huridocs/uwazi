@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { Definitions } from 'api/queue/application/JobSerializer';
 import { Job } from 'api/queue/contracts/Job';
-import { RSMQJobSerializer } from '../RSMQJobSerializer';
+import { StringJobSerializer } from '../StringJobSerializer';
 
 describe('when there are definitions for a job', () => {
   it('should properly serialize and deserialize an object', async () => {
@@ -33,8 +33,8 @@ describe('when there are definitions for a job', () => {
 
     const instance = new TestJob({ someAttribute: 1 }, 'some text');
 
-    const serialized = await RSMQJobSerializer.serialize(instance);
-    const deserialized = await RSMQJobSerializer.deserialize('job id', serialized, definitions);
+    const serialized = await StringJobSerializer.serialize(instance);
+    const deserialized = await StringJobSerializer.deserialize('job id', serialized, definitions);
 
     expect(deserialized).toBeInstanceOf(TestJob);
 
@@ -57,8 +57,8 @@ describe('when there are definitions for a job', () => {
     const namespaceFactory = async () => namespace;
     namespace = '2';
 
-    const serialized = await RSMQJobSerializer.serialize(instance, namespaceFactory);
-    const deserialized = await RSMQJobSerializer.deserialize('job id', serialized, {
+    const serialized = await StringJobSerializer.serialize(instance, namespaceFactory);
+    const deserialized = await StringJobSerializer.deserialize('job id', serialized, {
       [TestJob.name]: { constructorFn: TestJob },
     });
 
@@ -98,8 +98,8 @@ describe('when there are definitions for a job', () => {
       dependency2: new Dependency('second'),
     });
 
-    const serialized = await RSMQJobSerializer.serialize(instance);
-    const deserialized = await RSMQJobSerializer.deserialize('job id', serialized, {
+    const serialized = await StringJobSerializer.serialize(instance);
+    const deserialized = await StringJobSerializer.deserialize('job id', serialized, {
       [TestJob.name]: { constructorFn: TestJob, dependenciesFactory },
     });
 
@@ -121,9 +121,9 @@ describe('when there are no definitions for a job', () => {
     const instance = new TestJob();
 
     await expect(async () => {
-      await RSMQJobSerializer.deserialize(
+      await StringJobSerializer.deserialize(
         'job id',
-        await RSMQJobSerializer.serialize(instance),
+        await StringJobSerializer.serialize(instance),
         {}
       );
     }).rejects.toEqual(new Error('Unregistered job TestJob'));
