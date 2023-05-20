@@ -10,6 +10,10 @@ export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
   }
 
   async update(candidateIds: string[]): Promise<void> {
-    await this.queue.dispatch(new UpdateRelationshipPropertiesJob(candidateIds));
+    await Promise.all(
+      candidateIds.map(async candidate =>
+        this.queue.dispatch(new UpdateRelationshipPropertiesJob(candidate))
+      )
+    );
   }
 }

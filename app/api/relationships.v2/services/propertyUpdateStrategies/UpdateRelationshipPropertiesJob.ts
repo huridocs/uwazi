@@ -1,21 +1,31 @@
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { HeartbeatCallback, Job } from 'api/queue/contracts/Job';
+import { Job } from 'api/queue/contracts/Job';
 
+interface IndexEntitiesCallback {
+  (sharedId: string): Promise<void>;
+}
 export class UpdateRelationshipPropertiesJob extends Job {
-  private entityIds: string[];
+  private entityId: string;
 
   updater?: EntityRelationshipsUpdateService;
 
-  constructor(entityIds: string[]) {
+  transactionManager?: TransactionManager;
+
+  indexEntity?: IndexEntitiesCallback;
+
+  constructor(entityId: string) {
     super();
-    this.entityIds = entityIds;
+    this.entityId = entityId;
   }
 
-  async handle(heartbeat: HeartbeatCallback) {
-    return this.entityIds.reduce(async (previous, entityId) => {
-      await previous;
-      await this.updater!.update([entityId]);
-      await heartbeat();
-    }, Promise.resolve());
+  async handle() {
+    await this.transactionManager!.run(async () => {
+      await this.updater!.update([this.entityId]);
+
+      this.transactionManager?.onCommitted(async () => {
+        await this.indexEntity!(this.entityId);
+      });
+    });
   }
 }
