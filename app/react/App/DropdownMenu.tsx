@@ -18,23 +18,24 @@ export type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
 export type DropdownMenuProps = {
   link: IImmutable<ILink>;
   position: number;
+  hideMobileMenu: Function;
 };
 
-export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
+export const DropdownMenu = ({ link, position, hideMobileMenu }: DropdownMenuProps) => {
   const [showing, setShowing] = useState(false);
   const dropdownRef = useRef(null);
   const onClickOutside = useCallback(() => {
     setShowing(false);
   }, []);
 
-  const toggleShowingWithoutPropagation = (e: { stopPropagation: () => void }) => {
-    setShowing(!showing);
-    e.stopPropagation();
-  };
   const toggleShowing = () => {
     setShowing(!showing);
   };
 
+  const hideMenu = () => {
+    setShowing(false);
+    hideMobileMenu();
+  };
   useOnClickOutsideElement<HTMLLIElement>(dropdownRef, onClickOutside);
 
   const menuOptions = () =>
@@ -49,14 +50,14 @@ export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
               className="btn dropdown-item"
               target="_blank"
               rel="noreferrer"
-              onClick={toggleShowing}
+              onClick={hideMenu}
             >
               <Translate context="Menu">{sublink?.get('title') as string}</Translate>
             </a>
           </li>
         ) : (
           <li key={index}>
-            <I18NLink to={url} className="btn dropdown-item" onClick={toggleShowing}>
+            <I18NLink to={url} className="btn dropdown-item" onClick={hideMenu}>
               <Translate context="Menu">{sublink?.get('title') as string}</Translate>
             </I18NLink>
           </li>
@@ -70,7 +71,7 @@ export const DropdownMenu = ({ link, position }: DropdownMenuProps) => {
         type="button"
         className={`btn menuNav-btn menuNav-link dropdown-toggle ${showing ? 'expanded' : ''} `}
         id="navbarDropdownMenuLink"
-        onClick={toggleShowingWithoutPropagation}
+        onClick={toggleShowing}
       >
         <Translate context="Menu">{link.get('title')}</Translate>
         &nbsp; <Icon icon="caret-down" />
