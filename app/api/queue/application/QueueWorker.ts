@@ -28,7 +28,7 @@ export class QueueWorker {
     });
   }
 
-  private async pickJob() {
+  private async peekJob() {
     let job = await this.queue.peek();
 
     while (!this.isStopping() && !job) {
@@ -36,6 +36,8 @@ export class QueueWorker {
 
       job = await this.queue.peek();
     }
+
+    if (this.isStopping()) return null;
 
     return job;
   }
@@ -56,10 +58,10 @@ export class QueueWorker {
   }
 
   async start() {
-    let job = await this.pickJob();
+    let job = await this.peekJob();
     while (job) {
       await this.processJob(job);
-      job = await this.pickJob();
+      job = await this.peekJob();
     }
     this.stopped();
   }

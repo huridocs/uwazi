@@ -6,68 +6,174 @@ import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerialize
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
 
-class A {
-  private namespace: string;
-
-  constructor(namespace: string) {
-    this.namespace = namespace;
-  }
-
-  do() {
-    console.log(`did for ${JSON.stringify(this.namespace)}`);
-  }
+async function sleep(ms: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
 }
 
-class SampleJob extends Job {
-  a?: A;
-
-  private data: { piece: string[] };
+class TestJob extends Job {
+  private data: { pieceOfData: string[] };
 
   private aNumber: number;
 
-  constructor(data: { piece: string[] }, aNumber: number) {
+  logger?: (message: string) => void;
+
+  constructor(data: { pieceOfData: string[] }, aNumber: number, lockWindow: number) {
     super();
     this.data = data;
     this.aNumber = aNumber;
+    this.lockWindow = lockWindow;
   }
 
   private somePrivateMethod() {
-    console.log(this.aNumber, this.data.piece.join('|'));
-    this.a?.do();
+    if (this.logger) {
+      return this.logger(`${this.aNumber}, ${this.data.pieceOfData.join('|')}`);
+    }
+
+    throw new Error('missing logger dependency');
   }
 
   async handle(): Promise<void> {
+    await sleep(1000);
     this.somePrivateMethod();
   }
 }
 
-it('should work', done => {
+it('should process all the jobs', done => {
+  const output: string[] = [];
   const adapter = new MemoryQueueAdapter();
-  const consumerQueue = new Queue('asdf', adapter, StringJobSerializer);
+  const producerQueue1 = new Queue('name', adapter, StringJobSerializer, {
+    namespaceFactory: async () => 'namespace1',
+  });
+  const producerQueue2 = new Queue('name', adapter, StringJobSerializer, {
+    namespaceFactory: async () => 'namespace1',
+  });
+  const consumerQueue = new Queue('name', adapter, StringJobSerializer);
+
+  consumerQueue.register(TestJob, async ns => ({
+    logger: async (message: string) => {
+      output.push(`${ns} ${message}`);
+    },
+  }));
+
   const worker = new QueueWorker(consumerQueue);
 
-  worker
-    .start()
+  const dispatch = async (job: Job, i: number) =>
+    i % 2 ? producerQueue1.dispatch(job) : producerQueue2.dispatch(job);
+
+  Promise.all(
+    [
+      new TestJob({ pieceOfData: ['.'] }, 1, 1),
+      new TestJob({ pieceOfData: ['.', '.'] }, 2, 1),
+      new TestJob({ pieceOfData: ['.', '.', '.'] }, 3, 1),
+    ].map(dispatch)
+  )
     .then(() => {
-      console.log('Done');
-      done();
+      output.push('finished enqueueing jobs pre worker.start');
+      worker.start().then(done).catch(done.fail);
+      Promise.all(
+        [
+          new TestJob({ pieceOfData: ['.', '.', '.', '.'] }, 4, 1),
+          new TestJob({ pieceOfData: ['.', '.', '.', '.', '.'] }, 5, 1),
+          new TestJob({ pieceOfData: ['.', '.', '.', '.', '.', '.'] }, 6, 1),
+        ].map(dispatch)
+      )
+        .then(() => {
+          output.push('finished enqueueing jobs post worker.start');
+          sleep(6 * 1000)
+            .then(() => {
+              worker
+                .stop()
+                .then(() => {
+                  output.push('worker stopped');
+
+                  expect(output).toEqual([
+                    'finished enqueueing jobs pre worker.start',
+                    'finished enqueueing jobs post worker.start',
+                    'namespace1 1, .',
+                    'namespace1 2, .|.',
+                    'namespace1 3, .|.|.',
+                    'namespace1 4, .|.|.|.',
+                    'namespace1 5, .|.|.|.|.',
+                    'namespace1 6, .|.|.|.|.|.',
+                    'worker stopped',
+                  ]);
+                })
+                .catch(done.fail);
+            })
+            .catch(done.fail);
+        })
+        .catch(done.fail);
     })
     .catch(done.fail);
+}, 10000);
 
-  consumerQueue.register(SampleJob, async namespace => ({ a: new A(namespace) }));
-
-  const producerQueue = new Queue('asdf', adapter, StringJobSerializer, {
-    namespaceFactory: async () => 'tenant1',
+it('should finish the in-progress job before stopping', done => {
+  const output: string[] = [];
+  const adapter = new MemoryQueueAdapter();
+  const producerQueue1 = new Queue('name', adapter, StringJobSerializer, {
+    namespaceFactory: async () => 'namespace1',
   });
-
-  void Promise.all(
-    [1, 2, 3, 4, 5, 6].map(async n =>
-      producerQueue.dispatch(new SampleJob({ piece: '.'.repeat(n).split('') }, n))
-    )
-  ).then(async () => {
-    await new Promise(resolve => {
-      setTimeout(resolve, 2000);
-    });
-    await worker.stop();
+  const producerQueue2 = new Queue('name', adapter, StringJobSerializer, {
+    namespaceFactory: async () => 'namespace1',
   });
+  const consumerQueue = new Queue('name', adapter, StringJobSerializer);
+
+  consumerQueue.register(TestJob, async ns => ({
+    logger: async (message: string) => {
+      output.push(`${ns} ${message}`);
+    },
+  }));
+
+  const worker = new QueueWorker(consumerQueue);
+
+  const dispatch = async (job: Job, i: number) =>
+    i % 2 ? producerQueue1.dispatch(job) : producerQueue2.dispatch(job);
+
+  Promise.all(
+    [
+      new TestJob({ pieceOfData: ['.'] }, 1, 1),
+      new TestJob({ pieceOfData: ['.', '.'] }, 2, 1),
+      new TestJob({ pieceOfData: ['.', '.', '.'] }, 3, 1),
+    ].map(dispatch)
+  )
+    .then(() => {
+      output.push('finished enqueueing jobs pre worker.start');
+      worker.start().then(done).catch(done.fail);
+      Promise.all(
+        [
+          new TestJob({ pieceOfData: ['.', '.', '.', '.'] }, 4, 1),
+          new TestJob({ pieceOfData: ['.', '.', '.', '.', '.'] }, 5, 1),
+          new TestJob({ pieceOfData: ['.', '.', '.', '.', '.', '.'] }, 6, 1),
+        ].map(dispatch)
+      )
+        .then(() => {
+          output.push('finished enqueueing jobs post worker.start');
+          sleep(3 * 1000 + 300)
+            .then(() => {
+              output.push('stopping worker');
+              worker
+                .stop()
+                .then(() => {
+                  output.push('worker stopped');
+
+                  expect(output).toEqual([
+                    'finished enqueueing jobs pre worker.start',
+                    'finished enqueueing jobs post worker.start',
+                    'namespace1 1, .',
+                    'namespace1 2, .|.',
+                    'namespace1 3, .|.|.',
+                    'stopping worker',
+                    'namespace1 4, .|.|.|.',
+                    'worker stopped',
+                  ]);
+                })
+                .catch(done.fail);
+            })
+            .catch(done.fail);
+        })
+        .catch(done.fail);
+    })
+    .catch(done.fail);
 }, 10000);
