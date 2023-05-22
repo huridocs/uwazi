@@ -14,7 +14,12 @@ const Template: StoryFn<typeof MultiSelect> = args => (
     <div className="tw-content">
       <div className="md:w-1/2">
         <h1>Multiselect component</h1>
-        <MultiSelect label={args.label} options={args.options} onChange={args.onChange} />
+        <MultiSelect
+          label={args.label}
+          options={args.options}
+          onChange={args.onChange}
+          disabled={args.disabled}
+        />
       </div>
     </div>
   </Provider>
@@ -45,6 +50,7 @@ Basic.args = {
     { label: 'Item with extra extra extra long name 5', value: 'lItem5' },
     { label: 'Item with extra extra extra extra extraextraextra long name', value: 'xlItem' },
   ],
+  disabled: false,
 };
 
 export { Basic };

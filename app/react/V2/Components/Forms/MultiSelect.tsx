@@ -12,10 +12,11 @@ type Option = { label: string; value: string; selected?: boolean };
 interface MultiSelectProps {
   label: String | React.ReactNode;
   options: Option[];
+  disabled?: boolean;
   onChange?: (options: Option[]) => any;
 }
 
-const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) => {
+const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSelectProps) => {
   const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
@@ -30,7 +31,11 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
       <div className="border-b border-gray-50 bg-gray-50 p-2 flex justify-between">
         <div className="text-indigo-700 text-base">{label}</div>
         <div className="left-0">
-          <Popover.Button ref={setReferenceElement} className="text-indigo-700">
+          <Popover.Button
+            ref={setReferenceElement}
+            className="text-primary-700 disabled:text-primary-300"
+            disabled={disabled}
+          >
             <PlusCircleIcon className="text-lg w-6" />
           </Popover.Button>
         </div>
@@ -44,6 +49,7 @@ const MultiSelect = ({ label, options, onChange = () => {} }: MultiSelectProps) 
               <button
                 type="button"
                 className="ml-1 text-gray-400 font-bold content-center justify-center"
+                disabled={disabled}
                 onClick={() => {
                   const selected = optionsState.map(opt => {
                     if (opt.value === option.value) {

@@ -100,4 +100,21 @@ describe('MultiSelect', () => {
       cy.get('@onChange').should('have.been.calledOnceWith', expectedArguments);
     });
   });
+
+  describe('disabled', () => {
+    it('should not be able to open the popover menu or remove items', () => {
+      mount(
+        <MultiSelect
+          disabled
+          options={[
+            { label: 'Value 1', value: 'someone', selected: true },
+            { label: 'Value 2', value: 'another', selected: true },
+          ]}
+        />
+      );
+
+      cy.get('[data-testid="multiselect-comp"] button').eq(0).should('be.disabled');
+      cy.get('[data-testid="multiselect-comp"] button').eq(1).should('be.disabled');
+    });
+  });
 });
