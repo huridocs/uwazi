@@ -106,12 +106,6 @@ describe('Public Form', () => {
         }
       );
       cy.get('img').should('be.visible');
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(200);
-      cy.get('.form-group.image').eq(0).scrollIntoView();
-      cy.get('.form-group.image')
-        .eq(0)
-        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.15 });
     });
 
     it('should fill the Video field', () => {

@@ -132,7 +132,14 @@ const MenuComponent = ({
         );
       }
 
-      return <DropdownMenu link={fromJS(link.toJS() as ILink)} position={index!} key={index} />;
+      return (
+        <DropdownMenu
+          link={fromJS(link.toJS() as ILink)}
+          position={index!}
+          key={index}
+          hideMobileMenu={hideMobileMenu}
+        />
+      );
     })
     .filter(v => v !== null)
     .toArray();
