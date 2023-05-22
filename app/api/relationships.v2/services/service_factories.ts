@@ -22,6 +22,7 @@ import { CreateRelationshipService as GenericCreateRelationshipService } from '.
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
+import { MigrationService as GenericMigrationService } from './MigrationService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -114,9 +115,15 @@ const DeleteRelationshipService = (request: Request) => {
   return service;
 };
 
+const MigrationService = () => {
+  const service = new GenericMigrationService();
+  return service;
+};
+
 export {
   CreateRelationshipService,
   DeleteRelationshipService,
   GetRelationshipService,
   DenormalizationService,
+  MigrationService,
 };

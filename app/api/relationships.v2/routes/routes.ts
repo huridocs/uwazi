@@ -8,6 +8,7 @@ import {
   CreateRelationshipService,
   DeleteRelationshipService,
   GetRelationshipService,
+  MigrationService,
 } from '../services/service_factories';
 import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
@@ -46,7 +47,9 @@ export default (app: Application) => {
     res.status(200).send();
   });
 
-  app.post('/api/v2/relationships/migrate', featureRequired, async () => {
-    console.log('request got');
+  app.post('/api/v2/relationships/migrate', featureRequired, async (req, res) => {
+    const service = MigrationService();
+    await service.migrate();
+    res.json();
   });
 };
