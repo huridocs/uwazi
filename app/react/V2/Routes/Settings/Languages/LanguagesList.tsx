@@ -118,7 +118,7 @@ const LanguagesList = () => {
 
   const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
     row.original.translationAvailable ? (
-      <Button buttonStyle="secondary" onClick={() => resetModal(row)}>
+      <Button buttonStyle="secondary" onClick={() => resetModal(row)} className="leading-4">
         <Translate>Reset</Translate>
       </Button>
     ) : (
@@ -129,11 +129,12 @@ const LanguagesList = () => {
     <Button
       buttonStyle={row.original.default ? 'primary' : 'tertiary'}
       onClick={async () => setDefaultLanguage(row)}
+      className="leading-4"
     >
       <Translate className="sr-only">Default</Translate>
       <StarIcon
         className={`${
-          !row.original.default ? ' w-5 text-white stroke-current stroke-gray-300 stroke-2' : 'w-5'
+          !row.original.default ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2' : 'w-4'
         }`}
       />
     </Button>
@@ -141,7 +142,7 @@ const LanguagesList = () => {
 
   const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) =>
     !row.original.default ? (
-      <Button buttonStyle="secondary" onClick={() => uninstallModal(row)}>
+      <Button buttonStyle="secondary" onClick={() => uninstallModal(row)} className="leading-4">
         <Translate>Uninstall</Translate>
       </Button>
     ) : (
