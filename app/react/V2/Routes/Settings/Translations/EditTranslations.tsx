@@ -224,7 +224,9 @@ const EditTranslations = () => {
           <div className="pb-4">
             <NavigationHeader backUrl="/settings/translations">
               <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
-                <Translate>Translations</Translate>
+                <Link to="/settings/translations">
+                  <Translate className="hover:underline">Translations</Translate>
+                </Link>
                 <span>&gt;</span>
                 <Translate>{contextLabel}</Translate>
               </h1>
