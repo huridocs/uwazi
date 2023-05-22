@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
 
 const Tab = ({
@@ -8,13 +9,11 @@ const Tab = ({
   id: string;
   label: React.ReactNode;
   children: React.ReactNode;
-}) => {
-  return (
-    <div className="hidden" id={id} data-label={label}>
-      {children}
-    </div>
-  );
-};
+}) => (
+  <div className="hidden" id={id} data-label={label}>
+    {children}
+  </div>
+);
 
 interface TabsProps {
   children: React.ReactComponentElement<typeof Tab>[];
@@ -37,7 +36,7 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
 
   return (
     <>
-      <div className="flex w-1/2">
+      <div className="flex md:w-1/2">
         {children.map((child, index: number) => (
           <button
             key={child.props.id}

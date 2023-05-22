@@ -11,6 +11,7 @@ const SidepanelStory = {
 
 const SidepanelContent = () => {
   const contents: React.ReactNode[] = [];
+
   for (let index = 1; index < 8; index += 1) {
     contents.push(
       <>
@@ -30,6 +31,7 @@ const SidepanelContent = () => {
       </>
     );
   }
+
   return <>{contents.map(content => content)}</>;
 };
 
@@ -95,6 +97,7 @@ const Template: StoryFn<typeof Sidepanel> = args => {
             withOverlay={args.withOverlay}
             title={args.title}
             closeSidepanelFunction={() => setShowSidepanel(false)}
+            size={args.size}
           >
             <SidepanelContent />
           </Sidepanel>
@@ -106,7 +109,7 @@ const Template: StoryFn<typeof Sidepanel> = args => {
 
 const Basic = Template.bind({});
 
-Basic.args = { withOverlay: false, title: 'My sidepanel' };
+Basic.args = { withOverlay: false, title: 'My sidepanel', size: 'medium' };
 
 export { Basic };
 
