@@ -36,7 +36,6 @@ export function connectionsChanged(sharedId) {
     if (!innerSharedId) {
       innerSharedId = relationshipsList.sharedId;
     }
-
     return referencesAPI
       .getGroupedByConnection(new RequestParams({ sharedId: innerSharedId }))
       .then(connectionsGroups => {
@@ -54,6 +53,7 @@ export function connectionsChanged(sharedId) {
       })
       .then(([connectionsGroups, sort]) => {
         dispatch(actions.set('relationships/list/connectionsGroups', connectionsGroups));
+        dispatch(actions.set('relationships/list/sharedId', sharedId));
         dispatch(formActions.merge('relationships/list.sort', sort));
         return searchReferences()(dispatch, getState);
       });

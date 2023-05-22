@@ -1,12 +1,12 @@
 const mongodb = require('mongodb');
 const yargs = require('yargs');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const fetch = require('node-fetch');
 const csv = require('@fast-csv/format');
 const fs = require('fs');
 const path = require('path');
 const csvtojson = require('csvtojson');
 const _ = require('lodash');
+
+const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 
 const getClient = async () => {
   const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
@@ -40,37 +40,29 @@ const getTranslationsFromDB = async () => {
   return locToSystemContext;
 };
 
-const getAvaiableLanguages = async () => {
-  const url = 'https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations';
-
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/json',
-      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
-    },
+const getAvaiableLanguages = async () =>
+  new Promise((resolve, reject) => {
+    fs.readdir(TRANSLATIONS_DIR, (err, files) => {
+      if (err) reject(err);
+      resolve(files.map(file => file.replace('.csv', '')));
+    });
   });
-  const languages = await response.json();
-  return languages.map(language => language.name.replace('.csv', ''));
-};
 
-const getKeysFromRepository = async locale => {
-  const url = `https://api.github.com/repos/huridocs/uwazi-contents/contents/ui-translations/${locale}.csv`;
+const getKeysFromRepository = async locale =>
+  new Promise((resolve, reject) => {
+    fs.readFile(`${TRANSLATIONS_DIR}/${locale}.csv`, (err, fileContent) => {
+      if (err) reject(err);
 
-  const response = await fetch(url, {
-    headers: {
-      accept: 'application/vnd.github.v4.raw',
-      ...(process.env.GITHUB_TOKEN ? { Authorization: process.env.GITHUB_TOKEN } : {}),
-    },
+      csvtojson({
+        delimiter: [',', ';'],
+        quote: '"',
+        headers: ['key', 'value'],
+      })
+        .fromString(fileContent.toString())
+        .then(resolve)
+        .catch(reject);
+    });
   });
-  const fileContent = await response.text();
-  const repoTranslations = await csvtojson({
-    delimiter: [',', ';'],
-    quote: '"',
-    headers: ['key', 'value'],
-  }).fromString(fileContent);
-
-  return repoTranslations;
-};
 
 const reportResult = (keys, message) => {
   if (keys.length === 0) {
@@ -95,12 +87,11 @@ const reportUntraslated = translations => {
   });
 };
 
-async function updateTranslations(dbKeyValues, language, outdir) {
+async function updateTranslations(dbKeyValues, language) {
   // eslint-disable-next-line max-statements
   return new Promise(resolve => {
     const { locale, repositoryTranslations, obsoleteTranslations, missingTranslations } = language;
-    const dirname = outdir || __dirname;
-    const fileName = path.resolve(dirname, `${locale}.csv`);
+    const fileName = path.resolve(TRANSLATIONS_DIR, `${locale}.csv`);
     const csvFile = fs.createWriteStream(fileName);
     const csvStream = csv.format({ headers: true });
     csvStream.pipe(csvFile).on('finish', csvFile.end);
@@ -221,15 +212,11 @@ yargs.command(
       alias: 'u',
       type: 'boolean',
     },
-    outdir: {
-      alias: 'o',
-      type: 'string',
-    },
   },
   () =>
     new Promise(resolve => {
       setTimeout(async () => {
-        await compareTranslations(argv.locale, argv.update, argv.outdir);
+        await compareTranslations(argv.locale, argv.update);
         resolve();
       }, 3000);
     })

@@ -12,6 +12,7 @@ import {
 import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { notificationActions } from 'app/Notifications';
+import { shouldDisplayTranslation } from '../utils/shouldDisplayTranslation';
 import { SettingsHeader } from './SettingsHeader';
 import Tip from '../../Layout/Tip';
 
@@ -122,7 +123,16 @@ class EntityTypesList extends Component {
               <li key={index} className="list-group-item">
                 <span>
                   <Link to={`/settings/templates/edit/${template._id}`}>{template.name}</Link>
-                  &#40;<Translate context={template._id}>{template.name}</Translate>&#41;
+                  {shouldDisplayTranslation(
+                    template.name,
+                    template._id,
+                    this.props.locale,
+                    this.props.languages
+                  ) && (
+                    <>
+                      &nbsp;&#40;<Translate context={template._id}>{template.name}</Translate>&#41;
+                    </>
+                  )}
                 </span>
                 {template.default ? this.defaultTemplateMessage() : ''}
                 {template.synced ? this.syncedTemplateMessage() : ''}
@@ -157,6 +167,8 @@ class EntityTypesList extends Component {
 
 EntityTypesList.propTypes = {
   templates: PropTypes.object.isRequired,
+  locale: PropTypes.string.isRequired,
+  languages: PropTypes.object.isRequired,
   deleteTemplate: PropTypes.func.isRequired,
   setAsDefault: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
@@ -166,8 +178,12 @@ EntityTypesList.propTypes = {
   }).isRequired,
 };
 
-export function mapStateToProps(state) {
-  return { templates: state.templates };
+function mapStateToProps(state) {
+  return {
+    templates: state.templates,
+    locale: state.locale,
+    languages: state.settings.collection.get('languages'),
+  };
 }
 
 function mapDispatchToProps(dispatch) {

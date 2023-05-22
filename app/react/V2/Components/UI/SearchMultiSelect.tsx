@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { InputField } from './InputField';
+import { InputField } from '../Forms';
 import { Pill } from './Pill';
 
 interface SearchMultiselectProps {
   items: { label: string; value: string }[];
   onChange: (selectedItems: string[]) => void;
+  className?: string;
 }
 
-const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
+const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
@@ -24,9 +25,12 @@ const SearchMultiselect = ({ items, onChange }: SearchMultiselectProps) => {
   };
 
   return (
-    <div>
-      <div className="mb-4 sticky top-0 w-full">
+    <div className={className}>
+      <div className="sticky top-0 w-full mb-4">
         <InputField
+          id="search-multiselect"
+          label="search-multiselect"
+          hideLabel
           onChange={e => setSearchTerm(e.target.value)}
           placeholder="Search"
           value={searchTerm}

@@ -1,4 +1,4 @@
-import { ConfirmationModal } from './ConfirmationModal';
+import { ConfirmNavigationModal } from './ConfirmNavigationModal';
 import { TranslationsTables } from './TranslationsTables';
 
-export { TranslationsTables, ConfirmationModal };
+export { TranslationsTables, ConfirmNavigationModal };

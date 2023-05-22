@@ -1,11 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
-import { NotificationsContainer, ModalContainer } from 'V2/Components/UI';
+
+import { socket } from 'app/socket';
+import { NotificationsContainer } from 'V2/Components/UI';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -23,6 +27,8 @@ import 'flowbite';
 const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
+  const setSettings = useSetRecoilState(settingsAtom);
+
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
@@ -51,6 +57,10 @@ const App = ({ customParams }) => {
   }
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
+
+  socket.on('updateSettings', settings => {
+    setSettings(settings);
+  });
 
   return (
     <div id="app" className={appClassName}>
@@ -88,7 +98,6 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
-      <ModalContainer />
     </div>
   );
 };

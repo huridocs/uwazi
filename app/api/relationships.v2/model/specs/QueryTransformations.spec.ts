@@ -250,6 +250,43 @@ describe('when calling reachesRelationship()', () => {
       ])
     );
   });
+
+  it('should return the narrowed query that would match the query with repeated segments', () => {
+    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['temp1'] }, [
+          new TraversalQueryNode('in', { types: ['type1'] }, [
+            new MatchQueryNode({ templates: ['temp1'] }),
+          ]),
+        ]),
+      ]),
+    ]);
+
+    expect(
+      query.reachesRelationship(
+        new Relationship(
+          'rel1',
+          new EntityPointer('entity1'),
+          new EntityPointer('entity2'),
+          'type1'
+        ),
+        {
+          entity1: { template: 'temp1', sharedId: 'entity1' },
+          entity2: { template: 'temp1', sharedId: 'entity2' },
+        }
+      )
+    ).toEqual(
+      new MatchQueryNode({ templates: ['temp1'] }, [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode({ sharedId: 'entity2' }, [
+            new TraversalQueryNode('in', { _id: 'rel1' }, [
+              new MatchQueryNode({ sharedId: 'entity1' }, []),
+            ]),
+          ]),
+        ]),
+      ])
+    );
+  });
 });
 
 describe('when calling reachesEntity()', () => {
@@ -320,6 +357,38 @@ describe('when calling reachesEntity()', () => {
             new TraversalQueryNode('in', { types: ['type2'] }, [
               new MatchQueryNode({ templates: ['temp3'] }, [
                 new TraversalQueryNode('out', { types: ['type3'] }, [
+                  new MatchQueryNode({ sharedId: 'entity1' }, []),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]),
+      ])
+    );
+  });
+
+  it('should return the narrowed query that would match the entity with repeated segments', () => {
+    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['temp1'] }, [
+          new TraversalQueryNode('in', { types: ['type1'] }, [
+            new MatchQueryNode({ templates: ['temp1'] }, [
+              new TraversalQueryNode('out', { types: ['type1'] }, [
+                new MatchQueryNode({ templates: ['temp1'] }, []),
+              ]),
+            ]),
+          ]),
+        ]),
+      ]),
+    ]);
+
+    expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toEqual(
+      new MatchQueryNode({ templates: ['temp1'] }, [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode({ templates: ['temp1'] }, [
+            new TraversalQueryNode('in', { types: ['type1'] }, [
+              new MatchQueryNode({ templates: ['temp1'] }, [
+                new TraversalQueryNode('out', { types: ['type1'] }, [
                   new MatchQueryNode({ sharedId: 'entity1' }, []),
                 ]),
               ]),

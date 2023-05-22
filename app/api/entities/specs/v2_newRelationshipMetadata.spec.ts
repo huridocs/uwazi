@@ -226,6 +226,13 @@ describe('entities.get()', () => {
   });
 });
 
+describe('entities.getById()', () => {
+  it('should not fail on undefined sharedId input', async () => {
+    const entity = await entities.getById(undefined, 'en');
+    expect(entity).toBe(undefined);
+  });
+});
+
 describe('entities.save()', () => {
   describe('when creating an entity', () => {
     it('should mark newRelationship metadata as obsolete on the created entity', async () => {

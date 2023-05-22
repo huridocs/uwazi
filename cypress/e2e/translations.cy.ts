@@ -24,8 +24,15 @@ describe('Translations', () => {
       cy.checkA11y();
     });
 
+    it('should have breadcrumb navigation', () => {
+      cy.contains('h1 > a > .translation', 'Translations').click();
+      cy.contains('caption', 'System translations');
+      cy.contains('[data-testid=content] button', 'Translate').click();
+    });
+
     it('Should edit a translation', () => {
       cy.get('form').should('be.visible');
+      cy.get('input[type=text]').should('be.visible');
       cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot();
       cy.get('input[type=text]').eq(0).siblings('button').click();
       cy.get('input[type=text]').eq(0).type('Date');
@@ -91,7 +98,7 @@ describe('Translations', () => {
       cy.get('input[id=en]').clear();
       cy.get('input[id=en]').type('Filtering');
       cy.contains('button', 'Submit').click();
-      cy.get('[data-testid=modal]').should('not.be.visible');
+      cy.get('[data-testid=modal]').should('not.exist');
     });
 
     it('should deactive the live translate and check the translatations in english and spanish', () => {

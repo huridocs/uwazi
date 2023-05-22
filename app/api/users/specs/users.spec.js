@@ -110,6 +110,18 @@ describe('Users', () => {
       }
     );
 
+    it('should not allow spaces in username', async () => {
+      currentUser = { _id: 'user2', role: 'admin' };
+      const userdata = {
+        _id: userId.toString(),
+        username: 'user name',
+      };
+      await expect(users.save(userdata, currentUser)).rejects.toEqual({
+        code: 400,
+        message: 'Usernames can not contain spaces.',
+      });
+    });
+
     describe('when you try to change role', () => {
       it('should be an admin', async () => {
         currentUser = { _id: userId, role: 'editor' };
@@ -232,6 +244,20 @@ describe('Users', () => {
         );
 
         await assertUserMembership(createdUser);
+      });
+
+      it('should not allow spaces in username', async () => {
+        const userdata = {
+          username: 'Peter Parker',
+          email: 'peter@parker.com',
+          password: 'mypass',
+          role: 'editor',
+          groups: [],
+        };
+        await expect(users.newUser(userdata, domain)).rejects.toEqual({
+          code: 400,
+          message: 'Usernames can not contain spaces.',
+        });
       });
     });
   });

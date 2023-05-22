@@ -1,0 +1,924 @@
+Key,English
+% of sentences above threshold,% of sentences above threshold
+(view page),(view page)
++ click to select multiple cards.,+ click to select multiple cards.
+// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
+2FA,2FA
+2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
+A generated ID will be the default title.,A generated ID will be the default title.
+Accept,Accept
+Accepted suggestion on entity,Accepted suggestion on entity
+Account,Account
+Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
+Account unlocked successfully,Account unlocked successfully
+Accuracy,Accuracy
+Action,Action
+Activate this feature for enhanced account security,Activate this feature for enhanced account security
+Active languages,Active languages
+Activity log,Activity log
+Add,Add
+Add / remove favorite,Add / remove favorite
+Add date,Add date
+Add entities / documents,Add entities / documents
+Add file,Add file
+Add from URL,Add from URL
+Add from web,Add from web
+Add group,Add group
+add icon,add icon
+Add language,Add language
+Add link,Add link
+Add page,Add page
+Add PDF,Add PDF
+Add people or groups,Add people or groups
+Add properties,Add properties
+Add relationship,Add relationship
+Add relationship type,Add relationship type
+Add template,Add template
+Add thesaurus,Add thesaurus
+Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
+Add thesaurus value,Add thesaurus value
+Add timelink,Add timelink
+Add to all languages,Add to all languages
+Add to table of contents,Add to table of contents
+Add user,Add user
+Add users,Add users
+add value,add value
+Add/delete users and assign roles,Add/delete users and assign roles
+Add/edit translations,Add/edit translations
+Added language,Added language
+Added new user,Added new user
+added to hub with the following errors:,added to hub with the following errors:
+added to hub.,added to hub.
+Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
+Admin,Admin
+Administrators and Editors,Administrators and Editors
+ALL,ALL
+All,All
+"All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
+Allow captcha bypass,Allow captcha bypass
+An error has occurred during data export,An error has occurred during data export
+An error occurred,An error occurred
+Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity or document,Any entity or document
+Apply to all languages,Apply to all languages
+Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
+Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
+Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
+Are you sure you want to delete this file?,Are you sure you want to delete this file?
+Are you sure you want to delete this item?,Are you sure you want to delete this item?
+Are you sure you want to delete this page?,Are you sure you want to delete this page?
+Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
+Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Attachment deleted,Attachment deleted
+Attachment renamed,Attachment renamed
+Attachment uploaded,Attachment uploaded
+Attachments,Attachments
+Authentication code,Authentication code
+auto-created,auto-created
+Auto-save,Auto-save
+Automatic Table of Contents,Automatic Table of Contents
+Automatically generated,Automatically generated
+Available default translation,Available default translation
+Back,Back
+Back to,Back to
+Back to dashboard,Back to dashboard
+Back to search,Back to search
+Back to thesauri,Back to thesauri
+Back to thesaurus,Back to thesaurus
+Bad Request,Bad Request
+Body,Body
+Browse files to upload,Browse files to upload
+"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+Can edit,Can edit
+Can see,Can see
+Can view,Can view
+Cancel,Cancel
+Canceling...,Canceling...
+Cannot delete relationship type:,Cannot delete relationship type:
+Cannot delete template:,Cannot delete template:
+Cannot delete thesaurus:,Cannot delete thesaurus:
+Captcha,Captcha
+Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
+The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
+header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
+malicious content."
+Cards,Cards
+Cards view,Cards view
+Change password,Change password
+Change will take effect after saving the template,Change will take effect after saving the template
+Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
+Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
+Selecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.
+You will need to update them manually. After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
+Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
+Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
+Check to make this instance private (only logged-in users can access the data),Check to make this instance private (only logged-in users can access the data)
+Chrome extension store link,Chrome extension store link
+Clear,Clear
+Clear coordinates,Clear coordinates
+Clear Filters,Clear Filters
+Clear PDF selection,Clear PDF selection
+Click,Click
+Click here,Click here
+Click to fill,Click to fill
+Close,Close
+Collaborator,Collaborator
+Collapse all,Collapse all
+Collection,Collection
+Collection name,Collection name
+Configuration,Configuration
+Configure filters,Configure filters
+Configure suggestions,Configure suggestions
+Configure templates,Configure templates
+Confirm,Confirm
+CONFIRM,CONFIRM
+Confirm action,Confirm action
+Confirm delete connection,Confirm delete connection
+Confirm delete multiple items,Are you sure you want to delete all the selected items?
+confirm delete template,"Are you sure you want to delete this entity type?
+        This will delete the template and all relationship properties from other templates pointing to this one."
+Confirm deletion,Confirm deletion
+Confirm deletion of,Confirm deletion of
+Confirm deletion of entity,Confirm deletion of entity
+Confirm deletion of file,Confirm deletion of file
+Confirm deletion of page:,Confirm deletion of page:
+Confirm deletion of relationship type:,Confirm deletion of relationship type:
+Confirm deletion of template:,Confirm deletion of template:
+Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
+Confirm discard changes,Confirm discard changes
+Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm new password,Confirm new password
+Confirm publish multiple items,Confirm publish multiple items
+Confirm suggestion acceptance,Confirm suggestion acceptance
+Connect to a document,Connect to a document
+Connect to a paragraph,Connect to a paragraph
+Connected to server,Connected to server
+Connection type,Connection type
+Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
+Contact Form,Contact Form
+Content translations,Content translations
+Context,Context
+Conversion failed,Conversion failed
+Copied to clipboard,Copied to clipboard
+Copy From,Copy From
+Copy Highlighted,Copy Highlighted
+Copy link,Copy link
+Copy properties to this entity from,Copy properties to this entity from
+Copy token,Copy token
+Could not be processed,Could not be processed
+Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
+Could not reach server. Please try again later.,Could not reach server. Please try again later.
+Create,Create
+CREATE,CREATE
+Create and edit thesauri,Create and edit thesauri
+Create Connection,Create Connection
+Create dictionaries,Create dictionaries
+Create entity,Create entity
+Create Entity,Create Entity
+Create Extractor,Create Extractor
+Create group,Create group
+Create new entities and upload documents,Create new entities and upload documents
+Create Reference,Create Reference
+Create relationship types,Create relationship types
+Create relationships and references,Create relationships and references
+Create table of contents,Create table of contents
+Created entity,Created entity
+Created entity coming from a public form,Created entity coming from a public form
+Created page,Created page
+Created relation type,Created relation type
+Created relationship,Created relationship
+Created successfully.,Created successfully.
+Created template,Created template
+Created thesaurus,Created thesaurus
+Created user group,Created user group
+Current value,Current value
+Currently connections only need a title.,Currently connections only need a title.
+Custom component error,Custom component markup error: unsupported values! Please check your configuration
+Custom CSS,Custom CSS
+Custom favicon,Custom favicon
+Custom JS,Custom JS
+custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom starting location,Custom starting location
+Custom Uploads,Custom Uploads
+Dashboard,Dashboard
+Data imported,Data imported
+Date added,Date added
+Date format,Date format
+Date modified,Date modified
+Day,Day
+Default,Default
+Default filter,Default filter
+Default language,Default language
+Default language change success,Default language change success
+Default template,Default template
+Default view,Default view
+Delete,Delete
+DELETE,DELETE
+Delete entities and documents,Delete entities and documents
+Delete file,Delete file
+Delete Group,Delete Group
+Delete language,Delete language
+Delete Property,Delete Property
+Deleted attachment,Deleted attachment
+Deleted custom file,Deleted custom file
+Deleted entity,Deleted entity
+Deleted file,Deleted file
+Deleted multiple entities,Deleted multiple entities
+Deleted page,Deleted page
+Deleted relation type,Deleted relation type
+Deleted relationship,Deleted relationship
+Deleted successfully.,Deleted successfully.
+Deleted template,Deleted template
+Deleted thesaurus,Deleted thesaurus
+Deleted user,Deleted user
+Deleted user group,Deleted user group
+Deletion success,Deletion success
+Description,Description
+Discard changes,Discard changes
+Discard changes?,Discard changes?
+Dismiss,Dismiss
+Display entity view from page,Display entity view from page
+Document,Document
+Document and entity types,Document and entity types
+Document contents,Document contents
+Document OCR trigger,Document OCR trigger
+Document Title,Document Title
+Documentation,Documentation
+documents,documents
+Documents,Documents
+documents before training (30 per topic).,documents before training (30 per topic).
+Documents for custom filter,Documents for custom filter
+Documents including suggestion:,Documents including suggestion:
+documents so far.,documents so far.
+documents to be reviewed,documents to be reviewed
+Documents to be reviewed,Documents to be reviewed
+documents.,documents.
+Download,Download
+Drag and drop file in this window to upload,Drag and drop file in this window to upload
+Drag items here,Drag items here
+Drag properties here,Drag properties here
+Drop your files here to upload or,Drop your files here to upload or
+Duplicate values not allowed.,Duplicate values not allowed.
+Duplicated email,Duplicated email
+Duplicated label,Duplicated label
+Duplicated name,Duplicated name
+Duplicated username,Duplicated username
+Edit,Edit
+Edit all documents matching this criteria,Edit all documents matching this criteria
+Edit Extractor,Edit Extractor
+Edit metadata of entities,Edit metadata of entities
+Editor,Editor
+editor,editor
+Email,Email
+Email address,Email address
+Email is required,Email is required
+Email updated,Email updated
+Empty,Empty
+Empty / Empty,Empty / Empty
+Empty / Label,Empty / Label
+Empty / Obsolete,Empty / Obsolete
+Empty / Value,Empty / Value
+empty property tip,You won't be able to save an entity if this property is empty.
+emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
+emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable this page to be used as an entity view page:,Enable this page to be used as an entity view page:
+Enter the 6-digit verification code generated by your Authenticator app:,Enter the 6-digit verification code generated by your Authenticator app:
+Entities,Entities
+entities,entities
+Entities across all languages,Entities across all languages
+"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here."
+Entity,Entity
+Entity deleted,Entity deleted
+Entity saved,Entity saved
+Entity types,Entity types
+Entity updated,Entity updated
+Error,Error
+Expand all,Expand all
+Exploration,Exploration
+Export CSV,Export CSV
+Exporting entities to CSV,Exporting entities to CSV
+Extension Token,Extension Token
+Extract information from your documents,Extract information from your documents
+Extractor Name,Extractor Name
+Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+
+1. Upload your icon in Custom Uploads.
+2. Copy its URL.
+3. Choose ""Custom Icon"" and paste the URL in the indicated field.
+4. Reload the page to see your favicon in action."
+FEATURED,FEATURED
+File,File
+File deleted,File deleted
+File updated,File updated
+Files,Files
+Files and database usage,Files and database usage
+Fill,Fill
+Filters,Filters
+Filters AND operator,AND
+Filters configuration,Filters
+Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
+Filters configuration example,"select ""Create group"" below to group filters under a label e.g (""Documents ""or ""People"")"
+Filters OR operator,OR
+Find,Find
+Find suggestions,Find suggestions
+Finding suggestions,Finding suggestions
+Fine tune,Fine tune
+Firefox extension store link,Firefox extension store link
+Fit,Fit
+Flag,Flag
+for,for
+Forgot Password?,Forgot Password?
+Forms and email configuration,Forms and email configuration
+From all templates,From all templates
+Full edit mode,Full edit mode
+Full width,Full width
+General,General
+Global CSS,Global CSS
+Global CSS & JS,Global CSS & JS
+Google Analytics,Google Analytics
+Google Analytics ID,Google Analytics ID
+Google Maps,Google Maps
+Group,Group
+Group created,Group created
+Group deleted,Group deleted
+Group name,Group name
+Group updated,Group updated
+Groups,Groups
+help,help
+here,here
+Hide actions,Hide actions
+Hide label,Hide label
+Hide toolbar,Hide toolbar
+https://yourdomain,https://yourdomain
+hubs,hubs
+Hybrid,Hybrid
+Icon,Icon
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
+"If you want to continue, please type","If you want to continue, please type"
+Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
+Import,Import
+Import completed,Import completed. Number of entities created:
+Import CSV,Import CSV
+Import instructions,Import instructions
+Imported entities from file,Imported entities from file
+Imported translations from file,Imported translations from file
+Importing data in progress,Importing data in progress
+in,in
+"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
+In OCR queue,In OCR queue
+incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
+Indexing entities may take a few minutes,Indexing entities may take a few minutes
+Info,Info
+Information extraction training,Information extraction training
+Inherit,Inherit
+Inherit property,Inherit property
+Install,Install
+Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language(s),Install language(s)
+INSTALL the browser extension,INSTALL the browser extension
+Install the Google Authenticator app on your mobile device,Install the Google Authenticator app on your mobile device
+Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Invalid captcha,Invalid captcha
+Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
+Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
+Invalid email,Invalid email
+Invalid form,An entry is required or has an invalid value. Please correct and try again.
+Invalid home page url,Invalid home page url
+It could also very easily break the app. Only write code here if you know exactly what you are doing.,It could also very easily break the app. Only write code here if you know exactly what you are doing.
+Item,Item
+Item name,Item name
+Items:,Items:
+Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
+key,key
+Label,Label
+"Label date ""From""",From:
+"Label date ""to""",To:
+Label more documents,Label more documents
+Label your collection note,"Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term ""education"" to find documents for the topic ""Education""."
+labelEmptyDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMatchDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMismatchDesc,"It has a current value and text selection but they do not match the model prediction. Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / labeled"". If the labeled data is correct and the suggestion is wrong no action is needed. It will be used as a training sample."
+Landing page,Landing page
+Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
+      
+A page: */page/dicxg0oagy3xgr7ixef80k9*
+A filtered view in Uwazi: */library/?searchTerm=test*
+An entity: */entity/9htbkgpkyy7j5rk9*
+A document: */document/4y9i99fadjp833di*
+      
+Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Language,Language
+Language Code,Language Code
+Language deleted,Language deleted
+Languages,Languages
+Last updated,Last updated
+Latitude,Latitude
+Learn more,Learn more
+Learning...,Learning...
+Legend,Legend
+Lengthy reindex process,Lengthy reindex process
+Library,Library
+library list view,library list view
+library map view,library map view
+library table view,library table view
+linked,linked
+Live translate,Live translate
+Loading,Loading
+Login,Login
+Login button,Login
+Login failed,Login failed
+Logout,Logout
+Longitude,Longitude
+Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+low,low
+Manage site settings and configuration,Manage site settings and configuration
+Map,Map
+Map api key,Map api key
+Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map provider,Map provider
+Map view,Map view
+MapBox,MapBox
+Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
+        -- from certain changes made to a template's property to new fields
+        that need to be populated across entities. 
+        This process will not negatively affect the data in your collection. 
+        It can last a few minutes and some parts of your collection might take
+        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Maps,Maps
+Mark as Reviewed,Mark as Reviewed
+Markdown,Markdown
+Match / Label,Match / Label
+Match / Value,Match / Value
+Matching,Matching
+Matomo Analytics,Matomo Analytics
+Members,Members
+Menu,Menu
+Message,Message
+Message sent,Message sent
+Metadata,Metadata
+Metadata creator,Metadata creator
+Metadata Extraction,Metadata Extraction
+Metadata extraction dashboard,Metadata extraction dashboard
+MIGRATE,MIGRATE
+Minimum,Minimum
+Mismatch / Empty,Mismatch / Empty
+Mismatch / Label,Mismatch / Label
+Mismatch / Value,Mismatch / Value
+mismatched passwords,Passwords don't match
+Mixed access,Mixed access
+ML TOC,ML TOC
+Month,Month
+more options.,more options.
+Multimedia fill description,"will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
+Multimedia fit description,will show the entire media inside the container.
+Multiple date,Multiple date
+Multiple date range,Multiple date range
+Multiple inherited properties warning ([property 1] affects [property 2]),affects
+Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
+Multiple select,Multiple select
+Name,Name
+Name is required,Name is required
+Name is too long,Name is too long
+Name is too short,Name is too short
+Name of the group,Name of the group
+Narrow down your searches,Narrow down your searches
+Narrow your search,Narrow your search
+Navigate back,Navigate back
+Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
+Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New entity,New entity
+New group,New group
+New language added,New language added
+New password,New password
+New relationship type,New relationship type
+New relationships group,New relationships group
+Next,Next
+No,No
+No attachments,No attachments
+No common filters,No common filters
+No Connections,No Connections
+No Connections description,Connections are the direct relationships between this document and other documents and entities.
+No Documents found,No Documents found
+no filters for templates,The combination of entity types doesn't have any filters in common.
+No icon / flag,No icon / flag
+No Label,No Label
+No options,No options
+No options found,No options found
+No property,Item does not have this property
+No References,No References
+No References description,References are parts of this document related with other documents and entities.
+No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
+No Relationships,No Relationships
+No Relationships description,Relationships are bonds between entities.
+No Table of Contents,No Table of Contents
+No Table of Contents description,No Table of Contents description
+No text match,No text match
+No text match description,You can type something different in the search box to get some results.
+No type,No type
+No value,No value
+No Value,No Value
+Non-matching,Non-matching
+Normal view,Normal view
+Not Found,Not Found
+Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
+Number of sentences above threshold,Number of sentences above threshold
+Obsolete,Obsolete
+obsoleteDesc,A new model is training and processing suggestions. This suggestion was created by a previous model so no actions are possible until the new suggestion is received.
+OCR,OCR
+OCR button tip,This will process the document to recognize its text. The original file will be added as a supporting file.
+OCR completed,OCR completed
+OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
+OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
+OCR error,OCR error
+OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR PDF,OCR PDF
+of,of
+Ok,Ok
+OK,OK
+"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
+Ooops... please go,Ooops... please go
+Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
+Open PDF,Open PDF
+Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
+or,or
+or drop your files here.,or drop your files here.
+Or enter this secret key into your Authenticator app,Or enter this secret key into your Authenticator app
+Order,Order
+Other,Other
+other,other
+out of,out of
+Page,Page
+Page Javascript,Page Javascript
+Page name,Page name
+Pages,Pages
+Password,Password
+Password changed success,Password changed success
+Password Error,Password Error!  Both fields are required and should match
+Password is too long,Password is too long
+Password updated,Password updated
+Paste URL here,Paste URL here
+PDF,PDF
+per page,per page
+Permission,Permission
+Permission on entities explicitly shared with the user,Permission on entities explicitly shared with the user
+Permissions,Permissions
+Plain text,Plain text
+Please contact an admin for details.,Please contact an admin for details.
+Please type in,Please type in
+Please type in letters and numbers from the image to start the export.,Please type in letters and numbers from the image to start the export.
+Precision,Precision
+Preserve,Preserve
+Preserve Extension,Preserve Extension
+Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Press enter to add,Press enter to add
+Preview,Preview
+Previous,Previous
+Primary Documents,Primary Documents
+Priority sorting,Priority sorting
+Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
+Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
+Private instance,Private instance
+Processing,Processing
+Properties,Properties
+Properties from other templates in the collection using the same label,Properties from other templates in the collection using the same label
+Property,Property
+Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
+Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+property date,Date
+property daterange,Date Range
+Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property generatedid,Generated ID
+property geolocation,Geolocation
+property image,Image
+property link,Link
+property markdown,Rich Text
+property media,Media
+property multidate,Multi Date
+property multidaterange,Multi Date Range
+property multiselect,Multiselect
+property numeric,Numeric
+property preview,Preview
+property relationship,Relationship
+property select,Select
+property text,Text
+Protect your account,Protect your account
+Protection,Protection
+ProTip!,ProTip!
+Public Endpoints,Public Endpoints
+Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
+Public form settings description,Here you can configure the public form destination and the whitelisted templates
+Public Form submit URL,Public Form submit URL
+Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
+Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
+Publish,Publish
+Published,Published
+Query,Query
+Quick labeling for,Quick labeling for
+RAW,RAW
+Re-uploaded document,Re-uploaded document
+Receiving email,Receiving email
+Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Reference,Reference
+References,References
+Reject,Reject
+Relationship,Relationship
+relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
+Relationship Type,Relationship Type
+Relationship types,Relationship types
+relationships,relationships
+Relationships,Relationships
+Relationships saved,Relationships saved
+RelationType saved,RelationType saved
+Remote Server Unreachable,Remote Server Unreachable
+Remove,Remove
+remove icon,remove icon
+Removed language,Removed language
+Rename,Rename
+Renamed attachment,Renamed attachment
+Repeat Password,Repeat Password
+Request id #,Request id #
+Request token,Request token
+Required property,Required property
+Reset,Reset
+Reset 2FA,Reset 2FA
+Reset default translation,Reset default translation
+Reset Password,Reset Password
+Restricted,Restricted
+Return to login,Return to login
+Return to the thesaurus page when you finished labeling to start learning.,Return to the thesaurus page when you finished labeling to start learning.
+Review,Review
+Review unpublished document,Review unpublished document
+Reviewed,Reviewed
+Reviewing,Reviewing
+Role,Role
+Route,Route
+Sample,Sample
+Satellite,Satellite
+Save,Save
+Save and go to next,Save and go to next
+Save changes,Save changes
+Save document,Save document
+Save document(s),Save document(s)
+Save password,Save password
+Save your work to make change permanent,Save your work to make change permanent
+Saved successfully.,Saved successfully.
+Search,Search
+Search item,Search item
+Search not found,Search not found
+Search related entities or documents,Search related entities or documents
+Search relevance,Search relevance
+Search text,Search text
+Search text description,Type something in the search box to get some results.
+Search Tips,Search Tips
+Search Tips: boolean,"AND, OR and NOT for boolean searches. Ie. ""status AND women NOT Nicaragua"" will match anything containing both the words status and women, and necessarily not containing the word Nicaragua."
+Search Tips: exact term,"Exact term match by enclosing your search string with quotes. Ie. ""Costa Rica"" will toss different results compared to Costa Rica without quotes."
+Search Tips: one char wildcard,"? for one character wildcard. Ie: ""198?"" will match 1980 to 1989 and also 198a, 198b, etc."
+Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find anything having ""the"" and""status"" within a distance of 5 words, such as ""the procedural status"", ""the specific legal status""."
+Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
+secret key recommendation,(please keep this key secret and don't share it):
+Select,Select
+Select all,Select all
+Select files on your device,Select files on your device
+Select from computer,Select from computer
+Select relationship type,Select relationship type
+Select target paragraph,Select target paragraph
+Select...,Select...
+Selected,Selected
+selected,selected
+selected of,selected of
+Semantic search,Semantic search
+Semantic Search,Semantic Search
+Semantic search minimum sentences help,Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.
+Semantic search overview,"Semantic search is a technique to provide contextual results. Its ability to capture concepts and word associations in human language enables the retrieval of related information such as synonyms, connected categories or entities, etc. ."
+Semantic search results,Semantic search results
+Semantic search threshold help,The threshold determines how close the results match the search concept. Move the slider to the right to narrow down the concept of the search query. The obtained results will be more precise. Move the slider to the left to more broaden the concept and explore related content.
+Send,Send
+Send recovery email,Send recovery email
+Sending email,Sending email
+Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
+Sending labeled data...,Sending labeled data...
+Sentences above threshold,Sentences above threshold
+Services,Services
+Set as default,Set as default
+Set default language,Set default language
+Set default template,Set default template
+Set the default starting point for your geolocation properties.,Set the default starting point for your geolocation properties.
+Settings,Settings
+settings,settings
+Settings updated,Settings updated.
+Share,Share
+Share edit access with other users,Share edit access with other users
+Share entities with the public,Share entities with the public
+Share with people and groups,Share with people and groups
+Shared as editor,Shared as editor
+Shared as viewer,Shared as viewer
+Show actions,Show actions
+Show cookie policy,Show cookie policy
+Show filters,Show filters
+Show Filters,Show Filters
+Show in cards,Show in cards
+Show more,Show more
+Show Suggestions,Show Suggestions
+Show toolbar,Show toolbar
+shown of,shown of
+Sign in,Sign in
+Single date,Single date
+Single date range,Single date range
+Single relationships must have a hub,Single relationships must have a hub
+Single select,Single select
+Size,Size
+Something went wrong,Something went wrong
+Sort,Sort
+Sort ascending,Sort ascending
+Sort by,Sort by
+Sort descending,Sort descending
+sorted by,sorted by
+State,State
+State Legend,State Legend
+Status,Status
+Storage,Storage
+Streets,Streets
+Strict mode,Strict mode
+Style,Style
+Submit,Submit
+Submitted entity to a remote instance,Submitted entity to a remote instance
+Submitting,Submitting
+Success,Success
+"Success, Upload another?","Success, Upload another?"
+Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
+Suggestion,Suggestion
+Suggestions,Suggestions
+Supporting files,Supporting files
+Synced template,Synced template
+syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
+syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
+syntax to create page content,syntax to create page content
+System translations,System translations
+Table,Table
+Table of Contents,Table of Contents
+Table of contents,Table of contents
+Table view,Table view
+Template,Template
+Template conflict,Template conflict
+Template name,Template name
+Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
+       this process may take several minutes, do you want to continue?"
+Template(s),Template(s)
+Templates,Templates
+Text,Text
+Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+The current model was trained at,The current model was trained at
+"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection."
+The import process threw an error:,The import process threw an error:
+The request could not be processed.,The request could not be processed.
+The template contains errors,The template contains errors
+The token does not validate against the secret key!,The token does not validate against the secret key!
+There are no pages enabled for entity view,There are no pages enabled for entity view
+There are no untranslated terms,There are no untranslated terms
+There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
+Thesauri,Thesauri
+Thesauri name,Thesauri name
+Thesaurus,Thesaurus
+Thesaurus saved,Thesaurus saved
+This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.
+This cannot be changed after saving,This cannot be changed after saving
+This content is automatically generated,This content is automatically generated
+"This entity has no document, you probably want to see the metadata","This entity has no document, you probably want to see the metadata"
+This entity is not public.,This entity is not public.
+This entity is restricted from public view.,This entity is restricted from public view.
+This field is required,This field is required
+This file type is not supported on image fields,This file type is not supported on image fields
+This file type is not supported on media fields,This file type is not supported on media fields
+This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
+This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
+This property will be inherited from the related entities and shown as metadata of this type of entities.,This property will be inherited from the related entities and shown as metadata of this type of entities.
+This property will be shown using all the width available.,This property will be shown using all the width available.
+This property will be shown without the label.,This property will be shown without the label.
+This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
+this template,this template
+This template has associated entities,This template has associated entities
+This template will be used as default for new entities.,This template will be used as default for new entities.
+This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
+This will cancel the finding suggestion process,This will cancel the finding suggestion process
+This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
+This will update the entity across all languages,This will update the entity across all languages
+Threshold,Threshold
+Time,Time
+Timelinks,Timelinks
+Title,Title
+"To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
+"To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
+to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
+to learn more about the components.,to learn more about the components.
+to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
+Tools,Tools
+topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
+Total entities,Total entities
+Total files,Total files
+"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
+Total users,Total users
+Train model,Train model
+Training,Training
+Training model...,Training model...
+Translate,Translate
+Translations,Translations
+Translations imported.,Translations imported.
+Translations reset successfully,Translations reset successfully
+Translations saved,Translations saved
+Try selecting other documents.,Try selecting other documents.
+Turn off inline translation,Turn off inline translation
+Two-factor authentication enabled,Two-factor authentication enabled
+Two-factor authentication failed.,Two-factor authentication failed.
+Two-factor authentication secret,Two-factor authentication secret
+Two-factor verification failed,Two-factor verification failed
+Two-step verification,Two-step verification
+Two-step verification successfully,"Congratulations!
+You have successfully configured two-step verification."
+Two-step verification token required,Two-step verification token required
+Type,Type
+Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
+Unlink,Unlink
+Unsupported OCR language,Unsupported OCR language
+Untranslated Terms,Untranslated Terms
+Update,Update
+UPDATE,UPDATE
+Update success,Update success
+Updated file,Updated file
+Updated multiple entities,Updated multiple entities
+Updated permissions on entity,Updated permissions on entity
+Updated relationships,Updated relationships
+Updated settings,Updated settings
+Updated translations,Updated translations
+Updated user,Updated user
+Upload a ZIP or CSV file.,Upload a ZIP or CSV file.
+Upload and select file,Upload and select file
+Upload from computer,Upload from computer
+Upload PDF,Upload PDF
+Upload PDF(s) to create,Upload PDF(s) to create
+Uploaded attachment,Uploaded attachment
+Uploaded custom file,Uploaded custom file
+Uploaded document,Uploaded document
+Uploaded file,Uploaded file
+Uploading,Uploading
+Uploading ...,Uploading ...
+Uploading file,Uploading file
+Uploads,Uploads
+URL,URL
+Use,Use
+Use as filter,Use as filter
+Use custom landing page,Use custom landing page
+User,User
+Username,Username
+Username is required,Username is required
+Username is too long,Username is too long
+Username is too short,Username is too short
+Users,Users
+Using Google Authenticator,Using Google Authenticator
+Uwazi is developed by,Uwazi is developed by
+"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection."
+Uwazi UI,Uwazi UI
+Value,Value
+Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+valueMatchDesc,"It has a current value that matches the suggestion, but it doesn't have a text selection. Accepting will keep the value as it is and enrich it with the suggested text selection becoming a ""match / label"" that can be used as a training sample."
+valueMismatchDesc,"Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. If the current value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Verify,Verify
+Verifying...,Verifying...
+View,View
+view,view
+View entities,View entities
+View in library,View in library
+View less,View less
+View more,View more
+View suggestions,View suggestions
+WARNING,WARNING
+Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
+We can't find the page you're looking for.,We can't find the page you're looking for.
+We recommend labeling,We recommend labeling
+Website analytics,Website analytics
+Welcome to Uwazi,Welcome to Uwazi
+"Well, this is awkward...","Well, this is awkward..."
+Whitelisted Templates,Whitelisted Templates
+will be updated with the same value.,will be updated with the same value.
+with,with
+With great power comes great responsibility!,With great power comes great responsibility!
+x less,less
+x more,more
+Year,Year
+"You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
+You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.
+You can create metadata templates in,You can create metadata templates in
+You have labeled,You have labeled
+"You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
+You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+You should activate this feature for enhanced account security,You should activate this feature for enhanced account security
+Your account is protected by 2fa.,Your account is protected by 2fa.
+Zoom in,Zoom in
+Zoom in library view,Zoom in library view
+Zoom out,Zoom out
+Zoom out library view,Zoom out library view
