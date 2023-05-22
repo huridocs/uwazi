@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
+import { sendMigrationRequest as _sendMigrationRequest } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex as _objectIndex } from 'shared/data_utils/objectIndex';
 
@@ -13,8 +14,6 @@ type RelationshipType = {
 };
 
 const objectIndex = _.memoize(_objectIndex);
-
-const sendMigrationRequest = () => {};
 
 const inferFromV1 = (
   templates: ClientTemplateSchema[],
@@ -41,6 +40,10 @@ const inferFromV1 = (
   const sorted = _.sortBy(unique, ['template', 'relationType', 'content']);
 
   return sorted;
+};
+
+const sendMigrationRequest = () => {
+  _sendMigrationRequest();
 };
 
 class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
@@ -76,7 +79,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             <div>Relationships infered from v1 relationship properties</div>
             <br />
             {inferedRelationships.map(p => (
-              <div>
+              <div key={`${p.template}_${p.relationType}_${p.content}`}>
                 {p.template}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;

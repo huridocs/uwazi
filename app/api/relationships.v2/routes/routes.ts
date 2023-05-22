@@ -45,4 +45,8 @@ export default (app: Application) => {
     await service.delete(relationshipsIds.ids);
     res.status(200).send();
   });
+
+  app.post('/api/v2/relationships/migrate', featureRequired, async () => {
+    console.log('request got');
+  });
 };
