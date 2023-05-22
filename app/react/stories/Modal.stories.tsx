@@ -11,7 +11,7 @@ const meta: Meta<typeof Modal> = {
 
 type Story = StoryObj<typeof Modal>;
 
-const ModalStory: Story = {
+const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <div className="container w-10 h10">
@@ -22,7 +22,7 @@ const ModalStory: Story = {
 };
 
 const Basic = {
-  ...ModalStory,
+  ...Primary,
   args: {
     children: (
       <>
@@ -47,7 +47,7 @@ const Basic = {
 };
 
 const Warning = {
-  ...ModalStory,
+  ...Primary,
   args: {
     children: (
       <Modal.Body>

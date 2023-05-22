@@ -9,7 +9,7 @@ const meta: Meta<typeof Pill> = {
 
 type Story = StoryObj<typeof Pill>;
 
-const PillStory: Story = {
+const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <Pill color={args.color}>{args.children}</Pill>
@@ -18,7 +18,7 @@ const PillStory: Story = {
 };
 
 const Basic = {
-  ...PillStory,
+  ...Primary,
   args: {
     children: <span>Pill Content</span>,
     color: 'gray',

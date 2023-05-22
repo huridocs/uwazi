@@ -16,7 +16,7 @@ interface SidePanelProps {
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
   <div className="flex mb-2 text-gray-500">
-    <h1 className="grow font-bold text-base">{title}</h1>
+    <h1 className="text-base font-bold grow">{title}</h1>
     <button
       type="button"
       className="justify-end"
@@ -63,9 +63,9 @@ const Sidepanel = ({
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed h-full w-full top-0 left-0 flex z-10">
+      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full">
         <Transition.Child
-          className="transition-opacity duration-200 ease-in bg-gray-900 w-0 md:flex-grow"
+          className="w-0 transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -105,4 +105,5 @@ const Sidepanel = ({
   );
 };
 
+export type { SidePanelProps };
 export { Sidepanel };

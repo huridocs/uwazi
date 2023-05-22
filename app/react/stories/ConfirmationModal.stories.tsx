@@ -22,7 +22,7 @@ const meta: Meta<typeof ConfirmationModal> = {
 
 type Story = StoryObj<typeof ConfirmationModal>;
 
-const ConfirmationModalStory: Story = {
+const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
@@ -45,7 +45,7 @@ const ConfirmationModalStory: Story = {
 };
 
 const BasicConfirmation: Story = {
-  ...ConfirmationModalStory,
+  ...Primary,
   args: {
     header: 'Delete Confirmation',
     body: 'Are you sure you want to delete this product?',
@@ -55,7 +55,7 @@ const BasicConfirmation: Story = {
 };
 
 const TextConfirmation: Story = {
-  ...ConfirmationModalStory,
+  ...Primary,
   args: {
     header: 'Delete Confirmation',
     body: 'Are you sure you want to delete this product?',
@@ -67,7 +67,7 @@ const TextConfirmation: Story = {
   },
 };
 const WarningConfirmation: Story = {
-  ...ConfirmationModalStory,
+  ...Primary,
   args: {
     header: <Translate>Are you sure</Translate>,
     body: "You can't undo this action",

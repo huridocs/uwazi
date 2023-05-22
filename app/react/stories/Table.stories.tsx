@@ -11,7 +11,7 @@ const meta: Meta<typeof Table> = {
 
 type Story = StoryObj<typeof Table>;
 
-const TableStory: Story = {
+const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <Table columns={args.columns} data={args.data} title={args.title} />
@@ -28,7 +28,7 @@ const actionsCell = () => (
 );
 
 const Basic = {
-  ...TableStory,
+  ...Primary,
   args: {
     title: 'Table name',
     columns: [
@@ -55,8 +55,7 @@ const Basic = {
 };
 
 const WithActions = {
-  ...TableStory,
-
+  ...Primary,
   args: {
     ...Basic.args,
     columns: [

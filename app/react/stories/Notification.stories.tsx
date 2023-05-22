@@ -11,7 +11,7 @@ const meta: Meta<typeof Notification> = {
 
 type Story = StoryObj<typeof Notification>;
 
-const NotificationStory: Story = {
+const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
@@ -29,7 +29,7 @@ const NotificationStory: Story = {
 };
 
 const Basic: Story = {
-  ...NotificationStory,
+  ...Primary,
   args: {
     type: 'success',
     text: `This is the text for the notification with a rather larger text that should eventually break to a new line. Then it has even more text.
@@ -40,7 +40,7 @@ const Basic: Story = {
 };
 
 const WithDetails: Story = {
-  ...NotificationStory,
+  ...Primary,
   args: {
     ...Basic.args,
     details:
@@ -49,7 +49,7 @@ const WithDetails: Story = {
 };
 
 const WithHeading: Story = {
-  ...NotificationStory,
+  ...Primary,
   args: {
     ...Basic.args,
     heading: 'This is the title of the notification',

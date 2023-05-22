@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { ToggleButton } from 'V2/Components/UI/ToggleButton';
+import { ToggleButton, ToggleButtonProps } from 'V2/Components/UI/ToggleButton';
 
 const meta: Meta<typeof ToggleButton> = {
   title: 'Components/ToggleButton',
@@ -9,22 +9,23 @@ const meta: Meta<typeof ToggleButton> = {
 
 type Story = StoryObj<typeof ToggleButton>;
 
-const ToggleButtonStory: Story = {
-  render: args => {
-    const [show, setShow] = useState(false);
-    return (
-      <div className="tw-content">
-        <ToggleButton onToggle={() => setShow(!show)} disabled={args.disabled}>
-          <div className="ml-2">{args.children}</div>
-        </ToggleButton>
-        {show && <p className="pt-3">This text appears and hides using the above toggle</p>}
-      </div>
-    );
-  },
+const ToggleButtonContainer = (args: ToggleButtonProps) => {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="tw-content">
+      <ToggleButton onToggle={() => setShow(!show)} disabled={args.disabled}>
+        <div className="ml-2">{args.children}</div>
+      </ToggleButton>
+      {show && <p className="pt-3">This text appears and hides using the above toggle</p>}
+    </div>
+  );
+};
+const Primary: Story = {
+  render: args => <ToggleButtonContainer {...args} />,
 };
 
 const Basic: Story = {
-  ...ToggleButtonStory,
+  ...Primary,
   args: {
     children: 'My toggle button',
     disabled: false,

@@ -19,7 +19,7 @@ const meta: Meta<typeof NavigationHeader> = {
 
 type Story = StoryObj<typeof NavigationHeader>;
 
-const NavigationHeaderStory: Story = {
+const Primary: Story = {
   render: args => (
     <MemoryRouter>
       <Provider store={createStore()}>
@@ -31,14 +31,14 @@ const NavigationHeaderStory: Story = {
   ),
 };
 const Basic: Story = {
-  ...NavigationHeaderStory,
+  ...Primary,
   args: {
     children: 'Page title',
   },
 };
 
 const WithLink = {
-  ...NavigationHeaderStory,
+  ...Primary,
   args: {
     children: 'Page title',
     backUrl: '/backUrl',

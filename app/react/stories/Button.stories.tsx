@@ -9,7 +9,7 @@ const meta: Meta<typeof Button> = {
 
 type Story = StoryObj<typeof Button>;
 
-const ButtonStory: Story = {
+const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <Button buttonStyle={args.buttonStyle} size={args.size} disabled={args.disabled}>
@@ -20,7 +20,7 @@ const ButtonStory: Story = {
 };
 
 const Basic: Story = {
-  ...ButtonStory,
+  ...Primary,
   args: {
     buttonStyle: 'primary',
     size: 'medium',
