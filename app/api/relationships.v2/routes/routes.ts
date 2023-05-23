@@ -13,6 +13,7 @@ import {
 import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
+import { validateMigration } from './validators/migration';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -48,8 +49,9 @@ export default (app: Application) => {
   });
 
   app.post('/api/v2/relationships/migrate', featureRequired, async (req, res) => {
+    const { dryRun } = validateMigration(req.body);
     const service = MigrationService();
-    await service.migrate();
+    await service.migrate(dryRun);
     res.json();
   });
 };

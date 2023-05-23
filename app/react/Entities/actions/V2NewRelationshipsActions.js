@@ -12,6 +12,6 @@ const saveRelationship = (type, from, to) =>
 
 const deleteRelationships = ids => api.delete(new RequestParams({ ids }));
 
-const sendMigrationRequest = () => api.migrate(new RequestParams({}));
+const sendMigrationRequest = dryRun => api.migrate(new RequestParams({ dryRun: dryRun || false }));
 
 export { deleteRelationships, getRelationshipsByEntity, saveRelationship, sendMigrationRequest };

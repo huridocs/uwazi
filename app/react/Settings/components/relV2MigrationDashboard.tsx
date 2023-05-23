@@ -42,7 +42,11 @@ const inferFromV1 = (
   return sorted;
 };
 
-const sendMigrationRequest = () => {
+const performDryRun = () => {
+  _sendMigrationRequest(true);
+};
+
+const performMigration = () => {
   _sendMigrationRequest();
 };
 
@@ -71,7 +75,11 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             <span>Migration Dashboard</span>
           </div>
           <div className="panel-body">
-            <button type="button" className="btn" onClick={sendMigrationRequest}>
+            <button type="button" className="btn" onClick={performDryRun}>
+              Dry Run
+            </button>
+            &emsp;
+            <button type="button" className="btn" onClick={performMigration}>
               Migrate
             </button>
             <br />
