@@ -5,6 +5,8 @@ import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
+import { LanguageDoesNotExist } from 'api/i18n.v2/errors/translationErrors';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 
 const collectionInDb = (collection = 'translations_v2') =>
   testingDB.mongodb?.collection(collection)!;
@@ -12,6 +14,7 @@ const collectionInDb = (collection = 'translations_v2') =>
 const createService = () =>
   new CreateTranslationsService(
     new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
     new MongoTransactionManager(getClient())
   );
 
@@ -95,6 +98,33 @@ describe('CreateTranslationsService', () => {
           context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
+    });
+    describe('when language does not exists as a configured language in settings', () => {
+      it('should throw a validation error', async () => {
+        const service = createService();
+        await expect(
+          service.create([
+            {
+              language: 'does not exist',
+              key: 'clave',
+              value: 'valor',
+              context: { type: 'Entity', label: 'Test', id: 'test' },
+            },
+            {
+              language: 'es',
+              key: 'clave',
+              value: 'valor',
+              context: { type: 'Entity', label: 'Test', id: 'test' },
+            },
+            {
+              language: 'no',
+              key: 'clave',
+              value: 'valor',
+              context: { type: 'Entity', label: 'Test', id: 'test' },
+            },
+          ])
+        ).rejects.toEqual(new LanguageDoesNotExist('["does not exist","no"]'));
+      });
     });
   });
 });

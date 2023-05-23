@@ -11,6 +11,7 @@ import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslatio
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { EnforcedWithId } from 'api/odm';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { tenants } from 'api/tenants';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 
@@ -74,6 +75,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).create(flattenTranslations(translation));
   }

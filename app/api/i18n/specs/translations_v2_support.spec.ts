@@ -1,3 +1,4 @@
+import settings from 'api/settings';
 import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
@@ -142,6 +143,7 @@ describe('translations v2 support', () => {
     it('should duplicate translations from the default language to the new one', async () => {
       await createTranslation();
 
+      await settings.addLanguage({ label: 'catalan', key: 'ca' });
       await translations.addLanguage('ca');
 
       const createdTranslations = await db
