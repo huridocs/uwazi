@@ -83,7 +83,7 @@
     "node-fetch": "2.6.7",
     "@types/istanbul-lib-report": "^3.0.0",
     "underscore": "^1.13.6",
-    "socket.io-parser": "4.2.2",
+    "socket.io-parser": "4.2.3",
     "json-schema": "^0.4.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9"
@@ -223,7 +223,7 @@
     "sift": "^16.0.1",
     "socket.io": "4.6.1",
     "socket.io-client": "4.6.1",
-    "socket.io-parser": "4.2.2",
+    "socket.io-parser": "4.2.3",
     "stopword": "^2.0.8",
     "superagent": "8.0.9",
     "svg-captcha": "^1.4.0",
