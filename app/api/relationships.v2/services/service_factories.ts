@@ -3,6 +3,7 @@ import { DefaultPermissionsDataSource } from 'api/authorization.v2/database/data
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
 import {
   DefaultIdGenerator,
+  DefaultTemporaryDataSourceFactory,
   DefaultTransactionManager,
 } from 'api/common.v2/database/data_source_defaults';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -16,7 +17,10 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
+import {
+  DefaultRelationshipDataSource,
+  DefaultV1ConnectionsDataSource,
+} from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
@@ -116,7 +120,14 @@ const DeleteRelationshipService = (request: Request) => {
 };
 
 const MigrationService = () => {
-  const service = new GenericMigrationService();
+  const transactionManager = DefaultTransactionManager();
+  const temporaryDSClass = DefaultTemporaryDataSourceFactory;
+  const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
+  const service = new GenericMigrationService(
+    transactionManager,
+    temporaryDSClass,
+    v1ConnectionsDS
+  );
   return service;
 };
 
