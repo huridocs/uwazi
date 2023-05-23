@@ -4,22 +4,47 @@
 // yarn ts-node --project ./tsconfig.json --transpile-only ./scripts/relationships.v2/dryRun.ts <required-path-to-definition-file> <optional-path-to-result-file>
 import fs from 'fs'
 import process from 'process';
+import readline from 'readline';
 
 import _ from 'lodash';
-import { Collection, Db, ObjectId } from 'mongodb';
+import { Collection, Db, } from 'mongodb';
 
-import { objectIndex } from '../../app/shared/data_utils/objectIndex';
+import { RelationshipDBOType } from '../../app/api/relationships.v2/database/schemas/relationshipTypes'
 import { CsvWriter } from './utilities/csv';
+import { anyTemplateString, ConnectionDescriptor, getEntityTemplateName, getRelationTypeTemplateName, readTypes } from './utilities/connection_descriptors';
 import { createTempCollections, finalize, getClientAndDB } from './utilities/db'
-import { ConnectionType as RawConnectionType, gatherHubs, HubType } from './utilities/hubs';
+import { ConnectionType, ConnectionType as RawConnectionType, ConnectionWithEntityInfoType, countRelTypeGroups, gatherHubs, getConnectionsFromHub, HubType } from './utilities/hubs';
 import { println } from './utilities/log';
+import { BulkWriteStream } from '../../app/api/common.v2/database/BulkWriteStream';
+import { propertyTypes } from '../../app/shared/propertyTypes';
+import { TemplateSchema } from '../../app/shared/types/templateType';
+
+
+
+const inputreader = readline.createInterface({ input: process.stdin, output: process.stdout });
+const prompt = (query: string) => new Promise((resolve) => inputreader.question(query, resolve));
 
 const batchsize = 1000;
 
+enum CheckTypes {
+    assumptions = 'assumptions', // use the assumptions based on the Cejil dataset
+    full = 'full' // cross-check every possible connection to a hub and try to match it to the given input graph
+}
+
+enum DefinitionSources {
+    file = 'file', // the input graph comes from a file
+    fields = 'fields' // the input graph is derived from the relationship fields in the db
+}
+
 const DEFINITION_FILE_PATH = process.argv.length > 2 ? process.argv[2] : undefined;
 const RESULT_FILE_PATH = process.argv.length > 3 ? process.argv[3] : undefined;
+const CHECK_TYPE = process.argv.length > 4 ? process.argv[4] : undefined;
+const DEFINITION_SOURCE = process.argv.length > 5 ? process.argv[5] : undefined;
+
+const USE_FULL_CROSSCHECK = CHECK_TYPE == CheckTypes.full;
 
 const temporaryHubCollectionName = '__temporary_hub_collection';
+const temporaryNewRelationshipsCollectionName = '__temporary_new_relationships';
 
 
 const readJsonFile = (path: string | undefined): Object => {
@@ -38,106 +63,18 @@ const readJsonFile = (path: string | undefined): Object => {
     return JSON.parse(fs.readFileSync(path, 'utf8'));
 };
 
-let TEMPLATE_IDS_BY_NAME: Record<string, string> = {};
-let TEMPLATE_NAMES_BY_ID: Record<string, string> = {};
-let RELATIONTYPE_IDS_BY_NAME: Record<string, string> = {};
-let RELATIONTYPE_NAMES_BY_ID: Record<string, string> = {};
-
-const readTypes = async (db: Db) => {
-    TEMPLATE_IDS_BY_NAME = objectIndex(
-        await db.collection('templates').find().toArray(),
-        t => t.name,
-        t => t._id.toHexString()
-    );
-    RELATIONTYPE_IDS_BY_NAME = objectIndex(
-        await db.collection('relationtypes').find().toArray(),
-        r => r.name,
-        r => r._id.toHexString()
-    );
-    RELATIONTYPE_NAMES_BY_ID = Object.fromEntries(Object.entries(RELATIONTYPE_IDS_BY_NAME).map(([name, id]) => [id, name]));
-    TEMPLATE_NAMES_BY_ID = Object.fromEntries(Object.entries(TEMPLATE_IDS_BY_NAME).map(([name, id]) => [id, name]));
-};
-
-type ConnectionType = RawConnectionType & { entityTemplateId: ObjectId, entityTitle: string, transformable?: boolean};
-
-enum ConnectionDirections {
-    in = 'in',
-    out = 'out',
-}
-
-const anyTemplateString = '*';
-type anyTemplateStringType = '*';
-type templateInputType = anyTemplateStringType | string[];
-
-class ConnectionInfo {
-    from: templateInputType;
-    through: templateInputType;
-    to: templateInputType;
-    constructor(from: templateInputType, through: templateInputType, direction: string, to: templateInputType) {
-        this.from = from;
-        this.through = through;
-        this.to = to;
-        if(direction == ConnectionDirections.in){
-            const temp = this.from;
-            this.from = this.to;
-            this.to = temp;
-        }
-    }
-
-    get hashableString(){
-        return `from: ${JSON.stringify(this.from)} - through: ${JSON.stringify(this.through)} - to: ${JSON.stringify(this.to)}`;
-    }
-
-    getCopyWithIds(){
-        return new ConnectionInfo(
-            this.from === anyTemplateString ? this.from : this.from.map(name => TEMPLATE_IDS_BY_NAME[name]),
-            this.through === anyTemplateString ? this.through : this.through.map(name => RELATIONTYPE_IDS_BY_NAME[name]),
-            ConnectionDirections.out,
-            this.to === anyTemplateString ? this.to : this.to.map(name => TEMPLATE_IDS_BY_NAME[name])
-        )
-    }
-}
-
-class Connection {
-    named: ConnectionInfo;
-    withIds: ConnectionInfo;
-
-    constructor(from: templateInputType, through: templateInputType, direction: string, to: templateInputType) {
-        this.named = new ConnectionInfo(from, through, direction, to);
-        this.withIds = this.named.getCopyWithIds();
-        this.nullCheck();
-    }
-
-    nullCheck() {
-        const checkArray = (checkable: templateInputType) => {
-            if (checkable !== anyTemplateString && checkable.filter(c => !c).length) {
-                throw new Error(
-                    `There is a null/undefined type or template in a connection:\n${JSON.stringify(this.named)}\n${JSON.stringify(this.withIds)}`
-                    )
-            }
-        };
-        checkArray(this.withIds.from);
-        checkArray(this.withIds.through);
-        checkArray(this.withIds.to);
-    }
-
-    get hashableString(){
-        return this.withIds.hashableString;
-    }
-}
-
 type ConnectionMatcherType = { 
     [k: string]: {
         [k: string]: Set<string>;
     }
 };
 
-const collateNodeConnections = (node: any, resultArray: Connection[]) => {
+const collateNodeConnections = (node: any, resultArray: ConnectionDescriptor[]) => {
     if(!node.traverse) return;
     node.traverse.forEach(edge => {
         if(!edge.match) throw new Error('Edge needs a match clause.');
         const targetTemplates = edge.match.map(node => node.templates);
-        let connection = new Connection(
+        let connection = new ConnectionDescriptor(
             node.templates,
             edge.types,
             edge.direction,
@@ -148,22 +85,9 @@ const collateNodeConnections = (node: any, resultArray: Connection[]) => {
     });
 };
 
-const collateConnections = (filledDefinitions: any[]) => {
-    const connections: Connection[] = [];
-    filledDefinitions.forEach(node => collateNodeConnections(node, connections))
-
-    const uniqueConnections: Connection[] = [];
-    const hashSet = new Set();
-
-    connections.forEach(c => {
-        if(!hashSet.has(c.hashableString)) {
-            hashSet.add(c.hashableString);
-            uniqueConnections.push(c);
-        }
-    });
-
+const buildMatcher = (connections: ConnectionDescriptor[]) => {
     const matcher: ConnectionMatcherType = {};
-    uniqueConnections.forEach(c => {
+    connections.forEach(c => {
         const from = c.withIds.from === anyTemplateString ? [anyTemplateString] : c.withIds.from;
         const through = c.withIds.through === anyTemplateString? [anyTemplateString] : c.withIds.through;
         const to = c.withIds.to === anyTemplateString? [anyTemplateString] : c.withIds.to;
@@ -177,9 +101,30 @@ const collateConnections = (filledDefinitions: any[]) => {
             });
         });
     });
-
-    return {matcher, uniqueConnections};
+    return matcher;
 };
+
+let FORWARD_MATCHER: ConnectionMatcherType = {};
+let PARTIAL_BACK_MATCHER: ConnectionMatcherType = {};
+
+const preProcessConnectionDescriptors = (connections: ConnectionDescriptor[]): ConnectionDescriptor[] => {
+    const uniqueConnections: ConnectionDescriptor[] = [];
+    const hashSet = new Set();
+
+    connections.forEach(c => {
+        if(!hashSet.has(c.hashableString)) {
+            hashSet.add(c.hashableString);
+            uniqueConnections.push(c);
+        }
+    });
+
+    FORWARD_MATCHER = buildMatcher(connections);
+    PARTIAL_BACK_MATCHER = buildMatcher(
+        connections.map(c => new ConnectionDescriptor(c.named.to, c.named.through, 'out', '*'))
+    );
+
+    return uniqueConnections;
+}
 
 const NO_CLASS_MARKER = 'NO_CLASS'
 
@@ -187,6 +132,7 @@ enum HubClasses {
     ONE_TO_ONE = 'ONE_TO_ONE',
     NO_UNTYPED_EDGE = 'NO_UNTYPED_EDGE',
     ALL_SAME_TYPE = 'ALL_SAME_TYPE',
+    ALL_SAME_ENTITY_TEMPLATE = 'ALL_SAME_ENTITY_TEMPLATE',
     ONE_OUTLIER = 'ONE_OUTLIER',
     ONE_UNTYPED_EDGE = 'ONE_UNTYPED_EDGE',
     '2+UNTYPED_EDGES' = '2+UNTYPED_EDGES',
@@ -201,7 +147,7 @@ const transformableClasses: Set<string> = new Set([
 const connectionsAreEqual = (a: ConnectionType, b: ConnectionType) =>
     a.entity === b.entity && a.hub.toHexString() === b.hub.toHexString() && a.template?.toHexString() === b.template?.toHexString()
 
-const matcherHas = (matcher: ConnectionMatcherType, from: string, through: string, to: string): boolean => {
+const matcherHas = (matcher: ConnectionMatcherType, from: string, through: string, to: string, shallow: boolean = false ): boolean => {
     const froms: {
         [k: string]: Set<string>
     }[] = [];
@@ -213,48 +159,97 @@ const matcherHas = (matcher: ConnectionMatcherType, from: string, through: strin
         if(through in fromDict) Array.from(fromDict[through]).forEach(toTemplate => toSet.add(toTemplate));
         if(anyTemplateString in fromDict) Array.from(fromDict[anyTemplateString]).forEach(toTemplate => toSet.add(toTemplate));
     });
+    if(shallow) return !!toSet.size;
     return toSet.has(to) || toSet.has(anyTemplateString);
 }
 
-const classifyHub = (hub: HubType, connections: ConnectionType[], matcher: ConnectionMatcherType) => {
+const fullMatch = (matcher: ConnectionMatcherType, from: string, through: string, to: string ): boolean =>
+    matcherHas(matcher, from, through, to, false);
+
+const fullForwardMatch = (from: string, through: string, to: string): boolean =>
+    fullMatch(FORWARD_MATCHER, from, through, to)
+
+const partialMatch = (matcher: ConnectionMatcherType, from: string, through: string ): boolean =>
+    matcherHas(matcher, from, through, '', true);
+
+const partialBackMatch = (from: string, through: string): boolean =>
+    partialMatch(PARTIAL_BACK_MATCHER, from, through)
+
+const pairMatches = (first: ConnectionWithEntityInfoType, second: ConnectionWithEntityInfoType): boolean => {
+    return !!second.template && fullForwardMatch(
+        first.entityTemplateId.toString(),
+        second.template.toString(),
+        second.entityTemplateId.toString()
+    );
+};
+
+const matchPairs = (sources: ConnectionWithEntityInfoType[], targets: ConnectionWithEntityInfoType[]) => {
+    sources.forEach(first => {
+        targets.forEach(second => {
+            const transformable = pairMatches(first, second);
+            first.transformable = first.transformable || transformable;
+            second.transformable = second.transformable || transformable;
+        });
+    });
+};
+
+const selectOutlier = (connections: ConnectionWithEntityInfoType[], groupCounts: Record<string, number>) => {
+    const outlierType = Object.entries(groupCounts).find(c => c[1] === 1)![0];
+    const [outlier, rest] = _.partition(connections, c => c.template.toHexString() === outlierType);
+    return {outlier, rest};
+
+};
+
+const fullCrossCheck = (connections: ConnectionWithEntityInfoType[]) => {
+    matchPairs(connections, connections);
+    return {hubclass: NO_CLASS_MARKER, transformable: undefined};
+};
+
+const classifyHub = (hub: HubType, connections: ConnectionWithEntityInfoType[], ) => {
+    if(USE_FULL_CROSSCHECK) return fullCrossCheck(connections);
     const classes: string[] = [];
     const untyped_count = connections.filter(c => !c.template).length;
-    const groups = _.groupBy(connections, c => c.template?.toHexString());
-    const groupCounts = Object.fromEntries(Object.entries(groups).map(([template, group]) => [template, group.length]));
+    const { groups, groupCounts } = countRelTypeGroups(connections);
     const typeCount = Object.values(groups).length;
+    const entityTemplateCount = new Set(connections.map(c => c.entityTemplateId.toString())).size;
     connections.forEach(c => {
         c.transformable = false;
     });
     if(untyped_count === 0) {
         classes.push(HubClasses.NO_UNTYPED_EDGE);
-        if(typeCount === 1) classes.push(HubClasses.ALL_SAME_TYPE);
+        if(typeCount === 1) {
+            classes.push(HubClasses.ALL_SAME_TYPE);
+            if(entityTemplateCount == 1) classes.push(HubClasses.ALL_SAME_ENTITY_TEMPLATE);
+            const [onlyTargets, sourceCandidates] = _.partition(
+                    connections,
+                    c => partialBackMatch(c.entityTemplateId.toString(), c.template.toString())
+                )
+                matchPairs(sourceCandidates, onlyTargets);            
+        } 
         if(connections.length === 2) { 
             classes.push(HubClasses.ONE_TO_ONE);
             const first = connections[0];
             const second = connections[1];
-            first.transformable = matcherHas(matcher, second.entityTemplateId.toString(), first.template.toString(), first.entityTemplateId.toString());
-            second.transformable = matcherHas(matcher, first.entityTemplateId.toString(), second.template.toString(), second.entityTemplateId.toString());
+            const first_transformable = fullForwardMatch(second.entityTemplateId.toString(), first.template.toString(), first.entityTemplateId.toString());
+            const second_transformable = fullForwardMatch(first.entityTemplateId.toString(), second.template.toString(), second.entityTemplateId.toString());
+            first.transformable = first_transformable || second_transformable;
+            second.transformable = first.transformable;
         } else if (typeCount === 2 && Object.values(groupCounts).some(v => v === 1)){
             classes.push(HubClasses.ONE_OUTLIER);
-            const outlierType = Object.entries(groupCounts).find(c => c[1] === 1)![0];
-            const outlier = connections.find(c => c.template.toHexString() === outlierType)!;      
-            connections.filter(c => c._id != outlier._id).forEach(c => {
-                c.transformable = matcherHas(
-                    matcher,
-                    outlier.entityTemplateId.toHexString(),
-                    c.template.toHexString(),
-                    c.entityTemplateId.toHexString()
-                );
-            });
+            const { outlier, rest } = selectOutlier(connections, groupCounts);
+            matchPairs(outlier, rest);
+
         }
     } else if(untyped_count === 1) {
         classes.push(HubClasses.ONE_UNTYPED_EDGE);
     } else if(untyped_count >= 2) {
         classes.push(HubClasses['2+UNTYPED_EDGES']);
         if(connections.length === 2) classes.push(HubClasses.ONE_TO_ONE)
-        const untypedConnections = connections.filter(c => !c.template)
+        const [typedConnections, untypedConnections] = _.partition(connections, c => c.template);
         if(untypedConnections.every(c => connectionsAreEqual(c, untypedConnections[0]))) {
             classes.push(HubClasses.EXACT_UNTYPED_COPIES);
+        } else {
+            matchPairs(untypedConnections, typedConnections);
         };
     };
     const finalClass = classes.join(' ');
@@ -268,45 +263,18 @@ const classifyHub = (hub: HubType, connections: ConnectionType[], matcher: Conne
 const classifyHubs = async (
     tempHubsCollection: Collection<HubType>,
     connectionsCollection: Collection<RawConnectionType>,
-    matcher: ConnectionMatcherType,
     csv?: CsvWriter,
 ) => {
-    const hubCursor = tempHubsCollection.find({});
+    const hubCursor = tempHubsCollection.find();
     const transformableCount: Record<string, number> = {}
     const nonTransformableCount: Record<string, number> = {}
     while(await hubCursor.hasNext()){
         const hub = await hubCursor.next();
         if(!hub) break;
 
-        const connections = await connectionsCollection.aggregate<ConnectionType>([
-        {
-            $match: { hub: hub._id }
-        },
-        {
-            $lookup: {
-                from: 'entities',
-                localField: 'entity',
-                foreignField: 'sharedId',
-                as: 'entityInfo'
-            }
-        },
-        {
-            $set: {
-                pickedEntity: { $arrayElemAt: ['$entityInfo', 0] }
-            }
-        },
-        {
-            $set: {
-                entityTemplateId: '$pickedEntity.template',
-                entityTitle: '$pickedEntity.title'
-            }
-        },
-        {
-            $unset: ['entityInfo', 'pickedEntity']
-        }
-        ]).toArray();
+        const connections = await getConnectionsFromHub(hub, connectionsCollection);
 
-        const {hubclass, transformable } = classifyHub(hub, connections, matcher);
+        const { hubclass } = classifyHub(hub, connections);
         if(csv) {
             csv.writeLines(
                 connections.map(c => {
@@ -320,8 +288,8 @@ const classifyHubs = async (
                     return {
                         ...c,
                         entityTitle: `"${c.entityTitle}"`,
-                        entityTemplate: TEMPLATE_NAMES_BY_ID[c.entityTemplateId.toHexString()],
-                        relationType: c.template ? RELATIONTYPE_NAMES_BY_ID[c.template.toHexString()] : c.template,
+                        entityTemplate: getEntityTemplateName(c.entityTemplateId.toString()),
+                        relationType: c.template ? getRelationTypeTemplateName(c.template.toString()) : c.template,
                         hubclass,
                     }
                 })
@@ -352,17 +320,174 @@ const printSummary = (
         printCountSet(nonTransformableCount);
 };
 
+const transformThroughUntypedOutlier = (connections: ConnectionType[]) => {
+    //c.transformable automatically true
+    const untyped = connections.find(c => !c.template);
+    const typed = connections.filter(c => c.template);
+    if(!untyped) return [];
+    const from = {entity: untyped.entity};        
+    return typed.map(c => ({ from, to: {entity: c.entity}, type: c.template }))
+};
+
+const transformMatchingPairs = (sources: ConnectionWithEntityInfoType[], targets: ConnectionWithEntityInfoType[]) => {
+    const transformed: Omit<RelationshipDBOType, '_id'>[] = [];
+    sources.forEach(first => {
+        targets.forEach(second => {
+            const transformable = pairMatches(first, second);
+            if(transformable) transformed.push({ from: {entity: first.entity}, to: {entity: second.entity}, type: second.template});
+        });
+    });
+    return transformed;
+}
+
+const fullCrossTransform = (connections: ConnectionWithEntityInfoType[]) => {
+    return transformMatchingPairs(connections, connections);
+};
+
+const transformThroughTypedOutlier = (connections: ConnectionWithEntityInfoType[]) => {
+    const { groupCounts } = countRelTypeGroups(connections);
+    const { outlier, rest } = selectOutlier(connections, groupCounts);
+    return transformMatchingPairs(outlier, rest);
+}
+
+const transformBySeparatingUntyped = (connections: ConnectionWithEntityInfoType[]) => {
+    const [typedConnections, untypedConnections] = _.partition(connections, c => c.template);
+    return transformMatchingPairs(untypedConnections, typedConnections);
+}
+
+const transformOneToOne = (connections: ConnectionWithEntityInfoType[]) => {
+    const first = connections[0];
+    const second = connections[1];
+
+    return [
+        ...transformMatchingPairs([first],[second]),
+        ...transformMatchingPairs([second], [first])
+    ];
+};
+
+type HubTransformerType = (connections: ConnectionWithEntityInfoType[]) => Omit<RelationshipDBOType, '_id'>[];
+const HUBTRANSFORMERS: Record<string, HubTransformerType> = {
+    // [`${HubClasses.ONE_UNTYPED_EDGE}`]: transformThroughUntypedOutlier,
+    // [`${HubClasses['2+UNTYPED_EDGES']}`]: transformBySeparatingUntyped,
+    // [`${HubClasses['2+UNTYPED_EDGES']} ${HubClasses['EXACT_UNTYPED_COPIES']}`]: transformThroughUntypedOutlier,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ALL_SAME_TYPE}`]: ...
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ALL_SAME_TYPE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_OUTLIER}`]: transformThroughTypedOutlier,
+    // [`${HubClasses.NO_UNTYPED_EDGE} ${HubClasses.ONE_TO_ONE}`]: transformOneToOne,
+    [`${NO_CLASS_MARKER}`]: fullCrossTransform,
+};
+
+const transformHub = (hubclass: string, connections: ConnectionWithEntityInfoType[]): Omit<RelationshipDBOType, '_id'>[] => {
+    if(hubclass in HUBTRANSFORMERS){
+        return HUBTRANSFORMERS[hubclass](connections);
+    }
+    return [];
+};
+
+const transformConnections = async (
+    tempHubsCollection: Collection<HubType>,
+    connectionsCollection: Collection<RawConnectionType>,
+    relationshipsCollection: Collection<RelationshipDBOType>,
+) => {
+    if (!(CHECK_TYPE === CheckTypes.full && DEFINITION_SOURCE === DefinitionSources.fields)) {
+        println('Transformations only supported for full check from relationships fields.');
+        return;
+    }
+    const stringanswer = await prompt('Perform transformations? (y/n)');
+    const perform = stringanswer === 'y';
+    if(!perform) return;
+    const hubCursor = tempHubsCollection.find({});
+    const relationshipsWriter = new BulkWriteStream(relationshipsCollection, undefined, batchsize);
+    while(await hubCursor.hasNext()){
+        const hub = await hubCursor.next();
+        if(!hub) break;
+        const connections = await getConnectionsFromHub(hub, connectionsCollection);
+        const { hubclass } = classifyHub(hub, connections);
+        const relationships = transformHub(hubclass, connections);
+        await relationshipsWriter.insertMany(relationships);
+    }
+    await relationshipsWriter.flush();
+};
+
+const checkCollectionNameWithUser = async (db: Db) => {
+    const site_name = (await db.collection('settings').findOne({}, { projection: { site_name: 1 } }))?.site_name;
+    const stringanswer = await prompt(`The site name in settings is ${site_name}. Proceed? (y/n)`);
+    const perform = stringanswer === 'y';
+    if(!perform) {
+        println('Stopping.');
+        process.exit(0);
+    };
+};
+
+const checkValueInObject = async (value: string | undefined, obj: any, name: string) => {
+    if(!value || !(value in obj)) {
+        println(`${value} as ${name} is unknown. Options are: ${Object.keys(obj)}`);
+        process.exit(0);
+    }
+}
+
+const readConnectionsFromFile = async (filepath: string) => {
+    println('Reading connection descriptors from file...')
+    const rawDefinitions: any = readJsonFile(filepath);    
+    const connections: ConnectionDescriptor[] = [];
+    rawDefinitions.forEach(node => collateNodeConnections(node, connections));
+    const uniqueConnections = preProcessConnectionDescriptors(connections);
+    println('Reading connection descriptors done.')
+    return uniqueConnections;
+};
+
+const readConnectionsFromFields = async (db: Db) => {
+    println('Reading connection descriptors from db...');
+    const connections: ConnectionDescriptor[] =  [];
+    const templates = await db.collection<TemplateSchema>('templates').find({}, {projection: { properties: 1 }}).toArray();
+    templates.forEach(t => {
+        const source = [t._id.toString()];
+        (t.properties || []).filter(p => p.type === propertyTypes.relationship).forEach(p => {
+            const target = p.content ? [p.content] : '*';
+            const relType = [p.relationType];
+            const descriptor =  new ConnectionDescriptor(source, relType, 'out', target, true);
+            connections.push(descriptor);
+        })
+    });
+    const uniqueConnections = preProcessConnectionDescriptors(connections);
+    println('Reading connection descriptors done');
+    return uniqueConnections;
+}
+
+const readConnections = async (filepath: string, db: Db) => {
+    let connections: ConnectionDescriptor[] =  [];
+    if (DEFINITION_SOURCE == DefinitionSources.file) {
+        connections = await readConnectionsFromFile(filepath)
+    } else if (DEFINITION_SOURCE == DefinitionSources.fields) {
+        connections = await readConnectionsFromFields(db)
+    }
+    return connections;
+}
+
+const inputChecks = () => {
+    if(!DEFINITION_FILE_PATH) {
+        println('No definition file path provided.');
+        process.exit(0);
+    }
+    checkValueInObject(CHECK_TYPE, CheckTypes, 'Check Type');
+    checkValueInObject(DEFINITION_SOURCE, DefinitionSources, 'Definition Source');
+    println(`Using check type: ${CHECK_TYPE}.`);
+    println(`Using definition source: ${DEFINITION_SOURCE}.`);
+};
 
 const run = async () => {
+    inputChecks();
     const {client, db} = await getClientAndDB();
+    await checkCollectionNameWithUser(db);
     
     await readTypes(db);
-    const rawDefinitions: any = readJsonFile(DEFINITION_FILE_PATH);    
-    const {matcher, uniqueConnections: connections} = collateConnections(rawDefinitions);
+    await readConnections(DEFINITION_FILE_PATH!, db);
 
-    await createTempCollections(db, [temporaryHubCollectionName])
+    await createTempCollections(db, [temporaryHubCollectionName, temporaryNewRelationshipsCollectionName]);
 
     const tempHubsCollection = db.collection<HubType>(temporaryHubCollectionName);
+    const tempRelationshipsCollection = db.collection<RelationshipDBOType>(temporaryNewRelationshipsCollectionName);
+    const relationshipsCollection = db.collection<RelationshipDBOType>('relationships');
     const connectionsCollection = db.collection<RawConnectionType>('connections');
 
     await gatherHubs(connectionsCollection, tempHubsCollection);
@@ -373,16 +498,21 @@ const run = async () => {
             ['_id', 'hub', 'entity', 'entityTitle', 'entityTemplate', 'relationType', 'hubclass', 'transformable'],
         ) : undefined;
 
-    println('Processing hubs...')
-    const { transformableCount, nonTransformableCount } = await classifyHubs(tempHubsCollection, connectionsCollection, matcher, csv);
-    println('Hub processing done.')
+    println('Classifying hubs...');
+    const { transformableCount, nonTransformableCount } = await classifyHubs(tempHubsCollection, connectionsCollection, csv);
+    println('Hub classification done.');
 
     printSummary(transformableCount, nonTransformableCount);
 
-    await finalize(db, [], [tempHubsCollection])
+    println('Transforming connections...');
+    await transformConnections(tempHubsCollection, connectionsCollection, tempRelationshipsCollection);
+    println('Transforming connections done.');
+
+    await finalize(db, [[tempRelationshipsCollection, relationshipsCollection]], [tempHubsCollection, tempRelationshipsCollection])
 
     await client.close();
     csv?.close();
+    inputreader.close();
 };
 
 run();

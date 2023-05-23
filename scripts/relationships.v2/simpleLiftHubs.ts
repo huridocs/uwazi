@@ -137,15 +137,15 @@ const hubsToRelationships = async (
   relationshipsCollection: Collection<RelationshipDBOType>, 
   defaultRelType: RelTypeType
 ) => {
-  const hubIdToSharedId = objectIndex(hubs, h => h.title, h => h.sharedId);
+  const hubIdToSharedId = objectIndex(hubs, h => h.title || '__undefined__', h => h.sharedId || '__undefined__');
   const hubIds = Object.keys(hubIdToSharedId).map(title => new ObjectId(title));
   const connections = connectionsCollection.find({ hub: { $in: hubIds } });
   const relationshipsWriter = new BulkWriteStream(relationshipsCollection, undefined, batchsize);
   while(!connections.closed){
-    const connectionsBatch = await getNextBatch(connections); 
+    const connectionsBatch = await getNextBatch(connections);
     const newRelationshipBatch = connectionsBatch.map(c => ({
-      from: c.entity,
-      to: hubIdToSharedId[c.hub.toString()],
+      from: {entity: c.entity},
+      to: {entity: hubIdToSharedId[c.hub.toString()]},
       type: c.template || defaultRelType._id,
     }))
     await relationshipsWriter.insertMany(newRelationshipBatch);
