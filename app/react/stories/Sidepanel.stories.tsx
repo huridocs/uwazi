@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Sidepanel } from 'V2/Components/UI';
@@ -38,7 +39,9 @@ const SidepanelContent = () => {
   return <>{contents.map(content => content)}</>;
 };
 
-const SidePanelContainer = (args: SidePanelProps) => {
+const SidePanelContainer: React.FC<Omit<SidePanelProps, 'children'>> = (
+  args: Omit<SidePanelProps, 'children'>
+) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
   return (
@@ -109,11 +112,18 @@ const SidePanelContainer = (args: SidePanelProps) => {
     </Provider>
   );
 };
-const Primary: Story = {
-  render: args => <SidePanelContainer {...args} />,
+const Primarys: Story = {
+  render: args => (
+    <SidePanelContainer
+      withOverlay={args.withOverlay}
+      title={args.title}
+      size={args.size}
+      closeSidepanelFunction={action('closeSidePanel')}
+    />
+  ),
 };
 
-const Basic = { ...Primary, withOverlay: false, title: 'My sidepanel', size: 'medium' };
+const Basic = { ...Primarys, args: { withOverlay: false, title: 'My sidepanel', size: 'medium' } };
 
 export { Basic };
 

@@ -9,7 +9,7 @@ interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
   closeSidepanelFunction: () => any;
   isOpen?: boolean;
-  title?: React.ReactNode | string;
+  title?: string | React.ReactNode;
   withOverlay?: boolean;
   size?: 'small' | 'medium';
 }
