@@ -9,3 +9,4 @@ export { Tabs } from './Tabs';
 export { Sidepanel } from './Sidepanel';
 export { SearchMultiselect } from './SearchMultiSelect';
 export { ConfirmationModal } from './ConfirmationModal';
+export { Card } from './Card';
