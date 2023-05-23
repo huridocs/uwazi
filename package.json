@@ -19,7 +19,7 @@
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
-    "check-types": "yarn check-cy-types; yarn check-app-types",
+    "check-types": "yarn check-cy-types && yarn check-app-types",
     "watch-types": "tsc --noEmit --pretty --watch --preserveWatchOutput",
     "emit-types": "node scripts/emitSchemaTypes.js",
     "emitSocketEvent": "node ./scripts/run.js ./emitSocketEvent.js",
