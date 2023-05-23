@@ -10,8 +10,9 @@ import {
 import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
+import { EnforcedWithId } from 'api/odm';
 import { tenants } from 'api/tenants';
-import { TranslationContext, TranslationType } from 'shared/translationType';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -37,8 +38,10 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
 };
 
 const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translation>) => {
-  const resultMap: { [language: string]: TranslationType } = {};
-  const contexts: { [language: string]: { [context: string]: TranslationContext } } = {};
+  const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+  const contexts: {
+    [language: string]: { [context: string]: TranslationContext & { values: TranslationValue[] } };
+  } = {};
   await tranlationsResult.forEach(translation => {
     if (!resultMap[translation.language]) {
       resultMap[translation.language] = {
@@ -62,9 +65,10 @@ const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translati
   });
 
   return Object.values(resultMap).map(translation => {
+    // eslint-disable-next-line no-param-reassign
     translation.contexts = Object.values(contexts[translation.locale]);
     return translation;
-  });
+  }) as EnforcedWithId<TranslationType>[];
 };
 export const createTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {

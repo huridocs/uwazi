@@ -42,13 +42,13 @@ const createTranslationsThroughService = async () => {
       language: 'es',
       key: 'clave',
       value: 'valor',
-      context: { type: 'test', label: 'Test', id: 'test' },
+      context: { type: 'Entity', label: 'Test', id: 'test' },
     },
     {
       language: 'en',
       key: 'key',
       value: 'value',
-      context: { type: 'test', label: 'Test', id: 'test' },
+      context: { type: 'Entity', label: 'Test', id: 'test' },
     },
   ]);
 };
@@ -66,14 +66,14 @@ describe('CreateTranslationsService', () => {
           language: 'es',
           key: 'clave',
           value: 'valor',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           _id: expect.any(ObjectId),
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
     });
@@ -86,13 +86,13 @@ describe('CreateTranslationsService', () => {
           language: 'es',
           key: 'clave',
           value: 'valor',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
     });

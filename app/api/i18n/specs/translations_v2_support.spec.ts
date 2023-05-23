@@ -3,7 +3,6 @@ import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
 import { TranslationValue } from 'shared/translationType';
 import translations from '../translations';
-import translationsModel from '../translationsModel';
 
 import fixtures from './fixtures.js';
 
@@ -434,10 +433,7 @@ describe('translations v2 support', () => {
               id: 'System',
               label: 'System',
               type: 'Uwazi UI',
-              values: [
-                { key: 'Password', value: 'Password' },
-                { key: 'Account', value: 'Account' },
-              ],
+              values: { Password: 'Password', Account: 'Account' },
             },
           ],
         });
@@ -452,10 +448,7 @@ describe('translations v2 support', () => {
               id: 'System',
               label: 'System',
               type: 'Uwazi UI',
-              values: [
-                { key: 'Password', value: 'Contraseña' },
-                { key: 'Account', value: 'Cuenta' },
-              ],
+              values: { Password: 'Contraseña', Account: 'Cuenta' },
             },
           ],
         });
@@ -505,10 +498,7 @@ describe('translations v2 support', () => {
               id: 'System',
               label: 'System',
               type: 'Uwazi UI',
-              values: [
-                { key: 'Password', value: 'Contraseña' },
-                { key: 'Account', value: 'Cuenta' },
-              ],
+              values: { Password: 'Contraseña', Account: 'Cuenta' },
             },
           ],
         });
@@ -561,19 +551,12 @@ describe('translations v2 support', () => {
                 id: 'System',
                 label: 'System',
                 type: 'Uwazi UI',
-                values: [
-                  { key: 'Password', value: 'Contraseña' },
-                  { key: 'Account', value: 'Cuenta' },
-                ],
+                values: { Password: 'Contraseña', Account: 'Cuenta' },
               },
             ],
           });
         });
       });
     });
-  });
-
-  it('should fail because this is the next step', async () => {
-    fail('continue with check-types');
   });
 });

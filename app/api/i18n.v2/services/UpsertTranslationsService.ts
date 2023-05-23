@@ -1,13 +1,7 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { Translation } from '../model/Translation';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-
-export interface CreateTranslationsData {
-  language: string; // should be an enum ?
-  key: string;
-  value: string;
-  context: { type: string; label: string; id: string };
-}
+import { CreateTranslationsData } from './CreateTranslationsService';
 
 export class UpsertTranslationsService {
   private translationsDS: TranslationsDataSource;

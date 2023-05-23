@@ -1,6 +1,6 @@
 import { CSVLoader } from 'api/csv';
 import * as os from 'os';
-import { WithId } from 'api/odm';
+import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
 import path from 'path';
@@ -190,6 +190,15 @@ const update = async (translation: TranslationType | IndexedTranslations) => {
   });
 };
 
+const translationTypeToIndexedTranslation = (translations: EnforcedWithId<TranslationType>[]) =>
+  translations.map(
+    translation =>
+      ({
+        ...translation,
+        contexts: prepareContexts(translation.contexts),
+      } as IndexedTranslations)
+  );
+
 export default {
   prepareContexts,
   async get(query: { _id?: string; locale?: string } = {}, selector = {}) {
@@ -200,16 +209,11 @@ export default {
         const [oldLanguage] = await model.get({ _id: query._id }, { locale: 1 });
         language = oldLanguage.locale;
       }
-      return getTranslationsV2(language);
+      return translationTypeToIndexedTranslation(await getTranslationsV2(language));
     }
     const translations = await model.get(query, selector);
-    return translations.map(
-      translation =>
-        ({
-          ...translation,
-          contexts: prepareContexts(translation.contexts),
-        } as IndexedTranslations)
-    );
+
+    return translationTypeToIndexedTranslation(translations);
   },
 
   async save(translation: TranslationType | IndexedTranslations) {

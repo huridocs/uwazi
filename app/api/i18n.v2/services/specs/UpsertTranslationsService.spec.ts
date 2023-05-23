@@ -20,13 +20,13 @@ const fixtures = {
       language: 'es',
       key: 'clave',
       value: 'valor',
-      context: { type: 'test', label: 'Test', id: 'test' },
+      context: { type: 'Entity', label: 'Test', id: 'test' },
     },
     {
       language: 'en',
       key: 'key',
       value: 'value',
-      context: { type: 'test', label: 'Test', id: 'test' },
+      context: { type: 'Entity', label: 'Test', id: 'test' },
     },
   ],
   settings: [
@@ -55,19 +55,19 @@ describe('CreateTranslationsService', () => {
           language: 'en',
           key: 'key',
           value: 'updatedValue',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva',
           value: 'valor nuevo',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva 2',
           value: 'valor nuevo 2',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
 
@@ -78,25 +78,25 @@ describe('CreateTranslationsService', () => {
           language: 'es',
           key: 'clave',
           value: 'valor',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva',
           value: 'valor nuevo',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva 2',
           value: 'valor nuevo 2',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'updatedValue',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
     });
@@ -107,19 +107,19 @@ describe('CreateTranslationsService', () => {
           language: 'en',
           key: 'key',
           value: 'updatedValue',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva',
           value: 'valor nuevo',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva 2',
           value: 'valor nuevo 2',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
 
@@ -128,19 +128,19 @@ describe('CreateTranslationsService', () => {
           language: 'en',
           key: 'key',
           value: 'updatedValue',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva',
           value: 'valor nuevo',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
         {
           language: 'es',
           key: 'clave nueva 2',
           value: 'valor nuevo 2',
-          context: { type: 'test', label: 'Test', id: 'test' },
+          context: { type: 'Entity', label: 'Test', id: 'test' },
         },
       ]);
     });

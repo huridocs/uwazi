@@ -5,13 +5,21 @@ export class Translation {
 
   readonly language: string;
 
-  readonly context: { type: string; label: string; id: string };
+  readonly context: {
+    type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+    label: string;
+    id: string;
+  };
 
   constructor(
     key: string,
     value: string,
     language: string,
-    context: { type: string; label: string; id: string }
+    context: {
+      type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+      label: string;
+      id: string;
+    }
   ) {
     this.key = key;
     this.value = value;

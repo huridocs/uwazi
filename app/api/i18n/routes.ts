@@ -85,7 +85,7 @@ export default (app: Application) => {
 
     async (req, res) => {
       const { _id } = await translations.save(req.body);
-      const [response] = await translations.get({ _id });
+      const [response] = await translations.get({ _id: _id.toString() });
       req.sockets.emitToCurrentTenant('translationsChange', response);
       res.json(response);
     }

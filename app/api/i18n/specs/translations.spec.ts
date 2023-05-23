@@ -149,7 +149,7 @@ describe('translations', () => {
         ],
       });
 
-      const [translation] = await translations.get({ _id: englishTranslation });
+      const [translation] = await translations.get({ _id: englishTranslation.toString() });
 
       expect(translation.contexts?.length).toBe(6);
       expect(translation.contexts?.find(context => context.id === 'Filters')?.values).toEqual({
