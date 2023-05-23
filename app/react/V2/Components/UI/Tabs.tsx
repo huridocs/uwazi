@@ -64,4 +64,6 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
 
 Tabs.Tab = Tab;
 
+export type { TabsProps };
+
 export { Tabs };
