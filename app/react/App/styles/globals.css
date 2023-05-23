@@ -1146,6 +1146,10 @@ input:checked + .toggle-bg {
   z-index: 50;
 }
 
+.col-span-2 {
+  grid-column: span 2 / span 2;
+}
+
 .float-right {
   float: right;
 }
@@ -1170,6 +1174,11 @@ input:checked + .toggle-bg {
 .-mx-1\.5 {
   margin-left: -0.375rem;
   margin-right: -0.375rem;
+}
+
+.-mx-5 {
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
 }
 
 .-my-1 {
@@ -1217,6 +1226,10 @@ input:checked + .toggle-bg {
 
 .-ml-0\.5 {
   margin-left: -0.125rem;
+}
+
+.-mt-5 {
+  margin-top: -1.25rem;
 }
 
 .mb-1 {
@@ -1297,6 +1310,10 @@ input:checked + .toggle-bg {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-5 {
+  margin-top: 1.25rem;
 }
 
 .mt-6 {
@@ -5075,6 +5092,10 @@ input:checked + .toggle-bg {
 }
 
 @media (min-width: 640px) {
+  .sm\:col-span-1 {
+    grid-column: span 1 / span 1;
+  }
+
   .sm\:mx-auto {
     margin-left: auto;
     margin-right: auto;
@@ -5106,6 +5127,18 @@ input:checked + .toggle-bg {
 
   .sm\:w-6 {
     width: 1.5rem;
+  }
+
+  .sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sm\:gap-6 {
+    gap: 1.5rem;
+  }
+
+  .sm\:rounded-lg {
+    border-radius: 0.5rem;
   }
 
   .sm\:px-4 {

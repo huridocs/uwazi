@@ -7,6 +7,7 @@ import UsersAPI from 'app/Users/UsersAPI';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { UserSchema } from 'shared/types/userType';
+import { InputField } from 'app/V2/Components/Forms';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -29,9 +30,68 @@ const Account = () => {
               <Translate>Account</Translate>
             </h1>
           </NavigationHeader>
-          <h2 className="text-lg text-primary-700 bg-gray-50">
-            <Translate>General Information</Translate>
-          </h2>
+          <div className="shadow-md sm:rounded-lg p-5 mb-4">
+            <h2 className="text-m font-semibold text-primary-700 bg-gray-50 -mt-5 -mx-5 p-4">
+              <Translate>General Information</Translate>
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mt-5">
+              <div className="sm:col-span-1">
+                <InputField
+                  id="account-username"
+                  label={<Translate>Username</Translate>}
+                  value={userAccount.username}
+                  disabled
+                />
+              </div>
+              <div className="sm:col-span-1">
+                <InputField
+                  id="account-role"
+                  label={<Translate>User Role</Translate>}
+                  value={userAccount.role}
+                  disabled
+                />
+              </div>
+              <div className="col-span-2">
+                <InputField
+                  id="account-email"
+                  label={<Translate>Email</Translate>}
+                  value={userAccount.email}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="shadow-md sm:rounded-lg p-5 mb-4">
+            <h2 className="text-m font-semibold text-primary-700 bg-gray-50 -mt-5 -mx-5 p-4">
+              <Translate>Change Password</Translate>
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mt-5">
+              <div className="sm:col-span-1">
+                <InputField id="new-password" label={<Translate>New Password</Translate>} />
+              </div>
+              <div className="sm:col-span-1">
+                <InputField
+                  id="confirm-new-password"
+                  label={<Translate>Confirm New Passowrd</Translate>}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="shadow-md sm:rounded-lg p-5 mb-4">
+            <h2 className="text-m font-semibold text-yellow-800 bg-yellow-100 -mt-5 -mx-5 p-4">
+              <Translate>Two-Factor Authenticator</Translate>
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mt-5">
+              <div className="sm:col-span-1">
+                <InputField id="new-password" label={<Translate>New Password</Translate>} />
+              </div>
+              <div className="sm:col-span-1">
+                <InputField
+                  id="confirm-new-password"
+                  label={<Translate>Confirm New Passowrd</Translate>}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
