@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react18';
 import { map } from 'lodash';
-import { composeStories } from '@storybook/testing-react';
+import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Table.stories';
 
 const { Basic } = composeStories(stories);

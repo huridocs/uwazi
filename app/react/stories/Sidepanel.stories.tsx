@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Sidepanel } from 'V2/Components/UI';
+import { SidePanelProps } from 'app/V2/Components/UI/Sidepanel';
 
-const SidepanelStory = {
+const meta: Meta<typeof Sidepanel> = {
   title: 'Components/Sidepanel',
   component: Sidepanel,
 };
+
+type Story = StoryObj<typeof Sidepanel>;
 
 const SidepanelContent = () => {
   const contents: React.ReactNode[] = [];
@@ -35,7 +39,9 @@ const SidepanelContent = () => {
   return <>{contents.map(content => content)}</>;
 };
 
-const Template: StoryFn<typeof Sidepanel> = args => {
+const SidePanelContainer: React.FC<Omit<SidePanelProps, 'children'>> = (
+  args: Omit<SidePanelProps, 'children'>
+) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
   return (
@@ -43,9 +49,9 @@ const Template: StoryFn<typeof Sidepanel> = args => {
       <div className="tw-content">
         <div>
           <main>
-            <h1 className="text-xl mb-2">This a content title</h1>
+            <h1 className="mb-2 text-xl">This a content title</h1>
 
-            <h2 className="text-lg mb-1">
+            <h2 className="mb-1 text-lg">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </h2>
 
@@ -86,7 +92,7 @@ const Template: StoryFn<typeof Sidepanel> = args => {
 
             <button
               type="button"
-              className="border-2 rounded border-primary-400 p-1 bg-primary-400 text-white"
+              className="p-1 text-white border-2 rounded border-primary-400 bg-primary-400"
               onClick={() => setShowSidepanel(!showSidepanel)}
             >
               Open/Close sidepanel
@@ -106,11 +112,19 @@ const Template: StoryFn<typeof Sidepanel> = args => {
     </Provider>
   );
 };
+const Primarys: Story = {
+  render: args => (
+    <SidePanelContainer
+      withOverlay={args.withOverlay}
+      title={args.title}
+      size={args.size}
+      closeSidepanelFunction={action('closeSidePanel')}
+    />
+  ),
+};
 
-const Basic = Template.bind({});
-
-Basic.args = { withOverlay: false, title: 'My sidepanel', size: 'medium' };
+const Basic = { ...Primarys, args: { withOverlay: false, title: 'My sidepanel', size: 'medium' } };
 
 export { Basic };
 
-export default { component: SidepanelStory };
+export default meta;
