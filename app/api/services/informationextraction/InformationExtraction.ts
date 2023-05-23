@@ -84,7 +84,7 @@ class InformationExtraction {
     extractorId: ObjectIdSchema,
     type: string
   ) => {
-    const fileContent = await storage.fileContents(xmlName,'segmentation');
+    const fileContent = await storage.fileContents(xmlName, 'segmentation');
     const endpoint = type === 'labeled_data' ? 'xml_to_train' : 'xml_to_predict';
     const url = urljoin(serviceUrl, endpoint, tenants.current().name, extractorId.toString());
     return request.uploadFile(url, xmlName, fileContent);
