@@ -220,7 +220,7 @@
     "rtlcss": "^4.1.0",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^6.0.1",
-    "sift": "^16.0.1",
+    "sift": "^17.0.1",
     "socket.io": "4.6.1",
     "socket.io-client": "4.6.1",
     "socket.io-parser": "4.2.2",
