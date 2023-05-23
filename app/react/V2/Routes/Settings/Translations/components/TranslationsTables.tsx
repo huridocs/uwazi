@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Translate } from 'app/I18N';
-import { Table } from '../UI';
-import { FormInput } from './FormInput';
+import { Table } from 'app/V2/Components/UI';
+import { FormInput } from 'app/V2/Components/Forms';
 import { LanguagePill } from './LanguagePill';
 
 type translationsTableType = {

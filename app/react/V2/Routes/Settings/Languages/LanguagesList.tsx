@@ -10,13 +10,13 @@ import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
-import { InstallLanguagesModal } from 'app/V2/Components/Languages/InstallLanguagesModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
+import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

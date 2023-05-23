@@ -16,10 +16,11 @@ import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
-import { ConfirmNavigationModal, TranslationsTables } from 'V2/Components/Translations';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
+import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
+import { TranslationsTables } from './components/TranslationsTables';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
