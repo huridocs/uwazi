@@ -85,6 +85,7 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new UpsertTranslationsService(
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).upsert(flattenTranslations(translation));
   }
