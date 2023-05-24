@@ -14,6 +14,7 @@ import { EnforcedWithId } from 'api/odm';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { tenants } from 'api/tenants';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import migration from 'api/i18n.v2/migrations/translations_to_translations_v2';
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -120,8 +121,14 @@ export const getTranslationsV2 = async (language?: string) => {
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
   if (!tenants.current().featureFlags?.translationsV2) {
-    await db.collection('translations_v2').deleteMany({});
-    //should delete lock collection !!
+    try {
+      await db.collection('translations_v2').drop({});
+      await db.collection('translations_v2_helper').drop();
+    } catch (e) {
+      if (e.message !== 'ns not found') {
+        throw e;
+      }
+    }
     return;
   }
 
@@ -137,19 +144,7 @@ export const migrateTranslationsToV2 = async () => {
     return false;
   }
 
-  const currentTranslationsCursor = db.collection('translations').find();
-  // eslint-disable-next-line no-await-in-loop
-  while (await currentTranslationsCursor.hasNext()) {
-    // eslint-disable-next-line no-await-in-loop
-    const translation = await currentTranslationsCursor.next();
-    if (translation) {
-      const flattenedTranslations = flattenTranslations(translation);
-      if (flattenedTranslations.length) {
-        // eslint-disable-next-line no-await-in-loop
-        await db.collection('translations_v2').insertMany(flattenedTranslations);
-      }
-    }
-  }
+  await migration.up(db);
 
   await db
     .collection('translations_v2_helper')
