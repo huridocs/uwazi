@@ -14,7 +14,7 @@ import { EnforcedWithId } from 'api/odm';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { tenants } from 'api/tenants';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import migration from 'api/i18n.v2/migrations/translations_to_translations_v2';
+import migration from 'api/i18n.v2/migrations/';
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {

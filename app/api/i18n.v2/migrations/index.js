@@ -27,14 +27,20 @@ export default {
   description:
     'creates indexes for translations v2, migrates all translations from old collection to the new one',
 
+  reindex: false,
+
   async up(db) {
-    const currentTranslationsCursor = db.collection('translations').find();
+    const oldTranslations = await db.collection('translations');
+    const newTranslations = await db.collection('translations_v2');
+    await newTranslations.createIndex({ language: 1, key: 1, 'context.id': 1 });
+
+    const currentTranslationsCursor = oldTranslations.find();
     while (await currentTranslationsCursor.hasNext()) {
       const translation = await currentTranslationsCursor.next();
       if (translation) {
         const flattenedTranslations = flattenTranslations(translation);
         if (flattenedTranslations.length) {
-          await db.collection('translations_v2').insertMany(flattenedTranslations);
+          await newTranslations.insertMany(flattenedTranslations);
         }
       }
     }

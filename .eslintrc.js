@@ -37,9 +37,10 @@ module.exports = {
         },
       ],
     ],
-    indent: 'off', // handled by prettier
-    'operator-linebreak': 'off', // handled by prettier
-    'space-before-function-paren': 'off', // handled by prettier
+    indent: 'off',
+    'brace-style': 'off',
+    'operator-linebreak': 'off',
+    'space-before-function-paren': 'off',
     'no-mixed-operators': 'off',
     'no-underscore-dangle': 'off',
     'comma-dangle': 'off',

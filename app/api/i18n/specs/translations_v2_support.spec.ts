@@ -310,25 +310,14 @@ describe('translations v2 support', () => {
         const translationsMigrated = await db
           .collection(newTranslationsCollection)
           .find({ 'context.id': 'System', language: 'en' })
+          .sort({ key: 1 })
           .toArray();
 
         expect(translationsMigrated).toMatchObject([
           {
             language: 'en',
-            key: 'Password',
-            value: 'Password',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
             key: 'Account',
             value: 'Account',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'Email',
-            value: 'E-Mail',
             context: { type: 'Uwazi UI', label: 'System', id: 'System' },
           },
           {
@@ -339,8 +328,20 @@ describe('translations v2 support', () => {
           },
           {
             language: 'en',
+            key: 'Email',
+            value: 'E-Mail',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
             key: 'Library',
             value: 'Library',
+            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
+          },
+          {
+            language: 'en',
+            key: 'Password',
+            value: 'Password',
             context: { type: 'Uwazi UI', label: 'System', id: 'System' },
           },
         ]);

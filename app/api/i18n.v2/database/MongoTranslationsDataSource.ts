@@ -27,7 +27,7 @@ export class MongoTranslationsDataSource
     await Promise.all(
       items.map(async item =>
         writeStream.updateOne(
-          { language: item.language, key: item.key, context: item.context },
+          { language: item.language, key: item.key, 'context.id': item.context.id },
           { $set: item },
           true
         )
