@@ -15,6 +15,18 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { tenants } from 'api/tenants';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import migration from 'api/i18n.v2/migrations/';
+import { Db } from 'mongodb';
+
+const cleanUpV2Collections = async (db: Db) => {
+  try {
+    await db.collection('translations_v2').drop({});
+    await db.collection('translations_v2_helper').drop();
+  } catch (e) {
+    if (e.message !== 'ns not found') {
+      throw e;
+    }
+  }
+};
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -121,15 +133,8 @@ export const getTranslationsV2 = async (language?: string) => {
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
   if (!tenants.current().featureFlags?.translationsV2) {
-    try {
-      await db.collection('translations_v2').drop({});
-      await db.collection('translations_v2_helper').drop();
-    } catch (e) {
-      if (e.message !== 'ns not found') {
-        throw e;
-      }
-    }
-    return;
+    await cleanUpV2Collections(db);
+    return false;
   }
 
   const needsMigration = await db
@@ -149,4 +154,6 @@ export const migrateTranslationsToV2 = async () => {
   await db
     .collection('translations_v2_helper')
     .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
+
+  return false;
 };
