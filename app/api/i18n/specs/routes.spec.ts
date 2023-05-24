@@ -232,7 +232,7 @@ describe('i18n translations routes', () => {
         const response = await request(app)
           .post('/api/translations')
           .send({
-            locale: 'es',
+            locale: 'ca',
             contexts: [{ values: { Search: 'Buscar' } }],
           });
 
@@ -247,14 +247,14 @@ describe('i18n translations routes', () => {
               },
             },
           ],
-          locale: 'es',
+          locale: 'ca',
         });
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'translationsChange',
           expect.objectContaining({
             contexts: [expect.objectContaining({ values: { Search: 'Buscar' } })],
-            locale: 'es',
+            locale: 'ca',
           })
         );
       });

@@ -222,12 +222,12 @@ export default {
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
 
-    if (translation._id) {
-      await upsertTranslationsV2(translationToSave);
-      return update(translation);
-    }
+    await upsertTranslationsV2(translationToSave);
 
-    await createTranslationsV2(translationToSave);
+    const [oldTranslationExists] = await model.get({ locale: translation.locale });
+    if (oldTranslationExists) {
+      return update({ _id: oldTranslationExists._id, ...translation });
+    }
 
     return model.save(translationToSave);
   },

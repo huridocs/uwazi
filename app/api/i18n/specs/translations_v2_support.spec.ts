@@ -60,6 +60,13 @@ describe('translations v2 support', () => {
       expect(createdTranslations).toEqual([]);
     });
 
+    it('should use locale to update the old translations collection (Temporary test)', async () => {
+      await createTranslation();
+      await createTranslation();
+      const oldTranslations = await db.collection('translations').find().toArray();
+      expect(oldTranslations.map(t => t.locale)).toEqual(['en']);
+    });
+
     it('should save the translations to the new translations collection', async () => {
       await createTranslation();
 
