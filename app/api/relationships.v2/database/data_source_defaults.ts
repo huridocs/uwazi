@@ -2,6 +2,7 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoRelationshipsDataSource } from './MongoRelationshipsDataSource';
 import { MongoV1ConnectionsDataSource } from './MongoV1ConnectionsDataSource';
+import { MongoHubsDataSource } from './MongoHubsDataSource';
 
 const DefaultRelationshipDataSource = (transactionManager: MongoTransactionManager) => {
   const connection = getConnection();
@@ -13,4 +14,9 @@ const DefaultV1ConnectionsDataSource = (transactionManager: MongoTransactionMana
   return new MongoV1ConnectionsDataSource(connection, transactionManager);
 };
 
-export { DefaultRelationshipDataSource, DefaultV1ConnectionsDataSource };
+const DefaultHubsDataSource = (transactionManager: MongoTransactionManager) => {
+  const db = getConnection();
+  return new MongoHubsDataSource(db, transactionManager);
+};
+
+export { DefaultHubsDataSource, DefaultRelationshipDataSource, DefaultV1ConnectionsDataSource };

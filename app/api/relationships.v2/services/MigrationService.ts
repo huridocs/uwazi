@@ -1,49 +1,42 @@
-import { Document } from 'mongodb';
-
-import { TemporaryDataSource } from 'api/common.v2/contracts/TemporaryDataSource';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-
+import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
 
-type TemporaryDataSourceFactoryType = <Schema extends Document>(
-  name: string,
-  transactionManager: MongoTransactionManager
-) => TemporaryDataSource<Schema>;
-
-type HubType = Document & {
-  hubId: string;
-};
+const HUB_BATCH_SIZE = 1000;
 
 export class MigrationService {
   private transactionManager: MongoTransactionManager;
 
-  private TemporaryDataSourceFactory: TemporaryDataSourceFactoryType;
+  private hubsDS: HubDataSource;
 
   private v1ConnectionsDS: V1ConnectionsDataSource;
 
   constructor(
     transactionManager: MongoTransactionManager,
-    temporaryDataSourceClass: TemporaryDataSourceFactoryType,
+    hubsDS: HubDataSource,
     v1ConnectionsDS: V1ConnectionsDataSource
   ) {
     this.transactionManager = transactionManager;
-    this.TemporaryDataSourceFactory = temporaryDataSourceClass;
+    this.hubsDS = hubsDS;
     this.v1ConnectionsDS = v1ConnectionsDS;
   }
 
-  private async gatherHubs(tempHubsCollection: TemporaryDataSource<HubType>, limit?: number) {
+  private async gatherHubs(limit?: number) {
     const cursor = this.v1ConnectionsDS.allCursor();
 
-    let count = 0;
-    const connections = [];
+    let hubIds: Set<string> = new Set();
     // eslint-disable-next-line no-await-in-loop
-    while ((await cursor.hasNext()) && (limit === undefined || count < limit)) {
+    while ((await cursor.hasNext()) && (limit === undefined || hubIds.size < limit)) {
       // eslint-disable-next-line no-await-in-loop
       const connection = await cursor.next();
-      connections.push(connection);
-      count += 1;
+      if (connection) hubIds.add(connection.hub);
+      if (hubIds.size >= HUB_BATCH_SIZE) {
+        // eslint-disable-next-line no-await-in-loop
+        await this.hubsDS.insertIds(Array.from(hubIds));
+        hubIds = new Set();
+      }
     }
-    console.log(connections)
+    await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
   async migrate(dryRun: boolean) {
@@ -54,14 +47,10 @@ export class MigrationService {
       console.log('not dry run, performing migration');
     }
 
-    const tempHubsCollection = this.TemporaryDataSourceFactory<HubType>(
-      'hubs',
-      this.transactionManager
-    );
-    await tempHubsCollection.create();
+    await this.hubsDS.create();
 
-    await this.gatherHubs(tempHubsCollection, 5);
+    await this.gatherHubs(20);
 
-    await tempHubsCollection.drop();
+    // await this.hubsDS.drop();
   }
 }

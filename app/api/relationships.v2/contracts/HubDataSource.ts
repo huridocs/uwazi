@@ -1,6 +1,6 @@
-export interface TemporaryDataSource<DbSchema> {
-  name(): string;
+export interface HubDataSource {
   exists(): Promise<boolean>;
   create(): Promise<void>;
   drop(): Promise<void>;
+  insertIds(ids: string[]): Promise<void>;
 }

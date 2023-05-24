@@ -1,41 +1,27 @@
 /* eslint-disable max-classes-per-file */
-import { Db, Document } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
-import { MongoDataSource } from './MongoDataSource';
-import { MongoTransactionManager } from './MongoTransactionManager';
-import { TemporaryDataSource } from '../contracts/TemporaryDataSource';
-
-const TEMP_COLLECTION_MARKER = '__temp_';
-
-const getRandomSuffix = () => Math.random().toString(36).substring(2, 8);
-
-const getName = (name: string) => `${TEMP_COLLECTION_MARKER}${name}_${getRandomSuffix()}`;
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
+import { HubDataSource } from '../contracts/HubDataSource';
 
 const collectionExists = async (db: Db, name: string) => {
   const collections = await db.listCollections({ name }).toArray();
   return collections.length > 0;
 };
 
+type HubType = {
+  _id: ObjectId;
+};
+
 class TemporaryDataSourceError extends Error {}
 
-export class MongoTemporaryDataSource<DbSchema extends Document>
-  extends MongoDataSource<DbSchema>
-  implements TemporaryDataSource<DbSchema>
-{ //eslint-disable-line
-  protected collectionName = '';
+export class MongoHubsDataSource extends MongoDataSource<HubType> implements HubDataSource {
+  protected collectionName = 'temporary_hubs';
 
   protected created = false;
 
   protected dropped = false;
-
-  constructor(name: string, db: Db, transactionManager: MongoTransactionManager) {
-    super(db, transactionManager);
-    this.collectionName = getName(name);
-  }
-
-  name() {
-    return this.collectionName;
-  }
 
   shouldBeCreated() {
     if (!this.created) {
@@ -47,6 +33,11 @@ export class MongoTemporaryDataSource<DbSchema extends Document>
     if (this.dropped) {
       throw new TemporaryDataSourceError(`Collection ${this.collectionName} was already dropped`);
     }
+  }
+
+  shouldBeReady() {
+    this.shouldBeCreated();
+    this.shouldNotBeDropped();
   }
 
   async create(): Promise<void> {
@@ -63,11 +54,26 @@ export class MongoTemporaryDataSource<DbSchema extends Document>
   }
 
   async drop(): Promise<void> {
-    this.shouldBeCreated();
-    this.shouldNotBeDropped();
+    this.shouldBeReady();
     if (await this.exists()) {
       await this.db.dropCollection(this.collectionName, { session: this.getSession() });
       this.dropped = true;
+    }
+  }
+
+  async insertIds(ids: string[]): Promise<void> {
+    this.shouldBeReady();
+    const collection = this.getCollection();
+    const existing = await collection
+      .find({ _id: { $in: ids.map(id => MongoIdHandler.mapToDb(id)) } })
+      .toArray();
+    const existingIds = new Set(existing.map(d => d._id.toString()));
+    const toInsert = ids.filter(id => !existingIds.has(id.toString()));
+    if (toInsert.length > 0) {
+      await collection.insertMany(
+        ids.map(id => ({ _id: MongoIdHandler.mapToDb(id) })),
+        { session: this.getSession() }
+      );
     }
   }
 }
