@@ -113,7 +113,7 @@ const handleErrorStatus = error => {
     }
   }
 
-  return { message: errorMessage, code: error.status };
+  return errorMessage;
 };
 
 const handleError = (e, endpoint) => {
@@ -126,8 +126,8 @@ const handleError = (e, endpoint) => {
 
   doneLoading();
 
-  const errorMessage = handleErrorStatus(error);
-  return Promise.reject(errorMessage);
+  handleErrorStatus(error);
+  return Promise.reject(error);
 };
 
 const _request = (url, req, method) => {
