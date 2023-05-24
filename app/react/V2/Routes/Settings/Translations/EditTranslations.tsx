@@ -13,8 +13,6 @@ import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
-import { availableLanguages } from 'shared/languagesList';
-import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
@@ -22,6 +20,9 @@ import { ConfirmNavigationModal, TranslationsTables } from 'V2/Components/Transl
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
+import { availableLanguages } from 'shared/languagesList';
+import { Settings } from 'shared/types/settingsType';
+import { FetchResponseError } from 'shared/JSONRequest';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -193,7 +194,7 @@ const EditTranslations = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    switch (true && fetcher.state === 'idle') {
+    switch (true) {
       case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
         setNotifications({
           type: 'success',
@@ -208,11 +209,11 @@ const EditTranslations = () => {
         });
         break;
 
-      case fetcher.data instanceof Error:
+      case fetcher.data instanceof FetchResponseError:
         setNotifications({
           type: 'error',
           text: <Translate>An error occurred</Translate>,
-          details: fetcher.data.message ? fetcher.data.message : undefined,
+          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
         });
         break;
 
