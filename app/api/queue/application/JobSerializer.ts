@@ -11,11 +11,7 @@ export interface Definition<T extends Job> {
 
 export type Definitions = Record<string, Definition<any>>;
 
-export interface NamespaceFactory {
-  (job: Job): Promise<string>;
-}
-
 export interface JobSerializer {
-  serialize(job: Job, namespaceFactory?: NamespaceFactory): Promise<string>;
+  serialize(job: Job, namespace: string): Promise<string>;
   deserialize(id: string, serialized: string, definitions: Definitions): Promise<Job>;
 }

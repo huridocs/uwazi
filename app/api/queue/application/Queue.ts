@@ -1,7 +1,7 @@
 import { Job } from '../contracts/Job';
 import { JobsDispatcher } from '../contracts/JobsDispatcher';
 import { QueueAdapter } from '../contracts/QueueAdapter';
-import { JobSerializer, NamespaceFactory } from './JobSerializer';
+import { JobSerializer } from './JobSerializer';
 
 interface JobConstructor<T extends Job> {
   new (...args: any[]): T;
@@ -14,12 +14,12 @@ interface Definition<T extends Job> {
 
 interface QueueOptions {
   lockWindow?: number;
-  namespaceFactory?: NamespaceFactory;
+  namespace?: string;
 }
 
 const optionsDefaults: Required<QueueOptions> = {
   lockWindow: 1,
-  namespaceFactory: async () => Promise.resolve(''),
+  namespace: '',
 };
 
 export class Queue implements JobsDispatcher {
@@ -49,7 +49,7 @@ export class Queue implements JobsDispatcher {
   }
 
   private async serializeJob(job: Job) {
-    return this.serializer.serialize(job, this.options.namespaceFactory);
+    return this.serializer.serialize(job, this.options.namespace);
   }
 
   private async deserializeJob(id: string, serialized: string) {

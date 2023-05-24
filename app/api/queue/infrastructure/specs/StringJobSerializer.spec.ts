@@ -33,7 +33,7 @@ describe('when there are definitions for a job', () => {
 
     const instance = new TestJob({ someAttribute: 1 }, 'some text');
 
-    const serialized = await StringJobSerializer.serialize(instance);
+    const serialized = await StringJobSerializer.serialize(instance, '');
     const deserialized = await StringJobSerializer.deserialize('job id', serialized, definitions);
 
     expect(deserialized).toBeInstanceOf(TestJob);
@@ -53,11 +53,7 @@ describe('when there are definitions for a job', () => {
 
     const instance = new TestJob();
 
-    let namespace = '1';
-    const namespaceFactory = async () => namespace;
-    namespace = '2';
-
-    const serialized = await StringJobSerializer.serialize(instance, namespaceFactory);
+    const serialized = await StringJobSerializer.serialize(instance, '2');
     const deserialized = await StringJobSerializer.deserialize('job id', serialized, {
       [TestJob.name]: { constructorFn: TestJob },
     });
@@ -98,7 +94,7 @@ describe('when there are definitions for a job', () => {
       dependency2: new Dependency('second'),
     });
 
-    const serialized = await StringJobSerializer.serialize(instance);
+    const serialized = await StringJobSerializer.serialize(instance, '');
     const deserialized = await StringJobSerializer.deserialize('job id', serialized, {
       [TestJob.name]: { constructorFn: TestJob, dependenciesFactory },
     });
@@ -123,7 +119,7 @@ describe('when there are no definitions for a job', () => {
     await expect(async () => {
       await StringJobSerializer.deserialize(
         'job id',
-        await StringJobSerializer.serialize(instance),
+        await StringJobSerializer.serialize(instance, ''),
         {}
       );
     }).rejects.toEqual(new Error('Unregistered job TestJob'));

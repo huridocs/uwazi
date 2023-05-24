@@ -44,10 +44,10 @@ it('should process all the jobs', done => {
   const output: string[] = [];
   const adapter = new MemoryQueueAdapter();
   const producerQueue1 = new Queue('name', adapter, StringJobSerializer, {
-    namespaceFactory: async () => 'namespace1',
+    namespace: 'namespace1',
   });
   const producerQueue2 = new Queue('name', adapter, StringJobSerializer, {
-    namespaceFactory: async () => 'namespace1',
+    namespace: 'namespace1',
   });
   const consumerQueue = new Queue('name', adapter, StringJobSerializer);
 
@@ -113,10 +113,10 @@ it('should finish the in-progress job before stopping', done => {
   const output: string[] = [];
   const adapter = new MemoryQueueAdapter();
   const producerQueue1 = new Queue('name', adapter, StringJobSerializer, {
-    namespaceFactory: async () => 'namespace1',
+    namespace: 'namespace1',
   });
   const producerQueue2 = new Queue('name', adapter, StringJobSerializer, {
-    namespaceFactory: async () => 'namespace1',
+    namespace: 'namespace1',
   });
   const consumerQueue = new Queue('name', adapter, StringJobSerializer);
 

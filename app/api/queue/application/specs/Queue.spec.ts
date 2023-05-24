@@ -39,13 +39,12 @@ class TestJob extends Job {
 }
 
 it('should enqueue and dequeue a job, including the namespace and injecting the dependencies', async () => {
-  let namespace: string;
   const output: string[] = [];
 
   const adapter = new MemoryQueueAdapter();
   const serializer = StringJobSerializer;
   const queue = new Queue('queue name', adapter, serializer, {
-    namespaceFactory: async () => namespace,
+    namespace: 'namespace',
   });
 
   queue.register(TestJob, async ns => ({
@@ -54,7 +53,6 @@ it('should enqueue and dequeue a job, including the namespace and injecting the 
     },
   }));
 
-  namespace = 'namespace';
   await queue.dispatch(new TestJob({ pieceOfData: ['a', 'b', 'c'] }, 2));
 
   const job = await queue.peek();

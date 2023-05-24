@@ -66,7 +66,7 @@ const createUpdateStrategy = async (
           return resolve(
             new QueuedRelationshipPropertyUpdateStrategy(
               new Queue('uwazi_jobs', RSMQ, StringJobSerializer, {
-                namespaceFactory: async () => tenants.current().name,
+                namespace: tenants.current().name,
               })
             )
           );
