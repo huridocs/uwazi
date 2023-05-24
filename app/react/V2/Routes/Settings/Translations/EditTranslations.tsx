@@ -193,7 +193,7 @@ const EditTranslations = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    switch (true) {
+    switch (true && fetcher.state === 'idle') {
       case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
         setNotifications({
           type: 'success',
