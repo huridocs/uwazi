@@ -52,7 +52,7 @@ describe('translations v2 support', () => {
     });
 
   describe('save', () => {
-    it('should do nothing when the feature flag is off', async () => {
+    it('should do nothing when the feature flag is off (Temporary test)', async () => {
       testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
       await createTranslation();
 
@@ -88,8 +88,8 @@ describe('translations v2 support', () => {
       ]);
     });
 
-    describe('when updating (the translation object has an _id)', () => {
-      it('should do nothing when the feature flag is off', async () => {
+    describe('when updating (the translation already exists on db)', () => {
+      it('should not save anything on the new collection', async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
 
         const savedTranslations = await createTranslation();
@@ -134,7 +134,7 @@ describe('translations v2 support', () => {
   });
 
   describe('addLanguage', () => {
-    it('should do nothing when the feature flag is off', async () => {
+    it('should not create new ones on the new collection', async () => {
       testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
       await createTranslation();
       await translations.addLanguage('ca');
