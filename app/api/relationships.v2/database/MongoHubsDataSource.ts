@@ -1,17 +1,14 @@
 /* eslint-disable max-classes-per-file */
-import { Db, ObjectId } from 'mongodb';
+import { Db } from 'mongodb';
 
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
-import { HubDataSource } from '../contracts/HubDataSource';
+import { HubDataSource, HubType } from '../contracts/HubDataSource';
 
 const collectionExists = async (db: Db, name: string) => {
   const collections = await db.listCollections({ name }).toArray();
   return collections.length > 0;
-};
-
-type HubType = {
-  _id: ObjectId;
 };
 
 class TemporaryDataSourceError extends Error {}
@@ -75,5 +72,11 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
         { session: this.getSession() }
       );
     }
+  }
+
+  all(): MongoResultSet<HubType, string> {
+    this.shouldBeReady();
+    const cursor = this.getCollection().find({}, { session: this.getSession() });
+    return new MongoResultSet<HubType, string>(cursor, dbo => dbo._id.toString());
   }
 }

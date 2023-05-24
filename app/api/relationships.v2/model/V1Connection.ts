@@ -5,10 +5,13 @@ class V1Connection {
 
   readonly template: string;
 
-  constructor(entity: string, hub: string, template: string) {
+  readonly entityTemplate?: string;
+
+  constructor(entity: string, hub: string, template: string, entityTemplate?: string) {
     this.entity = entity;
     this.hub = hub;
     this.template = template;
+    this.entityTemplate = entityTemplate;
   }
 }
 

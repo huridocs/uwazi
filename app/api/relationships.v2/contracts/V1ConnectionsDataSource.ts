@@ -9,8 +9,13 @@ type V1ConnectionDBO = {
   template: ObjectId;
 };
 
+type V1ConnectionDBOWithEntityInfo = V1ConnectionDBO & {
+  entityTemplateId: ObjectId;
+};
+
 export interface V1ConnectionsDataSource {
   allCursor(): MongoResultSet<V1ConnectionDBO, V1Connection>;
+  getConnectedToHubs(hubIds: string[]): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1Connection>;
 }
 
-export type { V1ConnectionDBO };
+export type { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo };

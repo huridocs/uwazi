@@ -39,6 +39,18 @@ export class MigrationService {
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
+  private async transformHubs() {
+    const hubCursor = this.hubsDS.all();
+    // eslint-disable-next-line no-await-in-loop
+    while (await hubCursor.hasNext()) {
+      // eslint-disable-next-line no-await-in-loop
+      const hubIdBatch = await hubCursor.nextBatch(HUB_BATCH_SIZE);
+      // eslint-disable-next-line no-await-in-loop
+      const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
+      console.log(connections)
+    }
+  }
+
   async migrate(dryRun: boolean) {
     console.log('request got in service');
     if (dryRun) {
@@ -49,8 +61,9 @@ export class MigrationService {
 
     await this.hubsDS.create();
 
-    await this.gatherHubs(20);
+    await this.gatherHubs(5);
+    await this.transformHubs();
 
-    // await this.hubsDS.drop();
+    await this.hubsDS.drop();
   }
 }
