@@ -81,11 +81,13 @@ const handleErrorStatus = error => {
       store.dispatch(notify(t('System', error.json.error, null, false), 'warning'));
       break;
     }
+
     case 500: {
       errorMessage = extractMessageFromError(error);
       store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
       break;
     }
+
     case isNonUsualApiError(error): {
       errorMessage = error.json.prettyMessage || error.json.error;
       store.dispatch(
@@ -93,6 +95,7 @@ const handleErrorStatus = error => {
       );
       break;
     }
+
     case error instanceof TypeError: {
       errorMessage = 'Could not reach server. Please try again later.';
       store.dispatch(
@@ -103,12 +106,14 @@ const handleErrorStatus = error => {
       );
       break;
     }
+
     default: {
       errorMessage = 'An error occurred';
       store.dispatch(notify(t('System', 'An error occurred', null, false), 'danger'));
     }
   }
-  return errorMessage;
+
+  return { message: errorMessage, code: error.status };
 };
 
 const handleError = (e, endpoint) => {
@@ -122,7 +127,7 @@ const handleError = (e, endpoint) => {
   doneLoading();
 
   const errorMessage = handleErrorStatus(error);
-  return Promise.reject(new Error(errorMessage));
+  return Promise.reject(errorMessage);
 };
 
 const _request = (url, req, method) => {

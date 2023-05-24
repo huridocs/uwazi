@@ -64,7 +64,7 @@ class LoginComponent extends RouteHandler {
       await this.props.login(credentials);
       this.resolveSuccessfulLogin();
     } catch (err) {
-      if (!this.state.tokenRequired && err.status === 409) {
+      if (!this.state.tokenRequired && err.code === 409) {
         this.setState({ tokenRequired: true });
       } else {
         const { tokenRequired } = this.state;
