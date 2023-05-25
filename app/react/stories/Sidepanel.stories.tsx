@@ -11,8 +11,6 @@ const meta: Meta<typeof Sidepanel> = {
   component: Sidepanel,
 };
 
-type Story = StoryObj<typeof Sidepanel>;
-
 const SidepanelContent = () => {
   const contents: React.ReactNode[] = [];
 
@@ -39,9 +37,7 @@ const SidepanelContent = () => {
   return <>{contents.map(content => content)}</>;
 };
 
-const SidePanelContainer: React.FC<Omit<SidePanelProps, 'children'>> = (
-  args: Omit<SidePanelProps, 'children'>
-) => {
+const SidePanelContainer = (args: SidePanelProps) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
   return (
@@ -112,18 +108,29 @@ const SidePanelContainer: React.FC<Omit<SidePanelProps, 'children'>> = (
     </Provider>
   );
 };
-const Primarys: Story = {
+
+type Story = StoryObj<typeof Sidepanel>;
+
+const Primary: Story = {
   render: args => (
     <SidePanelContainer
       withOverlay={args.withOverlay}
       title={args.title}
       size={args.size}
       closeSidepanelFunction={action('closeSidePanel')}
-    />
+    >
+      {
+        // eslint-disable-next-line react/jsx-no-useless-fragment
+        <></>
+      }
+    </SidePanelContainer>
   ),
 };
 
-const Basic = { ...Primarys, args: { withOverlay: false, title: 'My sidepanel', size: 'medium' } };
+const Basic: Story = {
+  ...Primary,
+  args: { withOverlay: false, title: 'My sidepanel', size: 'medium' },
+};
 
 export { Basic };
 
