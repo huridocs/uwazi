@@ -30,11 +30,11 @@ export default {
   reindex: false,
 
   async up(db) {
-    const oldTranslations = await db.collection('translations');
     const newTranslations = await db.collection('translations_v2');
     await newTranslations.createIndex({ language: 1, key: 1, 'context.id': 1 });
+    await newTranslations.deleteMany({});
 
-    const currentTranslationsCursor = oldTranslations.find();
+    const currentTranslationsCursor = await db.collection('translations').find();
     while (await currentTranslationsCursor.hasNext()) {
       const translation = await currentTranslationsCursor.next();
       if (translation) {

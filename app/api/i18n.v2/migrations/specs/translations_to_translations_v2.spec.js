@@ -42,7 +42,8 @@ describe('migration set_up_new_relationship_collection', () => {
     });
   });
 
-  it('should migrate translations to translations_v2 as atomic entries', async () => {
+  it('should migrate translations to translations_v2 as atomic entries and be idempotent', async () => {
+    await migration.up(db);
     const translationsMigrated = await db
       .collection('translations_v2')
       .find({ 'context.id': 'System', language: 'en' })
