@@ -32,7 +32,6 @@ import { GetRelationshipService as GenericGetRelationshipService } from './GetRe
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
-import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -50,40 +49,47 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
+const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
+  async () =>
+    new Promise((resolve, reject) => {
+      const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
+      const RSMQ = new RedisSMQ({ client: redisClient });
+
+      redisClient.on('connect', () =>
+        resolve(
+          new QueuedRelationshipPropertyUpdateStrategy(
+            new Queue('uwazi_jobs', RSMQ, StringJobSerializer, {
+              namespace: tenants.current().name,
+            })
+          )
+        )
+      );
+      redisClient.on('error', e => {
+        console.log(e);
+        return reject(e);
+      });
+    });
+
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
   updater: EntityRelationshipsUpdateService
-) =>
-  new Promise<RelationshipPropertyUpdateStrategy>((resolve, reject) => {
-    const transactionManager = new MongoTransactionManager(getClient());
+) => {
+  const transactionManager = new MongoTransactionManager(getClient());
 
-    const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
-    const RSMQ = new RedisSMQ({ client: redisClient });
-
-    redisClient.on('connect', () => {
-      switch (strategyKey) {
-        case QueuedRelationshipPropertyUpdateStrategy.name:
-          return resolve(
-            new QueuedRelationshipPropertyUpdateStrategy(
-              new Queue('uwazi_jobs', RSMQ, StringJobSerializer, {
-                namespace: tenants.current().name,
-              })
-            )
-          );
-        case OnlineRelationshipPropertyUpdateStrategy.name:
-        case undefined:
-          return resolve(
-            new OnlineRelationshipPropertyUpdateStrategy(
-              indexEntitiesCallback,
-              updater,
-              transactionManager
-            )
-          );
-        default:
-          return reject(new Error(`${strategyKey} is not a valid DenormalizationStrategy`));
-      }
-    });
-  });
+  switch (strategyKey) {
+    case QueuedRelationshipPropertyUpdateStrategy.name:
+      return buildQueuedRelationshipPropertyUpdateStrategy();
+    case OnlineRelationshipPropertyUpdateStrategy.name:
+    case undefined:
+      return new OnlineRelationshipPropertyUpdateStrategy(
+        indexEntitiesCallback,
+        updater,
+        transactionManager
+      );
+    default:
+      throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
+  }
+};
 
 const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);

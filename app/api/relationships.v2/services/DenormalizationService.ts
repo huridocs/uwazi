@@ -91,18 +91,27 @@ export class DenormalizationService {
     );
   }
 
+  private async getCandidateEntitiesForTemplate(templateId: string, propertyNames: string[]) {
+    const entities = await this.entitiesDS.getIdsByTemplate(templateId).all();
+    return entities.map(entity => ({ sharedId: entity, properties: propertyNames }));
+  }
+
   private async runQueriesAndInvalidateMetadataCaches<Id>(
-    relationshipIds: Id[],
-    getCandidatesCallback: (id: Id) => Promise<
-      {
-        sharedId: string;
-        property: string;
-      }[]
+    ids: Id[],
+    findCandidatesCallback: (id: Id) => Promise<
+      (
+        | {
+            sharedId: string;
+            property: string;
+          }
+        | {
+            sharedId: string;
+            properties: string[];
+          }
+      )[]
     >
   ) {
-    const candidates = (
-      await Promise.all(relationshipIds.map(async id => getCandidatesCallback(id)))
-    ).flat();
+    const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
 
     await this.entitiesDS.markMetadataAsChanged(candidates);
 
@@ -172,6 +181,12 @@ export class DenormalizationService {
   async denormalizeAfterCreatingEntities(entityIds: string[], language: string) {
     return this.runQueriesAndInvalidateMetadataCaches(entityIds, async id =>
       this.getCandidateEntitiesForEntity(id, language)
+    );
+  }
+
+  async denormalizeAfterCreatingProperty(templateId: string, propertyNames: string[]) {
+    return this.runQueriesAndInvalidateMetadataCaches([templateId], async id =>
+      this.getCandidateEntitiesForTemplate(id, propertyNames)
     );
   }
 }

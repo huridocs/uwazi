@@ -7,6 +7,10 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { OnlineRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { CreateTemplateService } from '../CreateTemplateService';
 
 const fixturesFactory = getFixturesFactory();
@@ -49,7 +53,27 @@ function setUpService() {
     settingsDS,
     transactionManager
   );
-  return new CreateTemplateService(templatesDS, relTypeDS, entityDS);
+  const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
+  const denormalizationService = new DenormalizationService(
+    relationshipsDS,
+    entityDS,
+    templatesDS,
+    settingsDS,
+    transactionManager,
+    async () => {},
+    new OnlineRelationshipPropertyUpdateStrategy(
+      async () => {},
+      new EntityRelationshipsUpdateService(entityDS, templatesDS, relationshipsDS),
+      new MongoTransactionManager(getClient())
+    )
+  );
+  return new CreateTemplateService(
+    templatesDS,
+    relTypeDS,
+    entityDS,
+    denormalizationService,
+    transactionManager
+  );
 }
 
 describe('when validating the query', () => {

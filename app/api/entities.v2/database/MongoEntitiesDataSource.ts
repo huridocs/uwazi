@@ -83,6 +83,14 @@ export class MongoEntitiesDataSource
     return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
 
+  getIdsByTemplate(templateId: string): ResultSet<string> {
+    const cursor = this.getCollection().find(
+      { template: MongoIdHandler.mapToDb(templateId) },
+      { session: this.getSession() }
+    );
+    return new MongoResultSet(cursor, async entity => entity.sharedId);
+  }
+
   async updateDenormalizedMetadataValues(
     sharedId: string,
     language: string,

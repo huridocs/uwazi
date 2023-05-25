@@ -1,6 +1,10 @@
 import { Definition, JobSerializer } from '../application/JobSerializer';
 import { Job } from '../contracts/Job';
 
+const DEFAULT_DESCRIPTOR = {
+  enumerable: true,
+};
+
 export const StringJobSerializer: JobSerializer = {
   async serialize(job: Job, namespace: string) {
     return JSON.stringify({
@@ -23,7 +27,7 @@ export const StringJobSerializer: JobSerializer = {
       (properties, property) => ({
         ...properties,
         [property]: {
-          ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, property),
+          ...DEFAULT_DESCRIPTOR,
           value: data.data[property],
         },
       }),
@@ -37,7 +41,7 @@ export const StringJobSerializer: JobSerializer = {
           (properties, property) => ({
             ...properties,
             [property]: {
-              ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, property),
+              ...DEFAULT_DESCRIPTOR,
               value: builtDependencies[property] as any,
             },
           }),
@@ -47,11 +51,11 @@ export const StringJobSerializer: JobSerializer = {
 
     const managedFieldsDescriptors = {
       id: {
-        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'id'),
+        ...DEFAULT_DESCRIPTOR,
         value: id,
       },
       namespace: {
-        ...Object.getOwnPropertyDescriptor(definition.constructorFn.prototype, 'namespace'),
+        ...DEFAULT_DESCRIPTOR,
         value: data.namespace,
       },
     };

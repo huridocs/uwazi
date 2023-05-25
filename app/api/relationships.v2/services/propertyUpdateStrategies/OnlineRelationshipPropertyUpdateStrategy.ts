@@ -6,20 +6,12 @@ interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
 }
 
-async function delay(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
-
 export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
   private indexEntities: IndexEntitiesCallback;
 
   private updater: EntityRelationshipsUpdateService;
 
   private transactionManager: TransactionManager;
-
-  static DELAY = 20000;
 
   constructor(
     indexEntities: IndexEntitiesCallback,
@@ -32,8 +24,6 @@ export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
   }
 
   async update(candidateIds: string[]) {
-    await delay(OnlineRelationshipPropertyUpdateStrategy.DELAY);
-
     await this.transactionManager.run(async () => {
       await this.updater.update(candidateIds);
 

@@ -5,6 +5,8 @@ import { MatchQueryNode, TemplateRecordElement } from 'api/relationships.v2/mode
 import { RelationshipTypesDataSource } from 'api/relationshiptypes.v2/contracts/RelationshipTypesDataSource';
 import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
 import { createError } from 'api/utils';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
+import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
@@ -98,14 +100,22 @@ export class CreateTemplateService {
 
   private entitiesDataSource: EntitiesDataSource;
 
+  private denormalizationService: DenormalizationService;
+
+  private transactionManager: TransactionManager;
+
   constructor(
     templatesDataSource: TemplatesDataSource,
     relTypesDataSource: RelationshipTypesDataSource,
-    entitiesDataSource: EntitiesDataSource
+    entitiesDataSource: EntitiesDataSource,
+    denormalizationService: DenormalizationService,
+    transactionManager: TransactionManager
   ) {
     this.templatesDataSource = templatesDataSource;
     this.relTypesDataSource = relTypesDataSource;
     this.entitiesDataSource = entitiesDataSource;
+    this.denormalizationService = denormalizationService;
+    this.transactionManager = transactionManager;
   }
 
   private async validateQuery(query: MatchQueryNode, denormalizedProperty?: string) {
@@ -170,25 +180,29 @@ export class CreateTemplateService {
     _oldTemplate: TemplateInput,
     _newTemplate: TemplateInput
   ) {
-    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
-    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
+    await this.transactionManager.run(async () => {
+      const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
+      const newTemplate = TemplateInputMappers.toApp(_newTemplate);
 
-    const newRelationshipNames = oldTemplate
-      .selectNewProperties(newTemplate)
-      .filter(p => p instanceof RelationshipProperty)
-      .map(p => p.name);
-    const updatedProperties = oldTemplate
-      .selectUpdatedProperties(newTemplate)
-      .filter(info => info.oldProperty.type === propertyTypes.newRelationship);
+      const newRelationshipNames = oldTemplate
+        .selectNewProperties(newTemplate)
+        .filter(p => p instanceof RelationshipProperty)
+        .map(p => p.name);
+      const updatedProperties = oldTemplate
+        .selectUpdatedProperties(newTemplate)
+        .filter(info => info.oldProperty.type === propertyTypes.newRelationship);
 
-    const updatesQuery = updatedProperties
-      .filter(info => info.updatedAttributes.includes('query'))
-      .map(info => info.newProperty.name);
+      const updatesQuery = updatedProperties
+        .filter(info => info.updatedAttributes.includes('query'))
+        .map(info => info.newProperty.name);
 
-    await this.markEntityMetadataAsObsolete(
-      newTemplate.id,
-      Array.from(new Set([...newRelationshipNames, ...updatesQuery]))
-    );
+      const uniquePropertyNames = Array.from(new Set([...newRelationshipNames, ...updatesQuery]));
+
+      await this.denormalizationService.denormalizeAfterCreatingProperty(
+        newTemplate.id,
+        uniquePropertyNames
+      );
+    });
   }
 
   async templateIsUsedInQueries(templateId: string) {

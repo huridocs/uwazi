@@ -50,6 +50,7 @@ export class QueueWorker {
   }
 
   private async processJob(job: Job) {
+    console.log('Processing', job);
     switch (job.deliveryGuarantee) {
       case DeliveryGuarantee.AtLeastOnce:
       default:
