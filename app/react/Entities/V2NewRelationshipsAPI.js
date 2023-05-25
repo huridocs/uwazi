@@ -17,4 +17,8 @@ export default {
   migrate(requestParams = new RequestParams()) {
     return api.post('v2/relationships/migrate', requestParams).then(response => response.json);
   },
+
+  testOneHub(requestParams = new RequestParams()) {
+    return api.post('v2/relationships/test_one_hub', requestParams).then(response => response.json);
+  },
 };

@@ -3,7 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
-import { sendMigrationRequest as _sendMigrationRequest } from 'app/Entities/actions/V2NewRelationshipsActions';
+import {
+  sendMigrationRequest as _sendMigrationRequest,
+  testOneHub as _testOneHub,
+} from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex as _objectIndex } from 'shared/data_utils/objectIndex';
 
@@ -18,6 +21,16 @@ type MigrationSummaryType = {
   used: number;
   time: number;
   dryRun: boolean;
+};
+
+type hubTestResult = {
+  total: number;
+  used: number;
+  transformed: {
+    from: { entity: string };
+    to: { entity: string };
+    type: string;
+  }[];
 };
 
 const objectIndex = _.memoize(_objectIndex);
@@ -60,6 +73,10 @@ const formatTime = (time: number) => {
 class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   private migrationSummary?: MigrationSummaryType;
 
+  private testedHub?: string;
+
+  private hubTestResult?: hubTestResult;
+
   async performDryRun() {
     const summary = await _sendMigrationRequest(true);
     this.migrationSummary = summary;
@@ -69,6 +86,16 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   async performMigration() {
     const summary = await _sendMigrationRequest();
     this.migrationSummary = summary;
+    this.forceUpdate();
+  }
+
+  async storeTestedHub(event: React.ChangeEvent<HTMLInputElement>) {
+    this.testedHub = event.target.value;
+  }
+
+  async testOneHub() {
+    const testresult = await _testOneHub(this.testedHub);
+    this.hubTestResult = testresult;
     this.forceUpdate();
   }
 
@@ -116,8 +143,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               </div>
             )}
             <br />
-            <div>Relationships infered from v1 relationship properties</div>
-            <br />
+            <div>Relationships infered from v1 relationship properties:</div>
             {inferedRelationships.map(p => (
               <div key={`${p.template}_${p.relationType}_${p.content}`}>
                 {p.template}&emsp;
@@ -129,6 +155,32 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 {p.content}
               </div>
             ))}
+            <br />
+            <br />
+            <button type="button" onClick={this.testOneHub.bind(this)}>
+              Test One Hub
+            </button>
+            <input type="text" onChange={this.storeTestedHub.bind(this)} />
+            {this.hubTestResult && (
+              <div>
+                <div>Test Result:</div>
+                <div>Total: {this.hubTestResult.total}</div>
+                <div>Used: {this.hubTestResult.used}</div>
+                <div>Unused: {this.hubTestResult.total - this.hubTestResult.used}</div>
+                <div>Transformed:</div>
+                {this.hubTestResult.transformed.map(t => (
+                  <div key={`${t.from.entity}_${t.to.entity}_${t.type}`}>
+                    {t.from.entity}&emsp;
+                    <Icon icon="arrow-right" />
+                    &emsp;
+                    {t.type}&emsp;
+                    <Icon icon="arrow-right" />
+                    &emsp;
+                    {t.to.entity}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

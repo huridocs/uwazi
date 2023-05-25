@@ -1,4 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
@@ -6,6 +7,7 @@ import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/object
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
 import { V1Connection } from '../model/V1Connection';
+import { EntityPointer, Relationship } from '../model/Relationship';
 
 const HUB_BATCH_SIZE = 1000;
 
@@ -45,10 +47,19 @@ class RelationshipMatcher {
         ))
     );
   }
+
+  static transform(first: V1Connection, second: V1Connection, newId: string) {
+    const sourcePointer = new EntityPointer(first.entity);
+    const targetPointer = new EntityPointer(second.entity);
+    const relationshipType = second.template;
+    return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
+  }
 }
 
 export class MigrationService {
   private transactionManager: MongoTransactionManager;
+
+  private idGenerator: IdGenerator;
 
   private hubsDS: HubDataSource;
 
@@ -58,11 +69,13 @@ export class MigrationService {
 
   constructor(
     transactionManager: MongoTransactionManager,
+    idGenerator: IdGenerator,
     hubsDS: HubDataSource,
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource
   ) {
     this.transactionManager = transactionManager;
+    this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
@@ -97,16 +110,20 @@ export class MigrationService {
   private async transformHub(connections: V1Connection[], matcher: RelationshipMatcher) {
     const total = connections.length;
     const usedConnections: Record<string, V1Connection> = {};
+    const transformed: Relationship[] = [];
     connections.forEach(first => {
       connections.forEach(second => {
         if (first.id !== second.id && matcher.matches(first, second)) {
           usedConnections[first.id] = first;
           usedConnections[second.id] = second;
+          transformed.push(
+            RelationshipMatcher.transform(first, second, this.idGenerator.generate())
+          );
         }
       });
     });
     const used = Object.keys(usedConnections).length;
-    return { total, used };
+    return { total, used, transformed };
   }
 
   // eslint-disable-next-line max-statements
@@ -137,6 +154,15 @@ export class MigrationService {
       }
     }
     return { total, used };
+  }
+
+  async testOneHub(hubId: string) {
+    const matcher = await this.readV1RelationshipFields();
+
+    const connected = await this.v1ConnectionsDS.getConnectedToHubs([hubId]).all();
+    const { total, used, transformed } = await this.transformHub(connected, matcher);
+
+    return { total, used, transformed };
   }
 
   async migrate(dryRun: boolean) {

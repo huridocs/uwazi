@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks';
+
 import { Application, NextFunction, Request, Response } from 'express';
 
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -14,7 +16,6 @@ import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
 import { validateMigration } from './validators/migration';
-import { performance } from 'perf_hooks';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -57,5 +58,11 @@ export default (app: Application) => {
     const timeEnd = performance.now();
     const time = timeEnd - timeStart;
     res.json({ total, used, time, dryRun });
+  });
+
+  app.post('/api/v2/relationships/test_one_hub', featureRequired, async (req, res) => {
+    const { hubId } = req.body;
+    const { total, used, transformed } = await MigrationService().testOneHub(hubId);
+    res.json({ total, used, transformed });
   });
 };

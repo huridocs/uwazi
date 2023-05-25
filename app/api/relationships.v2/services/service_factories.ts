@@ -27,6 +27,7 @@ import { DeleteRelationshipService as GenericDeleteRelationshipService } from '.
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { MigrationService as GenericMigrationService } from './MigrationService';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -126,6 +127,7 @@ const MigrationService = () => {
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const service = new GenericMigrationService(
     transactionManager,
+    MongoIdHandler,
     hubDS,
     v1ConnectionsDS,
     templatesDS
