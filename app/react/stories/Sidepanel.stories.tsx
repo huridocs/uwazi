@@ -113,19 +113,17 @@ type Story = StoryObj<typeof Sidepanel>;
 
 const Primary: Story = {
   render: args => (
-    <div className="tw-content">
-      <SidePanelContainer
-        withOverlay={args.withOverlay}
-        title={args.title}
-        size={args.size}
-        closeSidepanelFunction={action('closeSidePanel')}
-      >
-        {
-          // eslint-disable-next-line react/jsx-no-useless-fragment
-          <></>
-        }
-      </SidePanelContainer>
-    </div>
+    <SidePanelContainer
+      withOverlay={args.withOverlay}
+      title={args.title}
+      size={args.size}
+      closeSidepanelFunction={action('closeSidePanel')}
+    >
+      {
+        // eslint-disable-next-line react/jsx-no-useless-fragment
+        <></>
+      }
+    </SidePanelContainer>
   ),
 };
 
