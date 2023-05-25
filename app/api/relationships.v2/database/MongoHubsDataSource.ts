@@ -68,7 +68,6 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
     const existing = await collection
       .find({ _id: { $in: ids.map(id => MongoIdHandler.mapToDb(id)) } })
       .toArray();
-    console.log('existing', existing);
     const existingIds = new Set(existing.map(d => d._id.toString()));
     const toInsert = ids.filter(id => !existingIds.has(id));
     if (toInsert.length > 0) {

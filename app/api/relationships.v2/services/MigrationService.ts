@@ -148,8 +148,6 @@ export class MigrationService {
 
     await this.hubsDS.drop();
 
-    console.log(total, used);
-
     return { total, used };
   }
 }

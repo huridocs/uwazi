@@ -14,6 +14,7 @@ import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
 import { validateMigration } from './validators/migration';
+import { performance } from 'perf_hooks';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -49,9 +50,12 @@ export default (app: Application) => {
   });
 
   app.post('/api/v2/relationships/migrate', featureRequired, async (req, res) => {
+    const timeStart = performance.now();
     const { dryRun } = validateMigration(req.body);
     const service = MigrationService();
-    await service.migrate(dryRun);
-    res.json();
+    const { total, used } = await service.migrate(dryRun);
+    const timeEnd = performance.now();
+    const time = timeEnd - timeStart;
+    res.json({ total, used, time, dryRun });
   });
 };

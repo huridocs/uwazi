@@ -13,6 +13,13 @@ type RelationshipType = {
   content?: string;
 };
 
+type MigrationSummaryType = {
+  total: number;
+  used: number;
+  time: number;
+  dryRun: boolean;
+};
+
 const objectIndex = _.memoize(_objectIndex);
 
 const inferFromV1 = (
@@ -42,15 +49,29 @@ const inferFromV1 = (
   return sorted;
 };
 
-const performDryRun = () => {
-  _sendMigrationRequest(true);
-};
-
-const performMigration = () => {
-  _sendMigrationRequest();
+const formatTime = (time: number) => {
+  const floored = Math.floor(time);
+  if (floored < 1000) {
+    return `${floored}ms`;
+  }
+  return `${(floored / 1000).toFixed(2)}s`;
 };
 
 class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
+  private migrationSummary?: MigrationSummaryType;
+
+  async performDryRun() {
+    const summary = await _sendMigrationRequest(true);
+    this.migrationSummary = summary;
+    this.forceUpdate();
+  }
+
+  async performMigration() {
+    const summary = await _sendMigrationRequest();
+    this.migrationSummary = summary;
+    this.forceUpdate();
+  }
+
   render() {
     const templatesById = objectIndex(
       this.props.templates,
@@ -75,14 +96,25 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             <span>Migration Dashboard</span>
           </div>
           <div className="panel-body">
-            <button type="button" className="btn" onClick={performDryRun}>
+            <button type="button" className="btn" onClick={this.performDryRun.bind(this)}>
               Dry Run
             </button>
             &emsp;
-            <button type="button" className="btn" onClick={performMigration}>
+            <button type="button" className="btn" onClick={this.performMigration.bind(this)}>
               Migrate
             </button>
             <br />
+            <br />
+            {this.migrationSummary && (
+              <div>
+                <br />
+                <div>Migration Summary{this.migrationSummary.dryRun ? ' (Dry Run)' : ''}:</div>
+                <div>Time: {formatTime(this.migrationSummary.time)}</div>
+                <div>Total: {this.migrationSummary.total}</div>
+                <div>Used: {this.migrationSummary.used}</div>
+                <div>Unused: {this.migrationSummary.total - this.migrationSummary.used}</div>
+              </div>
+            )}
             <br />
             <div>Relationships infered from v1 relationship properties</div>
             <br />
