@@ -25,10 +25,14 @@ const get = async (
 };
 
 const post = async (updatedTranslations: ClientTranslationSchema[], contextId: string) => {
-  const translations = await Promise.all(
-    updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
-  );
-  return filterTranslationsByContext(translations, contextId);
+  try {
+    const translations = await Promise.all(
+      updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
+    );
+    return filterTranslationsByContext(translations, contextId);
+  } catch (e) {
+    return e;
+  }
 };
 
 const importTranslations = async (
@@ -36,18 +40,22 @@ const importTranslations = async (
   contextId: string
 ): Promise<ClientTranslationSchema[]> => {
   loadingBar.start();
-  const translations = (await httpRequest(
-    'translations/import',
-    { context: contextId },
-    {
-      Accept: 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-    },
-    file
-  )) as ClientTranslationSchema[];
-  loadingBar.done();
-
-  return filterTranslationsByContext(translations, contextId);
+  try {
+    const translations = (await httpRequest(
+      'translations/import',
+      { context: contextId },
+      {
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      file
+    )) as ClientTranslationSchema[];
+    return filterTranslationsByContext(translations, contextId);
+  } catch (e) {
+    return e;
+  } finally {
+    loadingBar.done();
+  }
 };
 
 const { getLanguages } = I18NApi;

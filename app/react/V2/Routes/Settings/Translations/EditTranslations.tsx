@@ -1,18 +1,18 @@
 /* eslint-disable max-lines */
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Params,
   useLoaderData,
   LoaderFunction,
   unstable_useBlocker as useBlocker,
   Link,
+  ActionFunction,
+  useFetcher,
 } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
-import { availableLanguages } from 'shared/languagesList';
-import { Settings } from 'shared/types/settingsType';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
@@ -21,6 +21,9 @@ import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
 import { SettingsFooter } from 'app/V2/Components/Settings/SettingsFooter';
+import { availableLanguages } from 'shared/languagesList';
+import { Settings } from 'shared/types/settingsType';
+import { FetchResponseError } from 'shared/JSONRequest';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -30,14 +33,34 @@ const editTranslationsLoader =
     return { translations, settings };
   };
 
-type formDataType = {
+const editTranslationsAction =
+  (): ActionFunction =>
+  async ({ params, request }) => {
+    const formData = await request.formData();
+    const formIntent = formData.get('intent') as 'form-submit' | 'file-upload';
+    const { context } = params;
+
+    if (formIntent === 'form-submit' && context) {
+      const formValues = formData.get('data') as string;
+      return translationsAPI.post(JSON.parse(formValues), context);
+    }
+
+    if (formIntent === 'file-upload') {
+      const file = formData.get('data') as File;
+      return translationsAPI.importTranslations(file, 'System');
+    }
+
+    return null;
+  };
+
+type formValuesType = {
   _id?: string;
   locale?: string;
   values: { [index: number]: { [key: string]: string } };
 }[];
 
 const prepareValuesToSave = (
-  data: formDataType,
+  data: formValuesType,
   currentTranslations: ClientTranslationSchema[]
 ): ClientTranslationSchema[] =>
   data.map((language, index) => {
@@ -54,8 +77,8 @@ const prepareValuesToSave = (
     };
   });
 
-const composeTableValues = (formData: formDataType, termIndex: number) =>
-  formData.map((language, languageIndex) => {
+const composeTableValues = (formValues: formValuesType, termIndex: number) =>
+  formValues.map((language, languageIndex) => {
     const languaLabel = availableLanguages.find(
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
@@ -63,9 +86,9 @@ const composeTableValues = (formData: formDataType, termIndex: number) =>
       language: languaLabel,
       translationStatus: {
         languageKey: language.locale,
-        status: formData[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
+        status: formValues[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
       },
-      fieldKey: `formData.${languageIndex}.values.${termIndex}.value`,
+      fieldKey: `formValues.${languageIndex}.values.${termIndex}.value`,
     };
   });
 
@@ -122,10 +145,10 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
 const filterTableValues = (values: any[]) =>
   values.filter(value => value.translationStatus.status !== 'translated');
 
-const calculateTableData = (terms: string[], formData: formDataType, hideTranslated: boolean) =>
+const calculateTableData = (terms: string[], formValues: formValuesType, hideTranslated: boolean) =>
   terms
     .map((term, index) => {
-      let values = composeTableValues(formData, index);
+      let values = composeTableValues(formValues, index);
       if (hideTranslated) values = filterTableValues(values);
       if (values.length === 1 && hideTranslated) return undefined;
       return { [term]: values };
@@ -139,15 +162,16 @@ const EditTranslations = () => {
     settings: Settings;
   };
 
-  const [translationsState, setTranslationsState] = useState(translations);
   const [hideTranslated, setHideTranslated] = useState(false);
+  const fetcher = useFetcher();
   const setNotifications = useSetRecoilState(notificationAtom);
   const [showModal, setShowModal] = useState(false);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
-  const { contextTerms, contextLabel, contextId } = getContextInfo(translationsState);
+  const isSubmitting = fetcher.state === 'submitting';
+  const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
-  const formData = prepareFormValues(translationsState, defaultLanguage?.key || 'en');
+  const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -156,13 +180,13 @@ const EditTranslations = () => {
     getFieldState,
     reset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    formState: { isDirty, errors, isSubmitting },
+    formState: { isDirty, errors, isSubmitting: formIsSubmitting },
   } = useForm({
-    defaultValues: { formData },
+    defaultValues: { formValues },
     mode: 'onSubmit',
   });
 
-  const blocker = useBlocker(isDirty);
+  const blocker = useBlocker(isDirty && !formIsSubmitting);
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -170,46 +194,55 @@ const EditTranslations = () => {
     }
   }, [blocker, setShowModal]);
 
-  const tablesData = calculateTableData(contextTerms, formData, hideTranslated);
-
-  const submitFunction = async (data: { formData: formDataType }) => {
-    const values = prepareValuesToSave(data.formData, translations);
-    if (values && contextId) {
-      try {
-        const response = await translationsAPI.post(values, contextId);
-        setTranslationsState(response);
+  useEffect(() => {
+    switch (true) {
+      case fetcher.formData?.get('intent') === 'form-submit' && Array.isArray(fetcher.data):
         setNotifications({
           type: 'success',
           text: <Translate>Translations saved</Translate>,
         });
-        reset({}, { keepValues: true });
-      } catch (e) {
-        setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
-        });
-      }
-    }
-  };
+        break;
 
-  const onFileImported = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      try {
-        const response = await translationsAPI.importTranslations(file, 'System');
-        setTranslationsState(response);
+      case fetcher.formData?.get('intent') === 'file-upload' && Array.isArray(fetcher.data):
         setNotifications({
           type: 'success',
           text: <Translate>Translations imported.</Translate>,
         });
-      } catch (e) {
+        break;
+
+      case fetcher.data instanceof FetchResponseError:
         setNotifications({
           type: 'error',
           text: <Translate>An error occurred</Translate>,
-          details: e.json.error,
+          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
         });
-      }
+        break;
+
+      default:
+        break;
+    }
+  }, [fetcher.data, fetcher.formData, setNotifications]);
+
+  const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
+
+  const formSubmit = async (data: { formValues: formValuesType }) => {
+    const formData = new FormData();
+    const values = prepareValuesToSave(data.formValues, translations);
+    formData.set('intent', 'form-submit');
+    formData.set('data', JSON.stringify(values));
+    fetcher.submit(formData, { method: 'post' });
+    reset({}, { keepValues: true });
+  };
+
+  const importFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.set('intent', 'file-upload');
+      formData.set('data', file);
+      fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
+      reset({}, { keepValues: true });
     }
   };
 
@@ -242,7 +275,7 @@ const EditTranslations = () => {
           </div>
           <div className="flex-grow">
             {tablesData.length ? (
-              <form onSubmit={handleSubmit(submitFunction)} id="edit-translations">
+              <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
                 <TranslationsTables
                   tablesData={tablesData}
                   submitting={isSubmitting}
@@ -281,7 +314,7 @@ const EditTranslations = () => {
                     type="file"
                     accept="text/csv"
                     className="hidden"
-                    onChange={onFileImported}
+                    onChange={importFile}
                   />
                 </>
               )}
@@ -310,4 +343,4 @@ const EditTranslations = () => {
   );
 };
 
-export { EditTranslations, editTranslationsLoader };
+export { EditTranslations, editTranslationsLoader, editTranslationsAction };
