@@ -39,6 +39,11 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
 
   async create(): Promise<void> {
     this.shouldNotBeDropped();
+    // TODO: don't forget to remove this after testing
+    if (await this.exists()) {
+      await this.db.dropCollection(this.collectionName, { session: this.getSession() });
+    }
+    //------------------
     if (!this.created) {
       await this.db.createCollection(this.collectionName, { session: this.getSession() });
       this.created = true;
@@ -46,7 +51,6 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
   }
 
   async exists(): Promise<boolean> {
-    this.shouldBeCreated();
     return collectionExists(this.db, this.collectionName);
   }
 
@@ -64,11 +68,12 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
     const existing = await collection
       .find({ _id: { $in: ids.map(id => MongoIdHandler.mapToDb(id)) } })
       .toArray();
+    console.log('existing', existing);
     const existingIds = new Set(existing.map(d => d._id.toString()));
-    const toInsert = ids.filter(id => !existingIds.has(id.toString()));
+    const toInsert = ids.filter(id => !existingIds.has(id));
     if (toInsert.length > 0) {
       await collection.insertMany(
-        ids.map(id => ({ _id: MongoIdHandler.mapToDb(id) })),
+        toInsert.map(id => ({ _id: MongoIdHandler.mapToDb(id) })),
         { session: this.getSession() }
       );
     }

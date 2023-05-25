@@ -9,10 +9,11 @@ import {
 import { V1Connection } from '../model/V1Connection';
 
 const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
-  new V1Connection(dbo.entity, dbo.hub.toString(), dbo.template.toString());
+  new V1Connection(dbo._id.toString(), dbo.entity, dbo.hub.toString(), dbo.template.toString());
 
 const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1Connection =>
   new V1Connection(
+    dbo._id.toString(),
     dbo.entity,
     dbo.hub.toString(),
     dbo.template.toString(),

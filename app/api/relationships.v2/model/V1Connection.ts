@@ -1,4 +1,6 @@
 class V1Connection {
+  readonly id: string;
+
   readonly entity: string;
 
   readonly hub: string;
@@ -7,7 +9,8 @@ class V1Connection {
 
   readonly entityTemplate?: string;
 
-  constructor(entity: string, hub: string, template: string, entityTemplate?: string) {
+  constructor(id: string, entity: string, hub: string, template: string, entityTemplate?: string) {
+    this.id = id;
     this.entity = entity;
     this.hub = hub;
     this.template = template;

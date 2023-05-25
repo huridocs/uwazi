@@ -123,7 +123,13 @@ const MigrationService = () => {
   const transactionManager = DefaultTransactionManager();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
-  const service = new GenericMigrationService(transactionManager, hubDS, v1ConnectionsDS);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const service = new GenericMigrationService(
+    transactionManager,
+    hubDS,
+    v1ConnectionsDS,
+    templatesDS
+  );
   return service;
 };
 
