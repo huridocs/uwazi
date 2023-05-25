@@ -343,7 +343,7 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "v7.31.10",
+    "eslint-plugin-react": "v7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.12",
     "fetch-mock": "^9.11.0",
