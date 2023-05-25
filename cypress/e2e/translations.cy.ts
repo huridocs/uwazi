@@ -30,17 +30,23 @@ describe('Translations', () => {
       cy.contains('[data-testid=content] button', 'Translate').click();
     });
 
+    const checkEditResults = () => {
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
+      cy.contains('.bg-gray-100', 'ES');
+      cy.contains('caption', 'Fecha');
+      cy.contains('caption', 'Informe de admisibilidad');
+      cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
+    };
+
     it('Should edit a translation', () => {
-      cy.get('form').should('be.visible');
       cy.get('input[type=text]').should('be.visible');
-      cy.get('[data-testid=settings-translations-edit]').toMatchImageSnapshot();
+      cy.contains('caption', 'Fecha');
       cy.get('input[type=text]').eq(0).siblings('button').click();
       cy.get('input[type=text]').eq(0).type('Date');
       cy.get('input[type=text]').eq(2).siblings('button').click();
       cy.get('input[type=text]').eq(2).type('تاريخ');
       cy.contains('button', 'Save').click();
-      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
-      cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
+      checkEditResults();
     });
 
     it('should disable the form and buttons, and emit a notification when saving', () => {
@@ -48,6 +54,7 @@ describe('Translations', () => {
       cy.contains('button', 'Save').should('be.disabled');
       cy.contains('button', 'Cancel').should('be.disabled');
       cy.get('input[type=text]').should('be.disabled');
+      cy.contains('[data-testid="notifications-container"]', 'Translations saved');
     });
 
     it('Should filter translations that have no untranslated terms', () => {
@@ -56,6 +63,16 @@ describe('Translations', () => {
       cy.contains('label', 'Untranslated Terms').click();
       cy.contains('caption', 'Informe de admisibilidad');
       cy.get('input[type=text]').eq(0).should('have.value', 'Informe de admisibilidad');
+    });
+
+    it('should notify the user if there is an error', () => {
+      cy.intercept('POST', 'api/translations', {
+        statusCode: 400,
+      }).as('api/translations');
+      cy.contains('button', 'Save').click();
+      cy.wait('@api/translations').then(() => {
+        cy.contains('[data-testid="notifications-container"]', 'An error occurred');
+      });
     });
 
     describe('discard changes', () => {
