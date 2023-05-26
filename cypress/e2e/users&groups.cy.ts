@@ -1,6 +1,14 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from './helpers';
 
+const namesShouldMatch = (names: string[]) => {
+  cy.get('table tbody tr').each((row, index) => {
+    cy.wrap(row).within(() => {
+      cy.get('td').eq(1).should('contain.text', names[index]);
+    });
+  });
+};
+
 describe('Users and groups', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -14,11 +22,7 @@ describe('Users and groups', () => {
   describe('Users', () => {
     it('should be sorted by name by default', () => {
       const titles = ['admin', 'colla', 'editor'];
-      cy.get('table tbody tr').each((row, index) => {
-        cy.wrap(row).within(() => {
-          cy.get('td').eq(1).should('contain.text', titles[index]);
-        });
-      });
+      namesShouldMatch(titles);
     });
     it('create user', () => {
       cy.contains('button', 'Add user').click();
@@ -36,11 +40,7 @@ describe('Users and groups', () => {
         });
         cy.contains('button', 'Save').click();
         cy.get('[data-testid="Close sidepanel"]').click();
-
-        // ---remove below after implementing form submission ----
-        cy.get('[role="dialog"] button').click();
-
-        // ----- use below after implementing ------
+        // ----- use below after implementing form submission ------
         // const titles = ['admin', 'colla', 'editor', 'User 1'];
         // cy.get('table tbody tr').each((row, index) => {
         //   cy.wrap(row).within(() => {
@@ -48,6 +48,8 @@ describe('Users and groups', () => {
         //   });
         // });
       });
+      // ---remove below after implementing form submission ----
+      cy.contains('[role="dialog"] button', 'Discard changes').click();
     });
     it('edit user', () => {
       cy.get('table tbody tr')
@@ -61,18 +63,38 @@ describe('Users and groups', () => {
         cy.get('#username').type(' edited');
         cy.contains('button', 'Save').click();
         cy.get('[data-testid="Close sidepanel"]').click();
-
-        const titles = ['admin', 'colla', 'editor', 'User 1'];
-        cy.get('table tbody tr').each((row, index) => {
-          cy.wrap(row).within(() => {
-            cy.get('td').eq(1).should('contain.text', titles[index]);
-          });
-        });
       });
+      // ----- remove below after implementing form submission ------
+      cy.contains('[role="dialog"] button', 'Discard changes').click();
+
+      // ----- the lines below should be edited after implementing form submission -----
+      const titles = ['admin', 'colla', 'editor', 'User 1'];
+      namesShouldMatch(titles);
     });
-    it('delete user');
-    it('reset password');
-    it('disable 2fa');
+    it('delete user', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Delete').click();
+    });
+    it('reset password', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset password').click();
+    });
+    it('disable 2fa', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset 2FA').click();
+    });
     it('check for unique name and email');
 
     describe('bulk actions', () => {
@@ -83,8 +105,35 @@ describe('Users and groups', () => {
   });
 
   describe('Groups', () => {
-    it('should be sorted by name by default');
-    it('create group');
+    before(() => {
+      cy.contains('[data-testid="tabs-comp"] button', 'Groups').click();
+    });
+    it('should be sorted by name by default', () => {
+      const groups = ['Activistas', 'Asesores legales'];
+      namesShouldMatch(groups);
+    });
+    it('create group', () => {
+      cy.contains('button', 'Add group').click();
+      cy.get('aside').within(() => {
+        cy.get('#name').type('Group 1');
+        cy.get('[data-testid="multiselect-comp"]').within(() => {
+          cy.get('button').click();
+          cy.get('ul li')
+            .eq(0)
+            .within(() => {
+              cy.get('input').eq(0).click();
+            });
+        });
+        cy.contains('button', 'Save').click();
+        cy.get('[data-testid="Close sidepanel"]').click();
+      });
+      // ----- remove below after implementing form submission ------
+      cy.contains('[role="dialog"] button', 'Discard changes').click();
+
+      // ----- the lines below should be edited after implementing form submission -----
+      const titles = ['admin', 'colla', 'editor', 'User 1'];
+      namesShouldMatch([]);
+    });
     it('edit group');
     it('delete group');
     it('check for unique name');
