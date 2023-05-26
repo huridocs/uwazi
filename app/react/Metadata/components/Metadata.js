@@ -194,8 +194,8 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
         key={`${prop.name}_${index}`}
       >
         <dt className={prop.noLabel ? 'hidden' : ''}>
-          {t(prop.translateContext || 'System', prop.label)}{' '}
-          {prop.obsolete ? <Icon icon="spinner" spin /> : null}
+          {t(prop.translateContext || 'System', prop.label)}
+          {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
           {showByType(prop, compact, templateId)}
