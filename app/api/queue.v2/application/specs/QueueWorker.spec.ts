@@ -1,8 +1,8 @@
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { Job } from 'api/queue/contracts/Job';
-import { MemoryQueueAdapter } from 'api/queue/infrastructure/MemoryQueueAdapter';
-import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
+import { Job } from 'api/queue.v2/contracts/Job';
+import { MemoryQueueAdapter } from 'api/queue.v2/infrastructure/MemoryQueueAdapter';
+import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
 

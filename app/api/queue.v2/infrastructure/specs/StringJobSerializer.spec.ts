@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-import { Definitions } from 'api/queue/application/JobSerializer';
-import { Job } from 'api/queue/contracts/Job';
+import { Definitions } from 'api/queue.v2/application/JobSerializer';
+import { Job } from 'api/queue.v2/contracts/Job';
 import { StringJobSerializer } from '../StringJobSerializer';
 
 describe('when there are definitions for a job', () => {

@@ -18,11 +18,11 @@ import { UserRole } from 'shared/types/userSchema';
 
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { Queue } from 'api/queue/application/Queue';
+import { Queue } from 'api/queue.v2/application/Queue';
 import RedisSMQ from 'rsmq';
 import Redis from 'redis';
 import { config } from 'api/config';
-import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
+import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { tenants } from 'api/tenants';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 

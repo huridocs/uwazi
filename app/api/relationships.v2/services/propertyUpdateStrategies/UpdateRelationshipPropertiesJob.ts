@@ -1,6 +1,6 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { Job } from 'api/queue/contracts/Job';
+import { Job } from 'api/queue.v2/contracts/Job';
 
 interface IndexEntitiesCallback {
   (sharedId: string): Promise<void>;

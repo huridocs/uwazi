@@ -1,6 +1,6 @@
-import { Queue } from 'api/queue/application/Queue';
-import { MemoryQueueAdapter } from 'api/queue/infrastructure/MemoryQueueAdapter';
-import { StringJobSerializer } from 'api/queue/infrastructure/StringJobSerializer';
+import { Queue } from 'api/queue.v2/application/Queue';
+import { MemoryQueueAdapter } from 'api/queue.v2/infrastructure/MemoryQueueAdapter';
+import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 

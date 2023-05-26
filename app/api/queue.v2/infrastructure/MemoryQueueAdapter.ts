@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import { QueueAdapter } from 'api/queue/contracts/QueueAdapter';
+import { QueueAdapter } from 'api/queue.v2/contracts/QueueAdapter';
 
 interface Queue {
   vt0: number;
