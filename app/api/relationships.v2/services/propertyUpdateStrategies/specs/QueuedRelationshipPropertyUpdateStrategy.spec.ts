@@ -12,16 +12,17 @@ it('should enqueue a job per entity', async () => {
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.update(['sharedId1', 'sharedId2']);
+  const enqueued1 = await queue.peek();
+  const enqueued2 = await queue.peek();
+  const enqueued3 = await queue.peek();
 
-  const enqueued = [await queue.peek(), await queue.peek(), await queue.peek()];
-
-  expect(enqueued[0]).toBeInstanceOf(UpdateRelationshipPropertiesJob);
+  expect(enqueued1).toBeInstanceOf(UpdateRelationshipPropertiesJob);
   // @ts-ignore
-  expect(enqueued[0].entityId).toBe('sharedId1');
+  expect(enqueued1.entityId).toBe('sharedId1');
 
-  expect(enqueued[1]).toBeInstanceOf(UpdateRelationshipPropertiesJob);
+  expect(enqueued2).toBeInstanceOf(UpdateRelationshipPropertiesJob);
   // @ts-ignore
-  expect(enqueued[1].entityId).toBe('sharedId2');
+  expect(enqueued2.entityId).toBe('sharedId2');
 
-  expect(enqueued[2]).toBe(null);
+  expect(enqueued3).toBe(null);
 });
