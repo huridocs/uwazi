@@ -96,6 +96,12 @@ export class DenormalizationService {
     return entities.map(entity => ({ sharedId: entity, properties: propertyNames }));
   }
 
+  private async invalidateMetadataCacheForTemplate(templateIds: string[], propertyNames: string[]) {
+    return this.entitiesDS.markMetadataAsChanged(
+      templateIds.map(templateId => ({ template: templateId, properties: propertyNames }))
+    );
+  }
+
   private async runQueriesAndInvalidateMetadataCaches<Id>(
     ids: Id[],
     findCandidatesCallback: (id: Id) => Promise<
@@ -109,11 +115,16 @@ export class DenormalizationService {
             properties: string[];
           }
       )[]
-    >
+    >,
+    invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>
   ) {
     const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
 
-    await this.entitiesDS.markMetadataAsChanged(candidates);
+    if (invalidateMetadataCacheCallback) {
+      await invalidateMetadataCacheCallback(ids);
+    } else {
+      await this.entitiesDS.markMetadataAsChanged(candidates);
+    }
 
     this.transactionManager.onCommitted(async () => {
       const candidateIds = candidates.map(c => c.sharedId);
@@ -185,8 +196,10 @@ export class DenormalizationService {
   }
 
   async denormalizeAfterCreatingOrUpdatingProperty(templateId: string, propertyNames: string[]) {
-    return this.runQueriesAndInvalidateMetadataCaches([templateId], async id =>
-      this.getCandidateEntitiesForTemplate(id, propertyNames)
+    return this.runQueriesAndInvalidateMetadataCaches(
+      [templateId],
+      async id => this.getCandidateEntitiesForTemplate(id, propertyNames),
+      async () => this.invalidateMetadataCacheForTemplate([templateId], propertyNames)
     );
   }
 }
