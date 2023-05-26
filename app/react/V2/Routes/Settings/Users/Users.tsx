@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { ActionFunction, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { Button, NavigationHeader, Tabs } from 'V2/Components/UI';
@@ -121,4 +121,22 @@ const usersLoader =
     return { users, groups };
   };
 
-export { Users, usersLoader };
+const settingsUserAction =
+  (): ActionFunction =>
+  async ({ params, request }) => {
+    const formData = await request.formData();
+    console.log(formData.values());
+    const formIntent = formData.get('intent') as 'new-user' | 'edit-user';
+    // const { context } = params;
+
+    const formValues = JSON.parse(formData.get('data') as string);
+    if (formIntent === 'new-user') {
+    }
+
+    if (formIntent === 'edit-user') {
+    }
+
+    return null;
+  };
+
+export { Users, usersLoader, settingsUserAction };

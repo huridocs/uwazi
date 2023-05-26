@@ -34,7 +34,7 @@ import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import { Users, usersLoader } from 'V2/Routes/Settings/Users/Users';
+import { Users, usersLoader, settingsUserAction } from 'V2/Routes/Settings/Users/Users';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
@@ -85,7 +85,12 @@ const getRoutesLayout = (
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
-      <Route path="users" element={adminsOnlyRoute(<Users />)} loader={usersLoader(headers)} />
+      <Route
+        path="users"
+        element={adminsOnlyRoute(<Users />)}
+        loader={usersLoader(headers)}
+        action={settingsUserAction()}
+      />
       <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
         <Route index element={adminsOnlyRoute(<Pages />)} />

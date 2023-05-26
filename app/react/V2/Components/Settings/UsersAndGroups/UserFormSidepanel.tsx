@@ -7,6 +7,7 @@ import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
+import { useFetcher } from 'react-router-dom';
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -45,6 +46,7 @@ const UserFormSidepanel = ({
   groups,
 }: UserFormSidepanelProps) => {
   const [showModal, setShowModal] = useState(false);
+  const fetcher = useFetcher();
 
   const defaultValues = {
     username: '',
@@ -58,7 +60,7 @@ const UserFormSidepanel = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { errors, isDirty },
     setValue,
   } = useForm({
     defaultValues,
@@ -79,6 +81,18 @@ const UserFormSidepanel = ({
     }
   };
 
+  const formSubmit = async (data: ClientUserSchema) => {
+    const formData = new FormData();
+    if (data._id) {
+      formData.set('intent', 'edit-user');
+    } else {
+      formData.set('intent', 'new-user');
+    }
+    formData.set('data', JSON.stringify(data));
+    fetcher.submit(formData, { method: 'post' });
+    reset({}, { keepValues: true });
+  };
+
   return (
     <>
       <Sidepanel
@@ -87,12 +101,7 @@ const UserFormSidepanel = ({
         closeSidepanelFunction={handleSidepanelState}
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >
-        <form
-          onSubmit={handleSubmit(data => {
-            console.log(data);
-          })}
-          className="flex flex-col h-full"
-        >
+        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
           <div className="flex-grow">
             <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
               <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
