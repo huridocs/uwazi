@@ -8,7 +8,7 @@ import {
   testOneHub as _testOneHub,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
-import { objectIndex as _objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 
 type RelationshipType = {
   template?: string;
@@ -31,9 +31,16 @@ type hubTestResult = {
     to: { entity: string };
     type: string;
   }[];
+  original: {
+    entity: string;
+    entityTemplate: string;
+    entityTitle: string;
+    hub: string;
+    id: string;
+    template: string;
+    templateName: string;
+  }[];
 };
-
-const objectIndex = _.memoize(_objectIndex);
 
 const inferFromV1 = (
   templates: ClientTemplateSchema[],
@@ -110,6 +117,16 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       t => t._id,
       t => t
     );
+    const oneHubTestEntityTitlesBySharedId = objectIndex(
+      this.hubTestResult?.original || [],
+      t => t.entity,
+      t => t.entityTitle
+    );
+    const oneHubRelTypeNamesById = objectIndex(
+      this.hubTestResult?.original || [],
+      t => t.template,
+      t => t.templateName
+    );
     const inferedRelationships: RelationshipType[] = inferFromV1(
       this.props.templates,
       templatesById,
@@ -167,18 +184,41 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 <div>Total: {this.hubTestResult.total}</div>
                 <div>Used: {this.hubTestResult.used}</div>
                 <div>Unused: {this.hubTestResult.total - this.hubTestResult.used}</div>
-                <div>Transformed:</div>
-                {this.hubTestResult.transformed.map(t => (
-                  <div key={`${t.from.entity}_${t.to.entity}_${t.type}`}>
-                    {t.from.entity}&emsp;
-                    <Icon icon="arrow-right" />
-                    &emsp;
-                    {t.type}&emsp;
-                    <Icon icon="arrow-right" />
-                    &emsp;
-                    {t.to.entity}
-                  </div>
-                ))}
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Original Hub</th>
+                      <th>Transformed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {this.hubTestResult.original.map(t => (
+                          <div key={`${t.template}_${t.entity}`}>
+                            {oneHubRelTypeNamesById[t.template]}&emsp;
+                            <Icon icon="link" />
+                            &emsp;
+                            {oneHubTestEntityTitlesBySharedId[t.entity]}
+                          </div>
+                        ))}
+                      </td>
+                      <td>
+                        {this.hubTestResult.transformed.map(t => (
+                          <div key={`${t.from.entity}_${t.to.entity}_${t.type}`}>
+                            {oneHubTestEntityTitlesBySharedId[t.from.entity]}&emsp;
+                            <Icon icon="arrow-right" />
+                            &emsp;
+                            {oneHubRelTypeNamesById[t.type]}&emsp;
+                            <Icon icon="arrow-right" />
+                            &emsp;
+                            {oneHubTestEntityTitlesBySharedId[t.to.entity]}
+                          </div>
+                        ))}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             )}
           </div>

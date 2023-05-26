@@ -6,7 +6,7 @@ import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipPro
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection } from '../model/V1Connection';
+import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
 import { EntityPointer, Relationship } from '../model/Relationship';
 
 const HUB_BATCH_SIZE = 1000;
@@ -32,7 +32,7 @@ class RelationshipMatcher {
     );
   }
 
-  matches(first: V1Connection, second: V1Connection) {
+  matches(first: V1ConnectionDisplayed, second: V1ConnectionDisplayed) {
     const sourceEntityTemplate = first.entityTemplate;
     const relationshipType = second.template;
     const targetEntityTemplate = second.entityTemplate;
@@ -107,9 +107,9 @@ export class MigrationService {
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
-  private async transformHub(connections: V1Connection[], matcher: RelationshipMatcher) {
+  private async transformHub(connections: V1ConnectionDisplayed[], matcher: RelationshipMatcher) {
     const total = connections.length;
-    const usedConnections: Record<string, V1Connection> = {};
+    const usedConnections: Record<string, V1ConnectionDisplayed> = {};
     const transformed: Relationship[] = [];
     connections.forEach(first => {
       connections.forEach(second => {
@@ -162,7 +162,7 @@ export class MigrationService {
     const connected = await this.v1ConnectionsDS.getConnectedToHubs([hubId]).all();
     const { total, used, transformed } = await this.transformHub(connected, matcher);
 
-    return { total, used, transformed };
+    return { total, used, transformed, original: connected };
   }
 
   async migrate(dryRun: boolean) {

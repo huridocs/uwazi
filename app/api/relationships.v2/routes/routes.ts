@@ -62,7 +62,7 @@ export default (app: Application) => {
 
   app.post('/api/v2/relationships/test_one_hub', featureRequired, async (req, res) => {
     const { hubId } = req.body;
-    const { total, used, transformed } = await MigrationService().testOneHub(hubId);
-    res.json({ total, used, transformed });
+    const { total, used, transformed, original } = await MigrationService().testOneHub(hubId);
+    res.json({ total, used, transformed, original });
   });
 };

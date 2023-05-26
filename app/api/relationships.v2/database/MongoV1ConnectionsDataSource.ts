@@ -6,18 +6,20 @@ import {
   V1ConnectionDBO,
   V1ConnectionDBOWithEntityInfo,
 } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection } from '../model/V1Connection';
+import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
 
 const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
   new V1Connection(dbo._id.toString(), dbo.entity, dbo.hub.toString(), dbo.template.toString());
 
-const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1Connection =>
-  new V1Connection(
+const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
+  new V1ConnectionDisplayed(
     dbo._id.toString(),
     dbo.entity,
     dbo.hub.toString(),
     dbo.template.toString(),
-    dbo.entityTemplateId.toString()
+    dbo.entityTemplateId.toString(),
+    dbo.entityTitle,
+    dbo.templateName
   );
 
 export class MongoV1ConnectionsDataSource
@@ -33,7 +35,7 @@ export class MongoV1ConnectionsDataSource
 
   getConnectedToHubs(
     _hubIds: string[]
-  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1Connection> {
+  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed> {
     const hubIds = _hubIds.map(id => MongoIdHandler.mapToDb(id));
     const collection = this.getCollection();
     const cursor = collection.aggregate<V1ConnectionDBOWithEntityInfo>([
@@ -49,21 +51,31 @@ export class MongoV1ConnectionsDataSource
         },
       },
       {
+        $lookup: {
+          from: 'relationtypes',
+          localField: 'template',
+          foreignField: '_id',
+          as: 'relTypeInfo',
+        },
+      },
+      {
         $set: {
           pickedEntity: { $arrayElemAt: ['$entityInfo', 0] },
+          pickedRelType: { $arrayElemAt: ['$relTypeInfo', 0] },
         },
       },
       {
         $set: {
           entityTemplateId: '$pickedEntity.template',
-          // entityTitle: '$pickedEntity.title',
+          entityTitle: '$pickedEntity.title',
+          templateName: '$pickedRelType.name',
         },
       },
       {
-        $unset: ['entityInfo', 'pickedEntity'],
+        $unset: ['entityInfo', 'pickedEntity', 'relTypeInfo', 'pickedRelType'],
       },
     ]);
-    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, V1Connection>(
+    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed>(
       cursor,
       mapConnectionsWithEntityInfo
     );
