@@ -150,10 +150,6 @@ export class CreateTemplateService {
     };
   }
 
-  async markEntityMetadataAsObsolete(templateId: string, properties: string[]) {
-    await this.entitiesDataSource.markMetadataAsChanged([{ template: templateId, properties }]);
-  }
-
   async validateUpdateActions(_oldTemplate: TemplateInput, _newTemplate: TemplateInput) {
     const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
     const newTemplate = TemplateInputMappers.toApp(_newTemplate);
@@ -198,7 +194,7 @@ export class CreateTemplateService {
 
       const uniquePropertyNames = Array.from(new Set([...newRelationshipNames, ...updatesQuery]));
 
-      await this.denormalizationService.denormalizeAfterCreatingProperty(
+      await this.denormalizationService.denormalizeAfterCreatingOrUpdatingProperty(
         newTemplate.id,
         uniquePropertyNames
       );

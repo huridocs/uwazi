@@ -472,3 +472,40 @@ describe('denormalizeAfterUpdatingEntities()', () => {
     });
   });
 });
+
+describe('denormalizeAfterCreatingOrUpdatingProperty()', () => {
+  it('should denormalize all the entities of the template', async () => {
+    await service.denormalizeAfterCreatingOrUpdatingProperty(
+      factory.id('template1').toHexString(),
+      ['relationshipProp1', 'relationshipProp1_with_inherit']
+    );
+
+    const entities = await testingDB.mongodb
+      ?.collection('entities')
+      .find({ template: factory.id('template1') })
+      .toArray();
+
+    expect(entities).toMatchObject([
+      {
+        sharedId: 'entity1',
+        language: 'hu',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity1',
+        language: 'es',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity10',
+        language: 'hu',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity10',
+        language: 'es',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+    ]);
+  });
+});

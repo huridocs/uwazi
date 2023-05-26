@@ -184,7 +184,7 @@ export class DenormalizationService {
     );
   }
 
-  async denormalizeAfterCreatingProperty(templateId: string, propertyNames: string[]) {
+  async denormalizeAfterCreatingOrUpdatingProperty(templateId: string, propertyNames: string[]) {
     return this.runQueriesAndInvalidateMetadataCaches([templateId], async id =>
       this.getCandidateEntitiesForTemplate(id, propertyNames)
     );
