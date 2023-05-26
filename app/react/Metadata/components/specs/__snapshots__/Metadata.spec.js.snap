@@ -11,6 +11,7 @@ exports[`Metadata should not render metadata without value 1`] = `
     className=""
   >
     Label
+     
   </dt>
   <dd
     className=""
@@ -29,6 +30,7 @@ exports[`Metadata should render a Geolocation viewer when the metadata is type g
     className=""
   >
     Geolocation Label
+     
   </dt>
   <dd
     className=""
@@ -57,6 +59,7 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
     className=""
   >
     label array
+     
   </dt>
   <dd
     className=""
@@ -80,6 +83,7 @@ exports[`Metadata should render a link 1`] = `
     className=""
   >
     Link
+     
   </dt>
   <dd
     className=""
@@ -104,6 +108,7 @@ exports[`Metadata should render a media field 1`] = `
     className=""
   >
     Media Label
+     
   </dt>
   <dd
     className=""
@@ -127,6 +132,7 @@ exports[`Metadata should render an image field 1`] = `
     className=""
   >
     Image Label
+     
   </dt>
   <dd
     className=""
@@ -150,6 +156,7 @@ exports[`Metadata should render array values separated by ", " 1`] = `
     className=""
   >
     label array
+     
   </dt>
   <dd
     className=""
@@ -185,6 +192,7 @@ exports[`Metadata should render links when multiple properties have url 1`] = `
     className=""
   >
     label array
+     
   </dt>
   <dd
     className=""
@@ -235,6 +243,7 @@ exports[`Metadata should render links when the property has url 1`] = `
     className=""
   >
     withUrl
+     
   </dt>
   <dd
     className=""
@@ -271,6 +280,7 @@ exports[`Metadata should render links with icons if propery has url and icon 1`]
     className=""
   >
     withUrl
+     
   </dt>
   <dd
     className=""
@@ -311,6 +321,7 @@ exports[`Metadata should render property not have this item when type is null 1`
     className=""
   >
     metadata without property
+     
   </dt>
   <dd
     className=""
@@ -329,6 +340,7 @@ exports[`Metadata should render sorted property with sorted styles 1`] = `
     className=""
   >
     sortedBy
+     
   </dt>
   <dd
     className="item-current-sort"
@@ -347,6 +359,7 @@ exports[`Metadata should render string values 1`] = `
     className=""
   >
     Label
+     
   </dt>
   <dd
     className=""
@@ -365,6 +378,7 @@ exports[`Metadata when passing a prop with multivalue and parents should render 
     className=""
   >
     label
+     
   </dt>
   <dd
     className=""
@@ -406,6 +420,7 @@ exports[`Metadata when passing a prop with parent should render the parent too 1
     className=""
   >
     label
+     
   </dt>
   <dd
     className=""
@@ -424,6 +439,7 @@ exports[`Metadata when passing compact prop should pass it to ValueList 1`] = `
     className=""
   >
     label array
+     
   </dt>
   <dd
     className=""
@@ -472,7 +488,9 @@ exports[`Metadata when passing inheritted relationships should flatten the resul
 >
   <dt
     className=""
-  />
+  >
+     
+  </dt>
   <dd
     className=""
   >
