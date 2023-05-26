@@ -28,7 +28,7 @@
     "run-production": "NODE_ENV=production node server.js",
     "dev-server": "./node_modules/.bin/nodemon ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
     "webpack-server": "node ./webpack/webpack.server.js",
-    "dev-worker": "node run.js ./app/worker.ts",
+    "dev-worker": "node ./scripts/run.js ../app/worker.ts",
     "check-translations": "node ./scripts/checkTranslations.mjs",
     "compare-translations": "node ./scripts/compareTranslations.js",
     "describe-database": "node ./scripts/describeDatabase.mjs",
