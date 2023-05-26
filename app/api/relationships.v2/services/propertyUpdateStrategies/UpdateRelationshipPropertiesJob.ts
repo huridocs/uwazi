@@ -23,7 +23,7 @@ export class UpdateRelationshipPropertiesJob extends Job {
     await this.transactionManager!.run(async () => {
       await this.updater!.update([this.entityId]);
 
-      this.transactionManager?.onCommitted(async () => {
+      this.transactionManager!.onCommitted(async () => {
         await this.indexEntity!(this.entityId);
       });
     });

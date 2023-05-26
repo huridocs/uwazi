@@ -57,7 +57,8 @@ function setUpJobsQueueWorker() {
                 templatesDS,
                 relationshipsDS
               ),
-              indexEntity: async (sharedId: string) => search.indexEntities({ sharedId }),
+              indexEntity: async (sharedId: string) =>
+                tenants.run(async () => search.indexEntities({ sharedId }), namespace),
               transactionManager,
             });
           }, namespace)
