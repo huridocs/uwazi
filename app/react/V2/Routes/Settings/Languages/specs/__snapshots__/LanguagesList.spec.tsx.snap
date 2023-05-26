@@ -65,9 +65,12 @@ exports[`LanguagesList render installed languages should show a list of installe
           data-testid="languages"
         >
           <div
-            class="relative overflow-x-auto shadow-md sm:rounded-lg"
+            class="relative"
             data-testid="table-element"
           >
+            <div
+              class="absolute bg-white dark:bg-black w-full h-full top-0 left-0 rounded-lg drop-shadow-md -z-10"
+            />
             <table
               class="w-full text-left text-sm text-gray-500 dark:text-gray-400"
               role="table"
@@ -82,11 +85,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </span>
               </caption>
               <thead
-                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+                class="group/head text-xs uppercase text-gray-700 dark:text-gray-400"
               >
                 <tr>
                   <th
-                    class="px-6 py-3 w-9/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 w-9/12"
                     colspan="1"
                     role="columnheader"
                     style="cursor: pointer;"
@@ -116,7 +119,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -131,7 +134,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -146,7 +149,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="px-6 py-3 text-center w-1/12"
+                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
                     colspan="1"
                     role="columnheader"
                   >
@@ -163,16 +166,16 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </tr>
               </thead>
               <tbody
-                class="text-gray-900 divide-y"
+                class="group/body text-gray-900 divide-y"
                 role="rowgroup"
               >
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -182,12 +185,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -197,7 +200,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class=" w-5 text-white stroke-current stroke-gray-300 stroke-2"
+                        class=" w-4 text-white stroke-current stroke-gray-300 stroke-2"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -211,18 +214,18 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -234,12 +237,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -249,12 +252,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -264,7 +267,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class=" w-5 text-white stroke-current stroke-gray-300 stroke-2"
+                        class=" w-4 text-white stroke-current stroke-gray-300 stroke-2"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -278,18 +281,18 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -301,12 +304,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class=""
+                  class="group/row"
                   data-testid="table-row-element"
                   role="row"
                 >
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <span
@@ -316,12 +319,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -331,7 +334,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                       </span>
                       <svg
                         aria-hidden="true"
-                        class="w-5"
+                        class="w-4"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg"
@@ -345,12 +348,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                     <button
                       class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
                       <span
@@ -361,7 +364,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="px-6 py-4"
+                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
                     role="cell"
                   >
                      

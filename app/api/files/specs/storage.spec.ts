@@ -11,6 +11,8 @@ import {
 import { config } from 'api/config';
 import { testingTenants } from 'api/utils/testingTenants';
 // eslint-disable-next-line node/no-restricted-import
+import { rmdir } from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { Readable } from 'stream';
 import {
@@ -310,6 +312,44 @@ describe('storage', () => {
         );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
         expect(await storage.fileExists('non_existent.txt', 'document')).toBe(false);
+      });
+    });
+  });
+
+  describe('createDirectory', () => {
+    afterEach(async () => {
+      try {
+        await rmdir(uploadsPath('directory_test'));
+      } catch (err) {
+        if (err && err.code !== 'ENOENT') {
+          throw err;
+        }
+      }
+    });
+
+    describe('when s3 flag is not active', () => {
+      it('should create directory on disk', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+        await storage.createDirectory(uploadsPath('directory_test'));
+        expect(await fileExistsOnPath(uploadsPath('directory_test'))).toBe(true);
+      });
+    });
+
+    describe('when s3 flag is active', () => {
+      it('should do nothing s3 creates directories as needed', async () => {
+        testingTenants.changeCurrentTenant({
+          featureFlags: { s3Storage: true },
+        });
+
+        await storage.createDirectory(uploadsPath('directory_test'));
+        expect(await fileExistsOnPath(uploadsPath('directory_test'))).toBe(false);
       });
     });
   });

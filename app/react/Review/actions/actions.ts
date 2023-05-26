@@ -45,11 +45,17 @@ export async function getAndLoadEntity(
 export function toggleOneUpFullEdit() {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
+    const template = state.templates.filter(
+      t => t?.get('_id') === state.entityView.entityForm.template
+    );
     const oneUpState = state.oneUpReview.state?.toJS();
     if (oneUpState && oneUpState.fullEdit && !state.entityView.entityFormState.$form.pristine) {
       const entity = await api.denormalize(
         new RequestParams(
-          wrapEntityMetadata(entitiesUtil.filterBaseProperties(state.entityView.entityForm))
+          wrapEntityMetadata(
+            entitiesUtil.filterBaseProperties(state.entityView.entityForm),
+            template
+          )
         )
       );
       dispatch(actions.set('entityView/entity', entity));
@@ -95,13 +101,17 @@ async function switchToEntity(
 export function switchOneUpEntity(delta: number, save: boolean) {
   return async (dispatch: Dispatch<IStore>, getState: () => IStore) => {
     const state = getState();
+    const template = state.templates
+      .filter(t => t?.get('_id') === state.entityView.entityForm.template)
+      .toJS();
     const oneUpState = state.oneUpReview.state?.toJS();
     if (!oneUpState) {
       return;
     }
     if (save) {
       const entity = wrapEntityMetadata(
-        entitiesUtil.filterBaseProperties(state.entityView.entityForm)
+        entitiesUtil.filterBaseProperties(state.entityView.entityForm),
+        template
       );
       await api.save(new RequestParams(entity, oneUpState.requestHeaders));
     }

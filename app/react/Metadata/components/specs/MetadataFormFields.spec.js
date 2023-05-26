@@ -23,6 +23,8 @@ describe('MetadataFormFields with one entity to edit ', () => {
       { _id: 3, name: 'field3', label: 'label3', type: 'date' },
       { _id: 4, name: 'field4', label: 'label4', type: 'generatedid' },
       { _id: 5, name: 'field5', label: 'label5', type: 'relationship', content: '2' },
+      { _id: 6, name: 'field6', label: 'label6', type: 'image' },
+      { _id: 7, name: 'field7', label: 'label7', type: 'media' },
     ];
 
     metadata = [
@@ -107,6 +109,15 @@ describe('MetadataFormFields with one entity to edit ', () => {
       const generatedIdInput = component.find('[model=".metadata.field4"]').find('input');
       expect(generatedIdInput.length).toBe(1);
       expect(generatedIdInput.props().defaultValue).toBe(undefined);
+    });
+
+    it('should render media components properly', () => {
+      render({ model: 'publicform' });
+      const imageField = component.find('[model=".metadata.field6"]').at(0);
+      const mediaField = component.find('[model=".metadata.field7"]').at(0);
+
+      expect(imageField.props().className).toBe('image');
+      expect(mediaField.props().className).toBe('media');
     });
   });
 

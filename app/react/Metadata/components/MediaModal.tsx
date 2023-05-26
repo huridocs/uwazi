@@ -1,6 +1,5 @@
 import React, { useMemo, useRef } from 'react';
 import ReactModal from 'react-modal';
-import ReactPlayer from 'react-player';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions as formActions } from 'react-redux-form';
@@ -15,6 +14,7 @@ import { uploadLocalAttachment } from 'app/Metadata/actions/supportingFilesActio
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
 import { MediaModalFileList } from 'app/Metadata/components/MediaModalFileList';
 import { MediaModalUploadFileButton } from './MediaModalUploadFileButton';
+import { validImageFile, validMediaFile } from '../helpers/validator';
 
 enum MediaModalType {
   Image,
@@ -27,9 +27,8 @@ const getAcceptedFileTypes = (type: MediaModalType) => {
     case MediaModalType.Image:
       return 'image/*';
     case MediaModalType.Media:
-      return 'video/*';
+      return 'video/*,audio/*';
     case MediaModalType.All:
-      return '*/*';
     default:
       return '*/*';
   }
@@ -40,7 +39,7 @@ interface MediaModalProps {
   onClose: () => void;
   attachments: (AttachmentSchema | ClientFile)[];
   onChange: (id: any) => void;
-  selectedUrl: string | null;
+  selectedUrl?: string;
   formModel: string;
   formField: string;
   type: MediaModalType;
@@ -75,13 +74,9 @@ function filterAttachments(
   });
   switch (type) {
     case MediaModalType.Image:
-      return filteredAttachments.filter(a => a.mimetype && a.mimetype.includes('image'));
+      return filteredAttachments.filter(validImageFile);
     case MediaModalType.Media:
-      return filteredAttachments.filter(
-        a =>
-          (a.mimetype && (a.mimetype.includes('video') || a.mimetype.includes('audio'))) ||
-          (a.url && ReactPlayer.canPlay(a.url))
-      );
+      return filteredAttachments.filter(validMediaFile);
     default:
       return attachments;
   }
