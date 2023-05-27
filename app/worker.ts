@@ -17,13 +17,7 @@ import { Queue } from 'api/queue.v2/application/Queue';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import Redis from 'redis';
 import RedisSMQ from 'rsmq';
-import { UpdateRelationshipPropertiesJob } from 'api/relationships.v2/services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { search } from 'api/search';
+import { registerUpdateRelationshipPropertiesJob } from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
 
 let dbAuth = {};
 
@@ -38,37 +32,13 @@ if (process.env.DBUSER) {
 function setUpJobsQueueWorker() {
   const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
   const RSMQ = new RedisSMQ({ client: redisClient });
-
   const queue = new Queue('uwazi_jobs', RSMQ, StringJobSerializer);
-  queue.register(
-    UpdateRelationshipPropertiesJob,
-    async namespace =>
-      new Promise((resolve, reject) => {
-        tenants
-          .run(async () => {
-            const transactionManager = DefaultTransactionManager();
-            const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
-            const entitiesDS = DefaultEntitiesDataSource(transactionManager);
-            const templatesDS = DefaultTemplatesDataSource(transactionManager);
-
-            resolve({
-              updater: new EntityRelationshipsUpdateService(
-                entitiesDS,
-                templatesDS,
-                relationshipsDS
-              ),
-              indexEntity: async (sharedId: string) =>
-                tenants.run(async () => search.indexEntities({ sharedId }), namespace),
-              transactionManager,
-            });
-          }, namespace)
-          .catch(reject);
-      })
-  );
+  
+  registerUpdateRelationshipPropertiesJob(queue);
 
   const queueWorker = new QueueWorker(queue);
 
-  redisClient.on('connect', () => {
+  redisClient.on('ready', () => {
     // eslint-disable-next-line no-void
     void queueWorker.start();
   });
