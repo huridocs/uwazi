@@ -514,6 +514,64 @@ describe('translations v2 support', () => {
         });
       });
 
+      it('should return only the language and context requested', async () => {
+        await testingDB.setupFixturesAndContext({
+          ...fixtures,
+          translations: [
+            {
+              locale: 'es',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Contraseña' },
+                    { key: 'Account', value: 'Cuenta' },
+                  ],
+                },
+                {
+                  id: 'context 2',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Contraseña' },
+                    { key: 'Account', value: 'Cuenta' },
+                  ],
+                },
+              ],
+            },
+            {
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'System',
+                  label: 'System',
+                  type: 'Uwazi UI',
+                  values: [
+                    { key: 'Password', value: 'Password' },
+                    { key: 'Account', value: 'Account' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        await translations.get();
+        const [spanish] = await translations.get({ context: 'System' });
+        expect(spanish).toMatchObject({
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              type: 'Uwazi UI',
+              values: { Password: 'Contraseña', Account: 'Cuenta' },
+            },
+          ],
+        });
+      });
+
       describe('when requesting an _id (old collection)', () => {
         it('should return the new collection values (old _id means language in the new collection)', async () => {
           const spanishId = new ObjectId();

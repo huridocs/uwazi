@@ -118,17 +118,26 @@ export const deleteTranslationsByLanguageV2 = async (language: string) => {
   ).deleteByLanguage(language);
 };
 
-export const getTranslationsV2 = async (language?: string) => {
-  const service = new GetTranslationsService(
-    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+export const getTranslationsV2ByContext = async (context: string) =>
+  resultsToV1TranslationType(
+    new GetTranslationsService(
+      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+    ).getByContext(context)
   );
 
-  if (language) {
-    return resultsToV1TranslationType(service.getByLanguage(language));
-  }
+export const getTranslationsV2ByLanguage = async (language: string) =>
+  resultsToV1TranslationType(
+    new GetTranslationsService(
+      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+    ).getByLanguage(language)
+  );
 
-  return resultsToV1TranslationType(service.getAll());
-};
+export const getTranslationsV2 = async () =>
+  resultsToV1TranslationType(
+    new GetTranslationsService(
+      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+    ).getAll()
+  );
 
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();

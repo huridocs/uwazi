@@ -20,6 +20,8 @@ import {
   deleteTranslationsByContextIdV2,
   deleteTranslationsByLanguageV2,
   getTranslationsV2,
+  getTranslationsV2ByContext,
+  getTranslationsV2ByLanguage,
   migrateTranslationsToV2,
   upsertTranslationsV2,
 } from './v2_support';
@@ -201,7 +203,7 @@ const translationTypeToIndexedTranslation = (translations: EnforcedWithId<Transl
 
 export default {
   prepareContexts,
-  async get(query: { _id?: string; locale?: string } = {}, selector = {}) {
+  async get(query: { _id?: string; locale?: string; context?: string } = {}, selector = {}) {
     const alreadyMigrated = await migrateTranslationsToV2();
     if (alreadyMigrated) {
       let language = query.locale;
@@ -209,9 +211,23 @@ export default {
         const [oldLanguage] = await model.get({ _id: query._id }, { locale: 1 });
         language = oldLanguage.locale;
       }
-      return translationTypeToIndexedTranslation(await getTranslationsV2(language));
+
+      if (query.context) {
+        return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
+      }
+
+      if (language) {
+        return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
+      }
+
+      return translationTypeToIndexedTranslation(await getTranslationsV2());
     }
-    const translations = await model.get(query, selector);
+
+    const { context, ...actualQuery } = query;
+    const translations = await model.get(
+      actualQuery,
+      Object.assign(selector, context ? { contexts: { $elemMatch: { id: context } } } : {})
+    );
 
     return translationTypeToIndexedTranslation(translations);
   },

@@ -11,6 +11,10 @@ export class GetTranslationsService {
     return this.translationsDS.getByLanguage(language);
   }
 
+  getByContext(context: string) {
+    return this.translationsDS.getByContext(context);
+  }
+
   getAll() {
     return this.translationsDS.getAll();
   }

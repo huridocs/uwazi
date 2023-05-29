@@ -14,10 +14,7 @@ import translations, { UITranslationNotAvailable } from './translations';
 export default (app: Application) => {
   app.get('/api/translations', async (req, res) => {
     const { context } = req.query;
-    const response = await translations.get(
-      {},
-      context && { contexts: { $elemMatch: { id: context } }, locale: 1 }
-    );
+    const response = await translations.get({ context }, context && { locale: 1 });
 
     res.json({ rows: response });
   });

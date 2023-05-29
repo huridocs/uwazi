@@ -59,4 +59,11 @@ export class MongoTranslationsDataSource
       TranslationMappers.toModel
     );
   }
+
+  getByContext(context: string) {
+    return new MongoResultSet<TranslationDBO, Translation>(
+      this.getCollection().find({ 'context.id': context }),
+      TranslationMappers.toModel
+    );
+  }
 }

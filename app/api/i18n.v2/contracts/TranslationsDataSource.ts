@@ -9,4 +9,5 @@ export interface TranslationsDataSource {
   deleteByLanguage(language: string): Promise<DeleteResult>;
   getAll(): ResultSet<Translation>;
   getByLanguage(language: string): ResultSet<Translation>;
+  getByContext(context: string): ResultSet<Translation>;
 }
