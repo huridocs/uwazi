@@ -27,16 +27,15 @@ const Users = () => {
   const fetcher = useFetcher();
 
   useEffect(() => {
+    setShowSidepanel(false);
     switch (true) {
       case fetcher.formData?.get('intent') === 'new-user':
-        setShowSidepanel(false);
         setNotifications({
           type: 'success',
           text: <Translate>User saved</Translate>,
         });
         break;
       case fetcher.formData?.get('intent') === 'edit-user':
-        setShowSidepanel(false);
         setNotifications({
           type: 'success',
           text: <Translate>User updated</Translate>,
@@ -160,6 +159,7 @@ const settingsUserAction =
     }
 
     if (formIntent === 'edit-user') {
+      return UsersAPI.saveUser(formValues);
     }
 
     return null;

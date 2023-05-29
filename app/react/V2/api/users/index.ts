@@ -10,6 +10,12 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
   return createdUser;
 };
 
+const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams(user, headers);
+  const savedUser = await UsersAPI.save(requestParams);
+  return savedUser;
+};
+
 const get = async (headers?: IncomingHttpHeaders) => {
   const requestParams = new RequestParams({}, headers);
   const response = UsersAPI.get(requestParams);
@@ -22,4 +28,4 @@ const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-export { get, getUserGroups, newUser };
+export { get, getUserGroups, newUser, saveUser };
