@@ -9,7 +9,6 @@ import * as usersAPI from 'V2/api/users';
 import { UserFormSidepanel, GroupFormSidepanel } from 'V2/Components/Settings/UsersAndGroups';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
-import * as UsersAPI from 'V2/api/users';
 
 type activeTab = 'Groups' | 'Users';
 
@@ -62,20 +61,19 @@ const Users = () => {
           <div className="flex gap-2 p-2 pt-1">
             {selectedUsers.length > 0 ? (
               <>
-                <Button size="small" buttonStyle="tertiary">
+                <Button size="small" styling="light">
                   <Translate>Reset password</Translate>
                 </Button>
-                <Button size="small" buttonStyle="tertiary">
+                <Button size="small" styling="light">
                   <Translate>Reset 2FA</Translate>
                 </Button>
-                <Button size="small" buttonStyle="danger">
+                <Button size="small" color="error">
                   <Translate>Delete</Translate>
                 </Button>
               </>
             ) : (
               <Button
                 size="small"
-                buttonStyle="primary"
                 onClick={() => {
                   setShowSidepanel(true);
                 }}
@@ -124,7 +122,7 @@ const usersLoader =
 
 const settingsUserAction =
   (): ActionFunction =>
-  async ({ params, request }) => {
+  async ({ request }) => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as
       | 'new-user'
@@ -133,23 +131,24 @@ const settingsUserAction =
       | 'edit-group';
 
     const formValues = JSON.parse(formData.get('data') as string);
-    if (formIntent === 'new-user') {
-      return UsersAPI.newUser(formValues);
-    }
 
-    if (formIntent === 'edit-user') {
-      return UsersAPI.saveUser(formValues);
-    }
+    switch (formIntent) {
+      case 'new-user':
+        return usersAPI.newUser(formValues);
 
-    if (formIntent === 'new-group') {
-      return usersAPI.saveGroup(formValues);
-    }
+      case 'edit-user':
+        return usersAPI.saveUser(formValues);
 
-    if (formIntent === 'edit-group') {
-      // return UsersAPI.saveUser(formValues);
-    }
+      case 'new-group':
+        return usersAPI.saveGroup(formValues);
 
-    return null;
+      case 'edit-group':
+        // return usersAPI.saveUser(formValues);
+        return null;
+
+      default:
+        return null;
+    }
   };
 
 export { Users, usersLoader, settingsUserAction };

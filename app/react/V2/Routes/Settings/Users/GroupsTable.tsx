@@ -14,7 +14,7 @@ const renderEditButton = (
   group: ClientUserGroupSchema,
   onclick: (group: ClientUserGroupSchema) => void
 ) => (
-  <Button buttonStyle="secondary" onClick={() => onclick(group)}>
+  <Button styling="outline" className="leading-4" onClick={() => onclick(group)}>
     <Translate>Edit</Translate>
   </Button>
 );

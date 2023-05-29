@@ -34,7 +34,7 @@ const pill = ({ cell }: any) => (
 );
 
 const renderEditButton = (user: ClientUserSchema, onclick: (user: ClientUserSchema) => void) => (
-  <Button buttonStyle="secondary" onClick={() => onclick(user)}>
+  <Button styling="outline" onClick={() => onclick(user)} className="leading-4">
     <Translate>Edit</Translate>
   </Button>
 );

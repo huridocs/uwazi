@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -7,7 +8,7 @@ import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
-import { Button, Sidepanel } from 'V2/Components/UI';
+import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -98,6 +99,7 @@ const UserFormSidepanel = ({
 
   useEffect(() => {
     setShowSidepanel(false);
+
     switch (true) {
       case fetcher.formData?.get('intent') === 'new-user':
         setNotifications({
@@ -105,17 +107,19 @@ const UserFormSidepanel = ({
           text: <Translate>User saved</Translate>,
         });
         break;
+
       case fetcher.formData?.get('intent') === 'edit-user':
         setNotifications({
           type: 'success',
           text: <Translate>User updated</Translate>,
         });
         break;
+
       default:
         console.log('Returned data');
         break;
     }
-  }, [fetcher.data, fetcher.formData, setNotifications]);
+  }, [fetcher.data, fetcher.formData, setNotifications, setShowSidepanel]);
 
   return (
     <>
@@ -126,121 +130,110 @@ const UserFormSidepanel = ({
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >
         <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-          <div className="flex-grow">
-            <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
-              <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
-                General Information
-              </Translate>
-
-              <div className="p-3">
-                <div className="mb-4">
-                  <InputField
-                    label={<Translate className="font-bold block mb-1">Username</Translate>}
-                    id="username"
-                    hasErrors={Boolean(errors.username)}
-                    className="mb-1"
-                    {...register('username', {
-                      required: true,
-                      validate: username => isUnique(username, selectedUser, users),
-                      maxLength: 50,
-                      minLength: 3,
-                    })}
-                  />
-                  <span className="text-error-700 font-bold">
-                    {errors.username?.type === 'required' && (
-                      <Translate>Username is required</Translate>
-                    )}
-                    {errors.username?.type === 'validate' && (
-                      <Translate>Duplicated username</Translate>
-                    )}
-                    {errors.username?.type === 'maxLength' && (
-                      <Translate>Username is too long</Translate>
-                    )}
-                    {errors.username?.type === 'minLength' && (
-                      <Translate>Username is too short</Translate>
-                    )}
-                  </span>
-                </div>
-
-                <Select
-                  label={<Translate className="font-bold block mb-1">User Role</Translate>}
-                  className="mb-4"
-                  id="roles"
-                  options={userRoles}
-                  {...register('role')}
-                />
-
-                <div>
-                  <InputField
-                    label={<Translate className="font-bold block mb-1">Email</Translate>}
-                    type="email"
-                    id="email"
-                    className="mb-1"
-                    hasErrors={Boolean(errors.email)}
-                    {...register('email', {
-                      required: true,
-                      validate: email => isUnique(email, selectedUser, users),
-                      maxLength: 256,
-                    })}
-                  />
-                  <span className="text-error-700 font-bold">
-                    {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
-                    {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
-                  </span>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
-              <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
-                Security
-              </Translate>
-
-              <div className="p-3">
+          <div className="flex-grow flex flex-col gap-4">
+            <Card title={<Translate>General Information</Translate>}>
+              <div className="mb-4">
                 <InputField
-                  label={
-                    <span className="font-bold mb-1">
-                      <Translate>Password</Translate>
-                    </span>
-                  }
-                  id="password"
-                  type="password"
-                  autoComplete="off"
-                  hasErrors={Boolean(errors.password)}
-                  className="mb-4"
-                  {...register('password', { maxLength: 50 })}
+                  label={<Translate className="font-bold block mb-1">Username</Translate>}
+                  id="username"
+                  hasErrors={Boolean(errors.username)}
+                  className="mb-1"
+                  {...register('username', {
+                    required: true,
+                    validate: username => isUnique(username, selectedUser, users),
+                    maxLength: 50,
+                    minLength: 3,
+                  })}
                 />
                 <span className="text-error-700 font-bold">
-                  {errors.password?.type === 'maxLength' && (
-                    <Translate>Password is too long</Translate>
+                  {errors.username?.type === 'required' && (
+                    <Translate>Username is required</Translate>
+                  )}
+                  {errors.username?.type === 'validate' && (
+                    <Translate>Duplicated username</Translate>
+                  )}
+                  {errors.username?.type === 'maxLength' && (
+                    <Translate>Username is too long</Translate>
+                  )}
+                  {errors.username?.type === 'minLength' && (
+                    <Translate>Username is too short</Translate>
                   )}
                 </span>
-
-                {selectedUser?._id && (
-                  <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
-                    <Button
-                      type="button"
-                      buttonStyle="tertiary"
-                      onClick={() => {
-                        console.log('this should show a confirm and then reset password');
-                      }}
-                    >
-                      <Translate>Reset Password</Translate>
-                    </Button>
-                    <Button
-                      type="button"
-                      buttonStyle="tertiary"
-                      onClick={() => {
-                        console.log('this should show a confirm and then reset 2fa');
-                      }}
-                    >
-                      <Translate>Reset 2FA</Translate>
-                    </Button>
-                  </div>
-                )}
               </div>
-            </fieldset>
-            <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
+
+              <Select
+                label={<Translate className="font-bold block mb-1">User Role</Translate>}
+                className="mb-4"
+                id="roles"
+                options={userRoles}
+                {...register('role')}
+              />
+
+              <div>
+                <InputField
+                  label={<Translate className="font-bold block mb-1">Email</Translate>}
+                  type="email"
+                  id="email"
+                  className="mb-1"
+                  hasErrors={Boolean(errors.email)}
+                  {...register('email', {
+                    required: true,
+                    validate: email => isUnique(email, selectedUser, users),
+                    maxLength: 256,
+                  })}
+                />
+                <span className="text-error-700 font-bold">
+                  {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
+                  {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
+                </span>
+              </div>
+            </Card>
+
+            <Card title={<Translate>Security</Translate>}>
+              <InputField
+                label={
+                  <span className="font-bold mb-1">
+                    <Translate>Password</Translate>
+                  </span>
+                }
+                id="password"
+                type="password"
+                autoComplete="off"
+                hasErrors={Boolean(errors.password)}
+                className="mb-4"
+                {...register('password', { maxLength: 50 })}
+              />
+              <span className="text-error-700 font-bold">
+                {errors.password?.type === 'maxLength' && (
+                  <Translate>Password is too long</Translate>
+                )}
+              </span>
+
+              {selectedUser?._id && (
+                <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+                  <Button
+                    type="button"
+                    styling="light"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset password');
+                    }}
+                  >
+                    <Translate>Reset Password</Translate>
+                  </Button>
+                  <Button
+                    type="button"
+                    styling="light"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset 2fa');
+                    }}
+                  >
+                    <Translate>Reset 2FA</Translate>
+                  </Button>
+                </div>
+              )}
+            </Card>
+
+            <div className="border rounded-md border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
@@ -267,24 +260,25 @@ const UserFormSidepanel = ({
                   return { label: group.name, value: group.name };
                 })}
               />
-            </fieldset>
+            </div>
           </div>
 
           <div className="flex gap-2">
             <Button
               className="flex-grow"
               type="button"
-              buttonStyle="secondary"
+              styling="outline"
               onClick={handleSidepanelState}
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="flex-grow" type="submit" buttonStyle="primary">
+            <Button className="flex-grow" type="submit">
               <Translate>Save</Translate>
             </Button>
           </div>
         </form>
       </Sidepanel>
+
       {showModal && (
         <ConfirmationModal
           setShowModal={setShowModal}

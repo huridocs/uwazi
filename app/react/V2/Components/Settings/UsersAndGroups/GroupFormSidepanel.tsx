@@ -6,7 +6,7 @@ import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { Button, Sidepanel } from 'V2/Components/UI';
+import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -113,44 +113,35 @@ const GroupFormSidepanel = ({
         title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
       >
         <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-          <div className="flex-grow">
-            <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
-              <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
-                Group Options
-              </Translate>
-
-              <div className="p-3">
-                <div className="mb-4">
-                  <InputField
-                    label={<Translate className="font-bold block mb-1">Name</Translate>}
-                    id="name"
-                    hasErrors={Boolean(errors.name)}
-                    className="mb-1"
-                    {...register('name', {
-                      required: true,
-                      validate: username => isUnique(username, selectedGroup, groups),
-                      maxLength: 50,
-                      minLength: 3,
-                    })}
-                  />
-                  <span className="text-error-700 font-bold">
-                    {errors.name && (
-                      <div className="validation-error">
-                        {errors.name.type === 'required' && <Translate>Name is required</Translate>}
-                        {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
-                        {errors.name.type === 'maxLength' && (
-                          <Translate>Name is too long</Translate>
-                        )}
-                        {errors.name.type === 'minLength' && (
-                          <Translate>Name is too short</Translate>
-                        )}
-                      </div>
-                    )}
-                  </span>
-                </div>
+          <div className="flex flex-col flex-grow gap-4">
+            <Card title={<Translate>Group Options</Translate>}>
+              <div>
+                <InputField
+                  label={<Translate className="font-bold block mb-1">Name</Translate>}
+                  id="name"
+                  hasErrors={Boolean(errors.name)}
+                  className="mb-1"
+                  {...register('name', {
+                    required: true,
+                    validate: username => isUnique(username, selectedGroup, groups),
+                    maxLength: 50,
+                    minLength: 3,
+                  })}
+                />
+                <span className="text-error-700 font-bold">
+                  {errors.name && (
+                    <div className="validation-error">
+                      {errors.name.type === 'required' && <Translate>Name is required</Translate>}
+                      {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
+                      {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
+                      {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
+                    </div>
+                  )}
+                </span>
               </div>
-            </fieldset>
-            <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
+            </Card>
+
+            <div className="mb-5 border rounded-md border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
@@ -172,18 +163,19 @@ const GroupFormSidepanel = ({
                   return { label: user.username, value: user._id as string };
                 })}
               />
-            </fieldset>
+            </div>
           </div>
+
           <div className="flex gap-2">
             <Button
               className="flex-grow"
               type="button"
-              buttonStyle="secondary"
+              styling="outline"
               onClick={discardChangesFunction}
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="flex-grow" type="submit" buttonStyle="primary">
+            <Button className="flex-grow" type="submit">
               <Translate>Save</Translate>
             </Button>
           </div>
