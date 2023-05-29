@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import {
   Column,
   HeaderGroup,
@@ -15,6 +16,7 @@ import {
 
 import { Table as FlowbiteTable } from 'flowbite-react';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import { SelectionContext } from './TableWithCheckbox';
 
 type TableColumn<T extends object> = Column<T> &
   UseSortByOptions<any> &
@@ -43,20 +45,32 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref) => {
-  const defaultRef = React.useRef();
+const IndeterminateCheckbox = React.forwardRef(({ indeterminate, myHandler, ...rest }, ref) => {
+  const defaultRef = useRef();
   const resolvedRef = ref || defaultRef;
 
-  React.useEffect(() => {
+  useEffect(() => {
     resolvedRef.current.indeterminate = indeterminate;
   }, [resolvedRef, indeterminate]);
 
-  return <input type="checkbox" className="rounded" ref={resolvedRef} {...rest} />;
+  return (
+    <input
+      type="checkbox"
+      className="rounded"
+      ref={resolvedRef}
+      {...rest}
+      onChange={props => {
+        rest.onChange(props);
+        myHandler();
+      }}
+    />
+  );
 });
 
 const Table = ({ columns, data, title, checkboxes, initialState }: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
+  const [selected, setSelected] = useContext(SelectionContext);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
     {
@@ -72,18 +86,25 @@ const Table = ({ columns, data, title, checkboxes, initialState }: TableProps) =
       hooks.visibleColumns.push(tableColumns => [
         {
           id: 'selection',
+          disableSortBy: true,
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
           Header: ({ getToggleAllRowsSelectedProps }) => (
             <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} myHandler={() => {}} />
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
           Cell: ({ row }) => (
             <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              <IndeterminateCheckbox
+                {...row.getToggleRowSelectedProps()}
+                myHandler={() => {
+                  console.log(selected);
+                  setSelected([...selected, row]);
+                }}
+              />
             </div>
           ),
         },
@@ -131,4 +152,5 @@ const Table = ({ columns, data, title, checkboxes, initialState }: TableProps) =
   );
 };
 
+export type { TableProps };
 export { Table };

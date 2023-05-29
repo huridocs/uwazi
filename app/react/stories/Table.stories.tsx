@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Table } from 'V2/Components/UI/Table';
-import { Button } from 'V2/Components/UI/Button';
+import { Table, TableProps } from 'V2/Components/UI/Table';
+import { Button, SelectionContext } from 'V2/Components/UI';
+import { TableSelector } from 'app/V2/Components/UI/TableWithCheckbox';
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -18,14 +19,41 @@ const Primary: Story = {
   ),
 };
 
+const Report = () => {
+  const [selected] = useContext(SelectionContext);
+  return (
+    <>
+      <p className="mb-4">Selected rows: {selected.length}</p>
+      <pre>{selected.map(select => JSON.stringify(select.original, null, 2))}</pre>
+    </>
+  );
+};
+
+const TableWithCheckBoxes = ({ columns, data, title }: TableProps) => (
+  <div className="tw-content">
+    <h1>Table one</h1>
+    <TableSelector>
+      <Table columns={columns} data={data} title={title} checkboxes />
+      <div className="mt-4">
+        <Report />
+      </div>
+    </TableSelector>
+
+    <hr />
+
+    <h2>Table two</h2>
+    <TableSelector>
+      <Table columns={columns} data={data} title={title} checkboxes />
+      <div className="mt-4">
+        <Report />
+      </div>
+    </TableSelector>
+  </div>
+);
+
 const Checkboxes: Story = {
   render: args => (
-    <div className="tw-content">
-      <Table columns={args.columns} data={args.data} title={args.title} checkboxes />
-      <div className="mt-4">
-        <p>Selected rows:</p>
-      </div>
-    </div>
+    <TableWithCheckBoxes columns={args.columns} data={args.data} title={args.title} />
   ),
 };
 

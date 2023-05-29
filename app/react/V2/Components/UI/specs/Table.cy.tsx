@@ -48,9 +48,21 @@ describe('Table', () => {
       cy.get('[type="checkbox"]').should('have.length', 4);
     });
 
-    it('should allow selecting items', () => {});
+    it('should allow selecting items', () => {
+      cy.get('[type="checkbox"]').eq(1).click();
+      cy.contains('p', 'Selected rows: 1');
 
-    it('should allow selecting all', () => {});
+      cy.get('[type="checkbox"]').eq(1).click();
+      cy.contains('p', 'Selected rows: 0');
+    });
+
+    it('should allow selecting all', () => {
+      cy.get('[type="checkbox"]').eq(0).click();
+      cy.contains('p', 'Selected rows: 3');
+
+      cy.get('[type="checkbox"]').eq(0).click();
+      cy.contains('p', 'Selected rows: 0');
+    });
 
     it('should trigger the onSelect function', () => {});
   });
