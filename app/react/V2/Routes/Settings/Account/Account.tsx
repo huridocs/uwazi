@@ -4,18 +4,33 @@ import { IncomingHttpHeaders } from 'http';
 import { Translate } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import UsersAPI from 'app/Users/UsersAPI';
+import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { ActionFunction, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { UserSchema } from 'shared/types/userType';
 import { InputField } from 'app/V2/Components/Forms';
-import { Button, Sidepanel } from 'app/V2/Components/UI';
+import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { useForm } from 'react-hook-form';
-import { User } from 'api/users.v2/model/User';
+import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     UsersAPI.currentUser(new RequestParams({}, headers));
+
+const accountAction =
+  (): ActionFunction =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const formIntent = formData.get('intent') as 'update' | '2fa';
+
+    switch (formIntent) {
+      case '2fa':
+        return Auth2faAPI.enable(new RequestParams({ token: formData.get('token') }));
+      default:
+        return UsersAPI.save(formData);
+    }
+  };
 
 const Account = () => {
   const userAccount = useLoaderData() as UserSchema;
@@ -26,10 +41,7 @@ const Account = () => {
     register,
     watch,
     handleSubmit,
-    setValue,
-    getFieldState,
-    reset,
-    formState: { isDirty, errors, isSubmitting },
+    formState: { errors },
   } = useForm<AccountForm>({
     defaultValues: userAccount,
     mode: 'onSubmit',
@@ -38,7 +50,7 @@ const Account = () => {
   const submit = async (data: AccountForm) => {
     console.log(data);
   };
-  console.log(errors);
+  console.log(userAccount);
   return (
     <div
       className="tw-content"
@@ -53,10 +65,7 @@ const Account = () => {
             </h1>
           </NavigationHeader>
           <form onSubmit={handleSubmit(submit)} id="account-form">
-            <div className="shadow-md sm:rounded-lg p-5 mb-4">
-              <h2 className="text-m font-semibold text-primary-700 bg-gray-50 -mt-5 -mx-5 p-4 mb-5">
-                <Translate>General Information</Translate>
-              </h2>
+            <Card className="mb-4" title={<Translate>General Information</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <InputField
@@ -82,11 +91,8 @@ const Account = () => {
                   />
                 </div>
               </div>
-            </div>
-            <div className="shadow-md sm:rounded-lg p-5 mb-4">
-              <h2 className="font-semibold text-primary-700 bg-gray-50 -mt-5 -mx-5 p-4 mb-5">
-                <Translate>Change Password</Translate>
-              </h2>
+            </Card>
+            <Card className="mb-4" title={<Translate>Change Password</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <InputField
@@ -107,26 +113,46 @@ const Account = () => {
                   <div className="text-sm text-red-800 font-semibold">Passwords do not match.</div>
                 )}
               </div>
-            </div>
-            <div className="shadow-md sm:rounded-lg p-5 mb-4">
-              <h2 className="text-m font-semibold text-yellow-800 bg-yellow-100 -mt-5 -mx-5 p-4 mb-5">
-                <Translate>Two-Factor Authenticator</Translate>
-              </h2>
-              <div className="flex gap-6 items-center">
-                <Button
-                  buttonStyle="secondary"
-                  className="flex-none"
-                  onClick={() => setIsSidepanelOpen(true)}
-                >
-                  <Translate>Enable</Translate>
-                </Button>
-                <div className="flex-1 grow">
-                  <Translate>
-                    You should activate this feature for enhanced account security.
-                  </Translate>
+            </Card>
+            {userAccount.using2fa ? (
+              <Card
+                className="mb-4"
+                title={<Translate>Two-Factor Authentication</Translate>}
+                color="default"
+              >
+                <div className="flex gap-6 items-center">
+                  <Button buttonStyle="secondary" className="flex-none">
+                    <Translate>Activated</Translate>
+                  </Button>
+                  <div className="flex-1 grow">
+                    <Translate>
+                      Your account's security is enhanced with two-factor authentication.
+                    </Translate>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </Card>
+            ) : (
+              <Card
+                className="mb-4"
+                title={<Translate>Two-Factor Authentication</Translate>}
+                color="yellow"
+              >
+                <div className="flex gap-6 items-center">
+                  <Button
+                    buttonStyle="secondary"
+                    className="flex-none"
+                    onClick={() => setIsSidepanelOpen(true)}
+                  >
+                    <Translate>Enable</Translate>
+                  </Button>
+                  <div className="flex-1 grow">
+                    <Translate>
+                      You should activate this feature for enhanced account security.
+                    </Translate>
+                  </div>
+                </div>
+              </Card>
+            )}
           </form>
         </div>
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
@@ -141,14 +167,16 @@ const Account = () => {
         </div>
       </div>
       <Sidepanel
-        title={<Translate className="uppercase">Two-step verification</Translate>}
+        title={<Translate className="uppercase">Two-Factor Authentication</Translate>}
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
+        size="large"
+        withOverlay
       >
-        <h1>Sidepanel</h1>
+        <TwoFactorSetup onCancel={() => setIsSidepanelOpen(false)} />
       </Sidepanel>
     </div>
   );
 };
 
-export { Account, accountLoader };
+export { Account, accountLoader, accountAction };
