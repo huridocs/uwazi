@@ -3,16 +3,16 @@ import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPr
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
 
 export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
-  private queue: JobsDispatcher;
+  private dispatcher: JobsDispatcher;
 
-  constructor(queue: JobsDispatcher) {
-    this.queue = queue;
+  constructor(dispatcher: JobsDispatcher) {
+    this.dispatcher = dispatcher;
   }
 
-  async update(candidateIds: string[]): Promise<void> {
+  async update(entityIds: string[]): Promise<void> {
     await Promise.all(
-      candidateIds.map(async candidate =>
-        this.queue.dispatch(new UpdateRelationshipPropertiesJob(candidate))
+      entityIds.map(async entityId =>
+        this.dispatcher.dispatch(new UpdateRelationshipPropertiesJob(entityId))
       )
     );
   }
