@@ -33,7 +33,7 @@ function setUpJobsQueueWorker() {
   const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
   const RSMQ = new RedisSMQ({ client: redisClient });
   const queue = new Queue('uwazi_jobs', RSMQ, StringJobSerializer);
-  
+
   registerUpdateRelationshipPropertiesJob(queue);
 
   const queueWorker = new QueueWorker(queue);

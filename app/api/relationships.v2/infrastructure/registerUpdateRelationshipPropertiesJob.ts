@@ -11,7 +11,7 @@ import { UpdateRelationshipPropertiesJob } from '../services/propertyUpdateStrat
 export function registerUpdateRelationshipPropertiesJob(queue: Queue) {
   queue.register(
     UpdateRelationshipPropertiesJob,
-     async namespace =>
+    async namespace =>
       new Promise((resolve, reject) => {
         tenants
           .run(async () => {
@@ -33,5 +33,5 @@ export function registerUpdateRelationshipPropertiesJob(queue: Queue) {
           }, namespace)
           .catch(reject);
       })
-    );
+  );
 }
