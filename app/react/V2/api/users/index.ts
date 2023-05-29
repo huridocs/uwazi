@@ -1,8 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import UsersAPI from 'app/Users/UsersAPI';
-import { getGroups } from 'app/Users/components/usergroups/UserGroupsAPI';
+import * as GroupsAPI from 'app/Users/components/usergroups/UserGroupsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
 const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   const requestParams = new RequestParams(user, headers);
@@ -16,6 +16,12 @@ const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =
   return savedUser;
 };
 
+const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams(group, headers);
+  const savedGroup = await GroupsAPI.saveGroup(requestParams);
+  return savedGroup;
+};
+
 const get = async (headers?: IncomingHttpHeaders) => {
   const requestParams = new RequestParams({}, headers);
   const response = UsersAPI.get(requestParams);
@@ -24,8 +30,8 @@ const get = async (headers?: IncomingHttpHeaders) => {
 
 const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   const requestParams = new RequestParams({}, headers);
-  const response = getGroups(requestParams);
+  const response = GroupsAPI.getGroups(requestParams);
   return response;
 };
 
-export { get, getUserGroups, newUser, saveUser };
+export { get, getUserGroups, newUser, saveUser, saveGroup };

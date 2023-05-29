@@ -1,13 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
 import { useForm } from 'react-hook-form';
+import { useFetcher } from 'react-router-dom';
+import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { ConfirmationModal } from './ConfirmationModal';
-import { useFetcher } from 'react-router-dom';
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -46,6 +48,7 @@ const UserFormSidepanel = ({
   groups,
 }: UserFormSidepanelProps) => {
   const [showModal, setShowModal] = useState(false);
+  const setNotifications = useSetRecoilState(notificationAtom);
   const fetcher = useFetcher();
 
   const defaultValues = {
@@ -92,6 +95,27 @@ const UserFormSidepanel = ({
     fetcher.submit(formData, { method: 'post' });
     reset({}, { keepValues: true });
   };
+
+  useEffect(() => {
+    setShowSidepanel(false);
+    switch (true) {
+      case fetcher.formData?.get('intent') === 'new-user':
+        setNotifications({
+          type: 'success',
+          text: <Translate>User saved</Translate>,
+        });
+        break;
+      case fetcher.formData?.get('intent') === 'edit-user':
+        setNotifications({
+          type: 'success',
+          text: <Translate>User updated</Translate>,
+        });
+        break;
+      default:
+        console.log('Returned data');
+        break;
+    }
+  }, [fetcher.data, fetcher.formData, setNotifications]);
 
   return (
     <>

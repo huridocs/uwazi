@@ -1,6 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useFetcher } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Sidepanel } from 'V2/Components/UI';
@@ -38,6 +41,8 @@ const GroupFormSidepanel = ({
   users,
 }: GroupFormSidepanelProps) => {
   const [showModal, setShowModal] = useState(false);
+  const setNotifications = useSetRecoilState(notificationAtom);
+  const fetcher = useFetcher();
 
   const defaultValues = { name: '', members: [] } as ClientUserGroupSchema;
 
@@ -66,6 +71,39 @@ const GroupFormSidepanel = ({
     }
   };
 
+  const formSubmit = async (data: ClientUserGroupSchema) => {
+    const formData = new FormData();
+    if (data._id) {
+      formData.set('intent', 'edit-group');
+    } else {
+      formData.set('intent', 'new-group');
+    }
+    formData.set('data', JSON.stringify(data));
+    fetcher.submit(formData, { method: 'post' });
+    reset({}, { keepValues: true });
+  };
+
+  useEffect(() => {
+    setShowSidepanel(false);
+    switch (true) {
+      case fetcher.formData?.get('intent') === 'new-group':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Group saved</Translate>,
+        });
+        break;
+      case fetcher.formData?.get('intent') === 'edit-group':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Group updated</Translate>,
+        });
+        break;
+      default:
+        console.log('Returned data');
+        break;
+    }
+  }, [fetcher.data, fetcher.formData, setNotifications]);
+
   return (
     <>
       <Sidepanel
@@ -74,12 +112,7 @@ const GroupFormSidepanel = ({
         closeSidepanelFunction={handleSidepanelState}
         title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
       >
-        <form
-          onSubmit={handleSubmit(data => {
-            console.log(data);
-          })}
-          className="flex flex-col h-full"
-        >
+        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
           <div className="flex-grow">
             <fieldset className="mb-5 border rounded-md border-gray-50 shadow-sm">
               <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg p-2">
