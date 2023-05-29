@@ -16,7 +16,7 @@ const translationsListLoader =
 
 const renderButton = ({ row }: any) => (
   <Link to={`edit/${row.values.id}`}>
-    <Button buttonStyle="secondary" className="leading-4">
+    <Button styling="outline" className="leading-4">
       <Translate>Translate</Translate>
     </Button>
   </Link>
