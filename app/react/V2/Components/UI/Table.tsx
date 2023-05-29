@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useMemo } from 'react';
 import {
@@ -26,6 +27,7 @@ interface TableProps {
   columns: ReadonlyArray<TableColumn<any>>;
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  checkboxes?: boolean;
   initialState?: Partial<TableState<any>>;
 }
 
@@ -41,7 +43,18 @@ const getIcon = (column: TableColumn<any>) => {
   }
 };
 
-const Table = ({ columns, data, title, initialState }: TableProps) => {
+const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref) => {
+  const defaultRef = React.useRef();
+  const resolvedRef = ref || defaultRef;
+
+  React.useEffect(() => {
+    resolvedRef.current.indeterminate = indeterminate;
+  }, [resolvedRef, indeterminate]);
+
+  return <input type="checkbox" className="rounded" ref={resolvedRef} {...rest} />;
+});
+
+const Table = ({ columns, data, title, checkboxes, initialState }: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo(() => data, [data]);
 
@@ -53,7 +66,29 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
     },
     useSortBy,
     useRowSelect,
-    useRowState
+    useRowState,
+    hooks =>
+      checkboxes &&
+      hooks.visibleColumns.push(tableColumns => [
+        {
+          id: 'selection',
+          // The header can use the table's getToggleAllRowsSelectedProps method
+          // to render a checkbox
+          Header: ({ getToggleAllRowsSelectedProps }) => (
+            <div>
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+            </div>
+          ),
+          // The cell can use the individual row's getToggleRowSelectedProps method
+          // to the render a checkbox
+          Cell: ({ row }) => (
+            <div>
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...tableColumns,
+      ])
   );
 
   return (

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Checkbox } from 'flowbite-react';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -18,7 +17,17 @@ const Primary: Story = {
     </div>
   ),
 };
-const checkboxCell = () => <Checkbox />;
+
+const Checkboxes: Story = {
+  render: args => (
+    <div className="tw-content">
+      <Table columns={args.columns} data={args.data} title={args.title} checkboxes />
+      <div className="mt-4">
+        <p>Selected rows:</p>
+      </div>
+    </div>
+  ),
+};
 
 const actionsCell = () => (
   <div className="flex gap-1">
@@ -32,7 +41,6 @@ const Basic = {
   args: {
     title: 'Table name',
     columns: [
-      { id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
       { Header: 'Title', accessor: 'title', id: 'title' },
       { Header: 'Description', accessor: 'description', disableSortBy: true },
       { Header: 'Date added', accessor: 'created', disableSortBy: true },
@@ -59,12 +67,6 @@ const WithActions = {
   args: {
     ...Basic.args,
     columns: [
-      {
-        id: 'select',
-        Header: '',
-        Cell: checkboxCell,
-        disableSortBy: true,
-      },
       { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
       {
         Header: 'Date added',
@@ -89,6 +91,13 @@ const WithActions = {
   },
 };
 
-export { Basic, WithActions };
+const WithCheckboxes = {
+  ...Checkboxes,
+  args: {
+    ...Basic.args,
+  },
+};
+
+export { Basic, WithActions, WithCheckboxes };
 
 export default meta;
