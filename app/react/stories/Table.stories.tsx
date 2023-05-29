@@ -23,7 +23,7 @@ const checkboxCell = () => <Checkbox />;
 const actionsCell = () => (
   <div className="flex gap-1">
     <Button>Primary</Button>
-    <Button buttonStyle="secondary">Secondary</Button>
+    <Button styling="outline">Secondary</Button>
   </div>
 );
 
