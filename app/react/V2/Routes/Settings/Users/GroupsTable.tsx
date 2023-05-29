@@ -51,15 +51,14 @@ const GroupsTable = ({ groups, onGroupsSelected, editButtonAction }: GroupsTable
     },
   ];
 
-  const sortedGroups = sortBy(groups, 'name');
-
   return (
     <Table
       columns={groupsColumns}
-      data={sortedGroups}
+      data={groups}
       title={<Translate>Groups</Translate>}
       enableSelection
       onRowSelected={onGroupsSelected}
+      initialState={{ sortBy: [{ id: 'name' }] }}
     />
   );
 };

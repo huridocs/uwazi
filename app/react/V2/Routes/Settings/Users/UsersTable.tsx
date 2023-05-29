@@ -83,15 +83,14 @@ const UsersTable = ({ users, onUsersSelected, editButtonAction }: UsersTableProp
     },
   ];
 
-  const sortedUsers = sortBy(users, 'username');
-
   return (
     <Table
       columns={usersColumns}
-      data={sortedUsers}
+      data={users}
       title={<Translate>Users</Translate>}
       enableSelection
       onRowSelected={onUsersSelected}
+      initialState={{ sortBy: [{ id: 'username' }] }}
     />
   );
 };
