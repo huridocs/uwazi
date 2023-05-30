@@ -1041,6 +1041,10 @@ input:checked + .toggle-bg {
   position: absolute;
 }
 
+.\!relative {
+  position: relative !important;
+}
+
 .relative {
   position: relative;
 }
@@ -1140,6 +1144,10 @@ input:checked + .toggle-bg {
 
 .float-right {
   float: right;
+}
+
+.m-0 {
+  margin: 0px;
 }
 
 .m-auto {
@@ -1527,9 +1535,53 @@ input:checked + .toggle-bg {
   width: 100%;
 }
 
+.w-\[200px\] {
+  width: 200px;
+}
+
+.w-96 {
+  width: 24rem;
+}
+
+.w-52 {
+  width: 13rem;
+}
+
+.\!w-full {
+  width: 100% !important;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-1 {
+  width: 0.25rem;
+}
+
+.w-24 {
+  width: 6rem;
+}
+
+.w-60 {
+  width: 15rem;
+}
+
 .min-w-fit {
   min-width: -moz-fit-content;
   min-width: fit-content;
+}
+
+.min-w-\[50\%\] {
+  min-width: 50%;
+}
+
+.min-w-\[1\] {
+  min-width: 1;
+}
+
+.min-w-\[150px\] {
+  min-width: 150px;
 }
 
 .max-w-2xl {
@@ -1556,6 +1608,10 @@ input:checked + .toggle-bg {
   max-width: 80rem;
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
@@ -1574,6 +1630,10 @@ input:checked + .toggle-bg {
 
 .max-w-xs {
   max-width: 20rem;
+}
+
+.max-w-\[150px\] {
+  max-width: 150px;
 }
 
 .flex-1 {
@@ -1749,6 +1809,10 @@ input:checked + .toggle-bg {
   gap: 1rem;
 }
 
+.gap-3 {
+  gap: 0.75rem;
+}
+
 .-space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(-1rem * var(--tw-space-x-reverse));
@@ -1849,6 +1913,16 @@ input:checked + .toggle-bg {
 
 .scroll-smooth {
   scroll-behavior: smooth;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 
 .whitespace-nowrap {
@@ -2817,6 +2891,14 @@ input:checked + .toggle-bg {
   padding-top: 1rem;
 }
 
+.pl-5 {
+  padding-left: 1.25rem;
+}
+
+.pl-1 {
+  padding-left: 0.25rem;
+}
+
 .text-left {
   text-align: left;
 }
@@ -3490,6 +3572,10 @@ input:checked + .toggle-bg {
 
 .hover\:cursor-not-allowed:hover {
   cursor: not-allowed;
+}
+
+.hover\:text-clip:hover {
+  text-overflow: clip;
 }
 
 .hover\:border-gray-300:hover {
@@ -5227,6 +5313,14 @@ input:checked + .toggle-bg {
     width: 1.5rem;
   }
 
+  .sm\:max-w-\[150px\] {
+    max-width: 150px;
+  }
+
+  .sm\:gap-6 {
+    gap: 1.5rem;
+  }
+
   .sm\:px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -5254,10 +5348,6 @@ input:checked + .toggle-bg {
   .md\:mx-2 {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
-  }
-
-  .md\:ml-2 {
-    margin-left: 0.5rem;
   }
 
   .md\:mr-6 {
@@ -5310,6 +5400,22 @@ input:checked + .toggle-bg {
 
   .md\:w-auto {
     width: auto;
+  }
+
+  .md\:w-52 {
+    width: 13rem;
+  }
+
+  .md\:w-6 {
+    width: 1.5rem;
+  }
+
+  .md\:w-8 {
+    width: 2rem;
+  }
+
+  .md\:w-60 {
+    width: 15rem;
   }
 
   .md\:max-w-xl {
@@ -5410,6 +5516,10 @@ input:checked + .toggle-bg {
 
   .lg\:hidden {
     display: none;
+  }
+
+  .lg\:max-w-xs {
+    max-width: 20rem;
   }
 }
 

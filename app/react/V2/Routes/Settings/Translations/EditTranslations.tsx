@@ -254,11 +254,15 @@ const EditTranslations = () => {
       data-testid="settings-translations-edit"
     >
       <SettingsContent>
-        <SettingsContent.Header />
+        <SettingsContent.Header
+          path={new Map([['Translations', '/settings/translations']])}
+          title={contextLabel}
+          contextId={contextId}
+        />
         <SettingsContent.Body>
-          <div className="pb-4">
-            <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
-              <div className="ml-2 text-sm text-gray-700">
+          <div className="px-5">
+            <ToggleButton className="px-5" onToggle={() => setHideTranslated(!hideTranslated)}>
+              <div className="pl-1 text-sm text-gray-700 ">
                 <Translate>Untranslated Terms</Translate>
               </div>
             </ToggleButton>

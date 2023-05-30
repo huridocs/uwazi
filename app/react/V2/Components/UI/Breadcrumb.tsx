@@ -1,36 +1,35 @@
-import React from 'react';
+/* eslint-disable react/no-multi-comp */
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import React, { PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 
-interface HeaderProps {
-  children: React.ReactNode | string;
-  backUrl?: string;
-}
+type BreadcrumbProps = PropsWithChildren & {
+  url: string;
+  className: string;
+};
 
-const Breadcrumb = ({ children, backUrl }: HeaderProps) => (
-  <div className="flex items-center">
-    {backUrl && (
-      <Link to={backUrl} className="block lg:hidden">
-        <div className="flex mr-3">
-          <svg
-            className="w-6 h-6"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M15.75 19.5L8.25 12l7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="sr-only">
-            <Translate>Navigate back</Translate>
-          </span>
-        </div>
-      </Link>
-    )}
-    {children}
-  </div>
+const Breadcrumb = ({ children }: PropsWithChildren) => (
+  <nav className="!relative flex right-0 h-4 !bg-transparent m-0 !w-full" aria-label="Breadcrumb">
+    <ol className="inline-flex items-center space-x-1">{children}</ol>
+  </nav>
 );
+
+const Item = ({ children, url, className }: BreadcrumbProps) => (
+  <li className={`inline-flex items-center ${className}`}>
+    <Link
+      to={url}
+      className="inline-flex items-center ml-0 text-base font-medium text-gray-700 truncate w-60 sm:gap-6 hover:text-blue-600 hover:underline dark:text-gray-400 dark:hover:text-white"
+    >
+      {children}
+    </Link>
+    <ChevronRightIcon className="w-12 pl-1 md:w-8" />
+    <span className="sr-only">
+      <Translate>Navigate back</Translate>
+    </span>
+  </li>
+);
+
+Breadcrumb.Item = Item;
 
 export { Breadcrumb };
