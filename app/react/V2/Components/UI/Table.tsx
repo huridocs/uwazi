@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   flexRender,
   getSortedRowModel,
@@ -7,6 +6,7 @@ import {
   useReactTable,
   createColumnHelper,
   AccessorFn,
+  SortingState,
 } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
@@ -38,22 +38,13 @@ interface TableProps {
 // };
 
 const Table = ({ columns, data, title, initialState }: TableProps) => {
-  // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
-  //   {
-  //     columns: memoizedColumns,
-  //     data: memoizedData,
-  //     initialState,
-  //   },
-  //   useSortBy,
-  //   useRowSelect,
-  //   useRowState
-  // );
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnHelper = createColumnHelper();
 
   const constructedColumns = columns.map(column =>
     columnHelper.accessor(column.accessor, {
-      id: column.id || column.accessor,
+      id: column.id || column.accessor.toString(),
       cell: info => (column.cell ? column.cell(info.getValue()) : info.renderValue()),
       header: column.header,
     })
@@ -62,36 +53,61 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
   const table = useReactTable({
     columns: constructedColumns,
     data,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
   return (
-    <table>
-      <thead>
-        {table.getHeaderGroups().map(headerGroup => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
+    <div className="relative overflow-x-auto">
+      <table className="w-full text-sm text-left">
+        {title && (
+          <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
+            {title}
+          </caption>
+        )}
 
-      <tbody>
-        {table.getRowModel().rows.map(row => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id} scope="col" className="px-6 py-3">
+                  {header.isPlaceholder ? null : (
+                    <div
+                      {...{
+                        className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: ' asc',
+                        desc: ' desc',
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id} className="bg-white border-b">
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id} className="px-6 py-3">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

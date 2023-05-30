@@ -18,6 +18,10 @@ const Primary: Story = {
   ),
 };
 
+const customCell = (value: string) => (
+  <div className="bg-gray-400 rounded text-white text-center">{value}</div>
+);
+
 const actionsCell = () => (
   <div className="flex gap-1">
     <Button>Primary</Button>
@@ -32,7 +36,7 @@ const Basic = {
     columns: [
       { header: 'Title', accessor: 'title', id: 'title' },
       { header: 'Description', accessor: 'description' },
-      { header: 'Date added', accessor: 'created' },
+      { header: 'Date added', accessor: 'created', cell: customCell },
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
