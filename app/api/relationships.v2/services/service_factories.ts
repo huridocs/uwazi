@@ -24,6 +24,7 @@ import Redis from 'redis';
 import { config } from 'api/config';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { tenants } from 'api/tenants';
+import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
@@ -58,16 +59,16 @@ const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelatio
       redisClient.on('connect', () =>
         resolve(
           new QueuedRelationshipPropertyUpdateStrategy(
-            new Queue('uwazi_jobs', RSMQ, StringJobSerializer, {
-              namespace: tenants.current().name,
-            })
+            new JobsRouter(
+              queueName =>
+                new Queue(queueName, RSMQ, StringJobSerializer, {
+                  namespace: tenants.current().name,
+                })
+            )
           )
         )
       );
-      redisClient.on('error', e => {
-        console.log(e);
-        return reject(e);
-      });
+      redisClient.on('error', reject);
     });
 
 const createUpdateStrategy = async (
