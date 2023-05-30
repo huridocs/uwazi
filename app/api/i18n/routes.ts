@@ -7,9 +7,24 @@ import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 import { languageSchema } from 'shared/types/commonSchemas';
 import { Application, Request } from 'express';
-import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/contentsClient';
+import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
-import translations, { UITranslationNotAvailable } from './translations';
+import translations from './translations';
+
+const addLanguage = async (language: any) => {
+  const newSettings = await settings.addLanguage(language);
+  const newTranslations = await translations.addLanguage(language.key);
+  await entities.addLanguage(language.key);
+  await pages.addLanguage(language.key);
+  try {
+    await translations.importPredefined(language.key);
+  } catch (error) {
+    if (!(error instanceof UITranslationNotAvailable)) {
+      throw error;
+    }
+  }
+  return { newSettings, newTranslations };
+};
 
 export default (app: Application) => {
   app.get('/api/translations', async (req, res) => {
@@ -108,10 +123,6 @@ export default (app: Application) => {
         await translations.importPredefined(locale);
         res.json(await translations.get({ locale }));
       } catch (error) {
-        if (error instanceof GithubQuotaExceeded || error instanceof GithubAuthenticationError) {
-          next(createError(error, 503));
-        }
-
         if (error instanceof UITranslationNotAvailable) {
           next(createError(error, 422));
         }
@@ -144,24 +155,21 @@ export default (app: Application) => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        body: languageSchema,
+        body: { type: 'array', items: languageSchema },
       },
     }),
 
     async (req, res) => {
-      const newSettings = await settings.addLanguage(req.body);
-      const newTranslations = await translations.addLanguage(req.body.key);
-      await entities.addLanguage(req.body.key);
-      await pages.addLanguage(req.body.key);
-      try {
-        await translations.importPredefined(req.body.key);
-      } catch (error) {
-        if (!(error instanceof UITranslationNotAvailable)) {
-          throw error;
-        }
+      const languages = req.body;
+      let newSettings;
+      let newTranslations;
+      for (let index = 0; index < languages.length; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        ({ newSettings, newTranslations } = await addLanguage(languages[index]));
+        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       }
+
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
       res.json(newSettings);
     }
   );

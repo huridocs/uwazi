@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 
 interface NotificationProps {
-  type: 'sucess' | 'info' | 'error';
+  type: 'success' | 'info' | 'error';
   text: string | React.ReactNode;
   heading?: string | React.ReactNode;
   details?: string | React.ReactNode;
@@ -49,9 +49,9 @@ const viewMoreIcons = {
   ),
 };
 
-const getIcon = (size: 'large' | 'small', type: 'sucess' | 'info' | 'error') => {
+const getIcon = (size: 'large' | 'small', type: 'success' | 'info' | 'error') => {
   const className = size === 'small' ? 'w-5 h-5' : 'w-7 h-7';
-  return type === 'sucess' || type === 'info' ? (
+  return type === 'success' || type === 'info' ? (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ const getIcon = (size: 'large' | 'small', type: 'sucess' | 'info' | 'error') => 
 };
 
 const Notification = ({
-  type = 'sucess',
+  type = 'success',
   text,
   heading,
   details,
@@ -117,10 +117,11 @@ const Notification = ({
       break;
 
     default:
-      containerClass = 'text-sucess-700 border-sucess-300 bg-white';
-      dismissClass = 'text-sucess-800 border-sucess-800 hover:bg-sucess-900 focus:ring-sucess-200';
-      viewMoreClass = 'bg-sucess-700 hover:bg-sucess-800';
-      iconContainer = 'bg-sucess-100';
+      containerClass = 'text-success-700 border-success-300 bg-white';
+      dismissClass =
+        'text-success-800 border-success-800 hover:bg-success-900 focus:ring-success-200';
+      viewMoreClass = 'bg-success-700 hover:bg-success-800';
+      iconContainer = 'bg-success-100';
       break;
   }
 
@@ -133,7 +134,7 @@ const Notification = ({
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}
-          <h3 className="text-lg font-medium ml-2">{heading}</h3>
+          <h3 className="ml-2 text-lg font-medium">{heading}</h3>
         </div>
       )}
       {heading ? (
@@ -146,7 +147,7 @@ const Notification = ({
           <div className="text-sm">{text}</div>
         </div>
       )}
-      {viewMore && <div className="text-sm mb-4">{details}</div>}
+      {viewMore && <div className="mb-4 text-sm">{details}</div>}
       <div className="flex">
         <button
           type="button"

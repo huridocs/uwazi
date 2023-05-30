@@ -18,7 +18,7 @@ describe('Share Entities', () => {
   it('Should list available collaborators of an entity', () => {
     selectRestrictedEntities();
     cy.contains('h2', titleEntity1).click();
-    cy.contains('button', 'Share').should('be.visible').click();
+    cy.contains('button', 'Share').click();
 
     cy.get('[data-testid=modal] input').focus();
     cy.contains('.userGroupsLookupField', 'Activistas');
@@ -26,7 +26,7 @@ describe('Share Entities', () => {
     cy.contains('.userGroupsLookupField', 'Public');
 
     cy.contains('[data-testid=modal] button', 'Close').click();
-    cy.get('[data-testid=modal]').should('not.be.visible');
+    cy.get('[data-testid=modal]').should('not.exist');
   });
 
   it('Should update the permissions of an entity', () => {
@@ -47,18 +47,18 @@ describe('Share Entities', () => {
     selectRestrictedEntities();
     cy.contains('h2', titleEntity2).click();
     cy.contains('button', 'Share').should('be.visible').click();
-    cy.get('.members-list').toMatchImageSnapshot();
+    cy.contains('.member-list-item', 'Administrators and Editors');
     cy.contains('[data-testid=modal] button', 'Close').click();
-    cy.get('[data-testid=modal]').should('not.be.visible');
+    cy.get('[data-testid=modal]').should('not.exist');
   });
 
   it('Should open the share modal for multiple selection', () => {
     cy.contains('button', 'Select all').click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.contains('[data-testid=modal] tr', 'editor');
-    cy.contains('[data-testid=modal] tr', 'admin');
-    cy.contains('[data-testid=modal] tr', 'Administrators and Editors');
-    cy.contains('[data-testid=modal] tr', 'Asesores legales');
+    cy.contains('.member-list-item', 'editor');
+    cy.contains('.member-list-item', 'admin');
+    cy.contains('.member-list-item', 'Administrators and Editors');
+    cy.contains('.member-list-item', 'Asesores legales');
     cy.contains('[data-testid=modal] button', 'Close').click();
   });
 

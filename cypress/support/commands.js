@@ -132,6 +132,9 @@ Cypress.Commands.add(
     );
   }
 );
+Cypress.Commands.add('configureCypressTestingLibrary', config => {
+  cy.configureCypressTestingLibrary(config);
+});
 
 Cypress.on('window:before:load', window => {
   window.document.head.insertAdjacentHTML(

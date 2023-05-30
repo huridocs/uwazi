@@ -22,7 +22,7 @@ class LibraryLayoutBase extends Component {
     } content-holder library-viewer document-viewer with-footer with-panel ${sidePanelMode} ]`;
 
     return (
-      <div className="row panels-layout">
+      <div className="row panels-layout" data-testid="library-content">
         <Helmet>
           <title>{t('System', 'Library', null, false)}</title>
         </Helmet>

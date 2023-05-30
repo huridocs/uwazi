@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress", "cypress-plugin-snapshots"]
+    "types": ["cypress", "cypress-plugin-snapshots"],
   },
   "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx"],
   "exclude": []

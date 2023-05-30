@@ -1,0 +1,922 @@
+Key,Korean 
+% of sentences above threshold,임계값 이상 문장 비율
+(view page),(페이지 보기)
++ click to select multiple cards.,+ click to select multiple cards.
+// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
+2FA,2FA
+2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
+A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
+Accept,수락
+Accepted suggestion on entity,Accepted suggestion on entity
+Account,계정
+Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
+Account unlocked successfully,Account unlocked successfully
+Accuracy,Accuracy
+Action,활동
+Activate this feature for enhanced account security,계정 보안 강화가 필요한 경우 이 기능을 활성화하십시오.
+Active languages,Active languages
+Activity log,활동 로그
+Add,추가
+Add / remove favorite,즐겨찾기 추가/제거
+Add date,날짜 추가
+Add entities / documents,엔티티/문서 추가
+Add file,파일 추가
+Add from URL,URL 에서 추가
+Add from web,웹에서 추가
+Add group,그룹 추가
+add icon,아이콘 추가
+Add language,언어 추가
+Add link,링크 추가
+Add page,페이지 추가
+Add PDF,Add PDF
+Add people or groups,사용자 혹은 그룹 추가
+Add properties,Add properties
+Add relationship,Add relationship
+Add relationship type,Add relationship type
+Add template,템플릿 추가
+Add thesaurus,시소러스 추가
+Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
+Add thesaurus value,Add thesaurus value
+Add timelink,Add timelink
+Add to all languages,모든 언어에 추가
+Add to table of contents,목차에 추가
+Add user,사용자 추가
+Add users,사용자 추가
+add value,add value
+Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
+Add/edit translations,번역 추가/편집
+Added language,Added language
+Added new user,Added new user
+added to hub with the following errors:,added to hub with the following errors:
+added to hub.,added to hub.
+Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
+Admin,관리자
+Administrators and Editors,관리자 및 편집자
+ALL,전체 필터
+All,전체 필터
+"All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
+Allow captcha bypass,Allow captcha bypass
+An error has occurred during data export,An error has occurred during data export
+An error occurred,An error occurred
+Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity or document,Any entity or document
+Apply to all languages,Apply to all languages
+Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
+Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
+Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
+Are you sure you want to delete this file?,Are you sure you want to delete this file?
+Are you sure you want to delete this item?,Are you sure you want to delete this item?
+Are you sure you want to delete this page?,Are you sure you want to delete this page?
+Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
+Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Attachment deleted,Attachment deleted
+Attachment renamed,Attachment renamed
+Attachment uploaded,Attachment uploaded
+Attachments,첨부 파일
+Authentication code,인증 코드
+auto-created,자동 생성 완료
+Auto-save,자동 저장
+Automatic Table of Contents,자동 생성 목차
+Automatically generated,자동 생성됨
+Available default translation,Available default translation
+Back,뒤로
+Back to,이전으로
+Back to dashboard,Back to dashboard
+Back to search,검색으로
+Back to thesauri,시소러스로 돌아가기
+Back to thesaurus,시소러스로 돌아가기
+Bad Request,Bad Request
+Body,바디
+Browse files to upload,업로드할 파일 탐색
+"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+Can edit,편집 가능
+Can see,열람 가능
+Can view,열람 가능
+Cancel,취소
+Canceling...,Canceling...
+Cannot delete relationship type:,Cannot delete relationship type:
+Cannot delete template:,Cannot delete template:
+Cannot delete thesaurus:,Cannot delete thesaurus:
+Captcha,보안 문자
+Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
+The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
+header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
+malicious content."
+Cards,카드
+Cards view,카드 뷰
+Change password,비밀번호 변경
+Change will take effect after saving the template,템플릿 저장 후 변경 사항이 적용됩니다.
+Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
+Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
+Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
+Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
+Check to make this instance private (only logged-in users can access the data),비공개 인스턴스로 전환하기 (로그인 사용자만 이용 가능)
+Chrome extension store link,Chrome extension store link
+Clear,Clear
+Clear coordinates,좌표 초기화
+Clear Filters,필터 초기화
+Clear PDF selection,Clear PDF selection
+Click,Click
+Click here,여기를 클릭하십시오
+Click to fill,텍스트 자동 채우기
+Close,닫기
+Collaborator,협업자
+Collapse all,Collapse all
+Collection,컬렉션
+Collection name,컬렉션 이름
+Configuration,Configuration
+Configure filters,필터 구성
+Configure suggestions,제안 구성
+Configure templates,Configure templates
+Confirm,확인
+CONFIRM,CONFIRM
+Confirm action,Confirm action
+Confirm delete connection,Confirm delete connection
+Confirm delete multiple items,삭제 확인 - 여러 항목
+confirm delete template,"Are you sure you want to delete this entity type?
+        This will delete the template and all relationship properties from other templates pointing to this one."
+Confirm deletion,삭제 확인
+Confirm deletion of,Confirm deletion of
+Confirm deletion of entity,Confirm deletion of entity
+Confirm deletion of file,Confirm deletion of file
+Confirm deletion of page:,Confirm deletion of page:
+Confirm deletion of relationship type:,Confirm deletion of relationship type:
+Confirm deletion of template:,Confirm deletion of template:
+Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
+Confirm discard changes,Confirm discard changes
+Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm new password,새 비밀번호 확인
+Confirm publish multiple items,여러 항목 게시 확인
+Confirm suggestion acceptance,Confirm suggestion acceptance
+Connect to a document,문서와 연결
+Connect to a paragraph,단락과 연결
+Connected to server,Connected to server
+Connection type,커넥션 유형
+Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
+Contact Form,연락처
+Content translations,Content translations
+Context,Context
+Conversion failed,변환 실패
+Copied to clipboard,Copied to clipboard
+Copy From,외부 복사
+Copy Highlighted,하이라이트 복사
+Copy link,링크 복사
+Copy properties to this entity from,이 엔티티의 속성 복사
+Copy token,Copy token
+Could not be processed,Could not be processed
+Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
+Could not reach server. Please try again later.,Could not reach server. Please try again later.
+Create,생성
+CREATE,생성
+Create and edit thesauri,Create and edit thesauri
+Create Connection,Create Connection
+Create dictionaries,사전 만들기
+Create entity,엔티티 생성
+Create Entity,엔티티 생성
+Create Extractor,Create Extractor
+Create group,그룹 생성
+Create new entities and upload documents,Create new entities and upload documents
+Create Reference,Create Reference
+Create relationship types,Create relationship types
+Create relationships and references,Create relationships and references
+Create table of contents,Create table of contents
+Created entity,Created entity
+Created entity coming from a public form,Created entity coming from a public form
+Created page,Created page
+Created relation type,Created relation type
+Created relationship,Created relationship
+Created successfully.,Created successfully.
+Created template,Created template
+Created thesaurus,Created thesaurus
+Created user group,Created user group
+Current value,Current value
+Currently connections only need a title.,커넥션에 제목이 필요합니다.
+Custom component error,사용자 맞춤 구성 오류
+Custom CSS,사용자 맞춤 CSS
+Custom favicon,사용자 파비콘
+Custom JS,Custom JS
+custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom starting location,사용자 지정 시작 위치
+Custom Uploads,사용자 맞춤 업로드
+Dashboard,Dashboard
+Data imported,데이터 업로드 완료
+Date added,추가한 날짜
+Date format,날짜 형식
+Date modified,수정한 날짜
+Day,일자
+Default,Default
+Default filter,Default filter
+Default language,Default language
+Default language change success,기본 언어 변경 완료
+Default template,기본 템플릿
+Default view,Default view
+Delete,삭제
+DELETE,삭제
+Delete entities and documents,Delete entities and documents
+Delete file,Delete file
+Delete Group,그룹 삭제
+Delete language,언어 삭제
+Delete Property,속성 삭제
+Deleted attachment,Deleted attachment
+Deleted custom file,Deleted custom file
+Deleted entity,Deleted entity
+Deleted file,Deleted file
+Deleted multiple entities,Deleted multiple entities
+Deleted page,Deleted page
+Deleted relation type,Deleted relation type
+Deleted relationship,Deleted relationship
+Deleted successfully.,Deleted successfully.
+Deleted template,Deleted template
+Deleted thesaurus,Deleted thesaurus
+Deleted user,Deleted user
+Deleted user group,Deleted user group
+Deletion success,Deletion success
+Description,설명
+Discard changes,변경 취소
+Discard changes?,Discard changes?
+Dismiss,Dismiss
+Display entity view from page,페이지에서 엔티티 뷰 표시
+Document,문서
+Document and entity types,문서 및 엔티티 유형
+Document contents,문서 내용
+Document OCR trigger,Document OCR trigger
+Document Title,문서 제목
+Documentation,기록
+documents,문서
+Documents,문서
+documents before training (30 per topic).,트레이닝 전 문서 (주제 당 30 개)
+Documents for custom filter,사용자 맞춤 필터 문서
+Documents including suggestion:,제안 포함 문서:
+documents so far.,현재까지 문서
+documents to be reviewed,검토할 문서
+Documents to be reviewed,검토할 문서
+documents.,문서
+Download,다운로드
+Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
+Drag items here,여기에 아이템을 드래그합니다.
+Drag properties here,여기에 속성을 드래그합니다.
+Drop your files here to upload or,여기에 파일을 드롭해 업로드합니다.
+Duplicate values not allowed.,Duplicate values not allowed.
+Duplicated email,이메일 중복
+Duplicated label,라벨 중복
+Duplicated name,중복된 이름
+Duplicated username,사용자 이름 중복
+Edit,편집
+Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
+Edit Extractor,Edit Extractor
+Edit metadata of entities,Edit metadata of entities
+Editor,편집자
+editor,편집자
+Email,이메일
+Email address,이메일 주소
+Email is required,이메일이 필요합니다.
+Email updated,이메일 업데이트 완료
+Empty,Empty
+Empty / Empty,Empty / Empty
+Empty / Label,Empty / Label
+Empty / Obsolete,Empty / Obsolete
+Empty / Value,Empty / Value
+empty property tip,You won't be able to save an entity if this property is empty.
+emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
+emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable this page to be used as an entity view page:,엔티티 뷰 페이지가 필요할 경우 활성화하십시오.
+Enter the 6-digit verification code generated by your Authenticator app:,보안 인증 앱에서 생성된 6자리 인증 코드를 입력하십시오.
+Entities,엔티티
+entities,엔티티
+Entities across all languages,Entities across all languages
+"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",사용자 맞춤 페이지에서 엔티티를 게시하려면 '페이지' 항목에서 사용자 맞춤 페이지를 생성 후 여기에서 선택하십시오.
+Entity,엔티티
+Entity deleted,Entity deleted
+Entity saved,Entity saved
+Entity types,엔티티 유형
+Entity updated,Entity updated
+Error,오류
+Expand all,Expand all
+Exploration,탐색
+Export CSV,CSV 추출
+Exporting entities to CSV,엔티티를 CSV 로 추출
+Extension Token,Extension Token
+Extract information from your documents,문서에서 정보 추출
+Extractor Name,Extractor Name
+Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+
+1. Upload your icon in Custom Uploads.
+2. Copy its URL.
+3. Choose ""Custom Icon"" and paste the URL in the indicated field.
+4. Reload the page to see your favicon in action."
+FEATURED,선택 필터
+File,파일
+File deleted,File deleted
+File updated,File updated
+Files,Files
+Files and database usage,Files and database usage
+Fill,채우기
+Filters,필터
+Filters AND operator,필터 AND 오퍼레이터
+Filters configuration,필터 구성
+Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
+Filters configuration example,필터 구성 예시
+Filters OR operator,필터 OR 오퍼레이터
+Find,찾기
+Find suggestions,Find suggestions
+Finding suggestions,Finding suggestions
+Fine tune,미세 조정
+Firefox extension store link,Firefox extension store link
+Fit,맞추기
+Flag,깃발
+for,for
+Forgot Password?,비밀번호를 잊으셨나요?
+Forms and email configuration,양식 및 이메일 구성
+From all templates,From all templates
+Full edit mode,전체 편집 모드
+Full width,Full width
+General,일반
+Global CSS,Global CSS
+Global CSS & JS,Global CSS & JS
+Google Analytics,구글 분석
+Google Analytics ID,구글 분석 ID
+Google Maps,Google Maps
+Group,Group
+Group created,Group created
+Group deleted,Group deleted
+Group name,Group name
+Group updated,Group updated
+Groups,그룹
+help,도움말
+here,here
+Hide actions,Hide actions
+Hide label,라벨 숨기기
+Hide toolbar,Hide toolbar
+https://yourdomain,전체경로: https://yourdomain
+hubs,허브
+Hybrid,Hybrid
+Icon,아이콘
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",외부 URL 인 경우 전체 경로 (http://www. 부터 시작하는 전체 URL) 를 넣으십시오.
+"If you want to continue, please type",계속하려면 다음을 입력하십시오:
+Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
+Import,업로드
+Import completed,Import completed. Number of entities created:
+Import CSV,CSV 업로드
+Import instructions,업로드 가이드라인
+Imported entities from file,Imported entities from file
+Imported translations from file,Imported translations from file
+Importing data in progress,데이터 업로드 중
+in,안
+"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
+In OCR queue,OCR 대기 중
+incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
+Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
+Info,정보
+Information extraction training,Information extraction training
+Inherit,Inherit
+Inherit property,속성 이어받기
+Install,Install
+Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language(s),Install language(s)
+INSTALL the browser extension,INSTALL the browser extension
+Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
+Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Invalid captcha,잘못된 보안문자
+Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
+Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
+Invalid email,잘못된 이메일
+Invalid form,잘못된 형식
+Invalid home page url,Invalid home page url
+It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
+Item,Item
+Item name,Item name
+Items:,아이템
+Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
+key,Korean
+Label,라벨
+"Label date ""From""",~부터
+"Label date ""to""",~까지
+Label more documents,더 많은 문서에 라벨 지정
+Label your collection note,컬렉션 노트에 라벨 지정
+labelEmptyDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMatchDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMismatchDesc,"It has a current value and text selection but they do not match the model prediction. Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / labeled"". If the labeled data is correct and the suggestion is wrong no action is needed. It will be used as a training sample."
+Landing page,랜딩 페이지
+Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
+      
+A page: */page/dicxg0oagy3xgr7ixef80k9*
+A filtered view in Uwazi: */library/?searchTerm=test*
+An entity: */entity/9htbkgpkyy7j5rk9*
+A document: */document/4y9i99fadjp833di*
+      
+Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Language,언어
+Language Code,Language Code
+Language deleted,언어가 삭제되었습니다.
+Languages,언어
+Last updated,Last updated
+Latitude,위도
+Learn more,더 알아보기
+Learning...,학습 중
+Legend,범례
+Lengthy reindex process,Lengthy reindex process
+Library,라이브러리
+library list view,라이브러리 리스트 뷰
+library map view,라이브러리 지도 뷰
+library table view,라이브러리 테이블 뷰
+linked,링크 완료
+Live translate,Live translate
+Loading,Loading
+Login,로그인
+Login button,로그인 버튼
+Login failed,로그인 실패
+Logout,로그아웃
+Longitude,경도
+Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+low,낮게
+Manage site settings and configuration,사이트 설정 및 구성 관리
+Map,지도
+Map api key,Map api key
+Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map provider,Map provider
+Map view,지도 뷰
+MapBox,MapBox
+Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
+        -- from certain changes made to a template's property to new fields
+        that need to be populated across entities. 
+        This process will not negatively affect the data in your collection. 
+        It can last a few minutes and some parts of your collection might take
+        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Maps,지도
+Mark as Reviewed,검토 완료로 표시
+Markdown,Markdown
+Match / Label,Match / Label
+Match / Value,Match / Value
+Matching,Matching
+Matomo Analytics,Matomo 분석
+Members,멤버
+Menu,메뉴
+Message,메세지
+Message sent,Message sent
+Metadata,메타데이터
+Metadata creator,메타데이터 작성자
+Metadata Extraction,메타데이터 추출
+Metadata extraction dashboard,메타데이터 추출 대시보드
+MIGRATE,MIGRATE
+Minimum,최소
+Mismatch / Empty,Mismatch / Empty
+Mismatch / Label,Mismatch / Label
+Mismatch / Value,Mismatch / Value
+mismatched passwords,Passwords don't match
+Mixed access,혼합 접근
+ML TOC,ML TOC
+Month,월
+more options.,옵션 더보기
+Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
+Multimedia fit description,will show the entire media inside the container.
+Multiple date,Multiple date
+Multiple date range,Multiple date range
+Multiple inherited properties warning ([property 1] affects [property 2]),영향
+Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
+Multiple select,Multiple select
+Name,이름
+Name is required,이름이 필요합니다.
+Name is too long,이름이 너무 깁니다.
+Name is too short,이름이 너무 짧습니다.
+Name of the group,그룹 이름
+Narrow down your searches,검색을 세부화하십시오.
+Narrow your search,상세 검색
+Navigate back,Navigate back
+Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
+Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New entity,새 엔티티
+New group,New group
+New language added,새로운 언어가 추가되었습니다.
+New password,새 비밀번호
+New relationship type,New relationship type
+New relationships group,새로운 관계 그룹
+Next,다음
+No,아니오
+No attachments,첨부파일 없음
+No common filters,공통 필터 없음
+No Connections,커넥션 없음
+No Connections description,Connections are the direct relationships between this document and other documents and entities.
+No Documents found,문서를 찾지 못했습니다.
+no filters for templates,The combination of entity types doesn't have any filters in common.
+No icon / flag,아이콘/플래그 없음
+No Label,라벨 없음
+No options,No options
+No options found,검색된 옵션 없음
+No property,속성 없음
+No References,참고문헌 없음
+No References description,References are parts of this document related with other documents and entities.
+No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
+No Relationships,관계 없음
+No Relationships description,Relationships are bonds between entities.
+No Table of Contents,목차 없음
+No Table of Contents description,목차 설명 없음
+No text match,일치하는 텍스트 없음
+No text match description,You can type something different in the search box to get some results.
+No type,유형 없음
+No value,값 없음
+No Value,값 없음
+Non-matching,Non-matching
+Normal view,일반 뷰
+Not Found,Not Found
+Nothing to see here! The selected documents are not using the selected thesaurus,검색 결과 없음. 해당 문서는 선택한 시소러스를 사용하지 않습니다.
+Number of sentences above threshold,임계값 이상 문장 수
+Obsolete,Obsolete
+obsoleteDesc,A new model is training and processing suggestions. This suggestion was created by a previous model so no actions are possible until the new suggestion is received.
+OCR,OCR (광학 문자 인식)
+OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
+OCR completed,OCR 완료
+OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
+OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
+OCR error,OCR 에러
+OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR PDF,PDF OCR 읽기
+of,의
+Ok,확인
+OK,확인
+"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
+Ooops... please go,Ooops...
+Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
+Open PDF,Open PDF
+Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
+or,or
+or drop your files here.,혹은 여기에 파일을 드롭하십시오.
+Or enter this secret key into your Authenticator app,혹은 다음 키를 Authenticator 앱에 입력하십시오.
+Order,순서
+Other,기타
+other,기타
+out of,out of
+Page,페이지
+Page Javascript,페이지 자바스크립트
+Page name,Page name
+Pages,페이지
+Password,비밀번호
+Password changed success,Password changed success
+Password Error,암호 오류
+Password is too long,암호가 너무 깁니다.
+Password updated,암호 업데이트 완료
+Paste URL here,Paste URL here
+PDF,PDF
+per page,per page
+Permission,권한
+Permission on entities explicitly shared with the user,특정 사용자에게 엔티티 접근 허가
+Permissions,권한
+Plain text,일반 텍스트
+Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
+Please type in,Please type in
+Please type in letters and numbers from the image to start the export.,이미지에 있는 문자와 숫자를 입력해 추출을 시작하십시오.
+Precision,정확도
+Preserve,Preserve
+Preserve Extension,Preserve Extension
+Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Press enter to add,Enter 키를 눌러 추가
+Preview,미리보기
+Previous,이전
+Primary Documents,기본 문서
+Priority sorting,우선순위 정렬
+Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
+Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
+Private instance,비공개 인스턴스
+Processing,처리 중
+Properties,속성
+Properties from other templates in the collection using the same label,이 컬렉션 내 다른 템플릿의 속성이 동일한 라벨을 사용하고 있습니다.
+Property,Property
+Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
+Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+property date,Date
+property daterange,Date Range
+Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property generatedid,Generated ID
+property geolocation,Geolocation
+property image,Image
+property link,Link
+property markdown,Rich Text
+property media,Media
+property multidate,Multi Date
+property multidaterange,Multi Date Range
+property multiselect,Multiselect
+property numeric,Numeric
+property preview,Preview
+property relationship,Relationship
+property select,Select
+property text,Text
+Protect your account,계정 보호하기
+Protection,보호
+ProTip!,프로 팁
+Public Endpoints,공개 엔드포인트
+Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
+Public form settings description,Here you can configure the public form destination and the whitelisted templates
+Public Form submit URL,Public Form submit URL
+Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
+Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
+Publish,게시
+Published,공개 게시물
+Query,검사
+Quick labeling for,빠른 라벨링
+RAW,RAW
+Re-uploaded document,Re-uploaded document
+Receiving email,수신 이메일 주소
+Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Reference,Reference
+References,참고문헌
+Reject,거부
+Relationship,연결
+relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
+Relationship Type,Relationship Type
+Relationship types,연결 유형
+relationships,연결
+Relationships,연결
+Relationships saved,Relationships saved
+RelationType saved,연결 유형 저장 완료
+Remote Server Unreachable,Remote Server Unreachable
+Remove,제거
+remove icon,아이콘 제거
+Removed language,Removed language
+Rename,이름 재설정
+Renamed attachment,Renamed attachment
+Repeat Password,암호를 재입력하십시오.
+Request id #,아이디 요청 #
+Request token,Request token
+Required property,필수 속성
+Reset,초기화
+Reset 2FA,이중 인증 절차 재설정
+Reset default translation,Reset default translation
+Reset Password,암호 재설정
+Restricted,비공개 게시물
+Return to login,로그인으로 돌아가기
+Return to the thesaurus page when you finished labeling to start learning.,라벨링을 마치면 학습 시작을 위해 시소러스 페이지로 돌아가십시오.
+Review,Review
+Review unpublished document,게시 전 문서 검토
+Reviewed,검토 완료
+Reviewing,Reviewing
+Role,권한
+Route,루트
+Sample,샘플
+Satellite,Satellite
+Save,저장
+Save and go to next,저장하고 다음으로 이동
+Save changes,변경사항 저장
+Save document,문서 저장
+Save document(s),문서 저장
+Save password,암호 저장
+Save your work to make change permanent,Save your work to make change permanent
+Saved successfully.,Saved successfully.
+Search,검색
+Search item,아이템 검색
+Search not found,검색 결과 없음
+Search related entities or documents,연결된 엔티티 및 문서 검색
+Search relevance,관련성 검색
+Search text,텍스트 검색
+Search text description,Type something in the search box to get some results.
+Search Tips,검색 팁
+Search Tips: boolean,검색 팁: 연산자
+Search Tips: exact term,검색 팁: 정확한 용어
+Search Tips: one char wildcard,검색 팁: one char wildcard
+Search Tips: proximity,검색 팁: 근접성
+Search Tips: wildcard,검색 팁: wildcard
+secret key recommendation,(please keep this key secret and don't share it):
+Select,Select
+Select all,전체 선택
+Select files on your device,기기에서 파일을 선택하십시오.
+Select from computer,Select from computer
+Select relationship type,연결 유형 선택
+Select target paragraph,대상 단락 선택
+Select...,선택
+Selected,Selected
+selected,선택 완료
+selected of,~ 중 선택됨
+Semantic search,시맨틱 서치
+Semantic Search,시맨틱 서치
+Semantic search minimum sentences help,시맨틱 서치를 위한 최소 문장 팁
+Semantic search overview,시맨틱 서치 개요
+Semantic search results,시맨틱 서치 결과
+Semantic search threshold help,시맨틱 서치 임계값 도움말
+Send,전송
+Send recovery email,복구 이메일 전송
+Sending email,발신 이메일 주소
+Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
+Sending labeled data...,Sending labeled data...
+Sentences above threshold,임계값 이상 문장
+Services,Services
+Set as default,기본으로 설정
+Set default language,Set default language
+Set default template,Set default template
+Set the default starting point for your geolocation properties.,지리정보 속성을 위해 기본 시작점을 설정하십시오.
+Settings,설정
+settings,설정
+Settings updated,설정 업데이트 완료
+Share,공유
+Share edit access with other users,Share edit access with other users
+Share entities with the public,Share entities with the public
+Share with people and groups,사용자 및 그룹과 공유
+Shared as editor,편집자로 공유
+Shared as viewer,뷰어로 공유
+Show actions,Show actions
+Show cookie policy,쿠키 정책 보기
+Show filters,필터 보기
+Show Filters,Show Filters
+Show in cards,카드에 표시하기
+Show more,자세히 보기
+Show Suggestions,자동 제안 보기
+Show toolbar,Show toolbar
+shown of,/
+Sign in,로그인
+Single date,Single date
+Single date range,Single date range
+Single relationships must have a hub,Single relationships must have a hub
+Single select,Single select
+Size,크기
+Something went wrong,오류
+Sort,분류하기
+Sort ascending,Sort ascending
+Sort by,정렬 기준
+Sort descending,Sort descending
+sorted by,정렬 기준
+State,State
+State Legend,State Legend
+Status,Status
+Storage,Storage
+Streets,Streets
+Strict mode,제한 모드
+Style,스타일
+Submit,제출
+Submitted entity to a remote instance,Submitted entity to a remote instance
+Submitting,Submitting
+Success,Success
+"Success, Upload another?","Success, Upload another?"
+Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
+Suggestion,Suggestion
+Suggestions,자동 제안
+Supporting files,추가 파일
+Synced template,Synced template
+syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
+syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
+syntax to create page content,페이지 콘텐츠 생성 신택스
+System translations,System translations
+Table,테이블
+Table of Contents,목차
+Table of contents,목차
+Table view,테이블 뷰
+Template,템플릿
+Template conflict,Template conflict
+Template name,Template name
+Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
+       this process may take several minutes, do you want to continue?"
+Template(s),Template(s)
+Templates,템플릿
+Text,텍스트
+Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+The current model was trained at,현재 모델의 훈련은:
+"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","첫째, 문서를 라벨링하십시오. 라벨링된 문서는 Uwazi 가 알맞은 주제를 자동 제안하는 데에 필요한 샘플이 됩니다."
+The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
+The request could not be processed.,The request could not be processed.
+The template contains errors,템플릿에 오류가 포함되어 있습니다.
+The token does not validate against the secret key!,The token does not validate against the secret key!
+There are no pages enabled for entity view,엔티티 뷰가 활성화된 페이지가 없습니다.
+There are no untranslated terms,There are no untranslated terms
+There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
+Thesauri,시소러스
+Thesauri name,Thesauri name
+Thesaurus,Thesaurus
+Thesaurus saved,시소러스 저장 완료
+This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,이 영역에 사용자 맞춤 자바스크립트를 추가할 수 있습니다.
+This cannot be changed after saving,This cannot be changed after saving
+This content is automatically generated,콘텐츠가 자동으로 생성되었습니다.
+"This entity has no document, you probably want to see the metadata",이 엔티티에는 문서가 없습니다. 메타데이터를 확인하십시오.
+This entity is not public.,공개된 엔티티가 아닙니다.
+This entity is restricted from public view.,이 엔티티는 공개 모드에서 제한됩니다.
+This field is required,This field is required
+This file type is not supported on image fields,This file type is not supported on image fields
+This file type is not supported on media fields,This file type is not supported on media fields
+This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
+This property will appear in the library cards as part of the basic info.,이 속성은 카드의 기본 정보에 포함되며 라이브러리에서 볼 수 있습니다.
+This property will be inherited from the related entities and shown as metadata of this type of entities.,관련 엔티티에서 속성을 이어받아 현재 엔티티의 메타데이터에 포함시킵니다.
+This property will be shown using all the width available.,디스플레이 가능한 너비 내에서 이 속성을 표시합니다.
+This property will be shown without the label.,이 속성은 라벨 없이 표시됩니다.
+This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
+this template,this template
+This template has associated entities,This template has associated entities
+This template will be used as default for new entities.,이 템플릿을 새 엔티티의 기본값으로 사용합니다.
+This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
+This will cancel the finding suggestion process,This will cancel the finding suggestion process
+This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
+This will update the entity across all languages,This will update the entity across all languages
+Threshold,임계점
+Time,시간
+Timelinks,Timelinks
+Title,제목
+"To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
+"To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
+to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
+to learn more about the components.,구성 요소에 대해 더 자세히 알기
+to view your authentication code and verify your identity.,코드 확인하고 인증하기
+Tools,도구
+topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
+Total entities,Total entities
+Total files,Total files
+"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
+Total users,Total users
+Train model,트레이닝 모델:
+Training,Training
+Training model...,Training model...
+Translate,번역
+Translations,번역
+Translations imported.,Translations imported.
+Translations reset successfully,Translations reset successfully
+Translations saved,번역 저장 완료
+Try selecting other documents.,다른 문서 선택
+Turn off inline translation,Turn off inline translation
+Two-factor authentication enabled,Two-factor authentication enabled
+Two-factor authentication failed.,Two-factor authentication failed.
+Two-factor authentication secret,Two-factor authentication secret
+Two-factor verification failed,이중 인증 절차 실패
+Two-step verification,이중 인증
+Two-step verification successfully,"Congratulations!
+You have successfully configured two-step verification."
+Two-step verification token required,Two-step verification token required
+Type,유형
+Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
+Unlink,Unlink
+Unsupported OCR language,OCR 지원되지 않는 언어
+Untranslated Terms,Untranslated Terms
+Update,업데이트
+UPDATE,업데이트
+Update success,Update success
+Updated file,Updated file
+Updated multiple entities,Updated multiple entities
+Updated permissions on entity,Updated permissions on entity
+Updated relationships,Updated relationships
+Updated settings,Updated settings
+Updated translations,Updated translations
+Updated user,Updated user
+Upload a ZIP or CSV file.,ZIP 혹은 CSV 파일 업로드
+Upload and select file,업로드 및 파일 선택
+Upload from computer,컴퓨터에서 업로드
+Upload PDF,PDF 업로드
+Upload PDF(s) to create,PDF 업로드해 엔티티 생성
+Uploaded attachment,Uploaded attachment
+Uploaded custom file,Uploaded custom file
+Uploaded document,Uploaded document
+Uploaded file,Uploaded file
+Uploading,업로드 중
+Uploading ...,업로드 중
+Uploading file,파일 업로드 중
+Uploads,업로드
+URL,URL
+Use,사용
+Use as filter,Use as filter
+Use custom landing page,사용자 지정 랜딩 페이지
+User,사용자
+Username,사용자 이름
+Username is required,사용자 이름이 필요합니다.
+Username is too long,사용자 이름이 너무 깁니다.
+Username is too short,사용자 이름이 너무 짧습니다.
+Users,사용자
+Using Google Authenticator,Google Authenticator 사용 중
+Uwazi is developed by,Uwazi 제작 및 개발:
+"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi 가 라벨링된 문서를 학습하고 있습니다. 이 과정은 최대 2 시간이 소요될 수 있습니다. 완료 후 Uwazi 의 자동 제안을 검토할 수 있습니다.
+Uwazi UI,Uwazi UI
+Value,Value
+Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+valueMatchDesc,"It has a current value that matches the suggestion, but it doesn't have a text selection. Accepting will keep the value as it is and enrich it with the suggested text selection becoming a ""match / label"" that can be used as a training sample."
+valueMismatchDesc,"Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. If the current value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Verify,검증
+Verifying...,검증 중
+View,보기
+view,보기
+View entities,View entities
+View in library,라이브러리에서 보기
+View less,View less
+View more,View more
+View suggestions,자동 제안 보기
+WARNING,WARNING
+Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집
+We can't find the page you're looking for.,We can't find the page you're looking for.
+We recommend labeling,라벨링을 추천합니다.
+Website analytics,웹사이트 분석
+Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
+"Well, this is awkward...",알 수 없는 에러 발생
+Whitelisted Templates,Whitelisted Templates
+will be updated with the same value.,동일 값으로 업데이트됩니다.
+with,with
+With great power comes great responsibility!,큰 일에는 큰 책임이 따르는 법!
+x less,덜 보기
+x more,더 보기
+Year,연도
+"You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
+You can also improve the model by providing more labeled documents.,더 많은 문서를 라벨링해 자동 제안 기능을 향상시킬 수 있습니다.
+You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
+You have labeled,라벨링 완료:
+"You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
+You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
+Your account is protected by 2fa.,계정 이중 인증 보호 중
+Zoom in,확대
+Zoom in library view,라이브러리 뷰 확대
+Zoom out,축소
+Zoom out library view,라이브러리 뷰 축소

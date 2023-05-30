@@ -22,11 +22,26 @@ beforeEach(async () => {
           }),
           fixturesFactory.property('relProp3', 'newRelationship', {
             query: [],
+            filter: true,
+          }),
+          fixturesFactory.property('nullprop', 'newRelationship', {
+            query: [],
+          }),
+          fixturesFactory.property('relProp4', 'newRelationship', {
+            denormalizedProperty: 'select',
+            query: [],
+            filter: true,
           }),
         ]),
         fixturesFactory.template('template2', [fixturesFactory.property('textProp1', 'text', {})]),
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
+        fixturesFactory.template('template4', [
+          fixturesFactory.property('select', 'select', {
+            content: fixturesFactory.id('thesauri1'),
+          }),
+        ]),
       ],
+      dictionaries: [fixturesFactory.thesauri('thesauri1', ['value1', 'value2'])],
       entities: [
         fixturesFactory.entity(
           'entity1',
@@ -56,6 +71,16 @@ beforeEach(async () => {
                 inheritedType: 'text',
               },
             ],
+            // @ts-ignore
+            nullprop: null,
+            relProp4: [
+              {
+                value: 'entity4',
+                label: 'entity4',
+                inheritedValue: [{ value: 'value1', label: 'value1' }],
+                inheritedType: 'select',
+              },
+            ],
           },
           { published: true }
         ),
@@ -72,6 +97,14 @@ beforeEach(async () => {
           'template3',
           {
             dateProp1: [fixturesFactory.metadataValue(1676688700080)],
+          },
+          { published: true }
+        ),
+        fixturesFactory.entity(
+          'entity4',
+          'template4',
+          {
+            select: [{ value: 'value1' }],
           },
           { published: true }
         ),
@@ -166,6 +199,35 @@ describe('searching', () => {
           dateProp1: [{ value: 1676688700080 }],
         },
       },
+      {
+        sharedId: 'entity4',
+        metadata: {
+          select: [{ value: 'value1' }],
+        },
+      },
+    ]);
+  });
+});
+
+describe('search aggreagations', () => {
+  let results: any;
+
+  beforeEach(async () => {
+    results = await search.search({ types: [fixturesFactory.id('template1').toHexString()] }, 'en');
+  });
+
+  it('should return aggregations for relationship properties denormalizing the title', async () => {
+    expect(results.aggregations.all.relProp3.buckets).toMatchObject([
+      { label: 'entity3', filtered: { doc_count: 1 } },
+      { label: 'Any', filtered: { doc_count: 1 } },
+    ]);
+  });
+
+  it('should return aggregations for relationship properties denormalizing a select property', async () => {
+    results = await search.search({ types: [fixturesFactory.id('template1').toHexString()] }, 'en');
+    expect(results.aggregations.all.relProp4.buckets).toMatchObject([
+      { label: 'value1', filtered: { doc_count: 1 } },
+      { label: 'Any', filtered: { doc_count: 1 } },
     ]);
   });
 });
