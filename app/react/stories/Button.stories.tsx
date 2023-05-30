@@ -12,7 +12,7 @@ type Story = StoryObj<typeof Button>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Button buttonStyle={args.buttonStyle} size={args.size} disabled={args.disabled}>
+      <Button styling={args.styling} size={args.size} disabled={args.disabled} color={args.color}>
         {args.children}
       </Button>
     </div>
@@ -22,7 +22,8 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    buttonStyle: 'primary',
+    styling: 'solid',
+    color: 'primary',
     size: 'medium',
     disabled: false,
     children: 'Button name',

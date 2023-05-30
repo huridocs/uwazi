@@ -224,7 +224,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     role="cell"
                   >
                     <button
-                      class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
+                      class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
@@ -291,7 +291,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     role="cell"
                   >
                     <button
-                      class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
+                      class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
@@ -323,7 +323,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     role="cell"
                   >
                     <button
-                      class="text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
+                      class="text-white bg-primary-700 border-primary-700  disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
@@ -352,7 +352,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     role="cell"
                   >
                     <button
-                      class="text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
+                      class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 leading-4"
                       type="button"
                     >
@@ -382,7 +382,7 @@ exports[`LanguagesList render installed languages should show a list of installe
           class="flex gap-2 p-2 pt-1"
         >
           <button
-            class="text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
+            class="text-white bg-primary-700 border-primary-700  disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
             type="button"
           >
