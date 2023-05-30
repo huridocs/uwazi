@@ -151,7 +151,7 @@ const GroupFormSidepanel = ({
                 onChange={options => {
                   setValue(
                     'members',
-                    options.map(option => ({ refId: option.value })),
+                    options.filter(opt => opt.selected).map(option => ({ refId: option.value })),
                     { shouldDirty: true }
                   );
                 }}

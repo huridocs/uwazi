@@ -243,12 +243,14 @@ const UserFormSidepanel = ({
                 onChange={selectedGroups => {
                   setValue(
                     'groups',
-                    selectedGroups.map(selectedGroup => {
-                      const group = groups?.find(
-                        originalGroup => originalGroup.name === selectedGroup.value
-                      );
-                      return { _id: group?._id as string, name: group?.name as string };
-                    }),
+                    selectedGroups
+                      .filter(grp => grp.selected)
+                      .map(selectedGroup => {
+                        const group = groups?.find(
+                          originalGroup => originalGroup.name === selectedGroup.value
+                        );
+                        return { _id: group?._id as string, name: group?.name as string };
+                      }),
                     { shouldDirty: true }
                   );
                 }}

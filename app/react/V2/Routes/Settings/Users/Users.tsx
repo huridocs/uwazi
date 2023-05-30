@@ -140,11 +140,8 @@ const settingsUserAction =
         return usersAPI.saveUser(formValues);
 
       case 'new-group':
-        return usersAPI.saveGroup(formValues);
-
       case 'edit-group':
-        // return usersAPI.saveUser(formValues);
-        return null;
+        return usersAPI.saveGroup(formValues);
 
       default:
         return null;
