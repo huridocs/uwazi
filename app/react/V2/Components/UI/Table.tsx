@@ -1,98 +1,97 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
-  Column,
-  HeaderGroup,
-  useRowSelect,
-  useRowState,
-  useTable,
-  useSortBy,
-  UseSortByOptions,
-  UseSortByColumnProps,
-  TableState,
-} from 'react-table';
-
-import { Table as FlowbiteTable } from 'flowbite-react';
+  flexRender,
+  getSortedRowModel,
+  getCoreRowModel,
+  useReactTable,
+  createColumnHelper,
+  AccessorFn,
+} from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
-type TableColumn<T extends object> = Column<T> &
-  UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>> & {
-    disableSortBy?: boolean;
-    className?: string;
-  };
-
-interface TableProps {
-  columns: ReadonlyArray<TableColumn<any>>;
-  data: { [key: string]: any }[];
-  title?: string | React.ReactNode;
-  initialState?: Partial<TableState<any>>;
-}
-
-const getIcon = (column: TableColumn<any>) => {
-  switch (true) {
-    case !column.isSorted:
-      return <ChevronUpDownIcon className="w-4" />;
-    case !column.isSortedDesc:
-      return <ChevronUpIcon className="w-4" />;
-    case column.isSortedDesc:
-    default:
-      return <ChevronDownIcon className="w-4" />;
-  }
+type Column = {
+  header: string;
+  accessor: AccessorFn<any>;
+  id?: string;
+  cell?: (value: any) => React.ReactNode;
+  className?: string;
 };
 
-const Table = ({ columns, data, title, initialState }: TableProps) => {
-  const memoizedColumns = useMemo(() => columns, [columns]);
-  const memoizedData = useMemo(() => data, [data]);
+interface TableProps {
+  columns: Column[];
+  data: { [key: string]: any }[];
+  title?: string | React.ReactNode;
+  initialState?;
+}
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
-    {
-      columns: memoizedColumns,
-      data: memoizedData,
-      initialState,
-    },
-    useSortBy,
-    useRowSelect,
-    useRowState
+// const getIcon = (column: TableColumn<any>) => {
+//   switch (true) {
+//     case !column.isSorted:
+//       return <ChevronUpDownIcon className="w-4" />;
+//     case !column.isSortedDesc:
+//       return <ChevronUpIcon className="w-4" />;
+//     case column.isSortedDesc:
+//     default:
+//       return <ChevronDownIcon className="w-4" />;
+//   }
+// };
+
+const Table = ({ columns, data, title, initialState }: TableProps) => {
+  // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+  //   {
+  //     columns: memoizedColumns,
+  //     data: memoizedData,
+  //     initialState,
+  //   },
+  //   useSortBy,
+  //   useRowSelect,
+  //   useRowState
+  // );
+
+  const columnHelper = createColumnHelper();
+
+  const constructedColumns = columns.map(column =>
+    columnHelper.accessor(column.accessor, {
+      id: column.id || column.accessor,
+      cell: info => (column.cell ? column.cell(info.getValue()) : info.renderValue()),
+      header: column.header,
+    })
   );
 
+  const table = useReactTable({
+    columns: constructedColumns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
   return (
-    <FlowbiteTable {...getTableProps()}>
-      {title && (
-        <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
-          {title}
-        </caption>
-      )}
-      <FlowbiteTable.Head>
-        {headerGroups.map((headerGroup: HeaderGroup<any>) =>
-          headerGroup.headers.map((column: any) => (
-            <FlowbiteTable.HeadCell
-              {...column.getHeaderProps(column.getSortByToggleProps())}
-              className={column.className}
-            >
-              <div className={`text-gray-500 ${!column.disableSortBy ? 'flex flex-row' : ''}`}>
-                {column.render('Header')}
-                {column.Header && !column.disableSortBy && getIcon(column)}
-              </div>
-            </FlowbiteTable.HeadCell>
-          ))
-        )}
-      </FlowbiteTable.Head>
-      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900 divide-y">
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <FlowbiteTable.Row {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <FlowbiteTable.Cell {...cell.getCellProps()}>
-                  {cell.render('Cell')}
-                </FlowbiteTable.Cell>
-              ))}
-            </FlowbiteTable.Row>
-          );
-        })}
-      </FlowbiteTable.Body>
-    </FlowbiteTable>
+    <table>
+      <thead>
+        {table.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(header.column.columnDef.header, header.getContext())}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+
+      <tbody>
+        {table.getRowModel().rows.map(row => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

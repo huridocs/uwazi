@@ -1,6 +1,5 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Checkbox } from 'flowbite-react';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -18,7 +17,6 @@ const Primary: Story = {
     </div>
   ),
 };
-const checkboxCell = () => <Checkbox />;
 
 const actionsCell = () => (
   <div className="flex gap-1">
@@ -32,10 +30,9 @@ const Basic = {
   args: {
     title: 'Table name',
     columns: [
-      { id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
-      { Header: 'Title', accessor: 'title', id: 'title' },
-      { Header: 'Description', accessor: 'description', disableSortBy: true },
-      { Header: 'Date added', accessor: 'created', disableSortBy: true },
+      { header: 'Title', accessor: 'title', id: 'title' },
+      { header: 'Description', accessor: 'description' },
+      { header: 'Date added', accessor: 'created' },
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -59,29 +56,23 @@ const WithActions = {
   args: {
     ...Basic.args,
     columns: [
+      { header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
       {
-        id: 'select',
-        Header: '',
-        Cell: checkboxCell,
-        disableSortBy: true,
-      },
-      { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
-      {
-        Header: 'Date added',
+        header: 'Date added',
         accessor: 'created',
         disableSortBy: true,
         className: 'w-1/3',
       },
       {
-        Header: 'Description',
+        header: 'Description',
         accessor: 'description',
         disableSortBy: true,
         className: 'w-1/3',
       },
       {
         id: 'action',
-        Header: 'Actions',
-        Cell: actionsCell,
+        header: 'Actions',
+        cell: actionsCell,
         disableSortBy: true,
         className: 'text-center',
       },
