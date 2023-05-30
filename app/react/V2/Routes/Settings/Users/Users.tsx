@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { ActionFunction, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { Button, NavigationHeader, Tabs } from 'V2/Components/UI';
 import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
 import * as usersAPI from 'V2/api/users';
-import { UserFormSidepanel, GroupFormSidepanel } from 'V2/Components/Settings/UsersAndGroups';
+import {
+  UserFormSidepanel,
+  GroupFormSidepanel,
+  DeleteConfirmationModal,
+} from 'V2/Components/Settings/UsersAndGroups';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
 
@@ -17,9 +21,11 @@ const Users = () => {
   const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
   const [selected, setSelected] = useState<ClientUserSchema | ClientUserGroupSchema | undefined>();
   const [showSidepanel, setShowSidepanel] = useState(false);
-  const [, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedGroups, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
+  const fetcher = useFetcher();
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
@@ -67,7 +73,13 @@ const Users = () => {
                 <Button size="small" styling="light">
                   <Translate>Reset 2FA</Translate>
                 </Button>
-                <Button size="small" color="error">
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => {
+                    setShowDeleteModal(true);
+                  }}
+                >
                   <Translate>Delete</Translate>
                 </Button>
               </>
@@ -84,6 +96,19 @@ const Users = () => {
                   <Translate>Add group</Translate>
                 )}
               </Button>
+            )}
+            {selectedGroups.length > 0 ? (
+              <Button
+                size="small"
+                color="error"
+                onClick={() => {
+                  setShowDeleteModal(true);
+                }}
+              >
+                <Translate>Delete</Translate>
+              </Button>
+            ) : (
+              <></>
             )}
           </div>
         </SettingsFooter>
@@ -108,6 +133,25 @@ const Users = () => {
           groups={groups}
         />
       )}
+
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          setShowModal={setShowDeleteModal}
+          onConfirm={() => {
+            setShowDeleteModal(false);
+            // Delete user
+            const formData = new FormData();
+            if (activeTab === 'Users') {
+              formData.set('intent', 'delete-user');
+              formData.set('data', JSON.stringify(selectedUsers[0]));
+            } else {
+              formData.set('intent', 'delete-group');
+              formData.set('data', JSON.stringify(selectedGroups[0]));
+            }
+            fetcher.submit(formData, { method: 'post' });
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -127,22 +171,25 @@ const settingsUserAction =
     const formIntent = formData.get('intent') as
       | 'new-user'
       | 'edit-user'
+      | 'delete-user'
       | 'new-group'
-      | 'edit-group';
+      | 'edit-group'
+      | 'delete-group';
 
     const formValues = JSON.parse(formData.get('data') as string);
 
     switch (formIntent) {
       case 'new-user':
         return usersAPI.newUser(formValues);
-
       case 'edit-user':
         return usersAPI.saveUser(formValues);
-
+      case 'delete-user':
+        return usersAPI.deleteUser(formValues);
       case 'new-group':
       case 'edit-group':
         return usersAPI.saveGroup(formValues);
-
+      case 'delete-group':
+        return usersAPI.deleteGroup(formValues);
       default:
         return null;
     }

@@ -16,10 +16,22 @@ const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =
   return savedUser;
 };
 
+const deleteUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams(user, headers);
+  const savedUser = await UsersAPI.delete(requestParams);
+  return savedUser;
+};
+
 const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
   const requestParams = new RequestParams(group, headers);
   const savedGroup = await GroupsAPI.saveGroup(requestParams);
   return savedGroup;
+};
+
+const deleteGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams({ _id: group._id as string }, headers);
+  const deletedGroup = await GroupsAPI.deleteGroup(requestParams);
+  return deletedGroup;
 };
 
 const get = async (headers?: IncomingHttpHeaders) => {
@@ -34,4 +46,4 @@ const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-export { get, getUserGroups, newUser, saveUser, saveGroup };
+export { get, getUserGroups, newUser, saveUser, deleteUser, saveGroup, deleteGroup };

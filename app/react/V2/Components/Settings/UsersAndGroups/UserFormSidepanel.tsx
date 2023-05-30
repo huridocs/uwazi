@@ -116,7 +116,6 @@ const UserFormSidepanel = ({
         break;
 
       default:
-        console.log('Returned data');
         break;
     }
   }, [fetcher.data, fetcher.formData, setNotifications, setShowSidepanel]);
