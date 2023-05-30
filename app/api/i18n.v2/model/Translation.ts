@@ -1,3 +1,5 @@
+type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+
 export class Translation {
   readonly key: string;
 
@@ -6,7 +8,7 @@ export class Translation {
   readonly language: string;
 
   readonly context: {
-    type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+    type: ContextType;
     label: string;
     id: string;
   };
@@ -16,7 +18,7 @@ export class Translation {
     value: string,
     language: string,
     context: {
-      type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+      type: ContextType;
       label: string;
       id: string;
     }

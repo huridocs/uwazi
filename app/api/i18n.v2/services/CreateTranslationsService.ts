@@ -9,7 +9,7 @@ export interface CreateTranslationsData {
   key: string;
   value: string;
   context: {
-    type?: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+    type: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
     label: string;
     id: string;
   };

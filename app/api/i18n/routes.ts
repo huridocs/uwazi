@@ -11,13 +11,30 @@ import { GithubAuthenticationError, GithubQuotaExceeded } from 'api/i18n/content
 import needsAuthorization from '../auth/authMiddleware';
 import translations, { UITranslationNotAvailable } from './translations';
 
-export default (app: Application) => {
-  app.get('/api/translations', async (req, res) => {
-    const { context } = req.query;
-    const response = await translations.get({ context }, context && { locale: 1 });
+type TranslationsRequest = Request & { query: { context: string } };
 
-    res.json({ rows: response });
-  });
+export default (app: Application) => {
+  app.get(
+    '/api/translations',
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            context: { type: 'string' },
+          },
+          required: ['context'],
+        },
+      },
+    }),
+    async (req: TranslationsRequest, res) => {
+      const { context } = req.query;
+      const response = await translations.get({ context }, context && { locale: 1 });
+
+      res.json({ rows: response });
+    }
+  );
 
   app.get('/api/languages', async (_req, res) => {
     res.json(await translations.availableLanguages());
