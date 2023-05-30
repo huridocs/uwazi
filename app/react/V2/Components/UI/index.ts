@@ -1,6 +1,6 @@
 export { Button } from './Button';
 export { Modal } from './Modal';
-export { NavigationHeader } from './NavigationHeader';
+export { Breadcrumb } from './Breadcrumb';
 export { Pill } from './Pill';
 export { Table } from './Table';
 export { ToggleButton } from './ToggleButton';

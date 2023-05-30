@@ -5,7 +5,7 @@ import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { Breadcrumb } from 'app/V2/Components/UI/Breadcrumb';
 import { Pill } from 'V2/Components/UI/Pill';
 import * as translationsAPI from 'V2/api/translations/index';
 
@@ -71,11 +71,11 @@ const TranslationsList = () => {
       data-testid="settings-translations"
     >
       <div className="p-5">
-        <NavigationHeader backUrl="/settings">
+        <Breadcrumb backUrl="/settings">
           <h1 className="text-base text-gray-700">
             <Translate>Translations</Translate>
           </h1>
-        </NavigationHeader>
+        </Breadcrumb>
         <div className="mt-4" data-testid="translations">
           <Table
             columns={columns}

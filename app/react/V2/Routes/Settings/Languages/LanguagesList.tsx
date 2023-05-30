@@ -12,7 +12,7 @@ import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { Breadcrumb } from 'app/V2/Components/UI/Breadcrumb';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
@@ -186,11 +186,11 @@ const LanguagesList = () => {
     >
       <div className="flex flex-col h-full">
         <div className="flex-grow p-5">
-          <NavigationHeader backUrl="/settings">
+          <Breadcrumb backUrl="/settings">
             <h1 className="text-base text-gray-700">
               <Translate>Languages</Translate>
             </h1>
-          </NavigationHeader>
+          </Breadcrumb>
           <div className="mt-4" data-testid="languages">
             <Table
               columns={columns}

@@ -7,7 +7,7 @@ interface HeaderProps {
   backUrl?: string;
 }
 
-const NavigationHeader = ({ children, backUrl }: HeaderProps) => (
+const Breadcrumb = ({ children, backUrl }: HeaderProps) => (
   <div className="flex items-center">
     {backUrl && (
       <Link to={backUrl} className="block lg:hidden">
@@ -33,4 +33,4 @@ const NavigationHeader = ({ children, backUrl }: HeaderProps) => (
   </div>
 );
 
-export { NavigationHeader };
+export { Breadcrumb };
