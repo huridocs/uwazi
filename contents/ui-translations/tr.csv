@@ -1,0 +1,922 @@
+Key,Turkish 
+% of sentences above threshold,eşiğin üzerindeki cümlelerin yüzdesi
+(view page),(sayfaya bak)
++ click to select multiple cards.,+ click to select multiple cards.
+// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
+2FA,2FA
+2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
+A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan başlık olacaktır."
+Accept,Kabul Et
+Accepted suggestion on entity,Accepted suggestion on entity
+Account,Hesap
+Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
+Account unlocked successfully,Account unlocked successfully
+Accuracy,Accuracy
+Action,Eylem
+Activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirin
+Active languages,Active languages
+Activity log,Sistem Günlüğü
+Add,Ekle
+Add / remove favorite,Favoriye ekle / Favoriden çıkarı
+Add date,Tarih ekle
+Add entities / documents,Varlık/Döküman ekle
+Add file,Dosya ekle
+Add from URL,URL'den ekle
+Add from web,WEB'ten ekle
+Add group,Grup ekle
+add icon,simge ekle
+Add language,Dil ekle
+Add link,Link ekle
+Add page,Sayfa ekle
+Add PDF,Add PDF
+Add people or groups,Kişi veya grup ekle
+Add properties,Add properties
+Add relationship,Add relationship
+Add relationship type,Add relationship type
+Add template,Şablon ekle
+Add thesaurus,Thesaurus ekle
+Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
+Add thesaurus value,Add thesaurus value
+Add timelink,Add timelink
+Add to all languages,Tüm dillere ekle
+Add to table of contents,İçindekiler tablosuna ekle
+Add user,Kullanıcı ekle
+Add users,Kullanıcılar ekle
+add value,add value
+Add/delete users and assign roles,Kullanıcı ekleme/silme ve roller atama
+Add/edit translations,Çeviri ekle/düzenle
+Added language,Added language
+Added new user,Added new user
+added to hub with the following errors:,added to hub with the following errors:
+added to hub.,added to hub.
+Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
+Admin,Yönetici
+Administrators and Editors,Yöneticiler ve Editörler
+ALL,ALL
+All,All
+"All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
+Allow captcha bypass,Allow captcha bypass
+An error has occurred during data export,An error has occurred during data export
+An error occurred,An error occurred
+Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
+Any entity or document,Any entity or document
+Apply to all languages,Apply to all languages
+Are you sure you want to continue?,Are you sure you want to continue?
+Are you sure you want to delete this attachment?,Are you sure you want to delete this attachment?
+Are you sure you want to delete this connection?,Are you sure you want to delete this connection?
+Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
+Are you sure you want to delete this file?,Are you sure you want to delete this file?
+Are you sure you want to delete this item?,Are you sure you want to delete this item?
+Are you sure you want to delete this page?,Are you sure you want to delete this page?
+Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
+Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Attachment deleted,Attachment deleted
+Attachment renamed,Attachment renamed
+Attachment uploaded,Attachment uploaded
+Attachments,Ekler
+Authentication code,Kimlik doğrulama kodu
+auto-created,otomatik oluşturulmuş
+Auto-save,Otomatik kaydetme
+Automatic Table of Contents,Otomatik İçindekiler
+Automatically generated,Otomatik olarak oluşturuldu
+Available default translation,Available default translation
+Back,Geriye git
+Back to,Geri dön
+Back to dashboard,Back to dashboard
+Back to search,Aramaya geri dön
+Back to thesauri,Thesauri'ye geri dön
+Back to thesaurus,Thesaurus'a geri dön
+Bad Request,Bad Request
+Body,Body
+Browse files to upload,Yüklenecek dosyalara göz atın
+"by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
+Can edit,Düzenleyebilir
+Can see,Görebilir
+Can view,Görüntüleyebilir
+Cancel,İptal et
+Canceling...,Canceling...
+Cannot delete relationship type:,Cannot delete relationship type:
+Cannot delete template:,Cannot delete template:
+Cannot delete thesaurus:,Cannot delete thesaurus:
+Captcha,Güvenlik kodu
+Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
+The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
+header ""Bypass-Captcha: true"" is sent along. This option is insecure and can be leveraged to flood your instance with spam or 
+malicious content."
+Cards,Fişler
+Cards view,Fiş görünümü
+Change password,Parola değiştir
+Change will take effect after saving the template,Değişiklik şablonu kaydettikten sonra yürürlüğe girecek
+Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
+Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
+Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
+Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
+Check to make this instance private (only logged-in users can access the data),Bu oluşumu özel yapmak için işaretleyin (yalnızca oturum açmış kullanıcılar verilere erişebilir)
+Chrome extension store link,Chrome extension store link
+Clear,Clear
+Clear coordinates,Koordinatları temizle
+Clear Filters,Filtreleri Temizle
+Clear PDF selection,Clear PDF selection
+Click,Click
+Click here,Buraya tıklayın
+Click to fill,Doldurmak için tıklayın
+Close,Kapat
+Collaborator,Katkı Sunan
+Collapse all,Collapse all
+Collection,Koleksiyon
+Collection name,Collection name
+Configuration,Configuration
+Configure filters,Filtreleri yapılandır
+Configure suggestions,Önerileri yapılandır
+Configure templates,Configure templates
+Confirm,Onayla
+CONFIRM,ONAYLA
+Confirm action,Confirm action
+Confirm delete connection,Confirm delete connection
+Confirm delete multiple items,Birden çok öğeyi silin
+confirm delete template,"Are you sure you want to delete this entity type?
+        This will delete the template and all relationship properties from other templates pointing to this one."
+Confirm deletion,Silmeyi onayla
+Confirm deletion of,Confirm deletion of
+Confirm deletion of entity,Confirm deletion of entity
+Confirm deletion of file,Confirm deletion of file
+Confirm deletion of page:,Confirm deletion of page:
+Confirm deletion of relationship type:,Confirm deletion of relationship type:
+Confirm deletion of template:,Confirm deletion of template:
+Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
+Confirm discard changes,Confirm discard changes
+Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm new password,Yeni parolayı onayla
+Confirm publish multiple items,Birden çok öğe yayınlamayı onaylayın
+Confirm suggestion acceptance,Confirm suggestion acceptance
+Connect to a document,Bir belgeye bağla
+Connect to a paragraph,Bir paragrafa bağla
+Connected to server,Connected to server
+Connection type,Bağlantı türü
+Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
+Contact Form,Contact Form
+Content translations,Content translations
+Context,Context
+Conversion failed,Dönüştürülemedi
+Copied to clipboard,Copied to clipboard
+Copy From,Formu Kopyala
+Copy Highlighted,Vurgulananları Kopyala
+Copy link,Bağlantıyı kopyala
+Copy properties to this entity from,Özellikleri şuradan bu varlığa kopyala
+Copy token,Copy token
+Could not be processed,Could not be processed
+Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
+Could not reach server. Please try again later.,Could not reach server. Please try again later.
+Create,Oluştur
+CREATE,Oluştur
+Create and edit thesauri,Create and edit thesauri
+Create Connection,Create Connection
+Create dictionaries,Sözlük oluştur
+Create entity,Varlık oluştur
+Create Entity,Varlık oluştur
+Create Extractor,Create Extractor
+Create group,Grup oluştur
+Create new entities and upload documents,Create new entities and upload documents
+Create Reference,Create Reference
+Create relationship types,Create relationship types
+Create relationships and references,Create relationships and references
+Create table of contents,Create table of contents
+Created entity,Created entity
+Created entity coming from a public form,Created entity coming from a public form
+Created page,Created page
+Created relation type,Created relation type
+Created relationship,Created relationship
+Created successfully.,Created successfully.
+Created template,Created template
+Created thesaurus,Created thesaurus
+Created user group,Created user group
+Current value,Current value
+Currently connections only need a title.,Şu anda bağlantıların yalnızca bir başlığa ihtiyacı var.
+Custom component error,Özel Yüklemeler
+Custom CSS,Özel CSS
+Custom favicon,Custom favicon
+Custom JS,Custom JS
+custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
+Custom starting location,Custom starting location
+Custom Uploads,Özel Yüklemeler
+Dashboard,Dashboard
+Data imported,İçe aktarılan veri
+Date added,Eklenme tarihi
+Date format,Tarih biçimi
+Date modified,Değiştirilme tarihi
+Day,Gün
+Default,Default
+Default filter,Default filter
+Default language,Default language
+Default language change success,Varsayılan dil değişikliği başarısı
+Default template,Varsayılan şablon
+Default view,Default view
+Delete,Sil
+DELETE,Sil
+Delete entities and documents,Delete entities and documents
+Delete file,Delete file
+Delete Group,Grubu Sil
+Delete language,Dili sil
+Delete Property,Özelliği Sil
+Deleted attachment,Deleted attachment
+Deleted custom file,Deleted custom file
+Deleted entity,Deleted entity
+Deleted file,Deleted file
+Deleted multiple entities,Deleted multiple entities
+Deleted page,Deleted page
+Deleted relation type,Deleted relation type
+Deleted relationship,Deleted relationship
+Deleted successfully.,Deleted successfully.
+Deleted template,Deleted template
+Deleted thesaurus,Deleted thesaurus
+Deleted user,Deleted user
+Deleted user group,Deleted user group
+Deletion success,Deletion success
+Description,Tanım
+Discard changes,Değişiklikleri göz ardı et
+Discard changes?,Discard changes?
+Dismiss,Dismiss
+Display entity view from page,Sayfadan varlık görünümünü görüntüle
+Document,Belge
+Document and entity types,Belge ve varlık türü
+Document contents,Belge içeriği
+Document OCR trigger,Document OCR trigger
+Document Title,Belge Başlığı
+Documentation,Dokümantasyon
+documents,Belgeler
+Documents,Belgeler
+documents before training (30 per topic).,eğitimden önceki belgeler (konu başına 30).
+Documents for custom filter,Özel filtre için belgeler
+Documents including suggestion:,Öneri içeren belgeler:
+documents so far.,şimdiye kadar belgeler.
+documents to be reviewed,İncelenecek belgeler
+Documents to be reviewed,İncelenecek belgeler
+documents.,belgeler.
+Download,Özel filtre için belgeler
+Drag and drop file in this window to upload,Yüklemek için dosyayı bu pencerede sürükleyip bırakın
+Drag items here,Öğeleri buraya sürükleyin
+Drag properties here,Özellikleri buraya sürükleyin
+Drop your files here to upload or,Dosyalarınızı yüklemek için buraya bırakın veya
+Duplicate values not allowed.,Duplicate values not allowed.
+Duplicated email,Mükerrer e-posta
+Duplicated label,Mükerrer etiket
+Duplicated name,Mükerrer ad
+Duplicated username,Mükerrer kullanıcı adı
+Edit,Düzenle
+Edit all documents matching this criteria,Bu kriterlere uyan tüm belgeleri düzenleyin
+Edit Extractor,Edit Extractor
+Edit metadata of entities,Edit metadata of entities
+Editor,Editör
+editor,Editör
+Email,E-posta
+Email address,E-posta adresi
+Email is required,E-posta gerekli
+Email updated,E-posta güncellendi
+Empty,Empty
+Empty / Empty,Empty / Empty
+Empty / Label,Empty / Label
+Empty / Obsolete,Empty / Obsolete
+Empty / Value,Empty / Value
+empty property tip,You won't be able to save an entity if this property is empty.
+emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
+emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
+Enter the 6-digit verification code generated by your Authenticator app:,"""Authenticator"" uygulamanız tarafından oluşturulan 6 haneli doğrulama kodunu girin:"
+Entities,Varlıklar
+entities,Varlıklar
+Entities across all languages,Entities across all languages
+"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",Varlıklar özel bir sayfada görüntülenebilir. Bunun için Sayfalar'da özel bir sayfa oluşturulmalı ve ardından burada seçilmelidir.
+Entity,Varlık
+Entity deleted,Entity deleted
+Entity saved,Entity saved
+Entity types,Varlık türü
+Entity updated,Entity updated
+Error,Hata
+Expand all,Expand all
+Exploration,Arama
+Export CSV,CSV'yi dışa aktar
+Exporting entities to CSV,Varlıkları CSV'ye dışa aktarma
+Extension Token,Extension Token
+Extract information from your documents,Belgelerinizden bilgi ayıklayın
+Extractor Name,Extractor Name
+Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
+
+1. Upload your icon in Custom Uploads.
+2. Copy its URL.
+3. Choose ""Custom Icon"" and paste the URL in the indicated field.
+4. Reload the page to see your favicon in action."
+FEATURED,FEATURED
+File,Dosya
+File deleted,File deleted
+File updated,File updated
+Files,Files
+Files and database usage,Files and database usage
+Fill,Doldur
+Filters,Filtreler
+Filters AND operator,VE
+Filters configuration,Filtreler
+Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
+Filters configuration example,Filtreler Yapılandırma Örneği
+Filters OR operator,YA DA
+Find,Bul
+Find suggestions,Find suggestions
+Finding suggestions,Finding suggestions
+Fine tune,İnce ayar
+Firefox extension store link,Firefox extension store link
+Fit,Yerleştirmek
+Flag,İşaretle
+for,for
+Forgot Password?,Parolanızı mı unuttunuz?
+Forms and email configuration,Formlar ve e-posta yapılandırması
+From all templates,From all templates
+Full edit mode,Tam düzenleme modu
+Full width,Full width
+General,Genel
+Global CSS,Genel CSS
+Global CSS & JS,Global CSS & JS
+Google Analytics,Google Analytics
+Google Analytics ID,Google Analytics Kimliği
+Google Maps,Google Maps
+Group,Group
+Group created,Group created
+Group deleted,Group deleted
+Group name,Group name
+Group updated,Group updated
+Groups,Gruplar
+help,yardım
+here,here
+Hide actions,Hide actions
+Hide label,Etiketi Gizle
+Hide toolbar,Hide toolbar
+https://yourdomain,https://yourdomain
+hubs,hubs
+Hybrid,Hybrid
+Icon,Simge
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
+"If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
+Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
+Import,İçe aktar
+Import completed,Import completed. Number of entities created:
+Import CSV,CSV'yi içe aktar
+Import instructions,Talimatları içe aktar
+Imported entities from file,Imported entities from file
+Imported translations from file,Imported translations from file
+Importing data in progress,İçeri veri aktarma devam etmekte
+in,in
+"In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
+In OCR queue,OCR kuyruğunda
+incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
+Indexing entities may take a few minutes,Varlıkların diznlenmesi birkaç dakika sürebilir
+Info,Bilgi
+Information extraction training,Information extraction training
+Inherit,Inherit
+Inherit property,Inherit property
+Install,Install
+Install browser extension (dynamic link),Install browser extension (dynamic link)
+Install language(s),Install language(s)
+INSTALL the browser extension,INSTALL the browser extension
+Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
+Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Invalid captcha,Geçersiz güvenlik kodu
+Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
+Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
+Invalid email,Geçersiz e-posta
+Invalid form,geçersiz form
+Invalid home page url,Invalid home page url
+It could also very easily break the app. Only write code here if you know exactly what you are doing.,Ayrıca uygulamayı çok kolay bozabilir. Buraya sadece tam olarak ne yaptığınızı biliyorsanız kod yazın.
+Item,Item
+Item name,Item name
+Items:,Öğeler:
+Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
+key,Turkish
+Label,Etiket
+"Label date ""From""",Başlangıç:
+"Label date ""to""",Son:
+Label more documents,Daha fazla belge etiketleyin
+Label your collection note,Koleksiyon notunuzu etiketleyin
+labelEmptyDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMatchDesc,It has a current value and a text selection matching with the model suggested value and selection. It will be used as a training sample.
+labelMismatchDesc,"It has a current value and text selection but they do not match the model prediction. Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / labeled"". If the labeled data is correct and the suggestion is wrong no action is needed. It will be used as a training sample."
+Landing page,Açılış sayfası
+Landing page description,"The landing page is the first page that visitors see when they come to your collection. The default landing page is your collection's library. You can set a different landing page by adding its relative URL here. For example:
+      
+A page: */page/dicxg0oagy3xgr7ixef80k9*
+A filtered view in Uwazi: */library/?searchTerm=test*
+An entity: */entity/9htbkgpkyy7j5rk9*
+A document: */document/4y9i99fadjp833di*
+      
+Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
+Language,Dil
+Language Code,Language Code
+Language deleted,Dil silindi
+Languages,Diller
+Last updated,Last updated
+Latitude,Enlem
+Learn more,Daha fazla bilgi edin
+Learning...,Öğreniyor...
+Legend,Gösterge
+Lengthy reindex process,Lengthy reindex process
+Library,Kütüphane
+library list view,kütüphane listesi görünümü
+library map view,kütüphane harita görünümü
+library table view,kütüphane tablo görünümü
+linked,bağlantılı
+Live translate,Live translate
+Loading,Loading
+Login,Giriş
+Login button,Giriş
+Login failed,Giriş başarısız
+Logout,Çıkış
+Longitude,Boylam
+Lost connection to the server. Your changes may be lost,Lost connection to the server. Your changes may be lost
+low,düşük
+Manage site settings and configuration,Site ayarlarını ve yapılandırmasını yönetin
+Map,Harita
+Map api key,Map api key
+Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map provider,Map provider
+Map view,Harita görünümü
+MapBox,MapBox
+Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
+        -- from certain changes made to a template's property to new fields
+        that need to be populated across entities. 
+        This process will not negatively affect the data in your collection. 
+        It can last a few minutes and some parts of your collection might take
+        some time to reappear in the Library, but this is temporary. Do you want to continue?"
+Maps,Haritalar
+Mark as Reviewed,İncelendi olarak işaretle
+Markdown,Not et
+Match / Label,Match / Label
+Match / Value,Match / Value
+Matching,Matching
+Matomo Analytics,Matomo Analytics
+Members,Üyeler
+Menu,Menü
+Message,Mesaj
+Message sent,Message sent
+Metadata,Meta veri
+Metadata creator,Meta veri oluşturucu
+Metadata Extraction,Meta veri özütleme
+Metadata extraction dashboard,Meta veri özütleme panosu
+MIGRATE,MIGRATE
+Minimum,Minimum
+Mismatch / Empty,Mismatch / Empty
+Mismatch / Label,Mismatch / Label
+Mismatch / Value,Mismatch / Value
+mismatched passwords,Passwords don't match
+Mixed access,Karma erişim
+ML TOC,ML TOC
+Month,Ay
+more options.,daha fazla seçenek.
+Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
+Multimedia fit description,will show the entire media inside the container.
+Multiple date,Multiple date
+Multiple date range,Multiple date range
+Multiple inherited properties warning ([property 1] affects [property 2]),etkiler
+Multiple relationships edit description,Making changes to this property will affect other properties on this template because they all share relationships with the same configuration.
+Multiple select,Multiple select
+Name,Ad
+Name is required,Ad gerekli
+Name is too long,Ad çok uzun
+Name is too short,Ad çok kısa
+Name of the group,Grubun adı
+Narrow down your searches,Aramalarınızı daraltın
+Narrow your search,Aramanızı daraltın
+Navigate back,Navigate back
+Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
+Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New entity,Yeni varlık
+New group,New group
+New language added,Yeni dil eklendi
+New password,Yeni parola
+New relationship type,New relationship type
+New relationships group,Yeni ilişkiler grubu
+Next,Sonraki
+No,Hayır
+No attachments,Ek yok
+No common filters,Ortak filtre yok
+No Connections,Bağlantı yok
+No Connections description,Connections are the direct relationships between this document and other documents and entities.
+No Documents found,Belge bulunamadı
+no filters for templates,The combination of entity types doesn't have any filters in common.
+No icon / flag,Simge/İşaret yok
+No Label,Etiket yok
+No options,No options
+No options found,Seçenek bulunamadı
+No property,Mülk yok
+No References,Referans Yok
+No References description,References are parts of this document related with other documents and entities.
+No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
+No Relationships,İlişki yok
+No Relationships description,Relationships are bonds between entities.
+No Table of Contents,İçerik Tablosu yok
+No Table of Contents description,İçerik Tablosu Yok Açıklama
+No text match,Metin Eşleşmesi Yok
+No text match description,You can type something different in the search box to get some results.
+No type,Tür yok
+No value,Değer yok
+No Value,Değer yok
+Non-matching,Non-matching
+Normal view,Normal görünüm
+Not Found,Not Found
+Nothing to see here! The selected documents are not using the selected thesaurus,"Burada görülecek bir şey yok! Seçilen belgeler, seçilen Thesaurus'u kullanmıyor."
+Number of sentences above threshold,Eşiğin üzerindeki cümle sayısı
+Obsolete,Obsolete
+obsoleteDesc,A new model is training and processing suggestions. This suggestion was created by a previous model so no actions are possible until the new suggestion is received.
+OCR,OKT
+OCR button tip,This will process the document to recognize it's text. The original file will be added as a supporting file.
+OCR completed,OKT tamamlandı
+OCR description tip 1,"This will enable the Optical Character Recognition (OCR) functionality for PDF documents. This service will recognize text inside images, such as scanned documents and photos, and convert it into machine-readable text data."
+OCR description tip 2,"When activated, this will enable administrator and editor users to send PDF documents to the OCR service."
+OCR error,OKT hatası
+OCR error tip,The OCR engine couldn't read the document due to a malformed format. Last updated
+OCR PDF,OKT PDF
+of,nın-nin
+Ok,Tamam
+OK,TAMAM
+"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
+Ooops... please go,Ooops... lütfen şuraya gidin
+Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! Düzenlemeye çalıştığınız Thesaurus'u bulamadık. Ayarlar aracılığıyla bu sayfaya geri dönmeyi deneyin.
+Open PDF,Open PDF
+Open the two-factor Authenticator app on your device,Cihazınızda iki faktörlü Kimlik Doğrulayıcı uygulamasını açın
+or,ya da
+or drop your files here.,veya dosyalarınızı buraya bırakın.
+Or enter this secret key into your Authenticator app,Veya bu gizli anahtarı Authenticator uygulamanıza girin
+Order,Düzen
+Other,Diğer
+other,Diğer
+out of,dışında
+Page,Sayfa
+Page Javascript,Sayfa Javascript
+Page name,Page name
+Pages,Sayfalar
+Password,Parola
+Password changed success,Password changed success
+Password Error,Şifre hatası
+Password is too long,Parola çok uzun
+Password updated,Parola güncellendi
+Paste URL here,Paste URL here
+PDF,PDF
+per page,per page
+Permission,İzin
+Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
+Permissions,İzinler
+Plain text,Düz metin
+Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
+Please type in,Please type in
+Please type in letters and numbers from the image to start the export.,Dışa aktarmayı başlatmak için lütfen resimdeki harfleri ve sayıları girin.
+Precision,Kesinlik
+Preserve,Preserve
+Preserve Extension,Preserve Extension
+Preserve Setup Description,"If you know your Uwazi URL and TOKEN click the link below, and fill the required information."
+Press enter to add,Eklemek için enter'a basın
+Preview,Ön izleme
+Previous,Önceki
+Primary Documents,BİRİNCİL BELGELER
+Priority sorting,Öncelik sıralaması
+Priority sorting description,"Properties marked as priority sorting will be used as default sorting criteria. If more than one property is marked as priority sorting the system will try to pick-up the best fit. When listing mixed template types, the system will pick-up the best combined priority sorting."
+Private entities description,Caution: the selected entities will be **private**. Only allowed users will be able to see them.
+Private instance,Özel oluşum
+Processing,İşleniyor
+Properties,Özellikler
+Properties from other templates in the collection using the same label,Koleksiyondaki aynı etiketi kullanan diğer şablonlardaki özellikler
+Property,Property
+Property as default filter description,"Use this property as a default filter in the library. When there are no entity types selected, this property will show as a default filter for your collection."
+Property as filter description,"This property will be used for filtering the library results. When properties match in equal name and field type with other entity types, they will be combined for filtering."
+property date,Date
+property daterange,Date Range
+Property delete warning,Deleting a template property will delete this metadata information on all entities using this template.
+property generatedid,Generated ID
+property geolocation,Geolocation
+property image,Image
+property link,Link
+property markdown,Rich Text
+property media,Media
+property multidate,Multi Date
+property multidaterange,Multi Date Range
+property multiselect,Multiselect
+property numeric,Numeric
+property preview,Preview
+property relationship,Relationship
+property select,Select
+property text,Text
+Protect your account,Hesabınızı Koruyun
+Protection,Koruma
+ProTip!,Uzman İpucu!
+Public Endpoints,Public Endpoints
+Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
+Public form settings description,Here you can configure the public form destination and the whitelisted templates
+Public Form submit URL,Public Form submit URL
+Public form URL description,"If you have configured a public form and would like a different Uwazi collection to receive the submissions, enter its URL here."
+Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
+Publish,Yayınla
+Published,Yayınlanan
+Query,Sorgulama
+Quick labeling for,Hızlı etiketleme
+RAW,RAW
+Re-uploaded document,Re-uploaded document
+Receiving email,Receiving email
+Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Reference,Reference
+References,Referanslar
+Reject,Reddet
+Relationship,İlişki
+relationship consistency warning,Cannot use 'any entity or document' if another relationship of the same type is already with a specific entity.
+Relationship Type,Relationship Type
+Relationship types,İlişki türleri
+relationships,İlişkiler
+Relationships,İlişkiler
+Relationships saved,Relationships saved
+RelationType saved,İlişki türü kaydedildi
+Remote Server Unreachable,Remote Server Unreachable
+Remove,Kaldır
+remove icon,simgeyi kaldır
+Removed language,Removed language
+Rename,Yeniden adlandır
+Renamed attachment,Renamed attachment
+Repeat Password,Parolayı yinele
+Request id #,Kimlik numarası iste #
+Request token,Request token
+Required property,Gerekli özellik
+Reset,Sıfırla
+Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
+Reset default translation,Reset default translation
+Reset Password,Parolayı sıfırla
+Restricted,Kısıtlanmış
+Return to login,Girişe dön
+Return to the thesaurus page when you finished labeling to start learning.,Öğrenmeye başlamak için etiketlemeyi bitirdiğinizde Thesaurus sayfasına dönün.
+Review,Review
+Review unpublished document,Yayınlanmamış belgeyi inceleyin
+Reviewed,İncelendi
+Reviewing,Reviewing
+Role,Rol
+Route,Rota
+Sample,Örnek
+Satellite,Satellite
+Save,Kaydet
+Save and go to next,Kaydet ve sonrakine git
+Save changes,Değişiklikleri kaydet
+Save document,Belgeyi kaydet
+Save document(s),Belgeyi/Belgeleri kaydet
+Save password,Parolayı kaydet
+Save your work to make change permanent,Save your work to make change permanent
+Saved successfully.,Saved successfully.
+Search,Ara
+Search item,Öğe ara
+Search not found,Arama bulunamadı
+Search related entities or documents,İlgili varlıkları veya belgeleri arayın
+Search relevance,Alaka arama
+Search text,Metin ara
+Search text description,Type something in the search box to get some results.
+Search Tips,Arama ipuçları
+Search Tips: boolean,Arama İpuçları: Boolean
+Search Tips: exact term,Arama İpuçları: Tam terim
+Search Tips: one char wildcard,Arama İpuçları: Bir Char Wildcard
+Search Tips: proximity,Arama İpuçları: Yakınlık
+Search Tips: wildcard,Arama İpuçları: Wildcard
+secret key recommendation,(please keep this key secret and don't share it):
+Select,Select
+Select all,Hepsini seç
+Select files on your device,Cihazınızdaki dosyaları seçin
+Select from computer,Select from computer
+Select relationship type,İlişki türü seç
+Select target paragraph,Hedef paragraf seç
+Select...,Seç...
+Selected,Selected
+selected,seçilmiş
+selected of,arasından seçildi
+Semantic search,Anlamsal Arama
+Semantic Search,Anlamsal Arama
+Semantic search minimum sentences help,Anlamsal Arama Minimum Cümleler Yardım
+Semantic search overview,Anlamsal Arama Genel Bakış
+Semantic search results,Anlamsal arama sonuçları
+Semantic search threshold help,Anlamsal arama eşiği yardımı
+Send,Gönder
+Send recovery email,Kurtarma e-postası gönder
+Sending email,Sending email
+Sending email description,This is the email address that will appear as the sender when an email is sent from your Uwazi collection to registered users. The default address is *no-reply@uwazi.io*. You can set a custom one by including your desired email address here.
+Sending labeled data...,Sending labeled data...
+Sentences above threshold,Eşik üstünde cümle
+Services,Services
+Set as default,Varsayılan olarak ayarla
+Set default language,Set default language
+Set default template,Set default template
+Set the default starting point for your geolocation properties.,Coğrafi konum özellikleriniz için varsayılan başlangıç noktasını ayarlayın.
+Settings,Ayarlar
+settings,Ayarlar
+Settings updated,Ayarlar güncellendi.
+Share,Paylaş
+Share edit access with other users,Share edit access with other users
+Share entities with the public,Share entities with the public
+Share with people and groups,Kişiler ve gruplarla paylaşın
+Shared as editor,Editör olarak paylaş
+Shared as viewer,Görüntüleyici olarak paylaş
+Show actions,Show actions
+Show cookie policy,Çerez politikasını göster
+Show filters,Filtreleri göster
+Show Filters,Show Filters
+Show in cards,Fişte göster
+Show more,Daha fazla göster
+Show Suggestions,Önerileri Göster
+Show toolbar,Show toolbar
+shown of,gösterilen
+Sign in,Oturum aç
+Single date,Single date
+Single date range,Single date range
+Single relationships must have a hub,Single relationships must have a hub
+Single select,Single select
+Size,Boyut
+Something went wrong,Bir şey ters gitti
+Sort,Sırala
+Sort ascending,Sort ascending
+Sort by,Sırala
+Sort descending,Sort descending
+sorted by,şuna göre sıralandı:
+State,State
+State Legend,State Legend
+Status,Status
+Storage,Storage
+Streets,Streets
+Strict mode,Sıkı mod
+Style,Stil
+Submit,Gönder
+Submitted entity to a remote instance,Submitted entity to a remote instance
+Submitting,Submitting
+Success,Success
+"Success, Upload another?","Success, Upload another?"
+Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
+Suggestion,Suggestion
+Suggestions,Öneriler
+Supporting files,Destekleyici belgeler
+Synced template,Synced template
+syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
+syncedTemplateListMessage,The source of this template is a sync. All editing options will be disabled.
+syntax to create page content,sayfa içeriği oluşturmak için sözdizimi
+System translations,System translations
+Table,Tablo
+Table of Contents,İçindekiler
+Table of contents,İçindekiler
+Table view,Tablo görünümü
+Template,Şablon
+Template conflict,Template conflict
+Template name,Template name
+Template with a long number of entities,"The template has changed and the associated entities will be re-indexed,
+       this process may take several minutes, do you want to continue?"
+Template(s),Template(s)
+Templates,Şablonlar
+Text,Metin
+Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
+The current model was trained at,Gelişmiş hesap güvenliği için bu özelliği etkinleştirmelisiniz
+"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","İlk adım, belgelerinizin bir örneğini etiketlemektir, böylece Uwazi, koleksiyonunuzu etiketlemenize yardımcı olurken hangi konuları önereceğini öğrenebilir."
+The import process threw an error:,İçe aktarma işlemi bir hata verdi:
+The request could not be processed.,The request could not be processed.
+The template contains errors,Şablon hatalar içeriyor
+The token does not validate against the secret key!,The token does not validate against the secret key!
+There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
+There are no untranslated terms,There are no untranslated terms
+There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
+Thesauri,Thesauri
+Thesauri name,Thesauri name
+Thesaurus,Thesaurus
+Thesaurus saved,Thesaurus kaydedildi
+This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,"Bu alan, sayfaya özel Javascript eklemenizi sağlar. Bu, yeni bir olasılıklar evreni açar."
+This cannot be changed after saving,This cannot be changed after saving
+This content is automatically generated,Bu içerik otomatik olarak oluşturulur
+"This entity has no document, you probably want to see the metadata","Bu varlığın belgesi yok, muhtemelen meta verileri görmek isteyebilirsiniz"
+This entity is not public.,Bu varlık açık değil.
+This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
+This field is required,This field is required
+This file type is not supported on image fields,This file type is not supported on image fields
+This file type is not supported on media fields,This file type is not supported on media fields
+This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
+This property will appear in the library cards as part of the basic info.,"Bu özellik, temel bilgilerin bir parçası olarak kütüphane fişlerinde görünecektir."
+This property will be inherited from the related entities and shown as metadata of this type of entities.,"Bu özellik, ilgili varlıklardan devralınacak ve bu tür varlıkların meta verileri olarak gösterilecektir."
+This property will be shown using all the width available.,"Bu özellik, mevcut tüm genişlik kullanılarak gösterilecektir."
+This property will be shown without the label.,Bu özellik etiketsiz olarak gösterilecektir.
+This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
+this template,this template
+This template has associated entities,This template has associated entities
+This template will be used as default for new entities.,"Bu şablon, yeni varlıklar için varsayılan olarak kullanılacaktır."
+This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
+This will cancel the finding suggestion process,This will cancel the finding suggestion process
+This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
+This will update the entity across all languages,This will update the entity across all languages
+Threshold,Eşik
+Time,Saat
+Timelinks,Timelinks
+Title,Başlık
+"To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
+"To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
+to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
+to learn more about the components.,bileşenleri hakkında daha fazla bilgi edinmek için.
+to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
+Tools,Araçlar
+topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
+Total entities,Total entities
+Total files,Total files
+"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
+Total users,Total users
+Train model,Eğitim modeli
+Training,Training
+Training model...,Training model...
+Translate,Çevir
+Translations,Çeviriler
+Translations imported.,Translations imported.
+Translations reset successfully,Translations reset successfully
+Translations saved,Çeviriler kaydedildi
+Try selecting other documents.,Diğer belgeleri seçmeyi deneyin.
+Turn off inline translation,Turn off inline translation
+Two-factor authentication enabled,Two-factor authentication enabled
+Two-factor authentication failed.,Two-factor authentication failed.
+Two-factor authentication secret,Two-factor authentication secret
+Two-factor verification failed,İki faktörlü doğrulama başarısız oldu
+Two-step verification,İki faktörlü doğrulama
+Two-step verification successfully,"Congratulations!
+You have successfully configured two-step verification."
+Two-step verification token required,Two-step verification token required
+Type,Tür
+Unexpected error,Unexpected error
+Uninstall,Uninstall
+Uninstall language,Uninstall language
+Unlink,Unlink
+Unsupported OCR language,Unsupported OCR language
+Untranslated Terms,Untranslated Terms
+Update,Güncelle
+UPDATE,Güncelle
+Update success,Update success
+Updated file,Updated file
+Updated multiple entities,Updated multiple entities
+Updated permissions on entity,Updated permissions on entity
+Updated relationships,Updated relationships
+Updated settings,Updated settings
+Updated translations,Updated translations
+Updated user,Updated user
+Upload a ZIP or CSV file.,Bir ZIP veya CSV dosyası yükleyin.
+Upload and select file,Dosya yükle ve seç
+Upload from computer,Bilgisayardan yükle
+Upload PDF,PDF Yükle
+Upload PDF(s) to create,Oluşturmak için PDF(leri) yükleyin
+Uploaded attachment,Uploaded attachment
+Uploaded custom file,Uploaded custom file
+Uploaded document,Uploaded document
+Uploaded file,Uploaded file
+Uploading,Yükleniyor
+Uploading ...,Yükleniyor ...
+Uploading file,Dosya yükleniyor
+Uploads,Yüklemeler
+URL,URL
+Use,Kullan
+Use as filter,Use as filter
+Use custom landing page,Use custom landing page
+User,Kullanıcı
+Username,Kullanıcı adı
+Username is required,Kullanıcı adı gerekli
+Username is too long,Kullanıcı adı çok uzun
+Username is too short,Kullanıcı adı çok kısa
+Users,Kullanıcılar
+Using Google Authenticator,Google Authenticator Kullanma
+Uwazi is developed by,Uwazi tarafından geliştirildi
+"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi etiketli belgeleri kullanarak öğreniyor. Bu işlem 2 saat kadar sürebilir ve tamamlandıktan sonra koleksiyonunuz için Uwazi tarafından yapılan önerileri inceleyebilirsiniz.
+Uwazi UI,Uwazi UI
+Value,Value
+Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+valueEmptyDesc,"Accepting is not available since there is no suggestion. If the value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+valueMatchDesc,"It has a current value that matches the suggestion, but it doesn't have a text selection. Accepting will keep the value as it is and enrich it with the suggested text selection becoming a ""match / label"" that can be used as a training sample."
+valueMismatchDesc,"Accepting the suggestion will replace the current value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. If the current value is correct, you can still click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Verify,Doğrula
+Verifying...,Doğrulanıyor...
+View,Görüntüle
+view,Görüntüle
+View entities,View entities
+View in library,Kitaplıkta görüntüle
+View less,View less
+View more,View more
+View suggestions,Önerileri görüntüle
+WARNING,WARNING
+Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
+We can't find the page you're looking for.,We can't find the page you're looking for.
+We recommend labeling,Etiketleme öneririz
+Website analytics,Web sitesi analizi
+Welcome to Uwazi,Uwazi'ye hoş geldiniz
+"Well, this is awkward...","Peki, bu garip bir durum..."
+Whitelisted Templates,Whitelisted Templates
+will be updated with the same value.,aynı değerle güncellenecektir.
+with,ile
+With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!
+x less,daha az
+x more,daha az
+Year,Yıl
+"You can also embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, çizelgeler ve varlık listeleri gibi gelişmiş bileşenleri de yerleştirebilirsiniz."
+You can also improve the model by providing more labeled documents.,Ayrıca daha fazla etiketli belge sağlayarak modeli iyileştirebilirsiniz.
+You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
+You have labeled,Etiketledin
+"You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
+You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
+You should activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirmelisiniz
+Your account is protected by 2fa.,Hesabınız iki adımlı doğrulama ile korunmaktadır.
+Zoom in,Yakınlaştır
+Zoom in library view,Kütüphane görünümünü yakınlaştır
+Zoom out,Uzaklaştır
+Zoom out library view,Kütüphane görünümünü uzaklaştır

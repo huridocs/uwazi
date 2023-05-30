@@ -11,6 +11,7 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
     '@storybook/addon-viewport',
+    '@storybook/addon-actions'
   ],
   framework: '@storybook/react',
   core: {

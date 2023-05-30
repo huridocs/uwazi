@@ -1,0 +1,919 @@
+Key,Spanish
+% of sentences above threshold,% de frases por encima del límite
+(view page),(ver página)
++ click to select multiple cards.,+ para seleccionar múltiples tarjetas
+// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
+2FA,2FA
+2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
+2fa QA scan tip,"Escanea el siguiente código QR seleccionando la opción ""escanear código de barras"":"
+A generated ID will be the default title.,El ID autogenerado será el título por defecto
+Accept,Aceptar
+Accepted suggestion on entity,Sugerencia aceptada en la entidad
+Account,Cuenta
+Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo electrónico para desbloquearla.
+Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
+Accuracy,Precisión
+Action,Acción
+Activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de tu cuenta
+Active languages,Idiomas activos
+Activity log,Registro de actividad
+Add,Añadir
+Add / remove favorite,Añadir / eliminar favorito
+Add date,Añadir fecha
+Add entities / documents,Añadir entidades / documentos
+Add file,Añadir archivo
+Add from URL,Añadir desde URL
+Add from web,Añadir desde la web
+Add group,Añadir grupo
+add icon,Añadir ícono
+Add language,Añadir idioma
+Add link,Añadir enlace
+Add page,Añadir página
+Add PDF,Añadir PDF
+Add people or groups,Añadir personas o grupos
+Add properties,Añadir propiedades
+Add relationship,Añadir relación
+Add relationship type,Añadir tipo de relación
+Add template,Añadir plantilla
+Add thesaurus,Añadir tesauro
+Add thesaurus modal description,"Después de la creación, puedes ir a Configuración → Tesauri para añadir elementos"
+Add thesaurus value,Añadir valor del tesauro
+Add timelink,Añadir línea de tiempo
+Add to all languages,Añadir a todos los idiomas
+Add to table of contents,Añadir a la tabla de contenidos
+Add user,Añadir usuario
+Add users,Añadir usuarios
+add value,añadir valor
+Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
+Add/edit translations,Añadir / editar traducciones
+Added language,Idioma añadido
+Added new user,Nuevo usuario añadido
+added to hub with the following errors:,añadido al nodo con los siguientes errores:
+added to hub.,añadido al nodo.
+Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
+Admin,Administración
+Administrators and Editors,Administradores y Editores.
+ALL,TODOS
+All,TODOS
+"All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
+Allow captcha bypass,Permitir la omisión de captcha
+An error has occurred during data export,Se ha producido un error durante la exportación de datos.
+An error occurred,Se ha producido un error
+Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
+Any entity or document,Cualquier entidad o documento
+Apply to all languages,Aplicar a todos los idiomas
+Are you sure you want to continue?,Estás seguro que quieres continuar?
+Are you sure you want to delete this attachment?,Estás seguro que quieres eliminar este archivo adjunto?
+Are you sure you want to delete this connection?,Estás seguro que quieres eliminar esta relación?
+Are you sure you want to delete this entity?,Estás seguro que quieres eliminar esta entidad?
+Are you sure you want to delete this file?,Estás seguro que quieres eliminar este archivo?
+Are you sure you want to delete this item?,Estás seguro que quieres eliminar este elemento?
+Are you sure you want to delete this page?,Estás seguro que quieres eliminar esta página?
+Are you sure you want to delete this relationship type?,Estás seguro que quieres eliminar este tipo de relación?
+Are you sure you want to delete this thesaurus?,Estás seguro que quieres eliminar este tesauro?
+Attachment deleted,Archivo adjunto eliminado
+Attachment renamed,Archivo adjunto renombrado
+Attachment uploaded,Archivo adjunto subido
+Attachments,Archivos adjuntos
+Authentication code,Código de autenticación
+auto-created,autogenerado
+Auto-save,Guardado automático
+Automatic Table of Contents,Tabla de contenidos automática.
+Automatically generated,Se genera automáticamente
+Available default translation,Traducción predeterminada disponible
+Back,Volver
+Back to,Volver a
+Back to dashboard,Regresar al panel
+Back to search,Volver a la búsqueda
+Back to thesauri,Volver al Thesauri
+Back to thesaurus,Volver al Tesauro
+Bad Request,Petición incorrecta
+Body,Cuerpo
+Browse files to upload,Explorar archivos para subir
+"by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
+Can edit,Puede editar
+Can see,Puede visualizar
+Can view,Puede visualizar
+Cancel,Cancelar
+Canceling...,Cancelando
+Cannot delete relationship type:,No se puede eliminar el tipo de relación:
+Cannot delete template:,No se puede eliminar la plantilla:
+Cannot delete thesaurus:,No se puede eliminar el tesauro:
+Captcha,Captcha
+Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
+El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
+Cards,Tarjetas
+Cards view,Vista de tarjetas
+Change password,Cambiar la contraseña
+Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
+Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Los cambios no pueden deshacerse después de guardar. Cambiar campos de texto pueden invalidar las sugerencias.
+Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
+Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
+Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
+Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
+Check to make this instance private (only logged-in users can access the data),Selecciona para que la instancia sea privada (sólo usuarios conectados pueden acceder a la información)
+Chrome extension store link,Enlace de la tienda de extensiones de Chrome
+Clear,Limpiar
+Clear coordinates,Limpiar coordenadas
+Clear Filters,Limpiar filtros
+Clear PDF selection,Limpiar la selección PDF
+Click,Click
+Click here,Haz click aquí
+Click to fill,Click para completar
+Close,Cerrar
+Collaborator,Colaboradora
+Collapse all,Colapsar todo
+Collection,Colección
+Collection name,Nombre de la colección
+Configuration,Configuración
+Configure filters,Configurar filtros
+Configure suggestions,Configurar sugerencias
+Configure templates,Configurar plantillas
+Confirm,Confirmar
+CONFIRM,CONFIRMAR
+Confirm action,Confirmar acción
+Confirm delete connection,Confirmar eliminación de relación
+Confirm delete multiple items,Confirmar eliminación de múltiples elementos
+confirm delete template,"Estás seguro que quieres eliminar este tipo de entidad?
+        Esto eliminar la plantilla de todas las propiedades de tipo relación desde otras plantillas que apunte al tipo eliminado."
+Confirm deletion,Confirmar la eliminación
+Confirm deletion of,Confirmar la eliminación de
+Confirm deletion of entity,Confirmar eliminación de entidad
+Confirm deletion of file,Confirmar eliminación de archivo
+Confirm deletion of page:,Confirmar eliminación de página:
+Confirm deletion of relationship type:,Confirmar eliminación de tipo de relación:
+Confirm deletion of template:,Confirmar eliminación de plantilla:
+Confirm deletion of thesaurus:,Confirmar eliminación de tesauro:
+Confirm discard changes,Confirmar descartar cambios
+Confirm edit suggestion-enabled Thesaurus,Confirmar editar Tesauro sugerencia-habilitada
+Confirm new password,Confirmar nueva contraseña
+Confirm publish multiple items,Confirmar la publicación de varios elementos
+Confirm suggestion acceptance,Aceptar las sugerencias
+Connect to a document,Conectar a un documento
+Connect to a paragraph,Conectar a un párrafo
+Connected to server,Conectado al servidor
+Connection type,Tipo de relación
+Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
+Contact Form,Formulario de contacto
+Content translations,Traducciones de contenido
+Context,Contexto
+Conversion failed,La conversión ha fallado
+Copied to clipboard,Copiado al clipboard
+Copy From,Copiar desde
+Copy Highlighted,Copiar lo resaltado
+Copy link,Copiar enlace
+Copy properties to this entity from,Copiar las propiedades a esta entidad desde
+Copy token,Copiar token
+Could not be processed,El proceso no ha sido posible
+Could not detect the area for the selected text,"No se pudo detectar el área para el texto seleccionado, por favor intenta seleccionar nuevamente."
+Could not reach server. Please try again later.,No se puede conectar con el servidor. Por favor intenta después.
+Create,Crear
+CREATE,Crear
+Create and edit thesauri,Crear y editar tesauro
+Create Connection,Crear Conexión
+Create dictionaries,Crear tesauros
+Create entity,Crear entidad
+Create Entity,Crear entidad
+Create Extractor,Create Extractor
+Create group,Crear grupo
+Create new entities and upload documents,Crear nuevas entidades y subir documentos
+Create Reference,Crear Referencia
+Create relationship types,Crear tipos de relación
+Create relationships and references,Crear relaciones y referencias
+Create table of contents,Crear tabla de contenidos
+Created entity,Entidad creada
+Created entity coming from a public form,Entidad creada desde un formulario público
+Created page,Página creada
+Created relation type,Tipo de relación creado
+Created relationship,Relación creada
+Created successfully.,Creado satisfactoriamente.
+Created template,Plantilla creada
+Created thesaurus,Tesauro creado
+Created user group,Grupo de usuarios creado
+Current value,Valor actual
+Currently connections only need a title.,Actualmente las conexiones sólo necesitan un título.
+Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
+Custom CSS,CSS personalizado
+Custom favicon,Definir favicon
+Custom JS,JS Personalizado
+custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
+Custom starting location,Configurar ubicación inicial
+Custom Uploads,Subidas personalizadas
+Dashboard,Tablero
+Data imported,Datos importados
+Date added,Fecha de creación
+Date format,Formato de fecha
+Date modified,Fecha de la modificación
+Day,Día
+Default,Predeterminado
+Default filter,Filtro predeterminado
+Default language,Idioma Predeterminado
+Default language change success,Cambio de idioma predeterminado exitoso
+Default template,Plantilla predeterminada
+Default view,Vista predeterminada
+Delete,Eliminar
+DELETE,Eliminar
+Delete entities and documents,Eliminar entidades y documentos
+Delete file,Eliminar archivo
+Delete Group,Eliminar grupo
+Delete language,Eliminar idioma
+Delete Property,Eliminar propiedad
+Deleted attachment,Archivo adjunto eliminado
+Deleted custom file,Archivo personalizado eliminado
+Deleted entity,Entidad eliminada
+Deleted file,Archivo eliminado
+Deleted multiple entities,Entidades eliminadas
+Deleted page,Página eliminada
+Deleted relation type,Tipo de relación eliminada
+Deleted relationship,Relación eliminada
+Deleted successfully.,Eliminado exitosamente.
+Deleted template,Plantilla eliminada
+Deleted thesaurus,Tesauro eliminado
+Deleted user,Usuario eliminado
+Deleted user group,Grupo de usuarios eliminado
+Deletion success,Eliminación exitosa
+Description,Descripción
+Discard changes,Descartar cambios
+Discard changes?,Descartar cambios?
+Dismiss,Descartar
+Display entity view from page,Mostrar entidad de visualización desde la página
+Document,Documento
+Document and entity types,Tipos de documento y entidad
+Document contents,Contenidos del documento
+Document OCR trigger,Desencadenador de OCR de documento
+Document Title,Título del documento
+Documentation,Documentación
+documents,Documentos
+Documents,Documentos
+documents before training (30 per topic).,documentos antes del entrenamiento (30 por tema).
+Documents for custom filter,Documentos para filtro personalizado
+Documents including suggestion:,Documentos que incluyen sugerencias:
+documents so far.,documentos hasta el momento.
+documents to be reviewed,Documentos a revisar
+Documents to be reviewed,Documentos a revisar
+documents.,documentos.
+Download,Descargar
+Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
+Drag items here,Arrastra aquí
+Drag properties here,Arrastra las propiedades aquí
+Drop your files here to upload or,Suelta los archivos aquí para cargar o
+Duplicate values not allowed.,No se permiten valores duplicados.
+Duplicated email,Correo electrónico duplicado
+Duplicated label,Etiqueta duplicada
+Duplicated name,Nombre duplicado
+Duplicated username,Nombre de usuario duplicado
+Edit,Editar
+Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
+Edit Extractor,Edit Extractor
+Edit metadata of entities,Editar metadatos de entidades
+Editor,Editor
+editor,Editor
+Email,Correo electrónico
+Email address,Dirección de correo electrónico
+Email is required,La dirección de correo electrónico es obligatorio
+Email updated,Correo electrónico actualizado
+Empty,Vacío
+Empty / Empty,Vacío / Vacío
+Empty / Label,Vacío / Etiqueta
+Empty / Obsolete,Vacío / Obsoleto
+Empty / Value,Vacío / Valor
+empty property tip,No podrás guardar una entidad si esta propiedad está vacía.
+emptyDesc,"El valor actual y la sugerencia están vacíos. Puedes dar click para llenar los valores y la selección de texto y así se convertirá en un ""vacío / etiqueta"" que será usado como ejemplo de entrenamiento."
+emptyMismatchDesc,"No hay un valor actual y el modelo está sugiriendo un valor. Aceptar la sugerencia reemplazará el valor (vacío) actual y la selección de texto con los sugeridos, convirtiéndose en un ""coincidencia / etiqueta"" que será usada como un ejemplo para el entrenamiento. Alternativamente puedes ignorar la sugerencia y dar click para ingresar la selección de texto convirtiéndose en un ""discordancia / etiqueta"" que será usada como un ejemplo para el entrenamiento."
+Enable this page to be used as an entity view page:,Habilitar a esta página para que se use como página de vista de entidad:
+Enter the 6-digit verification code generated by your Authenticator app:,Ingrese el código de verificación de 6 dígitos generado por su aplicación de autenticación
+Entities,Entidades
+entities,Entidades
+Entities across all languages,Entidades en todos los idiomas
+"Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Las entidades se pueden mostrar en una página personalizada. Para eso, una página personalizada debe crearse en Páginas y luego seleccionarse aquí."
+Entity,Entidad
+Entity deleted,Entidad eliminada
+Entity saved,Entidad grabada
+Entity types,Tipos de entidades
+Entity updated,Entidad actualizada
+Error,Error
+Expand all,Expandir todo
+Exploration,Exploración
+Export CSV,Exportar CSV
+Exporting entities to CSV,Exportando entidades a CSV
+Extension Token,Token extensión
+Extract information from your documents,Extraer información de sus documentos
+Extractor Name,Extractor Name
+Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
+
+1. Sube tu ícono en Subidas personalizadas.
+2. Copia su URL.
+3. Activa ""Definir favicon"" y pega el URL en el campo indicado.
+4. Recarga la página para ver tu favicon en acción."
+FEATURED,DESTACADO
+File,Archivo
+File deleted,Archivo eliminado
+File updated,Archivo actualizado
+Files,Archivos
+Files and database usage,Uso de archivos y base de datos
+Fill,Rellenar/completar
+Filters,Filtros
+Filters AND operator,Y
+Filters configuration,Configuración de filtros
+Filters configuration description,"Por omisión, los usuarios pueden filtrar las entidades en la colección basados en los tipos que has definido. Sin embargo, puedes configurar cómo estos tipos de entidades se mostrarán."
+Filters configuration example,"selecciona Crear grupo"" a continuación, para agrupar filtros bajo una etiqueta, por ejemplo (""Documentos"" o ""Personas"")"
+Filters OR operator,OR
+Find,Encontrar
+Find suggestions,Encontrar sugerencias
+Finding suggestions,Encontrando sugerencias
+Fine tune,Afinar búsqueda
+Firefox extension store link,Enlace de la tienda de extensiones de Firefox
+Fit,Encajar
+Flag,Bandera
+for,for
+Forgot Password?,¿Has olvidado tu contraseña?
+Forms and email configuration,Configuración de formularios y correo electrónico
+From all templates,From all templates
+Full edit mode,Modo de edición completa
+Full width,Ancho completo
+General,General
+Global CSS,CSS global
+Global CSS & JS,CSS Global & JS
+Google Analytics,Google Analytics
+Google Analytics ID,ID de Google Analytics
+Google Maps,Google Maps
+Group,Grupo
+Group created,Grupo creado
+Group deleted,Grupo eliminado
+Group name,Nombre del grupo
+Group updated,Grupo actualizado
+Groups,Grupos
+help,ayuda
+here,aquí
+Hide actions,Ocultar acciones
+Hide label,Ocultar etiqueta
+Hide toolbar,Ocultar barra de herramientas
+https://yourdomain,https://tudominio
+hubs,nodos
+Hybrid,Híbrido
+Icon,Icono
+"If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
+"If you want to continue, please type","Si quieres continuar, por favor escribe"
+Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
+Import,Importar
+Import completed,Importación completada. Número de entidades creadas:
+Import CSV,Importar CSV
+Import instructions,Instrucciones de importación
+Imported entities from file,Entidades importadas desde el archivo
+Imported translations from file,Traducciones importadas desde el archivo
+Importing data in progress,Importación de datos en curso
+in,en
+"In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
+In OCR queue,En cola para ROC
+incorrect suggestion check,¿La sugerencia es incorrecta? Haz clic en 'Rechazar' y Uwazi mejorará las sugerencias que realiza.
+Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
+Info,Información
+Information extraction training,Entrenamiento de extracción de información
+Inherit,Heredar
+Inherit property,Heredar propiedad
+Install,Instalar
+Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
+Install language(s),Instalar idioma(s)
+INSTALL the browser extension,INSTALAR la extensión de navegador
+Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
+Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
+Invalid captcha,Captcha no válido
+Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
+Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
+Invalid email,Email no válido
+Invalid form,Formulario no válido
+Invalid home page url,URL  de página de inicio no válido
+It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
+Item,Elemento
+Item name,Nombre del elemento
+Items:,Elementos:
+Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
+key,clave
+Label,Etiqueta
+"Label date ""From""",De:
+"Label date ""to""",A:
+Label more documents,Etiquetar más documentos
+Label your collection note,"Nota: Haz el conjunto de muestra de documentos para cada tema diverso y representativo. Por ejemplo, usa varios métodos para buscar documentos de muestra y no busques sólo el término “educación” para encontrar documentos para el tema “Educación”"
+labelEmptyDesc,"La aceptación no está disponible porque no hay ninguna sugerencia. Si el valor es correcto y la sugerencia es incorrecta, no es necesario realizar ninguna acción. Se utilizará como muestra de entrenamiento."
+labelMatchDesc,Tiene un valor actual y una selección de texto que coincide con el valor y la selección sugeridos por el modelo. Se utilizará como muestra de entrenamiento.
+labelMismatchDesc,"Tiene un valor actual y una selección de texto, pero no coinciden con la predicción del modelo. Al aceptar la sugerencia, se reemplazará el valor actual y la selección de texto con los sugeridos convirtiéndose en una ""coincidencia/etiquetado"". Si los datos etiquetados son correctos y la sugerencia es incorrecta, no es necesario realizar ninguna acción. Se utilizará como muestra de entrenamiento."
+Landing page,Página de inicio
+Landing page description,"La página de inicio es la primera página que los visitantes ven cuando entran a tu colección. La página de inicio predeterminada es la librería de tu colección. Puedes configurar una página de inicio diferente añadiendo su URL relativa aquí. Por ejemplo:
+      
+Una página: */page/dicxg0oagy3xgr7ixef80k9*
+Una vista filtrada en Uwazi: */library/?searchTerm=test*
+Una entidad: */entity/9htbkgpkyy7j5rk9*
+Un documento: */document/4y9i99fadjp833di*
+      
+Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nombre del dominio. Por ejemplo: En la dirección *https://yoursite.com/landingpage*, el URL relativo es /landingpage"
+Language,Idioma
+Language Code,Código de Idioma
+Language deleted,Idioma eliminado
+Languages,Idiomas
+Last updated,Última actualización
+Latitude,Latitud
+Learn more,Aprender más
+Learning...,Aprendiendo...
+Legend,Leyenda
+Lengthy reindex process,Proceso de reindexación largo
+Library,Colección
+library list view,vista de lista de la colección
+library map view,vista de mapa de la colección
+library table view,vista de tabla de la colección
+linked,vinculado
+Live translate,Traducción en vivo
+Loading,Cargando
+Login,Acceder
+Login button,Inicio de Sesión
+Login failed,Error de inicio de sesión
+Logout,Cerrar Sesión
+Longitude,Longitud
+Lost connection to the server. Your changes may be lost,Se perdió la conexión con el servidor. Los cambios pueden perderse
+low,bajo
+Manage site settings and configuration,Administrar la configuración del sitio
+Map,Mapa
+Map api key,Clave del API de Mapas
+Map api key tooltip,Se requiere una clave API para usar Mapbox o Google Maps.
+Map provider,Proveedor de mapas
+Map view,Vista de mapa
+MapBox,MapBox
+Mapping conflict error,"Es necesaria una reindexación de su colección. El motivo puede variar
+         -- de ciertos cambios hechos a la propiedad de una plantilla a nuevos campos
+         que deben completarse en todas las entidades.
+         Este proceso no afectará negativamente los datos de tu colección.
+         Puede durar unos minutos y algunas partes de tu colección pueden tardar
+         algún tiempo para reaparecer en la Librería, pero esto es temporal. ¿Quieres continuar?"
+Maps,Mapas
+Mark as Reviewed,Marcar como Revisado
+Markdown,Markdown
+Match / Label,Coincidencia / Etiqueta
+Match / Value,Coincidencia / Valor
+Matching,Coincidencia
+Matomo Analytics,Analíticas de Matomo
+Members,Miembros
+Menu,Menú
+Message,Mensaje
+Message sent,Mensaje enviado
+Metadata,Metadatos
+Metadata creator,Creador de metadatos
+Metadata Extraction,Extracción de metadatos
+Metadata extraction dashboard,Tablero de extracción de metadatos
+MIGRATE,MIGRAR
+Minimum,Mínimo
+Mismatch / Empty,Mismatch / Empty
+Mismatch / Label,Mismatch / Label
+Mismatch / Value,Mismatch / Value
+mismatched passwords,Las contraseñas no coinciden
+Mixed access,Acceso mixto
+ML TOC,ML TdC
+Month,Mes
+more options.,más opciones.
+Multimedia fill description,"intentará llenar el contenedor, utilizando todo su ancho. En las tarjetas, es probable que se produzcan recortes."
+Multimedia fit description,mostrará todo el contenido multimedia dentro del contenedor.
+Multiple date,Fecha múltiple
+Multiple date range,Rango de fechas múltiple
+Multiple inherited properties warning ([property 1] affects [property 2]),afecta
+Multiple relationships edit description,Hacer cambios a esta propiedad afectará a otras propiedades en esta plantilla porque todos ellas comparten relaciones con la misma configuración
+Multiple select,Selección múltiple
+Name,Nombre
+Name is required,Se requiere el nombre
+Name is too long,El nombre es demasiado largo
+Name is too short,El nombre es muy corto
+Name of the group,Nombre del grupo
+Narrow down your searches,Reducir tus búsquedas
+Narrow your search,Reducir tu búsqueda
+Navigate back,Navegar hacia atrás
+Navigation menu tool tip part 1,"Si utilizas una URL interna de este sitio web, asegúrate de eliminar la primera parte."
+Navigation menu tool tip part 2,dejando solo una URL relativa que comienza con una barra inclinada. Es decir. /algun_url.
+New entity,Nueva entidad
+New group,Grupo nuevo
+New language added,Nuevo idioma añadido
+New password,Nueva contraseña
+New relationship type,Nuevo tipo de relación
+New relationships group,Nuevo grupo de relaciones
+Next,Próximo
+No,No
+No attachments,Sin adjuntos
+No common filters,No existen filtros comunes
+No Connections,No existen relaciones
+No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
+No Documents found,No se encontraron documentos
+no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
+No icon / flag,Sin icono / bandera
+No Label,No existe etiqueta
+No options,No options
+No options found,Opciones no encontradas
+No property,Ninguna propiedad
+No References,Sin referencias
+No References description,Las referencias son partes de este documento relacionadas con otros documentos y entidades.
+No relationship types warning,Los campos de relación no se pueden agregar hasta que tenga al menos un tipo de relación para seleccionar.
+No Relationships,No existen relaciones
+No Relationships description,Las relaciones son vínculos entre entidades.
+No Table of Contents,Sin Tabla de Contenidos
+No Table of Contents description,Sin descripción de Tabla de Contenidos
+No text match,Sin coincidencias de texto
+No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
+No type,Sin tipo
+No value,Sin valor
+No Value,Sin valor
+Non-matching,no coincidente
+Normal view,Vista normal
+Not Found,No encontrado
+Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
+Number of sentences above threshold,El número de frases supera el límite
+Obsolete,Obsoleto
+obsoleteDesc,"Un nuevo modelo está entrenando procesando sugerencias. Esta sugerencia fue creada por un modelo anterior, por lo que no es posible realizar ninguna acción hasta que se reciba la nueva sugerencia."
+OCR,ROC
+OCR button tip,Esto procesará el documento para reconocer su texto. El archivo original se agregará como un archivo de soporte.
+OCR completed,ROC completado
+OCR description tip 1,"Esto habilitará la función de reconocimiento óptico de caracteres (OCR) para documentos PDF. Este servicio reconocerá el texto dentro de las imágenes, como documentos escaneados y fotos, y lo convertirá en datos de texto legibles por máquina."
+OCR description tip 2,"Cuando está activado, esto permitirá a los usuarios administradores y editores enviar documentos PDF al servicio OCR."
+OCR error,Error ROC
+OCR error tip,El motor de OCR no pudo leer el documento debido a un formato incorrecto. Última actualización
+OCR PDF,ROC PDF
+of,de
+Ok,De acuerdo
+OK,OK
+"Only text, number and date properties are currently supported","Actualmente solo se admiten las propiedades de texto, número y fecha"
+Ooops... please go,¡Cuidado! Adelante por favor
+Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
+Open PDF,Abrir PDF
+Open the two-factor Authenticator app on your device,Abre la app Authenticator de tu dispositivo móvil
+or,o
+or drop your files here.,o deposita tus archivos aquí
+Or enter this secret key into your Authenticator app,O ingresa este contraseña secreta en tu app Authenticator
+Order,Orden
+Other,Otro
+other,Otro
+out of,fuera de
+Page,Página
+Page Javascript,Página JavaScript
+Page name,Nombre de la página
+Pages,Páginas
+Password,Contraseña
+Password changed success,Contraseña cambiada exitosamente
+Password Error,¡Error de contraseña! Ambos campos son obligatorios y deben coincidir
+Password is too long,La contraseña es demasiado larga
+Password updated,Contraseña actualizada
+Paste URL here,Pega el URL aquí
+PDF,PDF
+per page,por página
+Permission,Permiso
+Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
+Permissions,Permisos
+Plain text,Texto sin formato
+Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
+Please type in,Por favor digite
+Please type in letters and numbers from the image to start the export.,"Por favor, teclea los caracteres de la imagen para iniciar la exportación."
+Precision,Precisión
+Preserve,Preservar
+Preserve Extension,Extensión Preservar
+Preserve Setup Description,"Si conoces el URL y TOKEN de Uwazi, haz click en el enlace a continuación y completa la información requerida."
+Press enter to add,Pulsa ENTER para añadir
+Preview,Previsualizar
+Previous,Anterior
+Primary Documents,Documentos primarios
+Priority sorting,Ordenamiento prioritario
+Priority sorting description,"Las propiedades marcadas como ordenamiento prioritaria se utilizarán como criterios de ordenamiento predeterminados. Si se marca más de una propiedad como ordenación prioritaria, el sistema intentará elegir la que mejor se ajuste. Al enumerar tipos de plantillas mixtas, el sistema seleccionará el mejor ordenamiento combinado."
+Private entities description,AVISO: Las entidades seleccionadas serán **privadas**. Solo usuarios con permiso podrán visualizarlos.
+Private instance,Instancia privada
+Processing,Procesando
+Properties,Propiedades
+Properties from other templates in the collection using the same label,Propiedades de otras plantillas de la colección que utilizan la misma etiqueta.
+Property,Property
+Property as default filter description,"Utiliza esta propiedad como filtro predeterminado en la colección. Cuando no haya ningún tipo de entidad seleccionado, esta propiedad se mostrará como un filtro predeterminado para tu colección."
+Property as filter description,"Esta propiedad se utilizará para filtrar los resultados de la colección. Cuando las propiedades coincidan en el mismo nombre y tipo de campo con otros tipos de entidades, se combinarán para el filtrado."
+property date,Fecha
+property daterange,Rango de fechas
+Property delete warning,"Eliminar una propiedad de la plantilla, eliminará su información de metadatos en todas las entidades que usan esta plantilla."
+property generatedid,ID Auto generado
+property geolocation,Geolocalización
+property image,Imagen
+property link,Enlace
+property markdown,Texto enriquecido
+property media,Media
+property multidate,Fecha múltiple
+property multidaterange,Rango de fechas múltiple
+property multiselect,Selección múltiple
+property numeric,Numérico
+property preview,Pre visualización
+property relationship,Relación
+property select,Selección
+property text,Texto
+Protect your account,Protege tu cuenta
+Protection,Protección
+ProTip!,¡Consejo avanzado!
+Public Endpoints,Destino final público
+Public entities description,AVISO: Las entidades seleccionadas serán **públicas**. Cualquier persona podrá visualizaras.
+Public form settings description,Aquí puedes configurar el destino del formulario público y la lista blanca de plantillas
+Public Form submit URL,URL de envío de formulario público
+Public form URL description,"Si has configurado un formulario público y deseas que una colección diferente de Uwazi reciba los envíos, ingresa su URL aquí."
+Public form whitelist description,"Si deseas incluir formularios públicos en tus páginas, debes incluir en la lista blanca los identificadores de las plantillas para los que se esperan formularios públicos"
+Publish,Publicar
+Published,Publicado
+Query,Consulta
+Quick labeling for,Etiquetado rápido para
+RAW,SIN FORMATO
+Re-uploaded document,Documento recargado
+Receiving email,Correo electrónico de recepción
+Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
+Reference,Referencia
+References,Referencias
+Reject,Rechazar
+Relationship,Relación
+relationship consistency warning,"No se puede utilizar ""cualquier entidad o documento"" si otra relación del mismo tipo está establecida con una entidad específica. "
+Relationship Type,Tipo de relación
+Relationship types,Tipos de relación
+relationships,relaciones
+Relationships,relaciones
+Relationships saved,Relaciones guardadas
+RelationType saved,Tipo de Relación guardada
+Remote Server Unreachable,Sin conexión con servidor remoto
+Remove,Eliminar
+remove icon,eliminar ícono
+Removed language,Idioma eliminado
+Rename,Renombrar
+Renamed attachment,Archivo adjunto eliminado
+Repeat Password,Repite la contraseña
+Request id #,Solicitar id #
+Request token,Solicitud de token
+Required property,Propiedad requerida
+Reset,Reiniciar
+Reset 2FA,Resetear 2FA
+Reset default translation,Resetear traducción predeterminada
+Reset Password,Restablecer contraseña
+Restricted,Restringido
+Return to login,Regresar al inicio de sesión
+Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
+Review,Revisar
+Review unpublished document,Revisar el documento no publicado
+Reviewed,Revisados
+Reviewing,Revisando
+Role,Rol
+Route,Ruta
+Sample,Ejemplo
+Satellite,Satélite
+Save,Guardar
+Save and go to next,Guardar e Ir al siguiente
+Save changes,Guardar cambios
+Save document,Guardar documento
+Save document(s),Guardar documento(s)
+Save password,Guardar contraseña
+Save your work to make change permanent,Guarda tu trabajo para que el cambio sea permanente
+Saved successfully.,Guardado exitoso.
+Search,Buscar
+Search item,Buscar elemento
+Search not found,Búsqueda no encontrada
+Search related entities or documents,Buscar entidades o documentos relacionados
+Search relevance,Relevancia de la búsqueda
+Search text,Buscar texto
+Search text description,Escribe algo en la barra de búsqueda para obtener resultados.
+Search Tips,Consejos de búsqueda
+Search Tips: boolean,"AND, OR y NOT para búsquedas lógicas. Por ejemplo. ""estado AND mujer NOT Nicaragua"" coincidirá con cualquier cosa que contenga tanto las palabras estado como mujer, y que no contenga la palabra Nicaragua."
+Search Tips: exact term,"Coincidencia exacta del término encerrando su cadena de búsqueda entre comillas. Por ejemplo. ""Costa Rica"" arrojará resultados diferentes a los de Costa Rica sin comillas."
+Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?"" coincidirá con 1980 a 1989 y también con 198a, 198b, etc."
+Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
+Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
+secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
+Select,Seleccionar
+Select all,Seleccionar todo
+Select files on your device,Seleccionar archivos de tu dispositivo
+Select from computer,Seleccionar desde la computadora
+Select relationship type,Seleccionar tipo de relación
+Select target paragraph,Seleccionar párrafo de destino
+Select...,Seleccionar
+Selected,Seleccionado
+selected,seleccionado(s)
+selected of,seleccionados de
+Semantic search,Búsqueda semántica
+Semantic Search,Búsqueda semántica
+Semantic search minimum sentences help,La búsqueda semántica se aplica a cada oración en un documento. Filtra los documentos por el número mínimo de oraciones que superan el límite.
+Semantic search overview,"La búsqueda semántica es una técnica para proporcionar resultados contextuales. Su capacidad para capturar conceptos y asociaciones de palabras en el lenguaje humano permite recuperar información relacionada, como sinónimos, categorías o entidades conectadas, etc."
+Semantic search results,Resultados de búsqueda semántica
+Semantic search threshold help,El límite determina qué tan cerca coinciden los resultados con el concepto de búsqueda. Mueve el control deslizante hacia la derecha para reducir el concepto de la consulta de búsqueda. Los resultados obtenidos serán más precisos. Mueve el control deslizante hacia la izquierda para ampliar más el concepto y explorar contenido relacionado.
+Send,Enviar
+Send recovery email,Enviar correo electrónico de recuperación
+Sending email,Correo electrónico de envío
+Sending email description,Esta es la dirección de correo electrónico que aparecerá como remitente cuando se envíe un correo electrónico desde tu colección Uwazi a usuarios registrados. La dirección predeterminada es *no-reply@uwazi.io*. Puedes configurar una dirección personalizada aquí.
+Sending labeled data...,Enviando datos etiquetados…
+Sentences above threshold,Palabras por encima del límite
+Services,Servicios
+Set as default,Establecer como predeterminado
+Set default language,Establecer idioma predeterminado
+Set default template,Establecer plantilla predeterminada
+Set the default starting point for your geolocation properties.,Configurar el punto de inicio para la geolocalización
+Settings,Configuración
+settings,Configuración
+Settings updated,Configuración actualizada
+Share,Compartir
+Share edit access with other users,Compartir acceso de edición con otros usuarios
+Share entities with the public,Compartir entidades públicamente
+Share with people and groups,Compartir con personas o grupos
+Shared as editor,Compartido como editor
+Shared as viewer,Compartido como observador
+Show actions,Mostrar acciones
+Show cookie policy,Mostrar política de cookies
+Show filters,Mostrar filtros
+Show Filters,Show Filters
+Show in cards,Mostrar en tarjetas
+Show more,Mostrar más
+Show Suggestions,Mostrar sugerencias
+Show toolbar,Mostrar la barra de herramientas
+shown of,listados de
+Sign in,Registrarse
+Single date,Fecha única
+Single date range,Rango de fechas únicas
+Single relationships must have a hub,Las relaciones simples deben tener un nodo
+Single select,Selección única
+Size,Tamaño
+Something went wrong,Algo salió mal
+Sort,Ordenar
+Sort ascending,Orden ascendente
+Sort by,Ordenar por
+Sort descending,Orden descendiente
+sorted by,ordenado por
+State,Estado
+State Legend,Leyenda de Estado
+Status,Status
+Storage,Almacenamiento
+Streets,Calles
+Strict mode,Modo estricto
+Style,Estilo
+Submit,Enviar
+Submitted entity to a remote instance,Entidad enviada a una instancia remota
+Submitting,Enviando
+Success,Exito
+"Success, Upload another?","Exito, cargar otro?"
+Suggested labels description,"Uwazi tiene etiquetas sugeridas para tu colección. Revísalas usando el botón ""Ver sugerencias"" junto a cada tema. Deshabilita las sugerencias desactivando  ""Mostrar sugerencias""."
+Suggestion,Sugerencia
+Suggestions,Sugerencias
+Supporting files,Archivos de soporte
+Synced template,Plantilla sincronizada
+syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
+syncedTemplateListMessage,La fuente de esta plantilla es una sincronización. Todas las opciones de edición estarán deshabilitadas.
+syntax to create page content,sintaxis para crear el contenido de la página
+System translations,Traducciones del sistema
+Table,Tabla
+Table of Contents,Tabla de Contenidos
+Table of contents,Tabla de Contenidos
+Table view,Vista de Tabla
+Template,Plantilla
+Template conflict,Conflicto de plantilla
+Template name,Nombre de plantilla
+Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
+Template(s),Template(s)
+Templates,Plantillas
+Text,Texto
+Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
+The current model was trained at,El modelo de datos actual fue entrenado en
+"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","El primer paso es etiquetar una muestra de tus documentos, para que Uwazi pueda aprender los temas a sugerir al momento de etiquetar una colección."
+The import process threw an error:,El proceso de importación tiene un error.
+The request could not be processed.,La petición no pudo ser procesada.
+The template contains errors,La plantilla contiene errores
+The token does not validate against the secret key!,¡El token no es válido en base a la clave secreta!
+There are no pages enabled for entity view,No hay páginas habilitadas para la vista de entidad
+There are no untranslated terms,No hay términos sin traducir
+There are unsaved changes. Are you sure you want to discard them and switch to a different document?,Hay cambios sin guardar. Estas seguro que quieres descartarlos y cambiar a un documento diferente?
+Thesauri,Tesauros
+Thesauri name,Nombre del Tesauro
+Thesaurus,Tesauro
+Thesaurus saved,Tesauro guardado
+This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Esta área permite Añadir Javascript para personalizar la página. Esto abre un nuevo universo de posibilidades.
+This cannot be changed after saving,Esto no puede ser cambiado después de guardar
+This content is automatically generated,Este contenido se genera automáticamente.
+"This entity has no document, you probably want to see the metadata","Esta entidad no tiene ningún documento, es probable que quieras ver los metadatos."
+This entity is not public.,Esta entidad no es pública.
+This entity is restricted from public view.,Esta entidad está restringida de la vista pública.
+This field is required,Este campo es obligatorio
+This file type is not supported on image fields,This file type is not supported on image fields
+This file type is not supported on media fields,This file type is not supported on media fields
+This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
+This property will appear in the library cards as part of the basic info.,Esta propiedad aparecerá en las tarjetas de la biblioteca como parte de la información básica.
+This property will be inherited from the related entities and shown as metadata of this type of entities.,Esta propiedad será heredada desde las entidades relacionadas y se mostrará como metadato de este tipo de entidad.
+This property will be shown using all the width available.,Esta propiedad se mostrará utilizando todo el espacio disponible.
+This property will be shown without the label.,Esta propiedad se mostrará sin su etiqueta.
+This relationship type is being used and cannot be deleted.,Este tipo de relación esta siendo utilizado y no puede ser eliminado.
+this template,esta plantilla
+This template has associated entities,Esta plantilla tiene entidades asociadas
+This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
+This thesaurus is being used in document types and cannot be deleted.,Este tesauro está siendo utilizado en plantillas y no puede ser eliminado.
+This will cancel the finding suggestion process,Esto cancelará el proceso de búsqueda de sugerencias
+This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
+This will update the entity across all languages,Esto actualizará la entidad en todos los idiomas
+Threshold,Límite
+Time,Tiempo
+Timelinks,Líneas de tiempo
+Title,Título
+"To bring you a better experience, this site uses cookies.","Para una mejor experiencia de usuario, este sitio utiliza cookies."
+"To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
+to learn how to add and configure a contact form on a webpage.,para aprender a añadir y configurar un contacto desde una página web.
+to learn more about the components.,para aprender más sobre los componentes.
+to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
+Tools,Herramientas
+topic suggestions tip,"Mejora la calidad de las sugerencias de temas, encontrando más ejemplos de documentos con esta etiqueta."
+Total entities,Total de entidades
+Total files,Total de archivos
+"Total files from main documents, supporting files and custom uploads","Total de archivos de documentos primarios, archivos adjuntos y archivos personalizados subidos"
+Total users,Total de usuarios
+Train model,Entrenar al modelo
+Training,Entrenando
+Training model...,Entrenando el modelo…
+Translate,Traducir
+Translations,Traducciones
+Translations imported.,Traducciones importadas.
+Translations reset successfully,Traducciones reseteadas exitosamente
+Translations saved,Traducciones guardadas
+Try selecting other documents.,Por favor intenta seleccionar otros documentos.
+Turn off inline translation,Desactivar la traducción en línea
+Two-factor authentication enabled,Doble factor de autenticación habilitado
+Two-factor authentication failed.,Doble factor de autenticación fallido.
+Two-factor authentication secret,Secreto doble factor autenticación
+Two-factor verification failed,Fallo en la verificación del doble factor de autenticación
+Two-step verification,Verificación de dos pasos.
+Two-step verification successfully,"¡Felicidades!
+Has configurado con éxito la verificación de dos pasos."
+Two-step verification token required,El token de verificación es obligatorio
+Type,Tipo
+Unexpected error,Error inesperado
+Uninstall,Desinstalar
+Uninstall language,Desinstalar idioma
+Unlink,Desenlazar
+Unsupported OCR language,Idioma no soportado para ROC
+Untranslated Terms,Términos sin traducir
+Update,Actualizar
+UPDATE,Actualizar
+Update success,Actualización exitosa
+Updated file,Archivo actualizado
+Updated multiple entities,Múltiples entidades actualizadas
+Updated permissions on entity,Permisos sobre la entidad actualizados
+Updated relationships,Relaciones actualizadas
+Updated settings,Configuración actualizada
+Updated translations,Traducciones actualizadas
+Updated user,Usuario actualizado
+Upload a ZIP or CSV file.,Subir un archivo ZIP o CSV.
+Upload and select file,Sube y selecciona un archivo
+Upload from computer,Subir desde la computadora
+Upload PDF,Subir PDF
+Upload PDF(s) to create,Subir PDFs
+Uploaded attachment,Archivo adjunto cargado
+Uploaded custom file,Archivo personalizado cargado
+Uploaded document,Documento cargado
+Uploaded file,Archivo cargado
+Uploading,Subiendo archivos
+Uploading ...,Subiendo...
+Uploading file,Subiendo archivo
+Uploads,Subir archivos
+URL,URL
+Use,Usar
+Use as filter,Usar como filtro
+Use custom landing page,Utilizar página de destino personalizada
+User,Usuario
+Username,Nombre de usuario
+Username is required,Se requiere nombre de usuario
+Username is too long,El nombre de usuario es demasiado largo
+Username is too short,El nombre de usuario es demasiado corto
+Users,Usuarios
+Using Google Authenticator,Usando Google Authenticator
+Uwazi is developed by,Uwazi es desarrollado por
+"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi está aprendiendo a utilizar documentos con etiquetas. Este proceso puede tomar hasta 2 horas y una vez completo, podrás revisar las sugerencias realizadas por Uwazi para tu colección."
+Uwazi UI,Uwazi UI
+Value,valor
+Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+valueEmptyDesc,"Aceptar no está disponible porque no hay ninguna sugerencia. Si el valor es correcto, aún puedes hacer click para completar la selección de texto, para que se convierta en una ""etiqueta/discordancia"" que se usará como muestra de entrenamiento."
+valueMatchDesc,"Tiene un valor actual que coincide con la sugerencia, pero no tiene una selección de texto. Aceptar mantendrá el valor como está y lo enriquecerá con la selección de texto sugerido convirtiéndose en una ""coincidencia/etiqueta"" que se puede usar como muestra de entrenamiento."
+valueMismatchDesc,"Al aceptar la sugerencia, reemplazará el valor actual y la selección de texto con las sugerencias, convirtiéndose en una ""coincidencia/etiqueta"" que se usará como muestra de entrenamiento. Si el valor actual es correcto, aún puedes hacer click para completar la selección de texto, para que se convierta en una ""etiqueta/discordancia"" que se usará como muestra de entrenamiento."
+Verify,Verificar
+Verifying...,Verificando
+View,Ver
+view,Ver
+View entities,Ver entidades
+View in library,Ver en la colección
+View less,Ver menos
+View more,Ver más
+View suggestions,Ver sugerencias
+WARNING,ADVERTENCIA
+Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
+We can't find the page you're looking for.,No podemos hallar la página que buscas.
+We recommend labeling,Recomendamos etiquetar
+Website analytics,Estadísticas del sitio web
+Welcome to Uwazi,Bienvenido a Uwazi
+"Well, this is awkward...","Bueno, esto es incómodo..."
+Whitelisted Templates,Lista blanca de plantillas
+will be updated with the same value.,se actualizará con el mismo valor
+with,con
+With great power comes great responsibility!,"¡Con un gran poder, viene una gran responsabilidad!"
+x less,menos
+x more,más
+Year,Año
+"You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
+You can also improve the model by providing more labeled documents.,Puedes mejorar el modelo proporcionando más documentos con etiquetas.
+You can create metadata templates in,Puedes crear plantillas de metadatos en
+You have labeled,Has etiquetado
+"You have not connected an Uwazi instance, yet","No has conectado una instancia Uwazi, todavía"
+You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
+You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
+Your account is protected by 2fa.,Tu cuenta está protegida por 2FA.
+Zoom in,Aumentar zoom
+Zoom in library view,Aumentar zoom en la colección
+Zoom out,Reducir zoom
+Zoom out library view,Reducir zoom en la colección

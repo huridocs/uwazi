@@ -12,6 +12,7 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { SettingsHeader } from './SettingsHeader';
 import sortThesauri from '../utils/sortThesauri';
+import { shouldDisplayTranslation } from '../utils/shouldDisplayTranslation';
 
 class ThesauriList extends RouteHandler {
   static async requestState(requestParams) {
@@ -110,8 +111,17 @@ class ThesauriList extends RouteHandler {
     return (
       <tr key={thesaurus.name}>
         <th scope="row">
-          <Link to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</Link>&nbsp;
-          &#40;<Translate context={thesaurus._id}>{thesaurus.name}</Translate>&#41;
+          <Link to={`/settings/dictionaries/edit/${thesaurus._id}`}>{thesaurus.name}</Link>
+          {shouldDisplayTranslation(
+            thesaurus.name,
+            thesaurus._id,
+            this.props.locale,
+            this.props.languages
+          ) && (
+            <>
+              &nbsp;&#40;<Translate context={thesaurus._id}>{thesaurus.name}</Translate>&#41;
+            </>
+          )}
         </th>
         <td>{this.getThesaurusSuggestionActions(thesaurus)}</td>
         <td>{this.getThesaurusModifyActions(thesaurus)}</td>
@@ -157,6 +167,8 @@ class ThesauriList extends RouteHandler {
 ThesauriList.propTypes = {
   dictionaries: PropTypes.object,
   topicClassificationEnabled: PropTypes.bool,
+  locale: PropTypes.string.isRequired,
+  languages: PropTypes.object.isRequired,
   deleteThesaurus: PropTypes.func.isRequired,
   checkThesaurusCanBeDeleted: PropTypes.func.isRequired,
   mainContext: PropTypes.shape({
@@ -169,6 +181,8 @@ function mapStateToProps(state) {
     dictionaries: state.dictionaries,
     topicClassificationEnabled: (state.settings.collection.toJS().features || {})
       .topicClassification,
+    locale: state.locale,
+    languages: state.settings.collection.get('languages'),
   };
 }
 

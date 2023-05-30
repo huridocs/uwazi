@@ -55,14 +55,18 @@ function extractMessageFromValidation(error) {
   );
 }
 
+// eslint-disable-next-line max-statements
 const handleErrorStatus = error => {
+  let errorMessage;
   switch (error.status || true) {
     case 400:
-    case 422:
+    case 422: {
+      errorMessage = extractMessageFromValidation(error);
       store.dispatch(
         notify(t('System', extractMessageFromValidation(error), null, false), 'danger')
       );
       break;
+    }
 
     case 401:
       redirect('/login');
@@ -72,21 +76,28 @@ const handleErrorStatus = error => {
       redirect('/404');
       break;
 
-    case 409:
+    case 409: {
+      errorMessage = error.json.error;
       store.dispatch(notify(t('System', error.json.error, null, false), 'warning'));
       break;
+    }
 
-    case 500:
+    case 500: {
+      errorMessage = extractMessageFromError(error);
       store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
       break;
+    }
 
-    case isNonUsualApiError(error):
+    case isNonUsualApiError(error): {
+      errorMessage = error.json.prettyMessage || error.json.error;
       store.dispatch(
         notify(t('System', error.json.prettyMessage || error.json.error, null, false), 'danger')
       );
       break;
+    }
 
-    case error instanceof TypeError:
+    case error instanceof TypeError: {
+      errorMessage = 'Could not reach server. Please try again later.';
       store.dispatch(
         notify(
           t('System', 'Could not reach server. Please try again later.', null, false),
@@ -94,10 +105,15 @@ const handleErrorStatus = error => {
         )
       );
       break;
+    }
 
-    default:
+    default: {
+      errorMessage = 'An error occurred';
       store.dispatch(notify(t('System', 'An error occurred', null, false), 'danger'));
+    }
   }
+
+  return errorMessage;
 };
 
 const handleError = (e, endpoint) => {

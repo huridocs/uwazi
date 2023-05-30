@@ -56,7 +56,7 @@ module.exports = {
     },
     colors: {
       primary: colors.indigo,
-      sucess: colors.green,
+      success: colors.green,
       error: colors.red,
     },
   },

@@ -2,15 +2,13 @@
 import React, { MouseEventHandler } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 
+type modalSizeType = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
 interface ModalProps {
   children: string | React.ReactNode;
-  show: boolean;
-  size: 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
+  size: modalSizeType;
 }
 
-const Modal = ({ show, children, size }: ModalProps) => {
-  const hidden = show ? '' : 'hidden';
-
+const Modal = ({ children, size }: ModalProps) => {
   const sizes = {
     sm: 'max-w-sm',
     md: 'max-w-md',
@@ -23,14 +21,14 @@ const Modal = ({ show, children, size }: ModalProps) => {
   return (
     <div
       aria-hidden="false"
-      className={`${hidden} fixed top-0 right-0 left-0 z-50 h-modal overflow-y-auto overflow-x-hidden 
+      className={`fixed top-0 right-0 left-0 z-50 h-modal overflow-y-auto overflow-x-hidden 
         md:inset-0 md:h-full items-center justify-center flex bg-gray-900 bg-opacity-50`}
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
     >
       <div className={`relative h-full w-full p-4 md:h-auto ${sizes[size]}`}>
-        <div className="relative rounded-lg bg-white shadow">{children}</div>
+        <div className="relative bg-white rounded-lg shadow">{children}</div>
       </div>
     </div>
   );
@@ -51,14 +49,14 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
   </div>
 );
 
-Modal.Body = ({ children }: ModalChildrenProps) => (
-  <div className="p-6" data-testid="modal-body">
+Modal.Body = ({ children, className }: ModalChildrenProps) => (
+  <div className={`p-6 ${className}`} data-testid="modal-body">
     {children}
   </div>
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex items-center space-x-2 rounded-b border-gray-200 p-6 border-t">
+  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
     {children}
   </div>
 );
@@ -78,5 +76,5 @@ Modal.CloseButton = ({
   </button>
 );
 
-export type { ModalProps };
+export type { ModalProps, modalSizeType };
 export { Modal };

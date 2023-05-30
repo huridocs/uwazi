@@ -11,10 +11,8 @@ const ModalStory = {
 
 const Template: ComponentStory<typeof Modal> = args => (
   <div className="tw-content">
-    <div className=" w-10 h10 container">
-      <Modal show={args.show} size={args.size}>
-        {args.children}
-      </Modal>
+    <div className="container w-10 h10">
+      <Modal size={args.size}>{args.children}</Modal>
     </div>
   </div>
 );
@@ -34,12 +32,13 @@ Basic.args = {
         ornare, a volutpat massa interdum.
       </Modal.Body>
       <Modal.Footer>
-        <Button>Accept</Button>
-        <Button buttonStyle="tertiary">Decline</Button>
+        <Button buttonStyle="tertiary" className="grow">
+          Decline
+        </Button>
+        <Button className="grow">Accept</Button>
       </Modal.Footer>
     </>
   ),
-  show: true,
   size: 'sm',
 };
 
@@ -56,12 +55,15 @@ Warning.args = {
         Are you sure you want to delete this product?
       </h3>
       <div className="flex justify-center gap-4">
-        <Button buttonStyle="danger">Yes, I&apos;m sure</Button>
-        <Button buttonStyle="tertiary">No, cancel</Button>
+        <Button buttonStyle="tertiary" className="grow">
+          No, cancel
+        </Button>
+        <Button buttonStyle="danger" className="grow">
+          Yes, I&apos;m sure
+        </Button>
       </div>
     </Modal.Body>
   ),
-  show: true,
   size: 'sm',
 };
 

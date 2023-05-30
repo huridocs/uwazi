@@ -49,6 +49,22 @@ const fixtures = {
       },
       { obsoleteMetadata: ['relProp4'] }
     ),
+    ...entityInLanguages(['en', 'pt'])(
+      'entity5',
+      'template1',
+      {
+        relProp1: [{ value: 'valid value', label: 'valid label' }],
+        relProp4: [
+          {
+            value: 'old_value',
+            label: 'old_label',
+            inheritedType: 'numeric',
+            inheritedValue: [],
+          },
+        ],
+      },
+      { obsoleteMetadata: ['relProp4'] }
+    ),
     factory.entity(
       'inherit_target_1',
       'template-to-inherit',
@@ -73,6 +89,18 @@ const fixtures = {
       { inherited: [{ value: 4 }] },
       { language: 'pt', title: 'inherit_target_2_pt' }
     ),
+    factory.entity(
+      'inherit_target_3',
+      'template-to-inherit',
+      {},
+      { language: 'en', title: 'inherit_target_3_en' }
+    ),
+    factory.entity(
+      'inherit_target_3',
+      'template-to-inherit',
+      {},
+      { language: 'pt', title: 'inherit_target_3_pt' }
+    ),
   ],
   relationships: [
     {
@@ -85,6 +113,12 @@ const fixtures = {
       _id: factory.id('e4_to_it2'),
       from: { entity: 'entity4' },
       to: { entity: 'inherit_target_2' },
+      type: factory.id('reltypeid'),
+    },
+    {
+      _id: factory.id('e5_to_it3'),
+      from: { entity: 'entity5' },
+      to: { entity: 'inherit_target_3' },
       type: factory.id('reltypeid'),
     },
   ],
@@ -172,10 +206,14 @@ describe('Relationship fields caching strategy', () => {
         { sharedId: 'entity3', language: 'pt', obsoleteMetadata: ['relProp3'] },
         { sharedId: 'entity4', language: 'en', obsoleteMetadata: ['relProp4'] },
         { sharedId: 'entity4', language: 'pt', obsoleteMetadata: ['relProp4'] },
+        { sharedId: 'entity5', language: 'en', obsoleteMetadata: ['relProp4'] },
+        { sharedId: 'entity5', language: 'pt', obsoleteMetadata: ['relProp4'] },
         { sharedId: 'inherit_target_1', language: 'en', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_1', language: 'pt', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_2', language: 'en', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_3', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_3', language: 'pt', obsoleteMetadata: undefined },
       ]);
     });
 
@@ -231,10 +269,22 @@ describe('Relationship fields caching strategy', () => {
           language: 'pt',
           obsoleteMetadata: ['relProp4', 'relProp1', 'relProp2'],
         },
+        {
+          sharedId: 'entity5',
+          language: 'en',
+          obsoleteMetadata: ['relProp4', 'relProp1', 'relProp2'],
+        },
+        {
+          sharedId: 'entity5',
+          language: 'pt',
+          obsoleteMetadata: ['relProp4', 'relProp1', 'relProp2'],
+        },
         { sharedId: 'inherit_target_1', language: 'en', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_1', language: 'pt', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_2', language: 'en', obsoleteMetadata: undefined },
         { sharedId: 'inherit_target_2', language: 'pt', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_3', language: 'en', obsoleteMetadata: undefined },
+        { sharedId: 'inherit_target_3', language: 'pt', obsoleteMetadata: undefined },
       ]);
     });
   });
@@ -253,7 +303,7 @@ describe('Relationship fields caching strategy', () => {
         tm
       );
 
-      entities = await ds.getByIds(['entity3', 'entity4']).all();
+      entities = await ds.getByIds(['entity3', 'entity4', 'entity5']).all();
     });
 
     it('should use the cached values', async () => {
@@ -281,6 +331,20 @@ describe('Relationship fields caching strategy', () => {
         },
         {
           sharedId: 'entity4',
+          language: 'pt',
+          metadata: {
+            relProp1: [{ value: 'valid value', label: 'valid label' }],
+          },
+        },
+        {
+          sharedId: 'entity5',
+          language: 'en',
+          metadata: {
+            relProp1: [{ value: 'valid value', label: 'valid label' }],
+          },
+        },
+        {
+          sharedId: 'entity5',
           language: 'pt',
           metadata: {
             relProp1: [{ value: 'valid value', label: 'valid label' }],
@@ -328,6 +392,67 @@ describe('Relationship fields caching strategy', () => {
                 value: 'inherit_target_2',
                 label: 'inherit_target_2_pt',
                 inheritedValue: [{ value: 4 }],
+                inheritedType: 'numeric',
+              },
+            ],
+          },
+        },
+        {
+          sharedId: 'entity5',
+          language: 'en',
+          metadata: {
+            relProp4: [
+              {
+                value: 'inherit_target_3',
+                label: 'inherit_target_3_en',
+                inheritedValue: [],
+                inheritedType: 'numeric',
+              },
+            ],
+          },
+        },
+        {
+          sharedId: 'entity5',
+          language: 'pt',
+          metadata: {
+            relProp4: [
+              {
+                value: 'inherit_target_3',
+                label: 'inherit_target_3_pt',
+                inheritedValue: [],
+                inheritedType: 'numeric',
+              },
+            ],
+          },
+        },
+      ]);
+    });
+
+    it('should denormalize as empty array if the denormalized property is empty', () => {
+      expect(entities.filter(e => e.sharedId === 'entity5')).toMatchObject([
+        {
+          sharedId: 'entity5',
+          language: 'en',
+          metadata: {
+            relProp4: [
+              {
+                value: 'inherit_target_3',
+                label: 'inherit_target_3_en',
+                inheritedValue: [],
+                inheritedType: 'numeric',
+              },
+            ],
+          },
+        },
+        {
+          sharedId: 'entity5',
+          language: 'pt',
+          metadata: {
+            relProp4: [
+              {
+                value: 'inherit_target_3',
+                label: 'inherit_target_3_pt',
+                inheritedValue: [],
                 inheritedType: 'numeric',
               },
             ],
@@ -425,7 +550,7 @@ it('should return the sharedIds of the entities that have a particular id within
     await ds
       .getByDenormalizedId(['relProp1', 'relProp2', 'relProp3', 'relProp4'], ['valid value'])
       .all()
-  ).toEqual(['entity3', 'entity3', 'entity4', 'entity4']);
+  ).toEqual(['entity3', 'entity3', 'entity4', 'entity4', 'entity5', 'entity5']);
 });
 
 it('should update the denormalizations value in all related entities', async () => {
