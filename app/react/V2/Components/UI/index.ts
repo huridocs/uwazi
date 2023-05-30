@@ -1,21 +1,12 @@
-import { Button } from './Button';
-import { Modal } from './Modal';
-import { NavigationHeader } from './NavigationHeader';
-import { Pill } from './Pill';
-import { Table } from './Table';
-import { ToggleButton } from './ToggleButton';
-import { NotificationsContainer } from './NotificationsContainer';
-import { Sidepanel } from './Sidepanel';
-import { SearchMultiselect } from './SearchMultiSelect';
-
-export {
-  Button,
-  Modal,
-  NavigationHeader,
-  Pill,
-  Table,
-  ToggleButton,
-  NotificationsContainer,
-  Sidepanel,
-  SearchMultiselect,
-};
+export { Button } from './Button';
+export { Modal } from './Modal';
+export { NavigationHeader } from './NavigationHeader';
+export { Pill } from './Pill';
+export { Table } from './Table';
+export { ToggleButton } from './ToggleButton';
+export { NotificationsContainer } from './NotificationsContainer';
+export { Tabs } from './Tabs';
+export { Sidepanel } from './Sidepanel';
+export { SearchMultiselect } from './SearchMultiSelect';
+export { ConfirmationModal } from './ConfirmationModal';
+export { Card } from './Card';
