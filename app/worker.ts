@@ -12,12 +12,6 @@ import { syncWorker } from 'api/sync/syncWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
-import { QueueWorker } from 'api/queue.v2/application/QueueWorker';
-import { Queue } from 'api/queue.v2/application/Queue';
-import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
-import Redis from 'redis';
-import RedisSMQ from 'rsmq';
-import { registerUpdateRelationshipPropertiesJob } from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
 
 let dbAuth = {};
 
@@ -29,27 +23,11 @@ if (process.env.DBUSER) {
   };
 }
 
-function setUpJobsQueueWorker() {
-  const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
-  const RSMQ = new RedisSMQ({ client: redisClient });
-  const queue = new Queue('uwazi_jobs', RSMQ, StringJobSerializer);
-
-  registerUpdateRelationshipPropertiesJob(queue);
-
-  const queueWorker = new QueueWorker(queue);
-
-  redisClient.on('ready', () => {
-    // eslint-disable-next-line no-void
-    void queueWorker.start();
-  });
-}
-
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     await tenants.setupTenants();
     setupWorkerSockets();
 
-    // eslint-disable-next-line max-statements
     await tenants.run(async () => {
       permissionsContext.setCommandContext();
 
@@ -101,8 +79,6 @@ DB.connect(config.DBHOST, dbAuth)
         host: config.redis.host,
         delayTimeBetweenTasks: 30000,
       }).start();
-
-      setUpJobsQueueWorker();
     });
   })
   .catch(error => {
