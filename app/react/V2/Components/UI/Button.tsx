@@ -2,7 +2,8 @@ import React, { MouseEventHandler } from 'react';
 
 interface ButtonProps {
   children: string | React.ReactNode;
-  buttonStyle?: 'primary' | 'secondary' | 'tertiary' | 'danger';
+  styling?: 'solid' | 'outline' | 'light';
+  color?: 'primary' | 'error' | 'success';
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
   disabled?: boolean;
@@ -13,7 +14,8 @@ interface ButtonProps {
 
 const Button = ({
   children,
-  buttonStyle = 'primary',
+  styling = 'solid',
+  color = 'primary',
   type = 'button',
   size,
   disabled,
@@ -24,23 +26,63 @@ const Button = ({
   let classNames;
   const textStyles = size === 'small' ? 'text-xs px-3 py-1.5' : 'text-sm px-5 py-2.5';
 
-  switch (buttonStyle) {
-    case 'secondary':
-      classNames =
-        'text-primary-700 bg-white border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:text-white enabled:hover:border-primary-800';
+  let bgColor;
+  let bgDisabled;
+  let border;
+  let borderHover;
+  let text;
+  let textDisabled;
+  let textHover;
+  let borderDisabled;
+  let bgHover;
+  switch (color) {
+    case 'error':
+      bgColor = 'bg-error-700';
+      bgHover = 'enabled:hover:bg-error-800';
+      bgDisabled = ' disabled:bg-error-300';
+      border = 'border-error-700';
+      borderHover = 'enabled:hover:border-error-800';
+      borderDisabled = 'disabled:border-error-300';
+      text = 'text-error-700';
+      textDisabled = 'disabled:text-error-300';
+      textHover = 'enabled:hover:text-error-700';
       break;
 
-    case 'tertiary':
-      classNames =
-        'text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700';
+    case 'success':
+      bgColor = 'bg-success-700';
+      bgHover = 'enabled:hover:bg-success-700';
+      bgDisabled = ' disabled:bg-success-300';
+      border = 'border-success-700';
+      borderHover = 'enabled:hover:border-success-800';
+      borderDisabled = 'disabled:border-success-300';
+      text = 'text-success-700';
+      textDisabled = 'disabled:text-success-300';
+      textHover = 'enabled:hover:text-success-700';
       break;
-    case 'danger':
-      classNames =
-        'text-white bg-error-700 border-error-700 disabled:bg-error-300 disabled:border-error-300 enabled:hover:bg-error-800 enabled:hover:border-error-800';
-      break;
+
     default:
-      classNames =
-        'text-white bg-primary-700 border-primary-700 disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800';
+      bgColor = 'bg-primary-700';
+      bgHover = 'enabled:hover:bg-primary-800';
+      bgDisabled = ' disabled:bg-primary-300';
+      border = 'border-primary-700';
+      borderHover = 'enabled:hover:border-primary-800';
+      borderDisabled = 'disabled:border-primary-300';
+      text = 'text-primary-700';
+      textDisabled = 'disabled:text-primary-300';
+      textHover = 'enabled:hover:text-primary-700';
+      break;
+  }
+
+  switch (styling) {
+    case 'outline':
+      classNames = `bg-white enabled:hover:text-white ${text} ${border} ${textDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
+      break;
+    case 'light':
+      classNames = `text-gray-700 disabled:text-gray-300 bg-white border-gray-200 ${textHover}`;
+      break;
+
+    default:
+      classNames = `text-white ${bgColor} ${border} ${bgDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
       break;
   }
 

@@ -295,7 +295,7 @@ const EditTranslations = () => {
                 <>
                   <Button
                     size="small"
-                    buttonStyle="tertiary"
+                    styling="light"
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => fileInputRef.current?.click()}
@@ -313,17 +313,11 @@ const EditTranslations = () => {
               )}
             </div>
             <Link to="/settings/translations">
-              <Button size="small" buttonStyle="tertiary" type="button" disabled={isSubmitting}>
+              <Button size="small" styling="light" type="button" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
-            <Button
-              size="small"
-              buttonStyle="primary"
-              type="submit"
-              disabled={isSubmitting}
-              formId="edit-translations"
-            >
+            <Button size="small" type="submit" disabled={isSubmitting} formId="edit-translations">
               <Translate>Save</Translate>
             </Button>
           </div>
