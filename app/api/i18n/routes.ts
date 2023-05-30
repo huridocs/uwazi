@@ -24,7 +24,6 @@ export default (app: Application) => {
           properties: {
             context: { type: 'string' },
           },
-          required: ['context'],
         },
       },
     }),
