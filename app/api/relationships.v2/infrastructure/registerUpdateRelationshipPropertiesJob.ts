@@ -13,7 +13,7 @@ export function registerUpdateRelationshipPropertiesJob(queue: Queue) {
     UpdateRelationshipPropertiesJob,
     async namespace =>
       new Promise((resolve, reject) => {
-        return tenants
+        tenants
           .run(async () => {
             const transactionManager = DefaultTransactionManager();
             const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
