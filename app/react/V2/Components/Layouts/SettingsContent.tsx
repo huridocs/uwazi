@@ -26,6 +26,9 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
   <div className={`flex pb-4 ${className || ''}`} data-testid="settings-content-header">
     <Link to="/settings" className="block lg:hidden">
       <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
+      <span className="sr-only">
+        <Translate>Navigate back</Translate>
+      </span>
     </Link>
     <Breadcrumb className="!relative p-1 flex right-0 h-4 !bg-transparent m-0 !w-full flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
