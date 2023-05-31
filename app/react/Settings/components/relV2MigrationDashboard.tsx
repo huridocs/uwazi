@@ -9,6 +9,7 @@ import {
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import { info } from 'console';
 
 type RelationshipType = {
   template?: string;
@@ -23,23 +24,27 @@ type MigrationSummaryType = {
   dryRun: boolean;
 };
 
+type OriginalEntityInfo = {
+  entity: string;
+  entityTemplate: string;
+  entityTitle: string;
+  hub: string;
+  id: string;
+  template: string;
+  templateName: string;
+};
+
+type TransformedInfo = {
+  from: { entity: string };
+  to: { entity: string };
+  type: string;
+};
+
 type hubTestResult = {
   total: number;
   used: number;
-  transformed: {
-    from: { entity: string };
-    to: { entity: string };
-    type: string;
-  }[];
-  original: {
-    entity: string;
-    entityTemplate: string;
-    entityTitle: string;
-    hub: string;
-    id: string;
-    template: string;
-    templateName: string;
-  }[];
+  transformed: TransformedInfo[];
+  original: OriginalEntityInfo[];
 };
 
 const inferFromV1 = (
@@ -122,6 +127,11 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       t => t.entity,
       t => t.entityTitle
     );
+    const oneHubTestEntityTemplatesBySharedId = objectIndex(
+      this.hubTestResult?.original || [],
+      t => t.entity,
+      t => t.entityTemplate
+    );
     const oneHubRelTypeNamesById = objectIndex(
       this.hubTestResult?.original || [],
       t => t.template,
@@ -132,6 +142,14 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       templatesById,
       relationTypesById
     );
+    const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
+      `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
+        templatesById[orig.entityTemplate].name
+      })`;
+    const displayEntityTitleAndNameFromTransformed = (entity: string) =>
+      `${oneHubTestEntityTitlesBySharedId[entity]}(${
+        templatesById[oneHubTestEntityTemplatesBySharedId[entity]].name
+      })`;
 
     return (
       <div className="settings-content">
@@ -199,20 +217,20 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                             {oneHubRelTypeNamesById[t.template]}&emsp;
                             <Icon icon="link" />
                             &emsp;
-                            {oneHubTestEntityTitlesBySharedId[t.entity]}
+                            {displayEntityTitleAndNameFromOriginal(t)}
                           </div>
                         ))}
                       </td>
                       <td>
                         {this.hubTestResult.transformed.map(t => (
                           <div key={`${t.from.entity}_${t.to.entity}_${t.type}`}>
-                            {oneHubTestEntityTitlesBySharedId[t.from.entity]}&emsp;
+                            {displayEntityTitleAndNameFromTransformed(t.from.entity)}&emsp;
                             <Icon icon="arrow-right" />
                             &emsp;
                             {oneHubRelTypeNamesById[t.type]}&emsp;
                             <Icon icon="arrow-right" />
                             &emsp;
-                            {oneHubTestEntityTitlesBySharedId[t.to.entity]}
+                            {displayEntityTitleAndNameFromTransformed(t.to.entity)}
                           </div>
                         ))}
                       </td>
