@@ -86,11 +86,10 @@ exports[`LanguagesList render installed languages should show a list of installe
         </nav>
       </div>
       <div
-        class=" flex-grow p-5"
+        class=" flex-grow py-1"
         data-testid="settings-content-body"
       >
         <div
-          class="mt-4"
           data-testid="languages"
         >
           <div
