@@ -97,7 +97,7 @@ const Users = () => {
                 )}
               </Button>
             )}
-            {selectedGroups.length > 0 ? (
+            {selectedGroups.length > 0 && selectedUsers.length === 0 ? (
               <Button
                 size="small"
                 color="error"

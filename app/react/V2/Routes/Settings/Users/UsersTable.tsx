@@ -1,5 +1,4 @@
 import React from 'react';
-import { sortBy } from 'lodash';
 import { Button, Pill, Table } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientUserSchema } from 'app/apiResponseTypes';
