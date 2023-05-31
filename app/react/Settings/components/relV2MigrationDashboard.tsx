@@ -9,7 +9,6 @@ import {
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { info } from 'console';
 
 type RelationshipType = {
   template?: string;
