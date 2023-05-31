@@ -35,6 +35,7 @@ import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
 
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 
 mongoose.Promise = Promise;
 
@@ -177,8 +178,14 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
       DB.disconnect().then(() => {
         process.stdout.write('Disconnected from database\r\n');
-        process.stdout.write('Server closed succesfully\r\n');
-        process.exit(0);
+        ApplicationRedisClient.close().then(wasOpen => {
+          if (wasOpen) {
+            process.stdout.write('Disconnected from Redis\r\n');
+          }
+
+          process.stdout.write('Server closed succesfully\r\n');
+          process.exit(0);
+        });
       });
     });
     closeSockets();

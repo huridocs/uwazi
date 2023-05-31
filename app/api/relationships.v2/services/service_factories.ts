@@ -20,11 +20,10 @@ import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant'
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { Queue } from 'api/queue.v2/application/Queue';
 import RedisSMQ from 'rsmq';
-import Redis from 'redis';
-import { config } from 'api/config';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { tenants } from 'api/tenants';
 import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
+import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
@@ -51,25 +50,19 @@ const userFromRequest = (request: Request) => {
 };
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
-  async () =>
-    new Promise((resolve, reject) => {
-      const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
-      const RSMQ = new RedisSMQ({ client: redisClient });
+  async () => {
+    const redisClient = await ApplicationRedisClient.getInstance();
+    const RSMQ = new RedisSMQ({ client: redisClient });
 
-      redisClient.on('connect', () =>
-        resolve(
-          new QueuedRelationshipPropertyUpdateStrategy(
-            new JobsRouter(
-              queueName =>
-                new Queue(queueName, RSMQ, StringJobSerializer, {
-                  namespace: tenants.current().name,
-                })
-            )
-          )
-        )
-      );
-      redisClient.on('error', reject);
-    });
+    return new QueuedRelationshipPropertyUpdateStrategy(
+      new JobsRouter(
+        queueName =>
+          new Queue(queueName, RSMQ, StringJobSerializer, {
+            namespace: tenants.current().name,
+          })
+      )
+    );
+  };
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,

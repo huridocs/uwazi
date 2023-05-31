@@ -4,9 +4,9 @@ import { config } from 'api/config';
 import { DB } from 'api/odm';
 import { Queue } from 'api/queue.v2/application/Queue';
 import { QueueWorker } from 'api/queue.v2/application/QueueWorker';
+import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { registerUpdateRelationshipPropertiesJob } from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
-import Redis from 'redis';
 import RedisSMQ from 'rsmq';
 
 let dbAuth = {};
@@ -24,7 +24,7 @@ DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     console.info('[💾 MongoDB] Connected');
     console.info('[📥 Redis] Connecting');
-    const redisClient = Redis.createClient(`redis://${config.redis.host}:${config.redis.port}`);
+    const redisClient = await ApplicationRedisClient.getInstance();
     console.info('[📥 Redis] Connected');
     const RSMQ = new RedisSMQ({ client: redisClient });
     const queue = new Queue(config.queueName, RSMQ, StringJobSerializer);
