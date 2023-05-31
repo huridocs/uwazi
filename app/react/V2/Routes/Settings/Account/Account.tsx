@@ -12,6 +12,7 @@ import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { useForm } from 'react-hook-form';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
+import { useFetcher } from 'react-router-dom';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -23,34 +24,49 @@ const accountAction =
   async ({ request }) => {
     const formData = await request.formData();
     const formIntent = formData.get('intent') as 'update' | '2fa';
-
     switch (formIntent) {
       case '2fa':
-        return Auth2faAPI.enable(new RequestParams({ token: formData.get('token') }));
+        try {
+          await Auth2faAPI.enable(new RequestParams({ token: formData.get('token') }));
+        } catch (error) {
+          if (error.status === 409) {
+            return error;
+          }
+          throw error;
+        }
+        break;
+
       default:
         return UsersAPI.save(formData);
     }
+    return null;
   };
 
 const Account = () => {
   const userAccount = useLoaderData() as UserSchema;
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
+  const fetcher = useFetcher();
 
   type AccountForm = UserSchema & { passwordConfirm?: string };
   const {
     register,
     watch,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitted },
   } = useForm<AccountForm>({
     defaultValues: userAccount,
     mode: 'onSubmit',
   });
 
   const submit = async (data: AccountForm) => {
-    console.log(data);
+    const formData = new FormData();
+    formData.set('intent', 'form-submit');
+    formData.set('data', JSON.stringify(data));
+    fetcher.submit(formData, { method: 'post' });
+    reset({}, { keepValues: true });
   };
-  console.log(userAccount);
+
   return (
     <div
       className="tw-content"
@@ -99,6 +115,7 @@ const Account = () => {
                     id="new-password"
                     label={<Translate>New Password</Translate>}
                     {...register('password')}
+                    type="password"
                   />
                 </div>
                 <div className="sm:col-span-1">
@@ -106,10 +123,11 @@ const Account = () => {
                     id="confirm-new-password"
                     label={<Translate>Confirm New Passowrd</Translate>}
                     {...register('passwordConfirm', { validate: val => val === watch('password') })}
+                    type="password"
                   />
                 </div>
 
-                {errors.passwordConfirm && (
+                {errors.passwordConfirm && isSubmitted && (
                   <div className="text-sm text-red-800 font-semibold">Passwords do not match.</div>
                 )}
               </div>
@@ -121,7 +139,7 @@ const Account = () => {
                 color="default"
               >
                 <div className="flex gap-6 items-center">
-                  <Button buttonStyle="secondary" className="flex-none">
+                  <Button color="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
                   <div className="flex-1 grow">
@@ -139,7 +157,7 @@ const Account = () => {
               >
                 <div className="flex gap-6 items-center">
                   <Button
-                    buttonStyle="secondary"
+                    styling="outline"
                     className="flex-none"
                     onClick={() => setIsSidepanelOpen(true)}
                   >
@@ -157,10 +175,10 @@ const Account = () => {
         </div>
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
           <div className="flex gap-2 p-2 pt-1">
-            <Button buttonStyle="danger">
+            <Button styling="outline" color="error">
               <Translate>Logout</Translate>
             </Button>
-            <Button type="submit" form="account-form" buttonStyle="primary">
+            <Button type="submit" form="account-form">
               <Translate>Update</Translate>
             </Button>
           </div>
@@ -173,7 +191,7 @@ const Account = () => {
         size="large"
         withOverlay
       >
-        <TwoFactorSetup onCancel={() => setIsSidepanelOpen(false)} />
+        <TwoFactorSetup closePanel={() => setIsSidepanelOpen(false)} />
       </Sidepanel>
     </div>
   );

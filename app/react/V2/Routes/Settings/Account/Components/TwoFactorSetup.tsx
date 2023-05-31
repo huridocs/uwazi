@@ -4,8 +4,11 @@ import { Translate } from 'app/I18N';
 import loadable from '@loadable/component';
 import { InputField } from 'app/V2/Components/Forms';
 import api from 'app/utils/api';
+import { useFetcher, useRevalidator } from 'react-router-dom';
+import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
 import { RequestParams } from 'app/utils/RequestParams';
-import { useFetcher } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+import { notificationAtom } from 'app/V2/atoms';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -14,17 +17,17 @@ const QRCodeSVG = loadable(
   }
 );
 
-//const otpauth = 'otpauth://totp/Uwazi:admin?secret=PJKFAVBTIUZXA3DGIZGXC4KUF5XEG2LQ&issuer=Uwazi';
-
 interface TwoFactorSetupProps {
-  onCancel: () => void;
+  closePanel: () => void;
 }
 
-const TwoFactorSetup = ({ onCancel }: TwoFactorSetupProps) => {
+const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
   const [token, setToken] = useState('');
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
+  const setNotifications = useSetRecoilState(notificationAtom);
   const fetcher = useFetcher();
+  let revalidator = useRevalidator();
 
   useEffect(() => {
     api
@@ -36,11 +39,54 @@ const TwoFactorSetup = ({ onCancel }: TwoFactorSetupProps) => {
       });
   }, []);
 
+  // const enable2fa = async () => {
+  //   const formData = new FormData();
+  //   formData.set('intent', '2fa');
+  //   formData.set('token', token);
+  //   fetcher.submit(formData, { method: 'post' });
+  // };
+
+  // useEffect(() => {
+  //   switch (true) {
+  //     case fetcher.formData?.get('intent') === '2fa':
+  //       closePanel();
+  //       setNotifications({
+  //         type: 'success',
+  //         text: <Translate>2FA Enabled</Translate>,
+  //       });
+  //       break;
+
+  //     case fetcher.formData?.get('intent') === '2fa' && fetcher.data instanceof FetchResponseError:
+  //       setNotifications({
+  //         type: 'error',
+  //         text: <Translate>An error occurred</Translate>,
+  //         details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
+  //       });
+  //       break;
+
+  //     default:
+  //       break;
+  //   }
+  // }, [fetcher.data, fetcher.formData, setNotifications]);
+
   const enable2fa = async () => {
-    const formData = new FormData();
-    formData.set('intent', '2fa');
-    formData.set('token', token);
-    fetcher.submit(formData, { method: 'post' });
+    try {
+      await Auth2faAPI.enable(new RequestParams({ token }));
+      revalidator.revalidate();
+      closePanel();
+      setNotifications({
+        type: 'success',
+        text: <Translate>2FA Enabled</Translate>,
+      });
+    } catch (error) {
+      if (error.status === 409) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>The token does not validate against the secret key</Translate>,
+        });
+      }
+      throw error;
+    }
   };
 
   return (
@@ -102,7 +148,7 @@ const TwoFactorSetup = ({ onCancel }: TwoFactorSetupProps) => {
         </Card>
       </div>
       <div className="flex gap-2 absolute bottom-0 w-full">
-        <Button buttonStyle="tertiary" onClick={onCancel} className="grow">
+        <Button styling="light" onClick={closePanel} className="grow">
           <Translate>Cancel</Translate>
         </Button>
         <Button className="grow" disabled={!token} onClick={enable2fa}>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import ClipboardDocumentIcon from '@heroicons/react/24/outline/ClipboardDocumentIcon';
+import React, { useEffect, useState } from 'react';
+import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 
 interface CopyValueInputProps {
@@ -13,10 +13,17 @@ const CopyValueInput = ({ value, className }: CopyValueInputProps) => {
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(value);
     setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
   };
+
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    return () => {};
+  }, [copied]);
 
   return (
     <div className={`relative w-full mb-4 ${className}`}>
@@ -34,7 +41,12 @@ const CopyValueInput = ({ value, className }: CopyValueInputProps) => {
           className="hover:text-primary-700 text-gray-900 p-2.5 text-sm font-medium rounded-r-lg
              focus:outline-none"
         >
-          <ClipboardDocumentIcon className="w-5" />
+          {copied ? (
+            <CheckIcon className="w-5 text-success-600" />
+          ) : (
+            <ClipboardDocumentIcon className="w-5" />
+          )}
+
           <Translate className="sr-only">Copy to clipboard</Translate>
         </button>
         {copied && (
