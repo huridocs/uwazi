@@ -16,10 +16,11 @@ const Breadcrumb = ({ children }: PropsWithChildren) => (
 );
 
 const Item = ({ children, url, className }: BreadcrumbProps) => (
-  <li className={`inline-flex items-center ${className}`}>
+  <li className="inline-flex items-center ">
     <Link
       to={url}
-      className="inline-flex items-center ml-0 text-base font-medium text-gray-700 truncate w-60 sm:gap-6 hover:text-blue-600 hover:underline dark:text-gray-400 dark:hover:text-white"
+      // eslint-disable-next-line max-len
+      className={` ${className} inline-flex items-center ml-0 text-base font-medium text-gray-700 truncate sm:gap-6 hover:text-blue-600 hover:underline dark:text-gray-400 dark:hover:text-white`}
     >
       {children}
     </Link>
