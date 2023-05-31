@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   flexRender,
   getSortedRowModel,
@@ -41,21 +41,27 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
 const Table = ({ columns, data, title, initialState }: TableProps) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
-  const columnHelper = createColumnHelper();
+  const columnHelper = createColumnHelper<any>();
 
-  const constructedColumns = columns.map(column => ({
-    ...columnHelper.accessor(column.accessor, {
-      id: column.id || column.accessor,
-      cell: info => (column.cell ? column.cell(info) : info.renderValue()),
-      header: column.header,
-      enableSorting: column.enableSorting,
-    }),
-    ...{ className: column.className },
-  }));
+  const constructedColumns = useMemo(
+    () =>
+      columns.map(column => ({
+        ...columnHelper.accessor(column.accessor, {
+          id: column.id || column.accessor,
+          cell: info => (column.cell ? column.cell(info) : info.renderValue()),
+          header: column.header,
+          enableSorting: column.enableSorting,
+        }),
+        ...{ className: column.className },
+      })),
+    [columnHelper, columns]
+  );
+
+  const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
     columns: constructedColumns,
-    data,
+    data: memoizedData,
     state: {
       sorting,
     },
