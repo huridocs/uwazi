@@ -1,6 +1,7 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, useLoaderData, LoaderFunction } from 'react-router-dom';
+import { CellContext } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Button } from 'V2/Components/UI/Button';
@@ -14,30 +15,30 @@ const translationsListLoader =
   async () =>
     translationsAPI.get(headers);
 
-const renderButton = ({ row }: any) => (
-  <Link to={`edit/${row.values.id}`}>
+const renderButton = ({ cell }: CellContext<ClientTranslationContextSchema, any>) => (
+  <Link to={`edit/${cell.row.original.id}`}>
     <Button styling="outline" className="leading-4">
       <Translate>Translate</Translate>
     </Button>
   </Link>
 );
 
-const pill = ({ cell }: any) => (
+const pill = ({ cell }: CellContext<ClientTranslationContextSchema, any>) => (
   <div className="whitespace-nowrap">
     <Pill color="gray">
-      <Translate>{cell.value}</Translate>
+      <Translate>{cell.renderValue()}</Translate>
     </Pill>
   </div>
 );
 
 const columns = [
-  { Header: 'Name', accessor: 'label', className: 'w-1/3' },
-  { Header: 'Type', accessor: 'type', Cell: pill, className: 'w-2/3' },
+  { header: 'Name', accessor: 'label', className: 'w-1/3' },
+  { header: 'Type', accessor: 'type', cell: pill, className: 'w-2/3' },
   {
-    Header: 'Action',
+    header: 'Action',
     accessor: 'id',
-    Cell: renderButton,
-    disableSortBy: true,
+    cell: renderButton,
+    enableSorting: false,
     className: 'text-center w-0',
   },
 ];

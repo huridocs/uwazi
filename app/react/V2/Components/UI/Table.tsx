@@ -5,14 +5,14 @@ import {
   getCoreRowModel,
   useReactTable,
   createColumnHelper,
-  AccessorFn,
   SortingState,
+  TableState,
 } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 type Column = {
-  header: string;
-  accessor: AccessorFn<any>;
+  header: string | React.ReactNode;
+  accessor: string;
   id?: string;
   cell?: (value: any) => React.ReactNode;
   enableSorting?: boolean;
@@ -23,6 +23,7 @@ interface TableProps {
   columns: Column[];
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
+  initialState?: Partial<TableState>;
 }
 
 const getIcon = (sorting: false | 'asc' | 'desc') => {
@@ -37,15 +38,15 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
   }
 };
 
-const Table = ({ columns, data, title }: TableProps) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
+const Table = ({ columns, data, title, initialState }: TableProps) => {
+  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
   const columnHelper = createColumnHelper();
 
   const constructedColumns = columns.map(column => ({
     ...columnHelper.accessor(column.accessor, {
-      id: column.id || column.accessor.toString(),
-      cell: info => (column.cell ? column.cell(info.getValue()) : info.renderValue()),
+      id: column.id || column.accessor,
+      cell: info => (column.cell ? column.cell(info) : info.renderValue()),
       header: column.header,
       enableSorting: column.enableSorting,
     }),
@@ -85,7 +86,7 @@ const Table = ({ columns, data, title }: TableProps) => {
                   >
                     {header.isPlaceholder ? null : (
                       <div
-                        className={`flex gap-1 ${isSortable ? 'cursor-pointer select-none' : ''}`}
+                        className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}

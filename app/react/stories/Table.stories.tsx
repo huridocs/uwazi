@@ -1,5 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
+import { CellContext } from '@tanstack/react-table';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -18,8 +19,8 @@ const Primary: Story = {
   ),
 };
 
-const customCell = (value: string) => (
-  <div className="bg-gray-400 rounded text-white text-center">{value}</div>
+const customCell = ({ cell }: CellContext<any, any>) => (
+  <div className="bg-gray-400 rounded text-white text-center">{cell.getValue()}</div>
 );
 
 const actionsCell = () => (

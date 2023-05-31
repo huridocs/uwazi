@@ -12,16 +12,16 @@ type fromPropsType = {
 
 const FormInput = (data: any, formProps: fromPropsType) => {
   const { register, setValue, submitting, getFieldState } = formProps;
-  const { error } = getFieldState(data.cell.value);
+  const { error } = getFieldState(data.cell.getValue());
   const hasErrors = Boolean(error);
-  const reset = () => setValue(data.cell.value, '', { shouldDirty: true });
-  const { onChange, onBlur, name, ref } = register(data.cell.value, { required: true });
+  const reset = () => setValue(data.cell.getValue(), '', { shouldDirty: true });
+  const { onChange, onBlur, name, ref } = register(data.cell.getValue(), { required: true });
 
   return (
     <div>
       <InputField
-        id={data.cell.value}
-        label={data.cell.row.values.language}
+        id={data.cell.getValue()}
+        label={data.cell.row.original.language}
         hideLabel
         disabled={submitting}
         clearFieldAction={reset}

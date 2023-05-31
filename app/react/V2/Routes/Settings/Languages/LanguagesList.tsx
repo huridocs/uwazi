@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { Row } from 'react-table';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
+import { CellContext, Row } from '@tanstack/react-table';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -23,8 +23,8 @@ const languagesListLoader =
   async () =>
     I18NApi.getLanguages(new RequestParams({}, headers));
 
-const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
-  <Translate>{`${row.original.label} (${row.original.key})`}</Translate>
+const languageLabel = ({ cell }: CellContext<LanguageSchema, any>) => (
+  <Translate>{`${cell.row.original.label} (${cell.row.original.key})`}</Translate>
 );
 
 // eslint-disable-next-line max-statements
@@ -89,7 +89,7 @@ const LanguagesList = () => {
         'Language reset success',
         I18NApi.populateTranslations,
         'locale',
-        row.values as LanguageSchema
+        row.original as LanguageSchema
       )
     );
   };
@@ -99,7 +99,7 @@ const LanguagesList = () => {
       'Default language change success',
       I18NApi.setDefaultLanguage,
       'key',
-      row.values as LanguageSchema
+      row.original as LanguageSchema
     )();
   };
 
@@ -111,38 +111,40 @@ const LanguagesList = () => {
         'Language uninstalled success',
         I18NApi.deleteLanguage,
         'key',
-        row.values as LanguageSchema
+        row.original as LanguageSchema
       )
     );
   };
 
-  const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
-    row.original.translationAvailable ? (
-      <Button styling="outline" onClick={() => resetModal(row)} className="leading-4">
+  const resetButton = ({ cell }: CellContext<LanguageSchema, any>) =>
+    cell.row.original.translationAvailable ? (
+      <Button styling="outline" onClick={() => resetModal(cell.row)} className="leading-4">
         <Translate>Reset</Translate>
       </Button>
     ) : (
       <> </>
     );
 
-  const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
+  const defaultButton = ({ cell }: CellContext<LanguageSchema, any>) => (
     <Button
-      styling={row.original.default ? 'solid' : 'light'}
-      onClick={async () => setDefaultLanguage(row)}
+      styling={cell.row.original.default ? 'solid' : 'light'}
+      onClick={async () => setDefaultLanguage(cell.row)}
       className="leading-4"
     >
       <Translate className="sr-only">Default</Translate>
       <StarIcon
         className={`${
-          !row.original.default ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2' : 'w-4'
+          !cell.row.original.default
+            ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
+            : 'w-4'
         }`}
       />
     </Button>
   );
 
-  const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) =>
-    !row.original.default ? (
-      <Button styling="outline" onClick={() => uninstallModal(row)} className="leading-4">
+  const uninstallButton = ({ cell }: CellContext<LanguageSchema, any>) =>
+    !cell.row.original.default ? (
+      <Button styling="outline" onClick={() => uninstallModal(cell.row)} className="leading-4">
         <Translate>Uninstall</Translate>
       </Button>
     ) : (
@@ -151,33 +153,34 @@ const LanguagesList = () => {
 
   const columns = [
     {
-      Header: <Translate>Language</Translate>,
+      header: <Translate>Language</Translate>,
       accessor: 'label',
-      Cell: languageLabel,
+      cell: languageLabel,
       className: 'w-9/12',
     },
     {
-      Header: <Translate className="sr-only">Default language</Translate>,
+      header: <Translate className="sr-only">Default language</Translate>,
       accessor: 'default',
-      Cell: defaultButton,
-      disableSortBy: true,
+      cell: defaultButton,
+      enableSorting: false,
       className: 'text-center w-1/12',
     },
     {
-      Header: <Translate className="sr-only">Reset language</Translate>,
+      header: <Translate className="sr-only">Reset language</Translate>,
       accessor: 'key',
-      Cell: resetButton,
-      disableSortBy: true,
+      cell: resetButton,
+      enableSorting: false,
       className: 'text-center w-1/12',
     },
     {
-      Header: <Translate className="sr-only">Uninstall language</Translate>,
+      header: <Translate className="sr-only">Uninstall language</Translate>,
       accessor: '_id',
-      Cell: uninstallButton,
-      disableSortBy: true,
+      cell: uninstallButton,
+      enableSorting: false,
       className: 'text-center w-1/12',
     },
   ];
+
   return (
     <div
       className="tw-content"
@@ -196,7 +199,7 @@ const LanguagesList = () => {
               columns={columns}
               data={languages}
               title={<Translate>Active languages</Translate>}
-              initialState={{ sortBy: [{ id: 'label' }] }}
+              initialState={{ sorting: [{ id: 'label', desc: false }] }}
             />
           </div>
         </div>
