@@ -38,29 +38,29 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
   }
 };
 
+const prepareColumns = (columns: Column[]) => {
+  const columnHelper = createColumnHelper<any>();
+
+  return columns.map(column => ({
+    ...columnHelper.accessor(column.accessor, {
+      id: column.id || column.accessor,
+      cell: info => (column.cell ? column.cell(info) : info.renderValue()),
+      header: column.header,
+      enableSorting: column.enableSorting,
+    }),
+    ...{ className: column.className },
+  }));
+};
+
 const Table = ({ columns, data, title, initialState }: TableProps) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
-  const columnHelper = createColumnHelper<any>();
-
-  const constructedColumns = useMemo(
-    () =>
-      columns.map(column => ({
-        ...columnHelper.accessor(column.accessor, {
-          id: column.id || column.accessor,
-          cell: info => (column.cell ? column.cell(info) : info.renderValue()),
-          header: column.header,
-          enableSorting: column.enableSorting,
-        }),
-        ...{ className: column.className },
-      })),
-    [columnHelper, columns]
-  );
-
+  const constructedColumns = prepareColumns(columns);
+  const memoizedColumns = useMemo(() => constructedColumns, [constructedColumns]);
   const memoizedData = useMemo(() => data, [data]);
 
   const table = useReactTable({
-    columns: constructedColumns,
+    columns: memoizedColumns,
     data: memoizedData,
     state: {
       sorting,
