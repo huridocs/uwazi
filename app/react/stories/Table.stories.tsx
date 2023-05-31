@@ -36,7 +36,7 @@ const Basic = {
     columns: [
       { header: 'Title', accessor: 'title', id: 'title' },
       { header: 'Description', accessor: 'description' },
-      { header: 'Date added', accessor: 'created', cell: customCell },
+      { header: 'Date added', accessor: 'created', cell: customCell, className: 'something' },
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -64,20 +64,18 @@ const WithActions = {
       {
         header: 'Date added',
         accessor: 'created',
-        disableSortBy: true,
         className: 'w-1/3',
       },
       {
         header: 'Description',
         accessor: 'description',
-        disableSortBy: true,
-        className: 'w-1/3',
+        enableSorting: false,
+        className: 'w-1/3 bg-red-500 text-white',
       },
       {
         id: 'action',
         header: 'Actions',
         cell: actionsCell,
-        disableSortBy: true,
         className: 'text-center',
       },
     ],

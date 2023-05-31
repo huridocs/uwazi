@@ -15,6 +15,7 @@ type Column = {
   accessor: AccessorFn<any>;
   id?: string;
   cell?: (value: any) => React.ReactNode;
+  enableSorting?: boolean;
   className?: string;
 };
 
@@ -22,33 +23,34 @@ interface TableProps {
   columns: Column[];
   data: { [key: string]: any }[];
   title?: string | React.ReactNode;
-  initialState?;
 }
 
-// const getIcon = (column: TableColumn<any>) => {
-//   switch (true) {
-//     case !column.isSorted:
-//       return <ChevronUpDownIcon className="w-4" />;
-//     case !column.isSortedDesc:
-//       return <ChevronUpIcon className="w-4" />;
-//     case column.isSortedDesc:
-//     default:
-//       return <ChevronDownIcon className="w-4" />;
-//   }
-// };
+const getIcon = (sorting: false | 'asc' | 'desc') => {
+  switch (sorting) {
+    case false:
+      return <ChevronUpDownIcon className="w-4" />;
+    case 'asc':
+      return <ChevronUpIcon className="w-4" />;
+    case 'desc':
+    default:
+      return <ChevronDownIcon className="w-4" />;
+  }
+};
 
-const Table = ({ columns, data, title, initialState }: TableProps) => {
+const Table = ({ columns, data, title }: TableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const columnHelper = createColumnHelper();
 
-  const constructedColumns = columns.map(column =>
-    columnHelper.accessor(column.accessor, {
+  const constructedColumns = columns.map(column => ({
+    ...columnHelper.accessor(column.accessor, {
       id: column.id || column.accessor.toString(),
       cell: info => (column.cell ? column.cell(info.getValue()) : info.renderValue()),
       header: column.header,
-    })
-  );
+      enableSorting: column.enableSorting,
+    }),
+    ...{ className: column.className },
+  }));
 
   const table = useReactTable({
     columns: constructedColumns,
@@ -73,24 +75,26 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id} scope="col" className="px-6 py-3">
-                  {header.isPlaceholder ? null : (
-                    <div
-                      {...{
-                        className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: ' asc',
-                        desc: ' desc',
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
+              {headerGroup.headers.map(header => {
+                const isSortable = header.column.getCanSort();
+                return (
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className={`px-6 py-3 ${(header.column.columnDef as Column).className}`}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={`flex gap-1 ${isSortable ? 'cursor-pointer select-none' : ''}`}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {isSortable && getIcon(header.column.getIsSorted())}
+                      </div>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
