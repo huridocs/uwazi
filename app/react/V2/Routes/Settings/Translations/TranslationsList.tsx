@@ -73,7 +73,7 @@ const TranslationsList = () => {
       <SettingsContent>
         <SettingsContent.Header title="Translations" />
         <SettingsContent.Body>
-          <div className="mt-4" data-testid="translations">
+          <div data-testid="translations">
             <Table
               columns={columns}
               data={contexts.systemContexts}

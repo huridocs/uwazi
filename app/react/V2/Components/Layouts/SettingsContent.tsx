@@ -50,7 +50,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex-grow p-5`} data-testid="settings-content-body">
+  <div className={`${className || ''} flex-grow py-1`} data-testid="settings-content-body">
     {children}
   </div>
 );

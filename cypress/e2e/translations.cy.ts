@@ -25,7 +25,7 @@ describe('Translations', () => {
     });
 
     it('should have breadcrumb navigation', () => {
-      cy.contains('h1 > a > .translation', 'Translations').click();
+      cy.contains('li > a > .translation', 'Translations').click();
       cy.contains('caption', 'System translations');
       cy.contains('[data-testid=content] button', 'Translate').click();
     });

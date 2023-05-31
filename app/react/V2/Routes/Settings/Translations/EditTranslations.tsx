@@ -260,8 +260,8 @@ const EditTranslations = () => {
           contextId={contextId}
         />
         <SettingsContent.Body>
-          <div className="px-5">
-            <ToggleButton className="px-5" onToggle={() => setHideTranslated(!hideTranslated)}>
+          <div className="px-5 pt-5">
+            <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>
               <div className="pl-1 text-sm text-gray-700 ">
                 <Translate>Untranslated Terms</Translate>
               </div>

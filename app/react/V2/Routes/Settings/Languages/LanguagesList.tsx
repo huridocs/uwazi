@@ -187,7 +187,7 @@ const LanguagesList = () => {
       <SettingsContent>
         <SettingsContent.Header title="Languages" />
         <SettingsContent.Body>
-          <div className="mt-4" data-testid="languages">
+          <div data-testid="languages">
             <Table
               columns={columns}
               data={languages}
