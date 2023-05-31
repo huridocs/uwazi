@@ -118,7 +118,7 @@ const LanguagesList = () => {
 
   const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
     row.original.translationAvailable ? (
-      <Button buttonStyle="secondary" onClick={() => resetModal(row)}>
+      <Button styling="outline" onClick={() => resetModal(row)} className="leading-4">
         <Translate>Reset</Translate>
       </Button>
     ) : (
@@ -127,13 +127,14 @@ const LanguagesList = () => {
 
   const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
     <Button
-      buttonStyle={row.original.default ? 'primary' : 'tertiary'}
+      styling={row.original.default ? 'solid' : 'light'}
       onClick={async () => setDefaultLanguage(row)}
+      className="leading-4"
     >
       <Translate className="sr-only">Default</Translate>
       <StarIcon
         className={`${
-          !row.original.default ? ' w-5 text-white stroke-current stroke-gray-300 stroke-2' : 'w-5'
+          !row.original.default ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2' : 'w-4'
         }`}
       />
     </Button>
@@ -141,7 +142,7 @@ const LanguagesList = () => {
 
   const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) =>
     !row.original.default ? (
-      <Button buttonStyle="secondary" onClick={() => uninstallModal(row)}>
+      <Button styling="outline" onClick={() => uninstallModal(row)} className="leading-4">
         <Translate>Uninstall</Translate>
       </Button>
     ) : (
@@ -203,7 +204,6 @@ const LanguagesList = () => {
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
           <div className="flex gap-2 p-2 pt-1">
             <Button
-              buttonStyle="primary"
               onClick={() => {
                 setShowInstallModal(true);
               }}

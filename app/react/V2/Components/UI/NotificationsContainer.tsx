@@ -8,7 +8,7 @@ const NotificationsContainer = () => {
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();
   const notification = useRecoilValue(notificationAtom);
   const resetRecoilAtom = useResetRecoilState(notificationAtom);
-  const notificationIsSet = notification.text && notification.type;
+  const notificationIsSet = Boolean(notification.text && notification.type);
 
   useEffect(() => {
     if (notificationIsSet && !timerId) {

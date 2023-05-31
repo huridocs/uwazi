@@ -29,4 +29,6 @@ const ToggleButton = ({ children, onToggle, value, disabled }: ToggleButtonProps
   );
 };
 
+export type { ToggleButtonProps };
+
 export { ToggleButton };

@@ -1,17 +1,43 @@
 import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Sidepanel } from 'V2/Components/UI';
+import { SidePanelProps } from 'app/V2/Components/UI/Sidepanel';
 
-const SidepanelStory = {
+const meta: Meta<typeof Sidepanel> = {
   title: 'Components/Sidepanel',
   component: Sidepanel,
 };
 
-const SidepanelContent = () => <p>The content of my sidepanel</p>;
+const SidepanelContent = () => {
+  const contents: React.ReactNode[] = [];
 
-const Template: ComponentStory<typeof Sidepanel> = args => {
+  for (let index = 1; index < 8; index += 1) {
+    contents.push(
+      <>
+        <h1 className="font-bold">Item {index}</h1>
+        <p className="mb-1">
+          Fusce id mi eu mauris bibendum dignissim nec in sem. Sed ultrices varius mauris quis
+          placerat. Donec imperdiet sodales diam sed imperdiet. Aenean a nisl venenatis lectus
+          mattis pellentesque. Duis fermentum ante a ultricies feugiat. Proin dapibus luctus purus
+          id viverra. Aenean a aliquet nibh. Aenean facilisis justo quis sem auctor, nec mollis
+          tortor placerat. Cras eget enim mollis, mollis risus gravida, pharetra risus. Mauris
+          dapibus malesuada mi, quis ornare felis imperdiet eget. Donec sed quam non dolor sodales
+          hendrerit. Aenean suscipit, velit sed laoreet cursus, ante odio tristique lectus, a porta
+          eros felis eu sem. Curabitur eu gravida dolor. Ut iaculis lacus vitae libero viverra
+          interdum. Phasellus ac est consectetur, malesuada nisl nec, blandit lorem.
+        </p>
+        <hr className="mb-2" />
+      </>
+    );
+  }
+
+  return <>{contents.map(content => content)}</>;
+};
+
+const SidePanelContainer = (args: SidePanelProps) => {
   const [showSidepanel, setShowSidepanel] = useState(false);
 
   return (
@@ -19,9 +45,9 @@ const Template: ComponentStory<typeof Sidepanel> = args => {
       <div className="tw-content">
         <div>
           <main>
-            <h1 className="text-xl mb-2">This a content title</h1>
+            <h1 className="mb-2 text-xl">This a content title</h1>
 
-            <h2 className="text-lg mb-1">
+            <h2 className="mb-1 text-lg">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </h2>
 
@@ -62,7 +88,7 @@ const Template: ComponentStory<typeof Sidepanel> = args => {
 
             <button
               type="button"
-              className="border-2 rounded border-primary-400 p-1 bg-primary-400 text-white"
+              className="p-1 text-white border-2 rounded border-primary-400 bg-primary-400"
               onClick={() => setShowSidepanel(!showSidepanel)}
             >
               Open/Close sidepanel
@@ -73,6 +99,7 @@ const Template: ComponentStory<typeof Sidepanel> = args => {
             withOverlay={args.withOverlay}
             title={args.title}
             closeSidepanelFunction={() => setShowSidepanel(false)}
+            size={args.size}
           >
             <SidepanelContent />
           </Sidepanel>
@@ -82,10 +109,29 @@ const Template: ComponentStory<typeof Sidepanel> = args => {
   );
 };
 
-const Basic = Template.bind({});
+type Story = StoryObj<typeof Sidepanel>;
 
-Basic.args = { withOverlay: false, title: 'My sidepanel' };
+const Primary: Story = {
+  render: args => (
+    <SidePanelContainer
+      withOverlay={args.withOverlay}
+      title={args.title}
+      size={args.size}
+      closeSidepanelFunction={action('closeSidePanel')}
+    >
+      {
+        // eslint-disable-next-line react/jsx-no-useless-fragment
+        <></>
+      }
+    </SidePanelContainer>
+  ),
+};
+
+const Basic: Story = {
+  ...Primary,
+  args: { withOverlay: false, title: 'My sidepanel', size: 'medium' },
+};
 
 export { Basic };
 
-export default SidepanelStory as ComponentMeta<typeof Sidepanel>;
+export default meta;

@@ -3,6 +3,7 @@ import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { RequestParams } from 'app/utils/RequestParams';
+import { FetchResponseError } from 'shared/JSONRequest';
 
 interface ApiCallerResult {
   data?: Promise<any | undefined>;
@@ -25,11 +26,11 @@ const useApiCaller = () => {
     return getData(res);
   };
 
-  const handleError = async (e: Error) => {
+  const handleError = async (e: FetchResponseError) => {
     setNotifications({
       type: 'error',
       text: <Translate>An error occurred</Translate>,
-      details: <span>{e.message}</span>,
+      details: e.json?.prettyMessage ? <span>{e.json.prettyMessage}</span> : undefined,
     });
     return e.message;
   };

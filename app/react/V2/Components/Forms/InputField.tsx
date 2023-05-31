@@ -11,6 +11,8 @@ interface InputFieldProps {
   hasErrors?: boolean;
   value?: string;
   className?: string;
+  type?: 'text' | 'email' | 'password';
+  autoComplete?: 'on' | 'off';
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -28,6 +30,8 @@ const InputField = React.forwardRef(
       hasErrors,
       value,
       className,
+      type = 'text',
+      autoComplete = 'on',
       name = '',
       clearFieldAction,
       onChange = () => {},
@@ -56,7 +60,8 @@ const InputField = React.forwardRef(
         </label>
         <div className="relative w-full">
           <input
-            type="text"
+            type={type}
+            autoComplete={autoComplete}
             id={id}
             onChange={onChange}
             onBlur={onBlur}
