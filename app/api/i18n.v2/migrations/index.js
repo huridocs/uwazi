@@ -31,7 +31,7 @@ export default {
 
   async up(db) {
     const newTranslations = await db.collection('translations_v2');
-    await newTranslations.createIndex({ language: 1, key: 1, 'context.id': 1 });
+    await newTranslations.createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
     await newTranslations.deleteMany({});
 
     const currentTranslationsCursor = await db.collection('translations').find();

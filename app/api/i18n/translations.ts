@@ -23,6 +23,7 @@ import {
   getTranslationsV2ByContext,
   getTranslationsV2ByLanguage,
   migrateTranslationsToV2,
+  updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
 
@@ -225,13 +226,11 @@ export default {
     return translationTypeToIndexedTranslation(translations);
   },
 
-  async save(translation: TranslationType | IndexedTranslations) {
+  async oldSave(translation: TranslationType | IndexedTranslations) {
     const translationToSave = {
       ...translation,
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
-
-    await upsertTranslationsV2(translationToSave);
 
     const [oldTranslationExists] = await model.get({ locale: translation.locale });
     if (oldTranslationExists) {
@@ -239,6 +238,12 @@ export default {
     }
 
     return model.save(translationToSave);
+  },
+
+  async save(translation: TranslationType | IndexedTranslations) {
+    const result = await this.oldSave(translation);
+    await upsertTranslationsV2(result);
+    return result;
   },
 
   async updateEntries(
@@ -327,6 +332,7 @@ export default {
       model.get(),
       settings.getDefaultLanguage(),
     ]);
+
     await Promise.all(
       translations.map(async translation => {
         translation.contexts = translation.contexts || [];
@@ -338,7 +344,8 @@ export default {
             values: translatedValues,
             type,
           });
-          return this.save(translation);
+
+          return this.oldSave(translation);
         }
 
         context.values = context.values || [];
@@ -370,8 +377,15 @@ export default {
 
         context.label = newContextName;
 
-        return this.save(translation);
+        return this.oldSave(translation);
       })
+    );
+
+    await updateContextV2(
+      { id: id.toString(), label: newContextName },
+      keyNamesChanges,
+      deletedProperties,
+      values
     );
     return 'ok';
   },

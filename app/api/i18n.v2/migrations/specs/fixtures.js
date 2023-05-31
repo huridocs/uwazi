@@ -50,7 +50,7 @@ export default {
           type: 'Document',
         },
         {
-          id: dictionaryId,
+          id: dictionaryId.toString(),
           type: 'Dictionary',
           values: [
             { key: 'dictionary 2', value: 'dictionary 2' },

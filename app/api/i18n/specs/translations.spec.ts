@@ -131,7 +131,7 @@ describe('translations', () => {
         expect(thesauri.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
           'age id',
           'Age changed',
-          dictionaryId,
+          dictionaryId.toString(),
           'en'
         );
       });
@@ -266,8 +266,8 @@ describe('translations', () => {
       expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual(
         ContextType.entity
       );
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual(
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[2].values).toEqual(values);
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[2].type).toEqual(
         ContextType.entity
       );
     });
@@ -282,7 +282,7 @@ describe('translations', () => {
       const translated = await translations.get();
 
       expect(translated[0].contexts?.length).toBe(5);
-      expect(translated[1].contexts?.length).toBe(0);
+      expect(translated[1].contexts?.length).toBe(1);
     });
   });
 
@@ -313,8 +313,6 @@ describe('translations', () => {
       const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
       const deletedProperties = ['Age'];
       const values = {
-        Pass: 'Pass',
-        Acc: 'Acc',
         Email: 'Email',
         Name: 'Names',
         Interface: 'Interfaces',

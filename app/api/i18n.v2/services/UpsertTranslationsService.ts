@@ -44,4 +44,43 @@ export class UpsertTranslationsService {
       )
     );
   }
+
+  async updateContext(
+    context: { id: string; label: string },
+    keyChanges: { [x: string]: string },
+    valueChanges: { [k: string]: string },
+    keysToDelete: string[]
+  ) {
+    return this.transactionManager.run(async () => {
+      const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
+      await this.translationsDS.updateContextLabel(context.id, context.label);
+      await this.translationsDS.updateContextKeys(context.id, keyChanges);
+
+      await Object.entries(valueChanges).reduce(async (previous, [key, value]) => {
+        await previous;
+        await this.translationsDS.updateValue(key, context.id, defaultLanguageKey, value);
+      }, Promise.resolve());
+
+      await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
+
+      const { context: existingContext } = await this.translationsDS
+        .getByContext(context.id)
+        .first();
+
+      const create: CreateTranslationsData[] = (await this.settingsDS.getLanguageKeys()).reduce(
+        (memo, languageKey) =>
+          memo.concat(
+            Object.entries(valueChanges).map(([key, value]) => ({
+              key,
+              value,
+              language: languageKey,
+              context: existingContext,
+            }))
+          ),
+        [] as CreateTranslationsData[]
+      );
+
+      await this.translationsDS.insertAndIgnoreUniqueError(create);
+    });
+  }
 }

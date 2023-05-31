@@ -20,6 +20,23 @@ export class MongoTranslationsDataSource
     return translations;
   }
 
+  async insertAndIgnoreUniqueError(translations: Translation[]): Promise<Translation[]> {
+    const items = translations.map(translation => TranslationMappers.toDBO(translation));
+
+    try {
+      await this.getCollection().insertMany(items, {
+        session: this.getSession(),
+        ordered: false,
+      });
+    } catch (e) {
+      if (!e.message.match(/E11000/)) {
+        throw e;
+      }
+    }
+
+    return translations;
+  }
+
   async upsert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     const writeStream = this.createBulkStream();
@@ -65,5 +82,36 @@ export class MongoTranslationsDataSource
       this.getCollection().find({ 'context.id': context }),
       TranslationMappers.toModel
     );
+  }
+
+  async updateContextLabel(contextId: string, contextLabel: string) {
+    return this.getCollection().updateMany(
+      { 'context.id': contextId },
+      { $set: { 'context.label': contextLabel } }
+    );
+  }
+
+  async updateContextKeys(contextId: string, keyChanges: { [k: string]: string }) {
+    const stream = this.createBulkStream();
+
+    await Object.entries(keyChanges).reduce(async (previous, [keyName, newKeyName]) => {
+      await previous;
+      await stream.updateMany(
+        { 'context.id': contextId, key: keyName },
+        { $set: { key: newKeyName } }
+      );
+    }, Promise.resolve());
+    await stream.flush();
+  }
+
+  async updateValue(key: string, contextId: string, language: string, value: string) {
+    await this.getCollection().updateOne(
+      { key, 'context.id': contextId, language },
+      { $set: { value } }
+    );
+  }
+
+  async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
+    return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
   }
 }

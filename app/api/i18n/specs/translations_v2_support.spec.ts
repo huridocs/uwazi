@@ -5,7 +5,7 @@ import { Db, ObjectId } from 'mongodb';
 import { TranslationValue } from 'shared/translationType';
 import translations from '../translations';
 
-import fixtures from './fixtures.js';
+import fixtures, { dictionaryId } from './fixtures.js';
 
 let db: Db;
 const newTranslationsCollection = 'translations_v2';
@@ -356,7 +356,7 @@ describe('translations v2 support', () => {
           .collection(newTranslationsCollection)
           .countDocuments();
 
-        expect(numberOfTranslationsMigrated).toBe(18);
+        expect(numberOfTranslationsMigrated).toBe(23);
       });
 
       it('should return from the old collection when not migrated', async () => {
@@ -624,6 +624,91 @@ describe('translations v2 support', () => {
             ],
           });
         });
+      });
+    });
+  });
+
+  describe('updateContext', () => {
+    describe('when feature flag is on', () => {
+      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations (OMG !)', async () => {
+        //values are only changed for keys that have changed and default language
+        //values are created new on all languages if do not exist
+        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
+        await testingDB.setupFixturesAndContext(fixtures);
+        await translations.get();
+
+        const values = {
+          'New Account Key': 'Account edited',
+          'new key': 'new value',
+        };
+
+        await translations.updateContext(
+          dictionaryId.toString(),
+          'new context name',
+          { Account: 'New Account Key', Password: 'New Password key' },
+          ['Email', 'Age'],
+          values
+        );
+
+        const updatedTranslations = await db
+          .collection(newTranslationsCollection)
+          .find({ language: { $in: ['es', 'en'] }, 'context.id': dictionaryId.toString() })
+          .sort({ language: 1, key: 1 })
+          .toArray();
+
+        expect(updatedTranslations.filter(t => t.language === 'en')).toMatchObject([
+          {
+            language: 'en',
+            key: 'New Account Key',
+            value: 'Account edited',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'en',
+            key: 'New Password key',
+            value: 'Password',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'en',
+            key: 'dictionary 2',
+            value: 'dictionary 2',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'en',
+            key: 'new key',
+            value: 'new value',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+        ]);
+
+        expect(updatedTranslations.filter(t => t.language === 'es')).toMatchObject([
+          {
+            language: 'es',
+            key: 'New Account Key',
+            value: 'Cuenta',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'es',
+            key: 'New Password key',
+            value: 'Contraseña',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'es',
+            key: 'dictionary 2',
+            value: 'dictionary 2',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'es',
+            key: 'new key',
+            value: 'new value',
+            context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          },
+        ]);
       });
     });
   });

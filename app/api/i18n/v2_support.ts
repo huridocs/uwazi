@@ -1,7 +1,8 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoTranslationsDataSource } from 'api/i18n.v2/database/MongoTranslationsDataSource';
+import migration from 'api/i18n.v2/migrations/';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import {
   CreateTranslationsData,
@@ -13,9 +14,9 @@ import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslatio
 import { EnforcedWithId } from 'api/odm';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { tenants } from 'api/tenants';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import migration from 'api/i18n.v2/migrations/';
 import { Db } from 'mongodb';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { IndexedContextValues } from './translations';
 
 const cleanUpV2Collections = async (db: Db) => {
   try {
@@ -138,6 +139,21 @@ export const getTranslationsV2 = async () =>
       new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
     ).getAll()
   );
+
+export const updateContextV2 = async (
+  context: { id: string; label: string },
+  keyNamesChanges: { [x: string]: string },
+  keysToDelete: string[],
+  valueChanges: IndexedContextValues
+) => {
+  if (tenants.current().featureFlags?.translationsV2) {
+    await new UpsertTranslationsService(
+      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient())
+    ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
+  }
+};
 
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();

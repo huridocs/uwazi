@@ -51,8 +51,9 @@ export default {
           type: 'Document',
         },
         {
-          id: dictionaryId,
+          id: dictionaryId.toString(),
           type: 'Dictionary',
+          label: 'Dictionary',
           values: [
             { key: 'dictionary 2', value: 'dictionary 2' },
             { key: 'Password', value: 'Password' },
@@ -75,6 +76,18 @@ export default {
             { key: 'Password', value: 'Contraseña' },
             { key: 'Account', value: 'Cuenta' },
             { key: 'Email', value: 'Correo electronico' },
+            { key: 'Age', value: 'Edad' },
+          ],
+        },
+        {
+          id: dictionaryId.toString(),
+          type: 'Dictionary',
+          label: 'Dictionary',
+          values: [
+            { key: 'dictionary 2', value: 'dictionary 2' },
+            { key: 'Password', value: 'Contraseña' },
+            { key: 'Account', value: 'Cuenta' },
+            { key: 'Email', value: 'E-Mail' },
             { key: 'Age', value: 'Edad' },
           ],
         },
