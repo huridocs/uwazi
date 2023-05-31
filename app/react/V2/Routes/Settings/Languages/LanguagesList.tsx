@@ -13,9 +13,9 @@ import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 
 const languagesListLoader =

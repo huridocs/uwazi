@@ -15,15 +15,15 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
+import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, ToggleButton } from 'V2/Components/UI';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
-import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { TranslationsTables } from './components/TranslationsTables';
 
 const editTranslationsLoader =

@@ -1,9 +1,9 @@
 /* eslint-disable react/no-multi-comp */
 import { Link } from 'react-router-dom';
 import React, { PropsWithChildren } from 'react';
+import { Breadcrumb } from 'flowbite-react';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
-import { Breadcrumb } from 'flowbite-react';
 
 interface SettingsContentProps extends PropsWithChildren {
   className?: string;
