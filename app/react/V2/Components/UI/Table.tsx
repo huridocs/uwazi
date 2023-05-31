@@ -84,15 +84,13 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
                     scope="col"
                     className={`px-6 py-3 ${(header.column.columnDef as Column).className}`}
                   >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {isSortable && getIcon(header.column.getIsSorted())}
-                      </div>
-                    )}
+                    <div
+                      className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {isSortable && getIcon(header.column.getIsSorted())}
+                    </div>
                   </th>
                 );
               })}
