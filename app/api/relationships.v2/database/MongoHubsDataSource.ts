@@ -39,11 +39,9 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
 
   async create(): Promise<void> {
     this.shouldNotBeDropped();
-    // TODO: don't forget to remove this after testing
     if (await this.exists()) {
       await this.db.dropCollection(this.collectionName, { session: this.getSession() });
     }
-    //------------------
     if (!this.created) {
       await this.db.createCollection(this.collectionName, { session: this.getSession() });
       this.created = true;

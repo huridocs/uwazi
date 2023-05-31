@@ -137,7 +137,6 @@ export class MigrationService {
     return { total, used, transformed };
   }
 
-  // eslint-disable-next-line max-statements
   private async transformHubs(
     matcher: RelationshipMatcher,
     transform: boolean = false,
