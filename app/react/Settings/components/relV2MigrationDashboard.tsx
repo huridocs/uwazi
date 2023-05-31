@@ -151,7 +151,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       })`;
 
     return (
-      <div className="settings-content">
+      <div className="settings-content" no-translate>
         <div className="panel panel-default">
           <div className="panel-heading">
             <span>Migration Dashboard</span>

@@ -111,8 +111,9 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
               to="/settings/newrelmigration"
               activeclassname="active"
               className="list-group-item"
+              no-translate
             >
-              <Translate>New Relationships Migration</Translate>
+              New Relationships Migration
             </I18NLink>
           </NeedAuthorization>
         </FeatureToggle>
