@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import React, { PropsWithChildren } from 'react';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
-import { Breadcrumb } from '../UI';
+import { Breadcrumb } from 'flowbite-react';
 
 interface SettingsContentProps extends PropsWithChildren {
   className?: string;
@@ -24,21 +24,21 @@ const SettingsContent = ({ children, className }: SettingsContentProps) => (
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
   <div className={`flex pb-4 ${className || ''}`} data-testid="settings-content-header">
-    <Breadcrumb>
-      <Link to="/settings" className="block lg:hidden">
-        <ChevronLeftIcon className="h-7 lg:hidden" />
-      </Link>
+    <Link to="/settings" className="block lg:hidden">
+      <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
+    </Link>
+    <Breadcrumb className="!relative flex right-0 h-4 !bg-transparent m-0 !w-full">
       {Array.from(path?.entries() || []).map(([key, value]) => (
-        <Breadcrumb.Item url={value} className="w-32 md:w-52">
-          <Translate className="truncate ">{key}</Translate>
+        <Breadcrumb.Item href={value} className="max-w-xs">
+          <Translate className="truncate hover:underline ">{key}</Translate>
         </Breadcrumb.Item>
       ))}
       {title !== undefined && (
-        <span className="inline-flex items-center w-32 m-0 text-base font-medium text-gray-700 sm:gap-6 600 dark:text-gray-400 md:w-60 ">
+        <Breadcrumb.Item className="max-w-xs">
           <Translate context={contextId || 'System'} className="truncate ">
             {title}
           </Translate>
-        </span>
+        </Breadcrumb.Item>
       )}
     </Breadcrumb>
     {children}

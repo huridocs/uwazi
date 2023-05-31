@@ -2664,6 +2664,10 @@ input:checked + .toggle-bg {
   stroke-width: 2;
 }
 
+.stroke-1 {
+  stroke-width: 1;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
@@ -2904,6 +2908,10 @@ input:checked + .toggle-bg {
 
 .font-semibold {
   font-weight: 600;
+}
+
+.font-thin {
+  font-weight: 100;
 }
 
 .uppercase {
