@@ -38,26 +38,16 @@ DB.connect(config.DBHOST, dbAuth)
       await queueWorker.stop();
     });
 
-    await new Promise<void>((resolve, reject) => {
-      redisClient.on('ready', async () => {
-        resolve();
-      });
-
-      redisClient.on('error', error => {
-        reject(error);
-      });
-    });
-
     console.info('[⚙️ Queue worker] Started');
     await queueWorker.start();
     console.info('[⚙️ Queue worker] Stopped');
 
     console.info('[📥 Redis] Disconnecting');
-    redisClient.quit(async () => {
-      console.info('[📥 Redis] Disconnected');
-      console.info('[💾 MongoDb] Disconnecting');
-      await DB.disconnect();
-      console.info('[💾 MongoDb] Disconnected');
-    });
+    await ApplicationRedisClient.close();
+    console.info('[📥 Redis] Disconnected');
+
+    console.info('[💾 MongoDb] Disconnecting');
+    await DB.disconnect();
+    console.info('[💾 MongoDb] Disconnected');
   })
   .catch(console.error);
