@@ -1,46 +1,24 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, useLoaderData, LoaderFunction } from 'react-router-dom';
+import { useLoaderData, LoaderFunction } from 'react-router-dom';
+import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
-import { Pill } from 'V2/Components/UI/Pill';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import * as translationsAPI from 'V2/api/translations/index';
+import {
+  ContextPill,
+  RenderButton,
+  ActionHeader,
+  LabelHeader,
+  TypeHeader,
+} from './components/TableComponents';
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     translationsAPI.get(headers);
-
-const renderButton = ({ row }: any) => (
-  <Link to={`edit/${row.values.id}`}>
-    <Button styling="outline" className="leading-4">
-      <Translate>Translate</Translate>
-    </Button>
-  </Link>
-);
-
-const pill = ({ cell }: any) => (
-  <div className="whitespace-nowrap">
-    <Pill color="gray">
-      <Translate>{cell.value}</Translate>
-    </Pill>
-  </div>
-);
-
-const columns = [
-  { Header: 'Name', accessor: 'label', className: 'w-1/3' },
-  { Header: 'Type', accessor: 'type', Cell: pill, className: 'w-2/3' },
-  {
-    Header: 'Action',
-    accessor: 'id',
-    Cell: renderButton,
-    disableSortBy: true,
-    className: 'text-center w-0',
-  },
-];
 
 const TranslationsList = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
@@ -64,33 +42,59 @@ const TranslationsList = () => {
     return contexts.contentContexts.push({ ...contextTranslations });
   });
 
+  const columnHelper = createColumnHelper<ClientTranslationContextSchema>();
+
+  const columns = [
+    {
+      ...columnHelper.accessor('label', {
+        header: LabelHeader,
+      }),
+      className: 'w-1/3',
+    },
+    {
+      ...columnHelper.accessor('type', {
+        header: TypeHeader,
+        cell: ContextPill,
+      }),
+      className: 'w-2/3',
+    },
+    {
+      ...columnHelper.accessor('id', {
+        header: ActionHeader,
+        cell: RenderButton,
+        enableSorting: false,
+      }),
+      className: 'text-center w-0',
+    },
+  ];
+
   return (
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="p-5">
-        <NavigationHeader backUrl="/settings">
-          <h1 className="text-base text-gray-700">
-            <Translate>Translations</Translate>
-          </h1>
-        </NavigationHeader>
-        <div className="mt-4" data-testid="translations">
-          <Table
-            columns={columns}
-            data={contexts.systemContexts}
-            title={<Translate>System translations</Translate>}
-          />
-        </div>
-        <div className="mt-4" data-testid="content">
-          <Table
-            columns={columns}
-            data={contexts.contentContexts}
-            title={<Translate>Content translations</Translate>}
-          />
-        </div>
-      </div>
+      <SettingsContent>
+        <SettingsContent.Header title="Translations" />
+        <SettingsContent.Body>
+          <div data-testid="translations">
+            <Table<ClientTranslationContextSchema>
+              columns={columns}
+              data={contexts.systemContexts}
+              title={<Translate>System translations</Translate>}
+              initialState={{ sorting: [{ id: 'label', desc: false }] }}
+            />
+          </div>
+          <div className="mt-4" data-testid="content">
+            <Table<ClientTranslationContextSchema>
+              columns={columns}
+              data={contexts.contentContexts}
+              title={<Translate>Content translations</Translate>}
+              initialState={{ sorting: [{ id: 'label', desc: false }] }}
+            />
+          </div>
+        </SettingsContent.Body>
+      </SettingsContent>
     </div>
   );
 };

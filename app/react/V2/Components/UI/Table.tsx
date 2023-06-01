@@ -1,156 +1,115 @@
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  Column,
-  HeaderGroup,
-  useRowSelect,
-  useRowState,
-  useTable,
-  useSortBy,
-  UseSortByOptions,
-  UseSortByColumnProps,
+  flexRender,
+  getSortedRowModel,
+  getCoreRowModel,
+  useReactTable,
+  SortingState,
   TableState,
-} from 'react-table';
-
-import { Table as FlowbiteTable } from 'flowbite-react';
+  ColumnDef,
+  CellContext,
+  Column,
+} from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { SelectionContext } from './TableWithCheckbox';
 
-type TableColumn<T extends object> = Column<T> &
-  UseSortByOptions<any> &
-  Partial<UseSortByColumnProps<T>> & {
-    disableSortBy?: boolean;
-    className?: string;
-  };
+type ColumnWithClassName<T> = ColumnDef<T, any> & {
+  className?: string;
+};
 
-interface TableProps {
-  columns: ReadonlyArray<TableColumn<any>>;
-  data: { [key: string]: any }[];
+type CellContextWithMeta<T, U> = CellContext<T, U> & {
+  column: Column<T> & { columnDef: ColumnWithClassName<T> };
+};
+
+interface TableProps<T> {
+  columns: ColumnWithClassName<T>[];
+  data: T[];
   title?: string | React.ReactNode;
-  checkboxes?: boolean;
-  initialState?: Partial<TableState<any>>;
+  initialState?: Partial<TableState>;
 }
 
-const getIcon = (column: TableColumn<any>) => {
-  switch (true) {
-    case !column.isSorted:
+const getIcon = (sorting: false | 'asc' | 'desc') => {
+  switch (sorting) {
+    case false:
       return <ChevronUpDownIcon className="w-4" />;
-    case !column.isSortedDesc:
+    case 'asc':
       return <ChevronUpIcon className="w-4" />;
-    case column.isSortedDesc:
+    case 'desc':
     default:
       return <ChevronDownIcon className="w-4" />;
   }
 };
 
-const IndeterminateCheckbox = React.forwardRef(({ indeterminate, myHandler, ...rest }, ref) => {
-  const defaultRef = useRef();
-  const resolvedRef = ref || defaultRef;
+// eslint-disable-next-line comma-spacing
+const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
+  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
-  useEffect(() => {
-    resolvedRef.current.indeterminate = indeterminate;
-  }, [resolvedRef, indeterminate]);
-
-  return (
-    <input
-      type="checkbox"
-      className="rounded"
-      ref={resolvedRef}
-      {...rest}
-      onChange={props => {
-        rest.onChange(props);
-        myHandler();
-      }}
-    />
-  );
-});
-
-const Table = ({ columns, data, title, checkboxes, initialState }: TableProps) => {
   const memoizedColumns = useMemo(() => columns, [columns]);
-  const memoizedData = useMemo(() => data, [data]);
-  const [selected, setSelected] = useContext(SelectionContext);
+  const memoizedData = useMemo<T[]>(() => data, [data]);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
-    {
-      columns: memoizedColumns,
-      data: memoizedData,
-      initialState,
+  const table = useReactTable({
+    columns: memoizedColumns,
+    data: memoizedData,
+    state: {
+      sorting,
     },
-    useSortBy,
-    useRowSelect,
-    useRowState,
-    hooks =>
-      checkboxes &&
-      hooks.visibleColumns.push(tableColumns => [
-        {
-          id: 'selection',
-          disableSortBy: true,
-          // The header can use the table's getToggleAllRowsSelectedProps method
-          // to render a checkbox
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} myHandler={() => {}} />
-            </div>
-          ),
-          // The cell can use the individual row's getToggleRowSelectedProps method
-          // to the render a checkbox
-          Cell: ({ row }) => (
-            <div>
-              <IndeterminateCheckbox
-                {...row.getToggleRowSelectedProps()}
-                myHandler={() => {
-                  console.log(selected);
-                  setSelected([...selected, row]);
-                }}
-              />
-            </div>
-          ),
-        },
-        ...tableColumns,
-      ])
-  );
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
-    <FlowbiteTable {...getTableProps()}>
-      {title && (
-        <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
-          {title}
-        </caption>
-      )}
-      <FlowbiteTable.Head>
-        {headerGroups.map((headerGroup: HeaderGroup<any>) =>
-          headerGroup.headers.map((column: any) => (
-            <FlowbiteTable.HeadCell
-              {...column.getHeaderProps(column.getSortByToggleProps())}
-              className={column.className}
-            >
-              <div className={`text-gray-500 ${!column.disableSortBy ? 'flex flex-row' : ''}`}>
-                {column.render('Header')}
-                {column.Header && !column.disableSortBy && getIcon(column)}
-              </div>
-            </FlowbiteTable.HeadCell>
-          ))
+    <div className="overflow-x-auto relative">
+      <table className="w-full text-sm text-left">
+        {title && (
+          <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
+            {title}
+          </caption>
         )}
-      </FlowbiteTable.Head>
-      <FlowbiteTable.Body {...getTableBodyProps()} className="text-gray-900 divide-y">
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <FlowbiteTable.Row {...row.getRowProps()}>
-              {row.cells.map(cell => (
-                <FlowbiteTable.Cell {...cell.getCellProps()}>
-                  {cell.render('Cell')}
-                </FlowbiteTable.Cell>
+
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => {
+                const isSortable = header.column.getCanSort();
+                return (
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className={`px-6 py-3 ${
+                      (header.column.columnDef as ColumnWithClassName<T>).className
+                    }`}
+                  >
+                    <div
+                      className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {isSortable && getIcon(header.column.getIsSorted())}
+                    </div>
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
+
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id} className="bg-white border-b">
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id} className="px-6 py-3">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
-            </FlowbiteTable.Row>
-          );
-        })}
-      </FlowbiteTable.Body>
-    </FlowbiteTable>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
-export type { TableProps };
+export type { CellContextWithMeta, ColumnWithClassName };
+
 export { Table };

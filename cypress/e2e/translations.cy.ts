@@ -8,6 +8,9 @@ describe('Translations', () => {
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Translations').click();
+  });
+
+  beforeEach(() => {
     cy.injectAxe();
   });
 
@@ -25,9 +28,8 @@ describe('Translations', () => {
     });
 
     it('should have breadcrumb navigation', () => {
-      cy.contains('h1 > a > .translation', 'Translations').click();
+      cy.contains('li > a > .translation', 'Translations').click();
       cy.contains('caption', 'System translations');
-      cy.contains('[data-testid=content] button', 'Translate').click();
     });
 
     const checkEditResults = () => {
@@ -35,10 +37,11 @@ describe('Translations', () => {
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
-      cy.get('[data-testid=table-element]').eq(0).toMatchImageSnapshot();
+      cy.get('table').eq(0).toMatchImageSnapshot();
     };
 
     it('Should edit a translation', () => {
+      cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
       cy.get('input[type=text]').should('be.visible');
       cy.contains('caption', 'Fecha');
       cy.get('input[type=text]').eq(0).siblings('button').click();
@@ -72,12 +75,15 @@ describe('Translations', () => {
       cy.contains('button', 'Save').click();
       cy.wait('@api/translations').then(() => {
         cy.contains('[data-testid="notifications-container"]', 'An error occurred');
+        cy.contains('button', 'Dismiss').trigger('mouseover');
+        cy.contains('button', 'Dismiss').click();
       });
     });
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.contains('label', 'Untranslated Terms').click();
+        cy.get('.tw-content').scrollTo('top');
+        cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });
 
@@ -89,11 +95,13 @@ describe('Translations', () => {
       });
 
       it('Should discard changes', () => {
+        //this reload is needed to clear several legacy notifications
+        cy.reload();
         cy.get('input[type=text]').eq(0).type('unwanted change');
         cy.contains('button', 'Cancel').click();
         cy.contains('button', 'Discard changes').click();
         cy.get('[data-testid=settings-translations]').should('be.visible');
-        cy.contains('[data-testid=content] button', 'Translate').click();
+        cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
         cy.get('form').should('be.visible');
         cy.get('input[type=text]').eq(0).should('have.value', 'Date');
       });

@@ -8,72 +8,95 @@ exports[`LanguagesList render installed languages should show a list of installe
     style="width: 100%; overflow-y: auto;"
   >
     <div
-      class="flex flex-col h-full"
+      class="flex flex-col h-full p-5 "
+      data-testid="settings-content"
     >
       <div
-        class="flex-grow p-5"
+        class="flex pb-4 "
+        data-testid="settings-content-header"
       >
-        <div
-          class="flex items-center"
+        <a
+          class="block lg:hidden"
+          href="/settings"
+          to="/settings"
         >
-          <a
-            class="block lg:hidden"
-            href="/settings"
-            to="/settings"
+          <svg
+            aria-hidden="true"
+            class="w-8 stroke-1 lg:hidden"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <div
-              class="flex mr-3"
+            <path
+              clip-rule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              fill-rule="evenodd"
+            />
+          </svg>
+          <span
+            class="sr-only"
+          >
+            <span
+              class="translation active"
+            >
+              Navigate back
+            </span>
+          </span>
+        </a>
+        <nav
+          aria-label="Breadcrumb"
+          class="!relative p-1 flex right-0 h-4 !bg-transparent m-0 !w-full flex-wrap align-middle"
+        >
+          <ol
+            class="flex items-center"
+          >
+            <li
+              class="group flex items-center max-w-xs"
             >
               <svg
                 aria-hidden="true"
-                class="w-6 h-6"
+                class="mx-1 h-6 w-6 text-gray-400 group-first:hidden md:mx-2"
+                data-testid="flowbite-breadcrumb-separator"
                 fill="none"
+                height="1em"
                 stroke="currentColor"
-                stroke-width="1.5"
+                stroke-width="2"
                 viewBox="0 0 24 24"
+                width="1em"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
+                  d="M9 5l7 7-7 7"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
               </svg>
               <span
-                class="sr-only"
+                class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400"
+                data-testid="flowbite-breadcrumb-item"
               >
                 <span
-                  class="translation active"
+                  class="translation active max-w-xs truncate"
                 >
-                  Navigate back
+                  Languages
                 </span>
               </span>
-            </div>
-          </a>
-          <h1
-            class="text-base text-gray-700"
-          >
-            <span
-              class="translation active"
-            >
-              Languages
-            </span>
-          </h1>
-        </div>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class=" flex-grow py-1"
+        data-testid="settings-content-body"
+      >
         <div
-          class="mt-4"
           data-testid="languages"
         >
           <div
-            class="relative"
-            data-testid="table-element"
+            class="overflow-x-auto relative"
           >
-            <div
-              class="absolute bg-white dark:bg-black w-full h-full top-0 left-0 rounded-lg drop-shadow-md -z-10"
-            />
             <table
-              class="w-full text-left text-sm text-gray-500 dark:text-gray-400"
-              role="table"
+              class="w-full text-sm text-left"
             >
               <caption
                 class="p-5 text-lg font-semibold text-left text-gray-900 bg-white"
@@ -85,18 +108,15 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </span>
               </caption>
               <thead
-                class="group/head text-xs uppercase text-gray-700 dark:text-gray-400"
+                class="text-xs text-gray-700 uppercase bg-gray-50"
               >
                 <tr>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 w-9/12"
-                    colspan="1"
-                    role="columnheader"
-                    style="cursor: pointer;"
-                    title="Toggle SortBy"
+                    class="px-6 py-3 w-9/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 flex flex-row"
+                      class="inline-flex cursor-pointer select-none"
                     >
                       <span
                         class="translation active"
@@ -119,12 +139,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -134,12 +153,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -149,12 +167,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -165,18 +182,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </th>
                 </tr>
               </thead>
-              <tbody
-                class="group/body text-gray-900 divide-y"
-                role="rowgroup"
-              >
+              <tbody>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -185,8 +196,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -214,14 +224,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -237,13 +245,10 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -252,8 +257,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -281,14 +285,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -304,13 +306,10 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -319,8 +318,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-white bg-primary-700 border-primary-700  disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -348,8 +346,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -364,8 +361,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
@@ -376,7 +372,8 @@ exports[`LanguagesList render installed languages should show a list of installe
         </div>
       </div>
       <div
-        class="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1"
+        class="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1 "
+        data-testid="settings-content-footer"
       >
         <div
           class="flex gap-2 p-2 pt-1"

@@ -1041,6 +1041,10 @@ input:checked + .toggle-bg {
   position: absolute;
 }
 
+.\!relative {
+  position: relative !important;
+}
+
 .relative {
   position: relative;
 }
@@ -1140,6 +1144,10 @@ input:checked + .toggle-bg {
 
 .float-right {
   float: right;
+}
+
+.m-0 {
+  margin: 0px;
 }
 
 .m-auto {
@@ -1422,6 +1430,10 @@ input:checked + .toggle-bg {
   min-height: fit-content;
 }
 
+.\!w-full {
+  width: 100% !important;
+}
+
 .w-0 {
   width: 0px;
 }
@@ -1671,6 +1683,12 @@ input:checked + .toggle-bg {
   cursor: pointer;
 }
 
+.select-none {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
 .snap-x {
   scroll-snap-type: x var(--tw-scroll-snap-strictness);
 }
@@ -1821,6 +1839,10 @@ input:checked + .toggle-bg {
   overflow: hidden;
 }
 
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -1843,6 +1865,12 @@ input:checked + .toggle-bg {
 
 .scroll-smooth {
   scroll-behavior: smooth;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .whitespace-nowrap {
@@ -2387,6 +2415,11 @@ input:checked + .toggle-bg {
   background-color: rgb(253 242 242 / var(--tw-bg-opacity));
 }
 
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
+}
+
 .bg-red-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(224 36 36 / var(--tw-bg-opacity));
@@ -2632,6 +2665,10 @@ input:checked + .toggle-bg {
   stroke: #D1D5DB;
 }
 
+.stroke-1 {
+  stroke-width: 1;
+}
+
 .stroke-2 {
   stroke-width: 2;
 }
@@ -2768,6 +2805,10 @@ input:checked + .toggle-bg {
   padding-left: 0px;
 }
 
+.pl-1 {
+  padding-left: 0.25rem;
+}
+
 .pl-10 {
   padding-left: 2.5rem;
 }
@@ -2835,6 +2876,11 @@ input:checked + .toggle-bg {
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+
+.text-9xl {
+  font-size: 8rem;
+  line-height: 1;
 }
 
 .text-base {
@@ -5258,10 +5304,6 @@ input:checked + .toggle-bg {
 
   .sm\:w-6 {
     width: 1.5rem;
-  }
-
-  .sm\:gap-6 {
-    gap: 1.5rem;
   }
 
   .sm\:px-4 {
