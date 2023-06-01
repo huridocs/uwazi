@@ -6,6 +6,8 @@ import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/v
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
 import { ensure } from 'shared/tsUtils';
 import { TemplateSchema } from 'shared/types/templateType';
+import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
+import { TemplateDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 import templates from './templates';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
@@ -49,7 +51,10 @@ const processNewRelationshipPropertiesOnUpdate = async (
   }
   const createTemplateService = CreateTemplateService();
 
-  await createTemplateService.handleRelationshipPropertyUpdates(_oldTemplate, _newTemplate);
+  const oldTemplate = TemplateMappers.toApp(_oldTemplate as unknown as TemplateDBO);
+  const newTemplate = TemplateMappers.toApp(_newTemplate as unknown as TemplateDBO);
+
+  await createTemplateService.handleRelationshipPropertyUpdates(oldTemplate, newTemplate);
 
   return _newTemplate;
 };

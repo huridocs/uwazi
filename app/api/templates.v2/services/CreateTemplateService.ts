@@ -9,6 +9,7 @@ import { TemplatesDataSource } from '../contracts/TemplatesDataSource';
 import { QueryMapper } from '../database/QueryMapper';
 import { TemplateInput, TemplateInputMappers } from './TemplateInputMappers';
 import { RelationshipProperty } from '../model/RelationshipProperty';
+import { Template } from '../model/Template';
 
 interface MatchQuery {
   templates: string[];
@@ -166,13 +167,7 @@ export class CreateTemplateService {
     }
   }
 
-  async handleRelationshipPropertyUpdates(
-    _oldTemplate: TemplateInput,
-    _newTemplate: TemplateInput
-  ) {
-    const oldTemplate = TemplateInputMappers.toApp(_oldTemplate);
-    const newTemplate = TemplateInputMappers.toApp(_newTemplate);
-
+  async handleRelationshipPropertyUpdates(oldTemplate: Template, newTemplate: Template) {
     const newRelationshipNames = oldTemplate
       .selectNewProperties(newTemplate)
       .filter(p => p instanceof RelationshipProperty)
