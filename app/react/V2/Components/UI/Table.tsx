@@ -4,24 +4,26 @@ import {
   getSortedRowModel,
   getCoreRowModel,
   useReactTable,
-  createColumnHelper,
   SortingState,
   TableState,
+  ColumnDef,
+  CellContext,
+  Column,
 } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
-type Column = {
-  header: string | React.ReactNode;
-  accessor: string;
-  id?: string;
-  cell?: (value: any) => React.ReactNode;
-  enableSorting?: boolean;
+type ColumnWithClassName<T> = ColumnDef<T, any> & {
+  // meta: ColumnMeta<T, any> & { action: Function };
   className?: string;
 };
 
-interface TableProps {
-  columns: Column[];
-  data: { [key: string]: any }[];
+type CellContextWithMeta<T, U> = CellContext<T, U> & {
+  column: Column<T> & { columnDef: ColumnWithClassName<T> };
+};
+
+interface TableProps<T> {
+  columns: ColumnWithClassName<T>[];
+  data: T[];
   title?: string | React.ReactNode;
   initialState?: Partial<TableState>;
 }
@@ -37,27 +39,14 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
       return <ChevronDownIcon className="w-4" />;
   }
 };
-
-const prepareColumns = (columns: Column[]) => {
-  const columnHelper = createColumnHelper<any>();
-
-  return columns.map(column => ({
-    ...columnHelper.accessor(column.accessor, {
-      id: column.id || column.accessor,
-      cell: info => (column.cell ? column.cell(info) : info.renderValue()),
-      header: column.header,
-      enableSorting: column.enableSorting,
-    }),
-    ...{ className: column.className },
-  }));
-};
-
-const Table = ({ columns, data, title, initialState }: TableProps) => {
+// eslint-disable-next-line prettier/prettier
+const Table = <T, >({ columns, data, title, initialState }: TableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
-  const constructedColumns = prepareColumns(columns);
+  // const constructedColumns = prepareColumns<T>(columns);
+  const constructedColumns = columns;
   const memoizedColumns = useMemo(() => constructedColumns, [constructedColumns]);
-  const memoizedData = useMemo(() => data, [data]);
+  const memoizedData = useMemo<T[]>(() => data, [data]);
 
   const table = useReactTable({
     columns: memoizedColumns,
@@ -88,7 +77,9 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
                   <th
                     key={header.id}
                     scope="col"
-                    className={`px-6 py-3 ${(header.column.columnDef as Column).className}`}
+                    className={`px-6 py-3 ${
+                      (header.column.columnDef as ColumnWithClassName<T>).className
+                    }`}
                   >
                     <div
                       className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
@@ -119,5 +110,7 @@ const Table = ({ columns, data, title, initialState }: TableProps) => {
     </div>
   );
 };
+
+export type { CellContextWithMeta, ColumnWithClassName };
 
 export { Table };

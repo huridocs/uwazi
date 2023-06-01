@@ -6,9 +6,9 @@ import * as stories from 'app/stories/Table.stories';
 
 const { Basic, WithActions } = composeStories(stories);
 
-const data = Basic.args?.data || [];
-
 describe('Table', () => {
+  const { data } = Basic.args;
+
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
     cellsContent.forEach((content, index) =>
       cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
@@ -29,7 +29,7 @@ describe('Table', () => {
     mount(<Basic />);
     cy.get('tbody > :nth-child(1) > :nth-child(3) > div').should(
       'have.class',
-      'bg-gray-400 rounded text-white text-center'
+      'text-center text-white bg-gray-400 rounded'
     );
   });
 

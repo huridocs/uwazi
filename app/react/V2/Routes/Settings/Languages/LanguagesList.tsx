@@ -4,8 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
-import { CellContext, Row } from '@tanstack/react-table';
-import { StarIcon } from '@heroicons/react/20/solid';
+import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
@@ -17,16 +16,21 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
+import {
+  DefaultHeader,
+  LabelHeader,
+  ResetHeader,
+  UninstallHeader,
+  DefaultButton,
+  ResetButton,
+  UninstallButton,
+  LanguageLabel,
+} from './components/TableComponents';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     I18NApi.getLanguages(new RequestParams({}, headers));
-
-const languageLabel = ({ cell }: CellContext<LanguageSchema, any>) => (
-  <Translate>{`${cell.row.original.label} (${cell.row.original.key})`}</Translate>
-);
-
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useRecoilValue<Settings>(settingsAtom);
@@ -115,68 +119,41 @@ const LanguagesList = () => {
       )
     );
   };
-
-  const resetButton = ({ cell }: CellContext<LanguageSchema, any>) =>
-    cell.row.original.translationAvailable ? (
-      <Button styling="outline" onClick={() => resetModal(cell.row)} className="leading-4">
-        <Translate>Reset</Translate>
-      </Button>
-    ) : (
-      <> </>
-    );
-
-  const defaultButton = ({ cell }: CellContext<LanguageSchema, any>) => (
-    <Button
-      styling={cell.row.original.default ? 'solid' : 'light'}
-      onClick={async () => setDefaultLanguage(cell.row)}
-      className="leading-4"
-    >
-      <Translate className="sr-only">Default</Translate>
-      <StarIcon
-        className={`${
-          !cell.row.original.default
-            ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2'
-            : 'w-4'
-        }`}
-      />
-    </Button>
-  );
-
-  const uninstallButton = ({ cell }: CellContext<LanguageSchema, any>) =>
-    !cell.row.original.default ? (
-      <Button styling="outline" onClick={() => uninstallModal(cell.row)} className="leading-4">
-        <Translate>Uninstall</Translate>
-      </Button>
-    ) : (
-      <> </>
-    );
-
+  const columnHelper = createColumnHelper<LanguageSchema>();
   const columns = [
     {
-      header: <Translate>Language</Translate>,
-      accessor: 'label',
-      cell: languageLabel,
+      ...columnHelper.accessor('label', {
+        id: 'label',
+        header: LabelHeader,
+        cell: LanguageLabel,
+      }),
       className: 'w-9/12',
     },
     {
-      header: <Translate className="sr-only">Default language</Translate>,
-      accessor: 'default',
-      cell: defaultButton,
-      enableSorting: false,
+      ...columnHelper.accessor('default', {
+        header: DefaultHeader,
+        cell: DefaultButton,
+        enableSorting: false,
+        meta: { action: setDefaultLanguage },
+      }),
       className: 'text-center w-1/12',
     },
     {
-      header: <Translate className="sr-only">Reset language</Translate>,
-      accessor: 'key',
-      cell: resetButton,
-      enableSorting: false,
+      ...columnHelper.accessor('key', {
+        header: ResetHeader,
+        cell: ResetButton,
+        enableSorting: false,
+        meta: { action: resetModal },
+      }),
       className: 'text-center w-1/12',
     },
     {
-      header: <Translate className="sr-only">Uninstall language</Translate>,
-      accessor: '_id',
-      cell: uninstallButton,
-      enableSorting: false,
+      ...columnHelper.accessor('_id', {
+        header: UninstallHeader,
+        cell: UninstallButton,
+        enableSorting: false,
+        meta: { action: uninstallModal },
+      }),
       className: 'text-center w-1/12',
     },
   ];
@@ -191,7 +168,7 @@ const LanguagesList = () => {
         <SettingsContent.Header title="Languages" />
         <SettingsContent.Body>
           <div data-testid="languages">
-            <Table
+            <Table<LanguageSchema>
               columns={columns}
               data={languages}
               title={<Translate>Active languages</Translate>}

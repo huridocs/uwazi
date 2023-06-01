@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { CellContext } from '@tanstack/react-table';
+import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -9,7 +9,13 @@ const meta: Meta<typeof Table> = {
   component: Table,
 };
 
-type Story = StoryObj<typeof Table>;
+type SampleSchema = {
+  title: string;
+  description: string;
+  created: number;
+};
+
+type Story = StoryObj<typeof Table<SampleSchema>>;
 
 const Primary: Story = {
   render: args => (
@@ -19,25 +25,28 @@ const Primary: Story = {
   ),
 };
 
-const customCell = ({ cell }: CellContext<any, any>) => (
-  <div className="bg-gray-400 rounded text-white text-center">{cell.getValue()}</div>
+const CustomCell = ({ cell }: CellContext<SampleSchema, any>) => (
+  <div className="text-center text-white bg-gray-400 rounded">{cell.getValue()}</div>
 );
 
-const actionsCell = () => (
+const ActionsCell = () => (
   <div className="flex gap-1">
     <Button>Primary</Button>
     <Button styling="outline">Secondary</Button>
   </div>
 );
-
-const Basic = {
+const columnHelper = createColumnHelper<SampleSchema>();
+const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
     columns: [
-      { header: 'Title', accessor: 'title', id: 'title' },
-      { header: 'Description', accessor: 'description' },
-      { header: 'Date added', accessor: 'created', cell: customCell, className: 'something' },
+      columnHelper.accessor('title', { header: 'Title', id: 'title' }),
+      columnHelper.accessor('description', { header: 'Description' }),
+      {
+        ...columnHelper.accessor('created', { header: 'Date added', cell: CustomCell }),
+        className: 'something',
+      },
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -55,28 +64,26 @@ const Basic = {
     ],
   },
 };
-
-const WithActions = {
+const WithActions: Story = {
   ...Primary,
   args: {
     ...Basic.args,
     columns: [
-      { header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
+      columnHelper.accessor('title', { id: 'title', header: 'Title' }),
       {
-        header: 'Date added',
-        accessor: 'created',
+        ...columnHelper.accessor('created', { id: 'created', header: 'Date added' }),
         className: 'w-1/3',
       },
       {
-        header: 'Description',
-        accessor: 'description',
-        enableSorting: false,
+        ...columnHelper.accessor('description', {
+          id: 'description',
+          header: 'Description',
+          enableSorting: false,
+        }),
         className: 'w-1/3 bg-red-500 text-white',
       },
       {
-        id: 'action',
-        header: 'Actions',
-        cell: actionsCell,
+        ...columnHelper.display({ id: 'action', header: 'Actions', cell: ActionsCell }),
         className: 'text-center',
       },
     ],
