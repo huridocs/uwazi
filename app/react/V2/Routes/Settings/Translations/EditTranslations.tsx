@@ -15,14 +15,16 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
-import { Button, NavigationHeader, ToggleButton } from 'V2/Components/UI';
-import { ConfirmNavigationModal, TranslationsTables } from 'V2/Components/Translations';
+import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Button, ToggleButton } from 'V2/Components/UI';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
 import { notificationAtom } from 'V2/atoms';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { FetchResponseError } from 'shared/JSONRequest';
+import { TranslationsTables } from './components/TranslationsTables';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -251,23 +253,16 @@ const EditTranslations = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations-edit"
     >
-      <div className="flex flex-col h-full">
-        <div className="flex-grow px-5 pt-5">
-          <div className="pb-4">
-            <NavigationHeader backUrl="/settings/translations">
-              <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
-                <Link to="/settings/translations">
-                  <Translate className="hover:underline">Translations</Translate>
-                </Link>
-                <span>&gt;</span>
-                <Translate>{contextLabel}</Translate>
-              </h1>
-            </NavigationHeader>
-          </div>
-
-          <div className="pb-4">
-            <ToggleButton onToggle={() => setHideTranslated(!hideTranslated)}>
-              <div className="ml-2 text-sm text-gray-700">
+      <SettingsContent>
+        <SettingsContent.Header
+          path={new Map([['Translations', '/settings/translations']])}
+          title={contextLabel}
+          contextId={contextId}
+        />
+        <SettingsContent.Body>
+          <div className="px-5 pt-5">
+            <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>
+              <div className="pl-1 text-sm text-gray-700 ">
                 <Translate>Untranslated Terms</Translate>
               </div>
             </ToggleButton>
@@ -292,9 +287,8 @@ const EditTranslations = () => {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+        </SettingsContent.Body>
+        <SettingsContent.Footer>
           <div className="flex justify-end gap-2 p-2 pt-1">
             <div className="flex-1">
               {contextId === 'System' && (
@@ -327,8 +321,8 @@ const EditTranslations = () => {
               <Translate>Save</Translate>
             </Button>
           </div>
-        </div>
-      </div>
+        </SettingsContent.Footer>
+      </SettingsContent>
       {showModal && (
         <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
       )}

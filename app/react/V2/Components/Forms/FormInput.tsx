@@ -32,7 +32,7 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         ref={ref}
       />
       {hasErrors && (
-        <div className="mt-2 text-error-700 font-bold">
+        <div className="mt-2 font-bold text-error-700">
           <Translate>This field is required</Translate>
         </div>
       )}
