@@ -16,7 +16,10 @@ const createDBRelationshipQuery = (index: number) => [
     direction: 'out' as const,
     match: [
       {
-        templates: [factory.id(`template${index}`)],
+        filter: {
+          type: 'template' as const,
+          value: [factory.id(`template${index}`)],
+        },
       },
     ],
   },

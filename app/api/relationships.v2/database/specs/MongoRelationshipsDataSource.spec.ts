@@ -5,6 +5,10 @@ import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNod
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import {
+  IdFilterCriteriaNode,
+  TemplateFilterCriteriaNode,
+} from 'api/relationships.v2/model/FilterOperatorNodes';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
@@ -98,7 +102,7 @@ describe('When getting by query', () => {
       testingDB.mongodb!,
       new MongoTransactionManager(getClient())
     );
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
     ]);
 
@@ -114,9 +118,9 @@ describe('When getting by query', () => {
       testingDB.mongodb!,
       new MongoTransactionManager(getClient())
     );
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
+        new MatchQueryNode(undefined, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
       ]),
     ]);
 
@@ -134,9 +138,9 @@ describe('When getting by query', () => {
       testingDB.mongodb!,
       new MongoTransactionManager(getClient())
     );
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
+        new MatchQueryNode(undefined, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
       ]),
     ]);
 
@@ -152,16 +156,16 @@ describe('When getting by query', () => {
       testingDB.mongodb!,
       new MongoTransactionManager(getClient())
     );
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
-            new MatchQueryNode({
-              templates: [
+            new MatchQueryNode(
+              new TemplateFilterCriteriaNode([
                 factory.id('template3').toHexString(),
                 factory.id('template4').toHexString(),
-              ],
-            }),
+              ])
+            ),
           ]),
         ]),
       ]),
@@ -179,16 +183,16 @@ describe('When getting by query', () => {
       new MongoTransactionManager(getClient())
     );
 
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
-            new MatchQueryNode({
-              templates: [
+            new MatchQueryNode(
+              new TemplateFilterCriteriaNode([
                 factory.id('template3').toHexString(),
                 factory.id('template4').toHexString(),
-              ],
-            }),
+              ])
+            ),
           ]),
         ]),
       ]),
@@ -208,16 +212,16 @@ describe('When getting by query', () => {
       new MongoTransactionManager(getClient())
     );
 
-    const query = new MatchQueryNode({ sharedId: 'entity1' }, [
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
       new TraversalQueryNode('out', {}, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
-            new MatchQueryNode({
-              templates: [
+            new MatchQueryNode(
+              new TemplateFilterCriteriaNode([
                 factory.id('template3').toHexString(),
                 factory.id('template4').toHexString(),
-              ],
-            }),
+              ])
+            ),
           ]),
         ]),
       ]),

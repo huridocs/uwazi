@@ -2,11 +2,7 @@ import { Relationship } from 'api/relationships.v2/model/Relationship';
 import _ from 'lodash';
 import { QueryNode } from './QueryNode';
 import { TraversalQueryNode } from './TraversalQueryNode';
-
-interface MatchFilters {
-  sharedId?: string;
-  templates?: string[];
-}
+import { FilterNode, IdFilterCriteriaNode, VoidFilterNode } from './FilterOperatorNodes';
 
 // Temporal type definition
 interface Entity {
@@ -26,15 +22,15 @@ interface TemplateRecordElement {
 type TemplateRecords = TemplateRecordElement[];
 
 export class MatchQueryNode extends QueryNode {
-  private filters: MatchFilters;
+  private filters: FilterNode;
 
   private traversals: TraversalQueryNode[] = [];
 
   private parent?: TraversalQueryNode;
 
-  constructor(filters?: MatchFilters, traversals?: TraversalQueryNode[]) {
+  constructor(filters?: FilterNode, traversals?: TraversalQueryNode[]) {
     super();
-    this.filters = filters || {};
+    this.filters = filters || new VoidFilterNode();
     traversals?.forEach(t => {
       this.traversals.push(t);
       t.setParent(this);
@@ -46,7 +42,7 @@ export class MatchQueryNode extends QueryNode {
   }
 
   getFilters() {
-    return { ...this.filters };
+    return this.filters;
   }
 
   getTraversals() {
@@ -87,10 +83,7 @@ export class MatchQueryNode extends QueryNode {
   }
 
   wouldMatch(entity: Entity) {
-    return (
-      (this.filters.sharedId ? this.filters.sharedId === entity.sharedId : true) &&
-      (this.filters.templates ? this.filters.templates.includes(entity.template) : true)
-    );
+    return this.filters.wouldMatch(entity);
   }
 
   inverse(next?: TraversalQueryNode): MatchQueryNode {
@@ -121,7 +114,7 @@ export class MatchQueryNode extends QueryNode {
   }
 
   shallowClone(traversals?: TraversalQueryNode[]) {
-    return new MatchQueryNode({ ...this.filters }, traversals ?? []);
+    return new MatchQueryNode(this.filters.shallowClone(), traversals ?? []);
   }
 
   private invertingAlgorithm(
@@ -164,7 +157,7 @@ export class MatchQueryNode extends QueryNode {
     const records = _records || [];
     records.push({
       path,
-      templates: this.filters.templates || [],
+      templates: this.filters.getTemplates(),
     });
     if (this.traversals.length) {
       this.traversals.forEach((t, index) => t.getTemplates([...path, index], records));
@@ -174,7 +167,7 @@ export class MatchQueryNode extends QueryNode {
 
   usesTemplate(templateId: string): boolean {
     return (
-      this.filters.templates?.includes(templateId) ||
+      this.filters.getTemplates().includes(templateId) ||
       this.traversals.some(traversal => traversal.usesTemplate(templateId))
     );
   }
@@ -199,7 +192,7 @@ export class MatchQueryNode extends QueryNode {
       return [
         {
           path,
-          templates: this.filters.templates || [],
+          templates: this.filters.getTemplates(),
         },
       ];
     }
@@ -208,7 +201,7 @@ export class MatchQueryNode extends QueryNode {
   }
 
   static forEntity(sharedId: string, traversals?: TraversalQueryNode[]) {
-    return new MatchQueryNode({ sharedId }, traversals);
+    return new MatchQueryNode(new IdFilterCriteriaNode(sharedId), traversals);
   }
 }
 

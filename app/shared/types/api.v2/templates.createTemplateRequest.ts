@@ -1,3 +1,5 @@
+export type Filter = never;
+
 export interface MatchQuery {
   templates: string[];
   traverse?: TraverseQuery[];

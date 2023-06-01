@@ -1,6 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { TraversalQueryNode } from '../model/TraversalQueryNode';
+import {
+  AndFilterOperatorNode,
+  FilterNode,
+  IdFilterCriteriaNode,
+  TemplateFilterCriteriaNode,
+  VoidFilterNode,
+} from '../model/FilterOperatorNodes';
 
 const parentDirectionToField = {
   in: 'from',
@@ -87,6 +94,38 @@ const compilers = {
     ];
   },
 
+  matchAndFilter(filter: AndFilterOperatorNode): object[] {
+    return [{ $and: filter.getOperands().map(compilers.matchFilters) }];
+  },
+
+  matchIdFilter(filter: IdFilterCriteriaNode): object[] {
+    return [{ $eq: ['$sharedId', filter.getSharedId()] }];
+  },
+
+  matchTemplateFilter(filter: TemplateFilterCriteriaNode): object[] {
+    return [{ $in: ['$template', filter.getTemplates().map(t => new ObjectId(t))] }];
+  },
+
+  matchFilters(filter: FilterNode): object[] {
+    if (filter instanceof AndFilterOperatorNode) {
+      return compilers.matchAndFilter(filter);
+    }
+
+    if (filter instanceof IdFilterCriteriaNode) {
+      return compilers.matchIdFilter(filter);
+    }
+
+    if (filter instanceof TemplateFilterCriteriaNode) {
+      return compilers.matchTemplateFilter(filter);
+    }
+
+    if (filter instanceof VoidFilterNode) {
+      return [{}];
+    }
+
+    throw new Error(`Unknown filter ${JSON.stringify(filter)}`);
+  },
+
   match(query: MatchQueryNode, index: number, language: string): object[] {
     const filters = query.getFilters();
     const sourceField = parentDirectionToField[query.getParent()!.getDirection()];
@@ -101,12 +140,9 @@ const compilers = {
               $match: {
                 $expr: {
                   $and: [
-                    ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
                     { $eq: [`$$${sourceField}.entity`, '$sharedId'] },
                     { $eq: ['$language', language] },
-                    ...(filters.templates?.length
-                      ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
-                      : []),
+                    ...compilers.matchFilters(filters),
                   ],
                 },
               },
@@ -137,13 +173,7 @@ const compilers = {
       {
         $match: {
           $expr: {
-            $and: [
-              ...(filters.sharedId ? [{ $eq: ['$sharedId', filters.sharedId] }] : []),
-              { $eq: ['$language', language] },
-              ...(filters.templates?.length
-                ? [{ $in: ['$template', filters.templates.map(t => new ObjectId(t))] }]
-                : []),
-            ],
+            $and: [{ $eq: ['$language', language] }, ...compilers.matchFilters(filters)],
           },
         },
       },

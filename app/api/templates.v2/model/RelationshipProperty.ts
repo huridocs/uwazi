@@ -1,6 +1,7 @@
 import { Entity } from 'api/entities.v2/model/Entity';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { Relationship } from 'api/relationships.v2/model/Relationship';
+import { TemplateFilterCriteriaNode } from 'api/relationships.v2/model/FilterOperatorNodes';
 import { Property, PropertyUpdateInfo } from './Property';
 
 class RelationshipProperty extends Property {
@@ -22,7 +23,7 @@ class RelationshipProperty extends Property {
   }
 
   buildQueryRootedInTemplate() {
-    return new MatchQueryNode({ templates: [this.template] }, this.query);
+    return new MatchQueryNode(new TemplateFilterCriteriaNode(this.template), this.query);
   }
 
   buildQueryInvertedFromRelationship(relationship: Relationship, entities: Entity[]) {

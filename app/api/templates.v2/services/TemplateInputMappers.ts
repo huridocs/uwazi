@@ -5,6 +5,10 @@ import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createT
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
+import {
+  TemplateFilterCriteriaNode,
+  VoidFilterNode,
+} from 'api/relationships.v2/model/FilterOperatorNodes';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
@@ -18,11 +22,11 @@ const BuildQuery = {
     ),
   match: (query: MatchQuery): MatchQueryNode =>
     new MatchQueryNode(
-      { templates: query.templates },
+      new TemplateFilterCriteriaNode(query.templates),
       query.traverse?.map(BuildQuery.traverse) ?? []
     ),
   build: (traversals: TraverseQuery[]) =>
-    new MatchQueryNode({}, traversals.map(BuildQuery.traverse)),
+    new MatchQueryNode(new VoidFilterNode(), traversals.map(BuildQuery.traverse)),
 };
 
 type TemplateInput = TemplateSchema;

@@ -2,51 +2,56 @@ import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relation
 import { MatchQueryNode } from '../MatchQueryNode';
 import { NonChainQueryError } from '../NonChainQueryErrror';
 import { TraversalQueryNode } from '../TraversalQueryNode';
+import {
+  AndFilterOperatorNode,
+  IdFilterCriteriaNode,
+  TemplateFilterCriteriaNode,
+} from '../FilterOperatorNodes';
 
 describe('when calling chainsDecomposition()', () => {
   // eslint-disable-next-line max-statements
   it('should return an array of the queries from the chain decomposition of the query', () => {
     /* eslint-disable */
-    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('root'), [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
+        new MatchQueryNode(undefined, [ // A
           new TraversalQueryNode('out', {}, [ // A -> B
-            new MatchQueryNode({}, []), //B
+            new MatchQueryNode(), //B
           ]),
           new TraversalQueryNode('out', {}, [ // A -> D
-            new MatchQueryNode({}, []), // D
+            new MatchQueryNode(), // D
           ]),
         ]),
       ]),
       new TraversalQueryNode('out', {}, [ // R -> C
-        new MatchQueryNode({}, []) // C
+        new MatchQueryNode() // C
       ]),
     ]);
     
 
-    const chain1 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+    const chain1 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
+        new MatchQueryNode(undefined, [ // A
           new TraversalQueryNode('out', {}, [ // A -> B
-            new MatchQueryNode({}, []) // B
+            new MatchQueryNode() // B
           ]),
         ]),
       ]),
     ]);
 
-    const chain2 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+    const chain2 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
+        new MatchQueryNode(undefined, [ // A
           new TraversalQueryNode('out', {}, [ // A -> D
-            new MatchQueryNode({}, []) // D
+            new MatchQueryNode() // D
           ]),
         ]),
       ]),
     ]);
 
-    const chain3 = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+    const chain3 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [ // Root
       new TraversalQueryNode('out', {}, [ // R -> C
-        new MatchQueryNode({}, []), // C
+        new MatchQueryNode(), // C
       ]),
     ]);
     /* eslint-enable */
@@ -57,36 +62,82 @@ describe('when calling chainsDecomposition()', () => {
 
 // eslint-disable-next-line max-statements
 describe('when calling inverse()', () => {
-  const chain0 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
-  const inverted0 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []);
+  const chain0 = new MatchQueryNode(
+    new AndFilterOperatorNode([
+      new IdFilterCriteriaNode('root'),
+      new TemplateFilterCriteriaNode('temp1'),
+    ]),
+    []
+  );
+  const inverted0 = new MatchQueryNode(
+    new AndFilterOperatorNode([
+      new IdFilterCriteriaNode('root'),
+      new TemplateFilterCriteriaNode('temp1'),
+    ]),
+    []
+  );
 
-  const chain1 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
-    new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
-  ]);
-  const inverted1 = new MatchQueryNode({}, [
+  const chain1 = new MatchQueryNode(
+    new AndFilterOperatorNode([
+      new IdFilterCriteriaNode('root'),
+      new TemplateFilterCriteriaNode('temp1'),
+    ]),
+    [new TraversalQueryNode('out', {}, [new MatchQueryNode()])]
+  );
+  const inverted1 = new MatchQueryNode(undefined, [
     new TraversalQueryNode('in', {}, [
-      new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []),
+      new MatchQueryNode(
+        new AndFilterOperatorNode([
+          new IdFilterCriteriaNode('root'),
+          new TemplateFilterCriteriaNode('temp1'),
+        ]),
+        []
+      ),
     ]),
   ]);
 
-  const chain2 = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
-    new TraversalQueryNode('out', { types: ['type1'] }, [
-      new MatchQueryNode({}, [
-        new TraversalQueryNode('in', { types: ['type2'] }, [
-          new MatchQueryNode({ sharedId: 'leaf1', templates: ['temp2'] }, []),
+  const chain2 = new MatchQueryNode(
+    new AndFilterOperatorNode([
+      new IdFilterCriteriaNode('root'),
+      new TemplateFilterCriteriaNode('temp1'),
+    ]),
+    [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode(undefined, [
+          new TraversalQueryNode('in', { types: ['type2'] }, [
+            new MatchQueryNode(
+              new AndFilterOperatorNode([
+                new IdFilterCriteriaNode('leaf1'),
+                new TemplateFilterCriteriaNode('temp2'),
+              ]),
+              []
+            ),
+          ]),
         ]),
       ]),
+    ]
+  );
+  const inverted2 = new MatchQueryNode(
+    new AndFilterOperatorNode([
+      new IdFilterCriteriaNode('leaf1'),
+      new TemplateFilterCriteriaNode('temp2'),
     ]),
-  ]);
-  const inverted2 = new MatchQueryNode({ sharedId: 'leaf1', templates: ['temp2'] }, [
-    new TraversalQueryNode('out', { types: ['type2'] }, [
-      new MatchQueryNode({}, [
-        new TraversalQueryNode('in', { types: ['type1'] }, [
-          new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, []),
+    [
+      new TraversalQueryNode('out', { types: ['type2'] }, [
+        new MatchQueryNode(undefined, [
+          new TraversalQueryNode('in', { types: ['type1'] }, [
+            new MatchQueryNode(
+              new AndFilterOperatorNode([
+                new IdFilterCriteriaNode('root'),
+                new TemplateFilterCriteriaNode('temp1'),
+              ]),
+              []
+            ),
+          ]),
         ]),
       ]),
-    ]),
-  ]);
+    ]
+  );
 
   it.each([
     { chain: chain0, inverted: inverted0 },
@@ -99,15 +150,21 @@ describe('when calling inverse()', () => {
 
 describe('when calling reachesRelationship()', () => {
   it('should return undefined if no segment <match, traverse, match> of the query would match the given relationship', () => {
-    const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
-      new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp2'] }, [
-          new TraversalQueryNode('in', { types: ['type2'] }, [
-            new MatchQueryNode({ templates: ['temp3'] }, []),
+    const query = new MatchQueryNode(
+      new AndFilterOperatorNode([
+        new IdFilterCriteriaNode('root'),
+        new TemplateFilterCriteriaNode('temp1'),
+      ]),
+      [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
+            new TraversalQueryNode('in', { types: ['type2'] }, [
+              new MatchQueryNode(new TemplateFilterCriteriaNode('temp3'), []),
+            ]),
           ]),
         ]),
-      ]),
-    ]);
+      ]
+    );
 
     expect(
       query.reachesRelationship(
@@ -161,13 +218,13 @@ describe('when calling reachesRelationship()', () => {
   });
 
   it('should return the narrowed query that would match the given relationship', () => {
-    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
       new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp2'] }, [
+        new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
           new TraversalQueryNode('in', { types: ['type2'] }, [
-            new MatchQueryNode({ templates: ['temp3'] }, [
+            new MatchQueryNode(new TemplateFilterCriteriaNode('temp3'), [
               new TraversalQueryNode('out', { types: ['type3'] }, [
-                new MatchQueryNode({ templates: ['temp4'] }, []),
+                new MatchQueryNode(new TemplateFilterCriteriaNode('temp4'), []),
               ]),
             ]),
           ]),
@@ -189,9 +246,9 @@ describe('when calling reachesRelationship()', () => {
         }
       )
     ).toEqual(
-      new MatchQueryNode({ sharedId: 'entity1' }, [
+      new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
         new TraversalQueryNode('out', { _id: 'rel1' }, [
-          new MatchQueryNode({ sharedId: 'entity2' }, []),
+          new MatchQueryNode(new IdFilterCriteriaNode('entity2'), []),
         ]),
       ])
     );
@@ -210,11 +267,11 @@ describe('when calling reachesRelationship()', () => {
         }
       )
     ).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ sharedId: 'entity1' }, [
+          new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
             new TraversalQueryNode('in', { _id: 'rel1' }, [
-              new MatchQueryNode({ sharedId: 'entity2' }, []),
+              new MatchQueryNode(new IdFilterCriteriaNode('entity2'), []),
             ]),
           ]),
         ]),
@@ -235,13 +292,13 @@ describe('when calling reachesRelationship()', () => {
         }
       )
     ).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ templates: ['temp2'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
             new TraversalQueryNode('in', { types: ['type2'] }, [
-              new MatchQueryNode({ sharedId: 'entity1' }, [
+              new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
                 new TraversalQueryNode('out', { _id: 'rel1' }, [
-                  new MatchQueryNode({ sharedId: 'entity2' }, []),
+                  new MatchQueryNode(new IdFilterCriteriaNode('entity2'), []),
                 ]),
               ]),
             ]),
@@ -252,11 +309,11 @@ describe('when calling reachesRelationship()', () => {
   });
 
   it('should return the narrowed query that would match the query with repeated segments', () => {
-    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
       new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp1'] }, [
+        new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
           new TraversalQueryNode('in', { types: ['type1'] }, [
-            new MatchQueryNode({ templates: ['temp1'] }),
+            new MatchQueryNode(new TemplateFilterCriteriaNode('temp1')),
           ]),
         ]),
       ]),
@@ -276,11 +333,11 @@ describe('when calling reachesRelationship()', () => {
         }
       )
     ).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ sharedId: 'entity2' }, [
+          new MatchQueryNode(new IdFilterCriteriaNode('entity2'), [
             new TraversalQueryNode('in', { _id: 'rel1' }, [
-              new MatchQueryNode({ sharedId: 'entity1' }, []),
+              new MatchQueryNode(new IdFilterCriteriaNode('entity1'), []),
             ]),
           ]),
         ]),
@@ -291,24 +348,30 @@ describe('when calling reachesRelationship()', () => {
 
 describe('when calling reachesEntity()', () => {
   it('should return undefined if no match node of the query would match the given entity', () => {
-    const query = new MatchQueryNode({ sharedId: 'root', templates: ['temp1'] }, [
-      new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp2'] }, [
-          new TraversalQueryNode('in', { types: ['type2'] }, [
-            new MatchQueryNode({ templates: ['temp3'] }, []),
+    const query = new MatchQueryNode(
+      new AndFilterOperatorNode([
+        new IdFilterCriteriaNode('root'),
+        new TemplateFilterCriteriaNode('temp1'),
+      ]),
+      [
+        new TraversalQueryNode('out', { types: ['type1'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
+            new TraversalQueryNode('in', { types: ['type2'] }, [
+              new MatchQueryNode(new TemplateFilterCriteriaNode('temp3'), []),
+            ]),
           ]),
         ]),
-      ]),
-    ]);
+      ]
+    );
 
     expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toBe(undefined);
     expect(query.reachesEntity({ template: 'temp4', sharedId: 'root' })).toBe(undefined);
   });
 
   it('should not match if it does not need to traverse a relationship', () => {
-    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
       new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp2'] }, []),
+        new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), []),
       ]),
     ]);
 
@@ -316,13 +379,13 @@ describe('when calling reachesEntity()', () => {
   });
 
   it('should return the narrowed query that would match the given entity', () => {
-    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
       new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp2'] }, [
+        new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
           new TraversalQueryNode('in', { types: ['type2'] }, [
-            new MatchQueryNode({ templates: ['temp3'] }, [
+            new MatchQueryNode(new TemplateFilterCriteriaNode('temp3'), [
               new TraversalQueryNode('out', { types: ['type3'] }, [
-                new MatchQueryNode({ templates: ['temp4'] }, []),
+                new MatchQueryNode(new TemplateFilterCriteriaNode('temp4'), []),
               ]),
             ]),
           ]),
@@ -331,19 +394,19 @@ describe('when calling reachesEntity()', () => {
     ]);
 
     expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp2' })).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ sharedId: 'entity1' }, []),
+          new MatchQueryNode(new IdFilterCriteriaNode('entity1'), []),
         ]),
       ])
     );
 
     expect(query.reachesEntity({ sharedId: 'entity1', template: 'temp3' })).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ templates: ['temp2'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
             new TraversalQueryNode('in', { types: ['type2'] }, [
-              new MatchQueryNode({ sharedId: 'entity1' }, []),
+              new MatchQueryNode(new IdFilterCriteriaNode('entity1'), []),
             ]),
           ]),
         ]),
@@ -351,13 +414,13 @@ describe('when calling reachesEntity()', () => {
     );
 
     expect(query.reachesEntity({ template: 'temp4', sharedId: 'entity1' })).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ templates: ['temp2'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp2'), [
             new TraversalQueryNode('in', { types: ['type2'] }, [
-              new MatchQueryNode({ templates: ['temp3'] }, [
+              new MatchQueryNode(new TemplateFilterCriteriaNode('temp3'), [
                 new TraversalQueryNode('out', { types: ['type3'] }, [
-                  new MatchQueryNode({ sharedId: 'entity1' }, []),
+                  new MatchQueryNode(new IdFilterCriteriaNode('entity1'), []),
                 ]),
               ]),
             ]),
@@ -368,13 +431,13 @@ describe('when calling reachesEntity()', () => {
   });
 
   it('should return the narrowed query that would match the entity with repeated segments', () => {
-    const query = new MatchQueryNode({ templates: ['temp1'] }, [
+    const query = new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
       new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['temp1'] }, [
+        new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
           new TraversalQueryNode('in', { types: ['type1'] }, [
-            new MatchQueryNode({ templates: ['temp1'] }, [
+            new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
               new TraversalQueryNode('out', { types: ['type1'] }, [
-                new MatchQueryNode({ templates: ['temp1'] }, []),
+                new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), []),
               ]),
             ]),
           ]),
@@ -383,13 +446,13 @@ describe('when calling reachesEntity()', () => {
     ]);
 
     expect(query.reachesEntity({ template: 'temp1', sharedId: 'entity1' })).toEqual(
-      new MatchQueryNode({ templates: ['temp1'] }, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
         new TraversalQueryNode('out', { types: ['type1'] }, [
-          new MatchQueryNode({ templates: ['temp1'] }, [
+          new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
             new TraversalQueryNode('in', { types: ['type1'] }, [
-              new MatchQueryNode({ templates: ['temp1'] }, [
+              new MatchQueryNode(new TemplateFilterCriteriaNode('temp1'), [
                 new TraversalQueryNode('out', { types: ['type1'] }, [
-                  new MatchQueryNode({ sharedId: 'entity1' }, []),
+                  new MatchQueryNode(new IdFilterCriteriaNode('entity1'), []),
                 ]),
               ]),
             ]),
@@ -401,20 +464,20 @@ describe('when calling reachesEntity()', () => {
 });
 
 describe('when calling a method that only supports chain queries', () => {
-  const query0 = new MatchQueryNode({ sharedId: 'root' }, [
-    new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
-    new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
+  const query0 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [
+    new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+    new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
   ]);
 
-  const query1 = new MatchQueryNode({ sharedId: 'root' }, [
-    new TraversalQueryNode('out', {}, [new MatchQueryNode({}, []), new MatchQueryNode({}, [])]),
+  const query1 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [
+    new TraversalQueryNode('out', {}, [new MatchQueryNode(), new MatchQueryNode()]),
   ]);
 
-  const query2 = new MatchQueryNode({ sharedId: 'root' }, [
+  const query2 = new MatchQueryNode(new IdFilterCriteriaNode('root'), [
     new TraversalQueryNode('out', {}, [
-      new MatchQueryNode({}, [
-        new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
-        new TraversalQueryNode('out', {}, [new MatchQueryNode({}, [])]),
+      new MatchQueryNode(undefined, [
+        new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+        new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
       ]),
     ]),
   ]);
@@ -452,21 +515,19 @@ describe('when calling a method that only supports chain queries', () => {
 describe('when getting the templates matched by the leaf nodes', () => {
   it('should return an array containing the occurrences of the template ids', () => {
     /* eslint-disable */
-    const query = new MatchQueryNode({ sharedId: 'root' }, [ // Root
+    const query = new MatchQueryNode(new IdFilterCriteriaNode('root'), [ // Root
       new TraversalQueryNode('out', {}, [ // R -> A
-        new MatchQueryNode({}, [ // A
+        new MatchQueryNode(undefined, [ // A
           new TraversalQueryNode('out', {}, [ // A -> B
-            new MatchQueryNode({
-              templates: ['template1', 'template2']
-            }, []), //B
+            new MatchQueryNode(new TemplateFilterCriteriaNode(['template1', 'template2']), []), //B
           ]),
           new TraversalQueryNode('out', {}, [ // A -> D
-            new MatchQueryNode({}, []), // D
+            new MatchQueryNode(), // D
           ]),
         ]),
       ]),
       new TraversalQueryNode('out', {}, [ // R -> C
-        new MatchQueryNode({ templates: ['template2'] }, []) // C
+        new MatchQueryNode(new TemplateFilterCriteriaNode('template2'), []) // C
       ]),
     ]);
     /* eslint-enable */

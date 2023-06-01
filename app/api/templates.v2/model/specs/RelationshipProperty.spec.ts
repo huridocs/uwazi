@@ -1,3 +1,4 @@
+import { TemplateFilterCriteriaNode } from 'api/relationships.v2/model/FilterOperatorNodes';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -11,7 +12,10 @@ describe('buildQueryRootedInTemplate()', () => {
     ]);
 
     expect(property.buildQueryRootedInTemplate()).toEqual(
-      new MatchQueryNode({ templates: [fixtureFactory.id('template1').toString()] }, property.query)
+      new MatchQueryNode(
+        new TemplateFilterCriteriaNode(fixtureFactory.id('template1').toString()),
+        property.query
+      )
     );
   });
 });
@@ -19,17 +23,14 @@ describe('buildQueryRootedInTemplate()', () => {
 describe('queryUsesTemplate', () => {
   const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
     new TraversalQueryNode('out', {}, [
-      new MatchQueryNode(
-        {
-          templates: ['template2'],
-        },
-        [
-          new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
-          new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
-        ]
-      ),
+      new MatchQueryNode(new TemplateFilterCriteriaNode('template2'), [
+        new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+        new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
+      ]),
     ]),
-    new TraversalQueryNode('in', {}, [new MatchQueryNode({ templates: ['template3'] })]),
+    new TraversalQueryNode('in', {}, [
+      new MatchQueryNode(new TemplateFilterCriteriaNode('template3')),
+    ]),
   ]);
 
   it('should return true if the query is using the template', () => {
@@ -44,7 +45,7 @@ describe('queryUsesTemplate', () => {
 describe('queryUsesRelationType', () => {
   const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
     new TraversalQueryNode('out', { types: ['relType2'] }, [
-      new MatchQueryNode({}, [
+      new MatchQueryNode(undefined, [
         new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
         new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
       ]),
@@ -64,7 +65,7 @@ describe('queryUsesRelationType', () => {
 describe('hasSameQuery', () => {
   const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
     new TraversalQueryNode('out', { types: ['relType2'] }, [
-      new MatchQueryNode({}, [
+      new MatchQueryNode(undefined, [
         new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
         new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
       ]),
@@ -75,7 +76,7 @@ describe('hasSameQuery', () => {
   it('should return true if the queries are the same', () => {
     const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
         ]),
@@ -89,7 +90,7 @@ describe('hasSameQuery', () => {
   it('should return false if the queries differ in attributes', () => {
     const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['different rel type'] }, [new MatchQueryNode()]),
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
         ]),
@@ -103,7 +104,7 @@ describe('hasSameQuery', () => {
   it('should return false if the queries have branches swap', () => {
     const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
         ]),
@@ -117,7 +118,7 @@ describe('hasSameQuery', () => {
   it('should return false if the queries have different quantity of branches', () => {
     const property2 = fixtureFactory.v2.application.relationshipProperty('prop2', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
         ]),
@@ -126,7 +127,7 @@ describe('hasSameQuery', () => {
 
     const property3 = fixtureFactory.v2.application.relationshipProperty('prop3', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
         ]),
@@ -137,7 +138,7 @@ describe('hasSameQuery', () => {
 
     const property4 = fixtureFactory.v2.application.relationshipProperty('prop4', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
         ]),
       ]),
@@ -146,7 +147,7 @@ describe('hasSameQuery', () => {
 
     const property5 = fixtureFactory.v2.application.relationshipProperty('prop5', 'template1', [
       new TraversalQueryNode('out', { types: ['relType2'] }, [
-        new MatchQueryNode({}, [
+        new MatchQueryNode(undefined, [
           new TraversalQueryNode('out', { types: ['relType1'] }, [new MatchQueryNode()]),
           new TraversalQueryNode('in', {}, [new MatchQueryNode()]),
           new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
