@@ -259,6 +259,7 @@ const EditTranslations = () => {
           title={contextLabel}
           contextId={contextId}
         />
+
         <SettingsContent.Body>
           <div className="px-5 pt-5">
             <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>
@@ -288,6 +289,7 @@ const EditTranslations = () => {
             )}
           </div>
         </SettingsContent.Body>
+
         <SettingsContent.Footer>
           <div className="flex gap-2 justify-end p-2 pt-1">
             <div className="flex-1">

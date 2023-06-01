@@ -7,7 +7,13 @@ import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/ist
 import { Table } from 'V2/Components/UI/Table';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import * as translationsAPI from 'V2/api/translations/index';
-import { ContextPill, RenderButton } from './components/TableComponents';
+import {
+  ContextPill,
+  RenderButton,
+  ActionHeader,
+  LabelHeader,
+  TypeHeader,
+} from './components/TableComponents';
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -41,20 +47,20 @@ const TranslationsList = () => {
   const columns = [
     {
       ...columnHelper.accessor('label', {
-        header: 'Type',
+        header: LabelHeader,
       }),
       className: 'w-1/3',
     },
     {
       ...columnHelper.accessor('type', {
-        header: 'Type',
+        header: TypeHeader,
         cell: ContextPill,
       }),
       className: 'w-2/3',
     },
     {
       ...columnHelper.accessor('id', {
-        header: 'Action',
+        header: ActionHeader,
         cell: RenderButton,
         enableSorting: false,
       }),
@@ -72,7 +78,7 @@ const TranslationsList = () => {
         <SettingsContent.Header title="Translations" />
         <SettingsContent.Body>
           <div data-testid="translations">
-            <Table
+            <Table<ClientTranslationContextSchema>
               columns={columns}
               data={contexts.systemContexts}
               title={<Translate>System translations</Translate>}
