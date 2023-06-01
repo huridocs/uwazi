@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import RenderIfVisible from 'react-render-if-visible';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { CellContext } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
-import { Pill, Table } from '../UI';
-import { FormInput } from './FormInput';
+import { Table } from 'app/V2/Components/UI';
+import { FormInput } from 'app/V2/Components/Forms';
+import { LanguagePill } from './LanguagePill';
 
 type translationsTableType = {
   tablesData: any[];
@@ -12,14 +12,6 @@ type translationsTableType = {
   setValue: UseFormSetValue<any>;
   getFieldState: UseFormGetFieldState<any>;
   submitting: boolean;
-};
-
-const languagePill = ({ cell }: CellContext<any, any>) => {
-  let color: 'gray' | 'primary' | 'yellow' = 'gray';
-  if (cell.getValue().status === 'defaultLanguage') color = 'primary';
-  if (cell.getValue().status === 'untranslated') color = 'yellow';
-
-  return <Pill color={color}>{cell.getValue().languageKey.toUpperCase()}</Pill>;
 };
 
 const TranslationsTables = ({
@@ -35,18 +27,18 @@ const TranslationsTables = ({
   );
 
   const columns = [
-    { header: <Translate>Language</Translate>, accessor: 'language', enabledSorting: false },
+    { Header: <Translate>Language</Translate>, accessor: 'language', disableSortBy: true },
     {
-      header: <Translate className="sr-only">Language Code</Translate>,
+      Header: <Translate className="sr-only">Language Code</Translate>,
       accessor: 'translationStatus',
-      cell: languagePill,
-      enableSorting: false,
+      Cell: LanguagePill,
+      disableSortBy: true,
     },
     {
-      header: <Translate>Value</Translate>,
+      Header: <Translate>Value</Translate>,
       accessor: 'fieldKey',
-      cell: memoizedInput,
-      enableSorting: false,
+      Cell: memoizedInput,
+      disableSortBy: true,
       className: 'w-full',
     },
   ];

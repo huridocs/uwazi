@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Pill } from 'V2/Components/UI/Pill';
 import * as translationsAPI from 'V2/api/translations/index';
 
@@ -71,27 +71,25 @@ const TranslationsList = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-translations"
     >
-      <div className="p-5">
-        <NavigationHeader backUrl="/settings">
-          <h1 className="text-base text-gray-700">
-            <Translate>Translations</Translate>
-          </h1>
-        </NavigationHeader>
-        <div className="mt-4" data-testid="translations">
-          <Table
-            columns={columns}
-            data={contexts.systemContexts}
-            title={<Translate>System translations</Translate>}
-          />
-        </div>
-        <div className="mt-4" data-testid="content">
-          <Table
-            columns={columns}
-            data={contexts.contentContexts}
-            title={<Translate>Content translations</Translate>}
-          />
-        </div>
-      </div>
+      <SettingsContent>
+        <SettingsContent.Header title="Translations" />
+        <SettingsContent.Body>
+          <div data-testid="translations">
+            <Table
+              columns={columns}
+              data={contexts.systemContexts}
+              title={<Translate>System translations</Translate>}
+            />
+          </div>
+          <div className="mt-4" data-testid="content">
+            <Table
+              columns={columns}
+              data={contexts.contentContexts}
+              title={<Translate>Content translations</Translate>}
+            />
+          </div>
+        </SettingsContent.Body>
+      </SettingsContent>
     </div>
   );
 };
