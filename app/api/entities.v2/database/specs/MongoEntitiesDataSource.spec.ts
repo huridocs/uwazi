@@ -130,8 +130,8 @@ const fixtures = {
   ],
   templates: [
     factory.template('template1', [
-      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [{}] },
-      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [{}] },
+      { type: 'newRelationship', name: 'relProp1', label: 'relProp1', query: [] },
+      { type: 'newRelationship', name: 'relProp2', label: 'relProp2', query: [] },
       {
         type: 'newRelationship',
         name: 'relProp3',
@@ -140,7 +140,11 @@ const fixtures = {
           {
             types: [factory.id('reltypeid')],
             direction: 'out',
-            match: [{ templates: [factory.id('template-to-inherit')] }],
+            match: [
+              {
+                filter: { type: 'template', value: [factory.id('template-to-inherit')] },
+              },
+            ],
           },
         ],
       },
@@ -152,7 +156,7 @@ const fixtures = {
           {
             types: [factory.id('reltypeid')],
             direction: 'out',
-            match: [{ templates: [factory.id('template-to-inherit')] }],
+            match: [{ filter: { type: 'template', value: [factory.id('template-to-inherit')] } }],
           },
         ],
         denormalizedProperty: 'inherited',

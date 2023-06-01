@@ -21,6 +21,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
+import { RelationshipPropertyDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -74,7 +75,9 @@ function getFixturesFactory() {
 
     template: (
       name: string,
-      properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
+      properties: (Omit<PropertySchema, 'query'> & {
+        query?: RelationshipPropertyDBO['query'];
+      })[] = []
     ) => ({
       _id: idMapper(name),
       name,
@@ -121,7 +124,12 @@ function getFixturesFactory() {
       });
     },
 
-    inherit(name: string, content: string, property: string, props = {}): PropertySchema {
+    inherit(
+      name: string,
+      content: string,
+      property: string,
+      props = {}
+    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } {
       return this.relationshipProp(name, content, {
         inherit: { property: idMapper(property).toString() },
         ...props,
@@ -151,7 +159,11 @@ function getFixturesFactory() {
       name,
     }),
 
-    relationshipProp(name: string, content: string, props = {}): PropertySchema {
+    relationshipProp(
+      name: string,
+      content: string,
+      props = {}
+    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),
         content: idMapper(content).toString(),
@@ -163,7 +175,7 @@ function getFixturesFactory() {
       name: string,
       type: PropertySchema['type'] = 'text',
       props = {}
-    ): PropertySchema => ({
+    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } => ({
       _id: idMapper(name),
       label: name,
       name,

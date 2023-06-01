@@ -163,14 +163,14 @@ const fixtures = {
             direction: 'out',
             match: [
               {
-                templates: [factory.id('formerHubsTemplate')],
+                filter: { type: 'template', value: [factory.id('formerHubsTemplate')] },
                 traverse: [
                   {
                     types: [factory.id('relType1')],
                     direction: 'in',
                     match: [
                       {
-                        templates: [factory.id('template4')],
+                        filter: { type: 'template', value: [factory.id('template4')] },
                       },
                     ],
                   },
@@ -191,14 +191,14 @@ const fixtures = {
             direction: 'out',
             match: [
               {
-                templates: [factory.id('formerHubsTemplate')],
+                filter: { type: 'template', value: [factory.id('formerHubsTemplate')] },
                 traverse: [
                   {
                     types: [factory.id('relType1')],
                     direction: 'in',
                     match: [
                       {
-                        templates: [factory.id('template4')],
+                        filter: { type: 'template', value: [factory.id('template4')] },
                       },
                     ],
                   },
@@ -220,14 +220,14 @@ const fixtures = {
             direction: 'out',
             match: [
               {
-                templates: [factory.id('template4')],
+                filter: { type: 'template', value: [factory.id('template4')] },
                 traverse: [
                   {
                     types: [factory.id('relType1')],
                     direction: 'out',
                     match: [
                       {
-                        templates: [factory.id('formerHubsTemplate')],
+                        filter: { type: 'template', value: [factory.id('formerHubsTemplate')] },
                       },
                     ],
                   },
@@ -254,21 +254,24 @@ const fixtures = {
             direction: 'out',
             match: [
               {
-                templates: [factory.id('formerHubsTemplate')],
+                filter: { type: 'template', value: [factory.id('formerHubsTemplate')] },
                 traverse: [
                   {
                     types: [factory.id('nullType')],
                     direction: 'in',
                     match: [
                       {
-                        templates: [factory.id('template1')],
+                        filter: { type: 'template', value: [factory.id('template1')] },
                         traverse: [
                           {
                             types: [factory.id('nullType')],
                             direction: 'in',
                             match: [
                               {
-                                templates: [factory.id('formerHubsTemplate')],
+                                filter: {
+                                  type: 'template',
+                                  value: [factory.id('formerHubsTemplate')],
+                                },
                               },
                             ],
                           },

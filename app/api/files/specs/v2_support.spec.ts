@@ -42,7 +42,7 @@ const fixtures = {
             types: [factory.id('type1')],
             match: [
               {
-                templates: [factory.id('template1')],
+                filter: { type: 'template', value: [factory.id('template1')] },
               },
             ],
           },
