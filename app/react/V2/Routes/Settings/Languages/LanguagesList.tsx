@@ -10,13 +10,13 @@ import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
-import { InstallLanguagesModal } from 'app/V2/Components/Languages/InstallLanguagesModal';
 import { Button } from 'V2/Components/UI/Button';
 import { Table } from 'V2/Components/UI/Table';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
+import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -184,14 +184,10 @@ const LanguagesList = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-languages"
     >
-      <div className="flex flex-col h-full">
-        <div className="flex-grow p-5">
-          <NavigationHeader backUrl="/settings">
-            <h1 className="text-base text-gray-700">
-              <Translate>Languages</Translate>
-            </h1>
-          </NavigationHeader>
-          <div className="mt-4" data-testid="languages">
+      <SettingsContent>
+        <SettingsContent.Header title="Languages" />
+        <SettingsContent.Body>
+          <div data-testid="languages">
             <Table
               columns={columns}
               data={languages}
@@ -199,9 +195,8 @@ const LanguagesList = () => {
               initialState={{ sortBy: [{ id: 'label' }] }}
             />
           </div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+        </SettingsContent.Body>
+        <SettingsContent.Footer>
           <div className="flex gap-2 p-2 pt-1">
             <Button
               onClick={() => {
@@ -211,8 +206,8 @@ const LanguagesList = () => {
               <Translate>Install language(s)</Translate>
             </Button>
           </div>
-        </div>
-      </div>
+        </SettingsContent.Footer>
+      </SettingsContent>
       {showModal && (
         <div className="container w-10 h10">
           <ConfirmationModal {...modalProps} size="md" />
