@@ -1,17 +1,27 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/no-multi-comp */
+import React, {
+  HTMLProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import {
   flexRender,
   getSortedRowModel,
   getCoreRowModel,
   useReactTable,
   SortingState,
-  TableState,
   ColumnDef,
   CellContext,
   Column,
+  TableState,
+  Row,
 } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { SelectionContext } from './TableWithCheckbox';
 
 type ColumnWithClassName<T> = ColumnDef<T, any> & {
   className?: string;
@@ -26,6 +36,8 @@ interface TableProps<T> {
   data: T[];
   title?: string | React.ReactNode;
   initialState?: Partial<TableState>;
+  enableSelection?: boolean;
+  onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
 }
 
 const getIcon = (sorting: false | 'asc' | 'desc') => {
@@ -40,11 +52,74 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
   }
 };
 
-// eslint-disable-next-line comma-spacing
-const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
-  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
+const IndeterminateCheckbox = ({
+  indeterminate,
+  className = '',
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) => {
+  const ref = useRef<HTMLInputElement>(null!);
 
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate, rest.checked]);
+
+  return (
+    <input type="checkbox" ref={ref} className={`rounded cursor-pointer ${className}`} {...rest} />
+  );
+};
+
+const CheckBoxHeader = ({ table }) => (
+  <IndeterminateCheckbox
+    {...{
+      checked: table.getIsAllRowsSelected(),
+      indeterminate: table.getIsSomeRowsSelected(),
+      onChange: table.getToggleAllRowsSelectedHandler(),
+    }}
+  />
+);
+
+// eslint-disable-next-line comma-spacing
+const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
+  <IndeterminateCheckbox
+    {...{
+      checked: row.getIsSelected(),
+      disabled: !row.getCanSelect(),
+      indeterminate: row.getIsSomeSelected(),
+      onChange: row.getToggleSelectedHandler(),
+    }}
+  />
+);
+
+// eslint-disable-next-line comma-spacing
+const Table = <T,>({
+  columns,
+  data,
+  title,
+  initialState,
+  enableSelection,
+  onSelection,
+}: TableProps<T>) => {
+  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
+  const [rowSelection, setRowSelection] = useState({});
+
+  const memoizedColumns = useMemo(
+    () => [
+      ...(enableSelection
+        ? [
+            {
+              id: 'select',
+              header: CheckBoxHeader,
+              cell: CheckBoxCell,
+            },
+          ]
+        : []),
+      ...columns,
+    ],
+    [columns, enableSelection]
+  );
+
   const memoizedData = useMemo<T[]>(() => data, [data]);
 
   const table = useReactTable({
@@ -52,11 +127,22 @@ const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
     data: memoizedData,
     state: {
       sorting,
+      ...(enableSelection ? { rowSelection } : {}),
     },
+    enableRowSelection: enableSelection,
+    onRowSelectionChange: enableSelection ? setRowSelection : () => undefined,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  useEffect(() => {
+    const selectedRows = table.getSelectedRowModel().flatRows;
+
+    if (onSelection) {
+      onSelection(selectedRows);
+    }
+  }, [onSelection, rowSelection, table]);
 
   return (
     <div className="overflow-x-auto relative">
@@ -110,6 +196,6 @@ const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
   );
 };
 
-export type { CellContextWithMeta, ColumnWithClassName };
+export type { CellContextWithMeta, ColumnWithClassName, TableProps };
 
 export { Table };

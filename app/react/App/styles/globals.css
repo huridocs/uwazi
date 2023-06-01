@@ -1150,8 +1150,16 @@ input:checked + .toggle-bg {
   margin: 0px;
 }
 
+.m-4 {
+  margin: 1rem;
+}
+
 .m-auto {
   margin: auto;
+}
+
+.m-1 {
+  margin: 0.25rem;
 }
 
 .-mx-1 {
@@ -2871,6 +2879,10 @@ input:checked + .toggle-bg {
 
 .align-top {
   vertical-align: top;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .text-2xl {
