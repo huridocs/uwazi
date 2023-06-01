@@ -37,7 +37,7 @@ beforeEach(async () => {
         fixturesFactory.template('template3', [fixturesFactory.property('dateProp1', 'date', {})]),
         fixturesFactory.template('template4', [
           fixturesFactory.property('select', 'select', {
-            content: fixturesFactory.id('thesauri1'),
+            content: fixturesFactory.id('thesauri1').toHexString(),
           }),
         ]),
       ],

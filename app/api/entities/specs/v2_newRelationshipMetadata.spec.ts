@@ -12,11 +12,11 @@ let db = testingDB.mongodb;
 
 const query = [
   {
-    direction: 'out',
+    direction: 'out' as const,
     types: [factory.id('rtype1')],
     match: [
       {
-        templates: [factory.id('template1')],
+        filter: { type: 'template' as const, value: [factory.id('template1')] },
       },
     ],
   },

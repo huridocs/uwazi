@@ -174,7 +174,9 @@ function getFixturesFactory() {
     property: (
       name: string,
       type: PropertySchema['type'] = 'text',
-      props = {}
+      props: Partial<
+        Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] }
+      > = {}
     ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } => ({
       _id: idMapper(name),
       label: name,

@@ -14,11 +14,11 @@ const commonProperties = fixtureFactory.commonProperties();
 
 const oldQueryInDb = [
   {
-    direction: 'out',
+    direction: 'out' as const,
     types: [fixtureFactory.id('relation')],
     match: [
       {
-        templates: [fixtureFactory.id('unrelated_template')],
+        filter: { type: 'template' as const, value: [fixtureFactory.id('unrelated_template')] },
         traverse: [],
       },
     ],
@@ -119,7 +119,7 @@ const newQueryInDb = [
     types: [fixtureFactory.id('relation')],
     match: [
       {
-        templates: [fixtureFactory.id('unrelated_template2')],
+        filter: { type: 'template', value: [fixtureFactory.id('unrelated_template2')] },
         traverse: [],
       },
     ],
@@ -166,7 +166,12 @@ describe('template.save()', () => {
           {
             direction: 'out',
             types: [fixtureFactory.id('relation')],
-            match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
+            match: [
+              {
+                filter: { type: 'template', value: [fixtureFactory.id('existing_template')] },
+                traverse: [],
+              },
+            ],
           },
         ],
       });
@@ -230,7 +235,12 @@ describe('template.save()', () => {
               {
                 direction: 'out',
                 types: [fixtureFactory.id('relation')],
-                match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
+                match: [
+                  {
+                    filter: { type: 'template', value: [fixtureFactory.id('existing_template')] },
+                    traverse: [],
+                  },
+                ],
               },
             ],
           },

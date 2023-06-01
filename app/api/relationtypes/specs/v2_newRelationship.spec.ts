@@ -7,11 +7,11 @@ const factory = getFixturesFactory();
 
 const queryInDb = [
   {
-    direction: 'out',
+    direction: 'out' as const,
     types: [factory.id('rtype_used_in_query')],
     match: [
       {
-        templates: [factory.id('template1')],
+        filter: { type: 'template' as const, value: [factory.id('template1')] },
         traverse: [],
       },
     ],
