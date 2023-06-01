@@ -1,10 +1,12 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useMemo } from 'react';
-import RenderIfVisible from 'react-render-if-visible';
+import { Link } from 'react-router-dom';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { CellContext } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
+import RenderIfVisible from 'react-render-if-visible';
 import { Translate } from 'app/I18N';
-import { Pill, Table } from 'app/V2/Components/UI';
-import { FormInput } from 'app/V2/Components/Forms';
+import { Button, Pill, Table } from 'V2/Components/UI';
+import { FormInput } from 'V2/Components/Forms';
 
 type translationsTableType = {
   tablesData: any[];
@@ -14,13 +16,33 @@ type translationsTableType = {
   submitting: boolean;
 };
 
-const languagePill = ({ cell }: CellContext<any, any>) => {
+const RenderButton = ({ cell }) => (
+  <Link to={`edit/${cell.row.original.id}`}>
+    <Button styling="outline" className="leading-4">
+      <Translate>Translate</Translate>
+    </Button>
+  </Link>
+);
+
+const ContextPill = ({ cell }) => (
+  <div className="whitespace-nowrap">
+    <Pill color="gray">
+      <Translate>{cell.renderValue()}</Translate>
+    </Pill>
+  </div>
+);
+
+const LanguagePill = ({ cell }) => {
   let color: 'gray' | 'primary' | 'yellow' = 'gray';
   if (cell.getValue().status === 'defaultLanguage') color = 'primary';
   if (cell.getValue().status === 'untranslated') color = 'yellow';
 
   return <Pill color={color}>{cell.getValue().languageKey.toUpperCase()}</Pill>;
 };
+
+const LanguageHeader = () => <Translate>Language</Translate>;
+const StatusHeader = () => <Translate className="sr-only">Language Code</Translate>;
+const FieldKeyHeader = () => <Translate>Value</Translate>;
 
 const TranslationsTables = ({
   tablesData,
@@ -34,22 +56,28 @@ const TranslationsTables = ({
     [getFieldState, register, setValue, submitting]
   );
 
+  const columnHelper = createColumnHelper();
+
   const columns = [
-    { header: <Translate>Language</Translate>, accessor: 'language', enabledSorting: false },
-    {
-      header: <Translate className="sr-only">Language Code</Translate>,
-      accessor: 'translationStatus',
-      cell: languagePill,
+    columnHelper.accessor('language', {
+      header: LanguageHeader,
+      enabledSorting: false,
+    }),
+
+    columnHelper.accessor('translationStatus', {
+      header: StatusHeader,
+      cell: LanguagePill,
       enableSorting: false,
-    },
-    {
-      header: <Translate>Value</Translate>,
-      accessor: 'fieldKey',
+    }),
+
+    columnHelper.accessor('fieldKey', {
+      header: FieldKeyHeader,
       cell: memoizedInput,
       enableSorting: false,
       className: 'w-full',
-    },
+    }),
   ];
+
   return (
     <>
       {tablesData.map(data => {
@@ -65,4 +93,5 @@ const TranslationsTables = ({
     </>
   );
 };
-export { TranslationsTables };
+
+export { RenderButton, ContextPill, TranslationsTables };
