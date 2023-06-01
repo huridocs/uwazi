@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import api from 'app/utils/api';
+import { useRevalidator } from 'react-router-dom';
+import { useSetRecoilState } from 'recoil';
+
+import { RequestParams } from 'app/utils/RequestParams';
+
+import { notificationAtom } from 'app/V2/atoms';
+
 import { Button, Card, CopyValueInput } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import loadable from '@loadable/component';
 import { InputField } from 'app/V2/Components/Forms';
-import api from 'app/utils/api';
-import { useFetcher, useRevalidator } from 'react-router-dom';
-import Auth2faAPI from 'app/Auth2fa/Auth2faAPI';
-import { RequestParams } from 'app/utils/RequestParams';
-import { useSetRecoilState } from 'recoil';
-import { notificationAtom } from 'app/V2/atoms';
 
 const QRCodeSVG = loadable(
   async () => import(/* webpackChunkName: "qrcode.react" */ 'qrcode.react'),
@@ -26,8 +28,7 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
   const setNotifications = useSetRecoilState(notificationAtom);
-  const fetcher = useFetcher();
-  let revalidator = useRevalidator();
+  const revalidator = useRevalidator();
 
   useEffect(() => {
     api
@@ -36,42 +37,15 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
       .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
         setSecret(secret);
         setOtpauth(otpauth);
+      })
+      .catch((error: Error) => {
+        throw error;
       });
   }, []);
 
-  // const enable2fa = async () => {
-  //   const formData = new FormData();
-  //   formData.set('intent', '2fa');
-  //   formData.set('token', token);
-  //   fetcher.submit(formData, { method: 'post' });
-  // };
-
-  // useEffect(() => {
-  //   switch (true) {
-  //     case fetcher.formData?.get('intent') === '2fa':
-  //       closePanel();
-  //       setNotifications({
-  //         type: 'success',
-  //         text: <Translate>2FA Enabled</Translate>,
-  //       });
-  //       break;
-
-  //     case fetcher.formData?.get('intent') === '2fa' && fetcher.data instanceof FetchResponseError:
-  //       setNotifications({
-  //         type: 'error',
-  //         text: <Translate>An error occurred</Translate>,
-  //         details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
-  //       });
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-  // }, [fetcher.data, fetcher.formData, setNotifications]);
-
   const enable2fa = async () => {
     try {
-      await Auth2faAPI.enable(new RequestParams({ token }));
+      await api.post('auth2fa-enable', new RequestParams({ token }));
       revalidator.revalidate();
       closePanel();
       setNotifications({
