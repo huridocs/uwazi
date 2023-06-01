@@ -8,6 +8,9 @@ describe('Translations', () => {
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Translations').click();
+  });
+
+  beforeEach(() => {
     cy.injectAxe();
   });
 
@@ -77,7 +80,8 @@ describe('Translations', () => {
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.contains('label', 'Untranslated Terms').click();
+        cy.get('.tw-content').scrollTo('top');
+        cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });
 
