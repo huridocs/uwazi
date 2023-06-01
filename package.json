@@ -89,7 +89,7 @@
     "@types/react-dom": "^18.0.9"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.325.0",
+    "@aws-sdk/client-s3": "3.344.0",
     "@aws-sdk/node-http-handler": "^3.329.0",
     "@elastic/elasticsearch": "7.17",
     "@fast-csv/format": "^4.3.5",
@@ -109,6 +109,7 @@
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
     "@supercharge/promise-pool": "^2.1.0",
+    "@tanstack/react-table": "^8.9.1",
     "@types/franc": "^5.0.1",
     "@types/lodash": "^4.14.170",
     "@types/mime-types": "^2.1.1",
