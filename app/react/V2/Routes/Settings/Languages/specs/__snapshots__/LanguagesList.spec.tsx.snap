@@ -93,7 +93,7 @@ exports[`LanguagesList render installed languages should show a list of installe
           data-testid="languages"
         >
           <div
-            class="relative overflow-x-auto"
+            class="overflow-x-auto relative"
           >
             <table
               class="w-full text-sm text-left"

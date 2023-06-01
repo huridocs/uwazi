@@ -7,7 +7,7 @@ import * as stories from 'app/stories/Table.stories';
 const { Basic, WithActions } = composeStories(stories);
 
 describe('Table', () => {
-  const { data } = Basic.args;
+  const data = Basic.args.data || [];
 
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
     cellsContent.forEach((content, index) =>

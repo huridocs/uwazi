@@ -13,7 +13,6 @@ import {
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 
 type ColumnWithClassName<T> = ColumnDef<T, any> & {
-  // meta: ColumnMeta<T, any> & { action: Function };
   className?: string;
 };
 
@@ -39,13 +38,12 @@ const getIcon = (sorting: false | 'asc' | 'desc') => {
       return <ChevronDownIcon className="w-4" />;
   }
 };
-// eslint-disable-next-line prettier/prettier
-const Table = <T, >({ columns, data, title, initialState }: TableProps<T>) => {
+
+// eslint-disable-next-line comma-spacing
+const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
 
-  // const constructedColumns = prepareColumns<T>(columns);
-  const constructedColumns = columns;
-  const memoizedColumns = useMemo(() => constructedColumns, [constructedColumns]);
+  const memoizedColumns = useMemo(() => columns, [columns]);
   const memoizedData = useMemo<T[]>(() => data, [data]);
 
   const table = useReactTable({
@@ -60,7 +58,7 @@ const Table = <T, >({ columns, data, title, initialState }: TableProps<T>) => {
   });
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">

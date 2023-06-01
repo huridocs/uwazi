@@ -20,7 +20,7 @@ type Story = StoryObj<typeof Table<SampleSchema>>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Table columns={args.columns} data={args.data} title={args.title} />
+      <Table<SampleSchema> columns={args.columns} data={args.data} title={args.title} />
     </div>
   ),
 };
@@ -35,7 +35,9 @@ const ActionsCell = () => (
     <Button styling="outline">Secondary</Button>
   </div>
 );
+
 const columnHelper = createColumnHelper<SampleSchema>();
+
 const Basic: Story = {
   ...Primary,
   args: {
@@ -64,6 +66,7 @@ const Basic: Story = {
     ],
   },
 };
+
 const WithActions: Story = {
   ...Primary,
   args: {
