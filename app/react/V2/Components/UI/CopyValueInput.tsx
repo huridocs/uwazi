@@ -5,9 +5,12 @@ import { Translate } from 'app/I18N';
 interface CopyValueInputProps {
   value: string;
   className?: string;
+  label: string;
+  hideLabel?: boolean;
+  id?: string;
 }
 
-const CopyValueInput = ({ value, className }: CopyValueInputProps) => {
+const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInputProps) => {
   const [copied, setCopied] = useState<boolean>(false);
 
   const copyToClipboard = async () => {
@@ -26,37 +29,42 @@ const CopyValueInput = ({ value, className }: CopyValueInputProps) => {
   }, [copied]);
 
   return (
-    <div className={`relative w-full mb-4 ${className}`}>
-      <input
-        type="text"
-        disabled
-        value={value}
-        className="disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5"
-      />
-      <div className="top-px absolute right-0 items-center flex">
-        <button
-          type="button"
-          onClick={copyToClipboard}
-          data-testid="copy-value-button"
-          className="hover:text-primary-700 text-gray-900 p-2.5 text-sm font-medium rounded-r-lg
+    <div className={`${className}`}>
+      <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+        {label}
+      </label>
+      <div className="relative w-full">
+        <input
+          type="text"
+          disabled
+          value={value}
+          className="disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5"
+        />
+        <div className="top-px absolute right-0 items-center flex">
+          <button
+            type="button"
+            onClick={copyToClipboard}
+            data-testid="copy-value-button"
+            className="hover:text-primary-700 text-gray-900 p-2.5 text-sm font-medium rounded-r-lg
              focus:outline-none"
-        >
-          {copied ? (
-            <CheckIcon className="w-5 text-success-600" />
-          ) : (
-            <ClipboardDocumentIcon className="w-5" />
-          )}
-
-          <Translate className="sr-only">Copy to clipboard</Translate>
-        </button>
-        {copied && (
-          <div
-            role="tooltip"
-            className="absolute -top-11 border-gray-50 w-max right-0 z-10 inline-block px-3 py-2 text-sm font-medium rounded-lg shadow-sm bg-white"
           >
-            <Translate>Copied to clipboard</Translate>
-          </div>
-        )}
+            {copied ? (
+              <CheckIcon className="w-5 text-success-600" />
+            ) : (
+              <ClipboardDocumentIcon className="w-5" />
+            )}
+
+            <Translate className="sr-only">Copy to clipboard</Translate>
+          </button>
+          {copied && (
+            <div
+              role="tooltip"
+              className="absolute -top-11 border-gray-50 w-max right-0 z-10 inline-block px-3 py-2 text-sm font-medium rounded-lg shadow-sm bg-white"
+            >
+              <Translate>Copied to clipboard</Translate>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -150,6 +150,7 @@ const Account = () => {
                   <Button
                     styling="outline"
                     className="flex-none"
+                    data-testid="open-2fa"
                     onClick={() => setIsSidepanelOpen(true)}
                   >
                     <Translate>Enable</Translate>
@@ -166,9 +167,15 @@ const Account = () => {
         </div>
         <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
           <div className="flex gap-2 p-2 pt-1">
-            <Button styling="outline" color="error">
+            <a
+              href="/logout"
+              data-testid="account-logout"
+              className="bg-white hover:text-white text-error-700 border-error-700   hover:bg-error-800 hover:border-error-800 text-sm px-5 py-2.5 font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+            >
               <Translate>Logout</Translate>
-            </Button>
+            </a>
+
             <Button type="submit" form="account-form">
               <Translate>Update</Translate>
             </Button>

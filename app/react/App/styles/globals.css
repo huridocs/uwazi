@@ -3550,6 +3550,11 @@ input:checked + .toggle-bg {
   cursor: not-allowed;
 }
 
+.hover\:border-error-800:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(153 27 27 / var(--tw-border-opacity));
+}
+
 .hover\:border-gray-300:hover {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
