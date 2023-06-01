@@ -8,60 +8,88 @@ exports[`LanguagesList render installed languages should show a list of installe
     style="width: 100%; overflow-y: auto;"
   >
     <div
-      class="flex flex-col h-full"
+      class="flex flex-col h-full p-5 "
+      data-testid="settings-content"
     >
       <div
-        class="flex-grow p-5"
+        class="flex pb-4 "
+        data-testid="settings-content-header"
       >
-        <div
-          class="flex items-center"
+        <a
+          class="block lg:hidden"
+          href="/settings"
+          to="/settings"
         >
-          <a
-            class="block lg:hidden"
-            href="/settings"
-            to="/settings"
+          <svg
+            aria-hidden="true"
+            class="w-8 stroke-1 lg:hidden"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <div
-              class="flex mr-3"
+            <path
+              clip-rule="evenodd"
+              d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+              fill-rule="evenodd"
+            />
+          </svg>
+          <span
+            class="sr-only"
+          >
+            <span
+              class="translation active"
+            >
+              Navigate back
+            </span>
+          </span>
+        </a>
+        <nav
+          aria-label="Breadcrumb"
+          class="!relative p-1 flex right-0 h-4 !bg-transparent m-0 !w-full flex-wrap align-middle"
+        >
+          <ol
+            class="flex items-center"
+          >
+            <li
+              class="group flex items-center max-w-xs"
             >
               <svg
                 aria-hidden="true"
-                class="w-6 h-6"
+                class="mx-1 h-6 w-6 text-gray-400 group-first:hidden md:mx-2"
+                data-testid="flowbite-breadcrumb-separator"
                 fill="none"
+                height="1em"
                 stroke="currentColor"
-                stroke-width="1.5"
+                stroke-width="2"
                 viewBox="0 0 24 24"
+                width="1em"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M15.75 19.5L8.25 12l7.5-7.5"
+                  d="M9 5l7 7-7 7"
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 />
               </svg>
               <span
-                class="sr-only"
+                class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400"
+                data-testid="flowbite-breadcrumb-item"
               >
                 <span
-                  class="translation active"
+                  class="translation active max-w-xs truncate"
                 >
-                  Navigate back
+                  Languages
                 </span>
               </span>
-            </div>
-          </a>
-          <h1
-            class="text-base text-gray-700"
-          >
-            <span
-              class="translation active"
-            >
-              Languages
-            </span>
-          </h1>
-        </div>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class=" flex-grow py-1"
+        data-testid="settings-content-body"
+      >
         <div
-          class="mt-4"
           data-testid="languages"
         >
           <div
@@ -376,7 +404,8 @@ exports[`LanguagesList render installed languages should show a list of installe
         </div>
       </div>
       <div
-        class="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1"
+        class="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1 "
+        data-testid="settings-content-footer"
       >
         <div
           class="flex gap-2 p-2 pt-1"

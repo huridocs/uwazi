@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pill } from '../UI';
+import { Pill } from 'app/V2/Components/UI';
 
 const LanguagePill = ({ cell }: any) => {
   let color: 'gray' | 'primary' | 'yellow' = 'gray';
