@@ -44,7 +44,7 @@ const Account = () => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
     await UsersAPI.save(new RequestParams(userData));
-    revalidator.revalidate();
+    await revalidator.revalidate();
     setNotifications({
       type: 'success',
       text: <Translate>Account updated</Translate>,
@@ -52,8 +52,7 @@ const Account = () => {
   };
 
   useEffect(() => {
-    console.log('userAccount', userAccount);
-    reset(userAccount, { keepValues: false });
+    reset({ ...userAccount, password: '', passwordConfirm: '' });
   }, [userAccount, reset]);
 
   return (
