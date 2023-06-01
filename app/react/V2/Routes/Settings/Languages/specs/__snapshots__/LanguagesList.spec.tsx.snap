@@ -93,15 +93,10 @@ exports[`LanguagesList render installed languages should show a list of installe
           data-testid="languages"
         >
           <div
-            class="relative"
-            data-testid="table-element"
+            class="relative overflow-x-auto"
           >
-            <div
-              class="absolute bg-white dark:bg-black w-full h-full top-0 left-0 rounded-lg drop-shadow-md -z-10"
-            />
             <table
-              class="w-full text-left text-sm text-gray-500 dark:text-gray-400"
-              role="table"
+              class="w-full text-sm text-left"
             >
               <caption
                 class="p-5 text-lg font-semibold text-left text-gray-900 bg-white"
@@ -113,18 +108,15 @@ exports[`LanguagesList render installed languages should show a list of installe
                 </span>
               </caption>
               <thead
-                class="group/head text-xs uppercase text-gray-700 dark:text-gray-400"
+                class="text-xs text-gray-700 uppercase bg-gray-50"
               >
                 <tr>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 w-9/12"
-                    colspan="1"
-                    role="columnheader"
-                    style="cursor: pointer;"
-                    title="Toggle SortBy"
+                    class="px-6 py-3 w-9/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 flex flex-row"
+                      class="inline-flex cursor-pointer select-none"
                     >
                       <span
                         class="translation active"
@@ -147,12 +139,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -162,12 +153,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -177,12 +167,11 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </div>
                   </th>
                   <th
-                    class="group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg bg-gray-50 dark:bg-gray-700 px-6 py-3 text-center w-1/12"
-                    colspan="1"
-                    role="columnheader"
+                    class="px-6 py-3 text-center w-1/12"
+                    scope="col"
                   >
                     <div
-                      class="text-gray-500 "
+                      class="inline-flex "
                     >
                       <span
                         class="translation active sr-only"
@@ -193,18 +182,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </th>
                 </tr>
               </thead>
-              <tbody
-                class="group/body text-gray-900 divide-y"
-                role="rowgroup"
-              >
+              <tbody>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -213,8 +196,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -242,14 +224,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -265,13 +245,10 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -280,8 +257,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-gray-700 disabled:text-gray-300 bg-white border-gray-200 enabled:hover:text-primary-700 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -309,14 +285,12 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -332,13 +306,10 @@ exports[`LanguagesList render installed languages should show a list of installe
                   </td>
                 </tr>
                 <tr
-                  class="group/row"
-                  data-testid="table-row-element"
-                  role="row"
+                  class="bg-white border-b"
                 >
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <span
                       class="translation active"
@@ -347,8 +318,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </span>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="text-white bg-primary-700 border-primary-700  disabled:bg-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -376,8 +346,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                     <button
                       class="bg-white enabled:hover:text-white text-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-sm px-5 py-2.5 disabled:cursor-not-allowed font-medium rounded-lg
@@ -392,8 +361,7 @@ exports[`LanguagesList render installed languages should show a list of installe
                     </button>
                   </td>
                   <td
-                    class="group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg px-6 py-4"
-                    role="cell"
+                    class="px-6 py-3"
                   >
                      
                   </td>
