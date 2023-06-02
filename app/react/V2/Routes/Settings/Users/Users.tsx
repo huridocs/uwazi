@@ -6,13 +6,13 @@ import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { Button, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   DeleteConfirmationModal,
-} from 'V2/Components/Settings/UsersAndGroups';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { getUsersColumns } from './components/TableComponents';
+  getUsersColumns,
+} from './components';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
