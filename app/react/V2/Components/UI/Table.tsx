@@ -21,6 +21,7 @@ const applyForSelection = (
   withOutSelection: any,
   enableSelection: boolean = false
 ) => (enableSelection ? withSelection : withOutSelection);
+
 // eslint-disable-next-line comma-spacing
 const Table = <T,>({
   columns,
@@ -77,7 +78,7 @@ const Table = <T,>({
   }, [onSelection, rowSelection, table]);
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">

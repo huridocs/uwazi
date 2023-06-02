@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
+import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, Tabs } from 'V2/Components/UI';
+import { Button, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import {
   UserFormSidepanel,
@@ -11,50 +12,64 @@ import {
   DeleteConfirmationModal,
 } from 'V2/Components/Settings/UsersAndGroups';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { UsersTable } from './UsersTable';
-import { GroupsTable } from './GroupsTable';
+import { getUsersColumns } from './components/TableComponents';
 
-type activeTab = 'Groups' | 'Users';
+type ActiveTab = 'Groups' | 'Users';
+type FormIntent =
+  | 'new-user'
+  | 'edit-user'
+  | 'delete-user'
+  | 'new-group'
+  | 'edit-group'
+  | 'delete-group';
 
 const Users = () => {
-  const [activeTab, setActiveTab] = useState<activeTab>('Users');
-  const [selectedUsers, setSelectedUsers] = useState<ClientUserSchema[]>([]);
+  const { users, groups } =
+    (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
+
+  const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
+  const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
   const [selected, setSelected] = useState<ClientUserSchema | ClientUserGroupSchema | undefined>();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedGroups, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
-  const { users, groups } =
-    (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
   const fetcher = useFetcher();
+
+  const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
+    setShowSidepanel(true);
+    setSelected(user);
+  });
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header title="Users & Groups" />
+
         <SettingsContent.Body>
-          <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
+          <Tabs onTabSelected={tab => setActiveTab(tab as ActiveTab)}>
             <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
-              <UsersTable
-                users={users}
-                editButtonAction={selectedUser => {
-                  setSelected(selectedUser);
-                  setShowSidepanel(true);
-                }}
-                onUsersSelected={selectedTableUsers => setSelectedUsers(selectedTableUsers)}
+              <Table<ClientUserSchema>
+                columns={usersTableColumns}
+                data={users}
+                title={<Translate>Users</Translate>}
+                enableSelection
+                onSelection={setSelectedUsers}
+                initialState={{ sorting: [{ id: 'username', desc: false }] }}
               />
             </Tabs.Tab>
             <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
-              <GroupsTable
+              {/* <GroupsTable
                 groups={groups}
                 editButtonAction={selectedGroup => {
                   setSelected(selectedGroup);
                   setShowSidepanel(true);
                 }}
                 onGroupsSelected={selection => setSelectedGroups(selection)}
-              />
+              /> */}
             </Tabs.Tab>
           </Tabs>
         </SettingsContent.Body>
+
         <SettingsContent.Footer>
           <div className="flex gap-2 p-2 pt-1">
             {selectedUsers.length > 0 ? (
@@ -89,6 +104,7 @@ const Users = () => {
                 )}
               </Button>
             )}
+
             {selectedGroups.length > 0 && selectedUsers.length === 0 ? (
               <Button
                 size="small"
@@ -99,10 +115,7 @@ const Users = () => {
               >
                 <Translate>Delete</Translate>
               </Button>
-            ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <></>
-            )}
+            ) : undefined}
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
@@ -132,8 +145,8 @@ const Users = () => {
           setShowModal={setShowDeleteModal}
           onConfirm={() => {
             setShowDeleteModal(false);
-            // Delete user
             const formData = new FormData();
+
             if (activeTab === 'Users') {
               formData.set('intent', 'delete-user');
               formData.set('data', JSON.stringify(selectedUsers[0]));
@@ -141,6 +154,7 @@ const Users = () => {
               formData.set('intent', 'delete-group');
               formData.set('data', JSON.stringify(selectedGroups[0]));
             }
+
             fetcher.submit(formData, { method: 'post' });
           }}
         />
@@ -161,13 +175,7 @@ const settingsUserAction =
   (): ActionFunction =>
   async ({ request }) => {
     const formData = await request.formData();
-    const formIntent = formData.get('intent') as
-      | 'new-user'
-      | 'edit-user'
-      | 'delete-user'
-      | 'new-group'
-      | 'edit-group'
-      | 'delete-group';
+    const formIntent = formData.get('intent') as FormIntent;
 
     const formValues = JSON.parse(formData.get('data') as string);
 
