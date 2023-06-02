@@ -359,7 +359,7 @@ describe('thesauri', () => {
         });
       });
 
-      fdescribe('when trying to save duplicated labels', () => {
+      describe('when trying to save duplicated labels', () => {
         it.each([
           {
             case: 'root',
@@ -368,7 +368,7 @@ describe('thesauri', () => {
               { label: 'other_label' },
               { label: 'duplicated_label' },
             ],
-            expectedMessage: 'Duplicated labels: duplicated_label',
+            expectedMessage: 'Duplicated labels: duplicated_label.',
           },
           {
             case: 'group',
@@ -382,7 +382,7 @@ describe('thesauri', () => {
                 ],
               },
             ],
-            expectedMessage: 'Duplicated labels: group/duplicated_label',
+            expectedMessage: 'Duplicated labels: group/duplicated_label.',
           },
         ])('should not allow duplication in $case', async ({ values, expectedMessage }) => {
           const toSave = { name: 'test_thesaurus', values };
@@ -396,9 +396,8 @@ describe('thesauri', () => {
             expect(e.errors).toMatchObject([
               {
                 message: expectedMessage,
-              }
+              },
             ]);
-            console.log(e)
           }
         });
 
