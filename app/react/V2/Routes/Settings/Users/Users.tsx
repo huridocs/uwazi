@@ -7,7 +7,12 @@ import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { UserFormSidepanel, GroupFormSidepanel, getUsersColumns } from './components';
+import {
+  UserFormSidepanel,
+  GroupFormSidepanel,
+  getUsersColumns,
+  getGroupsTableColumns,
+} from './components';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
@@ -18,13 +23,14 @@ type FormIntent =
   | 'edit-group'
   | 'delete-group';
 
+// eslint-disable-next-line max-statements
 const Users = () => {
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
-  const [selectedGroups, setSelectedGroups] = useState<ClientUserGroupSchema[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
   const [selected, setSelected] = useState<ClientUserSchema | ClientUserGroupSchema | undefined>();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -33,6 +39,11 @@ const Users = () => {
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
     setShowSidepanel(true);
     setSelected(user);
+  });
+
+  const groupsTableColumns = getGroupsTableColumns((group: ClientUserGroupSchema) => {
+    setShowSidepanel(true);
+    setSelected(group);
   });
 
   return (
@@ -53,14 +64,14 @@ const Users = () => {
               />
             </Tabs.Tab>
             <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
-              {/* <GroupsTable
-                groups={groups}
-                editButtonAction={selectedGroup => {
-                  setSelected(selectedGroup);
-                  setShowSidepanel(true);
-                }}
-                onGroupsSelected={selection => setSelectedGroups(selection)}
-              /> */}
+              <Table
+                columns={groupsTableColumns}
+                data={groups}
+                title={<Translate>Groups</Translate>}
+                enableSelection
+                onSelection={setSelectedGroups}
+                initialState={{ sorting: [{ id: 'name', desc: false }] }}
+              />
             </Tabs.Tab>
           </Tabs>
         </SettingsContent.Body>

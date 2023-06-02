@@ -7,8 +7,7 @@ import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiSelect } from 'V2/Components/Forms';
-import { ConfirmationModal } from './ConfirmationModal';
+import { ConfirmNavigationModal, InputField, MultiSelect } from 'V2/Components/Forms';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
@@ -101,7 +100,7 @@ const GroupFormSidepanel = ({
       default:
         break;
     }
-  }, [fetcher.data, fetcher.formData, setNotifications]);
+  }, [fetcher.data, fetcher.formData, setNotifications, setShowSidepanel]);
 
   return (
     <>
@@ -140,7 +139,7 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
+            <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
@@ -180,8 +179,9 @@ const GroupFormSidepanel = ({
           </div>
         </form>
       </Sidepanel>
+
       {showModal && (
-        <ConfirmationModal
+        <ConfirmNavigationModal
           setShowModal={setShowModal}
           onConfirm={() => {
             setShowModal(false);
