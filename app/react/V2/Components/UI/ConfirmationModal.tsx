@@ -5,7 +5,7 @@ import { Button, Modal } from '../UI';
 import { modalSizeType } from './Modal';
 
 type confirmationModalType = {
-  size: modalSizeType;
+  size?: modalSizeType;
   header?: string | React.ReactNode;
   body?: string | React.ReactNode;
   onAcceptClick?: () => void;
@@ -14,6 +14,7 @@ type confirmationModalType = {
   cancelButton?: string | React.ReactNode;
   warningText?: string | React.ReactNode;
   confirmWord?: string;
+  dangerStyle?: boolean;
 };
 
 const ConfirmationModal = ({
@@ -25,7 +26,8 @@ const ConfirmationModal = ({
   cancelButton,
   warningText,
   confirmWord,
-  size,
+  size = 'md',
+  dangerStyle = false,
 }: confirmationModalType) => {
   const [confirmed, setConfirmed] = useState(confirmWord === undefined);
 
@@ -78,7 +80,7 @@ const ConfirmationModal = ({
         <Button
           onClick={onAcceptClick}
           disabled={!confirmed}
-          color={!warningText ? 'primary' : 'error'}
+          color={!warningText && !dangerStyle ? 'primary' : 'error'}
           className="grow"
           data-testid="accept-button"
         >

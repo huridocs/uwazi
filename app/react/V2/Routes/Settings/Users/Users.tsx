@@ -4,15 +4,10 @@ import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, Table, Tabs } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import {
-  UserFormSidepanel,
-  GroupFormSidepanel,
-  DeleteConfirmationModal,
-  getUsersColumns,
-} from './components';
+import { UserFormSidepanel, GroupFormSidepanel, getUsersColumns } from './components';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
@@ -141,9 +136,12 @@ const Users = () => {
       )}
 
       {showDeleteModal && (
-        <DeleteConfirmationModal
-          setShowModal={setShowDeleteModal}
-          onConfirm={() => {
+        <ConfirmationModal
+          header="Delete"
+          body="Do you want to delete?"
+          acceptButton="Delete"
+          cancelButton="No, cancel"
+          onAcceptClick={() => {
             setShowDeleteModal(false);
             const formData = new FormData();
 
@@ -157,6 +155,8 @@ const Users = () => {
 
             fetcher.submit(formData, { method: 'post' });
           }}
+          onCancelClick={() => setShowDeleteModal(false)}
+          dangerStyle
         />
       )}
     </div>
