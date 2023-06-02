@@ -7,10 +7,9 @@ import { useFetcher } from 'react-router-dom';
 import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
+import { InputField, Select, MultiSelect, ConfirmNavigationModal } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
-import { ConfirmationModal } from './ConfirmationModal';
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -129,11 +128,11 @@ const UserFormSidepanel = ({
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >
         <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-          <div className="flex-grow flex flex-col gap-4">
+          <div className="flex flex-col flex-grow gap-4">
             <Card title={<Translate>General Information</Translate>}>
               <div className="mb-4">
                 <InputField
-                  label={<Translate className="font-bold block mb-1">Username</Translate>}
+                  label={<Translate className="block mb-1 font-bold">Username</Translate>}
                   id="username"
                   hasErrors={Boolean(errors.username)}
                   className="mb-1"
@@ -144,7 +143,7 @@ const UserFormSidepanel = ({
                     minLength: 3,
                   })}
                 />
-                <span className="text-error-700 font-bold">
+                <span className="font-bold text-error-700">
                   {errors.username?.type === 'required' && (
                     <Translate>Username is required</Translate>
                   )}
@@ -161,7 +160,7 @@ const UserFormSidepanel = ({
               </div>
 
               <Select
-                label={<Translate className="font-bold block mb-1">User Role</Translate>}
+                label={<Translate className="block mb-1 font-bold">User Role</Translate>}
                 className="mb-4"
                 id="roles"
                 options={userRoles}
@@ -170,7 +169,7 @@ const UserFormSidepanel = ({
 
               <div>
                 <InputField
-                  label={<Translate className="font-bold block mb-1">Email</Translate>}
+                  label={<Translate className="block mb-1 font-bold">Email</Translate>}
                   type="email"
                   id="email"
                   className="mb-1"
@@ -181,7 +180,7 @@ const UserFormSidepanel = ({
                     maxLength: 256,
                   })}
                 />
-                <span className="text-error-700 font-bold">
+                <span className="font-bold text-error-700">
                   {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
                   {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
                 </span>
@@ -191,7 +190,7 @@ const UserFormSidepanel = ({
             <Card title={<Translate>Security</Translate>}>
               <InputField
                 label={
-                  <span className="font-bold mb-1">
+                  <span className="mb-1 font-bold">
                     <Translate>Password</Translate>
                   </span>
                 }
@@ -202,7 +201,7 @@ const UserFormSidepanel = ({
                 className="mb-4"
                 {...register('password', { maxLength: 50 })}
               />
-              <span className="text-error-700 font-bold">
+              <span className="font-bold text-error-700">
                 {errors.password?.type === 'maxLength' && (
                   <Translate>Password is too long</Translate>
                 )}
@@ -232,10 +231,10 @@ const UserFormSidepanel = ({
               )}
             </Card>
 
-            <div className="border rounded-md border-gray-50 shadow-sm">
+            <div className="border rounded-md shadow-sm border-gray-50">
               <MultiSelect
                 label={
-                  <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
+                  <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
                     Groups
                   </Translate>
                 }
@@ -281,7 +280,7 @@ const UserFormSidepanel = ({
       </Sidepanel>
 
       {showModal && (
-        <ConfirmationModal
+        <ConfirmNavigationModal
           setShowModal={setShowModal}
           onConfirm={() => {
             setShowModal(false);
