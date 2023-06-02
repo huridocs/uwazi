@@ -56,6 +56,9 @@ const Table = <T,>({
   const table = useReactTable({
     columns: memoizedColumns,
     data: memoizedData,
+    initialState: {
+      sorting: initialState?.sorting,
+    },
     state: {
       sorting,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
