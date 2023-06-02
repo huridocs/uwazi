@@ -3,9 +3,8 @@ import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
-import { Row } from 'react-table';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
-import { StarIcon } from '@heroicons/react/20/solid';
+import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
@@ -17,16 +16,21 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { Settings } from 'shared/types/settingsType';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
+import {
+  DefaultHeader,
+  LabelHeader,
+  ResetHeader,
+  UninstallHeader,
+  DefaultButton,
+  ResetButton,
+  UninstallButton,
+  LanguageLabel,
+} from './components/TableComponents';
 
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     I18NApi.getLanguages(new RequestParams({}, headers));
-
-const languageLabel = ({ row }: { row: Row<LanguageSchema> }) => (
-  <Translate>{`${row.original.label} (${row.original.key})`}</Translate>
-);
-
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useRecoilValue<Settings>(settingsAtom);
@@ -89,7 +93,7 @@ const LanguagesList = () => {
         'Language reset success',
         I18NApi.populateTranslations,
         'locale',
-        row.values as LanguageSchema
+        row.original as LanguageSchema
       )
     );
   };
@@ -99,7 +103,7 @@ const LanguagesList = () => {
       'Default language change success',
       I18NApi.setDefaultLanguage,
       'key',
-      row.values as LanguageSchema
+      row.original as LanguageSchema
     )();
   };
 
@@ -111,73 +115,49 @@ const LanguagesList = () => {
         'Language uninstalled success',
         I18NApi.deleteLanguage,
         'key',
-        row.values as LanguageSchema
+        row.original as LanguageSchema
       )
     );
   };
-
-  const resetButton = ({ row }: { row: Row<LanguageSchema> }) =>
-    row.original.translationAvailable ? (
-      <Button styling="outline" onClick={() => resetModal(row)} className="leading-4">
-        <Translate>Reset</Translate>
-      </Button>
-    ) : (
-      <> </>
-    );
-
-  const defaultButton = ({ row }: { row: Row<LanguageSchema> }) => (
-    <Button
-      styling={row.original.default ? 'solid' : 'light'}
-      onClick={async () => setDefaultLanguage(row)}
-      className="leading-4"
-    >
-      <Translate className="sr-only">Default</Translate>
-      <StarIcon
-        className={`${
-          !row.original.default ? ' w-4 text-white stroke-current stroke-gray-300 stroke-2' : 'w-4'
-        }`}
-      />
-    </Button>
-  );
-
-  const uninstallButton = ({ row }: { row: Row<LanguageSchema> }) =>
-    !row.original.default ? (
-      <Button styling="outline" onClick={() => uninstallModal(row)} className="leading-4">
-        <Translate>Uninstall</Translate>
-      </Button>
-    ) : (
-      <> </>
-    );
-
+  const columnHelper = createColumnHelper<LanguageSchema>();
   const columns = [
     {
-      Header: <Translate>Language</Translate>,
-      accessor: 'label',
-      Cell: languageLabel,
+      ...columnHelper.accessor('label', {
+        id: 'label',
+        header: LabelHeader,
+        cell: LanguageLabel,
+      }),
       className: 'w-9/12',
     },
     {
-      Header: <Translate className="sr-only">Default language</Translate>,
-      accessor: 'default',
-      Cell: defaultButton,
-      disableSortBy: true,
+      ...columnHelper.accessor('default', {
+        header: DefaultHeader,
+        cell: DefaultButton,
+        enableSorting: false,
+        meta: { action: setDefaultLanguage },
+      }),
       className: 'text-center w-1/12',
     },
     {
-      Header: <Translate className="sr-only">Reset language</Translate>,
-      accessor: 'key',
-      Cell: resetButton,
-      disableSortBy: true,
+      ...columnHelper.accessor('key', {
+        header: ResetHeader,
+        cell: ResetButton,
+        enableSorting: false,
+        meta: { action: resetModal },
+      }),
       className: 'text-center w-1/12',
     },
     {
-      Header: <Translate className="sr-only">Uninstall language</Translate>,
-      accessor: '_id',
-      Cell: uninstallButton,
-      disableSortBy: true,
+      ...columnHelper.accessor('_id', {
+        header: UninstallHeader,
+        cell: UninstallButton,
+        enableSorting: false,
+        meta: { action: uninstallModal },
+      }),
       className: 'text-center w-1/12',
     },
   ];
+
   return (
     <div
       className="tw-content"
@@ -188,11 +168,11 @@ const LanguagesList = () => {
         <SettingsContent.Header title="Languages" />
         <SettingsContent.Body>
           <div data-testid="languages">
-            <Table
+            <Table<LanguageSchema>
               columns={columns}
               data={languages}
               title={<Translate>Active languages</Translate>}
-              initialState={{ sortBy: [{ id: 'label' }] }}
+              initialState={{ sorting: [{ id: 'label', desc: false }] }}
             />
           </div>
         </SettingsContent.Body>

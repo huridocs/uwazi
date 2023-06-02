@@ -1,5 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
+import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Table } from 'V2/Components/UI/Table';
 import { Button } from 'V2/Components/UI/Button';
 
@@ -8,39 +9,49 @@ const meta: Meta<typeof Table> = {
   component: Table,
 };
 
-type Story = StoryObj<typeof Table>;
+type SampleSchema = {
+  title: string;
+  description: string;
+  created: number;
+};
+
+type Story = StoryObj<typeof Table<SampleSchema>>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Table
-        columns={args.columns}
-        data={args.data}
-        title={args.title}
-        enableSelection={args.enableSelection}
-        onRowSelected={args.onRowSelected}
-      />
+      <Table columns={args.columns} data={args.data} title={args.title} />
     </div>
   ),
 };
 
-const actionsCell = () => (
+const CustomCell = ({ cell }: CellContext<SampleSchema, any>) => (
+  <div className="text-center text-white bg-gray-400 rounded">{cell.getValue()}</div>
+);
+
+const ActionsCell = () => (
   <div className="flex gap-1">
     <Button>Primary</Button>
     <Button styling="outline">Secondary</Button>
   </div>
 );
 
+const columnHelper = createColumnHelper<SampleSchema>();
+
 const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
-    enableSelection: true,
-    onRowSelected: () => {},
     columns: [
-      { Header: 'Title', accessor: 'title', id: 'title' },
-      { Header: 'Description', accessor: 'description', disableSortBy: true },
-      { Header: 'Date added', accessor: 'created', disableSortBy: true },
+      columnHelper.accessor('title', { header: 'Title', id: 'title' }),
+      columnHelper.accessor('description', { header: 'Description', enableSorting: false }),
+      {
+        ...columnHelper.accessor('created', {
+          header: 'Date added',
+          cell: CustomCell,
+        }),
+        className: 'something',
+      },
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -59,29 +70,30 @@ const Basic: Story = {
   },
 };
 
-const WithActions = {
+const WithActions: Story = {
   ...Primary,
   args: {
     ...Basic.args,
     columns: [
-      { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
+      { ...columnHelper.accessor('title', { id: 'title', header: 'Title' }), className: 'w-1/3' },
       {
-        Header: 'Date added',
-        accessor: 'created',
-        disableSortBy: true,
+        ...columnHelper.accessor('created', {
+          id: 'created',
+          header: 'Date added',
+          enableSorting: false,
+        }),
         className: 'w-1/3',
       },
       {
-        Header: 'Description',
-        accessor: 'description',
-        disableSortBy: true,
-        className: 'w-1/3',
+        ...columnHelper.accessor('description', {
+          id: 'description',
+          header: 'Description',
+          enableSorting: false,
+        }),
+        className: 'w-1/3 bg-red-500 text-white',
       },
       {
-        id: 'action',
-        Header: 'Actions',
-        Cell: actionsCell,
-        disableSortBy: true,
+        ...columnHelper.display({ id: 'action', header: 'Actions', cell: ActionsCell }),
         className: 'text-center',
       },
     ],

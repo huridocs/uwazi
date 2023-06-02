@@ -24,7 +24,7 @@ import { notificationAtom } from 'V2/atoms';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { TranslationsTables } from './components/TranslationsTables';
+import { TranslationsTables } from './components/TableComponents';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -259,6 +259,7 @@ const EditTranslations = () => {
           title={contextLabel}
           contextId={contextId}
         />
+
         <SettingsContent.Body>
           <div className="px-5 pt-5">
             <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>

@@ -12,7 +12,7 @@ const namesShouldMatch = (names: string[]) => {
 describe('Users and groups', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    // cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-puppeteer-fixtures', { env });
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Users & Groups').click();

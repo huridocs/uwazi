@@ -50,7 +50,7 @@ const GroupFormSidepanel = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { errors, isDirty },
     setValue,
   } = useForm({
     defaultValues,
@@ -116,7 +116,7 @@ const GroupFormSidepanel = ({
             <Card title={<Translate>Group Options</Translate>}>
               <div>
                 <InputField
-                  label={<Translate className="font-bold block mb-1">Name</Translate>}
+                  label={<Translate className="block mb-1 font-bold">Name</Translate>}
                   id="name"
                   hasErrors={Boolean(errors.name)}
                   className="mb-1"
@@ -127,7 +127,7 @@ const GroupFormSidepanel = ({
                     minLength: 3,
                   })}
                 />
-                <span className="text-error-700 font-bold">
+                <span className="font-bold text-error-700">
                   {errors.name && (
                     <div className="validation-error">
                       {errors.name.type === 'required' && <Translate>Name is required</Translate>}
@@ -140,10 +140,10 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 border rounded-md border-gray-50 shadow-sm">
+            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
               <MultiSelect
                 label={
-                  <Translate className="block w-full bg-gray-50 text-primary-700 font-semibold text-lg">
+                  <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
                     Members
                   </Translate>
                 }

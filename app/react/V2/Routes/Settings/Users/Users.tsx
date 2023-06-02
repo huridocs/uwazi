@@ -3,14 +3,14 @@ import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, NavigationHeader, Tabs } from 'V2/Components/UI';
-import { SettingsFooter } from 'V2/Components/Settings/SettingsFooter';
+import { Button, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   DeleteConfirmationModal,
 } from 'V2/Components/Settings/UsersAndGroups';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { UsersTable } from './UsersTable';
 import { GroupsTable } from './GroupsTable';
 
@@ -29,16 +29,9 @@ const Users = () => {
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
-      <div className="flex flex-col h-full">
-        <div className="flex-grow px-5 pt-5">
-          <div className="pb-4">
-            <NavigationHeader backUrl="/settings">
-              <h1 className="flex gap-2 text-base text-gray-700 sm:gap-6">
-                <Translate>Users & Groups</Translate>
-              </h1>
-            </NavigationHeader>
-          </div>
-
+      <SettingsContent>
+        <SettingsContent.Header title="Users & Groups" />
+        <SettingsContent.Body>
           <Tabs onTabSelected={tab => setActiveTab(tab as activeTab)}>
             <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
               <UsersTable
@@ -57,13 +50,12 @@ const Users = () => {
                   setSelected(selectedGroup);
                   setShowSidepanel(true);
                 }}
-                onGroupsSelected={selectedGroups => setSelectedGroups(selectedGroups)}
+                onGroupsSelected={selection => setSelectedGroups(selection)}
               />
             </Tabs.Tab>
           </Tabs>
-        </div>
-
-        <SettingsFooter>
+        </SettingsContent.Body>
+        <SettingsContent.Footer>
           <div className="flex gap-2 p-2 pt-1">
             {selectedUsers.length > 0 ? (
               <>
@@ -108,11 +100,12 @@ const Users = () => {
                 <Translate>Delete</Translate>
               </Button>
             ) : (
+              // eslint-disable-next-line react/jsx-no-useless-fragment
               <></>
             )}
           </div>
-        </SettingsFooter>
-      </div>
+        </SettingsContent.Footer>
+      </SettingsContent>
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
