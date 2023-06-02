@@ -359,7 +359,7 @@
     "jest-image-snapshot": "^6.0.0",
     "jest-jasmine2": "^29.5.0",
     "jest-puppeteer": "6.1.0",
-    "mini-css-extract-plugin": "^2.7.5",
+    "mini-css-extract-plugin": "^2.7.6",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nodemon": "^2.0.22",
