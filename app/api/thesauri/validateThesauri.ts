@@ -28,14 +28,14 @@ const getDuplicatedLabels = (values: { label: string }[] | undefined): string[] 
   if (!values) return [];
   const labels = values.map(v => v.label);
   const asSet: Set<string> = new Set();
-  const duplicated: string[] = [];
+  const duplicated: Set<string> = new Set();
   labels.forEach(label => {
     if (asSet.has(label)) {
-      duplicated.push(label);
+      duplicated.add(label);
     }
     asSet.add(label);
   });
-  return duplicated;
+  return Array.from(duplicated);
 };
 
 ajv.addKeyword({
