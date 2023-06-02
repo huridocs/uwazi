@@ -48,23 +48,23 @@ const fixtures = {
     fixtureFactory.template('template', [
       fixtureFactory.property('unrelated_property', 'text'),
       fixtureFactory.property('no_new_value_select', 'select', {
-        content: fixtureFactory.id('no_new_value_thesaurus'),
+        content: fixtureFactory.id('no_new_value_thesaurus').toHexString(),
         label: 'no_new_value_select',
       }),
       fixtureFactory.property('select_property', 'select', {
-        content: fixtureFactory.id('Select Thesaurus'),
+        content: fixtureFactory.id('Select Thesaurus').toHexString(),
         label: 'Select Property',
       }),
       fixtureFactory.property('multiselect_property', 'multiselect', {
-        content: fixtureFactory.id('multiselect_thesaurus'),
+        content: fixtureFactory.id('multiselect_thesaurus').toHexString(),
         label: 'Multiselect Property',
       }),
       fixtureFactory.property('nested_select_property', 'select', {
-        content: fixtureFactory.id('nested_thesaurus'),
+        content: fixtureFactory.id('nested_thesaurus').toHexString(),
         label: 'Nested Select Property',
       }),
       fixtureFactory.property('nested_multiselect_property', 'multiselect', {
-        content: fixtureFactory.id('nested_thesaurus'),
+        content: fixtureFactory.id('nested_thesaurus').toHexString(),
         label: 'Nested MultiSelect Property',
       }),
     ]),

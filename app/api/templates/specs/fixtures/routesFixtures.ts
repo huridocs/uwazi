@@ -59,15 +59,15 @@ const fixtures = {
     },
     fixtureFactory.template('template2', [
       fixtureFactory.property('select_property', 'select', {
-        content: fixtureFactory.id('select_thesaurus'),
+        content: fixtureFactory.id('select_thesaurus').toHexString(),
       }),
       fixtureFactory.property('multiselect_property', 'multiselect', {
-        content: fixtureFactory.id('multiselect_thesaurus'),
+        content: fixtureFactory.id('multiselect_thesaurus').toHexString(),
       }),
     ]),
     fixtureFactory.template('template3', [
       fixtureFactory.property('select_property', 'select', {
-        content: fixtureFactory.id('select_thesaurus'),
+        content: fixtureFactory.id('select_thesaurus').toHexString(),
       }),
     ]),
     {

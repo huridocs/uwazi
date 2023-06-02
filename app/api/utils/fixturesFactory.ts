@@ -23,6 +23,10 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
 import { RelationshipPropertyDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 
+type PropertySchemaWithRelationshipV2 = Omit<PropertySchema, 'query'> & {
+  query?: RelationshipPropertyDBO['query'];
+};
+
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
 
@@ -73,12 +77,7 @@ function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
-    template: (
-      name: string,
-      properties: (Omit<PropertySchema, 'query'> & {
-        query?: RelationshipPropertyDBO['query'];
-      })[] = []
-    ) => ({
+    template: (name: string, properties: PropertySchemaWithRelationshipV2[] = []) => ({
       _id: idMapper(name),
       name,
       properties,
@@ -129,7 +128,7 @@ function getFixturesFactory() {
       content: string,
       property: string,
       props = {}
-    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } {
+    ): PropertySchemaWithRelationshipV2 {
       return this.relationshipProp(name, content, {
         inherit: { property: idMapper(property).toString() },
         ...props,
@@ -159,11 +158,7 @@ function getFixturesFactory() {
       name,
     }),
 
-    relationshipProp(
-      name: string,
-      content: string,
-      props = {}
-    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } {
+    relationshipProp(name: string, content: string, props = {}): PropertySchemaWithRelationshipV2 {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),
         content: idMapper(content).toString(),
@@ -174,10 +169,8 @@ function getFixturesFactory() {
     property: (
       name: string,
       type: PropertySchema['type'] = 'text',
-      props: Partial<
-        Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] }
-      > = {}
-    ): Omit<PropertySchema, 'query'> & { query?: RelationshipPropertyDBO['query'] } => ({
+      props: Partial<PropertySchemaWithRelationshipV2> = {}
+    ): PropertySchemaWithRelationshipV2 => ({
       _id: idMapper(name),
       label: name,
       name,
