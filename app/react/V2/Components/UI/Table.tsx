@@ -16,6 +16,11 @@ import {
   ColumnWithClassName,
 } from './TableTypes';
 
+const applyForSelection = (
+  withSelection: any,
+  withOutSelection: any,
+  enableSelection: boolean = false
+) => (enableSelection ? withSelection : withOutSelection);
 // eslint-disable-next-line comma-spacing
 const Table = <T,>({
   columns,
@@ -30,15 +35,17 @@ const Table = <T,>({
 
   const memoizedColumns = useMemo(
     () => [
-      ...(enableSelection
-        ? [
-            {
-              id: 'select',
-              header: CheckBoxHeader,
-              cell: CheckBoxCell,
-            },
-          ]
-        : []),
+      ...applyForSelection(
+        [
+          {
+            id: 'select',
+            header: CheckBoxHeader,
+            cell: CheckBoxCell,
+          },
+        ],
+        [],
+        enableSelection
+      ),
       ...columns,
     ],
     [columns, enableSelection]
@@ -51,15 +58,15 @@ const Table = <T,>({
     data: memoizedData,
     state: {
       sorting,
-      ...(enableSelection ? { rowSelection } : {}),
+      ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
-    onRowSelectionChange: enableSelection ? setRowSelection : () => undefined,
+    onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-  
+
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
 

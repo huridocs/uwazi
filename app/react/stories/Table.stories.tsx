@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
-import { Table, TableProps } from 'V2/Components/UI/Table';
+import { Table, TableProps } from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
 
 const meta: Meta<typeof Table> = {

@@ -1,3 +1,4 @@
+export type { TableProps } from './TableTypes';
 export { Button } from './Button';
 export { Modal } from './Modal';
 export { Pill } from './Pill';

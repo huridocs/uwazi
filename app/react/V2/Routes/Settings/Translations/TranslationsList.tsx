@@ -4,7 +4,7 @@ import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import { Table } from 'V2/Components/UI/Table';
+import { Table } from 'V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import * as translationsAPI from 'V2/api/translations/index';
 import {
