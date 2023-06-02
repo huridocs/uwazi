@@ -34,6 +34,7 @@ describe('ConfirmationModal', () => {
       </div>
     );
   };
+
   it('should have the basic structure of settings content', () => {
     render();
     cy.get('[data-testid="settings-content-header"]')
