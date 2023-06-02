@@ -5,10 +5,10 @@ import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/datab
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { CreateTemplateService } from '../CreateTemplateService';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { CreateTemplateService } from '../CreateTemplateService';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -70,7 +70,10 @@ describe('when validating the query', () => {
             types: [],
             match: [
               {
-                templates: [fixturesFactory.id('template1').toHexString()],
+                filter: {
+                  type: 'template',
+                  value: [fixturesFactory.id('template1').toHexString()],
+                },
               },
             ],
           },
@@ -79,7 +82,10 @@ describe('when validating the query', () => {
             types: [],
             match: [
               {
-                templates: [fixturesFactory.id('template3').toHexString()],
+                filter: {
+                  type: 'template',
+                  value: [fixturesFactory.id('template3').toHexString()],
+                },
               },
             ],
           },
@@ -107,7 +113,7 @@ describe('when validating the query', () => {
           types: [],
           match: [
             {
-              templates: [fixturesFactory.id('template1').toHexString()],
+              filter: { type: 'template', value: [fixturesFactory.id('template1').toHexString()] },
             },
           ],
         },
@@ -116,7 +122,7 @@ describe('when validating the query', () => {
           types: [],
           match: [
             {
-              templates: [fixturesFactory.id('template2').toHexString()],
+              filter: { type: 'template', value: [fixturesFactory.id('template2').toHexString()] },
             },
           ],
         },
@@ -137,7 +143,7 @@ describe('when validating the query', () => {
           types: [],
           match: [
             {
-              templates: [],
+              filter: { type: 'void' },
             },
           ],
         },
@@ -160,7 +166,10 @@ describe('when validating the query', () => {
             types: [],
             match: [
               {
-                templates: [fixturesFactory.id('non-existing-template').toHexString()],
+                filter: {
+                  type: 'template',
+                  value: [fixturesFactory.id('non-existing-template').toHexString()],
+                },
               },
             ],
           },
@@ -193,7 +202,10 @@ describe('when validating the query', () => {
             types: [fixturesFactory.id('non-existing-reltype').toHexString()],
             match: [
               {
-                templates: [fixturesFactory.id('template1').toHexString()],
+                filter: {
+                  type: 'template',
+                  value: [fixturesFactory.id('template1').toHexString()],
+                },
               },
             ],
           },
