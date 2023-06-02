@@ -20,7 +20,12 @@ type Story = StoryObj<typeof Table<SampleSchema>>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Table columns={args.columns} data={args.data} title={args.title} />
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title={args.title}
+        initialState={args.initialState}
+      />
     </div>
   ),
 };
@@ -111,6 +116,14 @@ const Basic: Story = {
   },
 };
 
+const WithInitialState: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    initialState: { sorting: [{ id: 'description', desc: true }] },
+  },
+};
+
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -148,6 +161,6 @@ const WithCheckboxes = {
   },
 };
 
-export { Basic, WithActions, WithCheckboxes };
+export { Basic, WithActions, WithCheckboxes, WithInitialState };
 
 export default meta;

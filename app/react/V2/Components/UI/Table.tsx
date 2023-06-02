@@ -57,6 +57,7 @@ const Table = <T,>({
   const table = useReactTable({
     columns: memoizedColumns,
     data: memoizedData,
+    initialState,
     state: {
       sorting,
       ...initialState,
