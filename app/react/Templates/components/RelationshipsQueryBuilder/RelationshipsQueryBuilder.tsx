@@ -180,7 +180,7 @@ const createDefaultTraversal = () =>
     types: [],
     match: [
       {
-        templates: [],
+        filter: { type: 'template', value: [] },
       },
     ],
   } as TraverseQuery);
@@ -217,7 +217,7 @@ const MatchNodeComponent = ({
   };
 
   const onTemplatesChangeHandler = (newTemplates: string[]) =>
-    onChange({ ...value, templates: newTemplates });
+    onChange({ ...value, filter: { type: 'template', value: newTemplates } });
 
   const onAddElementHandler = () =>
     onChange({
@@ -250,7 +250,7 @@ const MatchNodeComponent = ({
         prefix={path}
         onChange={onTemplatesChangeHandler}
         options={templates}
-        value={value.templates}
+        value={value.filter.type === 'template' ? value.filter.value : []}
         optionsValue="_id"
         optionsLabel="name"
       />
@@ -297,7 +297,7 @@ const TravesalNodeComponent = ({
       match: [
         ...(value.match ?? []),
         {
-          templates: [],
+          filter: { type: 'template', value: [] },
           traverse: [],
         },
       ],

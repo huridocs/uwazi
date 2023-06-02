@@ -22,7 +22,9 @@ const BuildQuery = {
     ),
   match: (query: MatchQuery): MatchQueryNode =>
     new MatchQueryNode(
-      new TemplateFilterCriteriaNode(query.templates),
+      new TemplateFilterCriteriaNode(
+        query.filter.type === 'template' ? query.filter.value ?? [] : []
+      ),
       query.traverse?.map(BuildQuery.traverse) ?? []
     ),
   build: (traversals: TraverseQuery[]) =>

@@ -31,7 +31,7 @@ const oldQueryInInput = [
     types: [fixtureFactory.id('relation').toString()],
     match: [
       {
-        templates: [fixtureFactory.id('unrelated_template').toString()],
+        filter: { type: 'template', value: [fixtureFactory.id('unrelated_template').toString()] },
         traverse: [],
       },
     ],
@@ -106,7 +106,7 @@ const newQueryInput = [
     types: [fixtureFactory.id('relation').toString()],
     match: [
       {
-        templates: [fixtureFactory.id('unrelated_template2').toString()],
+        filter: { type: 'template', value: [fixtureFactory.id('unrelated_template2').toString()] },
         traverse: [],
       },
     ],
@@ -149,7 +149,14 @@ describe('template.save()', () => {
               {
                 direction: 'out',
                 types: [fixtureFactory.id('relation').toString()],
-                match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+                match: [
+                  {
+                    filter: {
+                      type: 'template',
+                      value: [fixtureFactory.id('existing_template').toString()],
+                    },
+                  },
+                ],
               },
             ],
           },
@@ -217,7 +224,14 @@ describe('template.save()', () => {
                 {
                   direction: 'out',
                   types: [fixtureFactory.id('relation').toString()],
-                  match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
+                  match: [
+                    {
+                      filter: {
+                        type: 'template',
+                        value: [fixtureFactory.id('existing_template').toString()],
+                      },
+                    },
+                  ],
                 },
               ],
             },
@@ -288,7 +302,14 @@ describe('template.save()', () => {
                 {
                   direction: 'out',
                   types: [fixtureFactory.id('relation').toString()],
-                  match: [{ templates: [fixtureFactory.id('unrelated_template').toString()] }],
+                  match: [
+                    {
+                      filter: {
+                        type: 'template',
+                        value: [fixtureFactory.id('unrelated_template').toString()],
+                      },
+                    },
+                  ],
                 },
               ],
             },

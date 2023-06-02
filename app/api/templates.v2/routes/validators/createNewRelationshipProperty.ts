@@ -1,9 +1,12 @@
 import { ValidatorSchema, createValidator } from 'api/common.v2/validation/routesValidation';
-import { RelationshipPropertyData } from 'shared/types/api.v2/templates.createTemplateRequest';
+import {
+  Filter,
+  RelationshipPropertyData,
+} from 'shared/types/api.v2/templates.createTemplateRequest';
 
 const createNewRelationshipPropertySchema: ValidatorSchema<
   RelationshipPropertyData,
-  { query: RelationshipPropertyData['query'] }
+  { query: RelationshipPropertyData['query']; filter: Filter }
 > = {
   properties: {
     label: { type: 'string' },
@@ -29,13 +32,31 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
           match: {
             elements: {
               properties: {
-                templates: { elements: { type: 'string' } },
+                filter: { ref: 'filter' },
               },
               optionalProperties: {
                 traverse: { ref: 'query' },
               },
             },
           },
+        },
+      },
+    },
+    filter: {
+      discriminator: 'type',
+      mapping: {
+        and: {
+          properties: {
+            value: { elements: { ref: 'filter' } },
+          },
+        },
+        template: {
+          properties: {
+            value: { elements: { type: 'string' } },
+          },
+        },
+        void: {
+          properties: {},
         },
       },
     },

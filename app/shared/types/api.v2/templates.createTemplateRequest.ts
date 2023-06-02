@@ -1,7 +1,20 @@
-export type Filter = never;
+export type Filter = AndFilter | TemplateFilter | VoidFilter;
+export interface AndFilter {
+  type: 'and';
+  value: Filter[];
+}
+
+export interface TemplateFilter {
+  type: 'template';
+  value: string[];
+}
+
+export interface VoidFilter {
+  type: 'void';
+}
 
 export interface MatchQuery {
-  templates: string[];
+  filter: Filter;
   traverse?: TraverseQuery[];
 }
 
