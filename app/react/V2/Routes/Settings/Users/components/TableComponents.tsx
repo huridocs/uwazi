@@ -5,7 +5,7 @@ import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
-const UserNameHeader = () => <Translate className="capitalize">Usarname</Translate>;
+const UserNameHeader = () => <Translate className="capitalize">Username</Translate>;
 const GroupNameHeader = () => <Translate className="capitalize">Name</Translate>;
 const ProtectionHeader = () => <Translate className="capitalize">Protection</Translate>;
 const RoleHeader = () => <Translate className="capitalize">Role</Translate>;
@@ -85,28 +85,28 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
       ...columnHelper.accessor('username', {
         header: UserNameHeader,
       }),
-      // className: 'w-1/3',
+      className: 'w-1/3',
     },
     {
       ...columnHelper.accessor('using2fa', {
         header: ProtectionHeader,
         cell: ProtectionPill,
       }),
-      // className: 'w-0',
+      className: 'w-0',
     },
     {
       ...columnHelper.accessor('role', {
         header: RoleHeader,
         cell: RolePill,
       }),
-      // className: 'text-center w-0',
+      className: 'w-0',
     },
     {
       ...columnHelper.accessor('groups', {
         header: GroupsHeader,
         cell: GroupsPill,
       }),
-      // className: 'w-1/3',
+      className: 'w-1/3',
     },
     {
       ...columnHelper.display({
@@ -116,7 +116,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
         meta: { action: editButtonAction },
         enableSorting: false,
       }),
-      // className: 'w-0',
+      className: 'w-0',
     },
   ];
 };
@@ -128,7 +128,7 @@ const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) 
       ...columnHelper.accessor('name', {
         header: GroupNameHeader,
       }),
-      // className: 'w-auto',
+      className: 'w-1/4',
     },
     {
       ...columnHelper.accessor('members', {
@@ -136,7 +136,7 @@ const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) 
         cell: MembersPill,
         enableSorting: false,
       }),
-      // className: 'w-1/3',
+      className: 'w-3/4',
     },
     {
       ...columnHelper.display({
@@ -146,7 +146,7 @@ const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) 
         meta: { action: editButtonAction },
         enableSorting: false,
       }),
-      // className: 'w-0',
+      className: 'w-0',
     },
   ];
 };
