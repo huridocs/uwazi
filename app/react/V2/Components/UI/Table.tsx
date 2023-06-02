@@ -39,9 +39,12 @@ const Table = <T,>({
       ...applyForSelection(
         [
           {
-            id: 'select',
-            header: CheckBoxHeader,
-            cell: CheckBoxCell,
+            ...{
+              id: 'checkbox-select',
+              header: CheckBoxHeader,
+              cell: CheckBoxCell,
+            },
+            className: 'w-0',
           },
         ],
         [],
@@ -91,14 +94,13 @@ const Table = <T,>({
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 const isSortable = header.column.getCanSort();
+                const isSelect = header.column.id === 'checkbox-select';
+                const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
+                  (header.column.columnDef as ColumnWithClassName<T>).className || ''
+                }`;
+
                 return (
-                  <th
-                    key={header.id}
-                    scope="col"
-                    className={`px-6 py-3 ${
-                      (header.column.columnDef as ColumnWithClassName<T>).className
-                    }`}
-                  >
+                  <th key={header.id} scope="col" className={headerClassName}>
                     <div
                       className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
                       onClick={header.column.getToggleSortingHandler()}
@@ -116,11 +118,15 @@ const Table = <T,>({
         <tbody>
           {table.getRowModel().rows.map(row => (
             <tr key={row.id} className="bg-white border-b">
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="px-6 py-3">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+              {row.getVisibleCells().map(cell => {
+                const isSelect = cell.column.id === 'checkbox-select';
+
+                return (
+                  <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>
