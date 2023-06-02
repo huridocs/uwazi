@@ -60,7 +60,6 @@ const Table = <T,>({
     initialState,
     state: {
       sorting,
-      ...initialState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
