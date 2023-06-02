@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Table } from 'V2/Components/UI/Table';
+import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
+import { Table, TableProps } from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
 
 const meta: Meta<typeof Table> = {
@@ -35,6 +35,47 @@ const ActionsCell = () => (
     <Button styling="outline">Secondary</Button>
   </div>
 );
+
+const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
+  const [selected1, setSelected1] = useState<Row<SampleSchema>[]>([]);
+  const [selected2, setSelected2] = useState<Row<SampleSchema>[]>([]);
+
+  return (
+    <div className="tw-content">
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title="Table A"
+        enableSelection
+        onSelection={setSelected1}
+      />
+
+      <p className="m-1">Selected items for Table A: {selected1.length}</p>
+      <p className="m-1">
+        Selections of Table A: {selected1.map(sel => `${sel.original.title}, `)}
+      </p>
+
+      <hr className="m-4" />
+
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title="Table B"
+        enableSelection
+        onSelection={setSelected2}
+      />
+
+      <p className="m-1">Selected items for Table B: {selected2.length}</p>
+      <p className="m-1">
+        Selections of Table B: {selected2.map(sel => `${sel.original.title}, `)}
+      </p>
+    </div>
+  );
+};
+
+const Checkboxes: Story = {
+  render: CheckboxesTableComponent,
+};
 
 const columnHelper = createColumnHelper<SampleSchema>();
 
@@ -100,6 +141,13 @@ const WithActions: Story = {
   },
 };
 
-export { Basic, WithActions };
+const WithCheckboxes = {
+  ...Checkboxes,
+  args: {
+    ...Basic.args,
+  },
+};
+
+export { Basic, WithActions, WithCheckboxes };
 
 export default meta;
