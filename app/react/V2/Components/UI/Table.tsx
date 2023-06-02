@@ -1,49 +1,56 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/no-multi-comp */
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   flexRender,
   getSortedRowModel,
   getCoreRowModel,
   useReactTable,
   SortingState,
-  TableState,
-  ColumnDef,
-  CellContext,
-  Column,
 } from '@tanstack/react-table';
-import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
+import {
+  TableProps,
+  CheckBoxHeader,
+  CheckBoxCell,
+  getIcon,
+  ColumnWithClassName,
+} from './TableTypes';
 
-type ColumnWithClassName<T> = ColumnDef<T, any> & {
-  className?: string;
-};
-
-type CellContextWithMeta<T, U> = CellContext<T, U> & {
-  column: Column<T> & { columnDef: ColumnWithClassName<T> };
-};
-
-interface TableProps<T> {
-  columns: ColumnWithClassName<T>[];
-  data: T[];
-  title?: string | React.ReactNode;
-  initialState?: Partial<TableState>;
-}
-
-const getIcon = (sorting: false | 'asc' | 'desc') => {
-  switch (sorting) {
-    case false:
-      return <ChevronUpDownIcon className="w-4" />;
-    case 'asc':
-      return <ChevronUpIcon className="w-4" />;
-    case 'desc':
-    default:
-      return <ChevronDownIcon className="w-4" />;
-  }
-};
-
+const applyForSelection = (
+  withSelection: any,
+  withOutSelection: any,
+  enableSelection: boolean = false
+) => (enableSelection ? withSelection : withOutSelection);
 // eslint-disable-next-line comma-spacing
-const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
+const Table = <T,>({
+  columns,
+  data,
+  title,
+  initialState,
+  enableSelection,
+  onSelection,
+}: TableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
+  const [rowSelection, setRowSelection] = useState({});
 
-  const memoizedColumns = useMemo(() => columns, [columns]);
+  const memoizedColumns = useMemo(
+    () => [
+      ...applyForSelection(
+        [
+          {
+            id: 'select',
+            header: CheckBoxHeader,
+            cell: CheckBoxCell,
+          },
+        ],
+        [],
+        enableSelection
+      ),
+      ...columns,
+    ],
+    [columns, enableSelection]
+  );
+
   const memoizedData = useMemo<T[]>(() => data, [data]);
 
   const table = useReactTable({
@@ -51,14 +58,25 @@ const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
     data: memoizedData,
     state: {
       sorting,
+      ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
+    enableRowSelection: enableSelection,
+    onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
+  useEffect(() => {
+    const selectedRows = table.getSelectedRowModel().flatRows;
+
+    if (onSelection) {
+      onSelection(selectedRows);
+    }
+  }, [onSelection, rowSelection, table]);
+
   return (
-    <div className="overflow-x-auto relative">
+    <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
@@ -108,7 +126,4 @@ const Table = <T,>({ columns, data, title, initialState }: TableProps<T>) => {
     </div>
   );
 };
-
-export type { CellContextWithMeta, ColumnWithClassName };
-
 export { Table };

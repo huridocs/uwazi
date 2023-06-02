@@ -4,7 +4,7 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Table.stories';
 
-const { Basic, WithActions } = composeStories(stories);
+const { Basic, WithActions, WithCheckboxes } = composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.data || [];
@@ -54,6 +54,25 @@ describe('Table', () => {
       mount(<WithActions />);
       cy.get('tr th').contains('Description').click();
       checkRowContent(1, ['Entity 2', '2', data[0].description]);
+    });
+  });
+
+  describe('Selections', () => {
+    it('should select items from each table', () => {
+      mount(<WithCheckboxes />);
+      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+
+      cy.get('tbody')
+        .eq(1)
+        .within(() => {
+          cy.get('input[type="checkbox"]').eq(0).check();
+          cy.get('input[type="checkbox"]').eq(2).check();
+        });
+
+      cy.contains('p', 'Selected items for Table A: 3');
+      cy.contains('p', 'Selections of Table A: Entity 2, Entity 1, Entity 3,');
+      cy.contains('p', 'Selected items for Table B: 2');
+      cy.contains('p', 'Selections of Table B: Entity 2, Entity 3,');
     });
   });
 });

@@ -280,7 +280,7 @@ const EditTranslations = () => {
                 />
               </form>
             ) : (
-              <div className="flex gap-2 items-center p-4 rounded-md border border-gray-50 bg-primary-50">
+              <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
                 <InformationCircleIcon className="w-10 text-primary-800" />
                 <span className="text-primary-800">
                   <Translate>There are no untranslated terms</Translate>
@@ -291,7 +291,7 @@ const EditTranslations = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex gap-2 justify-end p-2 pt-1">
+          <div className="flex justify-end gap-2 p-2 pt-1">
             <div className="flex-1">
               {contextId === 'System' && (
                 <>
