@@ -390,8 +390,8 @@ export default {
     return 'ok';
   },
 
-  async addLanguage(locale: string) {
-    const [languageTranslationAlreadyExists] = await model.get({ locale });
+  async addLanguage(newLanguage: string) {
+    const [languageTranslationAlreadyExists] = await model.get({ locale: newLanguage });
     if (languageTranslationAlreadyExists) {
       return Promise.resolve();
     }
@@ -403,7 +403,7 @@ export default {
     const newLanguageTranslations = {
       ...defaultTranslation,
       _id: undefined,
-      locale,
+      locale: newLanguage,
       contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
     };
 

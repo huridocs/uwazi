@@ -5,6 +5,7 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
+import { CreateTranslationsData } from '../CreateTranslationsService';
 import { UpsertTranslationsService } from '../UpsertTranslationsService';
 
 const collectionInDb = (collection = 'translations_v2') =>
@@ -12,16 +13,28 @@ const collectionInDb = (collection = 'translations_v2') =>
 
 const createService = () =>
   new UpsertTranslationsService(
-    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoTranslationsDataSource(
+      getConnection(),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient())
+    ),
     new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
     new MongoTransactionManager(getClient())
   );
+
+const translation = (translationData: Partial<CreateTranslationsData>): CreateTranslationsData => ({
+  language: 'es',
+  key: 'key',
+  value: 'valor',
+  context: { type: 'Entity', label: 'Test', id: 'test' },
+  ...translationData,
+});
 
 const fixtures = {
   translations_v2: [
     {
       language: 'es',
-      key: 'clave',
+      key: 'key',
       value: 'valor',
       context: { type: 'Entity', label: 'Test', id: 'test' },
     },
@@ -54,98 +67,30 @@ describe('CreateTranslationsService', () => {
   describe('upsert()', () => {
     it('should persist new translations and update existing ones', async () => {
       await createService().upsert([
-        {
-          language: 'en',
-          key: 'key',
-          value: 'updatedValue',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva',
-          value: 'valor nuevo',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva 2',
-          value: 'valor nuevo 2',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
+        translation({ language: 'en', key: 'key', value: 'updatedValue' }),
+        translation({ language: 'es', key: 'new key', value: 'valor nuevo' }),
+        translation({ language: 'en', key: 'new key', value: 'new value' }),
       ]);
 
       const translationsInDb = await collectionInDb().find({}).sort({ key: 1 }).toArray();
 
       expect(translationsInDb).toMatchObject([
-        {
-          language: 'es',
-          key: 'clave',
-          value: 'valor',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva',
-          value: 'valor nuevo',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva 2',
-          value: 'valor nuevo 2',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'en',
-          key: 'key',
-          value: 'updatedValue',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
+        translation({ language: 'es', key: 'key', value: 'valor' }),
+        translation({ language: 'en', key: 'key', value: 'updatedValue' }),
+        translation({ language: 'es', key: 'new key', value: 'valor nuevo' }),
+        translation({ language: 'en', key: 'new key', value: 'new value' }),
       ]);
     });
 
     it('should return persisted translations', async () => {
-      const translations = await createService().upsert([
-        {
-          language: 'en',
-          key: 'key',
-          value: 'updatedValue',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva',
-          value: 'valor nuevo',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva 2',
-          value: 'valor nuevo 2',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-      ]);
+      const translations: CreateTranslationsData[] = [
+        translation({ language: 'en', key: 'key', value: 'updatedValue' }),
+        translation({ language: 'es', key: 'new key', value: 'valor nuevo' }),
+        translation({ language: 'en', key: 'new key', value: 'new value' }),
+      ];
+      const createdTranslations = await createService().upsert(translations);
 
-      expect(translations).toEqual([
-        {
-          language: 'en',
-          key: 'key',
-          value: 'updatedValue',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva',
-          value: 'valor nuevo',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-        {
-          language: 'es',
-          key: 'clave nueva 2',
-          value: 'valor nuevo 2',
-          context: { type: 'Entity', label: 'Test', id: 'test' },
-        },
-      ]);
+      expect(createdTranslations).toEqual(translations);
     });
 
     describe('when language does not exists as a configured language in settings', () => {
@@ -153,24 +98,9 @@ describe('CreateTranslationsService', () => {
         const service = createService();
         await expect(
           service.upsert([
-            {
-              language: 'does not exist',
-              key: 'clave',
-              value: 'valor',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
-            {
-              language: 'es',
-              key: 'clave',
-              value: 'valor',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
-            {
-              language: 'no',
-              key: 'clave',
-              value: 'valor',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
+            translation({ language: 'does not exist' }),
+            translation({ language: 'es' }),
+            translation({ language: 'no' }),
           ])
         ).rejects.toEqual(new LanguageDoesNotExist('["does not exist","no"]'));
       });

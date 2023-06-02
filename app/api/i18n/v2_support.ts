@@ -85,10 +85,15 @@ const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translati
     return translation;
   }) as EnforcedWithId<TranslationType>[];
 };
+
 export const createTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new CreateTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      ),
       new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).create(flattenTranslations(translation));
@@ -98,7 +103,11 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
 export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new UpsertTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      ),
       new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).upsert(flattenTranslations(translation));
@@ -107,14 +116,22 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
   await new DeleteTranslationsService(
-    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoTranslationsDataSource(
+      getConnection(),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient())
+    ),
     new MongoTransactionManager(getClient())
   ).deleteByContextId(contextId);
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
   await new DeleteTranslationsService(
-    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+    new MongoTranslationsDataSource(
+      getConnection(),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient())
+    ),
     new MongoTransactionManager(getClient())
   ).deleteByLanguage(language);
 };
@@ -122,21 +139,33 @@ export const deleteTranslationsByLanguageV2 = async (language: string) => {
 export const getTranslationsV2ByContext = async (context: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      )
     ).getByContext(context)
   );
 
 export const getTranslationsV2ByLanguage = async (language: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      )
     ).getByLanguage(language)
   );
 
 export const getTranslationsV2 = async () =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      )
     ).getAll()
   );
 
@@ -148,7 +177,11 @@ export const updateContextV2 = async (
 ) => {
   if (tenants.current().featureFlags?.translationsV2) {
     await new UpsertTranslationsService(
-      new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTranslationsDataSource(
+        getConnection(),
+        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+        new MongoTransactionManager(getClient())
+      ),
       new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
       new MongoTransactionManager(getClient())
     ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);

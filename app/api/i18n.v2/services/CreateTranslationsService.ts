@@ -1,7 +1,7 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { LanguageDoesNotExist } from '../errors/translationErrors';
+import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 
 export interface CreateTranslationsData {
@@ -33,13 +33,28 @@ export class CreateTranslationsService {
   }
 
   async create(translations: CreateTranslationsData[]) {
-    const allowedLanguageKeys = await this.settingsDS.getLanguageKeys();
+    const configuredLanguageKeys = await this.settingsDS.getLanguageKeys();
+
     const difference = translations
       .map(t => t.language)
-      .filter(key => !allowedLanguageKeys.includes(key));
+      .filter(key => !configuredLanguageKeys.includes(key));
     if (difference.length) {
       throw new LanguageDoesNotExist(JSON.stringify(difference));
     }
+
+    const translationsMissingLanguages = await this.translationsDS.calculateKeysWithoutAllLanguages(
+      translations
+    );
+    if (translationsMissingLanguages.length) {
+      throw new TranslationMissingLanguages(
+        `the following key/context combination are missing translations\n${translationsMissingLanguages
+          .map(
+            t => `key: ${t.key}, context: ${t.contextId}, languages missing: ${t.missingLanguages}`
+          )
+          .join('\n')}`
+      );
+    }
+
     return this.transactionManager.run(async () =>
       this.translationsDS.insert(
         translations.map(

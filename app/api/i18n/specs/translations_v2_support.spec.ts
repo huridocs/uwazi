@@ -4,6 +4,7 @@ import testingDB from 'api/utils/testing_db';
 import { Db, ObjectId } from 'mongodb';
 import { TranslationValue } from 'shared/translationType';
 import translations from '../translations';
+import { migrateTranslationsToV2 } from '../v2_support';
 
 import fixtures, { dictionaryId } from './fixtures.js';
 
@@ -12,14 +13,73 @@ const newTranslationsCollection = 'translations_v2';
 
 describe('translations v2 support', () => {
   beforeEach(async () => {
-    await testingDB.setupFixturesAndContext({ ...fixtures, translations: [] });
-    db = testingDB.mongodb as Db;
+    await testingDB.setupFixturesAndContext({
+      ...fixtures,
+      translations: [
+        {
+          locale: 'es',
+          contexts: [
+            {
+              id: 'contextId',
+              label: 'contextLabel',
+              type: 'Entity',
+              values: [
+                { key: 'Key', value: 'Value' },
+                { key: 'Key2', value: 'Value2' },
+                { key: 'Key3', value: 'Value3' },
+              ],
+            },
+            {
+              id: 'contextId2',
+              label: 'contextLabel',
+              type: 'Entity',
+              values: [
+                { key: 'Key', value: 'Value' },
+                { key: 'Key2', value: 'Value2' },
+              ],
+            },
+          ],
+        },
+        {
+          locale: 'zh',
+          contexts: [
+            {
+              id: 'contextId',
+              label: 'contextLabel',
+              type: 'Entity',
+              values: [
+                { key: 'Key', value: 'Value' },
+                { key: 'Key2', value: 'Value2' },
+                { key: 'Key3', value: 'Value3' },
+              ],
+            },
+            {
+              id: 'contextId2',
+              label: 'contextLabel',
+              type: 'Entity',
+              values: [
+                { key: 'Key', value: 'Value' },
+                { key: 'Key2', value: 'Value2' },
+              ],
+            },
+          ],
+        },
+      ],
+    });
     testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
+    await migrateTranslationsToV2();
+    db = testingDB.mongodb as Db;
   });
 
   afterAll(async () => {
     await testingDB.disconnect();
   });
+
+  const deactivateFeature = async () => {
+    await testingDB.setupFixturesAndContext({ ...fixtures, translations: [] });
+    testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+    await migrateTranslationsToV2();
+  };
 
   const createTranslation = async () =>
     translations.save({
@@ -53,7 +113,8 @@ describe('translations v2 support', () => {
 
   describe('save', () => {
     it('should do nothing when the feature flag is off (Temporary test)', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+      await deactivateFeature();
+
       await createTranslation();
 
       const createdTranslations = await db.collection(newTranslationsCollection).find().toArray();
@@ -61,16 +122,20 @@ describe('translations v2 support', () => {
     });
 
     it('should use locale to update the old translations collection (Temporary test)', async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
       await createTranslation();
       await createTranslation();
       const oldTranslations = await db.collection('translations').find().toArray();
-      expect(oldTranslations.map(t => t.locale)).toEqual(['en']);
+      expect(oldTranslations.map(t => t.locale)).toEqual(['es', 'zh', 'en']);
     });
 
     it('should save the translations to the new translations collection', async () => {
       await createTranslation();
 
-      const createdTranslations = await db.collection(newTranslationsCollection).find().toArray();
+      const createdTranslations = await db
+        .collection(newTranslationsCollection)
+        .find({ language: 'en' })
+        .toArray();
 
       expect(createdTranslations).toMatchObject([
         {
@@ -90,7 +155,7 @@ describe('translations v2 support', () => {
 
     describe('when updating (the translation already exists on db)', () => {
       it('should not save anything on the new collection', async () => {
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
+        await deactivateFeature();
 
         const savedTranslations = await createTranslation();
         await updateTranslation(savedTranslations._id, [{ key: 'Key', value: 'updatedValue' }]);
@@ -107,7 +172,10 @@ describe('translations v2 support', () => {
           { key: 'Key3', value: 'createdValue' },
         ]);
 
-        const createdTranslations = await db.collection(newTranslationsCollection).find().toArray();
+        const createdTranslations = await db
+          .collection(newTranslationsCollection)
+          .find({ language: 'en' })
+          .toArray();
 
         expect(createdTranslations).toMatchObject([
           {
@@ -148,7 +216,26 @@ describe('translations v2 support', () => {
     });
 
     it('should duplicate translations from the default language to the new one', async () => {
-      await createTranslation();
+      await testingDB.setupFixturesAndContext({
+        settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+        translations: [
+          {
+            locale: 'en',
+            contexts: [
+              {
+                id: 'contextId',
+                label: 'contextLabel',
+                type: 'Entity',
+                values: [
+                  { key: 'Key', value: 'Value' },
+                  { key: 'Key2', value: 'Value2' },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      await migrateTranslationsToV2();
 
       await settings.addLanguage({ label: 'catalan', key: 'ca' });
       await translations.addLanguage('ca');
@@ -202,7 +289,10 @@ describe('translations v2 support', () => {
       });
 
       await translations.deleteContext('contextId');
-      const translationsRemaining = await db.collection(newTranslationsCollection).find().toArray();
+      const translationsRemaining = await db
+        .collection(newTranslationsCollection)
+        .find({ language: 'en' })
+        .toArray();
       expect(translationsRemaining).toMatchObject([
         {
           language: 'en',
@@ -222,52 +312,19 @@ describe('translations v2 support', () => {
 
   describe('removeLanguage', () => {
     it('should delete all translations belonging to a language', async () => {
-      await translations.save({
-        locale: 'en',
-        contexts: [
-          {
-            id: 'contextId',
-            label: 'contextLabel',
-            type: 'Entity',
-            values: [
-              { key: 'Key', value: 'Value' },
-              { key: 'Key2', value: 'Value2' },
-            ],
-          },
-        ],
-      });
-
-      await translations.save({
-        locale: 'es',
-        contexts: [
-          {
-            id: 'contextId',
-            label: 'contextLabel',
-            type: 'Entity',
-            values: [
-              { key: 'Key', value: 'Value' },
-              { key: 'Key2', value: 'Value2' },
-            ],
-          },
-        ],
-      });
+      await createTranslation();
 
       await translations.removeLanguage('en');
-      const translationsRemaining = await db.collection(newTranslationsCollection).find().toArray();
-      expect(translationsRemaining).toMatchObject([
-        {
-          language: 'es',
-          key: 'Key',
-          value: 'Value',
-          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
-        },
-        {
-          language: 'es',
-          key: 'Key2',
-          value: 'Value2',
-          context: { type: 'Entity', label: 'contextLabel', id: 'contextId' },
-        },
-      ]);
+
+      const enTranslations = (
+        await db.collection(newTranslationsCollection).find({ language: 'en' }).toArray()
+      ).length;
+      expect(enTranslations).toBe(0);
+
+      const esTranslations = (
+        await db.collection(newTranslationsCollection).find({ language: 'es' }).toArray()
+      ).length;
+      expect(esTranslations).toBe(5);
     });
   });
 

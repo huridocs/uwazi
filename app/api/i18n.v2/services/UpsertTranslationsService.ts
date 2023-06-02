@@ -1,7 +1,7 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { LanguageDoesNotExist } from '../errors/translationErrors';
+import { LanguageDoesNotExist, TranslationMissingLanguages as TranslationsMissingLanguages } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';
 
@@ -30,6 +30,20 @@ export class UpsertTranslationsService {
     if (difference.length) {
       throw new LanguageDoesNotExist(JSON.stringify(difference));
     }
+
+    const translationsMissingLanguages = await this.translationsDS.calculateKeysWithoutAllLanguages(
+      translations
+    );
+    if (translationsMissingLanguages.length) {
+      throw new TranslationsMissingLanguages(
+        `the following key/context combination are missing translations\n${translationsMissingLanguages
+          .map(
+            t => `key: ${t.key}, context: ${t.contextId}, languages missing: ${t.missingLanguages}`
+          )
+          .join('\n')}`
+      );
+    }
+
     return this.transactionManager.run(async () =>
       this.translationsDS.upsert(
         translations.map(

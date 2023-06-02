@@ -18,4 +18,8 @@ export interface TranslationsDataSource {
   updateContextLabel(contextId: string, contextLabel: string): Promise<UpdateResult<Translation>>;
   updateContextKeys(contextId: string, keyChanges: { [k: string]: string }): Promise<void>;
   updateValue(key: string, contextId: string, language: string, value: string): Promise<void>;
+
+  calculateKeysWithoutAllLanguages(
+    translations: Translation[]
+  ): Promise<{ key: string; contextId: string; missingLanguages: string[] }[]>;
 }
