@@ -4,7 +4,7 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Table.stories';
 
-const { Basic, WithActions, WithCheckboxes } = composeStories(stories);
+const { Basic, WithActions, WithCheckboxes, WithInitialState } = composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.data || [];
@@ -23,6 +23,14 @@ describe('Table', () => {
     checkRowContent(1, ['Entity 2', data[0].description, '2']);
     checkRowContent(2, ['Entity 1', data[1].description, '1']);
     checkRowContent(3, ['Entity 3', data[2].description, '3']);
+  });
+
+  it('Should sort the rows with the sorting state specified', () => {
+    mount(<WithInitialState />);
+
+    checkRowContent(1, ['Entity 2', data[0].description, '2']);
+    checkRowContent(2, ['Entity 3', data[2].description, '3']);
+    checkRowContent(3, ['Entity 1', data[1].description, '1']);
   });
 
   it('should render the data in a custom component', () => {
