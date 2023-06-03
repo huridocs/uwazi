@@ -119,41 +119,30 @@ const LanguagesList = () => {
   };
   const columnHelper = createColumnHelper<LanguageSchema>();
   const columns = [
-    {
-      ...columnHelper.accessor('label', {
-        id: 'label',
-        header: LabelHeader,
-        cell: LanguageLabel,
-      }),
-      className: 'w-9/12',
-    },
-    {
-      ...columnHelper.accessor('default', {
-        header: DefaultHeader,
-        cell: DefaultButton,
-        enableSorting: false,
-        meta: { action: setDefaultLanguage },
-      }),
-      className: 'text-center w-1/12',
-    },
-    {
-      ...columnHelper.accessor('key', {
-        header: ResetHeader,
-        cell: ResetButton,
-        enableSorting: false,
-        meta: { action: resetModal },
-      }),
-      className: 'text-center w-1/12',
-    },
-    {
-      ...columnHelper.accessor('_id', {
-        header: UninstallHeader,
-        cell: UninstallButton,
-        enableSorting: false,
-        meta: { action: uninstallModal },
-      }),
-      className: 'text-center w-1/12',
-    },
+    columnHelper.accessor('label', {
+      id: 'label',
+      header: LabelHeader,
+      cell: LanguageLabel,
+      meta: { className: 'w-9/12' },
+    }),
+    columnHelper.accessor('default', {
+      header: DefaultHeader,
+      cell: DefaultButton,
+      enableSorting: false,
+      meta: { action: setDefaultLanguage, className: 'text-center w-1/12' },
+    }),
+    columnHelper.accessor('key', {
+      header: ResetHeader,
+      cell: ResetButton,
+      enableSorting: false,
+      meta: { action: resetModal, className: 'text-center w-1/12' },
+    }),
+    columnHelper.accessor('_id', {
+      header: UninstallHeader,
+      cell: UninstallButton,
+      enableSorting: false,
+      meta: { action: uninstallModal, className: 'text-center w-1/12' },
+    }),
   ];
 
   return (

@@ -45,27 +45,21 @@ const TranslationsList = () => {
   const columnHelper = createColumnHelper<ClientTranslationContextSchema>();
 
   const columns = [
-    {
-      ...columnHelper.accessor('label', {
-        header: LabelHeader,
-      }),
-      className: 'w-1/3',
-    },
-    {
-      ...columnHelper.accessor('type', {
-        header: TypeHeader,
-        cell: ContextPill,
-      }),
-      className: 'w-2/3',
-    },
-    {
-      ...columnHelper.accessor('id', {
-        header: ActionHeader,
-        cell: RenderButton,
-        enableSorting: false,
-      }),
-      className: 'text-center w-0',
-    },
+    columnHelper.accessor('label', {
+      header: LabelHeader,
+      meta: { className: 'w-1/3' },
+    }),
+    columnHelper.accessor('type', {
+      header: TypeHeader,
+      cell: ContextPill,
+      meta: { className: 'w-2/3' },
+    }),
+    columnHelper.accessor('id', {
+      header: ActionHeader,
+      cell: RenderButton,
+      enableSorting: false,
+      meta: { className: 'text-center w-0' },
+    }),
   ];
 
   return (
