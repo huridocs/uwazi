@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -65,89 +65,73 @@ const GroupsPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['gr
   </div>
 );
 
-const EditButton = ({ cell }: CellContext<any, any>) => {
+const EditButton = ({ onClick }: { onClick: MouseEventHandler }) => (
+  <Button styling="outline" onClick={onClick} className="leading-4">
+    <Translate>Edit</Translate>
+  </Button>
+);
+const EditUserButton = ({ cell }: CellContext<ClientUserSchema, any>) => {
   const selectedUser = cell.row.original;
-  return (
-    <Button
-      styling="outline"
-      onClick={() => cell.column.columnDef.meta?.action(selectedUser)}
-      className="leading-4"
-    >
-      <Translate>Edit</Translate>
-    </Button>
-  );
+  return <EditButton onClick={() => cell.column.columnDef.meta?.action?.(selectedUser)} />;
+};
+
+const EditUserGroupButton = ({ cell }: CellContext<ClientUserGroupSchema, any>) => {
+  const selectedUserGroup = cell.row.original;
+  return <EditButton onClick={() => cell.column.columnDef.meta?.action?.(selectedUserGroup)} />;
 };
 
 const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => {
   const columnHelper = createColumnHelper<ClientUserSchema>();
   return [
-    {
-      ...columnHelper.accessor('username', {
-        header: UserNameHeader,
-      }),
-      className: 'w-1/3',
-    },
-    {
-      ...columnHelper.accessor('using2fa', {
-        header: ProtectionHeader,
-        cell: ProtectionPill,
-      }),
-      className: 'w-0',
-    },
-    {
-      ...columnHelper.accessor('role', {
-        header: RoleHeader,
-        cell: RolePill,
-      }),
-      className: 'w-0',
-    },
-    {
-      ...columnHelper.accessor('groups', {
-        header: GroupsHeader,
-        cell: GroupsPill,
-      }),
-      className: 'w-1/3',
-    },
-    {
-      ...columnHelper.display({
-        id: '1',
-        header: ActionHeader,
-        cell: EditButton,
-        meta: { action: editButtonAction },
-        enableSorting: false,
-      }),
-      className: 'w-0',
-    },
+    columnHelper.accessor('username', {
+      header: UserNameHeader,
+      meta: { className: 'w-1/3' },
+    }),
+    columnHelper.accessor('using2fa', {
+      header: ProtectionHeader,
+      cell: ProtectionPill,
+      meta: { className: 'w-0' },
+    }),
+    columnHelper.accessor('role', {
+      header: RoleHeader,
+      cell: RolePill,
+      meta: { className: 'w-0' },
+    }),
+    columnHelper.accessor('groups', {
+      header: GroupsHeader,
+      cell: GroupsPill,
+      meta: { className: 'w-1/3' },
+    }),
+    columnHelper.display({
+      id: '1',
+      header: ActionHeader,
+      cell: EditUserButton,
+      meta: { action: editButtonAction, className: 'w-0' },
+      enableSorting: false,
+    }),
   ];
 };
 
 const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) => void) => {
   const columnHelper = createColumnHelper<ClientUserGroupSchema>();
   return [
-    {
-      ...columnHelper.accessor('name', {
-        header: GroupNameHeader,
-      }),
-      className: 'w-1/4',
-    },
-    {
-      ...columnHelper.accessor('members', {
-        header: MembersHeader,
-        cell: MembersPill,
-        enableSorting: false,
-      }),
-      className: 'w-3/4',
-    },
-    {
-      ...columnHelper.display({
-        id: '1',
-        header: ActionHeader,
-        cell: EditButton,
-        meta: { action: editButtonAction },
-        enableSorting: false,
-      }),
-      className: 'w-0',
-    },
+    columnHelper.accessor('name', {
+      header: GroupNameHeader,
+      meta: { className: 'w-1/4' },
+    }),
+    columnHelper.accessor('members', {
+      header: MembersHeader,
+      cell: MembersPill,
+      enableSorting: false,
+      meta: { className: 'w-3/4' },
+    }),
+    columnHelper.display({
+      id: '1',
+      header: ActionHeader,
+      cell: EditUserGroupButton,
+      meta: { action: editButtonAction, className: 'w-0' },
+      enableSorting: false,
+    }),
   ];
 };
 
