@@ -90,14 +90,13 @@ const Basic: Story = {
     title: 'Table name',
     columns: [
       columnHelper.accessor('title', { header: 'Title', id: 'title' }),
+
       columnHelper.accessor('description', { header: 'Description', enableSorting: false }),
-      {
-        ...columnHelper.accessor('created', {
-          header: 'Date added',
-          cell: CustomCell,
-        }),
-        className: 'something',
-      },
+      columnHelper.accessor('created', {
+        header: 'Date added',
+        cell: CustomCell,
+        meta: { className: 'something' },
+      }),
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -129,27 +128,29 @@ const WithActions: Story = {
   args: {
     ...Basic.args,
     columns: [
-      { ...columnHelper.accessor('title', { id: 'title', header: 'Title' }), className: 'w-1/3' },
-      {
-        ...columnHelper.accessor('created', {
-          id: 'created',
-          header: 'Date added',
-          enableSorting: false,
-        }),
-        className: 'w-1/3',
-      },
-      {
-        ...columnHelper.accessor('description', {
-          id: 'description',
-          header: 'Description',
-          enableSorting: false,
-        }),
-        className: 'w-1/3 bg-red-500 text-white',
-      },
-      {
-        ...columnHelper.display({ id: 'action', header: 'Actions', cell: ActionsCell }),
-        className: 'text-center',
-      },
+      columnHelper.accessor('title', {
+        id: 'title',
+        header: 'Title',
+        meta: { className: 'w-1/3' },
+      }),
+      columnHelper.accessor('created', {
+        id: 'created',
+        header: 'Date added',
+        enableSorting: false,
+        meta: { className: 'w-1/3' },
+      }),
+      columnHelper.accessor('description', {
+        id: 'description',
+        header: 'Description',
+        enableSorting: false,
+        meta: { className: 'w-1/3 bg-red-500 text-white' },
+      }),
+      columnHelper.display({
+        id: 'action',
+        header: 'Actions',
+        cell: ActionsCell,
+        meta: { className: 'text-center' },
+      }),
     ],
   },
 };

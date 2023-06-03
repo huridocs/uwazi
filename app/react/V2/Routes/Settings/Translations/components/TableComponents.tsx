@@ -82,15 +82,12 @@ const TranslationsTables = ({
       cell: LanguagePill,
       enableSorting: false,
     }),
-
-    {
-      ...columnHelper.accessor('fieldKey', {
-        header: FieldKeyHeader,
-        cell: memoizedInput,
-        enableSorting: false,
-      }),
-      className: 'w-full',
-    },
+    columnHelper.accessor('fieldKey', {
+      header: FieldKeyHeader,
+      cell: memoizedInput,
+      enableSorting: false,
+      meta: { className: 'w-full' },
+    }),
   ];
 
   return (

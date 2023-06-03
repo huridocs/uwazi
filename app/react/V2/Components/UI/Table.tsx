@@ -8,13 +8,7 @@ import {
   useReactTable,
   SortingState,
 } from '@tanstack/react-table';
-import {
-  TableProps,
-  CheckBoxHeader,
-  CheckBoxCell,
-  getIcon,
-  ColumnWithClassName,
-} from './TableTypes';
+import { TableProps, CheckBoxHeader, CheckBoxCell, getIcon } from './TableTypes';
 
 const applyForSelection = (
   withSelection: any,
@@ -81,7 +75,7 @@ const Table = <T,>({
   }, [onSelection, rowSelection, table]);
 
   return (
-    <div className="overflow-x-auto relative">
+    <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
@@ -96,7 +90,7 @@ const Table = <T,>({
                 const isSortable = header.column.getCanSort();
                 const isSelect = header.column.id === 'checkbox-select';
                 const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
-                  (header.column.columnDef as ColumnWithClassName<T>).className || ''
+                  header.column.columnDef.meta?.className || ''
                 }`;
 
                 return (
