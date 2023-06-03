@@ -3,11 +3,13 @@ import React from 'react';
 import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 import { Button } from 'V2/Components/UI/Button';
+import { CellContext } from '@tanstack/react-table';
+import { LanguageSchema } from 'shared/types/commonTypes';
 
-const DefaultButton = ({ cell, column }: any) => (
+const DefaultButton = ({ cell, column }: CellContext<LanguageSchema, boolean>) => (
   <Button
     styling={cell.row.original.default ? 'solid' : 'light'}
-    onClick={async () => column.columnDef.meta?.action(cell.row)}
+    onClick={async () => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
     <Translate className="sr-only">Default</Translate>
@@ -21,11 +23,11 @@ const DefaultButton = ({ cell, column }: any) => (
   </Button>
 );
 
-const UninstallButton = ({ cell, column }: any) =>
+const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
   !cell.row.original.default ? (
     <Button
       styling="outline"
-      onClick={() => column.columnDef.meta?.action(cell.row)}
+      onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
       <Translate>Uninstall</Translate>
@@ -34,11 +36,11 @@ const UninstallButton = ({ cell, column }: any) =>
     <> </>
   );
 
-const ResetButton = ({ cell, column }: any) =>
+const ResetButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
   cell.row.original.translationAvailable ? (
     <Button
       styling="outline"
-      onClick={() => column.columnDef.meta?.action(cell.row)}
+      onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
       <Translate>Reset</Translate>
