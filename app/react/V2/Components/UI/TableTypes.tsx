@@ -1,27 +1,12 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
 import React, { Dispatch, SetStateAction } from 'react';
-import {
-  ColumnDef,
-  CellContext,
-  Column,
-  TableState,
-  Row,
-  Table as TableDef,
-} from '@tanstack/react-table';
+import { ColumnDef, TableState, Row, Table as TableDef } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { IndeterminateCheckbox } from './IndeterminateCheckbox';
 
-type ColumnWithClassName<T> = ColumnDef<T, any> & {
-  className?: string;
-};
-
-type CellContextWithMeta<T, U> = CellContext<T, U> & {
-  column: Column<T> & { columnDef: ColumnWithClassName<T> };
-};
-
 interface TableProps<T> {
-  columns: ColumnWithClassName<T>[];
+  columns: ColumnDef<T, any>[];
   data: T[];
   title?: string | React.ReactNode;
   initialState?: Partial<TableState>;
@@ -64,5 +49,5 @@ const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
   />
 );
 
-export type { TableProps, ColumnWithClassName, CellContextWithMeta };
+export type { TableProps };
 export { CheckBoxHeader, CheckBoxCell, getIcon };
