@@ -2503,10 +2503,10 @@
     webpack-dev-server "^4.7.4"
     webpack-merge "^5.4.0"
 
-"@cypress/webpack-preprocessor@^5.17.0":
-  version "5.17.0"
-  resolved "https://registry.yarnpkg.com/@cypress/webpack-preprocessor/-/webpack-preprocessor-5.17.0.tgz#3f58cf333c5931094780e3ca14c9302a1965025e"
-  integrity sha512-HyFqHkrOrIIYOt4G+r3VK0kVYTcev1tEcqBI/0DJ4AzEuEgW/TB+cX56txy4Cgn60XXdJoul2utclZwUqOsPZA==
+"@cypress/webpack-preprocessor@^5.17.1":
+  version "5.17.1"
+  resolved "https://registry.yarnpkg.com/@cypress/webpack-preprocessor/-/webpack-preprocessor-5.17.1.tgz#19c3f6ceb89e156824917b4ec31717ade34592ec"
+  integrity sha512-FE/e8ikPc8z4EVopJCaior3RGy0jd2q9Xcp5NtiwNG4XnLfEnUFTZlAGwXe75sEh4fNMPrBJW1KIz77PX5vGAw==
   dependencies:
     bluebird "3.7.1"
     debug "^4.3.4"
