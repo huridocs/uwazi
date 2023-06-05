@@ -17,13 +17,13 @@ interface SettingsHeaderProps extends PropsWithChildren {
 }
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
-  <div className={`flex flex-col h-full p-5 ${className || ''}`} data-testid="settings-content">
+  <div className={`flex flex-col h-full ${className || ''}`} data-testid="settings-content">
     {children}
   </div>
 );
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
-  <div className={`flex pb-4 ${className || ''}`} data-testid="settings-content-header">
+  <div className={`flex pt-5 pb-4 px-5 ${className || ''}`} data-testid="settings-content-header">
     <Link to="/settings" className="block lg:hidden">
       <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
       <span className="sr-only">
@@ -33,12 +33,12 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
     <Breadcrumb className="!relative p-1 flex right-0 h-4 !bg-transparent m-0 !w-full flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} href={value} className="max-w-xs">
-          <Translate className="max-w-xs truncate hover:underline ">{key}</Translate>
+          <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
         </Breadcrumb.Item>
       ))}
       {title !== undefined && (
         <Breadcrumb.Item className="max-w-xs">
-          <Translate context={contextId || 'System'} className="max-w-xs truncate ">
+          <Translate context={contextId || 'System'} className="max-w-xs truncate">
             {title}
           </Translate>
         </Breadcrumb.Item>
@@ -50,7 +50,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex-grow py-1`} data-testid="settings-content-body">
+  <div className={`${className || ''} flex-grow px-5`} data-testid="settings-content-body">
     {children}
   </div>
 );

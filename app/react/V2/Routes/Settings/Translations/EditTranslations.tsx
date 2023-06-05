@@ -24,7 +24,7 @@ import { notificationAtom } from 'V2/atoms';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { TranslationsTables } from './components/TranslationsTables';
+import { TranslationsTables } from './components/TableComponents';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -259,10 +259,11 @@ const EditTranslations = () => {
           title={contextLabel}
           contextId={contextId}
         />
+
         <SettingsContent.Body>
           <div className="px-5 pt-5">
             <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>
-              <div className="pl-1 text-sm text-gray-700 ">
+              <div className="pl-1 text-sm text-gray-700">
                 <Translate>Untranslated Terms</Translate>
               </div>
             </ToggleButton>
@@ -288,6 +289,7 @@ const EditTranslations = () => {
             )}
           </div>
         </SettingsContent.Body>
+
         <SettingsContent.Footer>
           <div className="flex justify-end gap-2 p-2 pt-1">
             <div className="flex-1">
