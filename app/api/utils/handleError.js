@@ -58,7 +58,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
-    result = { code: 500, message: error.stack };
+    result = { code: 500, message: error.message, prettyMessage: error.message };
   }
 
   if (error instanceof Ajv.ValidationError) {
