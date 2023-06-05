@@ -7,8 +7,8 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
-  if (error.errors && error.errors.length) {
-    error.errors.forEach(oneError => {
+  if (error.validations && error.validations.length) {
+    error.validations.forEach(oneError => {
       errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
     });
   }
@@ -97,6 +97,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   result.prettyMessage = error.ajv
     ? ajvPrettifier(result)
     : joiPrettifier(result, obfuscatedRequest);
+  result.message = error.ajv ? result.prettyMessage : result.message;
 
   return result;
 };
@@ -126,21 +127,6 @@ const sendLog = (data, error, errorOptions) => {
   }
 };
 
-function simplifyError(result, error) {
-  const simplifiedError = { ...result };
-  delete simplifiedError.original;
-
-  if (error instanceof Error) {
-    simplifiedError.prettyMessage = error.message;
-    simplifiedError.error = error.message;
-    delete simplifiedError.message;
-  } else {
-    simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
-  }
-
-  return simplifiedError;
-}
-
 function setRequestId(result) {
   try {
     return { ...result, requestId: appContext.get('requestId') };
@@ -161,7 +147,9 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
 
   sendLog(result, error, {});
 
-  return simplifyError(result, error);
+  delete result.original;
+
+  return result;
 };
 
 export { handleError, prettifyError };
