@@ -7,15 +7,16 @@ import { Translate } from 'app/I18N';
 
 interface SidePanelProps {
   children: JSX.Element | React.ReactNode;
-  isOpen: boolean;
   closeSidepanelFunction: () => any;
-  title?: React.ReactNode | string;
+  isOpen?: boolean;
+  title?: string | React.ReactNode;
   withOverlay?: boolean;
+  size?: 'small' | 'medium';
 }
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
   <div className="flex mb-2 text-gray-500">
-    <h1 className="grow uppercase font-bold text-base">{title}</h1>
+    <h1 className="text-base font-bold grow">{title}</h1>
     <button
       type="button"
       className="justify-end"
@@ -30,22 +31,41 @@ const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactN
   </div>
 );
 
+// eslint-disable-next-line max-statements
 const Sidepanel = ({
-  isOpen = false,
+  children,
   closeSidepanelFunction,
+  isOpen = false,
   title,
   withOverlay,
-  children,
+  size = 'medium',
 }: SidePanelProps) => {
   const { lang: languageKey } = useParams();
+
+  let transitionRight = '-translate-x-[500px]';
+  let transitionLeft = '-translate-x-[-500px]';
+  let width = 'md:w-[500px]';
+
+  switch (size) {
+    case 'small':
+      transitionRight = '-translate-x-[300px]';
+      transitionLeft = '-translate-x-[-300px]';
+      width = 'md:w-[300px]';
+      break;
+
+    default:
+      break;
+  }
+
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
-  const transition = isRigthToLeft ? '-translate-x-[500px]' : '-translate-x-[-500px]';
+  const transition = isRigthToLeft ? transitionRight : transitionLeft;
+  const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed h-full w-full top-0 left-0 flex z-10">
+      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full">
         <Transition.Child
-          className="transition-opacity duration-200 ease-in bg-gray-900 w-0 md:flex-grow"
+          className="w-0 transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -53,13 +73,15 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="aside"
-          className="transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full md:w-[500px]"
+          className={`transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
         >
-          {sidepanelHeader(closeSidepanelFunction, title)}
-          <div>{children}</div>
+          <div className={contentClasses}>
+            {sidepanelHeader(closeSidepanelFunction, title)}
+            <div className="flex-grow">{children}</div>
+          </div>
         </Transition.Child>
       </Transition>
     );
@@ -69,15 +91,19 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="aside"
-      className="transition transform ease-in duration-200 fixed h-full w-full top-0 right-0 bg-white border-l-2 px-2 py-4 shadow-lg z-10 md:w-[500px]"
+      className={`transition transform ease-in duration-200 fixed h-full w-full top-0 right-0
+      bg-white border-l-2 px-2 py-4 shadow-lg z-10 ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
     >
-      {sidepanelHeader(closeSidepanelFunction, title)}
-      <div>{children}</div>
+      <div className={contentClasses}>
+        {sidepanelHeader(closeSidepanelFunction, title)}
+        <div className="flex-grow">{children}</div>
+      </div>
     </Transition>
   );
 };
 
+export type { SidePanelProps };
 export { Sidepanel };
