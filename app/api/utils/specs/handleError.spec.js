@@ -21,6 +21,7 @@ describe('handleError', () => {
     describe('when error is instance of Error', () => {
       it('should return the error with 500 code without the original error and error stack', () => {
         const errorInstance = new Error('error');
+
         const error = handleError(errorInstance);
 
         expect(error.code).toBe(500);
@@ -156,7 +157,7 @@ original error: {
         ajv: true,
         code: 400,
         message: 'hello',
-        errors: [
+        validations: [
           {
             instancePath: 'a property',
             message: 'an error',

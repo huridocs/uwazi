@@ -58,7 +58,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
-    result = { code: 500, message: error.message, prettyMessage: error.message };
+    result = { code: 500, message: error.stack };
   }
 
   if (error instanceof Ajv.ValidationError) {
@@ -135,6 +135,16 @@ function setRequestId(result) {
   }
 }
 
+const postProcessError = (error, original) => {
+  const result = { ...error };
+  delete result.original;
+  if (result.code === 500 && original.name !== 'MongoError') {
+    delete result.message;
+    result.prettyMessage = original.message;
+  }
+  return result;
+};
+
 const handleError = (_error, { req = {}, uncaught = false, useContext = true } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
 
@@ -147,7 +157,7 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
 
   sendLog(result, error, {});
 
-  delete result.original;
+  result = postProcessError(result, error);
 
   return result;
 };
