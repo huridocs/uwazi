@@ -5,6 +5,36 @@ const DEFAULT_DESCRIPTOR = {
   enumerable: true,
 };
 
+const buildPropertyDescriptors = (data: any) => {
+  const propertyDescriptors: Record<string, any> = {};
+
+  Object.entries(data).forEach(([name, value]) => {
+    propertyDescriptors[name] = {
+      ...DEFAULT_DESCRIPTOR,
+      value,
+    };
+  });
+
+  return propertyDescriptors;
+};
+
+const buildDependencyDescriptors = async (definition: Definition<any>, namespace: string) => {
+  const builtDependencies = await definition.dependenciesFactory?.(namespace);
+
+  const dependenciesDescriptors: Record<string, any> = {};
+
+  if (builtDependencies) {
+    Object.entries(builtDependencies).forEach(([name, value]) => {
+      dependenciesDescriptors[name] = {
+        ...DEFAULT_DESCRIPTOR,
+        value,
+      };
+    });
+  }
+
+  return dependenciesDescriptors;
+};
+
 export const StringJobSerializer: JobSerializer = {
   async serialize(job: Job, namespace: string) {
     return JSON.stringify({
@@ -23,32 +53,6 @@ export const StringJobSerializer: JobSerializer = {
       throw new Error(`Unregistered job ${data.name}`);
     }
 
-    const propertyDescriptors = Object.keys(data.data).reduce(
-      (properties, property) => ({
-        ...properties,
-        [property]: {
-          ...DEFAULT_DESCRIPTOR,
-          value: data.data[property],
-        },
-      }),
-      {}
-    );
-
-    const builtDependencies = await definition.dependenciesFactory?.(data.namespace);
-
-    const dependenciesDescriptors = builtDependencies
-      ? Object.keys(builtDependencies).reduce(
-          (properties, property) => ({
-            ...properties,
-            [property]: {
-              ...DEFAULT_DESCRIPTOR,
-              value: builtDependencies[property] as any,
-            },
-          }),
-          {}
-        )
-      : {};
-
     const managedFieldsDescriptors = {
       id: {
         ...DEFAULT_DESCRIPTOR,
@@ -61,8 +65,8 @@ export const StringJobSerializer: JobSerializer = {
     };
 
     return Object.create(definition.constructorFn.prototype, {
-      ...propertyDescriptors,
-      ...dependenciesDescriptors,
+      ...buildPropertyDescriptors(data.data),
+      ...(await buildDependencyDescriptors(definition, data.namespace)),
       ...managedFieldsDescriptors,
     }) as Job;
   },
