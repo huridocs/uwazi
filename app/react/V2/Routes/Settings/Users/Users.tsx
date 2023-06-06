@@ -5,7 +5,7 @@ import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
+import { ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { notificationAtom } from 'app/V2/atoms';
@@ -16,6 +16,7 @@ import {
   getUsersColumns,
   getGroupsTableColumns,
 } from './components';
+import { ActionButtons } from './components/ActionButtons';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
@@ -121,6 +122,7 @@ const Users = () => {
                 initialState={{ sorting: [{ id: 'username', desc: false }] }}
               />
             </Tabs.Tab>
+
             <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
               <Table<ClientUserGroupSchema>
                 columns={groupsTableColumns}
@@ -135,45 +137,17 @@ const Users = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex gap-2 p-2 pt-1">
-            {selectedUsers.length ? (
-              <>
-                <Button size="small" styling="light">
-                  <Translate>Reset password</Translate>
-                </Button>
-                <Button size="small" styling="light">
-                  <Translate>Reset 2FA</Translate>
-                </Button>
-              </>
-            ) : undefined}
-
-            {selectedUsers.length || selectedGroups.length ? (
-              <Button
-                size="small"
-                color="error"
-                onClick={() => {
-                  setShowDeleteModal(true);
-                }}
-              >
-                <Translate>Delete</Translate>
-              </Button>
-            ) : undefined}
-
-            {!selectedUsers.length && !selectedGroups.length ? (
-              <Button
-                size="small"
-                onClick={() => {
-                  setShowSidepanel(true);
-                }}
-              >
-                {activeTab === 'Users' ? (
-                  <Translate>Add user</Translate>
-                ) : (
-                  <Translate>Add group</Translate>
-                )}
-              </Button>
-            ) : undefined}
-          </div>
+          <ActionButtons
+            selectedUsers={selectedUsers}
+            selectedGroups={selectedGroups}
+            activeTab={activeTab}
+            deleteAction={() => {
+              setShowDeleteModal(true);
+            }}
+            createAction={() => {
+              setShowSidepanel(true);
+            }}
+          />
         </SettingsContent.Footer>
       </SettingsContent>
 
