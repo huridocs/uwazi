@@ -83,4 +83,81 @@ describe('migration set_up_new_relationship_collection', () => {
       },
     ]);
   });
+
+  it('should make sure all keys/context exists in all langauges', async () => {
+    await testingDB.setupFixturesAndContext({
+      ...fixtures,
+      translations: [
+        {
+          type: 'translation',
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: [
+                { key: 'Key 1', value: 'Value 1 es' },
+                { key: 'Key 3', value: 'Value 3 es' },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'translation',
+          locale: 'en',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: [
+                { key: 'Key 2', value: 'Value 2 en' },
+                { key: 'Key 3', value: 'Value 3 en' },
+                { key: 'Key 4', value: 'Value 4 en' },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'translation',
+          locale: 'zh',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: [
+                { key: 'Key 1', value: 'Value 1 zh' },
+                { key: 'Key 2', value: 'Value 2 zh' },
+                { key: 'Key 4', value: 'Value 4 zh' },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    await migration.up(db);
+
+    const translationsMigrated = await db
+      .collection('translations_v2')
+      .find()
+      .sort({ language: 1, key: 1 })
+      .toArray();
+
+    expect(translationsMigrated).toMatchObject([
+      { key: 'Key 1', value: 'Value 1 es', language: 'en' },
+      { key: 'Key 2', value: 'Value 2 en', language: 'en' },
+      { key: 'Key 3', value: 'Value 3 en', language: 'en' },
+      { key: 'Key 4', value: 'Value 4 en', language: 'en' },
+
+      { key: 'Key 1', value: 'Value 1 es', language: 'es' },
+      { key: 'Key 2', value: 'Value 2 en', language: 'es' },
+      { key: 'Key 3', value: 'Value 3 es', language: 'es' },
+      { key: 'Key 4', value: 'Value 4 en', language: 'es' },
+
+      { key: 'Key 1', value: 'Value 1 zh', language: 'zh' },
+      { key: 'Key 2', value: 'Value 2 zh', language: 'zh' },
+      { key: 'Key 3', value: 'Value 3 es', language: 'zh' },
+      { key: 'Key 4', value: 'Value 4 zh', language: 'zh' },
+    ]);
+  });
 });

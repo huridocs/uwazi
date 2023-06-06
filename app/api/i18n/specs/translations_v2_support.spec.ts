@@ -5,6 +5,7 @@ import { Db, ObjectId } from 'mongodb';
 import { TranslationValue } from 'shared/translationType';
 import translations from '../translations';
 import { migrateTranslationsToV2 } from '../v2_support';
+import migration from '../../i18n.v2/migrations';
 
 import fixtures, { dictionaryId } from './fixtures.js';
 
@@ -165,8 +166,29 @@ describe('translations v2 support', () => {
       });
 
       it('should update already existing translations and create new ones', async () => {
-        const savedTranslations = await createTranslation();
-        await updateTranslation(savedTranslations._id, [
+        const enTranslationId = testingDB.id();
+        await testingDB.setupFixturesAndContext({
+          settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+          translations: [
+            {
+              _id: enTranslationId,
+              locale: 'en',
+              contexts: [
+                {
+                  id: 'contextId',
+                  label: 'contextLabel',
+                  type: 'Entity',
+                  values: [
+                    { key: 'Key', value: 'Value' },
+                    { key: 'Key2', value: 'Value2' },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        await migrateTranslationsToV2();
+        await updateTranslation(enTranslationId, [
           { key: 'Key', value: 'updatedValue' },
           { key: 'Key2', value: 'updatedValue2' },
           { key: 'Key3', value: 'createdValue' },
@@ -407,13 +429,9 @@ describe('translations v2 support', () => {
       it('should only migrate once (on concurrent calls also)', async () => {
         await testingDB.setupFixturesAndContext(fixtures);
 
+        jest.spyOn(migration, 'up');
         await Promise.all([translations.get(), translations.get(), translations.get()]);
-
-        const numberOfTranslationsMigrated = await db
-          .collection(newTranslationsCollection)
-          .countDocuments();
-
-        expect(numberOfTranslationsMigrated).toBe(23);
+        expect(migration.up).toHaveBeenCalledTimes(1);
       });
 
       it('should return from the old collection when not migrated', async () => {
@@ -688,8 +706,6 @@ describe('translations v2 support', () => {
   describe('updateContext', () => {
     describe('when feature flag is on', () => {
       it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations (OMG !)', async () => {
-        //values are only changed for keys that have changed and default language
-        //values are created new on all languages if do not exist
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
         await testingDB.setupFixturesAndContext(fixtures);
         await translations.get();
