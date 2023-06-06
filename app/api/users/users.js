@@ -234,9 +234,9 @@ export default {
   },
 
   async delete(_ids, currentUser) {
-    // if (_id === currentUser._id.toString()) {
-    //   return Promise.reject(createError('Can not delete yourself', 403));
-    // }
+    if (_ids.find(id => id.toString() === currentUser._id.toString())) {
+      return Promise.reject(createError('Can not delete yourself', 403));
+    }
 
     return model.delete({ _id: { $in: _ids } });
     // const count = await model.count();

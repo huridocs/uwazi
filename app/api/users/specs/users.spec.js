@@ -618,14 +618,24 @@ describe('Users', () => {
       expect(usersInDb).toEqual([]);
     });
 
-    it('should not allow to delete self', async () => {
+    it.each([
+      {
+        ids: [userId],
+      },
+      {
+        ids: [userId, userToDelete],
+      },
+    ])('should not allow to delete self', async ({ ids }) => {
       try {
-        await users.delete(userId.toString(), { _id: userId });
+        await users.delete(ids, { _id: userId });
         throw new Error('should throw an error');
       } catch (error) {
         expect(error).toEqual(createError('Can not delete yourself', 403));
-        const user = await users.getById(userId);
-        expect(user).not.toBe(null);
+        const usersInDb = await db.mongodb
+          .collection('users')
+          .find({ _id: { $in: ids } })
+          .toArray();
+        expect(usersInDb.length).toBe(ids.length);
       }
     });
 
