@@ -17,6 +17,7 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
+import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -35,7 +36,6 @@ import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
 
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
-import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 
 mongoose.Promise = Promise;
 
