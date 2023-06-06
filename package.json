@@ -266,7 +266,7 @@
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
     "@cypress/webpack-dev-server": "^3.4.1",
-    "@cypress/webpack-preprocessor": "^5.17.0",
+    "@cypress/webpack-preprocessor": "^5.17.1",
     "@mdx-js/loader": "^2.3.0",
     "@storybook/addon-actions": "^7.0.13",
     "@storybook/addon-essentials": "^7.0.13",
