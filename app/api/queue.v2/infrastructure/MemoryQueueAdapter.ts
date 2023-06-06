@@ -10,7 +10,11 @@ interface Queue {
 class QueueExistsError extends Error {
   name = 'queueExists';
 }
-
+/**
+ * This QueueAdapter is used for testing without connectiong to an external
+ * storage (e.g. Redis). It's also a specification for the semantics of
+ * a QueueAdapter.
+ */
 export class MemoryQueueAdapter implements QueueAdapter {
   private queues: Record<string, Queue> = {};
 
