@@ -233,16 +233,18 @@ export default {
     return user;
   },
 
-  async delete(_id, currentUser) {
-    if (_id === currentUser._id.toString()) {
-      return Promise.reject(createError('Can not delete yourself', 403));
-    }
-    const count = await model.count();
-    if (count > 1) {
-      await updateUserMemberships({ _id }, []);
-      return model.delete({ _id });
-    }
-    return Promise.reject(createError('Can not delete last user', 403));
+  async delete(_ids, currentUser) {
+    // if (_id === currentUser._id.toString()) {
+    //   return Promise.reject(createError('Can not delete yourself', 403));
+    // }
+
+    return model.delete({ _id: { $in: _ids } });
+    // const count = await model.count();
+    // if (count > 1) {
+    //   await updateUserMemberships({ _id }, []);
+    //   return model.delete({ _id });
+    // }
+    // return Promise.reject(createError('Can not delete last user', 403));
   },
 
   async login({ username, password, token }, domain) {

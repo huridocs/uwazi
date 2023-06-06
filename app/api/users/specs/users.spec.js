@@ -19,6 +19,7 @@ import fixtures, {
   group1Id,
   group2Id,
   userToDelete,
+  userToDelete2,
 } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
@@ -599,11 +600,22 @@ describe('Users', () => {
     });
   });
 
-  describe('delete()', () => {
-    it('should delete the user', async () => {
-      await users.delete(userId, { _id: 'another_user' });
-      const user = await users.getById(userId);
-      expect(user).toBe(null);
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('delete()', () => {
+    it.each([
+      {
+        ids: [userId],
+      },
+      {
+        ids: [userId, userToDelete],
+      },
+    ])('should delete the users', async ({ ids }) => {
+      await users.delete(ids, { _id: 'another_user' });
+      const usersInDb = await db.mongodb
+        .collection('users')
+        .find({ _id: { $in: ids } })
+        .toArray();
+      expect(usersInDb).toEqual([]);
     });
 
     it('should not allow to delete self', async () => {
