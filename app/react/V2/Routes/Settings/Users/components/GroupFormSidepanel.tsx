@@ -6,6 +6,7 @@ import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
+import { UserGroupSchema } from 'shared/types/userGroupType';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
@@ -39,7 +40,7 @@ const GroupFormSidepanel = ({
 }: GroupFormSidepanelProps) => {
   const fetcher = useFetcher();
 
-  const defaultValues = { name: '', members: [] } as ClientUserGroupSchema;
+  const defaultValues = { name: '', members: [] } as UserGroupSchema;
 
   const {
     register,
@@ -58,7 +59,7 @@ const GroupFormSidepanel = ({
     setShowSidepanel(false);
   };
 
-  const formSubmit = async (data: ClientUserGroupSchema) => {
+  const formSubmit = async (data: UserGroupSchema) => {
     const formData = new FormData();
     if (data._id) {
       formData.set('intent', 'edit-group');
@@ -70,6 +71,26 @@ const GroupFormSidepanel = ({
     fetcher.submit(formData, { method: 'post' });
     setShowSidepanel(false);
     reset(defaultValues);
+  };
+
+  const availableUsers = (users || []).map(user => {
+    const members = selectedGroup?.members.map(member => member.refId) || [];
+
+    if (members.includes(user._id || '')) {
+      return { label: user.username, value: user._id as string, selected: true };
+    }
+
+    return { label: user.username, value: user._id as string };
+  });
+
+  const onChange = (options: { label: string; value: string; selected?: boolean }[]) => {
+    const selected = options
+      .filter(option => option.selected)
+      .map(option => ({
+        refId: option.value,
+      }));
+
+    setValue('members', selected, { shouldDirty: true });
   };
 
   return (
@@ -115,20 +136,8 @@ const GroupFormSidepanel = ({
                   Members
                 </Translate>
               }
-              onChange={options => {
-                setValue(
-                  'members',
-                  options.filter(opt => opt.selected).map(option => ({ refId: option.value })),
-                  { shouldDirty: true }
-                );
-              }}
-              options={(users || []).map(user => {
-                const members = selectedGroup?.members.map(member => member.refId) || [];
-                if (members.includes(user._id || '')) {
-                  return { label: user.username, value: user._id as string, selected: true };
-                }
-                return { label: user.username, value: user._id as string };
-              })}
+              onChange={options => onChange(options)}
+              options={availableUsers}
             />
           </div>
         </div>
