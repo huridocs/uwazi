@@ -36,12 +36,20 @@ export class MongoSettingsDataSource
     return !!settings?.features?.newRelationships;
   }
 
-  async getFeatureConfiguration(featureKey: string) {
+  async getNewRelationshipsConfiguration(): Promise<
+    Exclude<Partial<Required<SettingsType>['features']['newRelationships']>, boolean | undefined>
+  > {
     const settings = await this.readSettings();
-    const featureConfiguration = settings?.features?.[featureKey];
+    const featureConfiguration = settings?.features?.newRelationships;
 
-    return <Record<string, any>>(
-      (typeof featureConfiguration === 'object' ? featureConfiguration : {})
-    );
+    if (typeof featureConfiguration === 'boolean' || !featureConfiguration) {
+      return {};
+    }
+
+    if ('updateStrategy' in featureConfiguration) {
+      return featureConfiguration;
+    }
+
+    return {};
   }
 }

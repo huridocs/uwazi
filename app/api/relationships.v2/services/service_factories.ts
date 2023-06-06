@@ -91,7 +91,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const settingsDS = DefaultSettingsDataSource(transactionManager);
 
-  const newRelationshipsSettings = await settingsDS.getFeatureConfiguration('newRelationships');
+  const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 
   const service = new GenericDenormalizationService(
     relationshipsDS,
