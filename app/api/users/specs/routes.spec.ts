@@ -238,21 +238,23 @@ describe('users routes', () => {
     });
 
     it('should invalidate if the schema is not matched', async () => {
-      const response = await request(app).delete('/api/users').query({ _id: undefined });
+      const response = await request(app).delete('/api/users').query({ ids: undefined });
       expect(response.status).toBe(400);
       expect(response.body.errors[0].keyword).toEqual('required');
     });
 
     it('should need authorization', async () => {
       currentUser!.role = UserRole.EDITOR;
-      const response = await request(app).delete('/api/users').query({ _id: 'user1' });
+      const response = await request(app).delete('/api/users').query({ ids: 'user1' });
       expect(response.status).toBe(401);
     });
 
     it('should use users to delete it', async () => {
-      const response = await request(app).delete('/api/users').query({ _id: 'userToDeleteId' });
+      const response = await request(app)
+        .delete('/api/users')
+        .query({ ids: ['userToDeleteId'] });
       expect(response.status).toBe(200);
-      expect(users.delete).toHaveBeenCalledWith('userToDeleteId', currentUser);
+      expect(users.delete).toHaveBeenCalledWith(['userToDeleteId'], currentUser);
     });
   });
 });

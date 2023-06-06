@@ -1,4 +1,4 @@
-import { validation } from 'api/utils';
+import { parseQuery, validation } from 'api/utils';
 import { userSchema } from 'shared/types/userSchema';
 import needsAuthorization from '../auth/authMiddleware';
 import users from './users';
@@ -123,22 +123,26 @@ export default app => {
   app.delete(
     '/api/users',
     needsAuthorization(),
+    parseQuery,
     validation.validateRequest({
       type: 'object',
       properties: {
         query: {
           type: 'object',
-          required: ['_id'],
+          additionalProperties: false,
+          required: ['ids'],
           properties: {
-            _id: { type: 'string' },
+            ids: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
           },
         },
       },
       required: ['query'],
     }),
     (req, res, next) => {
+      const { ids } = req.query;
+      const idsArray = Array.isArray(ids) ? ids : [ids];
       users
-        .delete(req.query._id, req.user)
+        .delete(idsArray, req.user)
         .then(response => res.json(response))
         .catch(next);
     }
