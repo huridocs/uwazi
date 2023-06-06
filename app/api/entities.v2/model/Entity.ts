@@ -1,14 +1,14 @@
-type BaseResultValue = {
-  value: string;
+type BaseMetadataValue = {
+  value: unknown;
   label: string;
 };
 
-type InheritedResultValue = BaseResultValue & {
-  inheritedValue: MetadataValue[];
+type InheritedResultValue = BaseMetadataValue & {
+  inheritedValue: BaseMetadataValue[];
   inheritedType: string;
 };
 
-type MetadataValue = BaseResultValue | InheritedResultValue;
+type MetadataValue = BaseMetadataValue | InheritedResultValue;
 
 type Metadata = Record<string, MetadataValue[]>;
 
