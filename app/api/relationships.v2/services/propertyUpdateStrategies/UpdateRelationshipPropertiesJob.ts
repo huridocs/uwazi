@@ -20,11 +20,25 @@ export class UpdateRelationshipPropertiesJob extends Job {
   }
 
   async handle() {
-    await this.transactionManager!.run(async () => {
-      await this.updater!.update([this.entityId]);
+    if (!this.updater) {
+      throw new Error('Missing dependency: updater');
+    }
 
-      this.transactionManager!.onCommitted(async () => {
-        await this.indexEntity!(this.entityId);
+    if (!this.transactionManager) {
+      throw new Error('Missing dependency: transactionManager');
+    }
+
+    if (!this.indexEntity) {
+      throw new Error('Missing dependency: indexEntity');
+    }
+
+    const { updater, transactionManager, indexEntity } = this;
+
+    await transactionManager.run(async () => {
+      await updater.update([this.entityId]);
+
+      transactionManager.onCommitted(async () => {
+        await indexEntity(this.entityId);
       });
     });
   }
