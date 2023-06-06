@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
@@ -13,6 +13,8 @@ import {
   getUsersColumns,
   getGroupsTableColumns,
 } from './components';
+import { useSetRecoilState } from 'recoil';
+import { notificationAtom } from 'app/V2/atoms';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
@@ -28,6 +30,7 @@ const Users = () => {
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
 
+  const setNotifications = useSetRecoilState(notificationAtom);
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
@@ -44,6 +47,25 @@ const Users = () => {
   const groupsTableColumns = getGroupsTableColumns((group: ClientUserGroupSchema) => {
     setShowSidepanel(true);
     setSelected(group);
+  });
+
+  useEffect(() => {
+    switch (fetcher.formData?.get('intent')) {
+      case 'delete-group':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Groups deleted</Translate>,
+        });
+        break;
+      case 'delete-user':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Users deleted</Translate>,
+        });
+        break;
+      default:
+        break;
+    }
   });
 
   return (
@@ -158,10 +180,10 @@ const Users = () => {
 
             if (activeTab === 'Users') {
               formData.set('intent', 'delete-user');
-              formData.set('data', JSON.stringify(selectedUsers[0]));
+              formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
             } else {
               formData.set('intent', 'delete-group');
-              formData.set('data', JSON.stringify(selectedGroups[0]));
+              formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
             }
 
             fetcher.submit(formData, { method: 'post' });

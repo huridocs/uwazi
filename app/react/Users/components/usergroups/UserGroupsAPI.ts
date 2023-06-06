@@ -11,7 +11,7 @@ const saveGroup = async (requestParams: RequestParams<ClientUserGroupSchema>) =>
   const response = await api.post('usergroups', requestParams);
   return response.json;
 };
-const deleteGroup = async (requestParams: RequestParams<{ _id: ObjectIdSchema }>) => {
+const deleteGroup = async (requestParams: RequestParams<{ ids: string[] }>) => {
   const response = await api.delete('usergroups', requestParams);
   return response.json;
 };
