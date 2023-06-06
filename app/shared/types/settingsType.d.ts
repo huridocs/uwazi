@@ -108,7 +108,7 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy: string;
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     [k: string]: unknown | undefined;
   };

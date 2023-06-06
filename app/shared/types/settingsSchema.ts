@@ -1,6 +1,8 @@
 import Ajv, { ErrorObject } from 'ajv';
 import { wrapValidator } from 'shared/tsUtils';
 import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/types/commonSchemas';
+import { OnlineRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { QueuedRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
 import { Settings } from './settingsType';
 
 const emitSchemaTypes = true;
@@ -287,7 +289,15 @@ const settingsSchema = {
               type: 'object',
               additionalProperties: false,
               required: ['updateStrategy'],
-              properties: { updateStrategy: { type: 'string' } },
+              properties: {
+                updateStrategy: {
+                  type: 'string',
+                  enum: [
+                    OnlineRelationshipPropertyUpdateStrategy.name,
+                    QueuedRelationshipPropertyUpdateStrategy.name,
+                  ],
+                },
+              },
             },
           ],
         },
