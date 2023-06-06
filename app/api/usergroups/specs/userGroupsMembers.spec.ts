@@ -2,7 +2,7 @@ import { testingDB } from 'api/utils/testing_db';
 import { getByMemberIdList, updateUserMemberships } from 'api/usergroups/userGroupsMembers';
 import { UserRole } from 'shared/types/userSchema';
 import userGroups from 'api/usergroups/userGroups';
-import { fixtures, group1Id, group2Id, user1Id } from './fixtures';
+import { fixtures, group1Id, group2Id, user1Id, user2Id } from './fixtures';
 
 describe('userGroupsMembers', () => {
   beforeEach(async () => {
@@ -14,11 +14,21 @@ describe('userGroupsMembers', () => {
   });
 
   describe('getByMemberIdList', () => {
-    it('should return the groups that contains the asked member ids', async () => {
-      const groups = await getByMemberIdList([user1Id.toString()]);
-      expect(groups[0]._id?.toString()).toBe(group2Id.toString());
-      expect(groups[0].name).toBe('Group 2');
-    });
+    it.each([
+      {
+        input: [user1Id.toString(), user2Id.toString()],
+        outputMatch: [
+          { _id: group1Id, name: 'Group 1' },
+          { _id: group2Id, name: 'Group 2' },
+        ],
+      },
+    ])(
+      'should return the groups that contains the asked member ids',
+      async ({ input, outputMatch }) => {
+        const groups = await getByMemberIdList(input);
+        expect(groups).toMatchObject(outputMatch);
+      }
+    );
   });
 
   describe('updateUserMemberships', () => {
