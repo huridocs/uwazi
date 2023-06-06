@@ -34,3 +34,7 @@ export const updateUserMemberships = async (
   });
   await userGroups.saveMultiple(groupsToUpdate);
 };
+
+export const removeUsersFromAllGroups = async (_userIds: ObjectIdSchema[]) => {
+  await model.updateMany({}, { $pull: { members: { refId: { $in: _userIds } } } });
+};

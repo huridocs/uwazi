@@ -6,7 +6,11 @@ import random from 'shared/uniqueID';
 import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
-import { getByMemberIdList, updateUserMemberships } from 'api/usergroups/userGroupsMembers';
+import {
+  getByMemberIdList,
+  updateUserMemberships,
+  removeUsersFromAllGroups,
+} from 'api/usergroups/userGroupsMembers';
 import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
@@ -233,16 +237,18 @@ export default {
     return user;
   },
 
-  async delete(_id, currentUser) {
-    if (_id === currentUser._id.toString()) {
+  async delete(_ids, currentUser) {
+    const ids = _ids.map(id => id.toString());
+    if (_ids.find(id => id.toString() === currentUser._id.toString())) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
+
     const count = await model.count();
-    if (count > 1) {
-      await updateUserMemberships({ _id }, []);
-      return model.delete({ _id });
+    if (count > _ids.length) {
+      await removeUsersFromAllGroups(ids);
+      return model.delete({ _id: { $in: _ids } });
     }
-    return Promise.reject(createError('Can not delete last user', 403));
+    return Promise.reject(createError('Can not delete last user(s).', 403));
   },
 
   async login({ username, password, token }, domain) {
