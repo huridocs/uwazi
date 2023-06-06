@@ -85,7 +85,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
   return [
     columnHelper.accessor('username', {
       header: UserNameHeader,
-      meta: { className: 'w-1/3' },
+      meta: { className: 'w-2/4' },
     }),
     columnHelper.accessor('using2fa', {
       header: ProtectionHeader,
@@ -100,7 +100,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
     columnHelper.accessor('groups', {
       header: GroupsHeader,
       cell: GroupsPill,
-      meta: { className: 'w-1/3' },
+      meta: { className: 'w-2/4' },
     }),
     columnHelper.display({
       id: '1',

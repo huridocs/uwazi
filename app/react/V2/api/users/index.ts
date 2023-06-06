@@ -5,48 +5,69 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
 const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams(user, headers);
-  const createdUser = await UsersAPI.new(requestParams);
-  return createdUser;
+  try {
+    const requestParams = new RequestParams(user, headers);
+    return await UsersAPI.new(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams(user, headers);
-  const savedUser = await UsersAPI.save(requestParams);
-  return savedUser;
+  try {
+    const requestParams = new RequestParams(user, headers);
+    return UsersAPI.save(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const deleteUser = async (users: ClientUserSchema[], headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams({ ids: users.map(user => user._id) }, headers);
-  const savedUser = await UsersAPI.delete(requestParams);
-  return savedUser;
+  try {
+    const requestParams = new RequestParams({ ids: users.map(user => user._id) }, headers);
+    return UsersAPI.delete(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams(group, headers);
-  const savedGroup = await GroupsAPI.saveGroup(requestParams);
-  return savedGroup;
+  try {
+    const requestParams = new RequestParams(group, headers);
+    return GroupsAPI.saveGroup(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams(
-    { ids: groups.map(group => group._id) as string[] },
-    headers
-  );
-  const deletedGroup = await GroupsAPI.deleteGroup(requestParams);
-  return deletedGroup;
+  try {
+    const requestParams = new RequestParams(
+      { ids: groups.map(group => group._id) as string[] },
+      headers
+    );
+    return GroupsAPI.deleteGroup(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const get = async (headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams({}, headers);
-  const response = UsersAPI.get(requestParams);
-  return response;
+  try {
+    const requestParams = new RequestParams({}, headers);
+    return UsersAPI.get(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 const getUserGroups = async (headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams({}, headers);
-  const response = GroupsAPI.getGroups(requestParams);
-  return response;
+  try {
+    const requestParams = new RequestParams({}, headers);
+    return GroupsAPI.getGroups(requestParams);
+  } catch (e) {
+    return e;
+  }
 };
 
 export { get, getUserGroups, newUser, saveUser, deleteUser, saveGroup, deleteGroup };

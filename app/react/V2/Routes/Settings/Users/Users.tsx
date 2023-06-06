@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
+import { useSetRecoilState } from 'recoil';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
@@ -7,23 +8,23 @@ import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { notificationAtom } from 'app/V2/atoms';
+import { FetchResponseError } from 'shared/JSONRequest';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
   getUsersColumns,
   getGroupsTableColumns,
 } from './components';
-import { useSetRecoilState } from 'recoil';
-import { notificationAtom } from 'app/V2/atoms';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
   | 'new-user'
   | 'edit-user'
-  | 'delete-user'
+  | 'delete-users'
   | 'new-group'
   | 'edit-group'
-  | 'delete-group';
+  | 'delete-groups';
 
 // eslint-disable-next-line max-statements
 const Users = () => {
@@ -49,24 +50,53 @@ const Users = () => {
     setSelected(group);
   });
 
+  const handleSave = () => {
+    const formData = new FormData();
+
+    if (activeTab === 'Users') {
+      formData.set('intent', 'delete-users');
+      formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
+      setSelectedUsers([]);
+    } else {
+      formData.set('intent', 'delete-groups');
+      formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
+      setSelectedGroups([]);
+    }
+
+    setShowDeleteModal(false);
+    fetcher.submit(formData, { method: 'post' });
+  };
+
   useEffect(() => {
+    if (fetcher.data instanceof FetchResponseError) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
+      });
+
+      return;
+    }
+
     switch (fetcher.formData?.get('intent')) {
-      case 'delete-group':
+      case 'delete-groups':
         setNotifications({
           type: 'success',
           text: <Translate>Groups deleted</Translate>,
         });
         break;
-      case 'delete-user':
+
+      case 'delete-users':
         setNotifications({
           type: 'success',
           text: <Translate>Users deleted</Translate>,
         });
         break;
+
       default:
         break;
     }
-  });
+  }, [fetcher.data, fetcher.formData, setNotifications]);
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
@@ -74,7 +104,13 @@ const Users = () => {
         <SettingsContent.Header title="Users & Groups" />
 
         <SettingsContent.Body>
-          <Tabs onTabSelected={tab => setActiveTab(tab as ActiveTab)}>
+          <Tabs
+            onTabSelected={tab => {
+              setActiveTab(tab as ActiveTab);
+              setSelectedUsers([]);
+              setSelectedGroups([]);
+            }}
+          >
             <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
               <Table<ClientUserSchema>
                 columns={usersTableColumns}
@@ -100,7 +136,7 @@ const Users = () => {
 
         <SettingsContent.Footer>
           <div className="flex gap-2 p-2 pt-1">
-            {selectedUsers.length > 0 ? (
+            {selectedUsers.length ? (
               <>
                 <Button size="small" styling="light">
                   <Translate>Reset password</Translate>
@@ -108,17 +144,22 @@ const Users = () => {
                 <Button size="small" styling="light">
                   <Translate>Reset 2FA</Translate>
                 </Button>
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => {
-                    setShowDeleteModal(true);
-                  }}
-                >
-                  <Translate>Delete</Translate>
-                </Button>
               </>
-            ) : (
+            ) : undefined}
+
+            {selectedUsers.length || selectedGroups.length ? (
+              <Button
+                size="small"
+                color="error"
+                onClick={() => {
+                  setShowDeleteModal(true);
+                }}
+              >
+                <Translate>Delete</Translate>
+              </Button>
+            ) : undefined}
+
+            {!selectedUsers.length && !selectedGroups.length ? (
               <Button
                 size="small"
                 onClick={() => {
@@ -130,18 +171,6 @@ const Users = () => {
                 ) : (
                   <Translate>Add group</Translate>
                 )}
-              </Button>
-            )}
-
-            {selectedGroups.length > 0 && selectedUsers.length === 0 ? (
-              <Button
-                size="small"
-                color="error"
-                onClick={() => {
-                  setShowDeleteModal(true);
-                }}
-              >
-                <Translate>Delete</Translate>
               </Button>
             ) : undefined}
           </div>
@@ -174,20 +203,7 @@ const Users = () => {
           body="Do you want to delete?"
           acceptButton="Delete"
           cancelButton="No, cancel"
-          onAcceptClick={() => {
-            setShowDeleteModal(false);
-            const formData = new FormData();
-
-            if (activeTab === 'Users') {
-              formData.set('intent', 'delete-user');
-              formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
-            } else {
-              formData.set('intent', 'delete-group');
-              formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
-            }
-
-            fetcher.submit(formData, { method: 'post' });
-          }}
+          onAcceptClick={() => handleSave()}
           onCancelClick={() => setShowDeleteModal(false)}
           dangerStyle
         />
@@ -204,7 +220,7 @@ const usersLoader =
     return { users, groups };
   };
 
-const settingsUserAction =
+const userAction =
   (): ActionFunction =>
   async ({ request }) => {
     const formData = await request.formData();
@@ -217,16 +233,16 @@ const settingsUserAction =
         return usersAPI.newUser(formValues);
       case 'edit-user':
         return usersAPI.saveUser(formValues);
-      case 'delete-user':
+      case 'delete-users':
         return usersAPI.deleteUser(formValues);
       case 'new-group':
       case 'edit-group':
         return usersAPI.saveGroup(formValues);
-      case 'delete-group':
+      case 'delete-groups':
         return usersAPI.deleteGroup(formValues);
       default:
         return null;
     }
   };
 
-export { Users, usersLoader, settingsUserAction };
+export { Users, usersLoader, userAction };
