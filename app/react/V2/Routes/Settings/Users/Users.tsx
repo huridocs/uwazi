@@ -68,28 +68,28 @@ const Users = () => {
   };
 
   useEffect(() => {
-    if (fetcher.data instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
-      });
+    const intent = fetcher.formData?.get('intent');
 
-      return;
-    }
-
-    switch (fetcher.formData?.get('intent')) {
-      case 'delete-groups':
+    switch (true) {
+      case intent === 'delete-groups':
         setNotifications({
           type: 'success',
           text: <Translate>Groups deleted</Translate>,
         });
         break;
 
-      case 'delete-users':
+      case intent === 'delete-users':
         setNotifications({
           type: 'success',
           text: <Translate>Users deleted</Translate>,
+        });
+        break;
+
+      case fetcher.data instanceof FetchResponseError:
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
         });
         break;
 
@@ -122,7 +122,7 @@ const Users = () => {
               />
             </Tabs.Tab>
             <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
-              <Table
+              <Table<ClientUserGroupSchema>
                 columns={groupsTableColumns}
                 data={groups}
                 title={<Translate>Groups</Translate>}
