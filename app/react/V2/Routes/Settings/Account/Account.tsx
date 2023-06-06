@@ -15,7 +15,6 @@ import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
-import { userA } from 'api/permissions/specs/fixtures';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -119,7 +118,7 @@ const Account = () => {
                 </div>
 
                 {errors.passwordConfirm && isSubmitted && (
-                  <div className="text-sm text-red-800 font-semibold">Passwords do not match.</div>
+                  <div className="text-sm font-semibold text-red-800">Passwords do not match.</div>
                 )}
               </div>
             </Card>
@@ -129,7 +128,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="default"
               >
-                <div className="flex gap-6 items-center">
+                <div className="flex items-center gap-6">
                   <Button color="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
@@ -146,7 +145,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="yellow"
               >
-                <div className="flex gap-6 items-center">
+                <div className="flex items-center gap-6">
                   <Button
                     styling="outline"
                     className="flex-none"
