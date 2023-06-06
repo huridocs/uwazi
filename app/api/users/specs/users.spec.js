@@ -600,8 +600,7 @@ describe('Users', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('delete()', () => {
+  describe('delete()', () => {
     it.each([
       {
         ids: [userId],
@@ -640,13 +639,14 @@ describe('Users', () => {
     });
 
     it('should not allow to delete the last user', async () => {
-      await users.delete(userToDelete.toString(), { _id: 'someone' });
-      await users.delete(recoveryUserId.toString(), { _id: 'someone' });
+      await users.delete([userToDelete.toString()], { _id: 'someone' });
+      await users.delete([userToDelete2.toString()], { _id: 'someone' });
+      await users.delete([recoveryUserId.toString()], { _id: 'someone' });
       try {
-        await users.delete(userId.toString(), { _id: 'someone' });
+        await users.delete([userId.toString()], { _id: 'someone' });
         throw new Error('should throw an error');
       } catch (error) {
-        expect(error).toEqual(createError('Can not delete last user', 403));
+        expect(error).toEqual(createError('Can not delete last user(s).', 403));
         const user = await users.getById(userId);
         expect(user).toEqual({
           _id: userId,
@@ -654,6 +654,26 @@ describe('Users', () => {
           role: 'admin',
           username: 'username',
         });
+      }
+    });
+
+    it('should not allow to delete the last users', async () => {
+      const userCount = await db.mongodb.collection('users').countDocuments();
+      try {
+        await users.delete(
+          [
+            userId.toString(),
+            userToDelete.toString(),
+            userToDelete2.toString(),
+            recoveryUserId.toString(),
+          ],
+          { _id: 'someone' }
+        );
+        throw new Error('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Can not delete last user(s).', 403));
+        const countAfterAttempt = await db.mongodb.collection('users').countDocuments();
+        expect(countAfterAttempt).toBe(userCount);
       }
     });
 
