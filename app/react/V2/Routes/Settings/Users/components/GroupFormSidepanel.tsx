@@ -1,13 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { notificationAtom } from 'V2/atoms';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
-import { ConfirmNavigationModal, InputField, MultiSelect } from 'V2/Components/Forms';
+import { InputField, MultiSelect } from 'V2/Components/Forms';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
@@ -39,8 +37,6 @@ const GroupFormSidepanel = ({
   groups,
   users,
 }: GroupFormSidepanelProps) => {
-  const [showModal, setShowModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
   const fetcher = useFetcher();
 
   const defaultValues = { name: '', members: [] } as ClientUserGroupSchema;
@@ -48,26 +44,18 @@ const GroupFormSidepanel = ({
   const {
     register,
     handleSubmit,
-    reset,
-    formState: { errors, isDirty },
+    formState: { errors },
     setValue,
+    reset,
   } = useForm({
     defaultValues,
     values: selectedGroup,
   });
 
-  const discardChangesFunction = () => {
-    setSelected(undefined);
+  const closeSidepanel = () => {
     reset(defaultValues);
+    setSelected(undefined);
     setShowSidepanel(false);
-  };
-
-  const handleSidepanelState = () => {
-    if (isDirty) {
-      setShowModal(true);
-    } else {
-      discardChangesFunction();
-    }
   };
 
   const formSubmit = async (data: ClientUserGroupSchema) => {
@@ -77,119 +65,84 @@ const GroupFormSidepanel = ({
     } else {
       formData.set('intent', 'new-group');
     }
+
     formData.set('data', JSON.stringify(data));
     fetcher.submit(formData, { method: 'post' });
-    reset({}, { keepValues: true });
+    setShowSidepanel(false);
+    reset(defaultValues);
   };
 
-  useEffect(() => {
-    setShowSidepanel(false);
-    switch (true) {
-      case fetcher.formData?.get('intent') === 'new-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group saved</Translate>,
-        });
-        break;
-      case fetcher.formData?.get('intent') === 'edit-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group updated</Translate>,
-        });
-        break;
-      default:
-        break;
-    }
-  }, [fetcher.data, fetcher.formData, setNotifications, setShowSidepanel]);
-
   return (
-    <>
-      <Sidepanel
-        isOpen={showSidepanel}
-        withOverlay
-        closeSidepanelFunction={handleSidepanelState}
-        title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
-      >
-        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-          <div className="flex flex-col flex-grow gap-4">
-            <Card title={<Translate>Group Options</Translate>}>
-              <div>
-                <InputField
-                  label={<Translate className="block mb-1 font-bold">Name</Translate>}
-                  id="name"
-                  hasErrors={Boolean(errors.name)}
-                  className="mb-1"
-                  {...register('name', {
-                    required: true,
-                    validate: username => isUnique(username, selectedGroup, groups),
-                    maxLength: 50,
-                    minLength: 3,
-                  })}
-                />
-                <span className="font-bold text-error-700">
-                  {errors.name && (
-                    <div className="validation-error">
-                      {errors.name.type === 'required' && <Translate>Name is required</Translate>}
-                      {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
-                      {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
-                      {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
-                    </div>
-                  )}
-                </span>
-              </div>
-            </Card>
-
-            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
-              <MultiSelect
-                label={
-                  <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
-                    Members
-                  </Translate>
-                }
-                onChange={options => {
-                  setValue(
-                    'members',
-                    options.filter(opt => opt.selected).map(option => ({ refId: option.value })),
-                    { shouldDirty: true }
-                  );
-                }}
-                options={(users || []).map(user => {
-                  const members = selectedGroup?.members.map(member => member.refId) || [];
-                  if (members.includes(user._id || '')) {
-                    return { label: user.username, value: user._id as string, selected: true };
-                  }
-                  return { label: user.username, value: user._id as string };
+    <Sidepanel
+      isOpen={showSidepanel}
+      withOverlay
+      closeSidepanelFunction={closeSidepanel}
+      title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
+    >
+      <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
+        <div className="flex flex-col flex-grow gap-4">
+          <Card title={<Translate>Group Options</Translate>}>
+            <div>
+              <InputField
+                label={<Translate className="block mb-1 font-bold">Name</Translate>}
+                id="name"
+                hasErrors={Boolean(errors.name)}
+                className="mb-1"
+                {...register('name', {
+                  required: true,
+                  validate: username => isUnique(username, selectedGroup, groups),
+                  maxLength: 50,
+                  minLength: 3,
                 })}
               />
+              <span className="font-bold text-error-700">
+                {errors.name && (
+                  <div className="validation-error">
+                    {errors.name.type === 'required' && <Translate>Name is required</Translate>}
+                    {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
+                    {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
+                    {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
+                  </div>
+                )}
+              </span>
             </div>
-          </div>
+          </Card>
 
-          <div className="flex gap-2">
-            <Button
-              className="flex-grow"
-              type="button"
-              styling="outline"
-              onClick={discardChangesFunction}
-            >
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button className="flex-grow" type="submit">
-              <Translate>Save</Translate>
-            </Button>
+          <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
+            <MultiSelect
+              label={
+                <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
+                  Members
+                </Translate>
+              }
+              onChange={options => {
+                setValue(
+                  'members',
+                  options.filter(opt => opt.selected).map(option => ({ refId: option.value })),
+                  { shouldDirty: true }
+                );
+              }}
+              options={(users || []).map(user => {
+                const members = selectedGroup?.members.map(member => member.refId) || [];
+                if (members.includes(user._id || '')) {
+                  return { label: user.username, value: user._id as string, selected: true };
+                }
+                return { label: user.username, value: user._id as string };
+              })}
+            />
           </div>
-        </form>
-      </Sidepanel>
+        </div>
 
-      {showModal && (
-        <ConfirmNavigationModal
-          setShowModal={setShowModal}
-          onConfirm={() => {
-            setShowModal(false);
-            discardChangesFunction();
-          }}
-        />
-      )}
-    </>
+        <div className="flex gap-2">
+          <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
+            <Translate>Cancel</Translate>
+          </Button>
+          <Button className="flex-grow" type="submit">
+            <Translate>Save</Translate>
+          </Button>
+        </div>
+      </form>
+    </Sidepanel>
   );
 };
 

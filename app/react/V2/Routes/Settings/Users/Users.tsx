@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
-import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
+import {
+  ActionFunction,
+  LoaderFunction,
+  useFetcher,
+  useFetchers,
+  useLoaderData,
+} from 'react-router-dom';
+import { last } from 'lodash';
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
@@ -40,6 +47,7 @@ const Users = () => {
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const fetcher = useFetcher();
+  const fetchers = useFetchers();
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
     setShowSidepanel(true);
@@ -69,35 +77,69 @@ const Users = () => {
   };
 
   useEffect(() => {
-    const intent = fetcher.formData?.get('intent');
+    if (!fetchers.length) return;
 
-    switch (true) {
-      case intent === 'delete-groups':
+    const lastFetcherCall = last(fetchers) || fetchers[0];
+    const intent = lastFetcherCall.formData?.get('intent') as FormIntent;
+    const { data } = lastFetcherCall;
+
+    if (data instanceof FetchResponseError) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: data.json?.prettyMessage ? data.json?.prettyMessage : undefined,
+      });
+
+      return;
+    }
+
+    switch (intent) {
+      case 'new-user':
         setNotifications({
           type: 'success',
-          text: <Translate>Groups deleted</Translate>,
+          text: <Translate>User saved</Translate>,
         });
         break;
 
-      case intent === 'delete-users':
+      case 'edit-user':
+        setNotifications({
+          type: 'success',
+          text: <Translate>User updated</Translate>,
+        });
+        break;
+
+      case 'new-group':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Group saved</Translate>,
+        });
+        break;
+
+      case 'edit-group':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Group updated</Translate>,
+        });
+        break;
+
+      case 'delete-users':
         setNotifications({
           type: 'success',
           text: <Translate>Users deleted</Translate>,
         });
         break;
 
-      case fetcher.data instanceof FetchResponseError:
+      case 'delete-groups':
         setNotifications({
-          type: 'error',
-          text: <Translate>An error occurred</Translate>,
-          details: fetcher.data.json?.prettyMessage ? fetcher.data.json?.prettyMessage : undefined,
+          type: 'success',
+          text: <Translate>Groups deleted</Translate>,
         });
         break;
 
       default:
         break;
     }
-  }, [fetcher.data, fetcher.formData, setNotifications]);
+  }, [fetchers, setNotifications]);
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
