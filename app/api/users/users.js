@@ -238,13 +238,14 @@ export default {
   },
 
   async delete(_ids, currentUser) {
+    const ids = _ids.map(id => id.toString());
     if (_ids.find(id => id.toString() === currentUser._id.toString())) {
       return Promise.reject(createError('Can not delete yourself', 403));
     }
 
     const count = await model.count();
     if (count > _ids.length) {
-      await removeUsersFromAllGroups(_ids);
+      await removeUsersFromAllGroups(ids);
       return model.delete({ _id: { $in: _ids } });
     }
     return Promise.reject(createError('Can not delete last user(s).', 403));

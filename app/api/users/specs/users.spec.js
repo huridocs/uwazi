@@ -677,10 +677,25 @@ describe('Users', () => {
       }
     });
 
-    it('should delete the user in all the groups', async () => {
-      await users.delete(userToDelete.toString(), { _id: 'someone' });
-      const group = await userGroups.get({ name: 'Group 3' });
-      expect(group[0].members.length).toBe(0);
+    it.each([
+      {
+        ids: [userToDelete],
+      },
+      {
+        ids: [userToDelete, userToDelete2],
+      },
+    ])('should delete the user in all the groups', async ({ ids }) => {
+      await users.delete(ids, { _id: 'someone' });
+      const allGroups = await db.mongodb.collection('usergroups').find().toArray();
+      const allMemberSet = new Set(
+        allGroups
+          .map(group => group.members)
+          .flat()
+          .map(({ refId }) => refId.toString())
+      );
+      ids.forEach(id => {
+        expect(allMemberSet.has(id.toString())).toBe(false);
+      });
     });
   });
 
