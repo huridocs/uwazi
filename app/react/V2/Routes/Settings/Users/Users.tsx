@@ -1,22 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { useSetRecoilState } from 'recoil';
-import {
-  ActionFunction,
-  LoaderFunction,
-  useFetcher,
-  useFetchers,
-  useLoaderData,
-} from 'react-router-dom';
-import { last } from 'lodash';
+import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { notificationAtom } from 'app/V2/atoms';
-import { FetchResponseError } from 'shared/JSONRequest';
 import {
   UserFormSidepanel,
   GroupFormSidepanel,
@@ -24,6 +14,7 @@ import {
   getGroupsTableColumns,
 } from './components';
 import { ActionButtons } from './components/ActionButtons';
+import { useHandleNotifications } from './useHandleNotifications';
 
 type ActiveTab = 'Groups' | 'Users';
 type FormIntent =
@@ -39,7 +30,6 @@ const Users = () => {
   const { users, groups } =
     (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
 
-  const setNotifications = useSetRecoilState(notificationAtom);
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
@@ -47,7 +37,8 @@ const Users = () => {
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const fetcher = useFetcher();
-  const fetchers = useFetchers();
+
+  useHandleNotifications();
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
     setShowSidepanel(true);
@@ -75,71 +66,6 @@ const Users = () => {
     setShowDeleteModal(false);
     fetcher.submit(formData, { method: 'post' });
   };
-
-  useEffect(() => {
-    if (!fetchers.length) return;
-
-    const lastFetcherCall = last(fetchers) || fetchers[0];
-    const intent = lastFetcherCall.formData?.get('intent') as FormIntent;
-    const { data } = lastFetcherCall;
-
-    if (data instanceof FetchResponseError) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: data.json?.prettyMessage ? data.json?.prettyMessage : undefined,
-      });
-
-      return;
-    }
-
-    switch (intent) {
-      case 'new-user':
-        setNotifications({
-          type: 'success',
-          text: <Translate>User saved</Translate>,
-        });
-        break;
-
-      case 'edit-user':
-        setNotifications({
-          type: 'success',
-          text: <Translate>User updated</Translate>,
-        });
-        break;
-
-      case 'new-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group saved</Translate>,
-        });
-        break;
-
-      case 'edit-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group updated</Translate>,
-        });
-        break;
-
-      case 'delete-users':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Users deleted</Translate>,
-        });
-        break;
-
-      case 'delete-groups':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Groups deleted</Translate>,
-        });
-        break;
-
-      default:
-        break;
-    }
-  }, [fetchers, setNotifications]);
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
