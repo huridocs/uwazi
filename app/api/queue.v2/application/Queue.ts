@@ -1,16 +1,7 @@
 import { Job } from '../contracts/Job';
 import { JobsDispatcher } from '../contracts/JobsDispatcher';
 import { QueueAdapter } from '../contracts/QueueAdapter';
-import { JobSerializer } from './JobSerializer';
-
-interface JobConstructor<T extends Job> {
-  new (...args: any[]): T;
-}
-
-interface Definition<T extends Job> {
-  constructorFn: JobConstructor<T>;
-  dependenciesFactory?: (namespace: string) => Promise<Partial<T>>;
-}
+import { Definition, JobConstructor, JobSerializer } from './JobSerializer';
 
 interface QueueOptions {
   lockWindow?: number;

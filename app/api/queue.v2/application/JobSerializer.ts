@@ -1,11 +1,11 @@
 import { Job } from '../contracts/Job';
 
-interface Constructor<T extends Job> {
+export interface JobConstructor<T extends Job> {
   new (...args: any[]): T;
 }
 
 export interface Definition<T extends Job> {
-  constructorFn: Constructor<T>;
+  constructorFn: JobConstructor<T>;
   dependenciesFactory?: (namespace: string) => Promise<Partial<T>>;
 }
 
