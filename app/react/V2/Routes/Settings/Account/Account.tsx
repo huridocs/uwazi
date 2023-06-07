@@ -12,8 +12,8 @@ import { notificationAtom } from 'app/V2/atoms';
 
 import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
+import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate } from 'app/I18N';
-import { NavigationHeader } from 'V2/Components/UI/NavigationHeader';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
@@ -60,13 +60,9 @@ const Account = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-languages"
     >
-      <div className="flex flex-col h-full">
-        <div className="flex-grow p-5">
-          <NavigationHeader backUrl="/settings">
-            <h1 className="text-base text-gray-700">
-              <Translate>Account</Translate>
-            </h1>
-          </NavigationHeader>
+      <SettingsContent>
+        <SettingsContent.Header title="Account" />
+        <SettingsContent.Body>
           <form onSubmit={handleSubmit(submit)} id="account-form">
             <Card className="mb-4" title={<Translate>General Information</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -162,8 +158,8 @@ const Account = () => {
               </Card>
             )}
           </form>
-        </div>
-        <div className="fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1">
+        </SettingsContent.Body>
+        <SettingsContent.Footer>
           <div className="flex gap-2 p-2 pt-1">
             <a
               href="/logout"
@@ -178,8 +174,8 @@ const Account = () => {
               <Translate>Update</Translate>
             </Button>
           </div>
-        </div>
-      </div>
+        </SettingsContent.Footer>
+      </SettingsContent>
       <Sidepanel
         title={<Translate className="uppercase">Two-Factor Authentication</Translate>}
         isOpen={isSidepanelOpen}
