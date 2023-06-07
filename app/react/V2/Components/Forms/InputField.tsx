@@ -1,6 +1,6 @@
-import { Translate } from 'app/I18N';
 import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { Translate } from 'app/I18N';
 
 interface InputFieldProps {
   id: string;

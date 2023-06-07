@@ -1,11 +1,8 @@
-import { Translate } from 'app/I18N';
-import { Checkbox } from 'flowbite-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Pill } from '../UI';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
-
-type Option = { label: string; value: string };
-type ContextOption = Option & { selected: boolean };
+import { Checkbox } from 'flowbite-react';
+import { Option, ContextOption } from './SelectTypes';
+import { Pill } from '../UI';
 
 interface MultiSelectProps {
   label: String | React.ReactNode;
@@ -23,8 +20,8 @@ interface ContextMenuProps {
 const ContextMenuBase = (
   { options, show, location, onOptionSelected }: ContextMenuProps,
   ref: any
-) => {
-  return show ? (
+) =>
+  show ? (
     <ul
       ref={ref}
       style={{
@@ -34,7 +31,7 @@ const ContextMenuBase = (
         left: `${location.x}px`,
         boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
       }}
-      className="min-w-fit bg-white rounded-md p-4 font-medium  absolute flex flex-col"
+      className="absolute flex flex-col p-4 font-medium bg-white rounded-md min-w-fit"
     >
       {options.map((option: ContextOption) => (
         <li key={option.label} className="py-1">
@@ -43,7 +40,7 @@ const ContextMenuBase = (
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               // @ts-ignore
               const isChecked = e.target.checked;
-              let currentOptions = [...options].map(opt => {
+              const currentOptions = [...options].map(opt => {
                 if (opt.value === option.value) {
                   return { ...opt, selected: isChecked };
                 }
@@ -61,7 +58,6 @@ const ContextMenuBase = (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <></>
   );
-};
 
 const ContextMenu = React.forwardRef(ContextMenuBase);
 
@@ -80,8 +76,8 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
 
   return (
     <div className="border rounded-lg border-gray-50" data-testid="multiselect-comp">
-      <div className="border-b border-gray-50 bg-gray-50 p-4 flex justify-between">
-        <div className="text-indigo-700 text-base">{label}</div>
+      <div className="flex justify-between p-4 border-b border-gray-50 bg-gray-50">
+        <div className="text-base text-indigo-700">{label}</div>
         <div className="left-0">
           <button
             type="button"
@@ -115,17 +111,17 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
               showMenu(!menu);
             }}
           >
-            <PlusCircleIcon className="text-lg w-6" />
+            <PlusCircleIcon className="w-6 text-lg" />
           </button>
         </div>
       </div>
-      <div className="min-h-fit p-2 flex flex-wrap">
+      <div className="flex flex-wrap p-2 min-h-fit">
         {getSelectedOptions().length > 0 ? (
           getSelectedOptions().map((option: Option) => (
-            <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
+            <Pill color="gray" key={option.value} className="flex flex-row mb-2">
               <span className="flex items-center">{option.label}</span>
               <button
-                className="ml-1 text-gray-400 font-bold content-center justify-center"
+                className="content-center justify-center ml-1 font-bold text-gray-400"
                 onClick={() => {
                   setInnerOptions(
                     innerOptions.map(opt =>
@@ -135,7 +131,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
                   onOptionSelected(getSelectedOptions());
                 }}
               >
-                <XMarkIcon className="text-lg w-6" />
+                <XMarkIcon className="w-6 text-lg" />
               </button>
             </Pill>
           ))
