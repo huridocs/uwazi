@@ -115,7 +115,7 @@ export default app => {
 
   app.get('/api/users', needsAuthorization(), (_req, res, next) => {
     users
-      .get({}, '+groups')
+      .get({}, '+groups +failedLogins +accountLocked')
       .then(response => res.json(response))
       .catch(next);
   });

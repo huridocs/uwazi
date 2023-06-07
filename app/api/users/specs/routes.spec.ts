@@ -225,7 +225,7 @@ describe('users routes', () => {
       jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(200);
-      expect(users.get).toHaveBeenCalled();
+      expect(users.get).toHaveBeenCalledWith({}, '+groups +failedLogins +accountLocked');
       expect(response.body).toEqual(['users']);
     });
   });
