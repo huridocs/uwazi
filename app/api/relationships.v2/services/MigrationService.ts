@@ -1,6 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
@@ -13,7 +12,7 @@ import { EntityPointer, Relationship } from '../model/Relationship';
 const HUB_BATCH_SIZE = 1000;
 
 class RelationshipMatcher {
-  readonly fieldLibrary: Record<string, Record<string, Set<string>>>;
+  readonly fieldLibrary: Record<string, Record<string, Set<string | undefined>>>;
 
   constructor(v1RelationshipFields: V1RelationshipProperty[]) {
     const groupedByTemplate = objectIndexToArrays(
@@ -43,9 +42,7 @@ class RelationshipMatcher {
       sourceEntityTemplate in this.fieldLibrary &&
       relationshipType in this.fieldLibrary[sourceEntityTemplate] &&
       (this.fieldLibrary[sourceEntityTemplate][relationshipType].has(targetEntityTemplate) ||
-        this.fieldLibrary[sourceEntityTemplate][relationshipType].has(
-          V1RelationshipProperty.ALL_MARKER
-        ))
+        this.fieldLibrary[sourceEntityTemplate][relationshipType].has(undefined))
     );
   }
 
@@ -58,8 +55,6 @@ class RelationshipMatcher {
 }
 
 export class MigrationService {
-  private transactionManager: MongoTransactionManager;
-
   private idGenerator: IdGenerator;
 
   private hubsDS: HubDataSource;
@@ -71,14 +66,12 @@ export class MigrationService {
   private relationshipsDS: RelationshipsDataSource;
 
   constructor(
-    transactionManager: MongoTransactionManager,
     idGenerator: IdGenerator,
     hubsDS: HubDataSource,
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource
   ) {
-    this.transactionManager = transactionManager;
     this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;
     this.v1ConnectionsDS = v1ConnectionsDS;

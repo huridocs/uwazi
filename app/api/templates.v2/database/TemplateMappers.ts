@@ -29,9 +29,9 @@ const propertyToApp = (property: PropertyDBO, _templateId: TemplateDBO['_id']): 
         propertyId,
         property.name,
         property.label,
-        property.content || V1RelationshipProperty.ALL_MARKER,
         property.relationType,
-        templateId
+        templateId,
+        property.content
       );
     default:
       return new Property(propertyId, property.type, property.name, property.label, templateId);
