@@ -149,7 +149,6 @@ const Account = () => {
                   <Button
                     styling="outline"
                     className="flex-none"
-                    data-testid="open-2fa"
                     onClick={() => setIsSidepanelOpen(true)}
                   >
                     <Translate>Enable</Translate>

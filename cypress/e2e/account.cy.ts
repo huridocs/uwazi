@@ -1,4 +1,5 @@
 import { clearCookiesAndLogin } from './helpers/login';
+import { authenticator } from 'otplib';
 import 'cypress-axe';
 
 describe('Public Form', () => {
@@ -35,14 +36,41 @@ describe('Public Form', () => {
       cy.get('input[name=username]').type('admin');
       cy.get('input[name=password]').type('1234');
       cy.contains('button', 'Login').click();
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      cy.injectAxe();
     });
   });
 
   describe('Enable 2FA', () => {
-    it('should enable 2FA', () => {
-      cy.get('[data-testid="open-2fa"]').click();
+    let secret: string;
+
+    it('pass accessibility tests', () => {
       cy.contains('button', 'Enable').click();
-      cy.contains('button', 'Disable');
-    }
+      cy.checkA11y();
+    });
+
+    it('should enable 2FA', () => {
+      cy.get('[data-testid="copy-value-button"]').click();
+      cy.get('[data-testid="copy-value-button"]').click();
+      cy.window()
+        .then(async win => win.navigator.clipboard.readText())
+        .then(value => {
+          secret = value;
+          const token = authenticator.generate(value);
+          cy.get('input[name=token]').type(token);
+          cy.contains('aside button', 'Enable').click();
+          cy.contains('Activated');
+          cy.contains('Dismiss').click();
+        });
+    });
+
+    it('should login with 2FA', () => {
+      cy.get('[data-testid="account-logout"]').click();
+      cy.get('input[name=username]').type('admin');
+      cy.get('input[name=password]').type('1234');
+      cy.contains('button', 'Login').click();
+      cy.get('input[name=token]').type(authenticator.generate(secret));
+      cy.contains('button', 'Verify').click();
+    });
   });
 });
