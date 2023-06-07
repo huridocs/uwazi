@@ -19,6 +19,6 @@ export async function adminLogin() {
 }
 export async function logout() {
   await page.goto(`${host}/en/settings/account`);
-  await expect(page).toClick('button', { text: 'Logout' });
+  await expect(page).toClick('a', { text: 'Logout' });
   await page.waitForNavigation();
 }

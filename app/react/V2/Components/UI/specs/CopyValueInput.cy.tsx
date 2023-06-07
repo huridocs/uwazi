@@ -8,7 +8,7 @@ describe('CopyValueInput', () => {
   const Component = () => (
     <Provider store={createStore()}>
       <div className="tw-content" style={{ height: '200px', paddingTop: '40px' }}>
-        <CopyValueInput value="some testing value" />
+        <CopyValueInput label="name" value="some testing value" />
       </div>
     </Provider>
   );
