@@ -16,13 +16,13 @@ class RelationshipMatcher {
   readonly fieldLibrary: Record<string, Record<string, Set<string>>>;
 
   constructor(v1RelationshipFields: V1RelationshipProperty[]) {
-    const groupbedByTemplate = objectIndexToArrays(
+    const groupedByTemplate = objectIndexToArrays(
       v1RelationshipFields,
       field => field.template,
       field => field
     );
     this.fieldLibrary = Object.fromEntries(
-      Object.entries(groupbedByTemplate).map(([template, fields]) => [
+      Object.entries(groupedByTemplate).map(([template, fields]) => [
         template,
         objectIndexToSets(
           fields,
