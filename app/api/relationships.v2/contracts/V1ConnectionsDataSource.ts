@@ -18,7 +18,7 @@ type V1ConnectionDBOWithEntityInfo = V1ConnectionDBO & {
 };
 
 export interface V1ConnectionsDataSource {
-  allCursor(): ResultSet<V1Connection>;
+  all(): ResultSet<V1Connection>;
   getConnectedToHubs(hubIds: string[]): ResultSet<V1ConnectionDisplayed>;
 }
 

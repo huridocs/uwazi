@@ -95,7 +95,7 @@ export class MigrationService {
   }
 
   private async gatherHubs() {
-    const cursor = this.v1ConnectionsDS.allCursor();
+    const cursor = this.v1ConnectionsDS.all();
 
     let hubIds: Set<string> = new Set();
     await cursor.forEach(async connection => {

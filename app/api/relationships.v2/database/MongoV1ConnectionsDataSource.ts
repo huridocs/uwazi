@@ -28,7 +28,7 @@ export class MongoV1ConnectionsDataSource
 {//eslint-disable-line
   protected collectionName = 'connections';
 
-  allCursor(): MongoResultSet<V1ConnectionDBO, V1Connection> {
+  all(): MongoResultSet<V1ConnectionDBO, V1Connection> {
     const cursor = this.getCollection().find({}, { session: this.getSession() });
     return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
   }
