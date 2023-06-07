@@ -34,13 +34,12 @@ export class MongoV1ConnectionsDataSource
   }
 
   getConnectedToHubs(
-    _hubIds: string[]
+    hubIds: string[]
   ): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed> {
-    const hubIds = _hubIds.map(id => MongoIdHandler.mapToDb(id));
     const collection = this.getCollection();
     const cursor = collection.aggregate<V1ConnectionDBOWithEntityInfo>([
       {
-        $match: { hub: { $in: hubIds } },
+        $match: { hub: { $in: hubIds.map(id => MongoIdHandler.mapToDb(id)) } },
       },
       {
         $lookup: {
