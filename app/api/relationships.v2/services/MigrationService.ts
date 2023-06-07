@@ -94,21 +94,17 @@ export class MigrationService {
     return matcher;
   }
 
-  private async gatherHubs(limit?: number) {
+  private async gatherHubs() {
     const cursor = this.v1ConnectionsDS.allCursor();
 
     let hubIds: Set<string> = new Set();
-    // eslint-disable-next-line no-await-in-loop
-    while ((await cursor.hasNext()) && (limit === undefined || hubIds.size < limit)) {
-      // eslint-disable-next-line no-await-in-loop
-      const connection = await cursor.next();
+    await cursor.forEach(async connection => {
       if (connection) hubIds.add(connection.hub);
       if (hubIds.size >= HUB_BATCH_SIZE) {
-        // eslint-disable-next-line no-await-in-loop
         await this.hubsDS.insertIds(Array.from(hubIds));
         hubIds = new Set();
       }
-    }
+    });
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
