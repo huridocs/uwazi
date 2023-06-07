@@ -6,12 +6,15 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
 import {
+  AndFilterOperatorNode,
+  FilterNode,
   TemplateFilterCriteriaNode,
   VoidFilterNode,
 } from 'api/relationships.v2/model/FilterOperatorNodes';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
+import { Filter } from 'shared/types/api.v2/templates.createTemplateRequest';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>
@@ -20,11 +23,19 @@ const BuildQuery = {
       { types: query.types },
       query.match.map(BuildQuery.match)
     ),
+  filter: (filter: Filter): FilterNode => {
+    switch (filter.type) {
+      case 'and':
+        return new AndFilterOperatorNode(filter.value.map(BuildQuery.filter));
+      case 'template':
+        return new TemplateFilterCriteriaNode(filter.value);
+      default:
+        return new VoidFilterNode();
+    }
+  },
   match: (query: MatchQuery): MatchQueryNode =>
     new MatchQueryNode(
-      new TemplateFilterCriteriaNode(
-        query.filter.type === 'template' ? query.filter.value ?? [] : []
-      ),
+      BuildQuery.filter(query.filter),
       query.traverse?.map(BuildQuery.traverse) ?? []
     ),
   build: (traversals: TraverseQuery[]) =>
