@@ -9154,6 +9154,13 @@ cypress-axe@^1.4.0:
   resolved "https://registry.yarnpkg.com/cypress-axe/-/cypress-axe-1.4.0.tgz#e67482bfe9e740796bf77c7823f19781a8a2faff"
   integrity sha512-Ut7NKfzjyKm0BEbt2WxuKtLkIXmx6FD2j0RwdvO/Ykl7GmB/qRQkwbKLk3VP35+83hiIr8GKD04PDdrTK5BnyA==
 
+cypress-browser-permissions@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/cypress-browser-permissions/-/cypress-browser-permissions-1.1.0.tgz#d681fd66674ca9c519f0a73553132730b680c747"
+  integrity sha512-/pLwCWIXqcmWga3LQmLUDplGCT+e490H8CeqztIXwy8bsMCK4EHTuoRgTcNwYGipdb00omgTfby7jIDPp2a01Q==
+  dependencies:
+    lodash "4.17.21"
+
 cypress-plugin-snapshots@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/cypress-plugin-snapshots/-/cypress-plugin-snapshots-1.4.4.tgz#3a57f9763da1ab6df34950b8ad01803820885310"
@@ -14565,7 +14572,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==
 
-lodash@^4.0.1, lodash@^4.15.0, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1:
+lodash@4.17.21, lodash@^4.0.1, lodash@^4.15.0, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
