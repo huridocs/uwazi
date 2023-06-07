@@ -37,6 +37,8 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
   return [];
 };
 
+const newTranslationsCollection = 'translations_v2';
+
 export default {
   delta: 1,
 
@@ -47,9 +49,15 @@ export default {
 
   reindex: false,
 
+  async createIndex(db) {
+    await db
+      .collection(newTranslationsCollection)
+      .createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
+  },
+
   async up(db) {
-    const newTranslations = await db.collection('translations_v2');
-    await newTranslations.createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
+    await this.createIndex(db);
+    const newTranslations = await db.collection(newTranslationsCollection);
     await newTranslations.deleteMany({});
 
     const configuredLanguageKeys = (await db.collection('settings').findOne()).languages.map(

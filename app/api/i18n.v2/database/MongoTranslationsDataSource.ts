@@ -50,10 +50,7 @@ export class MongoTranslationsDataSource
 
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
-    await this.getCollection().insertMany(items, {
-      session: this.getSession(),
-    });
-
+    await this.getCollection().insertMany(items, { session: this.getSession() });
     return translations;
   }
 

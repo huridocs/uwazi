@@ -131,6 +131,11 @@ describe('translations v2 support', () => {
     });
 
     it('should save the translations to the new translations collection', async () => {
+      await testingDB.setupFixturesAndContext({
+        settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
+        translations: [],
+      });
+      await migrateTranslationsToV2();
       await createTranslation();
 
       const createdTranslations = await db

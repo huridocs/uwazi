@@ -9,6 +9,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
+import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 
 const collectionInDb = (collection = 'translations_v2') =>
@@ -39,6 +40,7 @@ const fixtures = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
+  await migration.createIndex(testingDB.mongodb);
 });
 
 afterAll(async () => {
@@ -134,7 +136,7 @@ describe('CreateTranslationsService', () => {
       });
     });
 
-    describe('when translations to save do not encompass all languages configured', () => {
+    describe('when translations will produce a state where keys are not in all languages', () => {
       it('should throw a validation error', async () => {
         await testingEnvironment.setUp({
           ...fixtures,
@@ -175,6 +177,40 @@ describe('CreateTranslationsService', () => {
           )
         );
       });
+    });
+  });
+
+  describe('when trying to create already existing translations', () => {
+    it('should throw a validation error', async () => {
+      await testingEnvironment.setUp({
+        ...fixtures,
+        translations_v2: [
+          {
+            language: 'en',
+            key: 'existing_key',
+            value: 'value',
+            context: { type: 'Entity', label: 'Test', id: 'test' },
+          },
+          {
+            language: 'es',
+            key: 'existing_key',
+            value: 'value',
+            context: { type: 'Entity', label: 'Test', id: 'test' },
+          },
+        ],
+      });
+      const service = createService();
+      await expect(
+        service.create([
+          {
+            language: 'es',
+            key: 'existing_key',
+            value: 'valor',
+            context: { type: 'Entity', label: 'Test', id: 'test' },
+          },
+        ])
+      ).rejects.toBeInstanceOf(String);
+      // ).rejects.toBeInstanceOf(MongoBulkWriteError);
     });
   });
 });
