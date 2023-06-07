@@ -127,7 +127,6 @@ const MigrationService = () => {
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const service = new GenericMigrationService(
-    transactionManager,
     MongoIdHandler,
     hubDS,
     v1ConnectionsDS,
