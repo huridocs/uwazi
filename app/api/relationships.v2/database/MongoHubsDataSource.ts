@@ -1,15 +1,8 @@
 /* eslint-disable max-classes-per-file */
-import { Db } from 'mongodb';
-
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoDataSource } from '../../common.v2/database/MongoDataSource';
 import { HubDataSource, HubType } from '../contracts/HubDataSource';
-
-const collectionExists = async (db: Db, name: string) => {
-  const collections = await db.listCollections({ name }).toArray();
-  return collections.length > 0;
-};
 
 class TemporaryDataSourceError extends Error {}
 
@@ -20,19 +13,19 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
 
   protected dropped = false;
 
-  shouldBeCreated() {
+  private shouldBeCreated() {
     if (!this.created) {
       throw new TemporaryDataSourceError(`Collection ${this.collectionName} was not created`);
     }
   }
 
-  shouldNotBeDropped() {
+  private shouldNotBeDropped() {
     if (this.dropped) {
       throw new TemporaryDataSourceError(`Collection ${this.collectionName} was already dropped`);
     }
   }
 
-  shouldBeReady() {
+  private shouldBeReady() {
     this.shouldBeCreated();
     this.shouldNotBeDropped();
   }
@@ -49,7 +42,8 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
   }
 
   async exists(): Promise<boolean> {
-    return collectionExists(this.db, this.collectionName);
+    const collections = await this.db.listCollections({ name: this.collectionName }).toArray();
+    return collections.length > 0;
   }
 
   async drop(): Promise<void> {
