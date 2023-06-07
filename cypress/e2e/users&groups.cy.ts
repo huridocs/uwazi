@@ -27,7 +27,7 @@ describe('Users and groups', () => {
     it('create user', () => {
       cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
-        cy.get('#username').type('User 1');
+        cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
         cy.get('#password').type('secret');
         cy.get('[data-testid="multiselect-comp"]').within(() => {
@@ -39,36 +39,30 @@ describe('Users and groups', () => {
             });
         });
         cy.contains('button', 'Save').click();
-        cy.get('[data-testid="Close sidepanel"]').click();
-        // ----- use below after implementing form submission ------
-        // const titles = ['admin', 'colla', 'editor', 'User 1'];
-        // cy.get('table tbody tr').each((row, index) => {
-        //   cy.wrap(row).within(() => {
-        //     cy.get('td').eq(1).should('contain.text', titles[index]);
-        //   });
-        // });
       });
-      // ---remove below after implementing form submission ----
-      cy.contains('[role="dialog"] button', 'Discard changes').click();
+      cy.contains('span', 'Account').click();
+      cy.contains('span', 'Users & Groups').click();
+
+      cy.contains('button', 'Dismiss').click();
+      namesShouldMatch(['User_1', 'admin', 'colla', 'editor']);
     });
     it('edit user', () => {
+      cy.intercept('POST', 'api/users').as('editUser');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
           cy.get('td:nth-child(6) button').click();
         });
       cy.get('aside').within(() => {
-        cy.get('#username').should('have.value', 'admin');
-        cy.get('#email').should('have.value', 'admin@uwazi.com');
-        cy.get('#username').type(' edited');
+        cy.get('#username').should('have.value', 'User_1');
+        cy.get('#email').should('have.value', 'user@mailer.com');
+        cy.get('#username').type('_edited');
+        cy.get('#password').type('secret');
         cy.contains('button', 'Save').click();
-        cy.get('[data-testid="Close sidepanel"]').click();
       });
-      // ----- remove below after implementing form submission ------
-      cy.contains('[role="dialog"] button', 'Discard changes').click();
-
-      // ----- the lines below should be edited after implementing form submission -----
-      const titles = ['admin', 'colla', 'editor', 'User 1'];
+      cy.wait('@editUser');
+      cy.contains('button', 'Dismiss').click();
+      const titles = ['User_1_edited', 'admi', 'colla', 'editor'];
       namesShouldMatch(titles);
     });
     it('delete user', () => {
@@ -78,6 +72,8 @@ describe('Users and groups', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Delete').click();
+      cy.contains('[data-testid="modal"] button', 'Delete').click();
+      cy.contains('button', 'Dismiss').click();
     });
     it('reset password', () => {
       cy.get('table tbody tr')
@@ -115,7 +111,7 @@ describe('Users and groups', () => {
     it('create group', () => {
       cy.contains('button', 'Add group').click();
       cy.get('aside').within(() => {
-        cy.get('#name').type('Group 1');
+        cy.get('#name').type('Group_1');
         cy.get('[data-testid="multiselect-comp"]').within(() => {
           cy.get('button').click();
           cy.get('ul li')
@@ -131,8 +127,8 @@ describe('Users and groups', () => {
       cy.contains('[role="dialog"] button', 'Discard changes').click();
 
       // ----- the lines below should be edited after implementing form submission -----
-      const titles = ['admin', 'colla', 'editor', 'User 1'];
-      namesShouldMatch([]);
+      const titles = ['Activistas', 'Asesores legales', 'Group_1'];
+      namesShouldMatch(titles);
     });
     it('edit group');
     it('delete group');
