@@ -145,11 +145,7 @@ export class MigrationService {
     const hubCursor = this.hubsDS.all();
     let total = 0;
     let used = 0;
-    // eslint-disable-next-line no-await-in-loop
-    while (await hubCursor.hasNext()) {
-      // eslint-disable-next-line no-await-in-loop
-      const hubIdBatch = await hubCursor.nextBatch(HUB_BATCH_SIZE);
-      // eslint-disable-next-line no-await-in-loop
+    await hubCursor.batchedForEach(HUB_BATCH_SIZE, async hubIdBatch => {
       const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
       const connectionsGrouped = objectIndexToArrays(
         connections,
@@ -170,10 +166,9 @@ export class MigrationService {
         transformed.push(...groupTransformed);
       }
       if (write) {
-        // eslint-disable-next-line no-await-in-loop
         await this.relationshipsDS.insert(transformed);
       }
-    }
+    });
     return { total, used };
   }
 

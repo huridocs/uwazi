@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
+import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 
 type HubType = {
   _id: ObjectId;
@@ -10,7 +10,7 @@ export interface HubDataSource {
   create(): Promise<void>;
   drop(): Promise<void>;
   insertIds(ids: string[]): Promise<void>;
-  all(): MongoResultSet<HubType, string>;
+  all(): ResultSet<string>;
 }
 
 export type { HubType };
