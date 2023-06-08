@@ -102,10 +102,7 @@ class InformationExtraction {
     await Promise.all(
       files.map(async file => {
         const xmlName = file.segmentation.xmlname!;
-        const xmlExists = await storage.fileExists(
-          path.join(PDFSegmentation.SERVICE_NAME, xmlName),
-          'document'
-        );
+        const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
         const propertyLabeledData = file.extractedMetadata?.find(
           labeledData => labeledData.name === extractor.property
