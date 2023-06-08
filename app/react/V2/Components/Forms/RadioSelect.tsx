@@ -19,7 +19,7 @@ const InlineRadio = ({ legend, options, name, onChange, orientation = 'vertical'
       className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''}`}
       id="radio"
     >
-      {legend && <legend className="mb-4">Choose your favorite country</legend>}
+      {legend && <legend className="mb-4">{legend}</legend>}
       {options.map(option => (
         <div
           className={`flex items-center gap-2 ${orientation === 'vertical' ? '' : 'mr-4'}`}
