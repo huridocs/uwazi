@@ -495,6 +495,14 @@ describe('Users', () => {
       expect(user.accountUnlockCode).toBe(undefined);
       expect(user.failedLogins).toBe(undefined);
     });
+
+    it('should keep fields intact in other users', async () => {
+      await users.simpleUnlock(userId);
+      const [user] = await db.mongodb.collection('users').find({ _id: userToDelete }).toArray();
+      expect(user.accountLocked).toBe(false);
+      expect(user.accountUnlockCode).toBe(undefined);
+      expect(user.failedLogins).toBe(0);
+    });
   });
 
   describe('recoverPassword', () => {

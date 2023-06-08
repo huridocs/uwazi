@@ -44,6 +44,8 @@ export default {
       email: 'userToDelete@email.com',
       role: 'admin',
       using2fa: false,
+      failedLogins: 0,
+      accountLocked: false,
     },
     {
       _id: userToDelete2,
