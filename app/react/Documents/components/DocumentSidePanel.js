@@ -508,6 +508,7 @@ class DocumentSidePanel extends Component {
               delete={this.deleteDocument}
               data={this.props.doc}
               formStatePath={this.props.formPath}
+              formState={this.props.formState}
               entityBeingEdited={docBeingEdited}
               includeViewButton={!docBeingEdited && readOnly}
               storeKey={this.props.storeKey}
@@ -716,6 +717,7 @@ DocumentSidePanel.propTypes = {
   formDirty: PropTypes.bool,
   formPath: PropTypes.string.isRequired,
   formData: PropTypes.instanceOf(Object),
+  formState: PropTypes.instanceOf(Object).isRequired,
   searchTerm: PropTypes.string,
   docBeingEdited: PropTypes.bool,
   open: PropTypes.bool,
@@ -785,6 +787,7 @@ const mapStateToProps = (state, ownProps) => {
     defaultLanguage,
     templates: state.templates,
     formData: state[ownProps.storeKey].sidepanel.metadata,
+    formState: state[ownProps.storeKey].sidepanel.metadataForm,
     currentSidepanelView: state.library.sidepanel.view,
     selectedDocument,
   };
