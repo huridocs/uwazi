@@ -57,6 +57,16 @@ const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHt
   }
 };
 
+const unlockAccount = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+  try {
+    const requestParams = new RequestParams({ id: user._id }, headers);
+    const response = await UsersAPI.unlockAccount(requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
 const get = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
@@ -77,4 +87,4 @@ const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
-export { get, getUserGroups, newUser, saveUser, deleteUser, saveGroup, deleteGroup };
+export { get, getUserGroups, newUser, saveUser, deleteUser, saveGroup, deleteGroup, unlockAccount };

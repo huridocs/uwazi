@@ -23,7 +23,8 @@ type FormIntent =
   | 'delete-users'
   | 'new-group'
   | 'edit-group'
-  | 'delete-groups';
+  | 'delete-groups'
+  | 'unlock-user';
 
 // eslint-disable-next-line max-statements
 const Users = () => {
@@ -182,6 +183,8 @@ const userAction =
         return usersAPI.saveGroup(formValues);
       case 'delete-groups':
         return usersAPI.deleteGroup(formValues);
+      case 'unlock-user':
+        return usersAPI.unlockAccount(formValues);
       default:
         return null;
     }

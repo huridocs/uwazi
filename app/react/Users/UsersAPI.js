@@ -9,6 +9,10 @@ export default {
     return api.post('users/new', requestParams).then(response => response.json);
   },
 
+  unlockAccount(requestParams) {
+    return api.post('users/unlock', requestParams).then(response => response.json);
+  },
+
   currentUser(requestParams) {
     return api.get('user', requestParams).then(response => response.json);
   },

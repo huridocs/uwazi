@@ -70,6 +70,13 @@ const useHandleNotifications = () => {
         });
         break;
 
+      case 'unlock-user':
+        setNotifications({
+          type: 'success',
+          text: <Translate>Account unlocked</Translate>,
+        });
+        break;
+
       default:
         break;
     }

@@ -86,6 +86,16 @@ const UserFormSidepanel = ({
     reset(defaultValues);
   };
 
+  const handleClick = (intent: string) => {
+    const formData = new FormData();
+    formData.set('intent', intent);
+    formData.set('data', JSON.stringify(selectedUser));
+    fetcher.submit(formData, { method: 'post' });
+
+    setShowSidepanel(false);
+    reset(defaultValues);
+  };
+
   return (
     <Sidepanel
       isOpen={showSidepanel}
@@ -172,28 +182,40 @@ const UserFormSidepanel = ({
               {errors.password?.type === 'maxLength' && <Translate>Password is too long</Translate>}
             </span>
 
-            {selectedUser?._id && (
-              <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+            <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+              {selectedUser?._id && (
+                <>
+                  <Button
+                    type="button"
+                    styling="light"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset password');
+                    }}
+                  >
+                    <Translate>Reset Password</Translate>
+                  </Button>
+                  <Button
+                    type="button"
+                    styling="light"
+                    onClick={() => {
+                      console.log('this should show a confirm and then reset 2fa');
+                    }}
+                  >
+                    <Translate>Reset 2FA</Translate>
+                  </Button>
+                </>
+              )}
+              {selectedUser?.accountLocked && (
                 <Button
                   type="button"
                   styling="light"
-                  onClick={() => {
-                    console.log('this should show a confirm and then reset password');
-                  }}
+                  color="error"
+                  onClick={() => handleClick('unlock-user')}
                 >
-                  <Translate>Reset Password</Translate>
+                  <Translate>Unlock account</Translate>
                 </Button>
-                <Button
-                  type="button"
-                  styling="light"
-                  onClick={() => {
-                    console.log('this should show a confirm and then reset 2fa');
-                  }}
-                >
-                  <Translate>Reset 2FA</Translate>
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
           </Card>
 
           <div className="rounded-md border border-gray-50 shadow-sm">
