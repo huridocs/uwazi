@@ -23,6 +23,7 @@ const Primary: Story = {
         options={args.options}
         name={args.name}
         onChange={args.onChange}
+        orientation={args.orientation}
       />
     </Provider>
   ),
@@ -57,6 +58,15 @@ const Basic: Story = {
     onChange: action('changed'),
   },
 };
-export { Basic };
+
+const Horizontal: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    orientation: 'horizontal',
+  },
+};
+
+export { Basic, Horizontal };
 
 export default meta;

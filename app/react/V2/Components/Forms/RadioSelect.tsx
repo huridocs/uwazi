@@ -10,14 +10,21 @@ interface RadioProps {
   options: (Option & {
     defaultChecked?: boolean;
   })[];
+  orientation?: 'vertical' | 'horizontal';
 }
 
-const InlineRadio = ({ legend, options, name, onChange }: RadioProps) => (
+const InlineRadio = ({ legend, options, name, onChange, orientation = 'vertical' }: RadioProps) => (
   <div className="tw-content">
-    <fieldset className="flex flex-col max-w-md gap-4" id="radio">
+    <fieldset
+      className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''}`}
+      id="radio"
+    >
       {legend && <legend className="mb-4">Choose your favorite country</legend>}
       {options.map(option => (
-        <div className="flex items-center gap-2" key={option.id || option.value}>
+        <div
+          className={`flex items-center gap-2 ${orientation === 'vertical' ? '' : 'mr-4'}`}
+          key={option.id || option.value}
+        >
           <Radio
             id={`${name}_${option.value}`}
             name={name}

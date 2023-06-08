@@ -3,7 +3,8 @@ import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/RadioSelect.stories';
 
-const { Basic } = composeStories(stories);
+const { Basic, Horizontal } = composeStories(stories);
+
 describe('RadioSelect', () => {
   beforeEach(() => {
     mount(<Basic />);
@@ -19,6 +20,11 @@ describe('RadioSelect', () => {
     });
   });
 
+  it('should be vertical by default', () => {
+    cy.get('fieldset').should('have.class', 'flex-col max-w-md');
+    cy.get('fieldset > div').should('not.have.class', 'mr-4');
+  });
+
   it('should have checked the default checked property', () => {
     cy.get('input[type="radio"]:checked').siblings().contains('Spain');
   });
@@ -32,5 +38,16 @@ describe('RadioSelect', () => {
     cy.get('input[type="radio"]').invoke('on', 'change', cy.stub().as('change'));
     cy.get('input[type="radio"]').eq(1).check();
     cy.get('@change').should('have.been.called');
+  });
+});
+
+describe('RadioSelect Horizontal', () => {
+  beforeEach(() => {
+    mount(<Horizontal />);
+  });
+
+  it('should be horizontal if specified', () => {
+    cy.get('fieldset').should('not.have.class', 'flex-col max-w-md');
+    cy.get('fieldset > div').should('have.class', 'mr-4');
   });
 });
