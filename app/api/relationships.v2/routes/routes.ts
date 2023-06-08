@@ -1,3 +1,5 @@
+import { performance } from 'perf_hooks';
+
 import { Application, NextFunction, Request, Response } from 'express';
 
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -8,10 +10,12 @@ import {
   CreateRelationshipService,
   DeleteRelationshipService,
   GetRelationshipService,
+  MigrationService,
 } from '../services/service_factories';
 import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
+import { validateMigration } from './validators/migration';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -34,15 +38,31 @@ export default (app: Application) => {
 
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {
     const relationships = validateCreateRelationship(req.body);
-    const service = CreateRelationshipService(req);
+    const service = await CreateRelationshipService(req);
     const created = await service.create(relationships);
     res.json(created);
   });
 
   app.delete('/api/v2/relationships', featureRequired, parseQuery, async (req, res) => {
     const relationshipsIds = validateDeleteRelationships(req.query);
-    const service = DeleteRelationshipService(req);
+    const service = await DeleteRelationshipService(req);
     await service.delete(relationshipsIds.ids);
     res.status(200).send();
+  });
+
+  app.post('/api/v2/relationships/migrate', featureRequired, async (req, res) => {
+    const timeStart = performance.now();
+    const { dryRun } = validateMigration(req.body);
+    const service = MigrationService();
+    const { total, used } = await service.migrate(dryRun);
+    const timeEnd = performance.now();
+    const time = timeEnd - timeStart;
+    res.json({ total, used, time, dryRun });
+  });
+
+  app.post('/api/v2/relationships/test_one_hub', featureRequired, async (req, res) => {
+    const { hubId } = req.body;
+    const { total, used, transformed, original } = await MigrationService().testOneHub(hubId);
+    res.json({ total, used, transformed, original });
   });
 };
