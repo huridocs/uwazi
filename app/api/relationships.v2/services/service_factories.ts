@@ -24,7 +24,12 @@ import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerial
 import { tenants } from 'api/tenants';
 import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
 import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
-import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import {
+  DefaultHubsDataSource,
+  DefaultRelationshipDataSource,
+  DefaultV1ConnectionsDataSource,
+} from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
@@ -32,6 +37,7 @@ import { GetRelationshipService as GenericGetRelationshipService } from './GetRe
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
+import { MigrationService as GenericMigrationService } from './MigrationService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -166,9 +172,26 @@ const DeleteRelationshipService = async (request: Request) => {
   return service;
 };
 
+const MigrationService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const hubDS = DefaultHubsDataSource(transactionManager);
+  const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const service = new GenericMigrationService(
+    MongoIdHandler,
+    hubDS,
+    v1ConnectionsDS,
+    templatesDS,
+    relationshipsDS
+  );
+  return service;
+};
+
 export {
   CreateRelationshipService,
   DeleteRelationshipService,
   GetRelationshipService,
   DenormalizationService,
+  MigrationService,
 };
