@@ -1,6 +1,8 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef, useState } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { Checkbox } from 'flowbite-react';
+import { Translate } from 'app/I18N';
 import { Option, ContextOption } from './SelectTypes';
 import { Pill } from '../UI';
 
