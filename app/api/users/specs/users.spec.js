@@ -20,6 +20,7 @@ import fixtures, {
   group2Id,
   userToDelete,
   userToDelete2,
+  blockedUserId,
 } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
@@ -486,6 +487,16 @@ describe('Users', () => {
     });
   });
 
+  describe('simpleUnlock', () => {
+    it('should remove unlock related fields', async () => {
+      await users.simpleUnlock(userId);
+      const [user] = await db.mongodb.collection('users').find({ _id: userId }).toArray();
+      expect(user.accountLocked).toBe(undefined);
+      expect(user.accountUnlockCode).toBe(undefined);
+      expect(user.failedLogins).toBe(undefined);
+    });
+  });
+
   describe('recoverPassword', () => {
     beforeEach(() => {
       jest.restoreAllMocks();
@@ -642,6 +653,7 @@ describe('Users', () => {
       await users.delete([userToDelete.toString()], { _id: 'someone' });
       await users.delete([userToDelete2.toString()], { _id: 'someone' });
       await users.delete([recoveryUserId.toString()], { _id: 'someone' });
+      await users.delete([blockedUserId.toString()], { _id: 'someone' });
       try {
         await users.delete([userId.toString()], { _id: 'someone' });
         throw new Error('should throw an error');
@@ -666,6 +678,7 @@ describe('Users', () => {
             userToDelete.toString(),
             userToDelete2.toString(),
             recoveryUserId.toString(),
+            blockedUserId.toString(),
           ],
           { _id: 'someone' }
         );
@@ -721,14 +734,14 @@ describe('Users', () => {
   describe('get', () => {
     it('should return all users without group data', async () => {
       const userList = await users.get();
-      expect(userList.length).toBe(4);
+      expect(userList.length).toBe(5);
       const groupData = userList.filter(u => u.groups !== undefined);
       expect(groupData.length).toBe(0);
     });
 
     it('should return all users with groups to which they belong', async () => {
       const userList = await users.get({}, '+groups');
-      expect(userList.length).toBe(4);
+      expect(userList.length).toBe(5);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
     });
