@@ -101,7 +101,7 @@ export class MigrationService {
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
-  private async transformHub(
+  private transformHub(
     connections: V1ConnectionDisplayed[],
     matcher: RelationshipMatcher,
     transform: boolean = false
@@ -134,7 +134,7 @@ export class MigrationService {
     const hubCursor = this.hubsDS.all();
     let total = 0;
     let used = 0;
-    await hubCursor.batchedForEach(HUB_BATCH_SIZE, async hubIdBatch => {
+    await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch => {
       const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
       const connectionsGrouped = objectIndexToArrays(
         connections,
@@ -148,8 +148,7 @@ export class MigrationService {
           total: groupTotal,
           used: groupUsed,
           transformed: groupTransformed,
-          // eslint-disable-next-line no-await-in-loop
-        } = await this.transformHub(connectionGroups[i], matcher, transform);
+        } = this.transformHub(connectionGroups[i], matcher, transform);
         total += groupTotal;
         used += groupUsed;
         transformed.push(...groupTransformed);

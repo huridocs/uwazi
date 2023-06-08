@@ -61,7 +61,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     }
   }
 
-  async batchedForEach(batchSize: number, callback: (items: U[]) => Promise<void> | void) {
+  async forEachBatch(batchSize: number, callback: (items: U[]) => Promise<void> | void) {
     while (await this.hasNext()) {
       const items: U[] = await this.nextBatch(batchSize);
       await callback(items);
