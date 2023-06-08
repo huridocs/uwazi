@@ -5,6 +5,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
+import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -23,13 +24,16 @@ export class DenormalizationService {
 
   private indexEntities: IndexEntitiesCallback;
 
+  private updateStrategy: RelationshipPropertyUpdateStrategy;
+
   constructor(
     relationshipsDS: RelationshipsDataSource,
     entitiesDS: EntitiesDataSource,
     templatesDS: TemplatesDataSource,
     settingsDS: SettingsDataSource,
     transactionManager: TransactionManager,
-    indexEntitiesCallback: IndexEntitiesCallback
+    indexEntitiesCallback: IndexEntitiesCallback,
+    updateStrategy: RelationshipPropertyUpdateStrategy
   ) {
     this.relationshipsDS = relationshipsDS;
     this.entitiesDS = entitiesDS;
@@ -37,6 +41,7 @@ export class DenormalizationService {
     this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
     this.indexEntities = indexEntitiesCallback;
+    this.updateStrategy = updateStrategy;
   }
 
   private async getCandidateEntities(
@@ -86,23 +91,45 @@ export class DenormalizationService {
     );
   }
 
-  private async runQueriesAndInvalidateMetadataCaches<Id>(
-    relationshipIds: Id[],
-    getCandidatesCallback: (id: Id) => Promise<
-      {
-        sharedId: string;
-        property: string;
-      }[]
-    >
-  ) {
-    const candidates = (
-      await Promise.all(relationshipIds.map(async id => getCandidatesCallback(id)))
-    ).flat();
+  private async getCandidateEntitiesForTemplate(templateId: string, propertyNames: string[]) {
+    const entities = await this.entitiesDS.getIdsByTemplate(templateId).all();
+    return entities.map(entity => ({ sharedId: entity, properties: propertyNames }));
+  }
 
-    await this.entitiesDS.markMetadataAsChanged(candidates);
+  private async invalidateMetadataCacheForTemplate(templateIds: string[], propertyNames: string[]) {
+    return this.entitiesDS.markMetadataAsChanged(
+      templateIds.map(templateId => ({ template: templateId, properties: propertyNames }))
+    );
+  }
+
+  private async runQueriesAndInvalidateMetadataCaches<Id>(
+    ids: Id[],
+    findCandidatesCallback: (id: Id) => Promise<
+      (
+        | {
+            sharedId: string;
+            property: string;
+          }
+        | {
+            sharedId: string;
+            properties: string[];
+          }
+      )[]
+    >,
+    invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>
+  ) {
+    const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
+
+    if (invalidateMetadataCacheCallback) {
+      await invalidateMetadataCacheCallback(ids);
+    } else {
+      await this.entitiesDS.markMetadataAsChanged(candidates);
+    }
 
     this.transactionManager.onCommitted(async () => {
-      await this.indexEntities(candidates.map(c => c.sharedId));
+      const candidateIds = candidates.map(c => c.sharedId);
+      await this.indexEntities(candidateIds);
+      await this.updateStrategy.update(candidates.map(c => c.sharedId));
     });
   }
 
@@ -165,6 +192,14 @@ export class DenormalizationService {
   async denormalizeAfterCreatingEntities(entityIds: string[], language: string) {
     return this.runQueriesAndInvalidateMetadataCaches(entityIds, async id =>
       this.getCandidateEntitiesForEntity(id, language)
+    );
+  }
+
+  async denormalizeAfterCreatingOrUpdatingProperty(templateId: string, propertyNames: string[]) {
+    return this.runQueriesAndInvalidateMetadataCaches(
+      [templateId],
+      async id => this.getCandidateEntitiesForTemplate(id, propertyNames),
+      async () => this.invalidateMetadataCacheForTemplate([templateId], propertyNames)
     );
   }
 }

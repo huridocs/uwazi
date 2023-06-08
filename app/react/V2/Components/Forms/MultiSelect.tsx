@@ -61,7 +61,7 @@ const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSel
                   onChange(selected);
                 }}
               >
-                <XMarkIcon className="text-lg w-6" />
+                <XMarkIcon className="w-6 text-lg" />
               </button>
             </Pill>
           ))
