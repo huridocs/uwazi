@@ -43,6 +43,31 @@ export default app => {
   );
 
   app.post(
+    '/api/users/unlock',
+    needsAuthorization(),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            id: { type: 'string' },
+          },
+          required: ['id'],
+        },
+      },
+      required: ['body'],
+    }),
+    (req, res, next) => {
+      users
+        .simpleUnlock(req.body.id)
+        .then(() => res.json('OK'))
+        .catch(next);
+    }
+  );
+
+  app.post(
     '/api/unlockaccount',
     validation.validateRequest({
       type: 'object',
@@ -115,7 +140,7 @@ export default app => {
 
   app.get('/api/users', needsAuthorization(), (_req, res, next) => {
     users
-      .get({}, '+groups')
+      .get({}, '+groups +failedLogins +accountLocked')
       .then(response => res.json(response))
       .catch(next);
   });

@@ -5,6 +5,7 @@ const userId = db.id();
 const group1Id = db.id();
 const group2Id = db.id();
 const recoveryUserId = db.id();
+const blockedUserId = db.id();
 const userToDelete = db.id();
 const userToDelete2 = db.id();
 const expectedKey = SHA256(`recovery@email.com${2000}`).toString();
@@ -27,11 +28,24 @@ export default {
       using2fa: false,
     },
     {
+      _id: blockedUserId,
+      password: 'anotherpassword',
+      username: 'blockedusername',
+      email: 'blocked@email.com',
+      role: 'editor',
+      using2fa: false,
+      failedLogins: 6,
+      accountLocked: true,
+      accountUnlockCode: 'unlockcode',
+    },
+    {
       _id: userToDelete,
       username: 'userToDelete',
       email: 'userToDelete@email.com',
       role: 'admin',
       using2fa: false,
+      failedLogins: 0,
+      accountLocked: false,
     },
     {
       _id: userToDelete2,
@@ -60,4 +74,13 @@ export default {
   ],
 };
 
-export { userId, recoveryUserId, expectedKey, group1Id, group2Id, userToDelete, userToDelete2 };
+export {
+  userId,
+  recoveryUserId,
+  expectedKey,
+  group1Id,
+  group2Id,
+  userToDelete,
+  userToDelete2,
+  blockedUserId,
+};

@@ -29,6 +29,20 @@ const invalidUserProperties = [
   { field: 'password', value: '', instancePath: '/body/password', keyword: 'minLength' },
 ];
 
+const adminUser = {
+  _id: 'admin1',
+  username: 'Admin 1',
+  role: UserRole.ADMIN,
+  email: 'admin@test.com',
+};
+
+const editorUser = {
+  _id: 'editor1',
+  username: 'Editor 1',
+  role: UserRole.EDITOR,
+  email: 'editor@test.com',
+};
+
 describe('users routes', () => {
   let currentUser: UserSchema | undefined;
 
@@ -55,12 +69,7 @@ describe('users routes', () => {
   });
 
   beforeEach(() => {
-    currentUser = {
-      _id: 'admin1',
-      username: 'Admin 1',
-      role: UserRole.ADMIN,
-      email: 'admin@test.com',
-    };
+    currentUser = adminUser;
   });
 
   describe('POST', () => {
@@ -122,6 +131,50 @@ describe('users routes', () => {
             expect(response.body.errors[0].keyword).toEqual(keyword);
           }
         );
+      });
+    });
+
+    describe('/users/unlock', () => {
+      let unlockMock: jest.SpyInstance;
+
+      beforeAll(() => {
+        unlockMock = jest
+          .spyOn(users, 'simpleUnlock')
+          .mockImplementation(async (_id?: any) => Promise.resolve());
+      });
+
+      afterAll(() => {
+        unlockMock.mockRestore();
+      });
+
+      it('should require an admin', async () => {
+        currentUser = editorUser;
+        const response = await request(app).post('/api/users/unlock').send({ id: 'useridstring ' });
+        expect(response.status).toBe(401);
+        currentUser = adminUser;
+      });
+
+      it.each([
+        {
+          body: {},
+        },
+        {
+          body: { id: 'useridstring', extra: 'extra' },
+        },
+        {
+          body: { id: 0 },
+        },
+      ])('should validate the body', async ({ body }) => {
+        const response = await request(app).post('/api/users/unlock').send(body);
+        expect(response.status).toBe(400);
+        expect(response.body.error).toEqual('validation failed');
+      });
+
+      it('should call users simpleUnlock with the body id', async () => {
+        const id = 'useridstring';
+        const response = await request(app).post('/api/users/unlock').send({ id });
+        expect(response.status).toBe(200);
+        expect(users.simpleUnlock).toHaveBeenCalledWith(id);
       });
     });
 
@@ -216,7 +269,7 @@ describe('users routes', () => {
   describe('GET', () => {
     it('should need authorization', async () => {
       jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
-      currentUser!.role = UserRole.EDITOR;
+      currentUser = editorUser;
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(401);
     });
@@ -225,7 +278,7 @@ describe('users routes', () => {
       jest.spyOn(users, 'get').mockImplementation(async () => Promise.resolve(['users']));
       const response = await request(app).get('/api/users');
       expect(response.status).toBe(200);
-      expect(users.get).toHaveBeenCalled();
+      expect(users.get).toHaveBeenCalledWith({}, '+groups +failedLogins +accountLocked');
       expect(response.body).toEqual(['users']);
     });
   });
@@ -244,7 +297,7 @@ describe('users routes', () => {
     });
 
     it('should need authorization', async () => {
-      currentUser!.role = UserRole.EDITOR;
+      currentUser = editorUser;
       const response = await request(app).delete('/api/users').query({ ids: 'user1' });
       expect(response.status).toBe(401);
     });

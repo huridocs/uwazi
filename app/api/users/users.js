@@ -280,6 +280,13 @@ export default {
     });
   },
 
+  async simpleUnlock(_id) {
+    await model.updateMany(
+      { _id },
+      { $unset: { accountLocked: 1, accountUnlockCode: 1, failedLogins: 1 } }
+    );
+  },
+
   recoverPassword(email, domain, options = {}) {
     const key = SHA256(email + Date.now()).toString();
     return Promise.all([model.get({ email }), settings.get()]).then(([_user, _settings]) => {
