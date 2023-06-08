@@ -7,7 +7,8 @@ import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams(user, headers);
-    return await UsersAPI.new(requestParams);
+    const response = await UsersAPI.new(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -16,7 +17,8 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
 const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams(user, headers);
-    return UsersAPI.save(requestParams);
+    const response = await UsersAPI.save(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -25,7 +27,8 @@ const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =
 const deleteUser = async (users: ClientUserSchema[], headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({ ids: users.map(user => user._id) }, headers);
-    return UsersAPI.delete(requestParams);
+    const response = await UsersAPI.delete(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -34,7 +37,8 @@ const deleteUser = async (users: ClientUserSchema[], headers?: IncomingHttpHeade
 const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams(group, headers);
-    return GroupsAPI.saveGroup(requestParams);
+    const response = await GroupsAPI.saveGroup(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -46,7 +50,8 @@ const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHt
       { ids: groups.map(group => group._id) as string[] },
       headers
     );
-    return GroupsAPI.deleteGroup(requestParams);
+    const response = await GroupsAPI.deleteGroup(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -55,7 +60,8 @@ const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHt
 const get = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
-    return UsersAPI.get(requestParams);
+    const response = await UsersAPI.get(requestParams);
+    return response;
   } catch (e) {
     return e;
   }
@@ -64,7 +70,8 @@ const get = async (headers?: IncomingHttpHeaders) => {
 const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
-    return GroupsAPI.getGroups(requestParams);
+    const response = await GroupsAPI.getGroups(requestParams);
+    return response;
   } catch (e) {
     return e;
   }

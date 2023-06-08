@@ -10,18 +10,18 @@ const useHandleNotifications = () => {
   const fetchers = useFetchers();
   const setNotifications = useSetRecoilState(notificationAtom);
 
-  useEffect(() => {
-    if (!fetchers.length) return;
+  const lastFetcherCall = last(fetchers) || fetchers[0];
+  const intent = lastFetcherCall?.formData?.get('intent');
+  const { data } = lastFetcherCall || {};
 
-    const lastFetcherCall = last(fetchers) || fetchers[0];
-    const intent = lastFetcherCall.formData?.get('intent');
-    const { data } = lastFetcherCall;
+  useEffect(() => {
+    if (!intent || !data) return;
 
     if (data instanceof FetchResponseError) {
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
-        details: data.json?.prettyMessage ? data.json?.prettyMessage : undefined,
+        details: data.json?.prettyMessage ? data.json.prettyMessage : undefined,
       });
 
       return;
@@ -73,7 +73,7 @@ const useHandleNotifications = () => {
       default:
         break;
     }
-  }, [fetchers, setNotifications]);
+  }, [data, intent, setNotifications]);
 };
 
 export { useHandleNotifications };
