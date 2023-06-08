@@ -38,14 +38,14 @@ export default (app: Application) => {
 
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {
     const relationships = validateCreateRelationship(req.body);
-    const service = CreateRelationshipService(req);
+    const service = await CreateRelationshipService(req);
     const created = await service.create(relationships);
     res.json(created);
   });
 
   app.delete('/api/v2/relationships', featureRequired, parseQuery, async (req, res) => {
     const relationshipsIds = validateDeleteRelationships(req.query);
-    const service = DeleteRelationshipService(req);
+    const service = await DeleteRelationshipService(req);
     await service.delete(relationshipsIds.ids);
     res.status(200).send();
   });

@@ -410,6 +410,7 @@ export default {
       inheritedType: type,
       onlyForCards: Boolean(options.onlyForCards),
       indexInTemplate: property.get('indexInTemplate'),
+      obsolete: options.doc.obsoleteMetadata.includes(name),
     };
   },
 

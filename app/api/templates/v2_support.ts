@@ -15,7 +15,7 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
     return template;
   }
 
-  const createTemplateService = CreateTemplateService();
+  const createTemplateService = await CreateTemplateService();
 
   const mappedProperties = await Promise.all(
     (template.properties || []).map(async property => {
@@ -47,7 +47,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return _newTemplate;
   }
-  const createTemplateService = CreateTemplateService();
+  const createTemplateService = await CreateTemplateService();
 
   await createTemplateService.handleRelationshipPropertyUpdates(_oldTemplate, _newTemplate);
 
@@ -61,7 +61,7 @@ const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSche
     return;
   }
 
-  const createTemplateService = CreateTemplateService();
+  const createTemplateService = await CreateTemplateService();
   const isUsed = await createTemplateService.templateIsUsedInQueries(templateId?.toString() || '');
 
   if (isUsed) {

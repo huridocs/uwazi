@@ -25,7 +25,6 @@ import {
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
-  assignNewRelationshipFieldsValues,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -448,14 +447,12 @@ export default {
 
   async getWithoutDocuments(query, select, options = {}) {
     const entities = await model.getUnrestricted(query, select, options);
-    await assignNewRelationshipFieldsValues(entities);
     return entities;
   },
 
   async getUnrestricted(query, select, options) {
     const extendedSelect = extendSelect(select);
     const entities = await model.getUnrestricted(query, extendedSelect, options);
-    await assignNewRelationshipFieldsValues(entities);
     return entities;
   },
 
@@ -469,7 +466,6 @@ export default {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
     const entities = await model.get(query, extendedSelect, restOfOptions);
-    await assignNewRelationshipFieldsValues(entities);
 
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
@@ -491,7 +487,6 @@ export default {
     } else {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
-    if (doc) await assignNewRelationshipFieldsValues([doc]);
     return doc;
   },
 
@@ -542,7 +537,6 @@ export default {
 
   async getAllLanguages(sharedId) {
     const entities = await model.get({ sharedId });
-    await assignNewRelationshipFieldsValues(entities);
     return entities;
   },
 
