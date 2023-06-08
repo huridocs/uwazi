@@ -6,6 +6,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import {
+  AndFilterOperatorNode,
   IdFilterCriteriaNode,
   TemplateFilterCriteriaNode,
 } from 'api/relationships.v2/model/FilterOperatorNodes';
@@ -175,6 +176,62 @@ describe('When getting by query', () => {
     expect(result).toMatchObject([
       { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
     ]);
+  });
+
+  describe('boolean operators', () => {
+    describe('when using an AND operator', () => {
+      const cases = [
+        {
+          query: new MatchQueryNode(
+            new AndFilterOperatorNode([
+              new IdFilterCriteriaNode('entity1'),
+              new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
+            ]),
+            []
+          ),
+          expected: [{ _id: factory.id('entity1-en').toString(), sharedId: 'entity1' }],
+        },
+        {
+          query: new MatchQueryNode(
+            new AndFilterOperatorNode([
+              new TemplateFilterCriteriaNode([
+                factory.id('template1').toString(),
+                factory.id('template2').toString(),
+              ]),
+              new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
+            ]),
+            []
+          ),
+          expected: [
+            { _id: factory.id('entity3-en').toString(), sharedId: 'entity3' },
+            { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
+          ],
+        },
+        {
+          query: new MatchQueryNode(
+            new AndFilterOperatorNode([
+              new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
+              new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
+            ]),
+            []
+          ),
+          expected: [],
+        },
+      ];
+
+      it.each(cases)(
+        'should match the entity if all the conditions are met. Case %#',
+        async ({ query, expected }) => {
+          const ds = new MongoRelationshipsDataSource(
+            testingDB.mongodb!,
+            new MongoTransactionManager(getClient())
+          );
+
+          const result = await ds.getByQuery(query, 'en').all();
+          expect(result).toMatchObject(expected);
+        }
+      );
+    });
   });
 
   it('should allow to query branches', async () => {

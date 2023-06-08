@@ -95,7 +95,7 @@ const compilers = {
   },
 
   matchAndFilter(filter: AndFilterOperatorNode): object[] {
-    return [{ $and: filter.getOperands().map(compilers.matchFilters) }];
+    return [{ $and: filter.getOperands().flatMap(compilers.matchFilters) }];
   },
 
   matchIdFilter(filter: IdFilterCriteriaNode): object[] {
