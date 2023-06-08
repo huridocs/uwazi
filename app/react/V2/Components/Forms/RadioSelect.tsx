@@ -17,7 +17,7 @@ const InlineRadio = ({ legend, options, name, onChange, orientation = 'vertical'
   <div className="tw-content">
     <fieldset
       className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''}`}
-      id="radio"
+      id={`radio_${name}`}
     >
       {legend && <legend className="mb-4">{legend}</legend>}
       {options.map(option => (
