@@ -2,7 +2,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable camelcase */
-import path from 'path';
 import urljoin from 'url-join';
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
@@ -11,7 +10,6 @@ import { storage } from 'api/files';
 import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
-import { PDFSegmentation } from 'api/services//pdfsegmentation/PDFSegmentation';
 import { EnforcedWithId } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { emitToTenant } from 'api/socketio/setupSockets';
