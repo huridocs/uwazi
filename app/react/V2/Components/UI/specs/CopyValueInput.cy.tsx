@@ -16,13 +16,6 @@ describe('CopyValueInput', () => {
 
   before(() => {
     cy.viewport(500, 500);
-  });
-
-  beforeEach(() => {
-    mount(<Component />);
-  });
-
-  it('Should copy the value to clipboard when clicking the button', () => {
     cy.wrap(
       Cypress.automation('remote:debugger:protocol', {
         command: 'Browser.grantPermissions',
@@ -32,6 +25,13 @@ describe('CopyValueInput', () => {
         },
       })
     );
+  });
+
+  beforeEach(() => {
+    mount(<Component />);
+  });
+
+  it('Should copy the value to clipboard when clicking the button', () => {
     cy.get('[data-testid="copy-value-button"]').click();
     cy.window()
       .then(async win => win.navigator.clipboard.readText())

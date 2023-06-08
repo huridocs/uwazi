@@ -9,6 +9,16 @@ describe('Public Form', () => {
     clearCookiesAndLogin('admin', 'change this password now');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
+
+    cy.wrap(
+      Cypress.automation('remote:debugger:protocol', {
+        command: 'Browser.grantPermissions',
+        params: {
+          permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+          origin: window.location.origin,
+        },
+      })
+    );
   });
 
   it('should have no detectable accessibility violations on load', () => {
@@ -50,7 +60,6 @@ describe('Public Form', () => {
     });
 
     it('should enable 2FA', () => {
-      cy.get('[data-testid="copy-value-button"]').click();
       cy.get('[data-testid="copy-value-button"]').click();
       cy.window()
         .then(async win => win.navigator.clipboard.readText())
