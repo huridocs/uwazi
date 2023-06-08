@@ -1,5 +1,6 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from './helpers';
+import { eq } from 'lodash';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {
@@ -76,6 +77,7 @@ describe('Users and groups', () => {
       cy.contains('button', 'Dismiss').click();
     });
     it('reset password', () => {
+      cy.reload();
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -84,17 +86,30 @@ describe('Users and groups', () => {
       cy.contains('button', 'Reset password').click();
     });
     it('disable 2fa', () => {
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
       cy.contains('button', 'Reset 2FA').click();
     });
     it('check for unique name and email');
 
     describe('bulk actions', () => {
-      it('bulk delete');
+      it('bulk delete', () => {
+        cy.reload();
+        cy.intercept('DELETE', 'api/users/*').as('deleteUsers');
+        cy.get('table tbody tr')
+          .eq(1)
+          .within(() => {
+            cy.get('td input').eq(0).click();
+          });
+        cy.get('table tbody tr')
+          .eq(2)
+          .within(() => {
+            cy.get('td input').eq(0).click();
+          });
+        cy.contains('button', 'Delete').click();
+        cy.contains('[data-testid="modal"] button', 'Delete').click();
+        cy.contains('button', 'Dismiss').click();
+        cy.wait('@deleteUsers');
+        namesShouldMatch(['admin']);
+      });
       it('bulk password reset');
       it('bulk reset 2FA');
     });
@@ -121,10 +136,7 @@ describe('Users and groups', () => {
             });
         });
         cy.contains('button', 'Save').click();
-        cy.get('[data-testid="Close sidepanel"]').click();
       });
-      // ----- remove below after implementing form submission ------
-      cy.contains('[role="dialog"] button', 'Discard changes').click();
 
       // ----- the lines below should be edited after implementing form submission -----
       const titles = ['Activistas', 'Asesores legales', 'Group_1'];
