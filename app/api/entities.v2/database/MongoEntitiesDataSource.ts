@@ -3,65 +3,13 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
-import { GraphQueryResultView } from 'api/relationships.v2/model/GraphQueryResultView';
-import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import { mapPropertyQuery } from 'api/templates.v2/database/QueryMapper';
 import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-
-async function defineGraphView(
-  templatesDS: MongoTemplatesDataSource,
-  property: EntityJoinTemplate['joinedTemplate'][0]['properties'][0]
-) {
-  if (property.denormalizedProperty) {
-    const denormalizedProperty = await templatesDS.getPropertyByName(property.denormalizedProperty);
-    return new GraphQueryResultView(denormalizedProperty);
-  }
-
-  return new GraphQueryResultView();
-}
-
-async function entityMapper(this: MongoEntitiesDataSource, entity: EntityJoinTemplate) {
-  const mappedMetadata: Record<string, { value: string; label: string }[]> = {};
-  const stream = this.createBulkStream();
-
-  await Promise.all(
-    // eslint-disable-next-line max-statements
-    entity.joinedTemplate[0]?.properties.map(async property => {
-      if (
-        property.type === 'newRelationship' &&
-        (entity.obsoleteMetadata || []).includes(property.name)
-      ) {
-        const configuredQuery = mapPropertyQuery(property.query);
-        const configuredView = await defineGraphView(this.templatesDS, property);
-        const results = await this.relationshipsDS
-          .getByQuery(MatchQueryNode.forEntity(entity.sharedId, configuredQuery), entity.language)
-          .all();
-        mappedMetadata[property.name] = configuredView.map(results);
-
-        await stream.updateOne(
-          { sharedId: entity.sharedId, language: entity.language },
-          // @ts-ignore
-          { $set: { [`metadata.${property.name}`]: mappedMetadata[property.name] } }
-        );
-        return;
-      }
-
-      mappedMetadata[property.name] = entity.metadata[property.name];
-    }) || []
-  );
-  await stream.updateOne(
-    { sharedId: entity.sharedId, language: entity.language },
-    { $set: { obsoleteMetadata: [] } }
-  );
-  await stream.flush();
-  return EntityMappers.toModel({ ...entity, metadata: mappedMetadata });
-}
+import { Entity, MetadataValue } from '../model/Entity';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -71,21 +19,17 @@ export class MongoEntitiesDataSource
 
   private settingsDS: MongoSettingsDataSource;
 
-  protected relationshipsDS: MongoRelationshipsDataSource;
-
   protected templatesDS: MongoTemplatesDataSource;
 
   constructor(
     db: Db,
     templatesDS: MongoTemplatesDataSource,
-    relationshipsDS: MongoRelationshipsDataSource,
     settingsDS: MongoSettingsDataSource,
     transactionManager: MongoTransactionManager
   ) {
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
-    this.relationshipsDS = relationshipsDS;
   }
 
   async entitiesExist(sharedIds: string[]) {
@@ -136,7 +80,15 @@ export class MongoEntitiesDataSource
       { session: this.getSession() }
     );
 
-    return new MongoResultSet(cursor, entityMapper.bind(this));
+    return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
+  }
+
+  getIdsByTemplate(templateId: string): ResultSet<string> {
+    const cursor = this.getCollection().find(
+      { template: MongoIdHandler.mapToDb(templateId) },
+      { session: this.getSession() }
+    );
+    return new MongoResultSet(cursor, async entity => entity.sharedId);
   }
 
   async updateDenormalizedMetadataValues(
@@ -176,5 +128,30 @@ export class MongoEntitiesDataSource
     });
 
     return new MongoResultSet(result, entity => entity.sharedId);
+  }
+
+  async updateObsoleteMetadataValues(
+    id: Entity['_id'],
+    values: Record<string, MetadataValue[]>
+  ): Promise<void> {
+    const stream = this.createBulkStream();
+
+    await stream.updateOne(
+      { _id: MongoIdHandler.mapToDb(id) },
+      {
+        $set: Object.fromEntries(
+          Object.entries(values).map(([propertyName, metadataValues]) => [
+            `metadata.${propertyName}`,
+            metadataValues,
+          ])
+        ),
+      }
+    );
+    await stream.updateOne(
+      { _id: MongoIdHandler.mapToDb(id) },
+      { $pull: { obsoleteMetadata: { $in: Object.keys(values) } } }
+    );
+
+    await stream.flush();
   }
 }
