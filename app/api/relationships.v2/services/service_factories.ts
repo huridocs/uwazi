@@ -16,12 +16,28 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { DefaultRelationshipDataSource } from '../database/data_source_defaults';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import { Queue } from 'api/queue.v2/application/Queue';
+import RedisSMQ from 'rsmq';
+import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
+import { tenants } from 'api/tenants';
+import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
+import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import {
+  DefaultHubsDataSource,
+  DefaultRelationshipDataSource,
+  DefaultV1ConnectionsDataSource,
+} from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
+import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
+import { MigrationService as GenericMigrationService } from './MigrationService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -39,11 +55,49 @@ const userFromRequest = (request: Request) => {
   return undefined;
 };
 
-const DenormalizationService = (transactionManager: MongoTransactionManager) => {
+const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
+  async () => {
+    const redisClient = await ApplicationRedisClient.getInstance();
+    const RSMQ = new RedisSMQ({ client: redisClient });
+
+    return new QueuedRelationshipPropertyUpdateStrategy(
+      new JobsRouter(
+        queueName =>
+          new Queue(queueName, RSMQ, StringJobSerializer, {
+            namespace: tenants.current().name,
+          })
+      )
+    );
+  };
+
+const createUpdateStrategy = async (
+  strategyKey: string | undefined,
+  updater: EntityRelationshipsUpdateService
+) => {
+  const transactionManager = new MongoTransactionManager(getClient());
+
+  switch (strategyKey) {
+    case QueuedRelationshipPropertyUpdateStrategy.name:
+      return buildQueuedRelationshipPropertyUpdateStrategy();
+    case OnlineRelationshipPropertyUpdateStrategy.name:
+    case undefined:
+      return new OnlineRelationshipPropertyUpdateStrategy(
+        indexEntitiesCallback,
+        updater,
+        transactionManager
+      );
+    default:
+      throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
+  }
+};
+
+const DenormalizationService = async (transactionManager: MongoTransactionManager) => {
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const entitiesDS = DefaultEntitiesDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const settingsDS = DefaultSettingsDataSource(transactionManager);
+
+  const newRelationshipsSettings = await settingsDS.getNewRelationshipsConfiguration();
 
   const service = new GenericDenormalizationService(
     relationshipsDS,
@@ -51,7 +105,11 @@ const DenormalizationService = (transactionManager: MongoTransactionManager) => 
     templatesDS,
     settingsDS,
     transactionManager,
-    indexEntitiesCallback
+    indexEntitiesCallback,
+    await createUpdateStrategy(
+      newRelationshipsSettings.updateStrategy,
+      new EntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS)
+    )
   );
 
   return service;
@@ -70,7 +128,7 @@ const GetRelationshipService = (request: Request) => {
   return service;
 };
 
-const CreateRelationshipService = (request: Request) => {
+const CreateRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
@@ -80,7 +138,7 @@ const CreateRelationshipService = (request: Request) => {
   const filesDS = DefaultFilesDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
-  const denormalizationService = DenormalizationService(transactionManager);
+  const denormalizationService = await DenormalizationService(transactionManager);
 
   const service = new GenericCreateRelationshipService(
     relationshipsDS,
@@ -96,13 +154,13 @@ const CreateRelationshipService = (request: Request) => {
   return service;
 };
 
-const DeleteRelationshipService = (request: Request) => {
+const DeleteRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
   const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
-  const denormService = DenormalizationService(transactionManager);
+  const denormService = await DenormalizationService(transactionManager);
 
   const service = new GenericDeleteRelationshipService(
     relationshipsDS,
@@ -114,9 +172,26 @@ const DeleteRelationshipService = (request: Request) => {
   return service;
 };
 
+const MigrationService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const hubDS = DefaultHubsDataSource(transactionManager);
+  const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const service = new GenericMigrationService(
+    MongoIdHandler,
+    hubDS,
+    v1ConnectionsDS,
+    templatesDS,
+    relationshipsDS
+  );
+  return service;
+};
+
 export {
   CreateRelationshipService,
   DeleteRelationshipService,
   GetRelationshipService,
   DenormalizationService,
+  MigrationService,
 };

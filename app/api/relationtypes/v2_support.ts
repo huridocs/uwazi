@@ -22,7 +22,7 @@ const relationTypeIsUsedInQueries = async (id: ObjectId): Promise<boolean> => {
   ).readNewRelationshipsAllowed();
   if (!newRelationshipsAllowed) return false;
 
-  const createTemplateService = CreateTemplateService();
+  const createTemplateService = await CreateTemplateService();
   const isUsed = await createTemplateService.relationTypeIsUsedInQueries(id.toString());
 
   return isUsed;

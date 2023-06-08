@@ -13,15 +13,10 @@ const fixtures = {
         {
           value: 'entity2',
           label: 'entity2',
-          inheritedValue: [{ value: 'entity2' }],
-          inheritedType: 'text',
         },
         {
           value: 'entity3',
-
           label: 'entity3',
-          inheritedValue: [{ value: 'entity3' }],
-          inheritedType: 'text',
         },
       ],
     }),
@@ -146,9 +141,9 @@ describe('when deleting a file', () => {
   it('should re-denormalize the affected entities', async () => {
     const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
     expect(entities).toEqual([
-      { ...fixtures.entities[0], obsoleteMetadata: ['relProp'] },
-      { ...fixtures.entities[1], obsoleteMetadata: [] },
-      { ...fixtures.entities[2], obsoleteMetadata: [] },
+      { ...fixtures.entities[0], metadata: { relProp: [] }, obsoleteMetadata: [] },
+      { ...fixtures.entities[1] },
+      { ...fixtures.entities[2] },
     ]);
   });
 

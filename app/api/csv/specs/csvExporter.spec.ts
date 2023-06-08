@@ -12,7 +12,6 @@ import CSVExporter, {
   prependCommonHeaders,
   processCommonField,
   processEntity,
-  processGeolocationField,
   processHeaders,
   translateCommonHeaders,
 } from '../csvExporter';
@@ -88,6 +87,7 @@ describe('csvExporter', () => {
         'Costume',
         'Super powers',
         'Allies',
+        'Geolocation',
         'AutoId',
         'Sidekick',
         'Planets conquered',
@@ -145,11 +145,6 @@ describe('csvExporter', () => {
         },
         {
           common: true,
-          label: 'Geolocation',
-          name: 'geolocation',
-        },
-        {
-          common: true,
           label: 'Documents',
           name: 'documents',
         },
@@ -195,40 +190,6 @@ describe('csvExporter', () => {
       expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
       expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
       expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
-    });
-  });
-
-  describe('geolocation fields', () => {
-    it('should locate the first geolocation field', () => {
-      const formatted = processGeolocationField(
-        searchResults.rows[0],
-        testTemplates['58ad7d240d44252fee4e61fd']
-      );
-
-      expect(formatted).toBe('45.974236866039696|2.154785156250431');
-    });
-
-    it('should return empty if no geolocation field on the template', () => {
-      const formatted = processGeolocationField(
-        searchResults.rows[1],
-        testTemplates['58ad7d240d44252fee4e61fb']
-      );
-
-      expect(formatted).toBe('');
-    });
-
-    it('should return empty and not call the formatter if no geolocation on the entity', () => {
-      const geolocationFieldBackup = searchResults.rows[0].metadata.geolocation_geolocation;
-      delete searchResults.rows[0].metadata.geolocation_geolocation;
-
-      const formatted = processGeolocationField(
-        searchResults.rows[0],
-        testTemplates['58ad7d240d44252fee4e61fd']
-      );
-
-      searchResults.rows[0].metadata.geolocation_geolocation = geolocationFieldBackup;
-
-      expect(formatted).toBe('');
     });
   });
 
@@ -278,18 +239,6 @@ describe('csvExporter', () => {
           moment.tz.setDefault();
         }
       );
-    });
-
-    it('should return the geolocation field processed', () => {
-      const formatted = processCommonField(
-        'geolocation',
-        searchResults.rows[0],
-        testTemplates['58ad7d240d44252fee4e61fd'],
-        hostname,
-        {}
-      );
-
-      expect(formatted).toBe('45.974236866039696|2.154785156250431');
     });
 
     it('should return the documents field processed', () => {

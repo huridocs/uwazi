@@ -6,7 +6,10 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import templates from '../templates';
+
+jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
 
 const fixtureFactory = getFixturesFactory();
 
@@ -129,6 +132,10 @@ const newQueryInDb = [
 describe('template.save()', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   afterAll(async () => {
@@ -317,14 +324,8 @@ describe('template.save()', () => {
           ],
         };
         await templates.save(updatedTemplate, 'en');
-        const allEntities = await db.mongodb?.collection('entities').find({}).toArray();
-        expect(allEntities?.map(e => e.metadata.new_relationship)).toMatchObject([
-          [{ value: 'entity3' }],
-          [{ value: 'entity3' }],
-          undefined,
-          undefined,
-          undefined,
-        ]);
+        const updaterMock = (<jest.Mock>EntityRelationshipsUpdateService).mock.instances[1].update;
+        expect(updaterMock).toHaveBeenCalledWith(['entity1', 'entity2']);
       });
     });
 
@@ -419,15 +420,15 @@ describe('template.save()', () => {
           .find({ template: existingTemplate._id })
           .toArray();
 
-        expect(relatedEntities?.map(e => e.metadata.existing_relationship)).toMatchObject([
-          [{ value: 'entity5' }],
+        expect(relatedEntities?.map(e => e.obsoleteMetadata)).toMatchObject([
+          ['existing_relationship'],
         ]);
 
         await elasticTesting.refresh();
         const indexed = (await elasticTesting.getIndexedEntities()).find(
           e => e.template === existingTemplate._id.toString()
         );
-        expect(indexed?.metadata?.existing_relationship).toMatchObject([{ value: 'entity5' }]);
+        expect(indexed?.obsoleteMetadata).toMatchObject(['existing_relationship']);
       });
 
       it('on denormalizedProperty change should throw an error and not change the metadata', async () => {

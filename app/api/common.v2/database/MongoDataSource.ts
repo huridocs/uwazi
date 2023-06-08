@@ -14,7 +14,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     this.transactionManager = transactionManager;
   }
 
-  getCollection() {
+  protected getCollection() {
     return this.db.collection<CollectionSchema>(this.collectionName);
   }
 

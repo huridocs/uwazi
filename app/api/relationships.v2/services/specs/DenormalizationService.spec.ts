@@ -8,7 +8,10 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
+import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { DenormalizationService } from '../DenormalizationService';
+import { OnlineRelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 
 const factory = getFixturesFactory();
 
@@ -319,14 +322,18 @@ beforeEach(async () => {
     new MongoEntitiesDataSource(
       db,
       templatesDataSource,
-      relationshipsDataSource,
       new MongoSettingsDataSource(db, transactionManager),
       transactionManager
     ),
     templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
-    async () => {}
+    async () => {},
+    new OnlineRelationshipPropertyUpdateStrategy(
+      async () => {},
+      partialImplementation<EntityRelationshipsUpdateService>({}),
+      new MongoTransactionManager(getClient())
+    )
   );
 });
 
@@ -466,5 +473,42 @@ describe('denormalizeAfterUpdatingEntities()', () => {
         },
       ]);
     });
+  });
+});
+
+describe('denormalizeAfterCreatingOrUpdatingProperty()', () => {
+  it('should denormalize all the entities of the template', async () => {
+    await service.denormalizeAfterCreatingOrUpdatingProperty(
+      factory.id('template1').toHexString(),
+      ['relationshipProp1', 'relationshipProp1_with_inherit']
+    );
+
+    const entities = await testingDB.mongodb
+      ?.collection('entities')
+      .find({ template: factory.id('template1') })
+      .toArray();
+
+    expect(entities).toMatchObject([
+      {
+        sharedId: 'entity1',
+        language: 'hu',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity1',
+        language: 'es',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity10',
+        language: 'hu',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+      {
+        sharedId: 'entity10',
+        language: 'es',
+        obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
+      },
+    ]);
   });
 });
