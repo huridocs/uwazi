@@ -55,13 +55,7 @@ export class MongoTranslationsDataSource
       await this.getCollection().insertMany(items, { session: this.getSession() });
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
-        throw new DuplicatedKeyError(
-          JSON.stringify(
-            e.writeErrors.map(writeError => {
-              return writeError.op;
-            })
-          )
-        );
+        throw new DuplicatedKeyError(e.message);
       }
     }
     return translations;

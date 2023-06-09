@@ -210,18 +210,7 @@ describe('CreateTranslationsService', () => {
             context: { type: 'Entity', label: 'Test', id: 'test' },
           },
         ])
-      ).rejects.toEqual(
-        new DuplicatedKeyError(
-          JSON.stringify([
-            {
-              language: 'es',
-              key: 'existing_key',
-              value: 'valor',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
-          ])
-        )
-      );
+      ).rejects.toBeInstanceOf(DuplicatedKeyError);
     });
   });
 });
