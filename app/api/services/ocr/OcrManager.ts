@@ -1,20 +1,23 @@
-import { Readable } from 'stream';
-import urljoin from 'url-join';
-import { files, uploadsPath, storage } from 'api/files';
-import { generateFileName } from 'api/files/filesystem';
+import { files, storage } from 'api/files';
+import { generateFileName, temporalFilesPath } from 'api/files/filesystem';
 import { processDocument } from 'api/files/processDocument';
+import relationships from 'api/relationships';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import settings from 'api/settings/settings';
-import { TaskManager, ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import { emitToTenant } from 'api/socketio/setupSockets';
 import { tenants } from 'api/tenants/tenantContext';
 import createError from 'api/utils/Error';
-import request from 'shared/JSONRequest';
-import { FileType } from 'shared/types/fileType';
-import relationships from 'api/relationships';
 import { handleError } from 'api/utils/handleError';
+// eslint-disable-next-line node/no-restricted-import
+import { createReadStream, createWriteStream } from 'fs';
+import request from 'shared/JSONRequest';
 import { language as getLanguage } from 'shared/languagesList';
-import { OcrRecord, OcrStatus } from './ocrModel';
+import { FileType } from 'shared/types/fileType';
+import { Readable } from 'stream';
+import { pipeline } from 'stream/promises';
+import urljoin from 'url-join';
 import { EnforcedWithId } from '../../odm/model';
+import { OcrRecord, OcrStatus } from './ocrModel';
 import {
   createForFile,
   getForSourceFile,
@@ -73,7 +76,14 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
   }
 
   const newFileName = generateFileName(originalFile);
-  await storage.storeFile(newFileName, fileStream, 'document');
+
+  await pipeline(fileStream, createWriteStream(temporalFilesPath(newFileName)));
+
+  await storage.storeFile(
+    newFileName,
+    createReadStream(temporalFilesPath(newFileName)),
+    'document'
+  );
   return processDocument(
     originalFile.entity!,
     {
@@ -83,7 +93,7 @@ const saveResultFile = async (message: ResultsMessage, originalFile: FileType) =
       size: parseInt(fileResponse.headers.get('Content-Length')!, 10),
       language: originalFile.language,
       type: 'document',
-      destination: uploadsPath(),
+      destination: temporalFilesPath(),
     },
     false
   );
@@ -159,7 +169,7 @@ const validateTaskIsAdmissible = async (
   file: EnforcedWithId<FileType>,
   settingsValues: OcrSettings
 ) => {
-  await validateFileIsDocument(file);
+  validateFileIsDocument(file);
   await validateNotInQueue(file);
 
   if (!(await validateLanguage(file.language || 'other', settingsValues))) {
