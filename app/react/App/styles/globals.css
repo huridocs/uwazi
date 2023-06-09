@@ -1437,6 +1437,10 @@ input:checked + .toggle-bg {
   max-height: 24rem;
 }
 
+.max-h-\[calc\(100vh_-_9rem\)\] {
+  max-height: calc(100vh - 9rem);
+}
+
 .min-h-fit {
   min-height: -moz-fit-content;
   min-height: fit-content;
@@ -2864,10 +2868,6 @@ input:checked + .toggle-bg {
 
 .pt-1 {
   padding-top: 0.25rem;
-}
-
-.pt-10 {
-  padding-top: 2.5rem;
 }
 
 .pt-3 {

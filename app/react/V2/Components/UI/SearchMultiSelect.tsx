@@ -37,8 +37,8 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
   };
 
   return (
-    <div className={className}>
-      <div className="sticky top-0 w-full mb-4">
+    <div className={`flex flex-col relative ${className}`}>
+      <div className="sticky top-0 w-full px-2 mb-4">
         <InputField
           id="search-multiselect"
           label="search-multiselect"
@@ -68,7 +68,7 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
         />
       </div>
 
-      <ul className="w-full pt-10">
+      <ul className="px-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
         {items.map(({ label, value }) => {
           const selected = selectedItems.includes(value);
           const hidden =
