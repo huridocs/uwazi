@@ -1,5 +1,6 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
@@ -7,7 +8,7 @@ import {
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { ObjectId } from 'mongodb';
+import { MongoBulkWriteError, ObjectId } from 'mongodb';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';
@@ -209,8 +210,18 @@ describe('CreateTranslationsService', () => {
             context: { type: 'Entity', label: 'Test', id: 'test' },
           },
         ])
-      ).rejects.toBeInstanceOf(String);
-      // ).rejects.toBeInstanceOf(MongoBulkWriteError);
+      ).rejects.toEqual(
+        new DuplicatedKeyError(
+          JSON.stringify([
+            {
+              language: 'es',
+              key: 'existing_key',
+              value: 'valor',
+              context: { type: 'Entity', label: 'Test', id: 'test' },
+            },
+          ])
+        )
+      );
     });
   });
 });

@@ -2,8 +2,9 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
-import { Db } from 'mongodb';
+import { Db, MongoBulkWriteError } from 'mongodb';
 import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
@@ -50,7 +51,19 @@ export class MongoTranslationsDataSource
 
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
-    await this.getCollection().insertMany(items, { session: this.getSession() });
+    try {
+      await this.getCollection().insertMany(items, { session: this.getSession() });
+    } catch (e) {
+      if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
+        throw new DuplicatedKeyError(
+          JSON.stringify(
+            e.writeErrors.map(writeError => {
+              return writeError.op;
+            })
+          )
+        );
+      }
+    }
     return translations;
   }
 

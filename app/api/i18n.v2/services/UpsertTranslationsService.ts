@@ -1,7 +1,10 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { LanguageDoesNotExist, TranslationMissingLanguages as TranslationsMissingLanguages } from '../errors/translationErrors';
+import {
+  LanguageDoesNotExist,
+  TranslationMissingLanguages as TranslationsMissingLanguages,
+} from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';
 
