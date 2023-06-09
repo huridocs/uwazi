@@ -52,16 +52,16 @@ export default app => {
           type: 'object',
           additionalProperties: false,
           properties: {
-            id: { type: 'string' },
+            _id: { type: 'string' },
           },
-          required: ['id'],
+          required: ['_id'],
         },
       },
       required: ['body'],
     }),
     (req, res, next) => {
       users
-        .simpleUnlock(req.body.id)
+        .simpleUnlock(req.body._id)
         .then(() => res.json('OK'))
         .catch(next);
     }

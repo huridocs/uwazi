@@ -149,7 +149,9 @@ describe('users routes', () => {
 
       it('should require an admin', async () => {
         currentUser = editorUser;
-        const response = await request(app).post('/api/users/unlock').send({ id: 'useridstring ' });
+        const response = await request(app)
+          .post('/api/users/unlock')
+          .send({ _id: 'useridstring ' });
         expect(response.status).toBe(401);
         currentUser = adminUser;
       });
@@ -159,10 +161,10 @@ describe('users routes', () => {
           body: {},
         },
         {
-          body: { id: 'useridstring', extra: 'extra' },
+          body: { _id: 'useridstring', extra: 'extra' },
         },
         {
-          body: { id: 0 },
+          body: { _id: 0 },
         },
       ])('should validate the body', async ({ body }) => {
         const response = await request(app).post('/api/users/unlock').send(body);
@@ -171,10 +173,10 @@ describe('users routes', () => {
       });
 
       it('should call users simpleUnlock with the body id', async () => {
-        const id = 'useridstring';
-        const response = await request(app).post('/api/users/unlock').send({ id });
+        const _id = 'useridstring';
+        const response = await request(app).post('/api/users/unlock').send({ _id });
         expect(response.status).toBe(200);
-        expect(users.simpleUnlock).toHaveBeenCalledWith(id);
+        expect(users.simpleUnlock).toHaveBeenCalledWith(_id);
       });
     });
 
