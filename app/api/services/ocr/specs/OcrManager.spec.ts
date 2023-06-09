@@ -29,7 +29,6 @@ class Mocks {
 
   constructor() {
     this.jestMocks = {
-      'filesApi.uploadsPath': jest.spyOn(filesApi, 'uploadsPath').mockReturnValue('file_path'),
       'storage.fileContents': jest
         .spyOn(storage, 'fileContents')
         .mockResolvedValue(Buffer.from('file_content')),
@@ -159,6 +158,7 @@ describe('OcrManager', () => {
       beforeAll(async () => {
         mocks.jestMocks['date.now'].mockReturnValue(1001);
         mocks.jestMocks['storage.storeFile'].mockRestore();
+        await filesApi.deleteFile('/tmp/generatedUwaziFilename');
         await mocks.taskManagerMock.trigger(mockedMessageFromRedis);
       });
 
@@ -174,11 +174,12 @@ describe('OcrManager', () => {
         );
       });
 
-      it('should run the file processing', async () => {
+      it('should run the file processing and tmp file should exist', async () => {
+        expect(await filesApi.fileExistsOnPath('/tmp/generatedUwaziFilename'));
         expect(processDocumentApi.processDocument).toHaveBeenCalledWith(
           'parentEntity',
           expect.objectContaining({
-            destination: 'file_path',
+            destination: '/tmp',
             filename: 'generatedUwaziFilename',
             language: 'eng',
             mimetype: 'some/mimetype',
