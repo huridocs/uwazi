@@ -24,7 +24,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
     cy.viewport(450, 650);
     mount(
       <Provider store={createStore()}>
-        <div className="tw-content p-2">
+        <div className="p-2 tw-content">
           <SearchMultiselect
             items={pizzas}
             onChange={selectedItems => {
@@ -43,7 +43,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
   });
 
   it('should filter the list of options', () => {
-    cy.get('input').type('chicken');
+    cy.get('input[type=text]').type('chicken');
     cy.contains('BBQ Chicken').should('be.visible');
     cy.contains('Buffalo Chicken').should('be.visible');
     cy.contains('Chicken Bacon Ranch').should('be.visible');
@@ -52,11 +52,11 @@ describe('SearchMultiSelect.cy.tsx', () => {
   });
 
   it('should select options', () => {
-    cy.get('input').type('chicken');
+    cy.get('input[type=text]').type('chicken');
     cy.contains('BBQ Chicken').click();
 
     cy.get('[data-testid="clear-field-button"]').click();
-    cy.get('input').type('margherita');
+    cy.get('input[type=text]').type('margherita');
     cy.contains('Margherita').click();
 
     cy.get('[data-testid="clear-field-button"]').click();

@@ -1,23 +1,33 @@
 import React, { ReactEventHandler } from 'react';
 import { Radio, Label } from 'flowbite-react';
+import { isString } from 'lodash';
 import { Translate } from 'app/I18N';
 import { Option } from './SelectTypes';
 
 interface RadioProps {
-  legend: string;
+  legend?: string;
   name: string;
   onChange?: ReactEventHandler<HTMLInputElement>;
   options: (Option & {
     defaultChecked?: boolean;
   })[];
-
+  className?: string;
   orientation?: 'vertical' | 'horizontal';
 }
 
-const InlineRadio = ({ legend, options, name, onChange, orientation = 'vertical' }: RadioProps) => (
+const InlineRadio = ({
+  legend,
+  options,
+  name,
+  onChange,
+  className,
+  orientation = 'vertical',
+}: RadioProps) => (
   <div className="tw-content">
     <fieldset
-      className={`flex flex-wrap gap-4 ${orientation === 'vertical' ? 'flex-col max-w-md' : ''}`}
+      className={`flex flex-wrap gap-4 ${
+        orientation === 'vertical' ? 'flex-col max-w-md' : ''
+      } ${className}`}
       id={`radio_${name}`}
     >
       {legend && <legend className="mb-4">{legend}</legend>}
@@ -38,7 +48,7 @@ const InlineRadio = ({ legend, options, name, onChange, orientation = 'vertical'
             htmlFor={option.id || option.value}
             className={option.disabled ? '!text-gray-300' : ''}
           >
-            <Translate>{option.label}</Translate>
+            {isString(option.label) ? <Translate>{option.label}</Translate> : option.label}
           </Label>
         </div>
       ))}

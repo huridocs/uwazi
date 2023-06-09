@@ -1,6 +1,7 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { InputField } from '../Forms';
+import { InputField, RadioSelect } from '../Forms';
 import { Pill } from './Pill';
 
 interface SearchMultiselectProps {
@@ -9,8 +10,15 @@ interface SearchMultiselectProps {
   className?: string;
 }
 
+const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
+  <>
+    <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
+  </>
+);
+
 const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [showAll, setShowAll] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
     onChange(selectedItems);
@@ -22,6 +30,10 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
     } else {
       setSelectedItems([...selectedItems, value]);
     }
+  };
+
+  const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+    setShowAll(target.value === 'true');
   };
 
   return (
@@ -36,12 +48,31 @@ const SearchMultiselect = ({ items, onChange, className }: SearchMultiselectProp
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
+        <RadioSelect
+          name="filter"
+          orientation="horizontal"
+          options={[
+            {
+              label: <Translate>All</Translate>,
+              value: 'true',
+              defaultChecked: true,
+            },
+            {
+              label: <SelectedCounter selectedItems={selectedItems} />,
+              value: 'false',
+              disabled: selectedItems.length === 0,
+            },
+          ]}
+          onChange={applyFilter}
+          className="px-1 pt-4"
+        />
       </div>
 
-      <ul className="w-full">
+      <ul className="w-full pt-10">
         {items.map(({ label, value }) => {
-          const hidden = !label.toLowerCase().includes(searchTerm.toLowerCase());
           const selected = selectedItems.includes(value);
+          const hidden =
+            !label.toLowerCase().includes(searchTerm.toLowerCase()) || (!showAll && !selected);
           const borderSyles = selected
             ? 'border-sucess-200'
             : 'border-transparent hover:border-primary-300';
