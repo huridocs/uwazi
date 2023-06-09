@@ -1,18 +1,9 @@
 const rules = require('./uwazi-eslint-rules');
 
 module.exports = {
-  extends: ['airbnb', 'plugin:cypress/recommended'],
-  env: {
-    browser: true,
-    node: true,
-    jest: true,
-    jasmine: true,
-    es6: true,
-    'cypress/globals': true,
-  },
-  parserOptions: {
-    ecmaVersion: 2020,
-  },
+  extends: ['airbnb', 'plugin:cypress/recommended', 'plugin:storybook/recommended'],
+  env: { browser: true, node: true, jest: true, jasmine: true, es6: true, 'cypress/globals': true },
+  parserOptions: { ecmaVersion: 2020 },
   plugins: [
     'react',
     'jest',
@@ -27,14 +18,8 @@ module.exports = {
     'node/no-restricted-import': [
       'error',
       [
-        {
-          name: 'fs',
-          message: 'Please use { storage } from api/files',
-        },
-        {
-          name: 'fs/promises',
-          message: 'Please use { storage } from api/files',
-        },
+        { name: 'fs', message: 'Please use { storage } from api/files' },
+        { name: 'fs/promises', message: 'Please use { storage } from api/files' },
       ],
     ],
     indent: 'off',
@@ -54,7 +39,13 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'jest/no-focused-tests': 'error',
     'object-curly-spacing': ['warn', 'always'],
-    'max-len': ['error', 150, { ignoreStrings: true }],
+    'max-len': [
+      'error',
+      150,
+      {
+        ignoreStrings: true,
+      },
+    ],
     'no-unused-vars': [
       'error',
       {
@@ -65,7 +56,6 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
-
     //all warns are activated by default if removed
     'prefer-promise-reject-errors': ['warn'],
     'max-classes-per-file': ['warn'],
@@ -73,7 +63,7 @@ module.exports = {
     'consistent-return': ['warn'],
     'prefer-const': ['warn'],
     'arrow-body-style': ['warn'],
-    'arrow-parens': ['off'], // handled by prettier
+    'arrow-parens': ['off'],
     'prefer-template': ['warn'],
     'no-tabs': ['warn'],
     'object-shorthand': ['warn'],
@@ -99,11 +89,16 @@ module.exports = {
     'max-lines': ['warn', 250],
     'max-params': ['warn', 4],
     'max-lines-per-function': 'off',
-    'max-statements': ['warn', { max: 10 }, { ignoreTopLevelFunctions: true }],
-
+    'max-statements': [
+      'warn',
+      {
+        max: 10,
+      },
+      {
+        ignoreTopLevelFunctions: true,
+      },
+    ],
     'no-restricted-exports': ['warn'],
-
-    //import
     'import/no-duplicates': ['warn'],
     'import/no-default-export': ['warn'],
     'import/exports-last': ['warn'],
@@ -116,28 +111,34 @@ module.exports = {
     'import/order': ['warn'],
     'import/named': ['warn'],
     'import/no-cycle': ['warn'],
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'import/no-extraneous-dependencies': [
+      'error',
+      {
+        devDependencies: true,
+      },
+    ],
     'import/no-import-module-exports': ['warn'],
-
-    //react
     'react/static-property-placement': 'off',
     'react/no-deprecated': ['warn'],
     'react/self-closing-comp': ['warn'],
     'react/no-multi-comp': ['warn'],
     'react/jsx-closing-bracket-location': ['warn'],
     'react/jsx-boolean-value': ['warn'],
-    'react/jsx-indent': ['off'], // handled by prettier,
+    'react/jsx-indent': ['off'],
     'react/jsx-indent-props': ['warn'],
     'react/no-array-index-key': ['warn'],
     'react/jsx-props-no-spreading': ['warn'],
     'react/jsx-first-prop-new-line': ['warn'],
     'react/no-unused-state': ['warn'],
-    'react/jsx-wrap-multilines': ['off'], // handled by prettier,
+    'react/jsx-wrap-multilines': ['off'],
     'react/jsx-curly-brace-presence': ['warn'],
     'react/jsx-curly-newline': 'off',
     'react/require-default-props': [
       'warn',
-      { forbidDefaultForRequired: false, ignoreFunctionalComponents: true },
+      {
+        forbidDefaultForRequired: false,
+        ignoreFunctionalComponents: true,
+      },
     ],
     'react/forbid-prop-types': ['warn'],
     'react/jsx-no-bind': ['warn'],
@@ -162,7 +163,6 @@ module.exports = {
     ],
     'react/jsx-no-useless-fragment': [2, { allowExpressions: true }],
     'react/no-unknown-property': ['error', { ignore: ['no-translate'] }],
-
     //jsx-a11y
     'jsx-a11y/anchor-is-valid': ['warn'],
     'jsx-a11y/label-has-for': ['off'],
@@ -176,51 +176,28 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
-
     //react-hooks && recoil
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': [
       'warn',
-      {
-        additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)',
-      },
+      { additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)' },
     ],
   },
   overrides: [
-    {
-      files: ['app/**/*spec.js'],
-      rules: {
-        'max-lines-per-function': 'off',
-      },
-    },
-    {
-      files: ['app/**/specs/*'],
-      rules: {
-        'max-lines-per-function': 'off',
-        'max-lines': 'off',
-      },
-    },
-    {
-      files: ['app/react/stories/*.stories.tsx'],
-      rules: {
-        'react/no-multi-comp': 'off',
-      },
-    },
+    { files: ['app/**/*spec.js'], rules: { 'max-lines-per-function': 'off' } },
+    { files: ['app/**/specs/*'], rules: { 'max-lines-per-function': 'off', 'max-lines': 'off' } },
+    { files: ['app/react/stories/*.stories.tsx'], rules: { 'react/no-multi-comp': 'off' } },
     {
       files: ['app/**/*.ts*', 'database/**/*.ts', 'e2e/**/*.ts'],
       excludedFiles: './**/*.cy.tsx',
       parser: '@typescript-eslint/parser',
-      parserOptions: {
-        project: './tsconfig.json',
-      },
+      parserOptions: { project: './tsconfig.json' },
       rules: { ...rules },
     },
     {
       files: ['./cypress/**/*.ts', './cypress/**/*.d.ts', './**/*.cy.tsx'],
       parser: '@typescript-eslint/parser',
-      parserOptions: {
-        project: './cypress/tsconfig.json',
-      },
+      parserOptions: { project: './cypress/tsconfig.json' },
       rules: { ...rules },
     },
   ],

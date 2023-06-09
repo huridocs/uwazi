@@ -2,10 +2,8 @@ import { actions as formActions } from 'react-redux-form';
 import * as notifications from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';
 import { RequestParams } from 'app/utils/RequestParams';
-
-import { httpRequest } from 'shared/superagent';
-import t from '../t';
 import I18NApi from '../I18NApi';
+import t from '../t';
 
 export function inlineEditTranslation(contextId, key) {
   return dispatch => {
@@ -42,28 +40,6 @@ export function saveTranslations(translations) {
         notifications.notify(t('System', 'Translations saved', null, false), 'success')(dispatch);
       }
     );
-  };
-}
-
-export function importTranslations(file) {
-  return async dispatch => {
-    try {
-      const headers = {
-        Accept: 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      };
-      const translations = await httpRequest(
-        'translations/import',
-        { context: 'System' },
-        headers,
-        file
-      );
-      notifications.notify(t('System', 'Translations imported.', null, false), 'success')(dispatch);
-      return translations;
-    } catch (e) {
-      notifications.notify(t('System', e.error, null, false), 'danger')(dispatch);
-      return undefined;
-    }
   };
 }
 

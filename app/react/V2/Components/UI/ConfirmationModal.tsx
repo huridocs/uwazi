@@ -68,7 +68,7 @@ const ConfirmationModal = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          buttonStyle="tertiary"
+          styling="light"
           onClick={onCancelClick}
           className="grow"
           data-testid="cancel-button"
@@ -78,7 +78,7 @@ const ConfirmationModal = ({
         <Button
           onClick={onAcceptClick}
           disabled={!confirmed}
-          buttonStyle={!warningText ? 'primary' : 'danger'}
+          color={!warningText ? 'primary' : 'error'}
           className="grow"
           data-testid="accept-button"
         >

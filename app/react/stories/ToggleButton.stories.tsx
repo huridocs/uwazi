@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { ToggleButton } from 'V2/Components/UI/ToggleButton';
+import { Meta, StoryObj } from '@storybook/react';
+import { ToggleButton, ToggleButtonProps } from 'V2/Components/UI/ToggleButton';
 
-const ToggleButtonStory = {
+const meta: Meta<typeof ToggleButton> = {
   title: 'Components/ToggleButton',
   component: ToggleButton,
 };
 
-const Template: ComponentStory<typeof ToggleButton> = args => {
+type Story = StoryObj<typeof ToggleButton>;
+
+const ToggleButtonContainer = (args: ToggleButtonProps) => {
   const [show, setShow] = useState(false);
   return (
     <div className="tw-content">
@@ -18,14 +20,18 @@ const Template: ComponentStory<typeof ToggleButton> = args => {
     </div>
   );
 };
+const Primary: Story = {
+  render: args => <ToggleButtonContainer {...args} />,
+};
 
-const Basic = Template.bind({});
-
-Basic.args = {
-  children: 'My toggle button',
-  disabled: false,
+const Basic: Story = {
+  ...Primary,
+  args: {
+    children: 'My toggle button',
+    disabled: false,
+  },
 };
 
 export { Basic };
 
-export default ToggleButtonStory as ComponentMeta<typeof ToggleButton>;
+export default meta;
