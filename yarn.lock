@@ -13294,10 +13294,10 @@ json-parse-even-better-errors@^2.3.0, json-parse-even-better-errors@^2.3.1:
   resolved "https://registry.npmjs.org/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
 
-json-schema-to-typescript@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/json-schema-to-typescript/-/json-schema-to-typescript-12.0.0.tgz#62ec4e9632f1d672fd3b4d81cf0d74f6df29bc23"
-  integrity sha512-Uk/BDIAo8vqepPBhM86UhNMHgCv7JulicNj/BgnQPHE1fGCoej0UTtcEYzXU/uk6lSvbZCf7pccW+dnNMrr5rg==
+json-schema-to-typescript@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/json-schema-to-typescript/-/json-schema-to-typescript-13.0.1.tgz#efcde0733dd9d3b535ffd66a444526d9ab6de70e"
+  integrity sha512-VU+Spn84eLJyt8R0Bmg2soTwHQFgvrGrU7V8mXbhqWFdEYCFekSYk4JcpCzx0i/WzjEVJKAU7r0y0PVYT14E6Q==
   dependencies:
     "@bcherny/json-schema-ref-parser" "10.0.5-fork"
     "@types/json-schema" "^7.0.11"
@@ -16167,7 +16167,7 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@2.7.1, prettier@^2.6.2:
+prettier@2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
@@ -16177,7 +16177,7 @@ prettier@^1.16.4:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
   integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
 
-prettier@^2.8.0:
+prettier@^2.6.2, prettier@^2.8.0:
   version "2.8.8"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
   integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
