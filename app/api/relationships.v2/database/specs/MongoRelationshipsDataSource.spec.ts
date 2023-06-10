@@ -8,6 +8,7 @@ import testingDB from 'api/utils/testing_db';
 import {
   AndFilterOperatorNode,
   IdFilterCriteriaNode,
+  SelectFilterCriteriaNode,
   TemplateFilterCriteriaNode,
 } from 'api/relationships.v2/model/FilterOperatorNodes';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
@@ -79,7 +80,31 @@ const fixtures = {
     ...entityInLanguages(['en', 'es'], 'entity2', 'otherTemplate'),
     ...entityInLanguages(['en', 'es'], 'hub1', 'formerHubsTemplate'),
     ...entityInLanguages(['en', 'es'], 'entity3', 'template2'),
-    ...entityInLanguages(['en', 'es'], 'entity4', 'template4'),
+    ...factory.entityInMultipleLanguages(
+      ['en', 'es'],
+      'entity4',
+      'template4',
+      {},
+      {},
+      {
+        en: {
+          metadata: {
+            select: [
+              { value: '1', label: 'one' },
+              { value: '2', label: 'two' },
+            ],
+          },
+        },
+        es: {
+          metadata: {
+            select: [
+              { value: '1', label: 'uno' },
+              { value: '2', label: 'dos' },
+            ],
+          },
+        },
+      }
+    ),
     ...entityInLanguages(['en', 'es'], 'hub2', 'formerHubsTemplate'),
     ...entityInLanguages(['en', 'es'], 'entity5', 'template2'),
     ...entityInLanguages(['en', 'es'], 'entity6', 'template3'),
@@ -152,85 +177,123 @@ describe('When getting by query', () => {
     ]);
   });
 
-  it('should allow to add filters to the query', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
-    const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
-      new TraversalQueryNode('out', {}, [
-        new MatchQueryNode(undefined, [
-          new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
-            new MatchQueryNode(
-              new TemplateFilterCriteriaNode([
-                factory.id('template3').toHexString(),
-                factory.id('template4').toHexString(),
-              ])
-            ),
+  describe('entity filters', () => {
+    it('should allow to add filters to the query', async () => {
+      const ds = new MongoRelationshipsDataSource(
+        testingDB.mongodb!,
+        new MongoTransactionManager(getClient())
+      );
+      const query = new MatchQueryNode(new IdFilterCriteriaNode('entity1'), [
+        new TraversalQueryNode('out', {}, [
+          new MatchQueryNode(undefined, [
+            new TraversalQueryNode('in', { types: [factory.id('relType3').toHexString()] }, [
+              new MatchQueryNode(
+                new TemplateFilterCriteriaNode([
+                  factory.id('template3').toHexString(),
+                  factory.id('template4').toHexString(),
+                ])
+              ),
+            ]),
           ]),
         ]),
-      ]),
-    ]);
+      ]);
 
-    const result = await ds.getByQuery(query, 'en').all();
-    expect(result).toMatchObject([
-      { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
-    ]);
-  });
+      const result = await ds.getByQuery(query, 'en').all();
+      expect(result).toMatchObject([
+        { _id: factory.id('entity6-en').toString(), sharedId: 'entity6' },
+      ]);
+    });
 
-  describe('boolean operators', () => {
-    describe('when using an AND operator', () => {
-      const cases = [
-        {
-          query: new MatchQueryNode(
-            new AndFilterOperatorNode([
-              new IdFilterCriteriaNode('entity1'),
-              new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
-            ]),
-            []
-          ),
-          expected: [{ _id: factory.id('entity1-en').toString(), sharedId: 'entity1' }],
-        },
-        {
-          query: new MatchQueryNode(
-            new AndFilterOperatorNode([
-              new TemplateFilterCriteriaNode([
-                factory.id('template1').toString(),
-                factory.id('template2').toString(),
+    describe('metadata filters', () => {
+      describe('when using a select filter', () => {
+        const cases = [
+          {
+            query: new MatchQueryNode(new SelectFilterCriteriaNode('select', '1'), []),
+            expected: [{ _id: factory.id('entity4-en').toString(), sharedId: 'entity4' }],
+          },
+          {
+            query: new MatchQueryNode(new SelectFilterCriteriaNode('select', ['1', '2']), []),
+            expected: [{ _id: factory.id('entity4-en').toString(), sharedId: 'entity4' }],
+          },
+          {
+            query: new MatchQueryNode(new SelectFilterCriteriaNode('select', ['1', '2', '3']), []),
+            expected: [{ _id: factory.id('entity4-en').toString(), sharedId: 'entity4' }],
+          },
+          {
+            query: new MatchQueryNode(new SelectFilterCriteriaNode('select', ['3']), []),
+            expected: [],
+          },
+        ];
+
+        it.each(cases)(
+          'should match the entity if the select property contains at least one of the values',
+          async ({ query, expected }) => {
+            const ds = new MongoRelationshipsDataSource(
+              testingDB.mongodb!,
+              new MongoTransactionManager(getClient())
+            );
+
+            const result = await ds.getByQuery(query, 'en').all();
+            expect(result).toMatchObject(expected);
+          }
+        );
+      });
+    });
+
+    describe('boolean operators', () => {
+      describe('when using an AND operator', () => {
+        const cases = [
+          {
+            query: new MatchQueryNode(
+              new AndFilterOperatorNode([
+                new IdFilterCriteriaNode('entity1'),
+                new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
               ]),
-              new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
-            ]),
-            []
-          ),
-          expected: [
-            { _id: factory.id('entity3-en').toString(), sharedId: 'entity3' },
-            { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
-          ],
-        },
-        {
-          query: new MatchQueryNode(
-            new AndFilterOperatorNode([
-              new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
-              new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
-            ]),
-            []
-          ),
-          expected: [],
-        },
-      ];
+              []
+            ),
+            expected: [{ _id: factory.id('entity1-en').toString(), sharedId: 'entity1' }],
+          },
+          {
+            query: new MatchQueryNode(
+              new AndFilterOperatorNode([
+                new TemplateFilterCriteriaNode([
+                  factory.id('template1').toString(),
+                  factory.id('template2').toString(),
+                ]),
+                new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
+              ]),
+              []
+            ),
+            expected: [
+              { _id: factory.id('entity3-en').toString(), sharedId: 'entity3' },
+              { _id: factory.id('entity5-en').toString(), sharedId: 'entity5' },
+            ],
+          },
+          {
+            query: new MatchQueryNode(
+              new AndFilterOperatorNode([
+                new TemplateFilterCriteriaNode([factory.id('template1').toString()]),
+                new TemplateFilterCriteriaNode([factory.id('template2').toString()]),
+              ]),
+              []
+            ),
+            expected: [],
+          },
+        ];
 
-      it.each(cases)(
-        'should match the entity if all the conditions are met. Case %#',
-        async ({ query, expected }) => {
-          const ds = new MongoRelationshipsDataSource(
-            testingDB.mongodb!,
-            new MongoTransactionManager(getClient())
-          );
+        it.each(cases)(
+          'should match the entity if all the conditions are met. Case %#',
+          async ({ query, expected }) => {
+            const ds = new MongoRelationshipsDataSource(
+              testingDB.mongodb!,
+              new MongoTransactionManager(getClient())
+            );
 
-          const result = await ds.getByQuery(query, 'en').all();
-          expect(result).toMatchObject(expected);
-        }
-      );
+            const result = await ds.getByQuery(query, 'en').all();
+            expect(result).toMatchObject(expected);
+          }
+        );
+      });
     });
   });
 

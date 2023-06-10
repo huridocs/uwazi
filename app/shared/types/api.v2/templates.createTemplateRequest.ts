@@ -1,4 +1,4 @@
-export type Filter = AndFilter | TemplateFilter | VoidFilter;
+export type Filter = AndFilter | TemplateFilter | SelectFilter | VoidFilter;
 export interface AndFilter {
   type: 'and';
   value: Filter[];
@@ -6,6 +6,12 @@ export interface AndFilter {
 
 export interface TemplateFilter {
   type: 'template';
+  value: string[];
+}
+
+export interface SelectFilter {
+  type: 'select';
+  property: string;
   value: string[];
 }
 

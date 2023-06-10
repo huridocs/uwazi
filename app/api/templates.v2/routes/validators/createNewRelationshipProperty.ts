@@ -55,6 +55,12 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
             value: { elements: { type: 'string' } },
           },
         },
+        select: {
+          properties: {
+            property: { type: 'string' },
+            value: { elements: { type: 'string' } },
+          },
+        },
         void: {
           properties: {},
         },

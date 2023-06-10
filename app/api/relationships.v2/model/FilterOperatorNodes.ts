@@ -9,7 +9,8 @@ export type FilterNode =
   | VoidFilterNode
   | AndFilterOperatorNode
   | IdFilterCriteriaNode
-  | TemplateFilterCriteriaNode;
+  | TemplateFilterCriteriaNode
+  | SelectFilterCriteriaNode;
 
 export class VoidFilterNode {
   shallowClone() {
@@ -94,5 +95,40 @@ export class TemplateFilterCriteriaNode {
 
   wouldMatch(entity: Entity) {
     return this.templates.includes(entity.template);
+  }
+}
+
+export class SelectFilterCriteriaNode {
+  private propertyName: string;
+
+  private thesauri: string[];
+
+  constructor(propertyName: string, thesauri: string[] | string) {
+    this.propertyName = propertyName;
+    if (Array.isArray(thesauri)) {
+      this.thesauri = thesauri;
+    } else {
+      this.thesauri = [thesauri];
+    }
+  }
+
+  getPropertyName() {
+    return this.propertyName;
+  }
+
+  getThesauri() {
+    return [...this.thesauri];
+  }
+
+  shallowClone() {
+    return new SelectFilterCriteriaNode(this.propertyName, this.thesauri);
+  }
+
+  getTemplates() {
+    return [];
+  }
+
+  wouldMatch(_entity: Entity) {
+    return false;
   }
 }

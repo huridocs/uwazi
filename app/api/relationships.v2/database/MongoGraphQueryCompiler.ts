@@ -5,6 +5,7 @@ import {
   AndFilterOperatorNode,
   FilterNode,
   IdFilterCriteriaNode,
+  SelectFilterCriteriaNode,
   TemplateFilterCriteriaNode,
   VoidFilterNode,
 } from '../model/FilterOperatorNodes';
@@ -106,6 +107,23 @@ const compilers = {
     return [{ $in: ['$template', filter.getTemplates().map(t => new ObjectId(t))] }];
   },
 
+  matchSelectFilter(filter: SelectFilterCriteriaNode): object[] {
+    return [
+      {
+        $cond: {
+          if: { $eq: [{ $type: `$metadata.${filter.getPropertyName()}.value` }, 'array'] },
+          then: {
+            $or: filter.getThesauri().map(value => ({
+              $in: [value, `$metadata.${filter.getPropertyName()}.value`],
+            })),
+          },
+          else: false,
+        },
+      },
+    ];
+  },
+
+  // eslint-disable-next-line max-statements
   matchFilters(filter: FilterNode): object[] {
     if (filter instanceof AndFilterOperatorNode) {
       return compilers.matchAndFilter(filter);
@@ -117,6 +135,10 @@ const compilers = {
 
     if (filter instanceof TemplateFilterCriteriaNode) {
       return compilers.matchTemplateFilter(filter);
+    }
+
+    if (filter instanceof SelectFilterCriteriaNode) {
+      return compilers.matchSelectFilter(filter);
     }
 
     if (filter instanceof VoidFilterNode) {

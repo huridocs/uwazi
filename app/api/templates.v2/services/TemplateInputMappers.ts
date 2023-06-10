@@ -1,20 +1,24 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
-import { MatchQuery, TraverseQuery } from 'shared/types/api.v2/templates.createTemplateRequest';
+import {
+  MatchQuery,
+  TraverseQuery,
+  Filter,
+} from 'shared/types/api.v2/templates.createTemplateRequest';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { propertyTypes } from 'shared/propertyTypes';
 import {
   AndFilterOperatorNode,
   FilterNode,
+  SelectFilterCriteriaNode,
   TemplateFilterCriteriaNode,
   VoidFilterNode,
 } from 'api/relationships.v2/model/FilterOperatorNodes';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
-import { Filter } from 'shared/types/api.v2/templates.createTemplateRequest';
 
 const BuildQuery = {
   traverse: (query: TraverseQuery): TraversalQueryNode =>
@@ -29,6 +33,8 @@ const BuildQuery = {
         return new AndFilterOperatorNode(filter.value.map(BuildQuery.filter));
       case 'template':
         return new TemplateFilterCriteriaNode(filter.value);
+      case 'select':
+        return new SelectFilterCriteriaNode(filter.property, filter.value);
       default:
         return new VoidFilterNode();
     }

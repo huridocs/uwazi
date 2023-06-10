@@ -5,6 +5,7 @@ import {
   AndFilterOperatorNode,
   FilterNode,
   IdFilterCriteriaNode,
+  SelectFilterCriteriaNode,
   TemplateFilterCriteriaNode,
   VoidFilterNode,
 } from 'api/relationships.v2/model/FilterOperatorNodes';
@@ -19,6 +20,8 @@ const QueryMapperToModel = {
         return new TemplateFilterCriteriaNode(query.value.map(MongoIdHandler.mapToApp));
       case 'id':
         return new IdFilterCriteriaNode(query.value);
+      case 'select':
+        return new SelectFilterCriteriaNode(query.property, query.value);
       case 'void':
         return new VoidFilterNode();
       default:
@@ -46,6 +49,7 @@ const mapPropertyQuery = (query: TraverseQueryDBO[]) =>
   query.map(QueryMapperToModel.parseTraversal);
 
 const QueryMapperToDBO = {
+  // eslint-disable-next-line max-statements
   parseFilter(filter: FilterNode): FilterDBO {
     if (filter instanceof AndFilterOperatorNode) {
       return {
@@ -65,6 +69,14 @@ const QueryMapperToDBO = {
       return {
         type: 'id',
         value: filter.getSharedId(),
+      };
+    }
+
+    if (filter instanceof SelectFilterCriteriaNode) {
+      return {
+        type: 'select',
+        property: filter.getPropertyName(),
+        value: filter.getThesauri(),
       };
     }
 

@@ -1,6 +1,11 @@
 import { ObjectId } from 'mongodb';
 
-export type FilterDBO = AndFilterDBO | TemplateFilterDBO | IdFilterDBO | VoidFilter;
+export type FilterDBO =
+  | AndFilterDBO
+  | TemplateFilterDBO
+  | IdFilterDBO
+  | SelectFilterDBO
+  | VoidFilterDBO;
 export interface AndFilterDBO {
   type: 'and';
   value: FilterDBO[];
@@ -16,7 +21,13 @@ export interface IdFilterDBO {
   value: string;
 }
 
-export interface VoidFilter {
+export interface SelectFilterDBO {
+  type: 'select';
+  property: string;
+  value: string[];
+}
+
+export interface VoidFilterDBO {
   type: 'void';
 }
 
