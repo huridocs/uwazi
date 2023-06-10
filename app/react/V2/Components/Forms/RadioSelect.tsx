@@ -45,7 +45,7 @@ const InlineRadio = ({
             onChange={onChange}
           />
           <Label
-            htmlFor={option.id || option.value}
+            htmlFor={`${name}_${option.value}`}
             className={option.disabled ? '!text-gray-300' : ''}
           >
             {isString(option.label) ? <Translate>{option.label}</Translate> : option.label}
