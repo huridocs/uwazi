@@ -15,7 +15,7 @@ interface RadioProps {
   orientation?: 'vertical' | 'horizontal';
 }
 
-const InlineRadio = ({
+const RadioSelect = ({
   legend,
   options,
   name,
@@ -56,4 +56,4 @@ const InlineRadio = ({
   </div>
 );
 
-export { InlineRadio as RadioSelect };
+export { RadioSelect };
