@@ -6,9 +6,9 @@ class V1Connection {
 
   readonly hub: string;
 
-  readonly template: string;
+  readonly template?: string;
 
-  constructor(id: string, entity: string, hub: string, template: string) {
+  constructor(id: string, entity: string, hub: string, template: string | undefined) {
     this.id = id;
     this.entity = entity;
     this.hub = hub;
@@ -27,7 +27,7 @@ class V1ConnectionDisplayed extends V1Connection {
     id: string,
     entity: string,
     hub: string,
-    template: string,
+    template: string | undefined,
     entityTemplate: string,
     entityTitle: string,
     templateName: string

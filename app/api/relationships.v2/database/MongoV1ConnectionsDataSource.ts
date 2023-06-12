@@ -8,15 +8,26 @@ import {
 } from '../contracts/V1ConnectionsDataSource';
 import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
 
-const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
-  new V1Connection(dbo._id.toString(), dbo.entity, dbo.hub.toString(), dbo.template.toString());
+const mapConnections = (dbo: V1ConnectionDBO): V1Connection => {
+  try {
+    return new V1Connection(
+      dbo._id.toString(),
+      dbo.entity,
+      dbo.hub.toString(),
+      dbo.template?.toString()
+    );
+  } catch (e) {
+    console.log(dbo);
+    throw e;
+  }
+};
 
 const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
   new V1ConnectionDisplayed(
     dbo._id.toString(),
     dbo.entity,
     dbo.hub.toString(),
-    dbo.template.toString(),
+    dbo.template?.toString(),
     dbo.entityTemplateId.toString(),
     dbo.entityTitle,
     dbo.templateName

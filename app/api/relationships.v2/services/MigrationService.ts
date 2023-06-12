@@ -39,6 +39,7 @@ class RelationshipMatcher {
     return (
       sourceEntityTemplate &&
       targetEntityTemplate &&
+      relationshipType &&
       sourceEntityTemplate in this.fieldLibrary &&
       relationshipType in this.fieldLibrary[sourceEntityTemplate] &&
       (this.fieldLibrary[sourceEntityTemplate][relationshipType].has(targetEntityTemplate) ||
@@ -50,6 +51,11 @@ class RelationshipMatcher {
     const sourcePointer = new EntityPointer(first.entity);
     const targetPointer = new EntityPointer(second.entity);
     const relationshipType = second.template;
+    if (!relationshipType) {
+      throw new Error(
+        `A Relationship going from ${first.entity} to ${second.entity} has no template.`
+      );
+    }
     return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
   }
 }

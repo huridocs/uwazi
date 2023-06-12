@@ -8,7 +8,7 @@ type V1ConnectionDBO = {
   _id: ObjectId;
   entity: string;
   hub: ObjectId;
-  template: ObjectId;
+  template?: ObjectId;
 };
 
 type V1ConnectionDBOWithEntityInfo = V1ConnectionDBO & {
