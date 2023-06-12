@@ -90,8 +90,7 @@ const Basic: Story = {
     title: 'Table name',
     columns: [
       columnHelper.accessor('title', { header: 'Title', id: 'title' }),
-
-      columnHelper.accessor('description', { header: 'Description', enableSorting: false }),
+      columnHelper.accessor('description', { header: 'Description' }),
       columnHelper.accessor('created', {
         header: 'Date added',
         cell: CustomCell,
@@ -128,15 +127,10 @@ const WithActions: Story = {
   args: {
     ...Basic.args,
     columns: [
-      columnHelper.accessor('title', {
-        id: 'title',
-        header: 'Title',
-        meta: { className: 'w-1/3' },
-      }),
+      columnHelper.accessor('title', { id: 'title', header: 'Title' }),
       columnHelper.accessor('created', {
         id: 'created',
         header: 'Date added',
-        enableSorting: false,
         meta: { className: 'w-1/3' },
       }),
       columnHelper.accessor('description', {
