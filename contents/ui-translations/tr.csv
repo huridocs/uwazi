@@ -375,7 +375,7 @@ Inherit,Inherit
 Inherit property,Inherit property
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -411,7 +411,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Dil
 Language Code,Language Code
 Language deleted,Dil silindi
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,Diller
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Enlem
 Learn more,Daha fazla bilgi edin
@@ -781,6 +784,7 @@ Thesauri,Thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus kaydedildi
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,"Bu alan, sayfaya özel Javascript eklemenizi sağlar. Bu, yeni bir olasılıklar evreni açar."
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Bu içerik otomatik olarak oluşturulur
