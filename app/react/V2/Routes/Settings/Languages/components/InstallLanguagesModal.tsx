@@ -36,8 +36,15 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
-      <Modal.Body>
-        <SearchMultiselect className="max-h-96" items={items} onChange={s => setSelected(s)} />
+      <Modal.Body className="pt-4">
+        <Translate className="block px-2 text-justify text-gray-700">
+          This action may take some time while we add the extra language to the entire collection.
+        </Translate>
+        <SearchMultiselect
+          className="pt-4 max-h-96 "
+          items={items}
+          onChange={s => setSelected(s)}
+        />
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">

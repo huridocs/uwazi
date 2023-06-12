@@ -2834,6 +2834,10 @@ input:checked + .toggle-bg {
   text-align: center;
 }
 
+.text-justify {
+  text-align: justify;
+}
+
 .align-top {
   vertical-align: top;
 }
