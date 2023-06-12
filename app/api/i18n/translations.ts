@@ -317,7 +317,7 @@ export default {
 
   async updateContext(
     id: string,
-    newContextName: string | undefined,
+    newContextName: string,
     keyNamesChanges: { [x: string]: string },
     deletedProperties: string[],
     values: IndexedContextValues,

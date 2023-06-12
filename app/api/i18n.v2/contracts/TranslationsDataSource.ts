@@ -1,15 +1,15 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { DeleteResult, UpdateResult } from 'mongodb';
-import { Translation } from '../model/Translation';
+import { Translation, TranslationContext } from '../model/Translation';
 
 export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
   upsert(translations: Translation[]): Promise<Translation[]>;
-  insertAndIgnoreUniqueError(translations: Translation[]): Promise<Translation[]>;
 
   getAll(): ResultSet<Translation>;
   getByLanguage(language: string): ResultSet<Translation>;
   getByContext(context: string): ResultSet<Translation>;
+  getContext(contextId: string): Promise<TranslationContext>;
 
   deleteByContextId(contextId: string): Promise<DeleteResult>;
   deleteByLanguage(language: string): Promise<DeleteResult>;

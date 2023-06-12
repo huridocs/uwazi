@@ -1,6 +1,6 @@
 type ContextType = 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
 
-type TranslationContext = {
+export type TranslationContext = {
   type: ContextType;
   label: string;
   id: string;

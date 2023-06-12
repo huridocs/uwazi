@@ -8,7 +8,7 @@ import {
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { MongoBulkWriteError, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';

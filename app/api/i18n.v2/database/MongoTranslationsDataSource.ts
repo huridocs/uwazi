@@ -8,6 +8,7 @@ import { Db, MongoBulkWriteError } from 'mongodb';
 import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
+import { ContextDoesNotExist } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 
@@ -52,29 +53,12 @@ export class MongoTranslationsDataSource
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     try {
-      await this.getCollection().insertMany(items, { session: this.getSession() });
+      await this.getCollection().insertMany(items, { session: this.getSession(), ordered: false });
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
         throw new DuplicatedKeyError(e.message);
       }
     }
-    return translations;
-  }
-
-  async insertAndIgnoreUniqueError(translations: Translation[]): Promise<Translation[]> {
-    const items = translations.map(translation => TranslationMappers.toDBO(translation));
-
-    try {
-      await this.getCollection().insertMany(items, {
-        session: this.getSession(),
-        ordered: false,
-      });
-    } catch (e) {
-      if (!e.message.match(/E11000/)) {
-        throw e;
-      }
-    }
-
     return translations;
   }
 
@@ -116,6 +100,14 @@ export class MongoTranslationsDataSource
       this.getCollection().find({ language }),
       TranslationMappers.toModel
     );
+  }
+
+  async getContext(contextId: string) {
+    const translation = await this.getCollection().findOne({ 'context.id': contextId });
+    if (!translation) {
+      throw new ContextDoesNotExist(contextId);
+    }
+    return translation.context;
   }
 
   getByContext(context: string) {

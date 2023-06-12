@@ -1,12 +1,17 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import { GetTranslationsService } from '../GetTranslationsService';
 
 const createService = () =>
   new GetTranslationsService(
-    new MongoTranslationsDataSource(getConnection(), new MongoTransactionManager(getClient()))
+    new MongoTranslationsDataSource(
+      getConnection(),
+      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      new MongoTransactionManager(getClient())
+    )
   );
 
 const fixtures = {
