@@ -16,7 +16,7 @@ const MembersHeader = () => <Translate className="capitalize">Members</Translate
 const ProtectionPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['using2fa']>) => {
   if (cell.getValue()) {
     return (
-      <Pill color="gray">
+      <Pill color="green">
         <Translate>Password + 2fa</Translate>
       </Pill>
     );
