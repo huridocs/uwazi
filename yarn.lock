@@ -6543,10 +6543,10 @@ attr-accept@^2.2.2:
   resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-2.2.2.tgz#646613809660110749e92f2c10833b70968d929b"
   integrity sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==
 
-autocannon@^7.10.0:
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-7.10.0.tgz#2a048cd065669222474b6a0f9522f108bc93d50b"
-  integrity sha512-PY1UrXL4NHE7J0hA6GGN2r8xjiAePS/bii3Hz7NOvp4JO3xDNBgRftDjfAxj1t6FDWXiXEOuKF/pdDiisIS8ZA==
+autocannon@^7.11.0:
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-7.11.0.tgz#4f52dd15a90707da76de6a7122cc74cd30271981"
+  integrity sha512-17farET7ImAZjOCGSxiG3TcEbc6b+zWWQ61CpKC8D6UIjq+U3c1foRDSMk8Rgl4VJ01Hbbbx6UhdXhye9yTEZg==
   dependencies:
     chalk "^4.1.0"
     char-spinner "^1.0.1"
