@@ -188,19 +188,11 @@ const UserFormSidepanel = ({
                   <Button
                     type="button"
                     styling="light"
-                    onClick={() => {
-                      console.log('this should show a confirm and then reset password');
-                    }}
+                    onClick={() => handleClick('reset-password')}
                   >
                     <Translate>Reset Password</Translate>
                   </Button>
-                  <Button
-                    type="button"
-                    styling="light"
-                    onClick={() => {
-                      console.log('this should show a confirm and then reset 2fa');
-                    }}
-                  >
+                  <Button type="button" styling="light" onClick={() => handleClick('reset-2fa')}>
                     <Translate>Reset 2FA</Translate>
                   </Button>
                 </>

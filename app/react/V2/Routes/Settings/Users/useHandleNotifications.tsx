@@ -27,58 +27,54 @@ const useHandleNotifications = () => {
       return;
     }
 
+    let text: React.ReactNode;
+
     switch (intent) {
       case 'new-user':
-        setNotifications({
-          type: 'success',
-          text: <Translate>User saved</Translate>,
-        });
+        text = <Translate>User saved</Translate>;
         break;
 
       case 'edit-user':
-        setNotifications({
-          type: 'success',
-          text: <Translate>User updated</Translate>,
-        });
+        text = <Translate>User updated</Translate>;
         break;
 
       case 'new-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group saved</Translate>,
-        });
+        text = <Translate>Group saved</Translate>;
         break;
 
       case 'edit-group':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Group updated</Translate>,
-        });
+        text = <Translate>Group updated</Translate>;
         break;
 
       case 'delete-users':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Users deleted</Translate>,
-        });
+        text = <Translate>Users deleted</Translate>;
         break;
 
       case 'delete-groups':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Groups deleted</Translate>,
-        });
+        text = <Translate>Groups deleted</Translate>;
         break;
 
       case 'unlock-user':
-        setNotifications({
-          type: 'success',
-          text: <Translate>Account unlocked</Translate>,
-        });
+        text = <Translate>Account unlocked</Translate>;
+        break;
+
+      case 'reset-password':
+        text = <Translate>Instruction to reset password sent to user</Translate>;
+        break;
+
+      case 'reset-2fa':
+        text = <Translate>Disabled 2FA</Translate>;
         break;
 
       default:
         break;
+    }
+
+    if (text) {
+      setNotifications({
+        type: 'success',
+        text,
+      });
     }
   }, [data, intent, setNotifications]);
 };
