@@ -3,7 +3,6 @@ import { mount } from '@cypress/react18';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { CopyValueInput } from '../CopyValueInput';
-import { isPermissionAllowed } from 'cypress-browser-permissions';
 
 describe('CopyValueInput', () => {
   const Component = () => (
