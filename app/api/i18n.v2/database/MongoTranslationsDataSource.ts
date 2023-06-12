@@ -161,7 +161,7 @@ export class MongoTranslationsDataSource
     await Object.entries(translationsByContext).reduce(
       async (previous, [contextId, contextTranslations]) => {
         await previous;
-        const dbtrans = this.getCollection().find({
+        const dbTranslations = this.getCollection().find({
           key: { $in: contextTranslations.map(t => t.key) },
           'context.id': contextId,
         });
@@ -172,7 +172,7 @@ export class MongoTranslationsDataSource
           t => t
         );
 
-        for await (const dbt of dbtrans) {
+        for await (const dbt of dbTranslations) {
           translationsByKey[dbt.key].missingLanguages.push(dbt.language);
         }
       },

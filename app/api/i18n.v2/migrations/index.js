@@ -1,38 +1,36 @@
 /* eslint-disable no-await-in-loop */
 const flattenTranslations = (translation, languagesByKeyContext) => {
   if (translation.contexts?.length) {
-    return translation.contexts.reduce(
-      (flatTranslations, context) =>
-        flatTranslations.concat(
-          context.values
-            ? context.values.map(contextValue => {
-                if (!languagesByKeyContext[`${context.id}${contextValue.key}`]) {
-                  // eslint-disable-next-line no-param-reassign
-                  languagesByKeyContext[`${context.id}${contextValue.key}`] = {
-                    key: contextValue.key,
-                    contextId: context.id,
-                    languages: [],
-                    translation: {
-                      key: contextValue.key,
-                      value: contextValue.value,
-                      context: { type: context.type, label: context.label, id: context.id },
-                    },
-                  };
-                }
-                languagesByKeyContext[`${context.id}${contextValue.key}`].languages.push(
-                  translation.locale
-                );
-                return {
-                  language: translation.locale,
-                  key: contextValue.key,
-                  value: contextValue.value,
-                  context: { type: context.type, label: context.label, id: context.id },
-                };
-              })
-            : []
-        ),
-      []
-    );
+    return translation.contexts.reduce((flatTranslations, context) => {
+      if (context.values) {
+        context.values.forEach(contextValue => {
+          if (!languagesByKeyContext[`${context.id}${contextValue.key}`]) {
+            // eslint-disable-next-line no-param-reassign
+            languagesByKeyContext[`${context.id}${contextValue.key}`] = {
+              key: contextValue.key,
+              contextId: context.id,
+              languages: [],
+              translation: {
+                key: contextValue.key,
+                value: contextValue.value,
+                context: { type: context.type, label: context.label, id: context.id },
+              },
+            };
+          }
+          languagesByKeyContext[`${context.id}${contextValue.key}`].languages.push(
+            translation.locale
+          );
+          flatTranslations.push({
+            language: translation.locale,
+            key: contextValue.key,
+            value: contextValue.value,
+            context: { type: context.type, label: context.label, id: context.id },
+          });
+        });
+      }
+
+      return flatTranslations;
+    }, []);
   }
   return [];
 };

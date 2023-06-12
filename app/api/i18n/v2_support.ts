@@ -31,23 +31,19 @@ const cleanUpV2Collections = async (db: Db) => {
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
-    return translation.contexts.reduce(
-      (flatTranslations, context) =>
-        flatTranslations.concat(
-          context.values
-            ? context.values.map(
-                contextValue =>
-                  ({
-                    language: translation.locale,
-                    key: contextValue.key,
-                    value: contextValue.value,
-                    context: { type: context.type, label: context.label, id: context.id },
-                  } as CreateTranslationsData)
-              )
-            : []
-        ),
-      [] as CreateTranslationsData[]
-    );
+    return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
+      if (context.values) {
+        context.values.forEach(contextValue => {
+          flatTranslations.push({
+            language: translation.locale,
+            key: contextValue.key,
+            value: contextValue.value,
+            context: { type: context.type, label: context.label, id: context.id },
+          } as CreateTranslationsData);
+        });
+      }
+      return flatTranslations;
+    }, []);
   }
   return [];
 };
