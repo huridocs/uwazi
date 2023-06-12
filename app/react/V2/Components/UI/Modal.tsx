@@ -41,16 +41,16 @@ interface ModalChildrenProps {
 
 Modal.Header = ({ children, className }: ModalChildrenProps) => (
   <div
-    className={`flex items-start justify-between rounded-t ${
+    className={`${className} flex items-start justify-between rounded-t ${
       children ? 'border-b p-5' : 'p-2'
-    } ${className}`}
+    }`}
   >
     {children}
   </div>
 );
 
 Modal.Body = ({ children, className }: ModalChildrenProps) => (
-  <div className={`p-6 ${className}`} data-testid="modal-body">
+  <div className={`${className} p-6 `} data-testid="modal-body">
     {children}
   </div>
 );
@@ -68,8 +68,8 @@ Modal.CloseButton = ({
   <button
     onClick={onClick}
     aria-label="Close modal"
-    className={`ml-auto inline-flex items-center rounded-lg bg-transparent 
-    p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 ${className}`}
+    className={`${className} ml-auto inline-flex items-center rounded-lg bg-transparent 
+    p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 `}
     type="button"
   >
     <XMarkIcon className="w-4" />
