@@ -29,7 +29,9 @@ describe('Settings mobile menu', () => {
   });
 
   it('should enter the account settings', () => {
+    cy.intercept('api/user').as('getUser');
     cy.contains('a', 'Account').click();
+    cy.wait('@getUser');
     cy.get('body').toMatchImageSnapshot();
   });
 

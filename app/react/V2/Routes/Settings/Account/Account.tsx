@@ -58,7 +58,7 @@ const Account = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-languages"
+      data-testid="settings-account"
     >
       <SettingsContent>
         <SettingsContent.Header title="Account" />
