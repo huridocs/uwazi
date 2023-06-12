@@ -1,3 +1,3 @@
 export { GroupFormSidepanel } from './GroupFormSidepanel';
 export { UserFormSidepanel } from './UserFormSidepanel';
-export { getUsersColumns, getGroupsTableColumns } from './TableComponents';
+export { getUsersColumns, getGroupsColumns } from './TableComponents';

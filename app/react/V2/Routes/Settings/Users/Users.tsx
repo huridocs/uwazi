@@ -11,7 +11,7 @@ import {
   UserFormSidepanel,
   GroupFormSidepanel,
   getUsersColumns,
-  getGroupsTableColumns,
+  getGroupsColumns,
 } from './components';
 import { ActionButtons } from './components/ActionButtons';
 import { useHandleNotifications } from './useHandleNotifications';
@@ -34,7 +34,9 @@ const Users = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
-  const [selected, setSelected] = useState<ClientUserSchema | ClientUserGroupSchema | undefined>();
+  const [sidepanelSelection, setSidepanelSelection] = useState<
+    ClientUserSchema | ClientUserGroupSchema | undefined
+  >();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const fetcher = useFetcher();
@@ -43,12 +45,12 @@ const Users = () => {
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
     setShowSidepanel(true);
-    setSelected(user);
+    setSidepanelSelection(user);
   });
 
-  const groupsTableColumns = getGroupsTableColumns((group: ClientUserGroupSchema) => {
+  const groupsTableColumns = getGroupsColumns((group: ClientUserGroupSchema) => {
     setShowSidepanel(true);
-    setSelected(group);
+    setSidepanelSelection(group);
   });
 
   const handleSave = () => {
@@ -57,14 +59,11 @@ const Users = () => {
     if (activeTab === 'Users') {
       formData.set('intent', 'delete-users');
       formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
-      setSelectedUsers([]);
     } else {
       formData.set('intent', 'delete-groups');
       formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
-      setSelectedGroups([]);
     }
 
-    setShowDeleteModal(false);
     fetcher.submit(formData, { method: 'post' });
   };
 
@@ -122,19 +121,19 @@ const Users = () => {
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
+          selectedUser={sidepanelSelection as ClientUserSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
-          setSelected={setSelected}
-          selectedUser={selected as ClientUserSchema}
+          setSelected={setSidepanelSelection}
           users={users}
           groups={groups}
         />
       ) : (
         <GroupFormSidepanel
-          selectedGroup={selected as ClientUserGroupSchema}
+          selectedGroup={sidepanelSelection as ClientUserGroupSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
-          setSelected={setSelected}
+          setSelected={setSidepanelSelection}
           users={users}
           groups={groups}
         />
@@ -146,7 +145,12 @@ const Users = () => {
           body="Do you want to delete?"
           acceptButton="Delete"
           cancelButton="No, cancel"
-          onAcceptClick={() => handleSave()}
+          onAcceptClick={() => {
+            handleSave();
+            setShowDeleteModal(false);
+            setSelectedGroups([]);
+            setSelectedUsers([]);
+          }}
           onCancelClick={() => setShowDeleteModal(false)}
           dangerStyle
         />

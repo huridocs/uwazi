@@ -108,7 +108,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
   ];
 };
 
-const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) => void) => {
+const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => void) => {
   const columnHelper = createColumnHelper<ClientUserGroupSchema>();
   return [
     columnHelper.accessor('name', {
@@ -131,4 +131,4 @@ const getGroupsTableColumns = (editButtonAction: (group: ClientUserGroupSchema) 
   ];
 };
 
-export { getUsersColumns, getGroupsTableColumns };
+export { getUsersColumns, getGroupsColumns };
