@@ -5,6 +5,7 @@ import { flattenDeep } from 'lodash';
 import { t } from 'app/I18N';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
+import { Icon } from 'UI';
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
@@ -194,6 +195,7 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
       >
         <dt className={prop.noLabel ? 'hidden' : ''}>
           {t(prop.translateContext || 'System', prop.label)}
+          {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
           {showByType(prop, compact, templateId)}

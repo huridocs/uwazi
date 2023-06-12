@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Checkbox } from 'flowbite-react';
-import { Table } from 'V2/Components/UI/Table';
+import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
+import { Table, TableProps } from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
 
 const meta: Meta<typeof Table> = {
@@ -9,33 +9,93 @@ const meta: Meta<typeof Table> = {
   component: Table,
 };
 
-type Story = StoryObj<typeof Table>;
+type SampleSchema = {
+  title: string;
+  description: string;
+  created: number;
+};
+
+type Story = StoryObj<typeof Table<SampleSchema>>;
 
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Table columns={args.columns} data={args.data} title={args.title} />
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title={args.title}
+        initialState={args.initialState}
+      />
     </div>
   ),
 };
-const checkboxCell = () => <Checkbox />;
 
-const actionsCell = () => (
+const CustomCell = ({ cell }: CellContext<SampleSchema, any>) => (
+  <div className="text-center text-white bg-gray-400 rounded">{cell.getValue()}</div>
+);
+
+const ActionsCell = () => (
   <div className="flex gap-1">
     <Button>Primary</Button>
     <Button styling="outline">Secondary</Button>
   </div>
 );
 
-const Basic = {
+const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
+  const [selected1, setSelected1] = useState<Row<SampleSchema>[]>([]);
+  const [selected2, setSelected2] = useState<Row<SampleSchema>[]>([]);
+
+  return (
+    <div className="tw-content">
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title="Table A"
+        enableSelection
+        onSelection={setSelected1}
+      />
+
+      <p className="m-1">Selected items for Table A: {selected1.length}</p>
+      <p className="m-1">
+        Selections of Table A: {selected1.map(sel => `${sel.original.title}, `)}
+      </p>
+
+      <hr className="m-4" />
+
+      <Table<SampleSchema>
+        columns={args.columns}
+        data={args.data}
+        title="Table B"
+        enableSelection
+        onSelection={setSelected2}
+      />
+
+      <p className="m-1">Selected items for Table B: {selected2.length}</p>
+      <p className="m-1">
+        Selections of Table B: {selected2.map(sel => `${sel.original.title}, `)}
+      </p>
+    </div>
+  );
+};
+
+const Checkboxes: Story = {
+  render: CheckboxesTableComponent,
+};
+
+const columnHelper = createColumnHelper<SampleSchema>();
+
+const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
     columns: [
-      { id: 'select', Header: '', Cell: checkboxCell, disableSortBy: true },
-      { Header: 'Title', accessor: 'title', id: 'title' },
-      { Header: 'Description', accessor: 'description', disableSortBy: true },
-      { Header: 'Date added', accessor: 'created', disableSortBy: true },
+      columnHelper.accessor('title', { header: 'Title', id: 'title' }),
+      columnHelper.accessor('description', { header: 'Description' }),
+      columnHelper.accessor('created', {
+        header: 'Date added',
+        cell: CustomCell,
+        meta: { className: 'something' },
+      }),
     ],
     data: [
       { title: 'Entity 2', created: 2, description: 'Short text' },
@@ -54,41 +114,48 @@ const Basic = {
   },
 };
 
-const WithActions = {
+const WithInitialState: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    initialState: { sorting: [{ id: 'description', desc: true }] },
+  },
+};
+
+const WithActions: Story = {
   ...Primary,
   args: {
     ...Basic.args,
     columns: [
-      {
-        id: 'select',
-        Header: '',
-        Cell: checkboxCell,
-        disableSortBy: true,
-      },
-      { Header: 'Title', accessor: 'title', id: 'title', className: 'w-1/3' },
-      {
-        Header: 'Date added',
-        accessor: 'created',
-        disableSortBy: true,
-        className: 'w-1/3',
-      },
-      {
-        Header: 'Description',
-        accessor: 'description',
-        disableSortBy: true,
-        className: 'w-1/3',
-      },
-      {
+      columnHelper.accessor('title', { id: 'title', header: 'Title' }),
+      columnHelper.accessor('created', {
+        id: 'created',
+        header: 'Date added',
+        meta: { className: 'w-1/3' },
+      }),
+      columnHelper.accessor('description', {
+        id: 'description',
+        header: 'Description',
+        enableSorting: false,
+        meta: { className: 'w-1/3 bg-red-500 text-white' },
+      }),
+      columnHelper.display({
         id: 'action',
-        Header: 'Actions',
-        Cell: actionsCell,
-        disableSortBy: true,
-        className: 'text-center',
-      },
+        header: 'Actions',
+        cell: ActionsCell,
+        meta: { className: 'text-center' },
+      }),
     ],
   },
 };
 
-export { Basic, WithActions };
+const WithCheckboxes = {
+  ...Checkboxes,
+  args: {
+    ...Basic.args,
+  },
+};
+
+export { Basic, WithActions, WithCheckboxes, WithInitialState };
 
 export default meta;

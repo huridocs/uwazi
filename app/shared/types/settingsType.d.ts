@@ -105,7 +105,11 @@ export interface Settings {
         properties: string[];
       }[];
     };
-    newRelationships?: boolean;
+    newRelationships?:
+      | boolean
+      | {
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
+        };
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {
