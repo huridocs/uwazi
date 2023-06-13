@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema, LanguageISO6391 } from 'shared/types/commonTypes';
+import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
 
 export interface ItemSchema {
   id?: string;
