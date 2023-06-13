@@ -375,7 +375,7 @@ Inherit,Inherit
 Inherit property,속성 이어받기
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -411,7 +411,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,언어
 Language Code,Language Code
 Language deleted,언어가 삭제되었습니다.
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,언어
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,위도
 Learn more,더 알아보기
@@ -781,6 +784,7 @@ Thesauri,시소러스
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,시소러스 저장 완료
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,이 영역에 사용자 맞춤 자바스크립트를 추가할 수 있습니다.
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,콘텐츠가 자동으로 생성되었습니다.

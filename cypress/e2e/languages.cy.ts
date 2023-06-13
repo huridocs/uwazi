@@ -23,17 +23,16 @@ describe('Languages', () => {
 
   describe('Install Language', () => {
     it('should open the install language modal', () => {
-      cy.contains('Install language').click();
+      cy.contains('Install Language').click();
       cy.checkA11y();
     });
 
     it('should install new languages', () => {
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
-      cy.get('[data-testid=modal] input').type('Danish');
+      cy.get('[data-testid=modal] input[type=text]').type('Danish');
       cy.contains('button', 'Danish').click();
 
-      cy.get('[data-testid=modal] input').clear();
-      cy.get('[data-testid=modal] input').type('Basque');
+      cy.clearAndType('[data-testid=modal] input[type=text]', 'Basque');
       cy.contains('button', 'Basque').click();
 
       cy.contains('[data-testid=modal] button', 'Install').click();

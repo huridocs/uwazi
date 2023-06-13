@@ -1441,6 +1441,10 @@ input:checked + .toggle-bg {
   max-height: 90vh;
 }
 
+.max-h-\[calc\(100vh_-_9rem\)\] {
+  max-height: calc(100vh - 9rem);
+}
+
 .min-h-fit {
   min-height: -moz-fit-content;
   min-height: fit-content;
@@ -2679,6 +2683,11 @@ input:checked + .toggle-bg {
   padding: 1.5rem;
 }
 
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -2828,6 +2837,10 @@ input:checked + .toggle-bg {
 
 .text-center {
   text-align: center;
+}
+
+.text-justify {
+  text-align: justify;
 }
 
 .align-top {
