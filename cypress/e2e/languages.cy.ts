@@ -23,7 +23,7 @@ describe('Languages', () => {
 
   describe('Install Language', () => {
     it('should open the install language modal', () => {
-      cy.contains('Install language').click();
+      cy.contains('Install Language').click();
       cy.checkA11y();
     });
 
