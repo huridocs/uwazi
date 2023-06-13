@@ -186,8 +186,6 @@ module.exports = {
         ignore: ['no-translate'],
       },
     ],
-    'react/jsx-no-useless-fragment': [2, { allowExpressions: true }],
-    'react/no-unknown-property': ['error', { ignore: ['no-translate'] }],
     //jsx-a11y
     'jsx-a11y/anchor-is-valid': ['warn'],
     'jsx-a11y/label-has-for': ['off'],
