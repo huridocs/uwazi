@@ -17,7 +17,12 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
 
 const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
-    const requestParams = new RequestParams(user, headers);
+    const userToSave = { ...user };
+    if (!user.password) {
+      delete userToSave.password;
+    }
+
+    const requestParams = new RequestParams(userToSave, headers);
     const response = await UsersAPI.save(requestParams);
     return response;
   } catch (e) {
