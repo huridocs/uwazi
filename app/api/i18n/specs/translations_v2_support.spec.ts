@@ -710,7 +710,7 @@ describe('translations v2 support', () => {
 
   describe('updateContext', () => {
     describe('when feature flag is on', () => {
-      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations (OMG !)', async () => {
+      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations', async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
         await testingDB.setupFixturesAndContext(fixtures);
         await translations.get();
