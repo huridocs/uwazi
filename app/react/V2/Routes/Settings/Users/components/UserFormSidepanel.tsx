@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
+import { InputField, Select, MultiSelect, MultiSelectProps } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 
@@ -36,6 +36,28 @@ const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: Clie
       (existingUser.username?.trim().toLowerCase() === nameVal.trim().toLowerCase() ||
         existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
   );
+
+const calculateSelectedGroups = (
+  selectedGroups: MultiSelectProps['options'],
+  groups?: ClientUserGroupSchema[]
+) =>
+  selectedGroups
+    .filter(selectedGroup => selectedGroup.selected)
+    .map(selectedGroup => {
+      const group = groups?.find(originalGroup => originalGroup.name === selectedGroup.value);
+      return { _id: group?._id as string, name: group?.name as string };
+    });
+
+const getOptions = (groups?: ClientUserGroupSchema[], selectedUser?: ClientUserSchema) =>
+  (groups || []).map(group => {
+    const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name);
+
+    if (userGroups?.includes(group.name)) {
+      return { label: group.name, value: group.name, selected: true };
+    }
+
+    return { label: group.name, value: group.name };
+  });
 
 const UserFormSidepanel = ({
   showSidepanel,
@@ -86,7 +108,7 @@ const UserFormSidepanel = ({
     reset(defaultValues);
   };
 
-  const handleClick = (intent: string) => {
+  const onClickSubmit = (intent: string) => {
     const formData = new FormData();
     formData.set('intent', intent);
     formData.set('data', JSON.stringify(selectedUser));
@@ -95,6 +117,8 @@ const UserFormSidepanel = ({
     setShowSidepanel(false);
     reset(defaultValues);
   };
+
+  const multiselectOptions = getOptions(groups, selectedUser);
 
   return (
     <Sidepanel
@@ -188,21 +212,23 @@ const UserFormSidepanel = ({
                   <Button
                     type="button"
                     styling="light"
-                    onClick={() => handleClick('reset-password')}
+                    onClick={() => onClickSubmit('reset-password')}
                   >
                     <Translate>Reset Password</Translate>
                   </Button>
-                  <Button type="button" styling="light" onClick={() => handleClick('reset-2fa')}>
+
+                  <Button type="button" styling="light" onClick={() => onClickSubmit('reset-2fa')}>
                     <Translate>Reset 2FA</Translate>
                   </Button>
                 </>
               )}
+
               {selectedUser?.accountLocked && (
                 <Button
                   type="button"
                   styling="light"
                   color="error"
-                  onClick={() => handleClick('unlock-user')}
+                  onClick={() => onClickSubmit('unlock-user')}
                 >
                   <Translate>Unlock account</Translate>
                 </Button>
@@ -218,26 +244,10 @@ const UserFormSidepanel = ({
                 </Translate>
               }
               onChange={selectedGroups => {
-                setValue(
-                  'groups',
-                  selectedGroups
-                    .filter(grp => grp.selected)
-                    .map(selectedGroup => {
-                      const group = groups?.find(
-                        originalGroup => originalGroup.name === selectedGroup.value
-                      );
-                      return { _id: group?._id as string, name: group?.name as string };
-                    }),
-                  { shouldDirty: true }
-                );
+                const values = calculateSelectedGroups(selectedGroups, groups);
+                setValue('groups', values, { shouldDirty: true });
               }}
-              options={(groups || []).map(group => {
-                const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name) || [];
-                if (userGroups.includes(group.name)) {
-                  return { label: group.name, value: group.name, selected: true };
-                }
-                return { label: group.name, value: group.name };
-              })}
+              options={multiselectOptions}
             />
           </div>
         </div>

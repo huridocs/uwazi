@@ -156,7 +156,13 @@ const Users = () => {
             ) : undefined}
 
             {!selectedUsers.length && !selectedGroups.length ? (
-              <Button size="small" onClick={() => setShowSidepanel(true)}>
+              <Button
+                size="small"
+                onClick={() => {
+                  setSidepanelData(undefined);
+                  setShowSidepanel(true);
+                }}
+              >
                 {activeTab === 'Users' ? (
                   <Translate>Add user</Translate>
                 ) : (

@@ -27,28 +27,28 @@ const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSel
   const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <Popover className="border rounded-lg border-gray-50 relative" data-testid="multiselect-comp">
-      <div className="border-b border-gray-50 bg-gray-50 p-2 flex justify-between">
-        <div className="text-indigo-700 text-base">{label}</div>
+    <Popover className="relative rounded-lg border border-gray-50" data-testid="multiselect-comp">
+      <div className="flex justify-between p-2 bg-gray-50 border-b border-gray-50">
+        <div className="text-base text-indigo-700">{label}</div>
         <div className="left-0">
           <Popover.Button
             ref={setReferenceElement}
             className="text-primary-700 disabled:text-primary-300"
             disabled={disabled}
           >
-            <PlusCircleIcon className="text-lg w-6" />
+            <PlusCircleIcon className="w-6 text-lg" />
           </Popover.Button>
         </div>
       </div>
 
-      <div className="min-h-fit p-2 flex flex-wrap">
+      <div className="flex flex-wrap p-2 min-h-fit">
         {selectedOptions.length ? (
           selectedOptions.map((option: Option) => (
-            <Pill color="gray" key={option.value} className="mb-2 flex flex-row">
+            <Pill color="gray" key={option.value} className="flex flex-row mb-2">
               <span className="flex items-center">{option.label}</span>
               <button
                 type="button"
-                className="ml-1 text-gray-400 font-bold content-center justify-center"
+                className="justify-center content-center ml-1 font-bold text-gray-400"
                 disabled={disabled}
                 onClick={() => {
                   const selected = optionsState.map(opt => {
@@ -83,11 +83,11 @@ const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSel
           style={styles.popper}
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
-          className="p-2 w-fit max-w-md rounded max-h-56 overflow-y-auto absolute right-8 shadow-md bg-white"
+          className="overflow-y-auto absolute right-8 p-2 max-w-md max-h-56 bg-white rounded shadow-md w-fit"
           as="ul"
         >
           {optionsState.map((option: Option) => (
-            <li key={option.label} className="py-1 flex gap-1 align-top">
+            <li key={option.label} className="flex gap-1 py-1 align-top">
               <Checkbox
                 checked={option.selected}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,4 +111,5 @@ const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSel
   );
 };
 
+export type { MultiSelectProps };
 export { MultiSelect };

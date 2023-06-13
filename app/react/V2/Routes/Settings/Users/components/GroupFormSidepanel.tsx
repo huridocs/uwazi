@@ -30,6 +30,17 @@ const isUnique = (
       userGroup.name.trim().toLowerCase() === name.trim().toLowerCase()
   );
 
+const getAvailableUsers = (users?: ClientUserSchema[], selectedGroup?: ClientUserGroupSchema) =>
+  (users || []).map(user => {
+    const members = selectedGroup?.members.map(member => member.refId) || [];
+
+    if (members.includes(user._id || '')) {
+      return { label: user.username, value: user._id as string, selected: true };
+    }
+
+    return { label: user.username, value: user._id as string };
+  });
+
 const GroupFormSidepanel = ({
   selectedGroup,
   showSidepanel,
@@ -73,15 +84,7 @@ const GroupFormSidepanel = ({
     reset(defaultValues);
   };
 
-  const availableUsers = (users || []).map(user => {
-    const members = selectedGroup?.members.map(member => member.refId) || [];
-
-    if (members.includes(user._id || '')) {
-      return { label: user.username, value: user._id as string, selected: true };
-    }
-
-    return { label: user.username, value: user._id as string };
-  });
+  const availableUsers = getAvailableUsers(users, selectedGroup);
 
   const onChange = (options: { label: string; value: string; selected?: boolean }[]) => {
     const selected = options
