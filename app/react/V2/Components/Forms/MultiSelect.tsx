@@ -36,7 +36,7 @@ const ContextMenuBase = (
       className="absolute flex flex-col p-4 font-medium bg-white rounded-md min-w-fit"
     >
       {options.map((option: ContextOption) => (
-        <li key={option.label} className="py-1">
+        <li key={option.value} className="py-1">
           <Checkbox
             checked={option.selected}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
