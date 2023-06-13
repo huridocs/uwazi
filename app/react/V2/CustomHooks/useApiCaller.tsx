@@ -18,10 +18,10 @@ const getError = async (res: Response) => {
 const useApiCaller = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
 
-  const handleSuccess = async (res: Response, successAction: string) => {
+  const handleSuccess = async (res: Response, successMessageComponent: React.ReactNode) => {
     setNotifications({
       type: 'success',
-      text: <Translate>{successAction}</Translate>,
+      text: successMessageComponent,
     });
     return getData(res);
   };
@@ -38,14 +38,14 @@ const useApiCaller = () => {
   const requestAction = async (
     action: (params: RequestParams) => Promise<Response>,
     requestParams: RequestParams,
-    successAction: string
+    successMessageComponent: React.ReactNode
   ): Promise<ApiCallerResult> => {
     let data;
     let error;
     try {
       const res: Response = await action(requestParams);
       if (!res.status || res.status === 200) {
-        data = handleSuccess(res, successAction);
+        data = handleSuccess(res, successMessageComponent);
       } else {
         error = handleError(await getError(res));
       }
