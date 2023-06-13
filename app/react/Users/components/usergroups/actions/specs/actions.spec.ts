@@ -103,7 +103,7 @@ describe('User Groups actions', () => {
     });
 
     it('should dispatch a remove action of the deleted user group', () => {
-      expect(api.deleteGroup).toHaveBeenCalledWith(new RequestParams({ _id: group2._id }));
+      expect(api.deleteGroup).toHaveBeenCalledWith(new RequestParams({ ids: [group2._id] }));
       expect(dispatch).toHaveBeenCalledWith({
         type: 'userGroups/REMOVE',
         value: group2,

@@ -32,7 +32,7 @@ describe('UserGroupsAPI', () => {
     it('should call delete method of usergroups api', async () => {
       const response = await deleteGroup(new RequestParams({ ids: ['group1'] }));
       expect(api.delete).toHaveBeenCalledWith('usergroups', {
-        data: { _id: 'group1' },
+        data: { ids: ['group1'] },
         headers: {},
       });
       expect(response.code).toBe(200);
