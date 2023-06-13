@@ -5,13 +5,14 @@ import { last } from 'lodash';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { notificationAtom } from 'app/V2/atoms';
+import { FormIntent } from './types';
 
 const useHandleNotifications = () => {
   const fetchers = useFetchers();
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const lastFetcherCall = last(fetchers) || fetchers[0];
-  const intent = lastFetcherCall?.formData?.get('intent');
+  const intent = lastFetcherCall?.formData?.get('intent') as FormIntent;
   const { data } = lastFetcherCall || {};
 
   useEffect(() => {

@@ -15,14 +15,14 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
   }
 };
 
-const saveUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const updateUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
-    const userToSave = { ...user };
+    const updatedUser = { ...user };
     if (!user.password) {
-      delete userToSave.password;
+      delete updatedUser.password;
     }
 
-    const requestParams = new RequestParams(userToSave, headers);
+    const requestParams = new RequestParams(updatedUser, headers);
     const response = await UsersAPI.save(requestParams);
     return response;
   } catch (e) {
@@ -117,7 +117,7 @@ export {
   get,
   getUserGroups,
   newUser,
-  saveUser,
+  updateUser,
   deleteUser,
   saveGroup,
   deleteGroup,

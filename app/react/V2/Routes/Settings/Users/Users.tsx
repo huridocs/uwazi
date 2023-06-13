@@ -15,20 +15,9 @@ import {
   getGroupsColumns,
 } from './components';
 import { useHandleNotifications } from './useHandleNotifications';
+import { FormIntent } from './types';
 
 type ActiveTab = 'Groups' | 'Users';
-type FormIntent =
-  | 'new-user'
-  | 'edit-user'
-  | 'delete-users'
-  | 'new-group'
-  | 'edit-group'
-  | 'delete-groups'
-  | 'unlock-user'
-  | 'reset-password'
-  | 'reset-2fa'
-  | 'bulk-reset-2fa'
-  | 'bulk-reset-password';
 
 // eslint-disable-next-line max-statements
 const Users = () => {
@@ -237,7 +226,7 @@ const userAction =
       case 'new-user':
         return usersAPI.newUser(formValues);
       case 'edit-user':
-        return usersAPI.saveUser(formValues);
+        return usersAPI.updateUser(formValues);
       case 'delete-users':
         return usersAPI.deleteUser(formValues);
       case 'new-group':
