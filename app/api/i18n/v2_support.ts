@@ -1,7 +1,7 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoTranslationsDataSource } from 'api/i18n.v2/database/MongoTranslationsDataSource';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import migration from 'api/i18n.v2/migrations/';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import {
@@ -12,7 +12,7 @@ import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslatio
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { EnforcedWithId } from 'api/odm';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
 import { Db } from 'mongodb';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
@@ -84,84 +84,60 @@ const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translati
 
 export const createTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
+    const transactionManager = new MongoTransactionManager(getClient());
     await new CreateTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      ),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
+      DefaultTranslationsDataSource(transactionManager),
+      DefaultSettingsDataSource(transactionManager),
+      transactionManager
     ).create(flattenTranslations(translation));
   }
 };
 
 export const upsertTranslationsV2 = async (translation: TranslationType) => {
   if (tenants.current().featureFlags?.translationsV2) {
+    const transactionManager = new MongoTransactionManager(getClient());
     await new UpsertTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      ),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
+      DefaultTranslationsDataSource(transactionManager),
+      DefaultSettingsDataSource(transactionManager),
+      transactionManager
     ).upsert(flattenTranslations(translation));
   }
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
+  const transactionManager = new MongoTransactionManager(getClient());
   await new DeleteTranslationsService(
-    new MongoTranslationsDataSource(
-      getConnection(),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
-    ),
-    new MongoTransactionManager(getClient())
+    DefaultTranslationsDataSource(transactionManager),
+    transactionManager
   ).deleteByContextId(contextId);
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
+  const transactionManager = new MongoTransactionManager(getClient());
   await new DeleteTranslationsService(
-    new MongoTranslationsDataSource(
-      getConnection(),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
-    ),
-    new MongoTransactionManager(getClient())
+    DefaultTranslationsDataSource(transactionManager),
+    transactionManager
   ).deleteByLanguage(language);
 };
 
 export const getTranslationsV2ByContext = async (context: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      )
+      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
     ).getByContext(context)
   );
 
 export const getTranslationsV2ByLanguage = async (language: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      )
+      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
     ).getByLanguage(language)
   );
 
 export const getTranslationsV2 = async () =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      )
+      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
     ).getAll()
   );
 
@@ -172,14 +148,11 @@ export const updateContextV2 = async (
   valueChanges: IndexedContextValues
 ) => {
   if (tenants.current().featureFlags?.translationsV2) {
+    const transactionManager = new MongoTransactionManager(getClient());
     await new UpsertTranslationsService(
-      new MongoTranslationsDataSource(
-        getConnection(),
-        new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-        new MongoTransactionManager(getClient())
-      ),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
+      DefaultTranslationsDataSource(transactionManager),
+      DefaultSettingsDataSource(transactionManager),
+      transactionManager
     ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
   }
 };

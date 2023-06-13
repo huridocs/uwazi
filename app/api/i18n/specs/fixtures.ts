@@ -133,7 +133,6 @@ const fixtures: DBFixture = {
         {
           key: 'zh',
           label: 'Chinese',
-          default: true,
         },
       ],
     },
