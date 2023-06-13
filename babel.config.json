@@ -21,7 +21,8 @@
     },
     "debug": {
       "sourceMaps": "inline",
-      "retainLines": true
+      "retainLines": true,
+      "plugins": [ "istanbul" ]
     }
   },
   "plugins": [
