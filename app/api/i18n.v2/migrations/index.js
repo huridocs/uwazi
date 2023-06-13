@@ -47,14 +47,16 @@ export default {
 
   reindex: false,
 
-  async createIndex(db) {
+  async createIndexes(db) {
     await db
       .collection(newTranslationsCollection)
       .createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
+
+    await db.collection(newTranslationsCollection).createIndex({ 'context.id': 1, key: 1 });
   },
 
   async up(db) {
-    await this.createIndex(db);
+    await this.createIndexes(db);
     const newTranslations = await db.collection(newTranslationsCollection);
     await newTranslations.deleteMany({});
 

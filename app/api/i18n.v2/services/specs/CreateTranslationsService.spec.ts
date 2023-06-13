@@ -41,7 +41,7 @@ const fixtures: DBFixture = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  await migration.createIndex(testingDB.mongodb);
+  await migration.createIndexes(testingDB.mongodb);
 });
 
 afterAll(async () => {

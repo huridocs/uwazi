@@ -34,6 +34,10 @@ describe('migration set_up_new_relationship_collection', () => {
     const indexInfo = await db.collection('translations_v2').indexInformation();
     expect(indexInfo).toEqual({
       _id_: [['_id', 1]],
+      'context.id_1_key_1': [
+        ['context.id', 1],
+        ['key', 1],
+      ],
       'language_1_key_1_context.id_1': [
         ['language', 1],
         ['key', 1],
