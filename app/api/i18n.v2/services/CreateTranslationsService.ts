@@ -1,11 +1,12 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 
 export interface CreateTranslationsData {
-  language: string; // should be an enum ?
+  language: LanguageISO6391;
   key: string;
   value: string;
   context: {

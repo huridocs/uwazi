@@ -253,7 +253,8 @@ export default {
     }
   ) {
     const { languages = [] } = await settings.get({}, 'languages');
-    const languagesSet = new Set(languages.map(l => l.key));
+    const languagesSet = new Set(languages.map(l => String(l.key)));
+
     const languagesToUpdate = Object.keys(keyValuePairsPerLanguage).filter(l =>
       languagesSet.has(l)
     );

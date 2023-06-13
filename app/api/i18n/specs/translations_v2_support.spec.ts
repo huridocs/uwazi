@@ -7,7 +7,7 @@ import translations from '../translations';
 import { migrateTranslationsToV2 } from '../v2_support';
 import migration from '../../i18n.v2/migrations';
 
-import fixtures, { dictionaryId } from './fixtures.js';
+import fixtures, { dictionaryId } from './fixtures';
 
 let db: Db;
 const newTranslationsCollection = 'translations_v2';

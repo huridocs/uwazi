@@ -7,7 +7,7 @@ import {
 } from 'api/i18n.v2/errors/translationErrors';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import migration from '../../migrations/index';
@@ -27,7 +27,7 @@ const createService = () =>
     new MongoTransactionManager(getClient())
   );
 
-const fixtures = {
+const fixtures: DBFixture = {
   translations_v2: [],
   settings: [
     {
@@ -115,7 +115,7 @@ describe('CreateTranslationsService', () => {
         await expect(
           service.create([
             {
-              language: 'does not exist',
+              language: 'zh',
               key: 'key',
               value: 'valor',
               context: { type: 'Entity', label: 'Test', id: 'test' },
@@ -127,13 +127,13 @@ describe('CreateTranslationsService', () => {
               context: { type: 'Entity', label: 'Test', id: 'test' },
             },
             {
-              language: 'no',
+              language: 'ar',
               key: 'key',
               value: 'valor',
               context: { type: 'Entity', label: 'Test', id: 'test' },
             },
           ])
-        ).rejects.toEqual(new LanguageDoesNotExist('["does not exist","no"]'));
+        ).rejects.toEqual(new LanguageDoesNotExist('["zh","ar"]'));
       });
     });
 

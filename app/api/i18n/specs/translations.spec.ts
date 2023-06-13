@@ -10,7 +10,7 @@ import fixtures, {
   documentTemplateId,
   englishTranslation,
   entityTemplateId,
-} from './fixtures.js';
+} from './fixtures';
 import { UITranslationNotAvailable } from '../defaultTranslations';
 
 describe('translations', () => {

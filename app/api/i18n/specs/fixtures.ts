@@ -1,13 +1,13 @@
 /** @format */
 
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 const englishTranslation = db.id();
 const dictionaryId = db.id();
 
-export default {
+const fixtures: DBFixture = {
   translations: [
     {
       _id: englishTranslation,
@@ -162,4 +162,5 @@ export default {
   ],
 };
 
+export default fixtures;
 export { entityTemplateId, englishTranslation, documentTemplateId, dictionaryId };

@@ -1,12 +1,12 @@
 import { search } from 'api/search';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { files } from '../files';
 
 const factory = getFixturesFactory();
 
-const fixtures = {
+const fixtures: DBFixture = {
   entities: [
     factory.entity('entity1', 'template1', {
       relProp: [
@@ -140,15 +140,15 @@ describe('when deleting a file', () => {
 
   it('should delete the text references from and to the file', async () => {
     const relationships = await testingDB.mongodb?.collection('relationships').find({}).toArray();
-    expect(relationships).toEqual([fixtures.relationships[1]]);
+    expect(relationships).toEqual([fixtures.relationships?.[1]]);
   });
 
   it('should re-denormalize the affected entities', async () => {
     const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
     expect(entities).toEqual([
-      { ...fixtures.entities[0], obsoleteMetadata: ['relProp'] },
-      { ...fixtures.entities[1], obsoleteMetadata: [] },
-      { ...fixtures.entities[2], obsoleteMetadata: [] },
+      { ...fixtures.entities?.[0], obsoleteMetadata: ['relProp'] },
+      { ...fixtures.entities?.[1], obsoleteMetadata: [] },
+      { ...fixtures.entities?.[2], obsoleteMetadata: [] },
     ]);
   });
 

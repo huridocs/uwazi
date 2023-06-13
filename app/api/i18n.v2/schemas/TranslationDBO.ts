@@ -1,5 +1,7 @@
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+
 export interface TranslationDBO {
-  language: string; // should be an enum ?
+  language: LanguageISO6391;
   key: string;
   value: string;
   context: {

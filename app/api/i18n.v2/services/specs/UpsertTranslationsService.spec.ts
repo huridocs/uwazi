@@ -3,7 +3,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { LanguageDoesNotExist } from 'api/i18n.v2/errors/translationErrors';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import { CreateTranslationsData } from '../CreateTranslationsService';
 import { UpsertTranslationsService } from '../UpsertTranslationsService';
@@ -30,7 +30,7 @@ const translation = (translationData: Partial<CreateTranslationsData>): CreateTr
   ...translationData,
 });
 
-const fixtures = {
+const fixtures: DBFixture = {
   translations_v2: [
     {
       language: 'es',
@@ -98,11 +98,11 @@ describe('CreateTranslationsService', () => {
         const service = createService();
         await expect(
           service.upsert([
-            translation({ language: 'does not exist' }),
+            translation({ language: 'zh' }),
             translation({ language: 'es' }),
-            translation({ language: 'no' }),
+            translation({ language: 'ar' }),
           ])
-        ).rejects.toEqual(new LanguageDoesNotExist('["does not exist","no"]'));
+        ).rejects.toEqual(new LanguageDoesNotExist('["zh","ar"]'));
       });
     });
   });

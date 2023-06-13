@@ -2,6 +2,7 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import { GetTranslationsService } from '../GetTranslationsService';
 
@@ -14,7 +15,7 @@ const createService = () =>
     )
   );
 
-const fixtures = {
+const fixtures: DBFixture = {
   translations_v2: [
     {
       key: 'key1',

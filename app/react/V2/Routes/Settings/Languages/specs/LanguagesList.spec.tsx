@@ -10,6 +10,7 @@ import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Settings } from 'shared/types/settingsType';
 import * as useApiCaller from 'app/V2/CustomHooks/useApiCaller';
 import { LanguagesList } from '../LanguagesList';
+import { LanguagesListSchema } from 'shared/types/commonTypes';
 
 const languageDefinition = (
   label: string,
@@ -36,7 +37,7 @@ const availableLanguages = [
   { ...languageDefinition('Thai', 'th', 'tha', 'ไทย', true) },
 ];
 
-const currentLanguages = [
+const currentLanguages: LanguagesListSchema = [
   { label: 'English', key: 'en' },
   { label: 'Spanish', key: 'es', default: true },
   { label: 'Arabic', key: 'ar' },

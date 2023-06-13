@@ -5,6 +5,7 @@ import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { Db, MongoBulkWriteError } from 'mongodb';
 import { objectIndex, objectIndexToArrays } from 'shared/data_utils/objectIndex';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
 import { ContextDoesNotExist } from '../errors/translationErrors';
@@ -13,10 +14,10 @@ import { TranslationDBO } from '../schemas/TranslationDBO';
 
 const languagesForKeyContext = (
   translations: Translation[]
-): { key: string; contextId: string; missingLanguages: string[] }[] =>
+): { key: string; contextId: string; missingLanguages: LanguageISO6391[] }[] =>
   Object.values(
     translations.reduce<
-      Record<string, { key: string; contextId: string; missingLanguages: string[] }>
+      Record<string, { key: string; contextId: string; missingLanguages: LanguageISO6391[] }>
     >((result, item) => {
       const key = `${item.key}${item.context.id}`;
       if (!result[key]) {
@@ -83,7 +84,7 @@ export class MongoTranslationsDataSource
     return this.getCollection().deleteMany({ 'context.id': contextId });
   }
 
-  async deleteByLanguage(language: string) {
+  async deleteByLanguage(language: LanguageISO6391) {
     return this.getCollection().deleteMany({ language });
   }
 
@@ -94,7 +95,7 @@ export class MongoTranslationsDataSource
     );
   }
 
-  getByLanguage(language: string) {
+  getByLanguage(language: LanguageISO6391) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ language }),
       TranslationMappers.toModel
@@ -136,7 +137,7 @@ export class MongoTranslationsDataSource
     await stream.flush();
   }
 
-  async updateValue(key: string, contextId: string, language: string, value: string) {
+  async updateValue(key: string, contextId: string, language: LanguageISO6391, value: string) {
     await this.getCollection().updateOne(
       { key, 'context.id': contextId, language },
       { $set: { value } }
