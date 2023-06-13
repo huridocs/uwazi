@@ -27,7 +27,7 @@ const Users = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
   const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
-  const [sidepanelSelection, setSidepanelSelection] = useState<
+  const [sidepanelData, setSidepanelData] = useState<
     ClientUserSchema | ClientUserGroupSchema | undefined
   >();
   const [showSidepanel, setShowSidepanel] = useState(false);
@@ -44,12 +44,12 @@ const Users = () => {
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
     setShowSidepanel(true);
-    setSidepanelSelection(user);
+    setSidepanelData(user);
   });
 
   const groupsTableColumns = getGroupsColumns((group: ClientUserGroupSchema) => {
     setShowSidepanel(true);
-    setSidepanelSelection(group);
+    setSidepanelData(group);
   });
 
   const handleBulkAction = () => {
@@ -170,19 +170,19 @@ const Users = () => {
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
-          selectedUser={sidepanelSelection as ClientUserSchema}
+          selectedUser={sidepanelData as ClientUserSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
-          setSelected={setSidepanelSelection}
+          setSelected={setSidepanelData}
           users={users}
           groups={groups}
         />
       ) : (
         <GroupFormSidepanel
-          selectedGroup={sidepanelSelection as ClientUserGroupSchema}
+          selectedGroup={sidepanelData as ClientUserGroupSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
-          setSelected={setSidepanelSelection}
+          setSelected={setSidepanelData}
           users={users}
           groups={groups}
         />
