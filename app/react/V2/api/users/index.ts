@@ -1,13 +1,17 @@
 import { IncomingHttpHeaders } from 'http';
 import UsersAPI from 'app/Users/UsersAPI';
 import api from 'app/utils/api';
-import * as GroupsAPI from 'app/Users/components/usergroups/UserGroupsAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
 const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
-    const requestParams = new RequestParams(user, headers);
+    const createdUser = { ...user };
+    if (!user.password) {
+      delete createdUser.password;
+    }
+
+    const requestParams = new RequestParams(createdUser, headers);
     const response = await UsersAPI.new(requestParams);
     return response;
   } catch (e) {
@@ -43,8 +47,8 @@ const deleteUser = async (users: ClientUserSchema[], headers?: IncomingHttpHeade
 const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams(group, headers);
-    const response = await GroupsAPI.saveGroup(requestParams);
-    return response;
+    const response = await api.post('usergroups', requestParams);
+    return response.json;
   } catch (e) {
     return e;
   }
@@ -56,8 +60,8 @@ const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHt
       { ids: groups.map(group => group._id) as string[] },
       headers
     );
-    const response = await GroupsAPI.deleteGroup(requestParams);
-    return response;
+    const response = await api.delete('usergroups', requestParams);
+    return response.json;
   } catch (e) {
     return e;
   }
@@ -106,8 +110,8 @@ const get = async (headers?: IncomingHttpHeaders) => {
 const getUserGroups = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
-    const response = await GroupsAPI.getGroups(requestParams);
-    return response;
+    const response = await api.get('usergroups', requestParams);
+    return response.json;
   } catch (e) {
     return e;
   }

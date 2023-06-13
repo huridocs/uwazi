@@ -11,8 +11,13 @@ import { t, I18NLink, Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { createSelector } from 'reselect';
 import { Pill } from 'app/Metadata/components/Pill';
-import { roleTranslationKey } from 'app/Users/UserManagement';
 import { SettingsHeader } from './SettingsHeader';
+
+const roleTranslationKey = {
+  admin: 'Admin',
+  editor: 'Editor',
+  collaborator: 'Collaborator',
+};
 
 class AccountSettings extends Component {
   constructor(props, context) {
@@ -78,7 +83,7 @@ class AccountSettings extends Component {
 
   renderPasswordField(id, value, label, passwordError) {
     return (
-      <div className={`form-group${passwordError ? ' has-error' : ''}`}>
+      <div className={`form-group${passwordError ? 'has-error' : ''}`}>
         <label className="form-group-label" htmlFor={id}>
           <Translate>{label}</Translate>
         </label>
