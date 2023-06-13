@@ -1,6 +1,5 @@
 import 'cypress-axe';
 import { clearCookiesAndLogin } from './helpers';
-import { eq } from 'lodash';
 
 const namesShouldMatch = (names: string[]) => {
   cy.get('table tbody tr').each((row, index) => {

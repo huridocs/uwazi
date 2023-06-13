@@ -8,7 +8,10 @@ describe('UserGroupList', () => {
   const group1: ClientUserGroupSchema = {
     _id: 'group1Id',
     name: 'Group 1',
-    members: [{ refId: 'user1' }, { refId: 'user2' }],
+    members: [
+      { refId: 'user1', username: 'user 1' },
+      { refId: 'user2', username: 'user 2' },
+    ],
   };
   const defaultProps: UserGroupListProps = {
     userGroups: [group1, { _id: 'group2Id', name: 'Group 2', members: [] }],

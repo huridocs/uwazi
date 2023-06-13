@@ -12,15 +12,22 @@ describe('User Groups actions', () => {
   const group2: ClientUserGroupSchema = {
     _id: 'group2',
     name: 'Group 2',
-    members: [{ refId: 'user1' }],
+    members: [{ refId: 'user1', username: 'user 1' }],
   };
   const userGroups: ClientUserGroupSchema[] = [
-    { _id: 'group1', name: 'group1', members: [{ refId: 'user1' }, { refId: 'user2' }] },
+    {
+      _id: 'group1',
+      name: 'group1',
+      members: [
+        { refId: 'user1', username: 'user 1' },
+        { refId: 'user2', username: 'user 2' },
+      ],
+    },
     group2,
   ];
   const newUserGroup: ClientUserGroupSchema = {
     name: 'new group',
-    members: [{ refId: 'user2' }],
+    members: [{ refId: 'user2', username: 'user 2' }],
   };
 
   let dispatch: Dispatch<IStore>;
@@ -67,7 +74,7 @@ describe('User Groups actions', () => {
         updatedGroup2 = {
           ...group2,
           name: 'Group 2 updated',
-          members: [{ refId: 'user1' }],
+          members: [{ refId: 'user1', username: 'user 1' }],
         };
         spyOn(api, 'saveGroup').and.returnValue(
           Promise.resolve({ ...group2, name: 'Group 2 updated' })

@@ -31,7 +31,7 @@ export function saveUserGroup(userGroup: ClientUserGroupSchema) {
 
 export function deleteUserGroup(userGroup: ClientUserGroupSchema) {
   return async (dispatch: Dispatch<IStore>) => {
-    await deleteGroup(new RequestParams({ _id: ensure(userGroup._id) }));
+    await deleteGroup(new RequestParams({ ids: [ensure(userGroup._id)] }));
     dispatch(actions.remove('userGroups', userGroup));
     dispatch(notificationActions.notify(t('System', 'Group deleted', null, false), 'success'));
   };
