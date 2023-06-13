@@ -1,4 +1,3 @@
-import def from 'ajv/dist/vocabularies/discriminator';
 import React from 'react';
 
 interface CardProps {
