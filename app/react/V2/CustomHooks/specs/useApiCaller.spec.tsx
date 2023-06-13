@@ -5,6 +5,8 @@ import { act, renderHook } from '@testing-library/react';
 import * as recoil from 'recoil';
 import { RecoilRoot, RecoilState } from 'recoil';
 import { RequestParams } from 'app/utils/RequestParams';
+import { Translate } from 'app/I18N';
+import React from 'react';
 import { useApiCaller } from '../useApiCaller';
 
 describe('describe useApiCaller', () => {
@@ -13,7 +15,7 @@ describe('describe useApiCaller', () => {
       requestAction: (
         arg0: jest.Mock<any, any>,
         arg1: RequestParams<{ data: string }>,
-        arg2: string
+        arg2: React.ReactNode
       ) => any;
     };
   };
@@ -37,7 +39,7 @@ describe('describe useApiCaller', () => {
       const apiResult = await apiCallerHook.current.requestAction(
         apiMock,
         new RequestParams({ data: 'paramid' }),
-        'successful action'
+        <Translate>successful action</Translate>
       );
       expect(setNotificationMock).toHaveBeenCalled();
 
