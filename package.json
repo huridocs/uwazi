@@ -209,7 +209,7 @@
     "react-tabs-redux": "4.0.0",
     "react-text-selection-handler": "0.1.0",
     "react-widgets": "v4.6.1",
-    "recharts": "2.5.0",
+    "recharts": "2.6.2",
     "recoil": "^0.7.7",
     "redis": "^3.1.2",
     "redlock": "^4.2.0",
