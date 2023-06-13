@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
@@ -172,8 +171,13 @@ export class MongoTranslationsDataSource
           t => t
         );
 
-        for await (const dbt of dbTranslations) {
-          translationsByKey[dbt.key].missingLanguages.push(dbt.language);
+        // eslint-disable-next-line no-await-in-loop
+        while (await dbTranslations.hasNext()) {
+          // eslint-disable-next-line no-await-in-loop
+          const dbt = await dbTranslations.next();
+          if (dbt) {
+            translationsByKey[dbt.key].missingLanguages.push(dbt.language);
+          }
         }
       },
       Promise.resolve()
