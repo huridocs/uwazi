@@ -129,7 +129,7 @@ const Users = () => {
                     setShowConfirmationModal(true);
                   }}
                 >
-                  <Translate>Reset password</Translate>
+                  <Translate>Reset Password</Translate>
                 </Button>
 
                 <Button
