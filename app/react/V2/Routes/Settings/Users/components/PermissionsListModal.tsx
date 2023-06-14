@@ -1,167 +1,179 @@
-import React, { useState } from 'react';
+/* eslint-disable react/no-multi-comp */
+import React from 'react';
+import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import { UserPlusIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { Button, Modal } from 'app/V2/Components/UI';
+import { Button, Modal, Table } from 'app/V2/Components/UI';
+
+type Level = 'none' | 'partial' | 'full';
 
 interface PermissionByRole {
-  label: string;
-  roles: {
-    admin: string;
-    editor: string;
-    collaborator: string;
-  };
+  action: string;
+  admin: Level;
+  editor: Level;
+  collaborator: Level;
 }
+
+interface PermissionsListModalProps {
+  showModal: boolean;
+  closeModal: () => void;
+}
+
 const permissionsByRole: PermissionByRole[] = [
   {
-    label: 'Create new entities and upload documents',
-    roles: { admin: 'full', editor: 'full', collaborator: 'full' },
+    action: 'Create new entities and upload documents',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'full',
   },
   {
-    label: 'Create table of contents',
-    roles: { admin: 'full', editor: 'full', collaborator: 'full' },
+    action: 'Create table of contents',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'full',
   },
   {
-    label: 'View entities',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+    action: 'View entities',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'partial',
   },
   {
-    label: 'Edit metadata of entities',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+    action: 'Edit metadata of entities',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'partial',
   },
   {
-    label: 'Delete entities and documents',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+    action: 'Delete entities and documents',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'partial',
   },
   {
-    label: 'Share edit access with other users',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+    action: 'Share edit access with other users',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'partial',
   },
   {
-    label: 'Create relationships and references',
-    roles: { admin: 'full', editor: 'full', collaborator: 'partial' },
+    action: 'Create relationships and references',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'partial',
   },
   {
-    label: 'Share entities with the public',
-    roles: { admin: 'full', editor: 'full', collaborator: 'none' },
+    action: 'Share entities with the public',
+    admin: 'full',
+    editor: 'full',
+    collaborator: 'none',
   },
   {
-    label: 'Manage site settings and configuration',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Manage site settings and configuration',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Add/delete users and assign roles',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Add/delete users and assign roles',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Configure filters',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Configure filters',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Add/edit translations',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Add/edit translations',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Configure templates ',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Configure templates ',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Create and edit thesauri',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Create and edit thesauri',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
   {
-    label: 'Create relationship types',
-    roles: { admin: 'full', editor: 'none', collaborator: 'none' },
+    action: 'Create relationship types',
+    admin: 'full',
+    editor: 'none',
+    collaborator: 'none',
   },
 ];
 
-const permissionIcons = {
-  full: { icon: 'check', className: 'label-success' },
-  partial: { icon: 'user-check', className: 'label-info' },
-  none: { icon: 'times', className: 'label-warning' },
+const ActionHeader = () => <Translate>User Action</Translate>;
+const CollaboratorHeader = () => <Translate>Collaborator</Translate>;
+const EditorHeader = () => <Translate>Editor</Translate>;
+const AdminHeader = () => <Translate>Admin</Translate>;
+
+const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
+  switch (cell.getValue()) {
+    case 'full':
+      return <CheckIcon className="w-6 text-green-400" />;
+
+    case 'partial':
+      return <UserPlusIcon className="w-6 text-orange-400" />;
+
+    default:
+      return <XMarkIcon className="w-6 text-pink-600" />;
+  }
 };
 
-type PermissionCellParams = 'full' | 'partial' | 'none';
-type userRoles = 'collaborator' | 'editor' | 'admin';
-
-interface PermissionsListProps {
-  isOpen: boolean;
-  onClose: () => void;
-  rolePermissions?: PermissionByRole[];
-}
-
-type PermissionsListModalProps = {
-  showModal: boolean;
-  closeModal: () => void;
-};
+const columnHelper = createColumnHelper<PermissionByRole>();
+const tableColumns = [
+  columnHelper.accessor('action', {
+    header: ActionHeader,
+    enableSorting: false,
+    meta: { className: 'w-2/5' },
+  }),
+  columnHelper.accessor('collaborator', {
+    header: CollaboratorHeader,
+    cell: LevelCell,
+    enableSorting: false,
+    meta: { className: 'w-1/5' },
+  }),
+  columnHelper.accessor('editor', {
+    header: EditorHeader,
+    cell: LevelCell,
+    enableSorting: false,
+    meta: { className: 'w-1/5' },
+  }),
+  columnHelper.accessor('admin', {
+    header: AdminHeader,
+    cell: LevelCell,
+    enableSorting: false,
+    meta: { className: 'w-1/5' },
+  }),
+];
 
 const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalProps) =>
   showModal ? (
-    <div className="container w-10 h-10">
-      <Modal size="xxxl">
-        <Modal.Header>
-          <Translate className="text-xl font-medium text-gray-900">Permissions</Translate>
-          <Modal.CloseButton onClick={closeModal} />
-        </Modal.Header>
-        <Modal.Body>Placeholder</Modal.Body>
-        <Modal.Footer>
-          <Button className="grow" styling="light" onClick={closeModal}>
-            <Translate>Close</Translate>
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* <Modal isOpen={isOpen} type="content" className="permissions-modal">
-        <Modal.Body>
-          <table className="permissions-list">
-            <thead>
-              <tr>
-                <th>
-                  <Translate>Permission</Translate>
-                </th>
-                <th>
-                  <Translate>Collaborator</Translate>
-                </th>
-                <th>
-                  <Translate>Editor</Translate>
-                </th>
-                <th>
-                  <Translate>Admin</Translate>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rolePermissions.map(permission => (
-                <tr key={permission.label}>
-                  <td>
-                    <Translate>{permission.label}</Translate>
-                  </td>
-                  {['collaborator', 'editor', 'admin'].map(role => {
-                    const roleIcon =
-                      permissionIcons[permission.roles[role as userRoles] as PermissionCellParams];
-                    return (
-                      <td key={role}>
-                        <Icon icon={roleIcon.icon} className={roleIcon.className} />
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="legend">
-            <Translate>Legend</Translate>
-            <div className="legend-item">
-              <Icon icon="user-check" className="label-info" />
-              <Translate>Permission on entities explicitly shared with the user</Translate>
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <button type="button" className="btn btn-default pristine" onClick={onClose}>
-            <Translate>Close</Translate>
-          </button>
-        </Modal.Footer>
-      </Modal> */}
-    </div>
+    <Modal size="xxxl">
+      <Modal.Header>
+        <Translate className="text-xl font-medium text-gray-900">Permissions</Translate>
+        <Modal.CloseButton onClick={closeModal} />
+      </Modal.Header>
+      <Modal.Body>
+        <Table<PermissionByRole> data={permissionsByRole} columns={tableColumns} />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button className="grow" styling="light" onClick={closeModal}>
+          <Translate>Close</Translate>
+        </Button>
+      </Modal.Footer>
+    </Modal>
   ) : null;
 
 export { PermissionsListModal };
