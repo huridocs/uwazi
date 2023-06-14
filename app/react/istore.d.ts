@@ -34,7 +34,19 @@ interface EntityDisplayState {
     quickLabelMetadataForm: any;
   };
   search: any;
-  filters: IImmutable<{ documentTypes: [] }>;
+  filters: IImmutable<{
+    documentTypes: string[];
+    properties: {
+      content: string;
+      _id: string;
+      label: string;
+      type: string;
+      name: string;
+      showInCard: boolean;
+      filter: boolean;
+    }[];
+  }>;
+  aggregations: IImmutable<>;
   selectedSorting: string;
 }
 

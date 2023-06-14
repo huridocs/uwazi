@@ -36,6 +36,7 @@ import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { UserManagement } from 'app/Users/UserManagement';
 import { LibraryTable } from 'app/Library/LibraryTable';
+import { LibraryChart } from 'app/Library/LibraryChart';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
 import {
@@ -70,6 +71,7 @@ const getRoutesLayout = (
     <Route path="library" element={privateRoute(<LibraryCards />, settings)} />
     <Route path="library/map" element={privateRoute(<LibraryMap />, settings)} />
     <Route path="library/table" element={privateRoute(<LibraryTable />, settings)} />
+    <Route path="library/chart" element={privateRoute(<LibraryChart />, settings)} />
     <Route path="document/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
     <Route path="entity/:sharedId/*" element={privateRoute(<ViewerRoute />, settings)} />
     <Route path="entity/:sharedId/:tabView" element={privateRoute(<ViewerRoute />, settings)} />

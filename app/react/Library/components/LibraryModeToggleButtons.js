@@ -6,7 +6,7 @@ import { Icon } from 'UI';
 import { processFilters, encodeSearch } from 'app/Library/actions/libraryActions';
 import { createSelector } from 'reselect';
 
-export class LibraryModeToggleButtons extends Component {
+class LibraryModeToggleButtons extends Component {
   render() {
     const { zoomLevel, zoomOut, zoomIn, showGeolocation, searchUrl, tableViewMode, mapViewMode } =
       this.props;
@@ -57,6 +57,15 @@ export class LibraryModeToggleButtons extends Component {
           >
             <Icon icon="align-justify" />
             <span className="tab-link-tooltip">{t('System', 'Table view')}</span>
+          </I18NLink>
+          <I18NLink
+            to={`library/chart${searchUrl}`}
+            className="btn btn-default"
+            activeclassname="is-active"
+            aria-label={t('System', 'library chart view', null, false)}
+          >
+            <Icon icon="chart-bar" />
+            <span className="tab-link-tooltip">{t('System', 'Chart view')}</span>
           </I18NLink>
           {showGeolocation && (
             <I18NLink
@@ -116,4 +125,6 @@ export function mapStateToProps(state, props) {
         : state.library.ui.get('zoomLevel'),
   };
 }
+
 export default connect(mapStateToProps)(LibraryModeToggleButtons);
+export { LibraryModeToggleButtons };

@@ -146,7 +146,7 @@ BarChartComponent.propTypes = {
 };
 
 export const mapStateToProps = (state, props) => ({
-  data: markdownDatasets.getAggregations(state, props),
+  data: props.data || markdownDatasets.getAggregations(state, props),
   thesauris: state.thesauris,
 });
 

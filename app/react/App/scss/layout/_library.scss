@@ -367,3 +367,32 @@ $c11: calc(9.09% - 15px);
     @include disableButton();
   }
 }
+
+.chart-library {
+  .library-toolbar {
+    .header-bottom {
+      .sort-by,
+      .documents-counter {
+        display: none;
+      }
+    }
+  }
+
+  .library-load-container > .row {
+    display: none;
+  }
+
+  .chartview-wrapper {
+    .property-selector {
+      margin-bottom: 15px;
+
+      label {
+        margin-right: 15px;
+      }
+
+      select {
+        min-width: 300px;
+      }
+    }
+  }
+}
