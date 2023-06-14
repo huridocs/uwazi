@@ -693,13 +693,11 @@ describe('Activitylog Parser', () => {
           {
             method: 'DELETE',
             url: '/api/users',
-            body: '{"_id":"userId"}',
-            idField: '_id',
+            body: '{"ids":["userId1","userId2"]}',
           },
           {
             action: 'DELETE',
-            description: 'Deleted user',
-            name: 'userId',
+            description: 'Deleted multiple users',
           }
         );
       });
@@ -1053,13 +1051,11 @@ describe('Activitylog Parser', () => {
             {
               method: 'DELETE',
               url: '/api/usergroups',
-              body: '{"_id":"usergroupId"}',
-              idField: '_id',
+              body: '{"ids":["group1","group2"]}',
             },
             {
               action: 'DELETE',
-              description: 'Deleted user group',
-              name: 'usergroupId',
+              description: 'Deleted multiple user groups',
             }
           );
         });
