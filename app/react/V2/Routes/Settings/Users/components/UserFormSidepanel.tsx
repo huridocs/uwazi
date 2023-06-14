@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { Translate } from 'app/I18N';
@@ -8,6 +8,8 @@ import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect, MultiSelectProps } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { PermissionsListModal } from './PermissionsListModal';
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -68,6 +70,7 @@ const UserFormSidepanel = ({
   groups,
 }: UserFormSidepanelProps) => {
   const fetcher = useFetcher();
+  const [showModal, setShowModal] = useState(false);
 
   const defaultValues = {
     username: '',
@@ -121,147 +124,165 @@ const UserFormSidepanel = ({
   const multiselectOptions = getOptions(groups, selectedUser);
 
   return (
-    <Sidepanel
-      isOpen={showSidepanel}
-      withOverlay
-      closeSidepanelFunction={closeSidepanel}
-      title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
-    >
-      <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-        <div className="flex flex-col flex-grow gap-4">
-          <Card title={<Translate>General Information</Translate>}>
-            <div className="mb-4">
-              <InputField
-                label={<Translate className="block mb-1 font-bold">Username</Translate>}
-                id="username"
-                hasErrors={Boolean(errors.username)}
-                className="mb-1"
-                {...register('username', {
-                  required: true,
-                  validate: username => isUnique(username, selectedUser, users),
-                  maxLength: 50,
-                  minLength: 3,
-                })}
-              />
+    <>
+      <Sidepanel
+        isOpen={showSidepanel}
+        withOverlay
+        closeSidepanelFunction={closeSidepanel}
+        title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
+      >
+        <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
+          <div className="flex flex-col flex-grow gap-4">
+            <Card title={<Translate>General Information</Translate>}>
+              <div className="mb-4">
+                <InputField
+                  label={<Translate className="block mb-1 font-bold">Username</Translate>}
+                  id="username"
+                  hasErrors={Boolean(errors.username)}
+                  className="mb-1"
+                  {...register('username', {
+                    required: true,
+                    validate: username => isUnique(username, selectedUser, users),
+                    maxLength: 50,
+                    minLength: 3,
+                  })}
+                />
 
-              <span className="font-bold text-error-700">
-                {errors.username?.type === 'required' && (
-                  <Translate>Username is required</Translate>
-                )}
-                {errors.username?.type === 'validate' && <Translate>Duplicated username</Translate>}
-                {errors.username?.type === 'maxLength' && (
-                  <Translate>Username is too long</Translate>
-                )}
-                {errors.username?.type === 'minLength' && (
-                  <Translate>Username is too short</Translate>
-                )}
-              </span>
-            </div>
-
-            <Select
-              label={<Translate className="block mb-1 font-bold">User Role</Translate>}
-              className="mb-4"
-              id="roles"
-              options={userRoles}
-              {...register('role')}
-            />
-
-            <div>
-              <InputField
-                label={<Translate className="block mb-1 font-bold">Email</Translate>}
-                type="email"
-                id="email"
-                className="mb-1"
-                hasErrors={Boolean(errors.email)}
-                {...register('email', {
-                  required: true,
-                  validate: email => isUnique(email, selectedUser, users),
-                  maxLength: 256,
-                })}
-              />
-
-              <span className="font-bold text-error-700">
-                {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
-                {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
-              </span>
-            </div>
-          </Card>
-
-          <Card title={<Translate>Security</Translate>}>
-            <InputField
-              label={
-                <span className="mb-1 font-bold">
-                  <Translate>Password</Translate>
+                <span className="font-bold text-error-700">
+                  {errors.username?.type === 'required' && (
+                    <Translate>Username is required</Translate>
+                  )}
+                  {errors.username?.type === 'validate' && (
+                    <Translate>Duplicated username</Translate>
+                  )}
+                  {errors.username?.type === 'maxLength' && (
+                    <Translate>Username is too long</Translate>
+                  )}
+                  {errors.username?.type === 'minLength' && (
+                    <Translate>Username is too short</Translate>
+                  )}
                 </span>
-              }
-              id="password"
-              type="password"
-              autoComplete="off"
-              hasErrors={Boolean(errors.password)}
-              className="mb-4"
-              {...register('password', { maxLength: 50 })}
-            />
+              </div>
 
-            <span className="font-bold text-error-700">
-              {errors.password?.type === 'maxLength' && <Translate>Password is too long</Translate>}
-            </span>
+              <Select
+                label={
+                  <div className="flex gap-2 mb-1 font-bold align-middle">
+                    <Translate>User Role</Translate>
+                    <button type="button" onClick={() => setShowModal(true)}>
+                      <QuestionMarkCircleIcon className="w-5" />
+                    </button>
+                  </div>
+                }
+                className="mb-4"
+                id="roles"
+                options={userRoles}
+                {...register('role')}
+              />
 
-            <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
-              {selectedUser?._id && (
-                <>
+              <div>
+                <InputField
+                  label={<Translate className="block mb-1 font-bold">Email</Translate>}
+                  type="email"
+                  id="email"
+                  className="mb-1"
+                  hasErrors={Boolean(errors.email)}
+                  {...register('email', {
+                    required: true,
+                    validate: email => isUnique(email, selectedUser, users),
+                    maxLength: 256,
+                  })}
+                />
+
+                <span className="font-bold text-error-700">
+                  {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
+                  {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
+                </span>
+              </div>
+            </Card>
+
+            <Card title={<Translate>Security</Translate>}>
+              <InputField
+                label={
+                  <span className="mb-1 font-bold">
+                    <Translate>Password</Translate>
+                  </span>
+                }
+                id="password"
+                type="password"
+                autoComplete="off"
+                hasErrors={Boolean(errors.password)}
+                className="mb-4"
+                {...register('password', { maxLength: 50 })}
+              />
+
+              <span className="font-bold text-error-700">
+                {errors.password?.type === 'maxLength' && (
+                  <Translate>Password is too long</Translate>
+                )}
+              </span>
+
+              <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+                {selectedUser?._id && (
+                  <>
+                    <Button
+                      type="button"
+                      styling="light"
+                      onClick={() => onClickSubmit('reset-password')}
+                    >
+                      <Translate>Reset Password</Translate>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      styling="light"
+                      onClick={() => onClickSubmit('reset-2fa')}
+                    >
+                      <Translate>Reset 2FA</Translate>
+                    </Button>
+                  </>
+                )}
+
+                {selectedUser?.accountLocked && (
                   <Button
                     type="button"
                     styling="light"
-                    onClick={() => onClickSubmit('reset-password')}
+                    color="error"
+                    onClick={() => onClickSubmit('unlock-user')}
                   >
-                    <Translate>Reset Password</Translate>
+                    <Translate>Unlock account</Translate>
                   </Button>
+                )}
+              </div>
+            </Card>
 
-                  <Button type="button" styling="light" onClick={() => onClickSubmit('reset-2fa')}>
-                    <Translate>Reset 2FA</Translate>
-                  </Button>
-                </>
-              )}
-
-              {selectedUser?.accountLocked && (
-                <Button
-                  type="button"
-                  styling="light"
-                  color="error"
-                  onClick={() => onClickSubmit('unlock-user')}
-                >
-                  <Translate>Unlock account</Translate>
-                </Button>
-              )}
+            <div className="rounded-md border border-gray-50 shadow-sm">
+              <MultiSelect
+                label={
+                  <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
+                    Groups
+                  </Translate>
+                }
+                onChange={selectedGroups => {
+                  const values = calculateSelectedGroups(selectedGroups, groups);
+                  setValue('groups', values, { shouldDirty: true });
+                }}
+                options={multiselectOptions}
+              />
             </div>
-          </Card>
-
-          <div className="rounded-md border border-gray-50 shadow-sm">
-            <MultiSelect
-              label={
-                <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
-                  Groups
-                </Translate>
-              }
-              onChange={selectedGroups => {
-                const values = calculateSelectedGroups(selectedGroups, groups);
-                setValue('groups', values, { shouldDirty: true });
-              }}
-              options={multiselectOptions}
-            />
           </div>
-        </div>
 
-        <div className="flex gap-2">
-          <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button className="flex-grow" type="submit">
-            <Translate>Save</Translate>
-          </Button>
-        </div>
-      </form>
-    </Sidepanel>
+          <div className="flex gap-2">
+            <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="flex-grow" type="submit">
+              <Translate>Save</Translate>
+            </Button>
+          </div>
+        </form>
+      </Sidepanel>
+      <PermissionsListModal showModal={showModal} closeModal={() => setShowModal(false)} />
+    </>
   );
 };
 

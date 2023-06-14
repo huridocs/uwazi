@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
-import { Button } from 'app/V2/Components/UI';
+import { Button, Modal } from 'app/V2/Components/UI';
 
 interface PermissionByRole {
   label: string;
@@ -88,14 +88,26 @@ interface PermissionsListProps {
   rolePermissions?: PermissionByRole[];
 }
 
-const PermissionsList = () => {
-  const [showModal, setShowModal] = useState(false);
+type PermissionsListModalProps = {
+  showModal: boolean;
+  closeModal: () => void;
+};
 
-  return (
-    <>
-      <Button type="button" styling="light" onClick={() => setShowModal(true)}>
-        <Translate>Permissions by role</Translate>
-      </Button>
+const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalProps) =>
+  showModal ? (
+    <div className="container w-10 h-10">
+      <Modal size="xxxl">
+        <Modal.Header>
+          <Translate className="text-xl font-medium text-gray-900">Permissions</Translate>
+          <Modal.CloseButton onClick={closeModal} />
+        </Modal.Header>
+        <Modal.Body>Placeholder</Modal.Body>
+        <Modal.Footer>
+          <Button className="grow" styling="light" onClick={closeModal}>
+            <Translate>Close</Translate>
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* <Modal isOpen={isOpen} type="content" className="permissions-modal">
         <Modal.Body>
@@ -149,8 +161,7 @@ const PermissionsList = () => {
           </button>
         </Modal.Footer>
       </Modal> */}
-    </>
-  );
-};
+    </div>
+  ) : null;
 
-export { PermissionsList };
+export { PermissionsListModal };
