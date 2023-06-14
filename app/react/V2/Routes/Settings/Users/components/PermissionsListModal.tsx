@@ -1,9 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { Tooltip } from 'flowbite-react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { Button, Modal, Table } from 'app/V2/Components/UI';
 
 type Level = 'none' | 'partial' | 'full';
@@ -124,7 +125,20 @@ const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
       return <CheckIcon className="w-6 text-green-400" />;
 
     case 'partial':
-      return <UserPlusIcon className="w-6 text-orange-400" />;
+      return (
+        <Tooltip
+          content={t(
+            'System',
+            'Permission on entities explicitly shared with the user',
+            null,
+            false
+          )}
+          // eslint-disable-next-line react/style-prop-object
+          style="light"
+        >
+          <UserPlusIcon className="w-6 text-orange-400" />
+        </Tooltip>
+      );
 
     default:
       return <XMarkIcon className="w-6 text-pink-600" />;
