@@ -21,14 +21,13 @@ const Modal = ({ children, size }: ModalProps) => {
   return (
     <div
       aria-hidden="false"
-      className={`fixed top-0 right-0 left-0 z-50 h-modal overflow-y-auto overflow-x-hidden 
-        md:inset-0 md:h-full items-center justify-center flex bg-gray-900 bg-opacity-50`}
+      className="flex overflow-x-hidden fixed inset-0 top-0 left-0 z-50 justify-center items-center bg-gray-900 bg-opacity-50"
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
     >
-      <div className={`relative h-full w-full p-4 md:h-auto ${sizes[size]}`}>
-        <div className="relative bg-white rounded-lg shadow">{children}</div>
+      <div className={`overflow-y-auto py-4 max-h-screen ${sizes[size]}`}>
+        <div className="bg-white rounded-lg shadow">{children}</div>
       </div>
     </div>
   );
@@ -42,7 +41,7 @@ interface ModalChildrenProps {
 Modal.Header = ({ children, className }: ModalChildrenProps) => (
   <div
     className={`${className} flex items-start justify-between rounded-t ${
-      children ? 'border-b p-5' : 'p-2'
+      children ? 'p-5 border-b' : 'p-2'
     }`}
   >
     {children}
@@ -50,13 +49,13 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
 );
 
 Modal.Body = ({ children, className }: ModalChildrenProps) => (
-  <div className={`${className} p-6 `} data-testid="modal-body">
+  <div className={`p-6 ${className}`} data-testid="modal-body">
     {children}
   </div>
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+  <div className="flex justify-center p-6 space-x-2 rounded-b border-t border-gray-200">
     {children}
   </div>
 );

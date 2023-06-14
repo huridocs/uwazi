@@ -26,7 +26,7 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <div className="container w-10 h10">
+        <div className="container w-10 h-10">
           <ConfirmationModal
             header={args.header}
             body={args.body}
