@@ -109,6 +109,45 @@ describe('When one operation fails', () => {
     expect(col1).toEqual(fixtures.collection1);
     expect(col2).toEqual(fixtures.collection2);
   });
+
+  it('should not try to abort the transaction if the server already did', async () => {
+    class Transactional4 extends TestBase {
+      async do() {
+        await testingDB.mongodb
+          ?.collection('collection1')
+          .updateOne(
+            { name: 'doc1' },
+            { $set: { name: 'doc3' } },
+            { session: this.tm.getSession() }
+          );
+
+        try {
+          await testingDB.mongodb
+            ?.collection('collection1')
+            .insertOne({ name: 'doc3' }, { session: this.tm.getSession() });
+        } catch (e) {
+          // Ignores the error for the sake of testing.
+        }
+      }
+    }
+
+    await testingDB.mongodb?.collection('collection1').createIndex({ name: 1 }, { unique: true });
+
+    const tm = new MongoTransactionManager(getClient());
+    const transactional = new Transactional4(tm);
+
+    try {
+      await tm.run(async () => {
+        await transactional.do();
+      });
+    } catch (e) {
+      await expect(e.message).not.toMatch(
+        'Cannot call abortTransaction after calling commitTransaction'
+      );
+      expect(e.codeName).toEqual('NoSuchTransaction');
+      expect(e.code).toBe(251);
+    }
+  });
 });
 
 describe('when calling run() when a transaction is running', () => {
@@ -289,6 +328,22 @@ describe('when the some operation throws a TransientTransactionError', () => {
       });
 
     expect(checkpoints).toEqual([1, 1, 2]);
+  });
+
+  it('should retry the transaction a finite amount of times if ', async () => {
+    const transactionManager = new MongoTransactionManager(getClient());
+    const errors: Error[] = [];
+    try {
+      await transactionManager.run(async () => {
+        const error = new MongoError('TransientTransactionError');
+        error.addErrorLabel('TransientTransactionError');
+        errors.push(error);
+        throw error;
+      });
+    } catch (e) {
+      expect(e).toBe(errors[errors.length - 1]);
+      expect(errors.length).toBe(4);
+    }
   });
 });
 
