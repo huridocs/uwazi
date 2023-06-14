@@ -718,6 +718,39 @@ describe('Activitylog Parser', () => {
           }
         );
       });
+
+      describe('method: POST /api/users/unlock', () => {
+        it('should beautify as UPDATE', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/users/unlock',
+              body: JSON.stringify({ _id: userId.toString() }),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Unlocked account of user',
+              name: 'User 1',
+            }
+          );
+        });
+
+        it('should not break on missing user', async () => {
+          const missingIdString = db.id().toString();
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/users/unlock',
+              body: JSON.stringify({ _id: missingIdString }),
+            },
+            {
+              action: 'UPDATE',
+              description: 'Unlocked account of user',
+              name: missingIdString,
+            }
+          );
+        });
+      });
     });
 
     describe('routes /api/references', () => {

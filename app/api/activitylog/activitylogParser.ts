@@ -145,6 +145,12 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'username',
     extra: data => `with ${data.role} role`,
   },
+  'POST/api/users/unlock': {
+    desc: 'Unlocked account of user',
+    method: Methods.Update,
+    related: helpers.loadUser,
+    nameField: 'username',
+  },
   'POST/api/files/upload/document': {
     desc: 'Uploaded file',
     method: Methods.Create,
