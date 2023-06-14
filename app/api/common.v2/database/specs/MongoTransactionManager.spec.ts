@@ -330,7 +330,7 @@ describe('when the some operation throws a TransientTransactionError', () => {
     expect(checkpoints).toEqual([1, 1, 2]);
   });
 
-  it('should retry the transaction a finite amount of times if ', async () => {
+  it('should retry the transaction a finite amount of times', async () => {
     const transactionManager = new MongoTransactionManager(getClient());
     const errors: Error[] = [];
     try {
