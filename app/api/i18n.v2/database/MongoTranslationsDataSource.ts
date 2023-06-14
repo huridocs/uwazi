@@ -124,7 +124,7 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async updateContextKeys(contextId: string, keyChanges: { [k: string]: string }) {
+  async updateKeysByContext(contextId: string, keyChanges: { [k: string]: string }) {
     const stream = this.createBulkStream();
 
     await Object.entries(keyChanges).reduce(async (previous, [keyName, newKeyName]) => {
@@ -146,6 +146,22 @@ export class MongoTranslationsDataSource
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
     return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
+  }
+
+  async calculateUnexistentKeys(keys: string[]) {
+    const result = this.getCollection().aggregate([
+      {
+        $match: { key: { $in: keys } },
+      },
+      {
+        $group: { _id: null, foundKeys: { $push: '$key' } },
+      },
+      {
+        $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } },
+      },
+    ]);
+    const [{ notFoundKeys }] = await result.toArray();
+    return notFoundKeys || [];
   }
 
   async calculateKeysWithoutAllLanguages(translations: Translation[]) {

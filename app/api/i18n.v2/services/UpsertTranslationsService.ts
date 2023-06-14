@@ -1,5 +1,4 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import {
@@ -24,16 +23,6 @@ export class UpsertTranslationsService {
     this.translationsDS = translationsDS;
     this.settingsDS = settingsDS;
     this.transactionManager = transactionManager;
-  }
-
-  private async insertIgnoringDuplicatedError(translations: Translation[]) {
-    try {
-      await this.translationsDS.insert(translations);
-    } catch (e) {
-      if (!(e instanceof DuplicatedKeyError)) {
-        throw e;
-      }
-    }
   }
 
   async upsert(translations: CreateTranslationsData[]) {
@@ -75,39 +64,77 @@ export class UpsertTranslationsService {
 
   async updateContext(
     context: { id: string; label: string },
-    keyChanges: { [x: string]: string },
-    valueChanges: { [k: string]: string },
+    keyChanges: { [oldKey: string]: string },
+    valueChanges: { [key: string]: string },
     keysToDelete: string[]
   ) {
     return this.transactionManager.run(async () => {
-      const newContext: TranslationContext = {
-        ...(await this.translationsDS.getContext(context.id)),
-        ...context,
-      };
+      const keysChangedReversed = Object.entries(keyChanges).reduce<{ [newKey: string]: string }>(
+        (keys, [oldKey, newKey]) => {
+          // eslint-disable-next-line no-param-reassign
+          keys[newKey] = oldKey;
+          return keys;
+        },
+        {}
+      );
 
       const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
 
-      await this.translationsDS.updateContextLabel(context.id, context.label);
-
-      await this.translationsDS.updateContextKeys(context.id, keyChanges);
-
       await Object.entries(valueChanges).reduce(async (previous, [key, value]) => {
         await previous;
-        await this.translationsDS.updateValue(key, context.id, defaultLanguageKey, value);
+        await this.translationsDS.updateValue(
+          keysChangedReversed[key] || key,
+          context.id,
+          defaultLanguageKey,
+          value
+        );
       }, Promise.resolve());
+
+      await this.translationsDS.updateContextLabel(context.id, context.label);
+
+      await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
       await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
 
-      const create: Translation[] = (await this.settingsDS.getLanguageKeys()).reduce<Translation[]>(
+      await this.createNewKeys(keysChangedReversed, valueChanges, context);
+    });
+  }
+
+  private async createNewKeys(
+    keysChangedReversed: { [x: string]: string },
+    valueChanges: { [key: string]: string },
+    context: { id: string; label: string }
+  ) {
+    const newContext: TranslationContext = {
+      ...(await this.translationsDS.getContext(context.id)),
+      ...context,
+    };
+
+    const originalKeysGoingToChange = Object.keys(valueChanges).reduce<string[]>((keys, key) => {
+      if (keysChangedReversed[key]) {
+        keys.push(keysChangedReversed[key]);
+      } else {
+        keys.push(key);
+      }
+      return keys;
+    }, []);
+
+    const missingKeysInDB = await this.translationsDS.calculateUnexistentKeys(
+      originalKeysGoingToChange
+    );
+
+    await this.translationsDS.insert(
+      (
+        await this.settingsDS.getLanguageKeys()
+      ).reduce<Translation[]>(
         (memo, languageKey) =>
           memo.concat(
-            Object.entries(valueChanges).map(
-              ([key, value]) => new Translation(key, value, languageKey, newContext)
+            missingKeysInDB.map(
+              key => new Translation(key, valueChanges[key], languageKey, newContext)
             )
           ),
         []
-      );
-      await this.insertIgnoringDuplicatedError(create);
-    });
+      )
+    );
   }
 }
