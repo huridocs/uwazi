@@ -98,15 +98,12 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
           browser: chrome
           component: false
           config: defaultCommandTimeout=8000,requestTimeout=12000
-          build: npx cypress info
         timeout-minutes: 25
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
