@@ -102,6 +102,9 @@ const Account = () => {
                     {...register('password')}
                     type="password"
                   />
+                  {errors.passwordConfirm && isSubmitted && (
+                    <p className="mt-2 text-sm text-error-600">Passwords do not match.</p>
+                  )}
                 </div>
                 <div className="sm:col-span-1">
                   <InputField
@@ -112,10 +115,6 @@ const Account = () => {
                     type="password"
                   />
                 </div>
-
-                {errors.passwordConfirm && isSubmitted && (
-                  <div className="text-sm font-semibold text-red-800">Passwords do not match.</div>
-                )}
               </div>
             </Card>
             {userAccount.using2fa ? (
