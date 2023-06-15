@@ -147,10 +147,10 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -331,10 +331,10 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -555,10 +555,10 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -725,10 +725,10 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -914,10 +914,10 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
