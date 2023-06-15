@@ -142,7 +142,10 @@ const UserFormSidepanel = ({
                   className="mb-1"
                   {...register('username', {
                     required: true,
-                    validate: username => isUnique(username, selectedUser, users),
+                    validate: {
+                      isUnique: username => isUnique(username, selectedUser, users),
+                      noSpaces: username => !/\s/.test(username),
+                    },
                     maxLength: 50,
                     minLength: 3,
                   })}
@@ -152,7 +155,7 @@ const UserFormSidepanel = ({
                   {errors.username?.type === 'required' && (
                     <Translate>Username is required</Translate>
                   )}
-                  {errors.username?.type === 'validate' && (
+                  {errors.username?.type === 'isUnique' && (
                     <Translate>Duplicated username</Translate>
                   )}
                   {errors.username?.type === 'maxLength' && (
@@ -160,6 +163,9 @@ const UserFormSidepanel = ({
                   )}
                   {errors.username?.type === 'minLength' && (
                     <Translate>Username is too short</Translate>
+                  )}
+                  {errors.username?.type === 'noSpaces' && (
+                    <Translate>Usernames cannot have spaces</Translate>
                   )}
                 </span>
               </div>
@@ -255,7 +261,7 @@ const UserFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="border rounded-md shadow-sm border-gray-50">
+            <div className="rounded-md border border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
