@@ -83,7 +83,7 @@ class AccountSettings extends Component {
 
   renderPasswordField(id, value, label, passwordError) {
     return (
-      <div className={`form-group${passwordError ? 'has-error' : ''}`}>
+      <div className={`form-group ${passwordError ? 'has-error' : ''}`}>
         <label className="form-group-label" htmlFor={id}>
           <Translate>{label}</Translate>
         </label>

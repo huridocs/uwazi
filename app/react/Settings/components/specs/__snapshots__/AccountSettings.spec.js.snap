@@ -86,7 +86,7 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
           onSubmit={[Function]}
         >
           <div
-            className="form-group"
+            className="form-group "
           >
             <label
               className="form-group-label"
@@ -105,7 +105,7 @@ exports[`AccountSettings 2fa should render a success area if user has already ac
             />
           </div>
           <div
-            className="form-group"
+            className="form-group "
           >
             <label
               className="form-group-label"
@@ -264,7 +264,7 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
           onSubmit={[Function]}
         >
           <div
-            className="form-group"
+            className="form-group "
           >
             <label
               className="form-group-label"
@@ -283,7 +283,7 @@ exports[`AccountSettings 2fa should render a warning and link to protect account
             />
           </div>
           <div
-            className="form-group"
+            className="form-group "
           >
             <label
               className="form-group-label"
