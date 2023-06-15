@@ -145,10 +145,15 @@ const LevelCell = ({ cell }: CellContext<PermissionByRole, Level>) => {
   }
 };
 
+const ActionCell = ({ cell }: CellContext<PermissionByRole, string>) => (
+  <Translate>{cell.getValue()}</Translate>
+);
+
 const columnHelper = createColumnHelper<PermissionByRole>();
 const tableColumns = [
   columnHelper.accessor('action', {
     header: ActionHeader,
+    cell: ActionCell,
     enableSorting: false,
     meta: { className: 'w-2/5' },
   }),
