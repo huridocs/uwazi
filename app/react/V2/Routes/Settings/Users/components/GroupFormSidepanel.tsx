@@ -31,10 +31,10 @@ const isUnique = (
   );
 
 const getAvailableUsers = (users?: ClientUserSchema[], selectedGroup?: ClientUserGroupSchema) =>
-  (users || []).map(user => {
-    const members = selectedGroup?.members.map(member => member.refId) || [];
+  users?.map(user => {
+    const members = selectedGroup?.members?.map(member => member.refId);
 
-    if (members.includes(user._id || '')) {
+    if (members?.includes(user._id || '')) {
       return { label: user.username, value: user._id as string, selected: true };
     }
 
@@ -72,6 +72,7 @@ const GroupFormSidepanel = ({
 
   const formSubmit = async (data: UserGroupSchema) => {
     const formData = new FormData();
+
     if (data._id) {
       formData.set('intent', 'edit-group');
     } else {
@@ -141,7 +142,7 @@ const GroupFormSidepanel = ({
                 </Translate>
               }
               onChange={options => onChange(options)}
-              options={availableUsers}
+              options={availableUsers || []}
             />
           </div>
         </div>

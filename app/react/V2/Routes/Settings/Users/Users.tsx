@@ -177,7 +177,7 @@ const Users = () => {
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
-          selectedUser={sidepanelData as ClientUserSchema}
+          selectedUser={sidepanelData && 'username' in sidepanelData ? sidepanelData : undefined}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
@@ -186,7 +186,7 @@ const Users = () => {
         />
       ) : (
         <GroupFormSidepanel
-          selectedGroup={sidepanelData as ClientUserGroupSchema}
+          selectedGroup={sidepanelData && 'members' in sidepanelData ? sidepanelData : undefined}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
