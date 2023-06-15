@@ -77,9 +77,22 @@ const unlockAccount = async (user: ClientUserSchema, headers?: IncomingHttpHeade
   }
 };
 
-const resetPassword = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const resetPassword = async (
+  data: ClientUserSchema | ClientUserSchema[],
+  headers?: IncomingHttpHeaders
+) => {
   try {
-    const requestParams = new RequestParams({ email: user.email }, headers);
+    if (Array.isArray(data)) {
+      const response = await Promise.all(
+        data.map(user => {
+          const requestParams = new RequestParams({ email: user.email }, headers);
+          return api.post('recoverpassword', requestParams);
+        })
+      );
+      return response;
+    }
+
+    const requestParams = new RequestParams({ email: data.email }, headers);
     const response = await api.post('recoverpassword', requestParams);
     return response;
   } catch (e) {
@@ -87,9 +100,22 @@ const resetPassword = async (user: ClientUserSchema, headers?: IncomingHttpHeade
   }
 };
 
-const reset2FA = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const reset2FA = async (
+  data: ClientUserSchema | ClientUserSchema[],
+  headers?: IncomingHttpHeaders
+) => {
   try {
-    const requestParams = new RequestParams({ _id: user._id }, headers);
+    if (Array.isArray(data)) {
+      const response = await Promise.all(
+        data.map(user => {
+          const requestParams = new RequestParams({ _id: user._id }, headers);
+          return api.post('auth2fa-reset', requestParams);
+        })
+      );
+      return response;
+    }
+
+    const requestParams = new RequestParams({ _id: data._id }, headers);
     const response = await api.post('auth2fa-reset', requestParams);
     return response;
   } catch (e) {

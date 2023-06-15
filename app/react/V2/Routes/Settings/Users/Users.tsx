@@ -243,13 +243,11 @@ const userAction =
       case 'unlock-user':
         return usersAPI.unlockAccount(formValues);
       case 'reset-password':
+      case 'bulk-reset-password':
         return usersAPI.resetPassword(formValues);
       case 'reset-2fa':
-        return usersAPI.reset2FA(formValues);
       case 'bulk-reset-2fa':
-        return null;
-      case 'bulk-reset-password':
-        return null;
+        return usersAPI.reset2FA(formValues);
       default:
         return null;
     }
