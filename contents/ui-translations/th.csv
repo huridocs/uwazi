@@ -267,7 +267,9 @@ Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Edit,แก้ไข
 Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
 Email,อีเมล
@@ -334,6 +336,7 @@ From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
 General,ข้อมูลทั่วไป
+General Information,General Information
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
@@ -343,6 +346,8 @@ Group,Group
 Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,กลุ่ม
 help,ช่วยเหลือ
@@ -378,6 +383,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,กรุณาติดตั้งแอป Google Authenticator บนอุปกรณ์มือถือของคุณ
+Instruction to reset password sent to user,Instruction to reset password sent to user
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -524,6 +530,7 @@ No Value,ไม่มีค่า
 Non-matching,Non-matching
 Normal view,มุมมองปกติ
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,ไม่พบข้อมูล! เอกสารที่ถูกเลือกไม่ได้ใช้คำอธิบายกลุ่มคำ
 Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
@@ -556,6 +563,7 @@ Page Javascript,หน้าจาวาสคริปต์
 Page name,Page name
 Pages,หน้า
 Password,รหัสผ่าน
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,รหัสผ่านผิดพลาด
 Password is too long,รหัสผ่านยาวเกินไป
@@ -566,6 +574,7 @@ per page,per page
 Permission,สิทธิการเข้าถึง
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
 Permissions,สิทธิการเข้าถึง
+Permissions by role,Permissions by role
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
@@ -680,6 +689,7 @@ Search Tips: one char wildcard,เคล็ดลับการค้นหา:
 Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Select,Select
 Select all,เลือกทั้งหมด
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
@@ -794,6 +804,7 @@ This content is automatically generated,เนื้อหานี้ถูก�
 This entity is not public.,รายการนี้ไม่ได้เปิดการเข้าถึงแบบสาธารณะ
 This entity is restricted from public view.,รายการนี้ถูกจำกัดการเข้าถึงแบบสาธารณะ
 This field is required,This field is required
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
@@ -847,6 +858,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
@@ -877,11 +889,13 @@ Use,ใช้
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,ผู้ใช้
+User Role,User Role
 Username,ชื่อผู้ใช้
 Username is required,จำเป็นต้องใส่ชื่อผู้ใช้
 Username is too long,ชื่อผู้ใช้ยาวเกินไป
 Username is too short,ชื่อผู้ใช้สั้นเกินไป
 Users,ผู้ใช้
+Users & Groups,Users & Groups
 Using Google Authenticator,ใช้ Google Authenticator
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi กำลังเรียนรู้โดยใช้เอกสารที่ถูกจำแนกประเภท 

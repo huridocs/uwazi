@@ -265,7 +265,9 @@ Duplicated username,Nombre de usuario duplicado
 Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Editar metadatos de entidades
+Edit user,Edit user
 Editor,Editor
 editor,Editor
 Email,Correo electrónico
@@ -332,6 +334,7 @@ From all templates,From all templates
 Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
+General Information,General Information
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
 Google Analytics,Google Analytics
@@ -341,6 +344,8 @@ Group,Grupo
 Group created,Grupo creado
 Group deleted,Grupo eliminado
 Group name,Nombre del grupo
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Grupo actualizado
 Groups,Grupos
 help,ayuda
@@ -376,6 +381,7 @@ Install browser extension (dynamic link),Instalar extensión de navegador (enlac
 Install Language(s),Instalar Idioma(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
+Instruction to reset password sent to user,Instruction to reset password sent to user
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
@@ -522,6 +528,7 @@ No Value,Sin valor
 Non-matching,no coincidente
 Normal view,Vista normal
 Not Found,No encontrado
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
@@ -554,6 +561,7 @@ Page Javascript,Página JavaScript
 Page name,Nombre de la página
 Pages,Páginas
 Password,Contraseña
+Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
 Password Error,¡Error de contraseña! Ambos campos son obligatorios y deben coincidir
 Password is too long,La contraseña es demasiado larga
@@ -564,6 +572,7 @@ per page,por página
 Permission,Permiso
 Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
 Permissions,Permisos
+Permissions by role,Permissions by role
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
@@ -678,6 +687,7 @@ Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?""
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
+Security,Security
 Select,Seleccionar
 Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
@@ -789,6 +799,7 @@ This content is automatically generated,Este contenido se genera automáticament
 This entity is not public.,Esta entidad no es pública.
 This entity is restricted from public view.,Esta entidad está restringida de la vista pública.
 This field is required,Este campo es obligatorio
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,Esta opción mostrará una notificación sobre el uso de cookies en la instancia.
@@ -842,6 +853,7 @@ Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
 Unlink,Desenlazar
+Unlock account,Unlock account
 Unsupported OCR language,Idioma no soportado para ROC
 Untranslated Terms,Términos sin traducir
 Update,Actualizar
@@ -872,11 +884,13 @@ Use,Usar
 Use as filter,Usar como filtro
 Use custom landing page,Utilizar página de destino personalizada
 User,Usuario
+User Role,User Role
 Username,Nombre de usuario
 Username is required,Se requiere nombre de usuario
 Username is too long,El nombre de usuario es demasiado largo
 Username is too short,El nombre de usuario es demasiado corto
 Users,Usuarios
+Users & Groups,Users & Groups
 Using Google Authenticator,Usando Google Authenticator
 Uwazi is developed by,Uwazi es desarrollado por
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi está aprendiendo a utilizar documentos con etiquetas. Este proceso puede tomar hasta 2 horas y una vez completo, podrás revisar las sugerencias realizadas por Uwazi para tu colección."

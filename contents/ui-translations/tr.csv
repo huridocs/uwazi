@@ -267,7 +267,9 @@ Duplicated username,Mükerrer kullanıcı adı
 Edit,Düzenle
 Edit all documents matching this criteria,Bu kriterlere uyan tüm belgeleri düzenleyin
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,Editör
 editor,Editör
 Email,E-posta
@@ -334,6 +336,7 @@ From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
+General Information,General Information
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
@@ -343,6 +346,8 @@ Group,Group
 Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,Gruplar
 help,yardım
@@ -378,6 +383,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
+Instruction to reset password sent to user,Instruction to reset password sent to user
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Geçersiz güvenlik kodu
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -524,6 +530,7 @@ No Value,Değer yok
 Non-matching,Non-matching
 Normal view,Normal görünüm
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,"Burada görülecek bir şey yok! Seçilen belgeler, seçilen Thesaurus'u kullanmıyor."
 Number of sentences above threshold,Eşiğin üzerindeki cümle sayısı
 Obsolete,Obsolete
@@ -556,6 +563,7 @@ Page Javascript,Sayfa Javascript
 Page name,Page name
 Pages,Sayfalar
 Password,Parola
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,Şifre hatası
 Password is too long,Parola çok uzun
@@ -566,6 +574,7 @@ per page,per page
 Permission,İzin
 Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
 Permissions,İzinler
+Permissions by role,Permissions by role
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Please type in
@@ -680,6 +689,7 @@ Search Tips: one char wildcard,Arama İpuçları: Bir Char Wildcard
 Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Select,Select
 Select all,Hepsini seç
 Select files on your device,Cihazınızdaki dosyaları seçin
@@ -792,6 +802,7 @@ This content is automatically generated,Bu içerik otomatik olarak oluşturulur
 This entity is not public.,Bu varlık açık değil.
 This entity is restricted from public view.,Bu varlığın genel görünümü kısıtlanmıştır.
 This field is required,This field is required
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
@@ -845,6 +856,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,Güncelle
@@ -875,11 +887,13 @@ Use,Kullan
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,Kullanıcı
+User Role,User Role
 Username,Kullanıcı adı
 Username is required,Kullanıcı adı gerekli
 Username is too long,Kullanıcı adı çok uzun
 Username is too short,Kullanıcı adı çok kısa
 Users,Kullanıcılar
+Users & Groups,Users & Groups
 Using Google Authenticator,Google Authenticator Kullanma
 Uwazi is developed by,Uwazi tarafından geliştirildi
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi etiketli belgeleri kullanarak öğreniyor. Bu işlem 2 saat kadar sürebilir ve tamamlandıktan sonra koleksiyonunuz için Uwazi tarafından yapılan önerileri inceleyebilirsiniz.

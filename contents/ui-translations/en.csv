@@ -269,7 +269,9 @@ Duplicated username,Duplicated username
 Edit,Edit
 Edit all documents matching this criteria,Edit all documents matching this criteria
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,Editor
 editor,editor
 Email,Email
@@ -336,6 +338,7 @@ From all templates,From all templates
 Full edit mode,Full edit mode
 Full width,Full width
 General,General
+General Information,General Information
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
@@ -345,6 +348,8 @@ Group,Group
 Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,Groups
 help,help
@@ -380,6 +385,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Install the Google Authenticator app on your mobile device
+Instruction to reset password sent to user,Instruction to reset password sent to user
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Invalid captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -526,6 +532,7 @@ No Value,No Value
 Non-matching,Non-matching
 Normal view,Normal view
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
 Number of sentences above threshold,Number of sentences above threshold
 Obsolete,Obsolete
@@ -558,6 +565,7 @@ Page Javascript,Page Javascript
 Page name,Page name
 Pages,Pages
 Password,Password
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,Password Error!  Both fields are required and should match
 Password is too long,Password is too long
@@ -568,6 +576,7 @@ per page,per page
 Permission,Permission
 Permission on entities explicitly shared with the user,Permission on entities explicitly shared with the user
 Permissions,Permissions
+Permissions by role,Permissions by role
 Plain text,Plain text
 Please contact an admin for details.,Please contact an admin for details.
 Please type in,Please type in
@@ -682,6 +691,7 @@ Search Tips: one char wildcard,"? for one character wildcard. Ie: ""198?"" will 
 Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find anything having ""the"" and""status"" within a distance of 5 words, such as ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Select,Select
 Select all,Select all
 Select files on your device,Select files on your device
@@ -794,6 +804,7 @@ This content is automatically generated,This content is automatically generated
 This entity is not public.,This entity is not public.
 This entity is restricted from public view.,This entity is restricted from public view.
 This field is required,This field is required
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
@@ -847,6 +858,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,Update
@@ -877,11 +889,13 @@ Use,Use
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,User
+User Role,User Role
 Username,Username
 Username is required,Username is required
 Username is too long,Username is too long
 Username is too short,Username is too short
 Users,Users
+Users & Groups,Users & Groups
 Using Google Authenticator,Using Google Authenticator
 Uwazi is developed by,Uwazi is developed by
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection."

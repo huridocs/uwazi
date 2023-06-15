@@ -267,7 +267,9 @@ Duplicated username,ပွားထားသော အသုံးပြုသ�
 Edit,တည်းဖြတ်ရန်
 Edit all documents matching this criteria,ဤစံနှုန်းနှင့် ကိုက်ညီသော စာရွက်စာတမ်းအားလုံးကို တည်းဖြတ်ပါ
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,အယ်ဒီတာ
 editor,အယ်ဒီတာ
 Email,အီးမေးလ်
@@ -334,6 +336,7 @@ From all templates,From all templates
 Full edit mode,အပြည့်အဝ တည်းဖြတ် မုဒ်
 Full width,Full width
 General,ယေဘုယျ
+General Information,General Information
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
@@ -343,6 +346,8 @@ Group,Group
 Group created,Group created
 Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,အုပ်စုများ
 help,အကူအညီ
@@ -378,6 +383,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator အက်ပ်ကို သင့်မိုဘိုင်းစက်တွင် တပ်ဆင်ပါ
+Instruction to reset password sent to user,Instruction to reset password sent to user
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -524,6 +530,7 @@ No Value,တန်ဖိုးမရှိပါ
 Non-matching,Non-matching
 Normal view,ပုံမှန် မြင်ကွင်း
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,ဤနေရာတွင် ကြည့်စရာ မရှိပါ။ ရွေးချယ်ထားသော စာရွက်စာတမ်းများသည် ရွေးချယ်ထားသည့် ဝေါဟာရပဒေသာကျမ်းကို အသုံးမပြုထားပါ
 Number of sentences above threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်အထက်ရှိ ဝါကျ အရေအတွက်
 Obsolete,Obsolete
@@ -556,6 +563,7 @@ Page Javascript,စာမျက်နှာ Javascript
 Page name,Page name
 Pages,စာမျက်နှာများ
 Password,စကားဝှက်
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,စကားဝှက် မှားနေသည်။
 Password is too long,စကားဝှက် ရှည်လွန်းသည်
@@ -566,6 +574,7 @@ per page,per page
 Permission,ခွင့်ပြုချက်
 Permission on entities explicitly shared with the user,အသုံးပြုသူနှင့် အတိအလင်း မျှဝေထားသော ဖြည့်သွင်းချက်များအတွက် ခွင့်ပြုချက်
 Permissions,ခွင့်ပြုချက်များ
+Permissions by role,Permissions by role
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,Please type in
@@ -680,6 +689,7 @@ Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြု
 Search Tips: proximity,ရှာဖွေမှု အကြံပြုချက်များ- နီးစပ်မှု
 Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက်များ- ပါဝင်မှု
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Select,Select
 Select all,အားလုံးကို ရွေးရန်
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
@@ -792,6 +802,7 @@ This content is automatically generated,ဤအကြောင်းအရာက�
 This entity is not public.,ဤဖြည့်သွင်းချက်ကို အများမမြင်နိုင်ပါ။
 This entity is restricted from public view.,ဤဖြည့်သွင်းချက်ကို အများမမြင်နိုင်အောင် ကန့်သတ်ထားသည်။
 This field is required,This field is required
+This file type is not supported in image fields,This file type is not supported in image fields
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
 This option will show a notification about the use of cookies in your instance.,ဤရွေးချယ်မှုသည် သင့်အခြေအနေတွင် ကွတ်ကီးများ အသုံးပြုမှုအကြောင်း အသိပေးချက် ပြသပါမည်။
@@ -845,6 +856,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,အပ်ဒိတ်လုပ်ရန်
@@ -875,11 +887,13 @@ Use,အသုံးပြုရန်
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,အသုံးပြုသူ
+User Role,User Role
 Username,အသုံးပြုသူ အမည်
 Username is required,အသုံးပြုသူ အမည် လိုအပ်သည်
 Username is too long,အသုံးပြုသူအမည် ရှည်လွန်းသည်
 Username is too short,အသုံးပြုသူအမည် တိုလွန်းသည်
 Users,အသုံးပြုသူများ
+Users & Groups,Users & Groups
 Using Google Authenticator,Google Authenticator သုံးပြီး
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi is သည် တံဆိပ်တပ်ထားသော စာရွက်စာတမ်းများကို သုံး၍ လေ့လာနေသည်။ ၎င်းသည် 2 နာရီအထိ ကြာနိုင်ပြီး ပြီးစီးသည်နှင့် သင်သည် သင့်စုစည်းမှုအတွက် Uwazi မှ အကြံပြုချက်များကို သုံးသပ်စစ်ဆေးနိုင်သည်။
