@@ -58,6 +58,7 @@ export class MongoTranslationsDataSource
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
         throw new DuplicatedKeyError(e.message);
       }
+      throw e;
     }
     return translations;
   }
