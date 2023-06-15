@@ -4,13 +4,21 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
+const prepareUser = (user: ClientUserSchema) => {
+  const preparedUser = { ...user };
+
+  if (!preparedUser.password) {
+    delete preparedUser.password;
+  }
+  delete preparedUser.accountLocked;
+  delete preparedUser.failedLogins;
+
+  return preparedUser;
+};
+
 const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
-    const createdUser = { ...user };
-    if (!user.password) {
-      delete createdUser.password;
-    }
-
+    const createdUser = prepareUser(user);
     const requestParams = new RequestParams(createdUser, headers);
     const response = await UsersAPI.new(requestParams);
     return response;
@@ -21,11 +29,7 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
 
 const updateUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
   try {
-    const updatedUser = { ...user };
-    if (!user.password) {
-      delete updatedUser.password;
-    }
-
+    const updatedUser = prepareUser(user);
     const requestParams = new RequestParams(updatedUser, headers);
     const response = await UsersAPI.save(requestParams);
     return response;
