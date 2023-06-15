@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Translate } from 'app/I18N';
-import { InputField } from '../../../../Components/Forms';
+import { InputField } from 'V2/Components/Forms';
 
 type fromPropsType = {
   register: UseFormRegister<any>;
