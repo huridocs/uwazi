@@ -21,7 +21,7 @@ const Modal = ({ children, size }: ModalProps) => {
   return (
     <div
       aria-hidden="false"
-      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900 bg-opacity-50"
+      className="flex overflow-x-hidden fixed inset-0 top-0 left-0 z-50 justify-center items-center bg-gray-900 bg-opacity-50"
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
@@ -49,13 +49,16 @@ Modal.Header = ({ children, className }: ModalChildrenProps) => (
 );
 
 Modal.Body = ({ children, className }: ModalChildrenProps) => (
-  <div className={`p-6 overflow-y-auto h-full md:h-[70vh] ${className}`} data-testid="modal-body">
+  <div
+    className={`overflow-y-auto p-6 h-full md:max-h-[70vh] ${className}`}
+    data-testid="modal-body"
+  >
     {children}
   </div>
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
+  <div className="flex justify-center p-6 space-x-2 rounded-b border-t border-gray-200">
     {children}
   </div>
 );
