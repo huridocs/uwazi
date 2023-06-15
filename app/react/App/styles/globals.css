@@ -1635,6 +1635,18 @@ input:checked + .toggle-bg {
   max-width: 20rem;
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
+.max-w-\[90vw\] {
+  max-width: 90vw;
+}
+
+.max-w-\[100vw\] {
+  max-width: 100vw;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }

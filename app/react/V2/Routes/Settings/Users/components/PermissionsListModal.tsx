@@ -184,7 +184,7 @@ const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalPro
         <Translate className="text-xl font-medium text-gray-900">Permissions</Translate>
         <Modal.CloseButton onClick={closeModal} />
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="max-w-[100vw]">
         <Table<PermissionByRole> data={permissionsByRole} columns={tableColumns} />
       </Modal.Body>
       <Modal.Footer>
