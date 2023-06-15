@@ -84,6 +84,20 @@ function updateSelectedEntities(entities) {
   return { type: types.UPDATE_SELECTED_ENTITIES, entities };
 }
 
+// TEST!!!
+function addChartProperty(property) {
+  return dispatch => {
+    dispatch(actions.push('library.chartProperties', property));
+  };
+}
+
+function removeChartProperty(property) {
+  return dispatch => {
+    dispatch(actions.remove('library.chartProperties', property));
+  };
+}
+// ------------
+
 function showFilters() {
   return { type: types.SHOW_FILTERS };
 }
@@ -431,6 +445,8 @@ export {
   selectSingleDocument,
   unselectAllDocuments,
   updateSelectedEntities,
+  addChartProperty,
+  removeChartProperty,
   showFilters,
   hideFilters,
   setDocuments,

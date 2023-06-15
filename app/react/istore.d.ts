@@ -13,6 +13,16 @@ import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
 import { IXExtractorInfo } from './MetadataExtraction/ExtractorModal';
 
+interface Property {
+  content: string;
+  _id: string;
+  label: string;
+  type: string;
+  name: string;
+  showInCard: boolean;
+  filter: boolean;
+}
+
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
   entities: { total: number };
@@ -36,18 +46,11 @@ interface EntityDisplayState {
   search: any;
   filters: IImmutable<{
     documentTypes: string[];
-    properties: {
-      content: string;
-      _id: string;
-      label: string;
-      type: string;
-      name: string;
-      showInCard: boolean;
-      filter: boolean;
-    }[];
+    properties: Property[];
   }>;
   aggregations: IImmutable<>;
   selectedSorting: string;
+  chartProperties: IImmutable<Property[]>;
 }
 
 interface RelationshipTypesType {
@@ -211,3 +214,5 @@ export interface IStore {
   locale: string;
   ixExtractors: Immutable<IXExtractorInfo[]>;
 }
+
+export { Property };

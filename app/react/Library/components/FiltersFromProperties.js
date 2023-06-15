@@ -98,6 +98,7 @@ const FiltersFromProperties = ({
   modelPrefix = '',
   storeKey,
   templates,
+  chartActions,
   ...props
 }) => {
   const location = useLocation();
@@ -128,9 +129,12 @@ const FiltersFromProperties = ({
               <SelectFilter
                 {...commonProps}
                 lookup={getAggregationSuggestions.bind(null, storeKey, property.name)}
+                property={property}
                 options={propertyOptions}
                 prefix={property.name}
                 showBoolSwitch={property.type === 'multiselect' || property.type === 'relationship'}
+                showChartButton
+                chartActions={chartActions}
                 sort={property.type === 'relationship'}
                 totalPossibleOptions={propertyOptions.length}
                 allowSelectGroup
@@ -167,6 +171,7 @@ const FiltersFromProperties = ({
 
 FiltersFromProperties.defaultProps = {
   onChange: () => {},
+  chartActions: { addChartProperty: () => {}, removeChartProperty: () => {} },
   dateFormat: '',
   modelPrefix: '',
   translationContext: '',
@@ -175,6 +180,7 @@ FiltersFromProperties.defaultProps = {
 FiltersFromProperties.propTypes = {
   templates: PropTypes.instanceOf(Array).isRequired,
   onChange: PropTypes.func,
+  chartActions: { addChartProperty: PropTypes.func, removeChartProperty: PropTypes.func },
   dateFormat: PropTypes.string,
   modelPrefix: PropTypes.string,
   translationContext: PropTypes.string,

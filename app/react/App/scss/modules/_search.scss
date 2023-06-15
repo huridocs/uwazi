@@ -265,6 +265,10 @@
   display: flex;
   flex-direction: column;
 
+  .chart-view-activate > button {
+    margin-right: 12px;
+  }
+
   &:not(:last-child),
   .form-group:not(:last-child) & {
     border-bottom: 1px solid $c-grey-light;

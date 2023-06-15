@@ -8,7 +8,11 @@ import { Icon } from 'UI';
 
 import debounce from 'app/utils/debounce';
 import libraryHelper, { prepareDefaultFilters } from 'app/Library/helpers/libraryFilters';
-import { searchDocuments } from 'app/Library/actions/libraryActions';
+import {
+  searchDocuments,
+  addChartProperty,
+  removeChartProperty,
+} from 'app/Library/actions/libraryActions';
 import { Translate } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';
 import { FilterTocGeneration } from 'app/ToggledFeatures/tocGeneration';
@@ -84,6 +88,10 @@ class FiltersForm extends Component {
           <Filters
             onChange={this.activateAutoSearch}
             properties={fields}
+            chartActions={{
+              addChartProperty: this.props.addChartProperty,
+              removeChartProperty: this.props.removeChartProperty,
+            }}
             translationContext={translationContext}
             storeKey={this.props.storeKey}
           />
@@ -131,6 +139,8 @@ FiltersForm.propTypes = {
   aggregations: PropTypes.instanceOf(Immutable.Map).isRequired,
   fields: PropTypes.instanceOf(Immutable.List).isRequired,
   searchDocuments: PropTypes.func.isRequired,
+  addChartProperty: PropTypes.func.isRequired,
+  removeChartProperty: PropTypes.func.isRequired,
   location: PropTypes.object.isRequired,
   navigate: PropTypes.func.isRequired,
   documentTypes: PropTypes.instanceOf(Immutable.List).isRequired,
@@ -147,7 +157,10 @@ function mapStateToProps(state, props) {
 }
 
 function mapDispatchToProps(dispatch, props) {
-  return bindActionCreators({ searchDocuments }, wrapDispatch(dispatch, props.storeKey));
+  return bindActionCreators(
+    { searchDocuments, addChartProperty, removeChartProperty },
+    wrapDispatch(dispatch, props.storeKey)
+  );
 }
 
 export { FiltersForm, mapStateToProps };

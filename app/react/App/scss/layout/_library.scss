@@ -383,16 +383,14 @@ $c11: calc(9.09% - 15px);
   }
 
   .chartview-wrapper {
-    .property-selector {
-      margin-bottom: 15px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 
-      label {
-        margin-right: 15px;
-      }
-
-      select {
-        min-width: 300px;
-      }
+    .chartview-section {
+      min-width: 400px;
+      max-width: 100%;
+      flex: 1 1 0;
     }
   }
 }
