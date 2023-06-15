@@ -28,6 +28,7 @@ describe('MetadataFormButtons', () => {
       exclusivelyViewButton: false,
       copyFrom: jasmine.createSpy('copyFrom'),
       uploadFileprogress: undefined,
+      formState: { $form: { pending: false } },
     };
   });
 
@@ -90,6 +91,14 @@ describe('MetadataFormButtons', () => {
         expect(button.props()).toMatchObject({ disabled: true });
       }
     );
+
+    it('should disable the buttons while the form submits', () => {
+      props.entityBeingEdited = true;
+      props.formState.$form.pending = true;
+      render();
+      const buttons = component.find('button');
+      buttons.forEach(button => expect(button.props().disabled).toBe(true));
+    });
   });
 
   describe('delete', () => {

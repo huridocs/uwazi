@@ -10,7 +10,8 @@ export const EntityMappers = {
       dbo.language,
       dbo.title,
       MongoIdHandler.mapToApp(dbo.template),
-      dbo.metadata
+      dbo.metadata,
+      dbo.obsoleteMetadata
     );
   },
 };

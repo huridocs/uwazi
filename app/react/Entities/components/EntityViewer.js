@@ -113,6 +113,7 @@ class EntityViewer extends Component {
       relationships,
       hasPageView,
       user,
+      formState,
     } = this.props;
 
     const { panelOpen, copyFrom, copyFromProps } = this.state;
@@ -210,6 +211,7 @@ class EntityViewer extends Component {
                   delete={this.deleteEntity}
                   data={this.props.entity}
                   formStatePath="entityView.entityForm"
+                  formState={formState}
                   entityBeingEdited={entityBeingEdited}
                   copyFrom={this.toggleCopyFrom}
                 />
@@ -408,6 +410,7 @@ EntityViewer.propTypes = {
   navigate: PropTypes.func,
   // v2
   newRelationshipsEnabled: PropTypes.bool,
+  formState: PropTypes.instanceOf(Object).isRequired,
 };
 
 const selectRelationTypes = createSelector(
@@ -432,6 +435,7 @@ const mapStateToProps = state => {
     hasPageView: Boolean(templateWithPageView),
     user: state.user,
     locale: state.locale,
+    formState: state.entityView.entityFormState,
     // Is this used at all?
     library: state.library,
     // v2

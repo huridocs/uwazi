@@ -36,6 +36,18 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return null;
   }
 
+  async nextBatch(size: number): Promise<U[]> {
+    const dbos: T[] = [];
+    while ((await this.mongoCursor.hasNext()) && dbos.length < size) {
+      const item = await this.mongoCursor.next();
+      if (item) {
+        dbos.push(item);
+      }
+    }
+    const mapped = await Promise.all(dbos.map(async item => this.mapper(item)));
+    return mapped;
+  }
+
   async all() {
     const results = await this.mongoCursor.toArray();
     const mapped = await Promise.all(results.map(async item => this.mapper(item)));
@@ -46,6 +58,13 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     while (await this.hasNext()) {
       const item: U | null = await this.next();
       await callback(item!);
+    }
+  }
+
+  async forEachBatch(batchSize: number, callback: (items: U[]) => Promise<void> | void) {
+    while (await this.hasNext()) {
+      const items: U[] = await this.nextBatch(batchSize);
+      await callback(items);
     }
   }
 

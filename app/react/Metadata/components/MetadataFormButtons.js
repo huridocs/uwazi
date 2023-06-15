@@ -13,9 +13,16 @@ import * as actions from '../actions/actions';
 
 class MetadataFormButtons extends Component {
   render() {
-    const { entityBeingEdited, exclusivelyViewButton, formName, hideDelete, uploadFileprogress } =
-      this.props;
+    const {
+      entityBeingEdited,
+      exclusivelyViewButton,
+      formName,
+      hideDelete,
+      uploadFileprogress,
+      formState,
+    } = this.props;
     const data = this.props.data.toJS();
+    const shouldDisable = formState.$form.pending || uploadFileprogress !== undefined;
 
     const ViewButton = (
       <I18NLink
@@ -69,7 +76,7 @@ class MetadataFormButtons extends Component {
               type="button"
               className="btn btn-default copy-from-btn"
               onClick={this.props.copyFrom}
-              disabled={uploadFileprogress !== undefined}
+              disabled={shouldDisable}
             >
               <Icon icon="copy-from" transform="left-0.07 up-0.06" />
               <span className="btn-label">
@@ -84,7 +91,7 @@ class MetadataFormButtons extends Component {
             <>
               <button
                 type="button"
-                disabled={uploadFileprogress !== undefined}
+                disabled={shouldDisable}
                 onClick={() => this.props.resetForm(this.props.formStatePath)}
                 className="cancel-edit-metadata btn btn-default btn-extra-padding"
               >
@@ -96,7 +103,7 @@ class MetadataFormButtons extends Component {
                 type="submit"
                 form={formName}
                 className="btn btn-success btn-extra-padding"
-                disabled={uploadFileprogress !== undefined}
+                disabled={shouldDisable}
               >
                 {uploadFileprogress ? <Icon icon="spinner" spin /> : null}
                 <span className="btn-label">
@@ -149,6 +156,7 @@ MetadataFormButtons.propTypes = {
   data: PropTypes.object.isRequired,
   entityBeingEdited: PropTypes.bool,
   formStatePath: PropTypes.string.isRequired,
+  formState: PropTypes.instanceOf(Object).isRequired,
   formName: PropTypes.string,
   includeViewButton: PropTypes.bool,
   exclusivelyViewButton: PropTypes.bool,
