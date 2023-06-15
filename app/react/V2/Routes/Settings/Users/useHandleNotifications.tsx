@@ -32,7 +32,7 @@ const useHandleNotifications = () => {
 
     switch (intent) {
       case 'new-user':
-        text = <Translate>User saved</Translate>;
+        text = <Translate>Added new user</Translate>;
         break;
 
       case 'edit-user':
@@ -48,15 +48,15 @@ const useHandleNotifications = () => {
         break;
 
       case 'delete-users':
-        text = <Translate>Users deleted</Translate>;
+        text = <Translate>Deleted user</Translate>;
         break;
 
       case 'delete-groups':
-        text = <Translate>Groups deleted</Translate>;
+        text = <Translate>Deleted user group</Translate>;
         break;
 
       case 'unlock-user':
-        text = <Translate>Account unlocked</Translate>;
+        text = <Translate>Account unlocked successfully</Translate>;
         break;
 
       case 'reset-password':
