@@ -31,7 +31,7 @@ describe('BulkWriteStream', () => {
     await db.setupFixturesAndContext(fixtures);
     stream = new BulkWriteStream(
       db.mongodb?.collection<NumberValueType>('values'),
-      undefined,
+      //undefined,
       stackLimit
     );
   });
