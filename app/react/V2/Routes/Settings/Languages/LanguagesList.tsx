@@ -176,7 +176,7 @@ const LanguagesList = () => {
         </SettingsContent.Footer>
       </SettingsContent>
       {showModal && (
-        <div className="container w-10 h10">
+        <div className="container w-10 h-10">
           <ConfirmationModal {...modalProps} size="md" />
         </div>
       )}
