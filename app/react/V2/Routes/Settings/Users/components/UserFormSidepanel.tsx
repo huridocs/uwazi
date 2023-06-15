@@ -139,6 +139,7 @@ const UserFormSidepanel = ({
                   label={<Translate className="block mb-1 font-bold">Username</Translate>}
                   id="username"
                   hasErrors={Boolean(errors.username)}
+                  autoComplete="off"
                   className="mb-1"
                   {...register('username', {
                     required: true,
@@ -189,6 +190,7 @@ const UserFormSidepanel = ({
                 <InputField
                   label={<Translate className="block mb-1 font-bold">Email</Translate>}
                   type="email"
+                  autoComplete="off"
                   id="email"
                   className="mb-1"
                   hasErrors={Boolean(errors.email)}

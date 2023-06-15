@@ -110,6 +110,7 @@ const GroupFormSidepanel = ({
               <InputField
                 label={<Translate className="block mb-1 font-bold">Name</Translate>}
                 id="name"
+                autoComplete="off"
                 hasErrors={Boolean(errors.name)}
                 className="mb-1"
                 {...register('name', {
