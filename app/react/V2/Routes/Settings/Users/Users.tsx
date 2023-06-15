@@ -13,6 +13,7 @@ import {
   GroupFormSidepanel,
   getUsersColumns,
   getGroupsColumns,
+  ListOfItems,
 } from './components';
 import { useHandleNotifications } from './useHandleNotifications';
 import { FormIntent } from './types';
@@ -112,7 +113,7 @@ const Users = () => {
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset passwords',
-                      body: 'Do you want reset the password for all selected users?',
+                      body: 'Do you want reset the password for the following users?',
                     });
                     setBulkActionIntent('bulk-reset-password');
                     setShowConfirmationModal(true);
@@ -127,7 +128,7 @@ const Users = () => {
                   onClick={() => {
                     setConfirmationModalProps({
                       header: 'Reset 2FA',
-                      body: 'Do you want disable 2FA for all selected users?',
+                      body: 'Do you want disable 2FA for the following users?',
                     });
                     setBulkActionIntent('bulk-reset-2fa');
                     setShowConfirmationModal(true);
@@ -145,7 +146,7 @@ const Users = () => {
                 onClick={() => {
                   setConfirmationModalProps({
                     header: 'Delete',
-                    body: 'Do you want to delete the selected items?',
+                    body: 'Do you want to delete the following items?',
                   });
                   setBulkActionIntent(activeTab === 'Users' ? 'delete-users' : 'delete-groups');
                   setShowConfirmationModal(true);
@@ -197,7 +198,8 @@ const Users = () => {
       {showConfirmationModal && (
         <ConfirmationModal
           header={confirmationModalProps.header}
-          body={confirmationModalProps.body}
+          warningText={confirmationModalProps.body}
+          body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
           onAcceptClick={() => {
             handleBulkAction();
             setShowConfirmationModal(false);
