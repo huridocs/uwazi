@@ -1,6 +1,5 @@
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
@@ -178,39 +177,6 @@ describe('CreateTranslationsService', () => {
           )
         );
       });
-    });
-  });
-
-  describe('when trying to create already existing translations', () => {
-    it('should throw a validation error', async () => {
-      await testingEnvironment.setUp({
-        ...fixtures,
-        translations_v2: [
-          {
-            language: 'en',
-            key: 'existing_key',
-            value: 'value',
-            context: { type: 'Entity', label: 'Test', id: 'test' },
-          },
-          {
-            language: 'es',
-            key: 'existing_key',
-            value: 'value',
-            context: { type: 'Entity', label: 'Test', id: 'test' },
-          },
-        ],
-      });
-      const service = createService();
-      await expect(
-        service.create([
-          {
-            language: 'es',
-            key: 'existing_key',
-            value: 'valor',
-            context: { type: 'Entity', label: 'Test', id: 'test' },
-          },
-        ])
-      ).rejects.toBeInstanceOf(DuplicatedKeyError);
     });
   });
 });

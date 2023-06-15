@@ -53,7 +53,7 @@ export class MongoTranslationsDataSource
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     try {
-      await this.getCollection().insertMany(items, { session: this.getSession(), ordered: false });
+      await this.getCollection().insertMany(items, { session: this.getSession() });
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
         throw new DuplicatedKeyError(e.message);
@@ -82,29 +82,35 @@ export class MongoTranslationsDataSource
   }
 
   async deleteByContextId(contextId: string) {
-    return this.getCollection().deleteMany({ 'context.id': contextId });
+    return this.getCollection().deleteMany(
+      { 'context.id': contextId },
+      { session: this.getSession() }
+    );
   }
 
   async deleteByLanguage(language: LanguageISO6391) {
-    return this.getCollection().deleteMany({ language });
+    return this.getCollection().deleteMany({ language }, { session: this.getSession() });
   }
 
   getAll() {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find(),
+      this.getCollection().find({}, { session: this.getSession() }),
       TranslationMappers.toModel
     );
   }
 
   getByLanguage(language: LanguageISO6391) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ language }),
+      this.getCollection().find({ language }, { session: this.getSession() }),
       TranslationMappers.toModel
     );
   }
 
   async getContext(contextId: string) {
-    const translation = await this.getCollection().findOne({ 'context.id': contextId });
+    const translation = await this.getCollection().findOne(
+      { 'context.id': contextId },
+      { session: this.getSession() }
+    );
     if (!translation) {
       throw new ContextDoesNotExist(contextId);
     }
@@ -113,7 +119,7 @@ export class MongoTranslationsDataSource
 
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ 'context.id': context }),
+      this.getCollection().find({ 'context.id': context }, { session: this.getSession() }),
       TranslationMappers.toModel
     );
   }
@@ -121,7 +127,8 @@ export class MongoTranslationsDataSource
   async updateContextLabel(contextId: string, contextLabel: string) {
     return this.getCollection().updateMany(
       { 'context.id': contextId },
-      { $set: { 'context.label': contextLabel } }
+      { $set: { 'context.label': contextLabel } },
+      { session: this.getSession() }
     );
   }
 
@@ -141,26 +148,27 @@ export class MongoTranslationsDataSource
   async updateValue(key: string, contextId: string, language: LanguageISO6391, value: string) {
     await this.getCollection().updateOne(
       { key, 'context.id': contextId, language },
-      { $set: { value } }
+      { $set: { value } },
+      { session: this.getSession() }
     );
   }
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
-    return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
+    return this.getCollection().deleteMany(
+      { 'context.id': contextId, key: { $in: keysToDelete } },
+      { session: this.getSession() }
+    );
   }
 
   async calculateUnexistentKeys(keys: string[]) {
-    const result = this.getCollection().aggregate([
-      {
-        $match: { key: { $in: keys } },
-      },
-      {
-        $group: { _id: null, foundKeys: { $push: '$key' } },
-      },
-      {
-        $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } },
-      },
-    ]);
+    const result = this.getCollection().aggregate(
+      [
+        { $match: { key: { $in: keys } } },
+        { $group: { _id: null, foundKeys: { $push: '$key' } } },
+        { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
+      ],
+      { session: this.getSession() }
+    );
     const [{ notFoundKeys }] = await result.toArray();
     return notFoundKeys || [];
   }
@@ -178,10 +186,13 @@ export class MongoTranslationsDataSource
     await Object.entries(translationsByContext).reduce(
       async (previous, [contextId, contextTranslations]) => {
         await previous;
-        const dbTranslations = this.getCollection().find({
-          key: { $in: contextTranslations.map(t => t.key) },
-          'context.id': contextId,
-        });
+        const dbTranslations = this.getCollection().find(
+          {
+            key: { $in: contextTranslations.map(t => t.key) },
+            'context.id': contextId,
+          },
+          { session: this.getSession() }
+        );
 
         const translationsByKey = objectIndex(
           contextTranslations,
