@@ -29,12 +29,12 @@ const InputField = React.forwardRef(
     {
       id,
       label,
-      disabled = false,
-      hideLabel = false,
-      placeholder = '',
-      hasErrors = false,
-      errorMessage = '',
-      value = '',
+      disabled,
+      hideLabel,
+      placeholder,
+      hasErrors,
+      errorMessage,
+      value,
       className = '',
       type = 'text',
       autoComplete = 'on',
@@ -47,13 +47,13 @@ const InputField = React.forwardRef(
   ) => {
     let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500';
     let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
-    let labelStyles = hideLabel ? 'sr-only' : 'block mb-2 text-sm font-medium text-gray-700';
+    let labelStyles = 'block mb-2 text-sm font-medium text-gray-700';
 
     if (hasErrors || errorMessage) {
       fieldStyles =
         'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700';
       clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
-      labelStyles = `${labelStyles} text-error-700`;
+      labelStyles = 'block mb-2 text-sm font-medium text-error-700';
     }
 
     if (clearFieldAction) {
@@ -62,7 +62,7 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <label htmlFor={id} className={labelStyles}>
+        <label htmlFor={id} className={hideLabel ? 'sr-only' : labelStyles}>
           {renderChild(label)}
         </label>
         <div className="relative w-full">
