@@ -1053,6 +1053,10 @@ input:checked + .toggle-bg {
   position: sticky;
 }
 
+.inset-0 {
+  inset: 0px;
+}
+
 .inset-y-0 {
   top: 0px;
   bottom: 0px;
@@ -1451,6 +1455,10 @@ input:checked + .toggle-bg {
 
 .max-h-\[calc\(100vh_-_9rem\)\] {
   max-height: calc(100vh - 9rem);
+}
+
+.max-h-screen {
+  max-height: 100vh;
 }
 
 .min-h-fit {
@@ -5176,6 +5184,10 @@ input:checked + .toggle-bg {
 
   .md\:hidden {
     display: none;
+  }
+
+  .md\:h-\[70vh\] {
+    height: 70vh;
   }
 
   .md\:h-auto {
