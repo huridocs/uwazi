@@ -10,8 +10,6 @@ import { PUBLIC_PERMISSION } from 'api/permissions/publicPermission';
 import * as api from '../../PermissionsAPI';
 import * as actions from '../actions';
 
-jest.mock('app/Users/components/usergroups/UserGroupsAPI');
-
 describe('Permissions actions', () => {
   let dispatch: Dispatch<IStore>;
 
