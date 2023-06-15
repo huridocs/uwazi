@@ -5,7 +5,7 @@ import { Translate } from 'app/I18N';
 interface CopyValueInputProps {
   value: string;
   className?: string;
-  label: string;
+  label: string | JSX.Element;
   hideLabel?: boolean;
   id?: string;
 }
