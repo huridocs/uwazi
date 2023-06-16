@@ -113,11 +113,13 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
-  const transactionManager = new MongoTransactionManager(getClient());
-  await new DeleteTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    transactionManager
-  ).deleteByContextId(contextId);
+  if (tenants.current().featureFlags?.translationsV2) {
+    const transactionManager = new MongoTransactionManager(getClient());
+    await new DeleteTranslationsService(
+      DefaultTranslationsDataSource(transactionManager),
+      transactionManager
+    ).deleteByContextId(contextId);
+  }
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
