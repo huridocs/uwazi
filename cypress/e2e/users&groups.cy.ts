@@ -21,7 +21,7 @@ describe('Users and groups', () => {
 
   describe('Users', () => {
     it('should be sorted by name by default', () => {
-      const titles = ['admin', 'colla', 'editor'];
+      const titles = ['Carmen', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
       namesShouldMatch(titles);
     });
     it('create user', () => {
@@ -43,8 +43,7 @@ describe('Users and groups', () => {
       cy.contains('span', 'Account').click();
       cy.contains('span', 'Users & Groups').click();
 
-      cy.contains('button', 'Dismiss').click();
-      namesShouldMatch(['User_1', 'admin', 'colla', 'editor']);
+      namesShouldMatch(['Carmen', 'Mike', 'User_1', 'admin', 'blocky', 'colla', 'editor']);
     });
     it('edit user', () => {
       cy.intercept('POST', 'api/users').as('editUser');
@@ -54,26 +53,32 @@ describe('Users and groups', () => {
           cy.get('td:nth-child(6) button').click();
         });
       cy.get('aside').within(() => {
-        cy.get('#username').should('have.value', 'User_1');
-        cy.get('#email').should('have.value', 'user@mailer.com');
+        cy.get('#username').should('have.value', 'Carmen');
+        cy.get('#email').should('have.value', 'carmen@huridocs.org');
         cy.get('#username').type('_edited');
         cy.get('#password').type('secret');
         cy.contains('button', 'Save').click();
       });
       cy.wait('@editUser');
-      cy.contains('button', 'Dismiss').click();
-      const titles = ['User_1_edited', 'admi', 'colla', 'editor'];
+      const titles = ['Carmen_edited', 'Mike', 'User_1', 'admin', 'blocky', 'colla', 'editor'];
       namesShouldMatch(titles);
     });
     it('delete user', () => {
+      cy.intercept('DELETE', 'api/users*').as('deleteUser');
       cy.get('table tbody tr')
-        .eq(0)
+        .eq(2)
         .within(() => {
           cy.get('td input').eq(0).click();
         });
-      cy.contains('button', 'Delete').click();
-      cy.contains('[data-testid="modal"] button', 'Delete').click();
       cy.contains('button', 'Dismiss').click();
+      cy.contains('button', 'Delete').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('button', 'Dismiss').click();
+      cy.wait("@deleteUser");
+      cy.contains('span', 'Account').click();
+      cy.contains('span', 'Users & Groups').click();
+      const titles = ['Carmen_edited', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
+      namesShouldMatch(titles);
     });
     it('reset password', () => {
       cy.reload();
@@ -82,32 +87,41 @@ describe('Users and groups', () => {
         .within(() => {
           cy.get('td input').eq(0).click();
         });
-      cy.contains('button', 'Reset password').click();
+      cy.contains('button', 'Reset Password').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('button', 'Dismiss').click();
     });
-    it('disable 2fa', () => {
+    it('Reset 2fa', () => {
+      cy.get('table tbody tr')
+      .eq(0)
+      .within(() => {
+        cy.get('td input').eq(0).click();
+      });
       cy.contains('button', 'Reset 2FA').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
     });
     it('check for unique name and email');
 
     describe('bulk actions', () => {
       it('bulk delete', () => {
         cy.reload();
-        cy.intercept('DELETE', 'api/users/*').as('deleteUsers');
+        cy.intercept('DELETE', 'api/users*').as('deleteUsers');
+        cy.get('table tbody tr')
+          .eq(0)
+          .within(() => {
+            cy.get('td input').eq(0).click();
+          });
         cy.get('table tbody tr')
           .eq(1)
           .within(() => {
             cy.get('td input').eq(0).click();
           });
-        cy.get('table tbody tr')
-          .eq(2)
-          .within(() => {
-            cy.get('td input').eq(0).click();
-          });
         cy.contains('button', 'Delete').click();
-        cy.contains('[data-testid="modal"] button', 'Delete').click();
+        cy.contains('[data-testid="modal"] button', 'Accept').click();
         cy.contains('button', 'Dismiss').click();
         cy.wait('@deleteUsers');
-        namesShouldMatch(['admin']);
+        cy.reload();
+        namesShouldMatch(['admin', 'blocky', 'colla', 'editor']);
       });
       it('bulk password reset');
       it('bulk reset 2FA');
