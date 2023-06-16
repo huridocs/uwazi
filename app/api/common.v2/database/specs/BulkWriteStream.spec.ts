@@ -29,11 +29,7 @@ describe('BulkWriteStream', () => {
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    stream = new BulkWriteStream(
-      db.mongodb?.collection<NumberValueType>('values'),
-      //undefined,
-      stackLimit
-    );
+    stream = new BulkWriteStream(db.mongodb!.collection<NumberValueType>('values'), stackLimit);
   });
 
   afterAll(async () => {

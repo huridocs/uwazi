@@ -6,9 +6,10 @@ import {
   CollationOptions,
   UpdateManyModel,
   Collection,
+  Document,
 } from 'mongodb';
 
-class BulkWriteStream<CollSchema extends { [key: string]: any }> {
+class BulkWriteStream<CollSchema extends Document> {
   collection: Collection<CollSchema>;
 
   stackLimit: number;
@@ -17,8 +18,7 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
 
   protected actions: Array<AnyBulkWriteOperation<CollSchema>>;
 
-  constructor(collection?: Collection<CollSchema>, stackLimit?: number, ordered?: boolean) {
-    if (!collection) throw new Error('Collection is required.');
+  constructor(collection: Collection<CollSchema>, stackLimit?: number, ordered?: boolean) {
     this.collection = collection;
     this.actions = [];
     this.stackLimit = stackLimit || 1000;
