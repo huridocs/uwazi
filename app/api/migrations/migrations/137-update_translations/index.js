@@ -3,7 +3,6 @@ const newKeys = [
   { key: 'Nothing selected' },
   { key: 'Edit group' },
   { key: 'Group Options' },
-  { key: 'Permissions by role' },
   { key: 'Password + 2fa' },
   { key: 'Edit user' },
   { key: 'General Information' },
