@@ -139,7 +139,7 @@ const postProcessError = (result, original) => {
   const processedError = { ...result };
   delete processedError.original;
 
-  if (processedError.code === 500 && original.name !== 'MongoError') {
+  if (original instanceof Error && processedError.code === 500 && original.name !== 'MongoError') {
     processedError.prettyMessage = original.message;
     processedError.error = original.message;
     delete processedError.message;
