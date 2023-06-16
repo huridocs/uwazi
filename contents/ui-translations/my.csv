@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,ဘာသာစကားအားလုံး သို့ ထည့်ရန်
 Add to table of contents,မာတိကာသို့ ထည့်ရန်
 Add user,အသုံးပြုသူထည့်ရန်
-Add users,အသုံးပြုသူများ ထည့်ရန်
 add value,add value
 Add/delete users and assign roles,အသုံးပြုသူများကို ထည့်/ဖျက်ပြီး တာဝန်များ သတ်မှတ်ရန်
 Add/edit translations,ဘာသာပြန်ဆိုမှုများကို ထည့်ရန်/တည်းဖြတ်ရန်
@@ -188,7 +187,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -343,8 +341,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -388,7 +384,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,အီးမေးလ် မှားနေသည်
 Invalid form,ပုံစံ မှားနေသည်
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
@@ -490,7 +485,6 @@ Name,အမည်
 Name is required,အမည် လိုအပ်သည်
 Name is too long,အမည် ရှည်လွန်းသည်
 Name is too short,အမည် တိုလွန်းသည်
-Name of the group,အုပ်စု အမည်
 Narrow down your searches,သင့်ရှာဖွေမှုများကို ချုံ့ပစ်ပါ
 Narrow your search,သင့်ရှာဖွေမှုကို ချုံ့ပစ်ပါ
 Navigate back,Navigate back
@@ -502,6 +496,7 @@ New language added,ဘာသာစကားအသစ် ထည့်ပြီး
 New password,စကားဝှက်အသစ်
 New relationship type,New relationship type
 New relationships group,ဆက်နွှယ်မှုအသစ်များ အုပ်စု
+New user,New user
 Next,ရှေ့သို့
 No,မရှိပါ
 No attachments,တွဲချိတ်မှုများ မရှိပါ
@@ -574,7 +569,6 @@ per page,per page
 Permission,ခွင့်ပြုချက်
 Permission on entities explicitly shared with the user,အသုံးပြုသူနှင့် အတိအလင်း မျှဝေထားသော ဖြည့်သွင်းချက်များအတွက် ခွင့်ပြုချက်
 Permissions,ခွင့်ပြုချက်များ
-Permissions by role,Permissions by role
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,Please type in
@@ -642,7 +636,6 @@ relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
 Relationships saved,Relationships saved
 RelationType saved,RelationType သိမ်းဆည်းပြီး
-Remote Server Unreachable,Remote Server Unreachable
 Remove,ဖယ်ရှားရန်
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Removed language,Removed language
@@ -887,11 +880,13 @@ Use,အသုံးပြုရန်
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,အသုံးပြုသူ
+User Action,User Action
 User Role,User Role
 Username,အသုံးပြုသူ အမည်
 Username is required,အသုံးပြုသူ အမည် လိုအပ်သည်
 Username is too long,အသုံးပြုသူအမည် ရှည်လွန်းသည်
 Username is too short,အသုံးပြုသူအမည် တိုလွန်းသည်
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,အသုံးပြုသူများ
 Users & Groups,Users & Groups
 Using Google Authenticator,Google Authenticator သုံးပြီး

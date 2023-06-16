@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
 Add user,إضافة مستخدم
-Add users,إضافة المستخدمين
 add value,add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
 Add/edit translations,إضافة / تحرير الترجمات
@@ -187,7 +186,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -342,8 +340,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -387,7 +383,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,بريد إلكتروني غير صحيح
 Invalid form,المدخلات غير صحيحة او غير مكتمله. رجاء التصحيح واعادج المحاولة
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,من الممكن أيضاً كسر التطبيق بسهولة بالغة. اكتب فقط الرمز هنا إذا كنت على دراية تامة بما تفعله
@@ -489,7 +484,6 @@ Name,اسم
 Name is required,الاسم مطلوب
 Name is too long,الاسم طويل جداً
 Name is too short,الاسم قصير جداً
-Name of the group,اسم المجموعة
 Narrow down your searches,ضيق نطاقات بحثك
 Narrow your search,ضيق نطاق بحثك
 Navigate back,Navigate back
@@ -501,6 +495,7 @@ New language added,أضيفت لغة جديدة
 New password,كلمة المرور الجديدة
 New relationship type,New relationship type
 New relationships group,مجموعة علاقات جديدة
+New user,New user
 Next,التالي
 No,لا
 No attachments,لا توجد مرفقات
@@ -573,7 +568,6 @@ per page,per page
 Permission,إذن
 Permission on entities explicitly shared with the user,الإذن للكيانات (للإدخالات) التي تم مشاركتها صراحة مع المستخدم
 Permissions,الأذونات
-Permissions by role,Permissions by role
 Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
 Please type in,Please type in
@@ -641,7 +635,6 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
-Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
 remove icon,إزالة الأيقونة
 Removed language,Removed language
@@ -886,11 +879,13 @@ Use,استخدام
 Use as filter,Use as filter
 Use custom landing page,خصص صفحة رئيسية
 User,المستخدم
+User Action,User Action
 User Role,User Role
 Username,اسم المستخدم
 Username is required,اسم المستخدم مطلوب
 Username is too long,اسم المستخدم طويل جداً
 Username is too short,اسم المستخدم قصير جداً
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,المستخدمين
 Users & Groups,Users & Groups
 Using Google Authenticator,باستخدام مصادقة جوجل

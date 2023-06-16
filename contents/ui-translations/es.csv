@@ -42,7 +42,6 @@ Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
 Add user,Añadir usuario
-Add users,Añadir usuarios
 add value,añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
@@ -186,7 +185,6 @@ Created entity coming from a public form,Entidad creada desde un formulario púb
 Created page,Página creada
 Created relation type,Tipo de relación creado
 Created relationship,Relación creada
-Created successfully.,Creado satisfactoriamente.
 Created template,Plantilla creada
 Created thesaurus,Tesauro creado
 Created user group,Grupo de usuarios creado
@@ -341,8 +339,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group created,Grupo creado
-Group deleted,Grupo eliminado
 Group name,Nombre del grupo
 Group Options,Group Options
 Group saved,Group saved
@@ -386,7 +382,6 @@ Instructions to reset password,"Se han enviado las instrucciones para restablece
 Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
-Invalid email,Email no válido
 Invalid form,Formulario no válido
 Invalid home page url,URL  de página de inicio no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
@@ -488,7 +483,6 @@ Name,Nombre
 Name is required,Se requiere el nombre
 Name is too long,El nombre es demasiado largo
 Name is too short,El nombre es muy corto
-Name of the group,Nombre del grupo
 Narrow down your searches,Reducir tus búsquedas
 Narrow your search,Reducir tu búsqueda
 Navigate back,Navegar hacia atrás
@@ -500,6 +494,7 @@ New language added,Nuevo idioma añadido
 New password,Nueva contraseña
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
+New user,New user
 Next,Próximo
 No,No
 No attachments,Sin adjuntos
@@ -572,7 +567,6 @@ per page,por página
 Permission,Permiso
 Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
 Permissions,Permisos
-Permissions by role,Permissions by role
 Plain text,Texto sin formato
 Please contact an admin for details.,"Por favor, contacta con un administrador para más detalles."
 Please type in,Por favor digite
@@ -640,7 +634,6 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
-Remote Server Unreachable,Sin conexión con servidor remoto
 Remove,Eliminar
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
@@ -884,11 +877,13 @@ Use,Usar
 Use as filter,Usar como filtro
 Use custom landing page,Utilizar página de destino personalizada
 User,Usuario
+User Action,User Action
 User Role,User Role
 Username,Nombre de usuario
 Username is required,Se requiere nombre de usuario
 Username is too long,El nombre de usuario es demasiado largo
 Username is too short,El nombre de usuario es demasiado corto
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Usuarios
 Users & Groups,Users & Groups
 Using Google Authenticator,Usando Google Authenticator

@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,모든 언어에 추가
 Add to table of contents,목차에 추가
 Add user,사용자 추가
-Add users,사용자 추가
 add value,add value
 Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
@@ -188,7 +187,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -343,8 +341,6 @@ Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -388,7 +384,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,잘못된 보안문자
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,잘못된 이메일
 Invalid form,잘못된 형식
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
@@ -490,7 +485,6 @@ Name,이름
 Name is required,이름이 필요합니다.
 Name is too long,이름이 너무 깁니다.
 Name is too short,이름이 너무 짧습니다.
-Name of the group,그룹 이름
 Narrow down your searches,검색을 세부화하십시오.
 Narrow your search,상세 검색
 Navigate back,Navigate back
@@ -502,6 +496,7 @@ New language added,새로운 언어가 추가되었습니다.
 New password,새 비밀번호
 New relationship type,New relationship type
 New relationships group,새로운 관계 그룹
+New user,New user
 Next,다음
 No,아니오
 No attachments,첨부파일 없음
@@ -574,7 +569,6 @@ per page,per page
 Permission,권한
 Permission on entities explicitly shared with the user,특정 사용자에게 엔티티 접근 허가
 Permissions,권한
-Permissions by role,Permissions by role
 Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,Please type in
@@ -642,7 +636,6 @@ relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
 RelationType saved,연결 유형 저장 완료
-Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
 remove icon,아이콘 제거
 Removed language,Removed language
@@ -887,11 +880,13 @@ Use,사용
 Use as filter,Use as filter
 Use custom landing page,사용자 지정 랜딩 페이지
 User,사용자
+User Action,User Action
 User Role,User Role
 Username,사용자 이름
 Username is required,사용자 이름이 필요합니다.
 Username is too long,사용자 이름이 너무 깁니다.
 Username is too short,사용자 이름이 너무 짧습니다.
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,사용자
 Users & Groups,Users & Groups
 Using Google Authenticator,Google Authenticator 사용 중

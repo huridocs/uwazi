@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,Tüm dillere ekle
 Add to table of contents,İçindekiler tablosuna ekle
 Add user,Kullanıcı ekle
-Add users,Kullanıcılar ekle
 add value,add value
 Add/delete users and assign roles,Kullanıcı ekleme/silme ve roller atama
 Add/edit translations,Çeviri ekle/düzenle
@@ -188,7 +187,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -343,8 +341,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics Kimliği
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -388,7 +384,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,Geçersiz güvenlik kodu
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,Geçersiz e-posta
 Invalid form,geçersiz form
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Ayrıca uygulamayı çok kolay bozabilir. Buraya sadece tam olarak ne yaptığınızı biliyorsanız kod yazın.
@@ -490,7 +485,6 @@ Name,Ad
 Name is required,Ad gerekli
 Name is too long,Ad çok uzun
 Name is too short,Ad çok kısa
-Name of the group,Grubun adı
 Narrow down your searches,Aramalarınızı daraltın
 Narrow your search,Aramanızı daraltın
 Navigate back,Navigate back
@@ -502,6 +496,7 @@ New language added,Yeni dil eklendi
 New password,Yeni parola
 New relationship type,New relationship type
 New relationships group,Yeni ilişkiler grubu
+New user,New user
 Next,Sonraki
 No,Hayır
 No attachments,Ek yok
@@ -574,7 +569,6 @@ per page,per page
 Permission,İzin
 Permission on entities explicitly shared with the user,Kullanıcıyla açıkça paylaşılan varlıklara ilişkin izin
 Permissions,İzinler
-Permissions by role,Permissions by role
 Plain text,Düz metin
 Please contact an admin for details.,Ayrıntılar için lütfen bir yöneticiyle iletişime geçin.
 Please type in,Please type in
@@ -642,7 +636,6 @@ relationships,İlişkiler
 Relationships,İlişkiler
 Relationships saved,Relationships saved
 RelationType saved,İlişki türü kaydedildi
-Remote Server Unreachable,Remote Server Unreachable
 Remove,Kaldır
 remove icon,simgeyi kaldır
 Removed language,Removed language
@@ -887,11 +880,13 @@ Use,Kullan
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,Kullanıcı
+User Action,User Action
 User Role,User Role
 Username,Kullanıcı adı
 Username is required,Kullanıcı adı gerekli
 Username is too long,Kullanıcı adı çok uzun
 Username is too short,Kullanıcı adı çok kısa
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Kullanıcılar
 Users & Groups,Users & Groups
 Using Google Authenticator,Google Authenticator Kullanma

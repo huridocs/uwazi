@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
 Add user,Добавить пользователя
-Add users,Добавить пользователей
 add value,add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
 Add/edit translations,Добавить / редактировать переводы
@@ -185,7 +184,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -340,8 +338,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -385,7 +381,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,Неверный адрес электронной почты
 Invalid form,Недействительная форма
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
@@ -487,7 +482,6 @@ Name,Имя
 Name is required,Требуется имя
 Name is too long,Имя слишком длинное
 Name is too short,Имя слишком короткое
-Name of the group,Имя группы
 Narrow down your searches,Сузьте область своего поиска
 Narrow your search,Ограничить свой поиск
 Navigate back,Navigate back
@@ -499,6 +493,7 @@ New language added,Добавлен новый язык
 New password,Новый пароль
 New relationship type,New relationship type
 New relationships group,Группа новых взаимосвязей
+New user,New user
 Next,Следующий
 No,Нет
 No attachments,Нет вложений
@@ -571,7 +566,6 @@ per page,per page
 Permission,Разрешение
 Permission on entities explicitly shared with the user,"Разрешение на объекты, которыми поделились с пользователем"
 Permissions,Разрешения
-Permissions by role,Permissions by role
 Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
 Please type in,Please type in
@@ -639,7 +633,6 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
-Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
 Removed language,Removed language
@@ -884,11 +877,13 @@ Use,Использовать
 Use as filter,Use as filter
 Use custom landing page,Использовать пользовательскую целевую страницу
 User,Пользователь
+User Action,User Action
 User Role,User Role
 Username,Имя пользователя
 Username is required,Требуется имя пользователя
 Username is too long,Имя пользователя слишком длинное
 Username is too short,Имя пользователя слишком короткое
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Пользователи
 Users & Groups,Users & Groups
 Using Google Authenticator,Использовать Google Authenticator

@@ -42,7 +42,6 @@ Add timelink,Add timelink
 Add to all languages,เพิ่มเข้าไปในทุกภาษา
 Add to table of contents,เพิ่มลงในสารบัญ
 Add user,เพิ่มผู้ใช้
-Add users,เพิ่มผู้ใช้
 add value,add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
 Add/edit translations,เพิ่ม / แก้ไขการแปล
@@ -188,7 +187,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -343,8 +341,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
@@ -388,7 +384,6 @@ Instructions to reset password,Instructions to reset user password have been sen
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,อีเมลไม่ถูกต้อง
 Invalid form,แบบฟอร์มไม่ถูกต้อง
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
@@ -490,7 +485,6 @@ Name,ชื่อ
 Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
-Name of the group,ชื่อของกลุ่ม
 Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
 Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
@@ -502,6 +496,7 @@ New language added,ภาษาใหม่ถูกเพิ่มแล้ว
 New password,รหัสผ่านใหม่
 New relationship type,New relationship type
 New relationships group,กลุ่มความสัมพันธ์ใหม่
+New user,New user
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา
@@ -574,7 +569,6 @@ per page,per page
 Permission,สิทธิการเข้าถึง
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
 Permissions,สิทธิการเข้าถึง
-Permissions by role,Permissions by role
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
@@ -642,7 +636,6 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
-Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
 remove icon,ลบไอคอน
 Removed language,Removed language
@@ -889,11 +882,13 @@ Use,ใช้
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,ผู้ใช้
+User Action,User Action
 User Role,User Role
 Username,ชื่อผู้ใช้
 Username is required,จำเป็นต้องใส่ชื่อผู้ใช้
 Username is too long,ชื่อผู้ใช้ยาวเกินไป
 Username is too short,ชื่อผู้ใช้สั้นเกินไป
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,ผู้ใช้
 Users & Groups,Users & Groups
 Using Google Authenticator,ใช้ Google Authenticator
