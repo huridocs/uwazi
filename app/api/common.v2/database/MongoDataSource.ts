@@ -2,12 +2,10 @@ import { Collection, Db, Document } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
-/**
- * Map of collection members to position of its options argument
- */
-type MethodsOptionsArgPosition = {
-  [method in keyof Partial<Collection>]: number;
-};
+type SessionScopedCollection<Schema extends Document> = Omit<
+  Collection<Schema>,
+  Exclude<keyof Collection<Schema>, typeof MongoDataSource['sessionScopedMethods'][number]>
+>;
 
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
@@ -23,33 +21,36 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     this.transactionManager = transactionManager;
   }
 
-  static scopedMethods: MethodsOptionsArgPosition = {
-    countDocuments: 1,
-    aggregate: 1,
-    insertOne: 1,
-    insertMany: 1,
-    find: 1,
-    findOne: 1,
-    deleteMany: 1,
-    bulkWrite: 1,
-  };
+  static sessionScopedMethods = [
+    'countDocuments',
+    'aggregate',
+    'insertOne',
+    'insertMany',
+    'find',
+    'findOne',
+    'deleteMany',
+    'bulkWrite',
+  ] as const;
 
-  private appendSessionToOptions(args: any[], position: number) {
-    const minArgumentsLength = position + 1;
+  private appendSessionToOptions(args: any[]) {
+    const optionsArgumentPosition = 1;
+    const minArgumentsLength = optionsArgumentPosition + 1;
     const missingArguments = minArgumentsLength - args.length;
 
     const paddedArgs =
       missingArguments > 0 ? args.concat(Array(missingArguments).fill(undefined)) : args;
 
-    paddedArgs[position] = {
-      ...paddedArgs[position],
+    paddedArgs[optionsArgumentPosition] = {
+      ...paddedArgs[optionsArgumentPosition],
       session: this.transactionManager.getSession(),
     };
 
     return paddedArgs;
   }
 
-  private scopeCollectionToTransaction(collection: Collection<CollectionSchema>) {
+  private scopeCollectionToTransaction(
+    collection: Collection<CollectionSchema>
+  ): SessionScopedCollection<CollectionSchema> {
     if (this.collectionProxy) {
       return this.collectionProxy;
     }
@@ -60,19 +61,15 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
       get(target, property, receiver) {
         if (
           typeof property === 'string' &&
-          Object.keys(MongoDataSource.scopedMethods).includes(property as keyof Collection)
+          MongoDataSource.sessionScopedMethods.includes(
+            property as keyof SessionScopedCollection<CollectionSchema>
+          )
         ) {
           const original = Reflect.get(target, property, receiver);
 
           if (typeof original === 'function') {
             return function proxiedFunction(...args: any[]) {
-              return original.apply(
-                receiver,
-                self.appendSessionToOptions(
-                  args,
-                  MongoDataSource.scopedMethods[property as keyof Collection]!
-                )
-              );
+              return original.apply(receiver, self.appendSessionToOptions(args));
             };
           }
 
