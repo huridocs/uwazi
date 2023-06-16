@@ -569,6 +569,8 @@ per page,per page
 Permission,권한
 Permission on entities explicitly shared with the user,특정 사용자에게 엔티티 접근 허가
 Permissions,권한
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,일반 텍스트
 Please contact an admin for details.,자세한 내용은 관리자에게 문의하십시오.
 Please type in,Please type in
@@ -636,6 +638,7 @@ relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
 RelationType saved,연결 유형 저장 완료
+Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
 remove icon,아이콘 제거
 Removed language,Removed language

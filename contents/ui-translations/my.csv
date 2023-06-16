@@ -569,6 +569,8 @@ per page,per page
 Permission,ခွင့်ပြုချက်
 Permission on entities explicitly shared with the user,အသုံးပြုသူနှင့် အတိအလင်း မျှဝေထားသော ဖြည့်သွင်းချက်များအတွက် ခွင့်ပြုချက်
 Permissions,ခွင့်ပြုချက်များ
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,ရိုးရိုးစာသား
 Please contact an admin for details.,ကျေးဇူးပြု၍ အသေးစိတ်များ သိရန် အက်မင်ကို ဆက်သွယ်ပါ။
 Please type in,Please type in
@@ -636,6 +638,7 @@ relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
 Relationships saved,Relationships saved
 RelationType saved,RelationType သိမ်းဆည်းပြီး
+Remote Server Unreachable,Remote Server Unreachable
 Remove,ဖယ်ရှားရန်
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
 Removed language,Removed language

@@ -568,6 +568,8 @@ per page,per page
 Permission,Permission
 Permission on entities explicitly shared with the user,Permission sur les entités explicitement partagées avec l'utilisateur
 Permissions,Permissions
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,Texte brut
 Please contact an admin for details.,Veuillez contacter un administrateur pour plus de détails.
 Please type in,Please type in
@@ -635,6 +637,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
 remove icon,Supprimer l'icône
 Removed language,Removed language

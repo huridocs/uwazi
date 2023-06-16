@@ -12,9 +12,10 @@ const newKeys = [
   { key: 'Unlock account' },
   { key: 'Instruction to reset password sent to user' },
   { key: 'Group saved' },
-  { key: 'User Action'},
-  { key: 'New user'},
-  { key: 'Usernames cannot have spaces'},
+  { key: 'User Action' },
+  { key: 'New user' },
+  { key: 'Usernames cannot have spaces' },
+  { key: 'Permissions by role' },
 ];
 
 const deletedKeys = [

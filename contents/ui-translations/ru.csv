@@ -1,4 +1,4 @@
-Key,Russian
+key,value
 % of sentences above threshold,% предложений выше порога
 (view page),(Просмотр страницы)
 + click to select multiple cards.,+ click to select multiple cards.
@@ -566,6 +566,8 @@ per page,per page
 Permission,Разрешение
 Permission on entities explicitly shared with the user,"Разрешение на объекты, которыми поделились с пользователем"
 Permissions,Разрешения
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,Обычный текст
 Please contact an admin for details.,"Пожалуйста, свяжитесь с администратором для выяснения деталей."
 Please type in,Please type in
@@ -633,6 +635,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
 Removed language,Removed language

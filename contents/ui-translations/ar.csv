@@ -568,6 +568,8 @@ per page,per page
 Permission,إذن
 Permission on entities explicitly shared with the user,الإذن للكيانات (للإدخالات) التي تم مشاركتها صراحة مع المستخدم
 Permissions,الأذونات
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,نص عادي
 Please contact an admin for details.,يرجى الاتصال بالمشرف (المسؤول) للحصول على التفاصيل.
 Please type in,Please type in
@@ -635,6 +637,7 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
+Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
 remove icon,إزالة الأيقونة
 Removed language,Removed language

@@ -569,6 +569,8 @@ per page,per page
 Permission,สิทธิการเข้าถึง
 Permission on entities explicitly shared with the user,สิทธิการเข้าถึงบนรายการถูกแชร์ให้ผู้ใช้แล้ว
 Permissions,สิทธิการเข้าถึง
+Permissions by role,Permissions by role
+Permissions by role,Permissions by role
 Plain text,ข้อความธรรมดา
 Please contact an admin for details.,กรุณาติดต่อผู้ดูแลระบบเพื่อดูรายละเอียดเพิ่มเติม
 Please type in,Please type in
@@ -636,6 +638,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
+Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
 remove icon,ลบไอคอน
 Removed language,Removed language
