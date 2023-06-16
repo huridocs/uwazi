@@ -5,13 +5,13 @@ import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
-const UserNameHeader = () => <Translate className="capitalize">Username</Translate>;
-const GroupNameHeader = () => <Translate className="capitalize">Name</Translate>;
-const ProtectionHeader = () => <Translate className="capitalize">Protection</Translate>;
-const RoleHeader = () => <Translate className="capitalize">Role</Translate>;
-const GroupsHeader = () => <Translate className="capitalize">Group</Translate>;
-const ActionHeader = () => <Translate className="capitalize">Action</Translate>;
-const MembersHeader = () => <Translate className="capitalize">Members</Translate>;
+const UserNameHeader = () => <Translate>Username</Translate>;
+const GroupNameHeader = () => <Translate>Name</Translate>;
+const ProtectionHeader = () => <Translate>Protection</Translate>;
+const RoleHeader = () => <Translate>Role</Translate>;
+const GroupsHeader = () => <Translate>Group</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
+const MembersHeader = () => <Translate>Members</Translate>;
 
 const ProtectionPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['using2fa']>) => {
   if (cell.getValue()) {
@@ -81,7 +81,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
   return [
     columnHelper.accessor('username', {
       header: UserNameHeader,
-      meta: { className: 'w-2/4' },
+      meta: { className: 'w-1/3' },
     }),
     columnHelper.accessor('using2fa', {
       header: ProtectionHeader,
@@ -96,13 +96,13 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
     columnHelper.accessor('groups', {
       header: GroupsHeader,
       cell: GroupsPill,
-      meta: { className: 'w-2/4' },
+      meta: { className: 'w-2/3' },
     }),
     columnHelper.display({
       id: '1',
       header: ActionHeader,
       cell: EditUserButton,
-      meta: { action: editButtonAction, className: 'w-0' },
+      meta: { action: editButtonAction, className: 'w-0 text-center' },
       enableSorting: false,
     }),
   ];
@@ -125,7 +125,7 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
       id: '1',
       header: ActionHeader,
       cell: EditUserGroupButton,
-      meta: { action: editButtonAction, className: 'w-0' },
+      meta: { action: editButtonAction, className: 'w-0 text-center' },
       enableSorting: false,
     }),
   ];

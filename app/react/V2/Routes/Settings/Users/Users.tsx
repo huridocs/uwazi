@@ -77,6 +77,7 @@ const Users = () => {
               setActiveTab(tab as ActiveTab);
               setSelectedUsers([]);
               setSelectedGroups([]);
+              setSidepanelData(undefined);
             }}
           >
             <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
@@ -177,7 +178,7 @@ const Users = () => {
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
-          selectedUser={sidepanelData && 'username' in sidepanelData ? sidepanelData : undefined}
+          selectedUser={sidepanelData as ClientUserSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
@@ -186,7 +187,7 @@ const Users = () => {
         />
       ) : (
         <GroupFormSidepanel
-          selectedGroup={sidepanelData && 'members' in sidepanelData ? sidepanelData : undefined}
+          selectedGroup={sidepanelData as ClientUserGroupSchema}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
