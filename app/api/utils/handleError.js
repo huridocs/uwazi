@@ -135,7 +135,7 @@ function setRequestId(result) {
   }
 }
 
-const postProcessError = (result, original) => {
+const simplifyError = (result, original) => {
   const processedError = { ...result };
   delete processedError.original;
 
@@ -162,7 +162,7 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
 
   sendLog(result, error, {});
 
-  result = postProcessError(result, error);
+  result = simplifyError(result, error);
 
   return result;
 };
