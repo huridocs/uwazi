@@ -375,7 +375,7 @@ Inherit,Inherit
 Inherit property,ဂုဏ်သတ္တိကို အမွေဆက်ခံရန်
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator အက်ပ်ကို သင့်မိုဘိုင်းစက်တွင် တပ်ဆင်ပါ
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -411,7 +411,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,ဘာသာစကား
 Language Code,Language Code
 Language deleted,ဘာသာစကား ဖျက်ပြီး
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,ဘာသာစကားများ
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,လတ္တီကျု
 Learn more,ပိုမိုလေ့လာရန်
@@ -781,6 +784,7 @@ Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,ဝေါဟာရပဒေသာကျမ်း သိမ်းပြီး
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,ဤဧရိယာသည် သင့်အား စာမျက်နှာသို့ စိတ်ကြိုက် Javascript ကို တွဲချိတ်ခွင့်ပြုသည်။ ၎င်းသည် ဖြစ်နိုင်ခြေအသစ်များစွာကို ပေါ်ပေါက်လာစေသည်။
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,ဤအကြောင်းအရာကို အလိုအလျောက် ထုတ်လုပ်ထားသည်

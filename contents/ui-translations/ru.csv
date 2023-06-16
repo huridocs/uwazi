@@ -372,7 +372,7 @@ Inherit,Inherit
 Inherit property,Перенять свойство
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Установите приложение Google Authenticator на своем мобильном устройстве
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
@@ -408,7 +408,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Язык
 Language Code,Language Code
 Language deleted,Язык удален
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,Языки
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Широта
 Learn more,Узнать больше
@@ -778,6 +781,7 @@ Thesauri,Предметный указатель
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Предметный указатель сохранен
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Эта область позволяет добавить пользовательский JavaScript на страницу. Это откроет большую сферу новых возможностей.
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Этот контент генерируется автоматически

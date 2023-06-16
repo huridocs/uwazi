@@ -373,7 +373,7 @@ Inherit,Heredar
 Inherit property,Heredar propiedad
 Install,Instalar
 Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
-Install language(s),Instalar idioma(s)
+Install Language(s),Instalar Idioma(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
@@ -409,7 +409,10 @@ Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nom
 Language,Idioma
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
+Language reset success,Idioma reseteado exitósamente
+Language uninstalled success,Idioma eliminado exitósamente
 Languages,Idiomas
+Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
 Latitude,Latitud
 Learn more,Aprender más
@@ -778,6 +781,7 @@ Thesauri,Tesauros
 Thesauri name,Nombre del Tesauro
 Thesaurus,Tesauro
 Thesaurus saved,Tesauro guardado
+This action may take some time while we add the extra language to the entire collection.,Esta acción puede tomar algún tiempo mientras añadimos el idioma a la colección.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Esta área permite Añadir Javascript para personalizar la página. Esto abre un nuevo universo de posibilidades.
 This cannot be changed after saving,Esto no puede ser cambiado después de guardar
 This content is automatically generated,Este contenido se genera automáticamente.

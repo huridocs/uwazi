@@ -48,7 +48,7 @@ const LanguagesList = () => {
 
   const handleAction =
     (
-      successMessage: string,
+      successMessage: React.ReactNode,
       action: { (requestParams: RequestParams): Promise<Response> },
       key: string,
       currentLanguage?: LanguageSchema
@@ -88,7 +88,7 @@ const LanguagesList = () => {
       'You are about to reset a language.',
       'Reset',
       handleAction(
-        'Language reset success',
+        <Translate>Language reset success</Translate>,
         I18NApi.populateTranslations,
         'locale',
         row.original as LanguageSchema
@@ -98,7 +98,7 @@ const LanguagesList = () => {
 
   const setDefaultLanguage = async (row: Row<LanguageSchema>) => {
     await handleAction(
-      'Default language change success',
+      <Translate>Default language change success</Translate>,
       I18NApi.setDefaultLanguage,
       'key',
       row.original as LanguageSchema
@@ -110,7 +110,7 @@ const LanguagesList = () => {
       'You are about to uninstall a language.',
       'Uninstall',
       handleAction(
-        'Language uninstalled success',
+        <Translate>Language uninstalled success</Translate>,
         I18NApi.deleteLanguage,
         'key',
         row.original as LanguageSchema
@@ -170,13 +170,13 @@ const LanguagesList = () => {
                 setShowInstallModal(true);
               }}
             >
-              <Translate>Install language(s)</Translate>
+              <Translate>Install Language(s)</Translate>
             </Button>
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
       {showModal && (
-        <div className="container w-10 h10">
+        <div className="container w-10 h-10">
           <ConfirmationModal {...modalProps} size="md" />
         </div>
       )}
