@@ -135,14 +135,19 @@ function setRequestId(result) {
   }
 }
 
-const postProcessError = (error, original) => {
-  const result = { ...error };
-  delete result.original;
-  if (result.code === 500 && original.name !== 'MongoError') {
-    delete result.message;
-    result.prettyMessage = original.message;
+const postProcessError = (result, original) => {
+  const processedError = { ...result };
+  delete processedError.original;
+
+  if (processedError.code === 500 && original.name !== 'MongoError') {
+    processedError.prettyMessage = original.message;
+    processedError.error = original.message;
+    delete processedError.message;
+  } else {
+    processedError.prettyMessage = processedError.prettyMessage || original.message;
   }
-  return result;
+
+  return processedError;
 };
 
 const handleError = (_error, { req = {}, uncaught = false, useContext = true } = {}) => {
