@@ -123,11 +123,13 @@ export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
-  const transactionManager = new MongoTransactionManager(getClient());
-  await new DeleteTranslationsService(
-    DefaultTranslationsDataSource(transactionManager),
-    transactionManager
-  ).deleteByLanguage(language);
+  if (tenants.current().featureFlags?.translationsV2) {
+    const transactionManager = new MongoTransactionManager(getClient());
+    await new DeleteTranslationsService(
+      DefaultTranslationsDataSource(transactionManager),
+      transactionManager
+    ).deleteByLanguage(language);
+  }
 };
 
 export const getTranslationsV2ByContext = async (context: string) =>
