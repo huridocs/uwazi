@@ -74,7 +74,7 @@ describe('Users and groups', () => {
       cy.contains('button', 'Delete').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('button', 'Dismiss').click();
-      cy.wait("@deleteUser");
+      cy.wait('@deleteUser');
       cy.contains('span', 'Account').click();
       cy.contains('span', 'Users & Groups').click();
       const titles = ['Carmen_edited', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
@@ -93,10 +93,10 @@ describe('Users and groups', () => {
     });
     it('Reset 2fa', () => {
       cy.get('table tbody tr')
-      .eq(0)
-      .within(() => {
-        cy.get('td input').eq(0).click();
-      });
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
       cy.contains('button', 'Reset 2FA').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
     });
