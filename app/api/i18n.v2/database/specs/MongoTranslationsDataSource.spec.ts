@@ -2,7 +2,6 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { Translation } from 'api/i18n.v2/model/Translation';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
@@ -53,11 +52,7 @@ describe('MongoTranslationsDataSource', () => {
         const transactionManager = DefaultTransactionManager();
 
         await expect(
-          new MongoTranslationsDataSource(
-            getConnection(),
-            DefaultSettingsDataSource(transactionManager),
-            transactionManager
-          ).insert([
+          new MongoTranslationsDataSource(getConnection(), transactionManager).insert([
             new Translation('existing_key', 'valor', 'es', {
               type: 'Entity',
               label: 'Test',
@@ -76,11 +71,7 @@ describe('MongoTranslationsDataSource', () => {
           throw new Error('db error');
         });
         await expect(
-          new MongoTranslationsDataSource(
-            db,
-            DefaultSettingsDataSource(transactionManager),
-            transactionManager
-          ).insert([
+          new MongoTranslationsDataSource(db, transactionManager).insert([
             new Translation('key', 'valor', 'es', {
               type: 'Entity',
               label: 'Test',

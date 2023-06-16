@@ -1,30 +1,32 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import {
   LanguageDoesNotExist,
   TranslationMissingLanguages,
 } from 'api/i18n.v2/errors/translationErrors';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';
+import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
 const collectionInDb = (collection = 'translations_v2') =>
   testingDB.mongodb?.collection(collection)!;
 
-const createService = () =>
-  new CreateTranslationsService(
-    new MongoTranslationsDataSource(
-      getConnection(),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
+const createService = () => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  return new CreateTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    new ValidateTranslationsService(
+      DefaultTranslationsDataSource(transactionManager),
+      DefaultSettingsDataSource(transactionManager)
     ),
-    new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-    new MongoTransactionManager(getClient())
+    transactionManager
   );
+};
 
 const fixtures: DBFixture = {
   translations_v2: [],

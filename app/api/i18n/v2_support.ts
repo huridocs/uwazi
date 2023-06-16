@@ -11,6 +11,7 @@ import {
 import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslationsService';
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
+import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { EnforcedWithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
@@ -87,7 +88,10 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
     const transactionManager = new MongoTransactionManager(getClient());
     await new CreateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager),
+      new ValidateTranslationsService(
+        DefaultTranslationsDataSource(transactionManager),
+        DefaultSettingsDataSource(transactionManager)
+      ),
       transactionManager
     ).create(flattenTranslations(translation));
   }
@@ -99,6 +103,10 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
     await new UpsertTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
       DefaultSettingsDataSource(transactionManager),
+      new ValidateTranslationsService(
+        DefaultTranslationsDataSource(transactionManager),
+        DefaultSettingsDataSource(transactionManager)
+      ),
       transactionManager
     ).upsert(flattenTranslations(translation));
   }
@@ -152,6 +160,10 @@ export const updateContextV2 = async (
     await new UpsertTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
       DefaultSettingsDataSource(transactionManager),
+      new ValidateTranslationsService(
+        DefaultTranslationsDataSource(transactionManager),
+        DefaultSettingsDataSource(transactionManager)
+      ),
       transactionManager
     ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
   }

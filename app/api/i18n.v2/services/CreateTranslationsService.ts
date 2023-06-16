@@ -1,9 +1,8 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
-import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { LanguageDoesNotExist, TranslationMissingLanguages } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
+import { ValidateTranslationsService } from './ValidateTranslationsService';
 
 export interface CreateTranslationsData {
   language: LanguageISO6391;
@@ -19,42 +18,24 @@ export interface CreateTranslationsData {
 export class CreateTranslationsService {
   private translationsDS: TranslationsDataSource;
 
-  private settingsDS: SettingsDataSource;
+  private validationService: ValidateTranslationsService;
 
   private transactionManager: TransactionManager;
 
   constructor(
     translationsDS: TranslationsDataSource,
-    settingsDS: SettingsDataSource,
+    validationService: ValidateTranslationsService,
     transactionManager: TransactionManager
   ) {
     this.translationsDS = translationsDS;
-    this.settingsDS = settingsDS;
+    this.validationService = validationService;
     this.transactionManager = transactionManager;
   }
 
   async create(translations: CreateTranslationsData[]) {
-    const configuredLanguageKeys = await this.settingsDS.getLanguageKeys();
+    await this.validationService.languagesExist(translations);
 
-    const difference = translations
-      .map(t => t.language)
-      .filter(key => !configuredLanguageKeys.includes(key));
-    if (difference.length) {
-      throw new LanguageDoesNotExist(JSON.stringify(difference));
-    }
-
-    const translationsMissingLanguages = await this.translationsDS.calculateKeysWithoutAllLanguages(
-      translations
-    );
-    if (translationsMissingLanguages.length) {
-      throw new TranslationMissingLanguages(
-        `the following key/context combination are missing translations\n${translationsMissingLanguages
-          .map(
-            t => `key: ${t.key}, context: ${t.contextId}, languages missing: ${t.missingLanguages}`
-          )
-          .join('\n')}`
-      );
-    }
+    await this.validationService.translationsWillExistsInAllLanguages(translations);
 
     return this.transactionManager.run(async () =>
       this.translationsDS.insert(

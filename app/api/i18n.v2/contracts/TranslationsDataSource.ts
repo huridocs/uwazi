@@ -9,6 +9,7 @@ export interface TranslationsDataSource {
   getAll(): ResultSet<Translation>;
   getByLanguage(language: string): ResultSet<Translation>;
   getByContext(context: string): ResultSet<Translation>;
+  getContextAndKeys(contextId: string, keys: string[]): ResultSet<Translation>;
   getContext(contextId: string): Promise<TranslationContext>;
 
   deleteByContextId(contextId: string): Promise<DeleteResult>;
@@ -21,8 +22,4 @@ export interface TranslationsDataSource {
   updateValue(key: string, contextId: string, language: string, value: string): Promise<void>;
 
   calculateUnexistentKeys(keys: string[]): Promise<string[]>;
-
-  calculateKeysWithoutAllLanguages(
-    translations: Translation[]
-  ): Promise<{ key: string; contextId: string; missingLanguages: string[] }[]>;
 }

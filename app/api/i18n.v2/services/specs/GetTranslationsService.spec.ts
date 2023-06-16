@@ -1,19 +1,14 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
-import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
 import { GetTranslationsService } from '../GetTranslationsService';
 
-const createService = () =>
-  new GetTranslationsService(
-    new MongoTranslationsDataSource(
-      getConnection(),
-      new MongoSettingsDataSource(getConnection(), new MongoTransactionManager(getClient())),
-      new MongoTransactionManager(getClient())
-    )
-  );
+const createService = () => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  return new GetTranslationsService(DefaultTranslationsDataSource(transactionManager));
+};
 
 const fixtures: DBFixture = {
   translations_v2: [
