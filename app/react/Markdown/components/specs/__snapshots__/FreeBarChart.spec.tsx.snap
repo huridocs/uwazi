@@ -239,10 +239,10 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -434,10 +434,10 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -609,10 +609,10 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
@@ -784,10 +784,10 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         useTranslate3d={false}
         viewBox={
           Object {
-            "x1": 0,
-            "x2": 0,
-            "y1": 0,
-            "y2": 0,
+            "height": 0,
+            "width": 0,
+            "x": 0,
+            "y": 0,
           }
         }
         wrapperStyle={Object {}}
