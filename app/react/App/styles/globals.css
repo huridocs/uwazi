@@ -1591,18 +1591,6 @@ input:checked + .toggle-bg {
   width: 100%;
 }
 
-.w-1\/6 {
-  width: 16.666667%;
-}
-
-.w-2\/6 {
-  width: 33.333333%;
-}
-
-.w-1\/2 {
-  width: 50%;
-}
-
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -1824,6 +1812,10 @@ input:checked + .toggle-bg {
 
 .items-center {
   align-items: center;
+}
+
+.items-baseline {
+  align-items: baseline;
 }
 
 .justify-start {
@@ -2307,6 +2299,11 @@ input:checked + .toggle-bg {
 .bg-error-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 226 226 / var(--tw-bg-opacity));
+}
+
+.bg-error-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .bg-error-700 {
@@ -2971,10 +2968,6 @@ input:checked + .toggle-bg {
 
 .uppercase {
   text-transform: uppercase;
-}
-
-.capitalize {
-  text-transform: capitalize;
 }
 
 .leading-4 {

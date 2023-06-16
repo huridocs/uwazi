@@ -1,11 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React, { MouseEventHandler } from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
-const UserNameHeader = () => <Translate>Username</Translate>;
+const UsernameHeader = () => <Translate>Username</Translate>;
 const GroupNameHeader = () => <Translate>Name</Translate>;
 const ProtectionHeader = () => <Translate>Protection</Translate>;
 const RoleHeader = () => <Translate>Role</Translate>;
@@ -61,11 +62,22 @@ const GroupsPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['gr
   </div>
 );
 
+const UsernameCell = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['username']>) => {
+  const userIsBlocker = cell.row.original.accountLocked;
+  return (
+    <div className="flex gap-1 items-start">
+      <span>{cell.getValue()}</span>
+      {userIsBlocker && <LockClosedIcon className="w-4 text-red-600" />}
+    </div>
+  );
+};
+
 const EditButton = ({ onClick }: { onClick: MouseEventHandler }) => (
   <Button styling="outline" onClick={onClick} className="leading-4">
     <Translate>Edit</Translate>
   </Button>
 );
+
 const EditUserButton = ({ cell }: CellContext<ClientUserSchema, any>) => {
   const selectedUser = cell.row.original;
   return <EditButton onClick={() => cell.column.columnDef.meta?.action?.(selectedUser)} />;
@@ -80,7 +92,8 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
   const columnHelper = createColumnHelper<ClientUserSchema>();
   return [
     columnHelper.accessor('username', {
-      header: UserNameHeader,
+      header: UsernameHeader,
+      cell: UsernameCell,
       meta: { className: 'w-1/3' },
     }),
     columnHelper.accessor('using2fa', {
