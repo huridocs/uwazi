@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ClientSession, Collection } from 'mongodb';
