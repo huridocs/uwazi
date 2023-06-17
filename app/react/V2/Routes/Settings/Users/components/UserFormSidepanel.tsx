@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect, MultiSelectProps } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
@@ -176,6 +176,7 @@ const UserFormSidepanel = ({
                   <div className="flex gap-2 mb-1 font-bold align-middle">
                     <Translate>User Role</Translate>
                     <button type="button" onClick={() => setShowModal(true)}>
+                      <span className="sr-only">{t('System', 'Permission', null, false)}</span>
                       <QuestionMarkCircleIcon className="w-5" />
                     </button>
                   </div>

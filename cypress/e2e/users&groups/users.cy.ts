@@ -19,6 +19,16 @@ describe('Users', () => {
     cy.injectAxe();
   });
 
+  it('accesibility check', () => {
+    cy.get('caption').within(() => cy.contains('span', 'Users'));
+    cy.checkA11y();
+    cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
+    cy.contains('button', 'Add user').click();
+    cy.contains('h1', 'New user');
+    cy.checkA11y();
+    cy.contains('button', 'Cancel').click();
+  });
+
   it('should be sorted by name by default', () => {
     const titles = ['Carmen', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
     namesShouldMatch(titles);

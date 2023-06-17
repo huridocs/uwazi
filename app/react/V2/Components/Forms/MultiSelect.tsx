@@ -4,7 +4,7 @@ import { sortBy } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover, Transition } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string; selected?: boolean };
@@ -36,6 +36,7 @@ const MultiSelect = ({ label, options, disabled, onChange = () => {} }: MultiSel
             className="text-primary-700 disabled:text-primary-300"
             disabled={disabled}
           >
+            <span className="sr-only">{t('System', 'Select', null, false)}</span>
             <PlusCircleIcon className="w-6 text-lg" />
           </Popover.Button>
         </div>

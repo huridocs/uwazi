@@ -8,7 +8,7 @@ import {
   useReactTable,
   SortingState,
 } from '@tanstack/react-table';
-import { TableProps, CheckBoxHeader, CheckBoxCell, getIcon } from './TableTypes';
+import { TableProps, CheckBoxHeader, CheckBoxCell, getIcon } from './TableElements';
 
 const applyForSelection = (
   withSelection: any,
