@@ -25,6 +25,7 @@ describe('Users', () => {
     cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
+    cy.get('aside').toMatchImageSnapshot();
     cy.checkA11y();
     cy.contains('button', 'Cancel').click();
   });

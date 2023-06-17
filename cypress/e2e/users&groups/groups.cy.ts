@@ -18,7 +18,9 @@ describe('Groups', () => {
     cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
+    cy.get('aside').toMatchImageSnapshot();
     cy.checkA11y();
+    cy.contains('button', 'Cancel').click();
   });
 
   //   it('should be sorted by name by default', () => {
