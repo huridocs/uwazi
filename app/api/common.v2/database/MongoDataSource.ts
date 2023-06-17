@@ -30,7 +30,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     return paddedArgs;
   }
 
-  private scopeCollectionToTransaction(collection: Collection<CollectionSchema>) {
+  private scopeCollectionToSession(collection: Collection<CollectionSchema>) {
     if (this.collectionProxy) {
       return this.collectionProxy;
     }
@@ -57,7 +57,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   }
 
   protected getCollection() {
-    return this.scopeCollectionToTransaction(this.db.collection(this.collectionName));
+    return this.scopeCollectionToSession(this.db.collection(this.collectionName));
   }
 
   protected getSession() {
