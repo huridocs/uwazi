@@ -17,13 +17,13 @@ interface SettingsHeaderProps extends PropsWithChildren {
 }
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
-  <div className={`flex flex-col h-full ${className || ''}`} data-testid="settings-content">
+  <div className={`${className || ''} flex flex-col h-full `} data-testid="settings-content">
     {children}
   </div>
 );
 
 const SettingsHeader = ({ contextId, title, children, path, className }: SettingsHeaderProps) => (
-  <div className={`flex pt-5 pb-4 px-5 ${className || ''}`} data-testid="settings-content-header">
+  <div className={`${className || ''} flex pt-5 pb-4 px-5 `} data-testid="settings-content-header">
     <Link to="/settings" className="block lg:hidden">
       <ChevronLeftIcon className="w-8 stroke-1 lg:hidden" />
       <span className="sr-only">

@@ -24,7 +24,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
     await requestAction(
       I18NApi.addLanguage,
       new RequestParams(languages.filter(l => selected.includes(l.key))),
-      'Languages installed successfully'
+      <Translate>Languages installed successfully</Translate>
     );
   };
 
@@ -32,13 +32,16 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
     <Modal size="lg">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          <Translate>Install language(s)</Translate>
+          <Translate>Install Language(s)</Translate>
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="pt-4">
+        <Translate className="block px-2 text-justify text-gray-700">
+          This action may take some time while we add the extra language to the entire collection.
+        </Translate>
         <SearchMultiselect
-          className="overflow-y-scroll max-h-96"
+          className="pt-4 max-h-96 "
           items={items}
           onChange={s => setSelected(s)}
         />
