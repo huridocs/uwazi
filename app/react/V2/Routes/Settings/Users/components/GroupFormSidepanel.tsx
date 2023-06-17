@@ -72,6 +72,10 @@ const GroupFormSidepanel = ({
 
   const formSubmit = async (data: UserGroupSchema) => {
     const formData = new FormData();
+    const formattedData = {
+      ...data,
+      members: data.members.map(member => ({ refId: member.refId })),
+    };
 
     if (data._id) {
       formData.set('intent', 'edit-group');
@@ -79,7 +83,7 @@ const GroupFormSidepanel = ({
       formData.set('intent', 'new-group');
     }
 
-    formData.set('data', JSON.stringify(data));
+    formData.set('data', JSON.stringify(formattedData));
     fetcher.submit(formData, { method: 'post' });
     setShowSidepanel(false);
     reset(defaultValues);
