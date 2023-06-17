@@ -56,9 +56,9 @@ describe('MultiSelect', () => {
 
     it('should sort the option by label', () => {
       cy.get('[data-testid="multiselect-comp"] button').click();
-      cy.get('ul li').get('span').eq(1).should('contain', 'And another');
-      cy.get('ul li').get('span').eq(2).should('contain', 'Another');
-      cy.get('ul li').get('span').eq(19).should('contain', 'Someone');
+      cy.get('ul li').get('span').eq(2).should('contain', 'And another');
+      cy.get('ul li').get('span').eq(3).should('contain', 'Another');
+      cy.get('ul li').get('span').eq(20).should('contain', 'Someone');
     });
   });
 
