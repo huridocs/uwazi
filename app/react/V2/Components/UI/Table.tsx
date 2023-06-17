@@ -49,11 +49,14 @@ const Table = <T,>({
     [columns, enableSelection]
   );
 
-  const memoizedData = useMemo<T[]>(() => data, [data]);
+  const preparedData = useMemo<T[]>(() => {
+    setRowSelection({});
+    return data;
+  }, [data]);
 
   const table = useReactTable({
     columns: memoizedColumns,
-    data: memoizedData,
+    data: preparedData,
     initialState,
     state: {
       sorting,
@@ -75,7 +78,7 @@ const Table = <T,>({
   }, [onSelection, rowSelection, table]);
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="overflow-x-auto relative">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
