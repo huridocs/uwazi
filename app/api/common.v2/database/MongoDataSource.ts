@@ -2,11 +2,6 @@ import { Collection, Db, Document } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
-type SessionScopedCollection<Schema extends Document> = Omit<
-  Collection<Schema>,
-  Exclude<keyof Collection<Schema>, typeof MongoDataSource['sessionScopedMethods'][number]>
->;
-
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
 
@@ -21,62 +16,40 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     this.transactionManager = transactionManager;
   }
 
-  static sessionScopedMethods = [
-    'countDocuments',
-    'aggregate',
-    'insertOne',
-    'insertMany',
-    'find',
-    'findOne',
-    'deleteMany',
-    'bulkWrite',
-  ] as const;
-
-  private appendSessionToOptions(args: any[]) {
-    const optionsArgumentPosition = 1;
-    const minArgumentsLength = optionsArgumentPosition + 1;
-    const missingArguments = minArgumentsLength - args.length;
+  private appendSessionToLastArgument(args: unknown[], argumentsLength: number) {
+    const missingArguments = argumentsLength - args.length;
 
     const paddedArgs =
       missingArguments > 0 ? args.concat(Array(missingArguments).fill(undefined)) : args;
 
-    paddedArgs[optionsArgumentPosition] = {
-      ...paddedArgs[optionsArgumentPosition],
+    paddedArgs[argumentsLength - 1] = {
+      ...(paddedArgs[argumentsLength - 1] ?? {}),
       session: this.transactionManager.getSession(),
     };
 
     return paddedArgs;
   }
 
-  private scopeCollectionToTransaction(
-    collection: Collection<CollectionSchema>
-  ): SessionScopedCollection<CollectionSchema> {
+  private scopeCollectionToTransaction(collection: Collection<CollectionSchema>) {
     if (this.collectionProxy) {
       return this.collectionProxy;
     }
 
     const self = this;
-
     this.collectionProxy = new Proxy<Collection<CollectionSchema>>(collection, {
       get(target, property, receiver) {
-        if (
-          typeof property === 'string' &&
-          MongoDataSource.sessionScopedMethods.includes(
-            property as keyof SessionScopedCollection<CollectionSchema>
-          )
-        ) {
-          const original = Reflect.get(target, property, receiver);
+        const original = Reflect.get(target, property, receiver);
 
-          if (typeof original === 'function') {
-            return function proxiedFunction(...args: any[]) {
-              return original.apply(receiver, self.appendSessionToOptions(args));
-            };
-          }
-
-          throw new Error(`Member to scope is not a function: ${property}`);
+        if (typeof original === 'function') {
+          return function proxiedFunction(...args: unknown[]) {
+            return original.apply(
+              receiver,
+              self.appendSessionToLastArgument(args, original.length)
+            );
+          };
         }
 
-        return Reflect.get(target, property, receiver);
+        return original;
       },
     });
 

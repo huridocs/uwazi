@@ -5,8 +5,8 @@ import {
   UpdateFilter,
   CollationOptions,
   UpdateManyModel,
-  Collection,
   Document,
+  Collection,
 } from 'mongodb';
 
 class BulkWriteStream<CollSchema extends Document> {
