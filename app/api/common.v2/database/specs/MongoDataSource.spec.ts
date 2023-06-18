@@ -66,14 +66,19 @@ describe('session scoped collection', () => {
     const dataSource1 = new DataSource(getConnection(), transactionManager1);
     const collection = dataSource1.collection();
 
-    const allowListed = Object.keys(MongoDataSource.scopedMethods);
-    Object.keys(collection).forEach(member => {
-      // @ts-ignore
+    const allowListed = Object.keys(MongoDataSource.scopedMethods) as Array<
+      keyof typeof collection
+    >;
+
+    allowListed.forEach(member => {
       const collectionMember = collection[member];
-      if (typeof collectionMember === 'function') {
-        expect(collectionMember.name).toBe(
-          allowListed.includes(member) ? 'proxiedFunction' : member
-        );
+      const optionsArgPos = MongoDataSource.scopedMethods[member];
+      if (optionsArgPos !== null) {
+        expect(collectionMember).not.toBe(undefined);
+        expect(typeof collectionMember).toBe('function');
+        expect((<Function>collectionMember).name).toBe('proxiedFunction');
+      } else {
+        expect(typeof collectionMember).not.toBe('function');
       }
     });
   });
