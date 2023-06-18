@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { ClientSession, Collection } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 import { getClient, getConnection } from '../getConnectionForCurrentTenant';
@@ -23,8 +22,8 @@ class DataSource extends MongoDataSource<{ data: string }> {
     await this.getCollection().insertOne({ data: 'some data' });
   }
 
-  withCollection<T>(cb: (c: Collection<{ data: string }>) => T) {
-    return cb(this.getCollection());
+  collection() {
+    return this.getCollection();
   }
 }
 
@@ -55,91 +54,27 @@ describe('session scoped collection', () => {
     ]);
   });
 
-  it('should always return the same proxy', () => {
+  it('should always return the same instance of the collection', () => {
     const transactionManager = new MongoTransactionManager(getClient());
     const dataSource = new DataSource(getConnection(), transactionManager);
 
-    const instance1 = dataSource.withCollection(collection => collection);
-    const instance2 = dataSource.withCollection(collection => collection);
-
-    expect(instance1).toBe(instance2);
+    expect(dataSource.collection()).toBe(dataSource.collection());
   });
 
-  it('should affect all the methods', () => {
+  it('should only affect the allow-listed functions', () => {
     const transactionManager1 = new MongoTransactionManager(getClient());
     const dataSource1 = new DataSource(getConnection(), transactionManager1);
+    const collection = dataSource1.collection();
 
-    dataSource1.withCollection(collection => {
-      Object.keys(dataSource1).forEach(member => {
-        // @ts-ignore
-        const collectionMember = collection[member];
-        if (typeof collectionMember === 'function') {
-          expect(collectionMember.name).toBe('proxiedFunction');
-        }
-      });
+    const allowListed = MongoDataSource.sessionScopedMethods;
+    Object.keys(collection).forEach(member => {
+      // @ts-ignore
+      const collectionMember = collection[member];
+      if (typeof collectionMember === 'function') {
+        expect(collectionMember.name).toBe(
+          allowListed.includes(member as keyof typeof collection) ? 'proxiedFunction' : member
+        );
+      }
     });
   });
-
-  it('should not affect other members', () => {
-    const transactionManager1 = new MongoTransactionManager(getClient());
-    const dataSource1 = new DataSource(getConnection(), transactionManager1);
-    dataSource1.withCollection(collection => {
-      expect(collection.collectionName).toBe('collection');
-      expect(collection.dbName).toBe(testingDB.dbName);
-      expect(typeof collection.namespace).toBe('string');
-    });
-  });
-
-  const cases = [
-    {
-      method: (arg1: any) => [arg1],
-      call: (collection: any) => collection.testMethod(),
-      expected: (session: ClientSession) => [{ session }],
-    },
-    {
-      method: (arg1: any) => [arg1],
-      call: (collection: any) => collection.testMethod({ someOption: false }),
-      expected: (session: ClientSession) => [{ someOption: false, session }],
-    },
-    {
-      method: (arg1: any, arg2: any) => [arg1, arg2],
-      call: (collection: any) => collection.testMethod(1),
-      expected: (session: ClientSession) => [1, { session }],
-    },
-    {
-      method: (arg1: any, arg2: any) => [arg1, arg2],
-      call: (collection: any) => collection.testMethod(1, { someOption: false }),
-      expected: (session: ClientSession) => [1, { someOption: false, session }],
-    },
-    {
-      method: (arg1: any, arg2: any, arg3: any) => [arg1, arg2, arg3],
-      call: (collection: any) => collection.testMethod(1, 2),
-      expected: (session: ClientSession) => [1, 2, { session }],
-    },
-    {
-      method: (arg1: any, arg2: any, arg3: any) => [arg1, arg2, arg3],
-      call: (collection: any) => collection.testMethod(1, 2, { someOption: false }),
-      expected: (session: ClientSession) => [1, 2, { someOption: false, session }],
-    },
-  ];
-
-  it.each(cases)(
-    'should add the session in the last parameter',
-    async ({ method, call, expected }) => {
-      const transactionManager1 = new MongoTransactionManager(getClient());
-      const dataSource1 = new DataSource(getConnection(), transactionManager1);
-
-      const result = await transactionManager1.run(async () =>
-        dataSource1.withCollection(async collection => {
-          Object.assign(collection, {
-            testMethod: method,
-          });
-
-          return call(collection);
-        })
-      );
-
-      expect(result).toEqual(expected(transactionManager1.getSession()!));
-    }
-  );
 });
