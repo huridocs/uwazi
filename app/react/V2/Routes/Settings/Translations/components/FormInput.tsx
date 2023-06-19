@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { Translate } from 'app/I18N';
-import { InputField } from '../Forms';
+import { InputField } from 'V2/Components/Forms';
 
 type fromPropsType = {
   register: UseFormRegister<any>;
@@ -25,17 +25,12 @@ const FormInput = (data: any, formProps: fromPropsType) => {
         hideLabel
         disabled={submitting}
         clearFieldAction={reset}
-        hasErrors={hasErrors}
+        errorMessage={hasErrors ? <Translate>This field is required</Translate> : ''}
         onChange={onChange}
         onBlur={onBlur}
         name={name}
         ref={ref}
       />
-      {hasErrors && (
-        <div className="mt-2 font-bold text-error-700">
-          <Translate>This field is required</Translate>
-        </div>
-      )}
     </div>
   );
 };
