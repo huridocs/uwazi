@@ -14,6 +14,7 @@ const newKeys = [
   { key: 'User Action' },
   { key: 'New user' },
   { key: 'Usernames cannot have spaces' },
+  { key: 'Account locked' },
 ];
 
 const deletedKeys = [
