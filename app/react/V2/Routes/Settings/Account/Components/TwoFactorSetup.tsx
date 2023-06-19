@@ -77,7 +77,8 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
               <Translate>
                 Download a third-party authenticator app from your mobile store.
               </Translate>
-              <span no-translate className="text-sm italic">
+              &nbsp;
+              <span no-translate className="italic text-gray-500">
                 (Google Authenticator, LastPass Authenticator, Microsoft Authenticator, Authy, etc.)
               </span>
             </li>
@@ -87,13 +88,13 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
                 or by inserting the provided key.
               </Translate>
             </li>
-            <li className="mb-4">
-              <Translate>
-                Instructions on how to achieve this will vary according to the app used, please
-                refer to the app's documentation.
-              </Translate>
-            </li>
           </ol>
+          <p>
+            <Translate className="italic text-gray-500">
+              Instructions on how to achieve this will vary according to the app used, please refer
+              to the app's documentation.
+            </Translate>
+          </p>
         </Card>
         <Card className="mb-4 sm:col-span-1" title={<Translate>QR Code</Translate>}>
           <div className="flex justify-center">
@@ -116,7 +117,7 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
                 <Translate className="block">
                   You can also enter this secret key into your Authenticator app.
                 </Translate>
-                <Translate className="block italic">
+                <Translate className="block italic text-gray-500">
                   *please keep this key secret and don't share it.
                 </Translate>
               </>
