@@ -21,5 +21,5 @@ export interface TranslationsDataSource {
 
   updateValue(key: string, contextId: string, language: string, value: string): Promise<void>;
 
-  calculateUnexistentKeys(keys: string[]): Promise<string[]>;
+  calculateNonexistentKeys(keys: string[]): Promise<string[]>;
 }

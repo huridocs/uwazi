@@ -32,17 +32,16 @@ export class MongoTranslationsDataSource
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     const stream = this.createBulkStream();
 
-    await Promise.all(
-      items.map(async item =>
-        stream.updateOne(
-          { language: item.language, key: item.key, 'context.id': item.context.id },
-          { $set: item },
-          true
-        )
-      )
-    );
-    await stream.flush();
+    await items.reduce(async (previous, item) => {
+      await previous;
+      await stream.updateOne(
+        { language: item.language, key: item.key, 'context.id': item.context.id },
+        { $set: item },
+        true
+      );
+    }, Promise.resolve());
 
+    await stream.flush();
     return translations;
   }
 
@@ -135,7 +134,7 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async calculateUnexistentKeys(keys: string[]) {
+  async calculateNonexistentKeys(keys: string[]) {
     const result = this.getCollection().aggregate(
       [
         { $match: { key: { $in: keys } } },
