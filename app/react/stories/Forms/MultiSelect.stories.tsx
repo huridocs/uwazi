@@ -16,7 +16,12 @@ const MultiSelectStory: Story = {
     <Provider store={createStore()}>
       <div className="tw-content">
         <div className="md:w-1/2">
-          <MultiSelect label={args.label} options={args.options} onOptionSelected={() => {}} />
+          <MultiSelect
+            label={args.label}
+            options={args.options}
+            onOptionSelected={() => {}}
+            placeholder={args.placeholder}
+          />
         </div>
       </div>
     </Provider>
@@ -33,6 +38,7 @@ const Basic: Story = {
       { label: 'Another name', value: 'another name' },
       { label: 'And another', value: 'and another' },
     ],
+    placeholder: 'No groups',
   },
 };
 

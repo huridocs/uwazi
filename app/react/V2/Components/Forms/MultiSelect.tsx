@@ -10,6 +10,7 @@ interface MultiSelectProps {
   label: String | React.ReactNode;
   options: Option[];
   onOptionSelected: (options: Option[]) => void;
+  placeholder?: String | React.ReactNode;
 }
 
 interface ContextMenuProps {
@@ -27,7 +28,6 @@ const ContextMenuBase = (
     <ul
       ref={ref}
       style={{
-        minWidth: '225px',
         position: 'absolute',
         top: `${location.y}px`,
         left: `${location.x}px`,
@@ -37,22 +37,24 @@ const ContextMenuBase = (
     >
       {options.map((option: ContextOption) => (
         <li key={option.value} className="py-1">
-          <Checkbox
-            checked={option.selected}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              // @ts-ignore
-              const isChecked = e.target.checked;
-              const currentOptions = [...options].map(opt => {
-                if (opt.value === option.value) {
-                  return { ...opt, selected: isChecked };
-                }
-                return opt;
-              });
+          <label className="cursor-pointer">
+            <Checkbox
+              checked={option.selected}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                // @ts-ignore
+                const isChecked = e.target.checked;
+                const currentOptions = [...options].map(opt => {
+                  if (opt.value === option.value) {
+                    return { ...opt, selected: isChecked };
+                  }
+                  return opt;
+                });
 
-              onOptionSelected(currentOptions);
-            }}
-          />
-          <span className="ml-2">{option.label}</span>
+                onOptionSelected(currentOptions);
+              }}
+            />
+            <span className="ml-2">{option.label}</span>
+          </label>
         </li>
       ))}
     </ul>
@@ -63,16 +65,36 @@ const ContextMenuBase = (
 
 const ContextMenu = React.forwardRef(ContextMenuBase);
 
-const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => {
+const MultiSelect = ({
+  label,
+  options,
+  onOptionSelected,
+  placeholder = 'No options',
+}: MultiSelectProps) => {
   const [innerOptions, setInnerOptions] = useState<ContextOption[]>([]);
   const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [menu, showMenu] = useState(false);
   const contextMenuRef = useRef<HTMLLIElement>();
+  const buttonRef = useRef<HTMLButtonElement>();
   const MENU_OFFSET = 15;
 
   useEffect(() => {
     setInnerOptions(options.map(opt => ({ ...opt, selected: false })));
   }, [options]);
+
+  useEffect(() => {
+    const closeMenuOnClickOutside = (e: MouseEvent) => {
+      if (
+        !contextMenuRef.current?.contains(e.target as Node) &&
+        !buttonRef.current?.contains(e.target as Node)
+      ) {
+        showMenu(false);
+      }
+    };
+
+    document.addEventListener('click', closeMenuOnClickOutside);
+    return () => document.removeEventListener('click', closeMenuOnClickOutside);
+  }, []);
 
   const getSelectedOptions = () => innerOptions.filter(opt => opt.selected);
 
@@ -83,6 +105,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
         <div className="left-0">
           <button
             type="button"
+            ref={buttonRef}
             className="text-indigo-700"
             onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
               setTimeout(() => {
@@ -117,12 +140,13 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap p-2 min-h-fit">
+      <div className="flex flex-wrap gap-2 px-5 py-4 min-h-fit">
         {getSelectedOptions().length > 0 ? (
           getSelectedOptions().map((option: Option) => (
-            <Pill color="gray" key={option.value} className="flex flex-row mb-2">
+            <Pill color="gray" key={option.value} className="flex flex-row">
               <span className="flex items-center">{option.label}</span>
               <button
+                type="button"
                 className="content-center justify-center ml-1 font-bold text-gray-400"
                 onClick={() => {
                   setInnerOptions(
@@ -138,7 +162,7 @@ const MultiSelect = ({ label, options, onOptionSelected }: MultiSelectProps) => 
             </Pill>
           ))
         ) : (
-          <Translate>No options</Translate>
+          <Translate className="text-gray-500">{placeholder}</Translate>
         )}
       </div>
       <ContextMenu
