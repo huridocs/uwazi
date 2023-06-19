@@ -57,6 +57,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
 import OneUpReview from './Review/OneUpReview';
+import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
 const getRoutesLayout = (
   settings: settingsType | undefined,
@@ -139,6 +140,12 @@ const getRoutesLayout = (
       <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
       <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
+      <Route
+        path="newrelmigration"
+        element={
+          settings?.features?.newRelationships ? <NewRelMigrationDashboard /> : <GeneralError />
+        }
+      />
     </Route>
   </Route>
 );

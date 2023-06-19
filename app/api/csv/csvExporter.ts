@@ -69,7 +69,7 @@ const notDuplicated = (collection: any) => (item: any) =>
   collection.findIndex((i: any) => Object.keys(i).every(key => i[key] === item[key])) < 0;
 
 const excludedProperties = (property: PropertySchema) =>
-  !['geolocation', 'preview', 'nested'].includes(property.type);
+  !['preview', 'nested'].includes(property.type);
 
 export const processHeaders = (templatesCache: TemplatesCache): ExportHeader[] =>
   Object.values(templatesCache).reduce(
@@ -104,23 +104,10 @@ export const prependCommonHeaders = (headers: ExportHeader[]) =>
 
 export const concatCommonHeaders = (headers: ExportHeader[]) =>
   headers.concat([
-    { label: 'Geolocation', name: 'geolocation', common: true },
     { label: 'Documents', name: 'documents', common: true },
     { label: 'Attachments', name: 'attachments', common: true },
     { label: 'Published', name: 'published', common: true },
   ]);
-
-export const processGeolocationField = (row: any, rowTemplate: TemplateSchema) => {
-  const geolocationField: PropertySchema | undefined = rowTemplate.properties?.find(
-    property => property.type === 'geolocation'
-  );
-
-  if (geolocationField && geolocationField.name && row.metadata[geolocationField.name]) {
-    return formatters.geolocation(row.metadata[geolocationField.name], {});
-  }
-
-  return '';
-};
 
 export const processCommonField = (
   headerName: string,
@@ -136,8 +123,6 @@ export const processCommonField = (
       return rowTemplate.name;
     case 'creationDate':
       return formatCreationDate(row, options);
-    case 'geolocation':
-      return processGeolocationField(row, rowTemplate);
     case 'documents':
       return formatDocuments(row);
     case 'attachments':

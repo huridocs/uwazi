@@ -86,7 +86,7 @@ class RelationshipMetadata extends Component {
       <MetadataForm
         model="relationships.metadata"
         initialTemplateId={this.props.entity.template}
-        templateId={this.props.formState.template}
+        templateId={this.props.formMetadata.template}
         onSubmit={this.saveEntity}
         changeTemplate={this.props.changeTemplate}
         highlightedProps={this.state.copyFromProps}
@@ -97,7 +97,7 @@ class RelationshipMetadata extends Component {
       <div className="tab-content tab-content-visible">
         {form}
         <CopyFromEntity
-          originalEntity={this.props.formState}
+          originalEntity={this.props.formMetadata}
           templates={this.props.templates}
           onSelect={this.onCopyFromSelect}
           formModel="relationships.metadata"
@@ -132,6 +132,7 @@ class RelationshipMetadata extends Component {
           data={Immutable.fromJS(this.props.entity)}
           delete={this.deleteDocument}
           formStatePath="relationships.metadata"
+          formState={this.props.formState}
           entityBeingEdited={this.props.entityBeingEdited}
           copyFrom={this.toggleCopyFrom}
           hideDelete={this.props.hubsBeingEdited}
@@ -187,6 +188,7 @@ RelationshipMetadata.defaultProps = {
 RelationshipMetadata.propTypes = {
   selectedConnection: PropTypes.bool,
   entity: PropTypes.object.isRequired,
+  formMetadata: PropTypes.object.isRequired,
   formState: PropTypes.object.isRequired,
   unselectConnection: PropTypes.func.isRequired,
   entityBeingEdited: PropTypes.bool,
@@ -223,7 +225,8 @@ const mapStateToProps = state => {
     entityBeingEdited,
     hubsBeingEdited: Boolean(state.relationships.hubActions.get('editing')),
     templates: state.templates,
-    formState: state.relationships.metadata,
+    formMetadata: state.relationships.metadata,
+    formState: state.relationships.formState,
     hubIndex: state.relationships.hubActions.getIn(['addTo', 'hubIndex']),
     rightRelationshipIndex: state.relationships.hubActions.getIn([
       'addTo',
