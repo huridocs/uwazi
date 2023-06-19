@@ -24,7 +24,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
     cy.viewport(450, 650);
     mount(
       <Provider store={createStore()}>
-        <div className="tw-content p-2">
+        <div className="p-2 tw-content">
           <SearchMultiselect
             items={pizzas}
             onChange={selectedItems => {
@@ -43,7 +43,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
   });
 
   it('should filter the list of options', () => {
-    cy.get('input').type('chicken');
+    cy.get('input[type=text]').type('chicken');
     cy.contains('BBQ Chicken').should('be.visible');
     cy.contains('Buffalo Chicken').should('be.visible');
     cy.contains('Chicken Bacon Ranch').should('be.visible');
@@ -52,11 +52,11 @@ describe('SearchMultiSelect.cy.tsx', () => {
   });
 
   it('should select options', () => {
-    cy.get('input').type('chicken');
+    cy.get('input[type=text]').type('chicken');
     cy.contains('BBQ Chicken').click();
 
     cy.get('[data-testid="clear-field-button"]').click();
-    cy.get('input').type('margherita');
+    cy.get('input[type=text]').type('margherita');
     cy.contains('Margherita').click();
 
     cy.get('[data-testid="clear-field-button"]').click();
@@ -65,5 +65,37 @@ describe('SearchMultiSelect.cy.tsx', () => {
     cy.get('ul').then(() => {
       expect(selected).to.deep.equal(['BQC', 'MGT']);
     });
+  });
+
+  it('should show all the options with their status', () => {
+    const items: string[] = [];
+    cy.get('input[type="radio"]:checked').siblings().contains('All');
+    cy.get('input[type="radio"]').eq(1).should('be.disabled');
+    cy.get('[data-testid="pill-comp"]').eq(3).click();
+    cy.get('[data-testid="pill-comp"]').eq(6).click();
+    cy.get('li:visible').each($li => items.push($li.text()));
+    cy.wrap(items).should('deep.equal', [
+      'MargheritaSelect',
+      'PepperoniSelect',
+      'HawaiianSelect',
+      'VegetarianSelected',
+      'Meat LoversSelect',
+      'BBQ ChickenSelect',
+      'MushroomSelected',
+      'Four CheeseSelect',
+      'Buffalo ChickenSelect',
+      'Chicken Bacon RanchSelect',
+      'Chicken AlfredoSelect',
+    ]);
+  });
+
+  it('should show only the selected options', () => {
+    const selectedItems: string[] = [];
+    cy.get('[data-testid="pill-comp"]').eq(3).click();
+    cy.get('[data-testid="pill-comp"]').eq(6).click();
+
+    cy.get('input[type="radio"]').eq(1).click();
+    cy.get('li:visible').each($li => selectedItems.push($li.text()));
+    cy.wrap(selectedItems).should('deep.equal', ['VegetarianSelected', 'MushroomSelected']);
   });
 });

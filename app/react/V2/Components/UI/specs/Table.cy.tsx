@@ -82,5 +82,33 @@ describe('Table', () => {
       cy.contains('p', 'Selected items for Table B: 2');
       cy.contains('p', 'Selections of Table B: Entity 2, Entity 3,');
     });
+
+    it('should clear selected items when data changes', () => {
+      mount(<WithCheckboxes />);
+
+      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+
+      cy.get('tbody')
+        .eq(1)
+        .within(() => {
+          cy.get('input[type="checkbox"]').eq(0).check();
+          cy.get('input[type="checkbox"]').eq(2).check();
+        });
+
+      cy.contains('button', 'Update table data').click();
+
+      cy.contains('p', 'Selections of Table A: Entity 2, Entity 1, Entity 3,');
+      cy.contains('p', 'Selections of Table B: Entity 2, Entity 3,').should('not.exist');
+    });
+
+    it('should not clear selections if data is not changed', () => {
+      mount(<WithCheckboxes />);
+      cy.get('table')
+        .eq(1)
+        .within(() => cy.get('thead > tr > th').eq(0).click());
+
+      cy.contains('button', 'Reset table data').click();
+      cy.contains('p', 'Selections of Table B: Entity 2, Entity 1, Entity 3,');
+    });
   });
 });
