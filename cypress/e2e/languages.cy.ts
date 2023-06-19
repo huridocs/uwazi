@@ -44,6 +44,16 @@ describe('Languages', () => {
     });
   });
 
+  describe('Cancel an action', () => {
+    it('should allow to cancel an action', () => {
+      cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
+      cy.contains('tr', 'Basque').contains('Uninstall').click();
+      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.contains('[data-testid=modal] button', 'No, cancel').click();
+      cy.contains('Basque').should('exist');
+    });
+  });
+
   describe('Uninstall Language', () => {
     it('should uninstall the language and remove it from the list', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
@@ -55,7 +65,6 @@ describe('Languages', () => {
       cy.contains('Basque').should('not.exist');
     });
   });
-
   describe('Set as default', () => {
     it('should set the language as default', () => {
       cy.intercept('POST', 'api/translations/setasdeafult').as('setDefault');

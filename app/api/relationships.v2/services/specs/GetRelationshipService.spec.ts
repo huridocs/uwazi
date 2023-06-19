@@ -65,7 +65,6 @@ const createService = (_user?: User) => {
   const entitiesDS = new MongoEntitiesDataSource(
     connection,
     templatesDS,
-    relationshipsDS,
     settingsDS,
     transactionManager
   );

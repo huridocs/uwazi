@@ -30,6 +30,14 @@ interface CustomColumn {
   className?: string;
 }
 
+declare module '@tanstack/table-core' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    action?: Function;
+    className?: string;
+  }
+}
+
 declare module 'react-table' {
   export interface Hooks<D extends object = {}>
     extends UseExpandedHooks<D>,
