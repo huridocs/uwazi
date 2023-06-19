@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { createRef, useEffect, useRef, useState } from 'react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { Checkbox } from 'flowbite-react';
 import { Translate } from 'app/I18N';
@@ -75,7 +75,7 @@ const MultiSelect = ({
   const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [menu, showMenu] = useState(false);
   const contextMenuRef = useRef<HTMLLIElement>();
-  const buttonRef = useRef<HTMLButtonElement>();
+  const buttonRef = createRef<HTMLButtonElement>();
   const MENU_OFFSET = 15;
 
   useEffect(() => {
