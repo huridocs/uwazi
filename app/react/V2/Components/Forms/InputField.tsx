@@ -2,6 +2,7 @@ import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 import { isString } from 'lodash';
+import { InputError } from './InputError';
 
 interface InputFieldProps {
   id: string;
@@ -45,7 +46,7 @@ const InputField = React.forwardRef(
     }: InputFieldProps,
     ref: Ref<any>
   ) => {
-    let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500';
+    let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500 bg-gray-50';
     let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
     let labelStyles = 'block mb-2 text-sm font-medium text-gray-700';
 
@@ -76,7 +77,7 @@ const InputField = React.forwardRef(
             ref={ref}
             disabled={disabled}
             value={value}
-            className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
+            className={`${fieldStyles} disabled:text-gray-500 rounded-lg block flex-1 w-full text-sm p-2.5`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (
@@ -92,9 +93,7 @@ const InputField = React.forwardRef(
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}
-          {errorMessage && (
-            <p className="mt-2 text-sm text-error-600">{renderChild(errorMessage)}</p>
-          )}
+          {errorMessage && <InputError>{errorMessage}</InputError>}
         </div>
       </div>
     );
