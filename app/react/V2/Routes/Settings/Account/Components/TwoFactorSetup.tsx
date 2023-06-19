@@ -139,7 +139,7 @@ const TwoFactorSetup = ({ closePanel }: TwoFactorSetupProps) => {
           />
           {tokenError && (
             <p className="mt-2 text-sm text-error-600">
-              The token does not validate against the secret key
+              <Translate>The token does not validate against the secret key</Translate>
             </p>
           )}
         </Card>

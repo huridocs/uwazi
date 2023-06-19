@@ -103,7 +103,9 @@ const Account = () => {
                     type="password"
                   />
                   {errors.passwordConfirm && isSubmitted && (
-                    <p className="mt-2 text-sm text-error-600">Passwords do not match.</p>
+                    <p className="mt-2 text-sm text-error-600">
+                      <Translate>Passwords do not match</Translate>
+                    </p>
                   )}
                 </div>
                 <div className="sm:col-span-1">
