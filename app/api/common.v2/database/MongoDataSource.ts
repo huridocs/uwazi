@@ -76,10 +76,12 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   private appendSessionToOptions(args: any[], method: keyof MethodsOptionsArgPosition) {
     const optionsPosition = MongoDataSource.scopedMethods[method]! - 1;
     const minArgumentsLength = optionsPosition;
-    const missingArguments = minArgumentsLength - args.length;
+    const missingArgumentsLength = minArgumentsLength - args.length;
 
     const paddedArgs =
-      missingArguments > 0 ? args.concat(Array(missingArguments).fill(undefined)) : args;
+      missingArgumentsLength > 0
+        ? args.concat(Array(missingArgumentsLength).fill(undefined))
+        : args;
 
     paddedArgs[optionsPosition] = {
       ...paddedArgs[optionsPosition],
