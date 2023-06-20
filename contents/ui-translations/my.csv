@@ -1,10 +1,12 @@
-Key,Burmese
+key,value
 % of sentences above threshold,အနိမ့်ဆုံး သတ်မှတ်ချက် အထက်ရှိ ဝါကျ % (ရာခိုင်နှုန်း)
 (view page),(စာမျက်နှာ ကြည့်ရန်)
+*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2FA Enabled,2FA Enabled
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,ထုတ်ပေးသည့် ID သည် ပုံသေမူလ ခေါင်းစဉ် ဖြစ်ပါမည်။
 Accept,လက်ခံမည်
@@ -12,13 +14,16 @@ Accepted suggestion on entity,Accepted suggestion on entity
 Account,အကောင့်
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
+Account updated,Account updated
 Accuracy,Accuracy
 Action,လုပ်ဆောင်ချက်
 Activate this feature for enhanced account security,အကောင့်လုံခြုံရေး ပိုမိုကောင်းမွန်ခိုင်မာစေရန် ဤအပြင်အဆင်ကို သက်ဝင်လုပ်ဆောင်ပါ
+Activated,Activated
 Active languages,Active languages
 Activity log,လုပ်ဆောင်မှု မှတ်တမ်း
 Add,ထည့်ရန်
 Add / remove favorite,အကြိုက်ဆုံးကို ထည့်ရန် / ဖယ်ရှားရန်
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,ရက်စွဲ ထည့်ရန်
 Add entities / documents,ဖြည့်သွင်းချက်များ / စာရွက်စာတမ်းများ ထည့်ရန်
 Add file,ဖိုင် ထည့်ရန်
@@ -107,6 +112,7 @@ malicious content."
 Cards,ကတ်များ
 Cards view,ကတ်မြင်ကွင်း
 Change password,စကားဝှက် ပြောင်းရန်
+Change Password,Change Password
 Change will take effect after saving the template,ပုံစံပြားကို သိမ်းဆည်းပြီးနောက် အပြောင်းအလဲ စတင်သက်ရောက်ပါမည်
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -148,6 +154,7 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Confirm publish multiple items,အရာများစွာကို တင်ရန် အတည်ပြုပါ
 Confirm suggestion acceptance,Confirm suggestion acceptance
@@ -165,6 +172,7 @@ Copy From,ဤမှ ကူးပါ
 Copy Highlighted,အရောင်ခြယ်ထားသည်ကို ကူးပါ
 Copy link,လင့်ခ်ကို ကူးပါ
 Copy properties to this entity from,ဤဖြည့်သွင်းချက်သို့ ထူးခြားချက်များကို ဤမှ ကူးပါ
+Copy to clipboard,Copy to clipboard
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -255,6 +263,7 @@ documents to be reviewed,ပြန်လည်သုံးသပ်ရန် စ
 Documents to be reviewed,ပြန်လည်သုံးသပ်ရန် စာရွက်စာတမ်းများ
 documents.,စာရွက်စာတမ်းများ။
 Download,ဒေါင်းလုဒ်လုပ်ရန်
+Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
 Drag items here,ဖိုင်များကို ဒီဘက် ဆွဲရွှေ့ပါ
 Drag properties here,ထူးခြားချက်များကို ဒီဘက် ဆွဲရွှေ့ပါ
@@ -282,7 +291,9 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable,Enable
 Enable this page to be used as an entity view page:,ဖြည့်သွင်းချက် ကြည့်ရန်အတွက် စာမျက်နှာအဖြစ် သုံးရန် ဤစာမျက်နှာကို ဖွင့်ထားပါ-
+Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter the 6-digit verification code generated by your Authenticator app:,သင့်  Authenticator အက်ပ်မှ ထုတ်လုပ်ပေးသည့် ဂဏန်း 6 လုံးပါ မှန်ကန်ကြောင်း စစ်ဆေးသည့်ကုဒ်ကို ရိုက်ထည့်ပါ-
 Entities,ဖြည့်သွင်းချက်များ
 entities,ဖြည့်သွင်းချက်များ
@@ -334,6 +345,7 @@ From all templates,From all templates
 Full edit mode,အပြည့်အဝ တည်းဖြတ် မုဒ်
 Full width,Full width
 General,ယေဘုယျ
+General Information,General Information
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
@@ -378,6 +390,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator အက်ပ်ကို သင့်မိုဘိုင်းစက်တွင် တပ်ဆင်ပါ
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -494,6 +507,7 @@ New entity,ထည့်သွင်းချက်အသစ်
 New group,New group
 New language added,ဘာသာစကားအသစ် ထည့်ပြီး
 New password,စကားဝှက်အသစ်
+New Password,New Password
 New relationship type,New relationship type
 New relationships group,ဆက်နွှယ်မှုအသစ်များ အုပ်စု
 Next,ရှေ့သို့
@@ -560,6 +574,7 @@ Password changed success,Password changed success
 Password Error,စကားဝှက် မှားနေသည်။
 Password is too long,စကားဝှက် ရှည်လွန်းသည်
 Password updated,စကားဝှက် အပ်ဒိတ်လုပ်ပြီး
+Passwords do not match,Passwords do not match
 Paste URL here,Paste URL here
 PDF,PDF
 per page,per page
@@ -616,6 +631,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,ထုတ်ဝေရန်
 Published,ထုတ်ဝေပြီး
+QR Code,QR Code
 Query,မေးခွန်း
 Quick labeling for,အမြန် တံဆိပ်တပ်အမှတ်အသားပြုခြင်း
 RAW,RAW
@@ -680,6 +696,7 @@ Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြု
 Search Tips: proximity,ရှာဖွေမှု အကြံပြုချက်များ- နီးစပ်မှု
 Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက်များ- ပါဝင်မှု
 secret key recommendation,(please keep this key secret and don't share it):
+Secret keys,Secret keys
 Select,Select
 Select all,အားလုံးကို ရွေးရန်
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
@@ -776,6 +793,7 @@ The current model was trained at,လက်ရှိ မော်ဒယ်ကိ�
 The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-
 The request could not be processed.,The request could not be processed.
 The template contains errors,ပုံစံပြားတွင် ချွတ်ယွင်းချက်များ ရှိနေသည်
+The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,ဖြည့်သွင်းချက် မြင်ကွင်းအတွက် ဖွင့်ထားသော စာမျက်နှာများ မရှိပါ
 There are no untranslated terms,There are no untranslated terms
@@ -832,6 +850,7 @@ Translations reset successfully,Translations reset successfully
 Translations saved,ဘာသာပြန်ဆိုချက်များ သိမ်းပြီး
 Try selecting other documents.,အခြားစာရွက်စာတမ်းများကို ရွေးချယ်ကြည့်ပါ။
 Turn off inline translation,Turn off inline translation
+Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
@@ -875,11 +894,13 @@ Use,အသုံးပြုရန်
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,အသုံးပြုသူ
+User Role,User Role
 Username,အသုံးပြုသူ အမည်
 Username is required,အသုံးပြုသူ အမည် လိုအပ်သည်
 Username is too long,အသုံးပြုသူအမည် ရှည်လွန်းသည်
 Username is too short,အသုံးပြုသူအမည် တိုလွန်းသည်
 Users,အသုံးပြုသူများ
+Using Authenticator,Using Authenticator
 Using Google Authenticator,Google Authenticator သုံးပြီး
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi is သည် တံဆိပ်တပ်ထားသော စာရွက်စာတမ်းများကို သုံး၍ လေ့လာနေသည်။ ၎င်းသည် 2 နာရီအထိ ကြာနိုင်ပြီး ပြီးစီးသည်နှင့် သင်သည် သင့်စုစည်းမှုအတွက် Uwazi မှ အကြံပြုချက်များကို သုံးသပ်စစ်ဆေးနိုင်သည်။
@@ -913,13 +934,16 @@ x less,x လျော့
 x more,x ပို
 Year,နှစ်
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
+You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,သင်သည် နောက်ထပ် တံဆိပ်တပ်မှတ်သားထားသော စာရွက်စာတမ်းများ ပေးခြင်းဖြင့်လည်း မော်ဒယ်ကို ပိုကောင်းအောင်လုပ်နိုင်သည်။
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
 You have labeled,သင် တံဆိပ်တပ်မှတ်သားထားသည်
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
+You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
 Your account is protected by 2fa.,သင့်အကောင့်ကို 2fa ဖြင့် ကာကွယ်ထားသည်။
+Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,ချုံ့သည်
 Zoom in library view,စာကြည့်တိုက် မြင်ကွင်းကို ချုံ့သည်
 Zoom out,ချဲ့သည်
