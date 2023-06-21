@@ -91,27 +91,29 @@ const MultiSelect = ({
           style={styles.popper}
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...attributes.popper}
-          className="overflow-y-auto absolute right-8 p-2 max-w-md max-h-56 bg-white rounded shadow-md w-fit"
+          className="overflow-y-auto p-2 max-w-md max-h-56 bg-white rounded shadow-md w-fit"
           as="ul"
         >
           {optionsState.map((option: Option) => (
-            <li key={option.label} className="flex gap-1 py-1 align-top">
-              <label className="cursor-pointer">
-                <Checkbox
-                  checked={option.selected}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const isChecked = e.target.checked;
-                    const selected = optionsState.map(opt => {
-                      if (opt.value === option.value) {
-                        return { ...opt, selected: isChecked };
-                      }
-                      return opt;
-                    });
-                    setOptionsState(selected);
-                    onChange(selected);
-                  }}
-                />
-                <span className="ml-2">{option.label}</span>
+            <li key={option.label} className="flex gap-2 py-1 align-top">
+              <Checkbox
+                className="cursor-pointer"
+                id={option.value}
+                checked={Boolean(option.selected)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const isChecked = e.target.checked;
+                  const selected = optionsState.map(opt => {
+                    if (opt.value === option.value) {
+                      return { ...opt, selected: isChecked };
+                    }
+                    return opt;
+                  });
+                  setOptionsState(selected);
+                  onChange(selected);
+                }}
+              />
+              <label className="cursor-pointer" htmlFor={option.value}>
+                {option.label}
               </label>
             </li>
           ))}

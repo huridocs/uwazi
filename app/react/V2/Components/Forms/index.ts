@@ -1,7 +1,6 @@
-import { InputField } from './InputField';
-import { Select } from './Select';
-import { MultiSelect } from '../Forms/MultiSelect';
-import { RadioSelect } from '../Forms/RadioSelect';
-import { ConfirmNavigationModal } from '../Forms/ConfirmNavigationModal';
-
-export { InputField, Select, MultiSelect, RadioSelect, ConfirmNavigationModal };
+export { InputField } from './InputField';
+export { Select } from './Select';
+export { MultiSelect } from '../Forms/MultiSelect';
+export { RadioSelect } from '../Forms/RadioSelect';
+export { ConfirmNavigationModal } from '../Forms/ConfirmNavigationModal';
+export type { MultiSelectProps } from './MultiSelect';
