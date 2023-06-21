@@ -80,7 +80,7 @@ class Configure2fa extends Component<Configure2faProps, State> {
   render() {
     const { otpauth, secret, conflict } = this.state;
     const { userUsing2fa } = this.props;
-
+    console.log('userUsing2fa', otpauth);
     return (
       <div className="settings-content">
         <div className="configure2fa-settings">

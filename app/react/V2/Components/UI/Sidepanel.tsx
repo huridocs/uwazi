@@ -11,7 +11,7 @@ interface SidePanelProps {
   isOpen?: boolean;
   title?: string | React.ReactNode;
   withOverlay?: boolean;
-  size?: 'small' | 'medium';
+  size?: 'small' | 'medium' | 'large';
 }
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
@@ -53,6 +53,12 @@ const Sidepanel = ({
       width = 'md:w-[300px]';
       break;
 
+    case 'large':
+      transitionRight = '-translate-x-[700px]';
+      transitionLeft = '-translate-x-[-700px]';
+      width = 'md:w-[700px]';
+      break;
+
     default:
       break;
   }
@@ -73,7 +79,7 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="aside"
-          className={`transition transform duration-200 ease-in bg-white border-l-2 px-2 py-4 w-full ${width}`}
+          className={`transition transform duration-200 ease-in bg-white border-l-2 p-4 w-full ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
@@ -92,7 +98,7 @@ const Sidepanel = ({
       show={isOpen}
       as="aside"
       className={`transition transform ease-in duration-200 fixed h-full w-full top-0 right-0
-      bg-white border-l-2 px-2 py-4 shadow-lg z-10 ${width}`}
+      bg-white border-l-2 p-4 shadow-lg z-10 ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}

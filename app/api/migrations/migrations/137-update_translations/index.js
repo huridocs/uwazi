@@ -1,91 +1,82 @@
-const newKeys = [
-  { key: 'Users & Groups' },
-  { key: 'Nothing selected' },
-  { key: 'Edit group' },
-  { key: 'Group Options' },
-  { key: 'Password + 2fa' },
-  { key: 'Edit user' },
-  { key: 'General Information' },
-  { key: 'User Role' },
-  { key: 'Security' },
-  { key: 'Unlock account' },
-  { key: 'Instruction to reset password sent to user' },
-  { key: 'Group saved' },
-  { key: 'User Action' },
-  { key: 'New user' },
-  { key: 'Usernames cannot have spaces' },
-  { key: 'Account locked' },
-];
+/*
+This migration is meant to be repeatable.
+After copy pasting:
+  - update migration number
+  - change the contents of systemKeys to the new keyset
+  - change the tests, if necessary
+*/
 
-const deletedKeys = [
-  { key: 'Invalid email' },
-  { key: 'Name of the group' },
-  { key: 'Add users' },
-  { key: 'Created successfully.' },
-  { key: 'Group deleted' },
-  { key: 'Group created' },
-  { key: 'Permissions by role' },
-];
+async function insertSystemKeys(db, newKeys) {
+  const translations = await db.collection('translations').find().toArray();
+  const locales = translations.map(tr => tr.locale);
 
-const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
-  const translation = { ...currentTranslation };
-  const newTranslation = keysToUpdate.find(row => row.key === currentTranslation.key);
-  if (newTranslation) {
-    translation.key = newTranslation.newKey;
-    if (loc === 'en' || currentTranslation.value === newTranslation.oldValue) {
-      translation.value = newTranslation.newValue;
-    }
-  }
-  return translation;
-};
+  const locToSystemContext = {};
+  translations.forEach(tr => {
+    locToSystemContext[tr.locale] = tr.contexts.find(c => c.id === 'System');
+  });
+  const locToKeys = {};
+  Object.entries(locToSystemContext).forEach(([loc, context]) => {
+    locToKeys[loc] = new Set(context.values.map(v => v.key));
+  });
+
+  newKeys.forEach(row => {
+    const { key, value: optionalValue } = row;
+
+    locales.forEach(loc => {
+      if (!locToKeys[loc].has(key)) {
+        const newValue = optionalValue || key;
+        locToSystemContext[loc].values.push({ key, value: newValue });
+        locToKeys[loc].add(key);
+      }
+    });
+  });
+
+  await Promise.all(
+    translations.map(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr))
+  );
+}
 
 export default {
   delta: 137,
 
   reindex: false,
 
-  name: 'update_translations',
+  name: 'add_system_key_translations',
 
-  description: 'Updates some translations reported with errors',
+  description: 'Adding missing translations for system keys.',
 
   async up(db) {
-    const keysToInsert = newKeys;
-    const keysToDelete = deletedKeys;
-    const translations = await db.collection('translations').find().toArray();
-    const locToSystemContext = {};
-    translations.forEach(tr => {
-      locToSystemContext[tr.locale] = tr.contexts.find(c => c.id === 'System');
-    });
-
-    const alreadyInDB = [];
-    Object.entries(locToSystemContext).forEach(([loc, context]) => {
-      const contextValues = context.values.reduce((newValues, currentTranslation) => {
-        const deleted = keysToDelete.find(
-          deletedTranslation => deletedTranslation.key === currentTranslation.key
-        );
-        if (!deleted) {
-          const translation = updateTranslation(currentTranslation, [], loc);
-          newValues.push(translation);
-        }
-        keysToInsert.forEach(newEntry => {
-          if (newEntry.key === currentTranslation.key) {
-            alreadyInDB.push(currentTranslation.key);
-          }
-        });
-        return newValues;
-      }, []);
-      keysToInsert
-        .filter(k => !alreadyInDB.includes(k.key))
-        .forEach(newEntry => {
-          contextValues.push({ key: newEntry.key, value: newEntry.key });
-        });
-      context.values = contextValues;
-    });
-
-    await Promise.all(
-      translations.map(tr => db.collection('translations').replaceOne({ _id: tr._id }, tr))
-    );
-
     process.stdout.write(`${this.name}...\r\n`);
+    const systemKeys = [
+      { key: 'Copy to clipboard' },
+      { key: 'Account updated' },
+      { key: 'General Information' },
+      { key: 'User Role' },
+      { key: 'Change Password' },
+      { key: 'New Password' },
+      { key: 'Passwords do not match' },
+      { key: 'Confirm New Passowrd' },
+      { key: 'Two-Factor Authentication' },
+      { key: 'Activated' },
+      { key: "Your account's security is enhanced with two-factor authentication." },
+      { key: 'Enable' },
+      { key: 'You should activate this feature for enhanced account security.' },
+      { key: '2FA Enabled' },
+      { key: 'Using Authenticator' },
+      { key: 'Download a third-party authenticator app from your mobile store.' },
+      {
+        key: 'Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.',
+      },
+      {
+        key: "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.",
+      },
+      { key: 'QR Code' },
+      { key: 'Secret keys' },
+      { key: 'You can also enter this secret key into your Authenticator app.' },
+      { key: "*please keep this key secret and don't share it." },
+      { key: 'Enter the 6-digit verification code generated by your Authenticator app' },
+      { key: 'The token does not validate against the secret key' },
+    ];
+    await insertSystemKeys(db, systemKeys);
   },
 };
