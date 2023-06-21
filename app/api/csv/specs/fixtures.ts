@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
@@ -6,7 +6,7 @@ const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 
-export default {
+const fixtures: DBFixture = {
   templates: [
     {
       _id: templateToRelateId,
@@ -111,4 +111,4 @@ export default {
   ],
 };
 
-export { template1Id, thesauri1Id, templateToRelateId };
+export { fixtures, template1Id, thesauri1Id, templateToRelateId };

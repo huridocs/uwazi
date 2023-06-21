@@ -319,7 +319,7 @@ const EditTranslations = () => {
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
-            <Button size="small" type="submit" disabled={isSubmitting} formId="edit-translations">
+            <Button size="small" type="submit" disabled={isSubmitting} form="edit-translations">
               <Translate>Save</Translate>
             </Button>
           </div>

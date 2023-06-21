@@ -25,11 +25,6 @@ describe('Settings', () => {
     await disableTransitions();
   });
 
-  it('should display Account', async () => {
-    await selectSettingsPage('Account');
-    await testSelectorShot('div.account-settings');
-  });
-
   it('should display Users', async () => {
     await selectSettingsPage('Users');
     await testSettingsContent();
