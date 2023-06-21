@@ -17,12 +17,12 @@ export class MongoSettingsDataSource
     return (await this.readSettings())?.languages;
   }
 
-  async getLanguageKeys(): Promise<string[]> {
+  async getLanguageKeys() {
     const languages = await this.readLanguages();
     return languages?.map(l => l.key) || [];
   }
 
-  async getDefaultLanguageKey(): Promise<string> {
+  async getDefaultLanguageKey() {
     const languages = await this.readLanguages();
     const defaultLanguage = languages?.find(l => l.default);
     if (!defaultLanguage) {

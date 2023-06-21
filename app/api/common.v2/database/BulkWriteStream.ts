@@ -59,6 +59,11 @@ class BulkWriteStream<CollSchema extends Document> {
     await this.check();
   }
 
+  async deleteMany(filter: Filter<CollSchema>, collation?: CollationOptions) {
+    this.actions.push({ deleteMany: { filter, collation } });
+    await this.check();
+  }
+
   async updateOne(
     filter: Filter<CollSchema>,
     update: UpdateFilter<CollSchema>,

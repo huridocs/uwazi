@@ -9,7 +9,7 @@ import { EntitySchema } from 'shared/types/entityType';
 import { uploadsPath } from 'api/files/filesystem';
 
 import { CSVLoader } from '../csvLoader';
-import fixtures, { template1Id } from './fixtures';
+import { fixtures, template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
 
 const removeTestingZip = async () =>

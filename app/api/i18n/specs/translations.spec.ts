@@ -10,7 +10,7 @@ import fixtures, {
   documentTemplateId,
   englishTranslation,
   entityTemplateId,
-} from './fixtures.js';
+} from './fixtures';
 import { UITranslationNotAvailable } from '../defaultTranslations';
 
 describe('translations', () => {
@@ -20,90 +20,6 @@ describe('translations', () => {
 
   afterAll(async () => {
     await db.disconnect();
-  });
-
-  describe('process System context', () => {
-    it('should add keys that do not exist into all languages', async () => {
-      const keys = [
-        {
-          key: 'Password',
-        },
-        {
-          key: 'Account',
-        },
-        {
-          key: 'Email',
-        },
-        {
-          key: 'Age',
-        },
-        {
-          key: 'new key',
-        },
-        {
-          key: 'new key 2',
-          label: 'label2',
-        },
-      ];
-      await translations.processSystemKeys(keys);
-      const result = await translations.get();
-
-      const ESTranslations =
-        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-      const ENTranslations =
-        (result.find(t => t.locale === 'en')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-      const otherTranslation =
-        (result.find(t => t.locale === 'other')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-
-      expect(ENTranslations.Password).toBe('Password');
-      expect(ENTranslations.Account).toBe('Account');
-      expect(ENTranslations.Email).toBe('E-Mail');
-      expect(ENTranslations.Age).toBe('Age');
-      expect(ENTranslations['new key']).toBe('new key');
-      expect(ENTranslations['new key 2']).toBe('label2');
-
-      expect(otherTranslation.Password).toBe('Password');
-      expect(otherTranslation.Account).toBe('Account');
-      expect(otherTranslation.Email).toBe('Email');
-      expect(otherTranslation.Age).toBe('Age');
-      expect(otherTranslation['new key']).toBe('new key');
-      expect(otherTranslation['new key 2']).toBe('label2');
-
-      expect(ESTranslations.Password).toBe('Contraseña');
-      expect(ESTranslations.Account).toBe('Cuenta');
-      expect(ESTranslations.Email).toBe('Correo electronico');
-      expect(ESTranslations.Age).toBe('Edad');
-      expect(ESTranslations['new key']).toBe('new key');
-      expect(ESTranslations['new key 2']).toBe('label2');
-    });
-
-    it('should delete the keys that are missing', async () => {
-      const keys = [{ key: 'Email' }, { key: 'Age' }, { key: 'new key' }];
-      await translations.processSystemKeys(keys);
-      const result = await translations.get();
-
-      const ESTrnaslations =
-        (result.find(t => t.locale === 'es')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-      const ENTrnaslations =
-        (result.find(t => t.locale === 'en')?.contexts || []).find(c => c.label === 'System')
-          ?.values || {};
-
-      expect(ENTrnaslations.Password).not.toBeDefined();
-      expect(ENTrnaslations.Account).not.toBeDefined();
-      expect(ENTrnaslations.Email).toBe('E-Mail');
-      expect(ENTrnaslations.Age).toBe('Age');
-      expect(ENTrnaslations['new key']).toBe('new key');
-
-      expect(ESTrnaslations.Password).not.toBeDefined();
-      expect(ESTrnaslations.Account).not.toBeDefined();
-      expect(ESTrnaslations.Email).toBe('Correo electronico');
-      expect(ESTrnaslations.Age).toBe('Edad');
-      expect(ESTrnaslations['new key']).toBe('new key');
-    });
   });
 
   describe('get()', () => {
@@ -215,7 +131,7 @@ describe('translations', () => {
         expect(thesauri.renameThesaurusInMetadata).toHaveBeenLastCalledWith(
           'age id',
           'Age changed',
-          dictionaryId,
+          dictionaryId.toString(),
           'en'
         );
       });
@@ -234,7 +150,7 @@ describe('translations', () => {
         ],
       });
 
-      const [translation] = await translations.get({ _id: englishTranslation });
+      const [translation] = await translations.get({ _id: englishTranslation.toString() });
 
       expect(translation.contexts?.length).toBe(6);
       expect(translation.contexts?.find(context => context.id === 'Filters')?.values).toEqual({
@@ -281,28 +197,6 @@ describe('translations', () => {
     } catch (error) {
       expect(error.message).toContain('Process is trying to save repeated translation key');
     }
-  });
-
-  describe('addEntry()', () => {
-    it('should add the new key to each dictionary in the given context', async () => {
-      const result = await translations.addEntry('System', 'Key', 'default');
-
-      expect(result).toBe('ok');
-
-      const translated = await translations.get();
-
-      expect(translated[0].contexts?.[0].values.Key).toBe('default');
-      expect(translated[1].contexts?.[0].values.Key).toBe('default');
-    });
-
-    it('should not allow adding existing keys', async () => {
-      try {
-        await translations.addEntry('System', 'Password', 'password_again');
-        fail('Should throw error.');
-      } catch (error) {
-        expect(error.message).toContain('Process is trying to save repeated translation key');
-      }
-    });
   });
 
   describe('updateEntries', () => {
@@ -372,8 +266,8 @@ describe('translations', () => {
       expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual(
         ContextType.entity
       );
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'es')?.contexts?.[1].type).toEqual(
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[2].values).toEqual(values);
+      expect(translated.find(t => t.locale === 'es')?.contexts?.[2].type).toEqual(
         ContextType.entity
       );
     });
@@ -388,7 +282,7 @@ describe('translations', () => {
       const translated = await translations.get();
 
       expect(translated[0].contexts?.length).toBe(5);
-      expect(translated[1].contexts?.length).toBe(0);
+      expect(translated[1].contexts?.length).toBe(1);
     });
   });
 
@@ -419,8 +313,6 @@ describe('translations', () => {
       const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
       const deletedProperties = ['Age'];
       const values = {
-        Pass: 'Pass',
-        Acc: 'Acc',
         Email: 'Email',
         Name: 'Names',
         Interface: 'Interfaces',

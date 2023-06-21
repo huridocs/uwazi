@@ -48,6 +48,12 @@ describe('BulkWriteStream', () => {
     await checkValues([0]);
   });
 
+  it('should be able to delete many', async () => {
+    await stream.deleteMany({ value: { $lt: 2 } });
+    await stream.flush();
+    await checkValues([]);
+  });
+
   it('should be able to update one', async () => {
     await stream.updateOne({ value: 0 }, { $set: { value: 99 } });
     await stream.flush();

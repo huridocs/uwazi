@@ -3,21 +3,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const factory = getFixturesFactory();
 
-const settings = [
-  {
-    languages: [{ default: true, label: 'English', key: 'en' }],
-    features: {
-      'metadata-extraction': true,
-      metadataExtraction: {
-        url: 'http://localhost:1234/',
-      },
-      segmentation: {
-        url: 'http://localhost:1234/files',
-      },
-    },
-  },
-];
-
 const fixturesPdfNameA = 'documentA.pdf';
 const fixturesPdfNameB = 'documentB.pdf';
 const fixturesPdfNameC = 'documentC.pdf';
@@ -26,7 +11,20 @@ const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
 
 const fixtures: DBFixture = {
-  settings,
+  settings: [
+    {
+      languages: [{ default: true, label: 'English', key: 'en' }],
+      features: {
+        'metadata-extraction': true,
+        metadataExtraction: {
+          url: 'http://localhost:1234/',
+        },
+        segmentation: {
+          url: 'http://localhost:1234/files',
+        },
+      },
+    },
+  ],
   ixextractors: [
     factory.ixExtractor('prop1extractor', 'property1', [
       'templateToSegmentA',

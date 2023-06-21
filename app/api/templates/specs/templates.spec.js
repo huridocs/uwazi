@@ -28,7 +28,7 @@ import fixtures, {
   thesauriId2,
   select3id,
   select4id,
-} from './fixtures/fixtures.js';
+} from './fixtures/fixtures';
 import { TemplateUpdatedEvent } from '../events/TemplateUpdatedEvent';
 import { TemplateDeletedEvent } from '../events/TemplateDeletedEvent';
 

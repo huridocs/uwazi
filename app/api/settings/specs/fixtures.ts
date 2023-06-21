@@ -1,11 +1,11 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 
 const template1 = db.id();
 const template2 = db.id();
 
-export default {
+const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
@@ -76,3 +76,5 @@ export default {
     },
   ],
 };
+
+export default fixtures;

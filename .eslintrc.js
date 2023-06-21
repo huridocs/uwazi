@@ -23,6 +23,7 @@ module.exports = {
       ],
     ],
     indent: 'off',
+    'brace-style': 'off',
     'operator-linebreak': 'off',
     'space-before-function-paren': 'off',
     'no-mixed-operators': 'off',
