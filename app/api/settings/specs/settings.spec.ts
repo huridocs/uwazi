@@ -3,7 +3,7 @@ import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
 import settings from '../settings';
-import fixtures from './fixtures.js';
+import fixtures from './fixtures';
 
 describe('settings', () => {
   beforeEach(async () => {

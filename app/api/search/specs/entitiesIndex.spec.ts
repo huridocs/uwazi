@@ -1,14 +1,14 @@
-import db from 'api/utils/testing_db';
-import { elasticTesting } from 'api/utils/elastic_testing';
 import { errorLog } from 'api/log';
+import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-import { UserRole } from 'shared/types/userSchema';
+import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
+import { UserRole } from 'shared/types/userSchema';
+import { Logger } from 'winston';
+import { elastic } from '../elastic';
+import { reindexAll, updateMapping } from '../entitiesIndex';
 import { search } from '../search';
 import { fixtures as fixturesForIndexErrors } from './fixtures_elastic_errors';
-import { elastic } from '../elastic';
-import { updateMapping, reindexAll } from '../entitiesIndex';
-import { Logger } from 'winston';
 
 const forceIndexingOfNumberBasedProperty = async () => {
   await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);

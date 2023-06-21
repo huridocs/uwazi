@@ -57,17 +57,20 @@ export class MongoTransactionManager implements TransactionManager {
       await this.commitWithRetry();
       return returnValue;
     } catch (error) {
-      await this.abortTransaction();
+      if (error.code !== 251) {
+        await this.abortTransaction();
+      }
+
       throw error;
     }
   }
 
-  private async runWithRetry<T>(callback: () => Promise<T>): Promise<T> {
+  private async runWithRetry<T>(callback: () => Promise<T>, retries = 3): Promise<T> {
     try {
       return await this.runInTransaction(callback);
     } catch (error) {
-      if (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
-        return this.runWithRetry(callback);
+      if (retries > 0 && error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
+        return this.runWithRetry(callback, retries - 1);
       }
 
       throw error;

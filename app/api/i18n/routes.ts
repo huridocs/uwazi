@@ -26,16 +26,29 @@ const addLanguage = async (language: any) => {
   return { newSettings, newTranslations };
 };
 
-export default (app: Application) => {
-  app.get('/api/translations', async (req, res) => {
-    const { context } = req.query;
-    const response = await translations.get(
-      {},
-      context && { contexts: { $elemMatch: { id: context } }, locale: 1 }
-    );
+type TranslationsRequest = Request & { query: { context: string } };
 
-    res.json({ rows: response });
-  });
+export default (app: Application) => {
+  app.get(
+    '/api/translations',
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            context: { type: 'string' },
+          },
+        },
+      },
+    }),
+    async (req: TranslationsRequest, res) => {
+      const { context } = req.query;
+      const response = await translations.get({ context }, context && { locale: 1 });
+
+      res.json({ rows: response });
+    }
+  );
 
   app.get('/api/languages', async (_req, res) => {
     res.json(await translations.availableLanguages());
@@ -100,7 +113,7 @@ export default (app: Application) => {
 
     async (req, res) => {
       const { _id } = await translations.save(req.body);
-      const [response] = await translations.get({ _id });
+      const [response] = await translations.get({ _id: _id.toString() });
       req.sockets.emitToCurrentTenant('translationsChange', response);
       res.json(response);
     }

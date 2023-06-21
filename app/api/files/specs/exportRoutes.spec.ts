@@ -1,14 +1,15 @@
-import { Writable } from 'stream';
-import request from 'supertest';
-import { setUpApp } from 'api/utils/testingRoutes';
-import { search } from 'api/search';
+import authMiddleware from 'api/auth/authMiddleware';
 import csvExporter, { SearchResults } from 'api/csv/csvExporter';
 import * as filesystem from 'api/files/filesystem';
+import { search } from 'api/search';
+import { setUpApp } from 'api/utils/testingRoutes';
 import { NextFunction, Request, Response } from 'express';
-import authMiddleware from 'api/auth/authMiddleware';
+import { Writable } from 'stream';
+import request from 'supertest';
 
 import { User } from 'api/users/usersModel';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DBFixture } from 'api/utils/testing_db';
 import routes from '../exportRoutes';
 
 jest.mock('api/csv/csvExporter');
@@ -21,7 +22,7 @@ describe('export routes', () => {
     let exportMock: jest.Mock;
 
     beforeEach(async () => {
-      const fixtures = {
+      const fixtures: DBFixture = {
         settings: [
           {
             dateFormat: 'yyyy-MM-dd',

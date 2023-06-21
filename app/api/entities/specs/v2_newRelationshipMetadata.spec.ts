@@ -1,7 +1,7 @@
 import { search } from 'api/search';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
 import * as v2Support from '../v2_support';
@@ -26,7 +26,7 @@ const adminUser = factory.user('admin', UserRole.ADMIN);
 
 const languages = ['en', 'es'];
 
-const fixtures = {
+const fixtures: DBFixture = {
   users: [adminUser],
   entities: [
     ...factory.entityInMultipleLanguages(
