@@ -1,6 +1,6 @@
-import { clearCookiesAndLogin } from '../helpers/login';
 import { authenticator } from 'otplib';
 import 'cypress-axe';
+import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Public Form', () => {
   before(() => {
