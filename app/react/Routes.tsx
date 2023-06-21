@@ -48,7 +48,7 @@ import {
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
-
+import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -81,7 +81,8 @@ const getRoutesLayout = (
     <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
-      <Route path="account" element={<AccountSettings />} />
+      <Route path="account" element={<Account />} loader={accountLoader(headers)} />
+      <Route path="account2" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
