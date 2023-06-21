@@ -1,6 +1,6 @@
 import relationtypes from 'api/relationtypes/relationtypes';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 const factory = getFixturesFactory();
@@ -18,7 +18,7 @@ const queryInDb = [
   },
 ];
 
-const fixtures = {
+const fixtures: DBFixture = {
   entities: [
     factory.entity('entity1', 'template1'),
     factory.entity('entity2', 'template1'),

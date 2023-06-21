@@ -1,17 +1,17 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
-export const template1 = db.id();
-export const e1 = db.id();
-export const e3 = db.id();
-export const e2 = db.id();
-export const dictionaryId = db.id();
-export const moviesId = db.id();
+const template1 = db.id();
+const e1 = db.id();
+const e3 = db.id();
+const e2 = db.id();
+const dictionaryId = db.id();
+const moviesId = db.id();
 
-export default {
+const fixtures: DBFixture = {
   templates: <TemplateSchema[]>[
     {
       _id: template1,
@@ -108,3 +108,7 @@ export default {
   ],
   translations: [{ locale: 'en', contexts: [] }],
 };
+
+export default fixtures;
+
+export { template1, e1, e3, e2, dictionaryId, moviesId };

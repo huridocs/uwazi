@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from './helpers/login';
+import { clearCookiesAndLogin } from '../helpers/login';
 import 'cypress-axe';
 
 describe('Languages', () => {

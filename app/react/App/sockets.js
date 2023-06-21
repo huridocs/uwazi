@@ -59,7 +59,7 @@ socket.on('thesauriDelete', thesauri => {
 });
 
 socket.on('translationsChange', translations => {
-  store.dispatch(actions.update('translations', translations));
+  store.dispatch(actions.update('translations', translations, 'locale'));
   t.resetCachedTranslation();
   Translate.resetCachedTranslation();
 });
