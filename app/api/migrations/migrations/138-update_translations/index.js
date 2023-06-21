@@ -9,7 +9,7 @@ const newKeys = [
   { key: 'User Role' },
   { key: 'Security' },
   { key: 'Unlock account' },
-  { key: 'Instruction to reset password sent to user' },
+  { key: 'Instructions to reset the password were sent to the user' },
   { key: 'Group saved' },
   { key: 'User Action' },
   { key: 'New user' },

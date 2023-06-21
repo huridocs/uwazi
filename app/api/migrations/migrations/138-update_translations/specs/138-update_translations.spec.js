@@ -35,8 +35,8 @@ describe('migration update translations of settings new Users/Groups UI', () => 
         value: 'New user',
       }),
       expect.objectContaining({
-        key: 'Instruction to reset password sent to user',
-        value: 'Instruction to reset password sent to user',
+        key: 'Instructions to reset the password were sent to the user',
+        value: 'Instructions to reset the password were sent to the user',
       }),
     ];
     const defaultContextContent = expect.objectContaining({
