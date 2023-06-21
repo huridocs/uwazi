@@ -29,7 +29,7 @@ describe('Users', () => {
   });
 
   it('create user', () => {
-    cy.contains('button', 'Add user').click();
+    cy.contains('button', 'Add user',).click({ force: true });
     cy.get('aside').within(() => {
       cy.get('#username').type('User_1');
       cy.get('#email').type('user@mailer.com');
@@ -106,8 +106,17 @@ describe('Users', () => {
       });
     cy.contains('button', 'Reset 2FA').click();
     cy.contains('[data-testid="modal"] button', 'Accept').click();
+    cy.contains('button', 'Dismiss').click();
   });
-  it('check for unique name and email');
+  it('check for unique name and email', () => {
+    cy.contains('button', 'Add user',).click({ force: true });
+    cy.get('aside').within(() => {
+      cy.get('#username').type('admin');
+      cy.contains('span', 'Duplicated username').should('exist');
+      cy.get('#email').type('admin@uwazi.com');
+      cy.contains('span', 'Duplicated email').should('exist');
+    });
+  });
 
   describe('bulk actions', () => {
     it('bulk delete', () => {
@@ -130,7 +139,41 @@ describe('Users', () => {
       cy.reload();
       namesShouldMatch(['admin', 'blocky', 'colla', 'editor']);
     });
-    it('bulk password reset');
-    it('bulk reset 2FA');
+    it('bulk password reset', () => {
+      cy.reload();
+      cy.intercept('GET', 'api/usergroups').as('bulkPasswordReset');
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.get('table tbody tr')
+        .eq(1)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset Password').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('button', 'Dismiss').click();
+      cy.wait('@bulkPasswordReset');
+    });
+    it('bulk reset 2FA', () => {
+      cy.reload();
+      cy.intercept('GET', 'api/usergroups').as('bulk2FAReset');
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.get('table tbody tr')
+        .eq(1)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset 2FA').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('button', 'Dismiss').click();
+      cy.wait('@bulk2FAReset');
+    });
   });
 });
