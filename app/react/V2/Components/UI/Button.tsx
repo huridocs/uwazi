@@ -7,7 +7,7 @@ interface ButtonProps {
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
   disabled?: boolean;
-  formId?: string;
+  form?: string;
   onClick?: MouseEventHandler;
   className?: string;
 }
@@ -19,7 +19,7 @@ const Button = ({
   type = 'button',
   size,
   disabled,
-  formId,
+  form,
   onClick,
   className = '',
 }: ButtonProps) => {
@@ -93,7 +93,7 @@ const Button = ({
       disabled={disabled}
       className={`${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 ${className}`}
-      form={formId}
+      form={form}
     >
       {children}
     </button>
