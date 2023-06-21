@@ -391,7 +391,7 @@ Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Installez l'application Google Authenticator sur votre appareil mobile
 Instruction to reset password sent to user,Instruction to reset password sent to user
-Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.,Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Captcha invalide
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
