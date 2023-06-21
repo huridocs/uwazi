@@ -13,7 +13,7 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
@@ -62,7 +62,7 @@ const createService = () => {
   );
 };
 
-const fixtures = {
+const fixtures: DBFixture = {
   entities: [
     ...entityInLanguages(['en', 'hu'], 'entity1', 'template1'),
     ...entityInLanguages(['en', 'hu'], 'entity2', 'template2'),

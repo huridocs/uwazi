@@ -2,7 +2,7 @@ import entities, { model } from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 
-import fixtures, { templateToRelateId } from '../../specs/fixtures';
+import { fixtures, templateToRelateId } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
 
 describe('relationship', () => {

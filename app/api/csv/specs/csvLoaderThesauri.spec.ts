@@ -8,7 +8,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { WithId } from 'api/odm';
 import { IndexedContextValues } from 'api/i18n/translations';
 import { CSVLoader } from '../csvLoader';
-import fixtures, { thesauri1Id } from './fixtures';
+import { fixtures, thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
 
 const getTranslation = async (lang: string, id: ObjectId) =>

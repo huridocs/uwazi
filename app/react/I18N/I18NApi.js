@@ -9,10 +9,6 @@ export default {
     return api.post('translations', requestParams).then(response => response.json);
   },
 
-  addEntry(requestParams) {
-    return api.post('translations/addentry', requestParams).then(response => response.json);
-  },
-
   addLanguage(requestParams) {
     return api.post('translations/languages', requestParams).then(response => response.json);
   },
