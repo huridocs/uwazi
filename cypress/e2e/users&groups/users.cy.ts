@@ -112,8 +112,9 @@ describe('Users', () => {
     cy.contains('button', 'Add user',).click({ force: true });
     cy.get('aside').within(() => {
       cy.get('#username').type('admin');
-      cy.contains('span', 'Duplicated username').should('exist');
       cy.get('#email').type('admin@uwazi.com');
+      cy.contains('button', 'Save').click()
+      cy.contains('span', 'Duplicated username').should('exist');
       cy.contains('span', 'Duplicated email').should('exist');
     });
   });
