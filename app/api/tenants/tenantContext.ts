@@ -13,6 +13,7 @@ export type Tenant = {
   activityLogs: string;
   featureFlags?: {
     s3Storage?: boolean;
+    translationsV2?: boolean;
   };
 };
 

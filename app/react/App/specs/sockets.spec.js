@@ -116,6 +116,7 @@ describe('sockets', () => {
     it('should emit a translationsChange event', () => {
       socket._callbacks.$translationsChange[0]({ id: '123' });
       expect(store.dispatch).toHaveBeenCalledWith({
+        customIndex: 'locale',
         type: 'translations/UPDATE',
         value: { id: '123' },
       });

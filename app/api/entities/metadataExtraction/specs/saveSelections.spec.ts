@@ -1,12 +1,12 @@
 import { files } from 'api/files';
-import { testingDB } from 'api/utils/testing_db';
+import { DBFixture, testingDB } from 'api/utils/testing_db';
 import { saveSelections } from '../saveSelections';
 
 const file1ID = testingDB.id();
 const file2ID = testingDB.id();
 const file3ID = testingDB.id();
 
-const fixture = {
+const fixture: DBFixture = {
   settings: [
     {
       languages: [
