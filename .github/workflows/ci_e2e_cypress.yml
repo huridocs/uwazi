@@ -94,7 +94,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
-        run: yarn run-production &
+        run: yarn run-production > output.txt &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
@@ -114,3 +114,6 @@ jobs:
         with:
           name: snapshots
           path: cypress/e2e/**/__image_snapshots__/
+      - name: print server output
+        run: cat output.txt
+        if: failure()

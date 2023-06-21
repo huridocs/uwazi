@@ -1,4 +1,5 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { DBFixture } from 'api/utils/testing_db';
 
 const templateCommonProperties = [
   {
@@ -29,7 +30,7 @@ const templateCommonProperties = [
 ];
 
 const fixtureFactory = getFixturesFactory();
-const fixtures = {
+const fixtures: DBFixture = {
   settings: [
     {
       site_name: 'Uwazi',

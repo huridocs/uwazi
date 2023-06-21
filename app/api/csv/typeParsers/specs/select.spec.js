@@ -3,7 +3,7 @@
 import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
 
-import fixtures, { thesauri1Id } from '../../specs/fixtures';
+import { fixtures, thesauri1Id } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
 
 describe('select', () => {

@@ -126,6 +126,7 @@ exports[`Semantic Search actions updateSearch should update specified search in 
 Array [
   Array [
     Object {
+      "customIndex": undefined,
       "type": "semanticSearch/searches/UPDATE",
       "value": Object {
         "_id": "search",
