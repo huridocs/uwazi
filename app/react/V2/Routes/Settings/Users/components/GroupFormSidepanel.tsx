@@ -41,6 +41,21 @@ const getAvailableUsers = (users?: ClientUserSchema[], selectedGroup?: ClientUse
     return { label: user.username, value: user._id as string };
   });
 
+const getFieldError = (type?: string) => {
+  switch (type) {
+    case 'required':
+      return 'Name is required';
+    case 'validate':
+      return 'Duplicated name';
+    case 'maxLength':
+      return 'Name is too long';
+    case 'minLength':
+      return 'Name is too short';
+    default:
+      return undefined;
+  }
+};
+
 const GroupFormSidepanel = ({
   selectedGroup,
   showSidepanel,
@@ -116,7 +131,7 @@ const GroupFormSidepanel = ({
                 label={<Translate className="block mb-1 font-bold">Name</Translate>}
                 id="name"
                 autoComplete="off"
-                hasErrors={Boolean(errors.name)}
+                errorMessage={getFieldError(errors.name?.type)}
                 className="mb-1"
                 {...register('name', {
                   required: true,
@@ -125,16 +140,6 @@ const GroupFormSidepanel = ({
                   minLength: 3,
                 })}
               />
-              <span className="font-bold text-error-700">
-                {errors.name && (
-                  <div>
-                    {errors.name.type === 'required' && <Translate>Name is required</Translate>}
-                    {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
-                    {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
-                    {errors.name.type === 'minLength' && <Translate>Name is too short</Translate>}
-                  </div>
-                )}
-              </span>
             </div>
           </Card>
 

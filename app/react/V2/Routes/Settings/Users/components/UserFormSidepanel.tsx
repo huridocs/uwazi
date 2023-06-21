@@ -61,6 +61,42 @@ const getOptions = (groups?: ClientUserGroupSchema[], selectedUser?: ClientUserS
     return { label: group.name, value: group.name };
   });
 
+const getFieldError = (field: 'username' | 'password' | 'email', type?: string) => {
+  if (field === 'username') {
+    switch (type) {
+      case 'required':
+        return 'Username is required';
+      case 'isUnique':
+        return 'Duplicated username';
+      case 'maxLength':
+        return 'Username is too long';
+      case 'minLength':
+        return 'Username is too short';
+      case 'noSpaces':
+        return 'Usernames cannot have spaces';
+      default:
+        break;
+    }
+  }
+
+  if (field === 'email') {
+    switch (type) {
+      case 'required':
+        return 'Email is required';
+      case 'validate':
+        return 'Duplicated email';
+      default:
+        break;
+    }
+  }
+
+  if (field === 'password' && type) {
+    return 'Password is too long';
+  }
+
+  return undefined;
+};
+
 const UserFormSidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -138,7 +174,7 @@ const UserFormSidepanel = ({
                 <InputField
                   label={<Translate className="block mb-1 font-bold">Username</Translate>}
                   id="username"
-                  hasErrors={Boolean(errors.username)}
+                  errorMessage={getFieldError('username', errors.username?.type)}
                   autoComplete="off"
                   className="mb-1"
                   {...register('username', {
@@ -151,24 +187,6 @@ const UserFormSidepanel = ({
                     minLength: 3,
                   })}
                 />
-
-                <span className="font-bold text-error-700">
-                  {errors.username?.type === 'required' && (
-                    <Translate>Username is required</Translate>
-                  )}
-                  {errors.username?.type === 'isUnique' && (
-                    <Translate>Duplicated username</Translate>
-                  )}
-                  {errors.username?.type === 'maxLength' && (
-                    <Translate>Username is too long</Translate>
-                  )}
-                  {errors.username?.type === 'minLength' && (
-                    <Translate>Username is too short</Translate>
-                  )}
-                  {errors.username?.type === 'noSpaces' && (
-                    <Translate>Usernames cannot have spaces</Translate>
-                  )}
-                </span>
               </div>
 
               <Select
@@ -194,18 +212,13 @@ const UserFormSidepanel = ({
                   autoComplete="off"
                   id="email"
                   className="mb-1"
-                  hasErrors={Boolean(errors.email)}
+                  errorMessage={getFieldError('email', errors.email?.type)}
                   {...register('email', {
                     required: true,
                     validate: email => isUnique(email, selectedUser, users),
                     maxLength: 256,
                   })}
                 />
-
-                <span className="font-bold text-error-700">
-                  {errors.email?.type === 'required' && <Translate>Email is required</Translate>}
-                  {errors.email?.type === 'validate' && <Translate>Duplicated email</Translate>}
-                </span>
               </div>
             </Card>
 
@@ -219,16 +232,10 @@ const UserFormSidepanel = ({
                 id="password"
                 type="password"
                 autoComplete="off"
-                hasErrors={Boolean(errors.password)}
+                errorMessage={getFieldError('password', errors.password?.type)}
                 className="mb-4"
                 {...register('password', { maxLength: 50 })}
               />
-
-              <span className="font-bold text-error-700">
-                {errors.password?.type === 'maxLength' && (
-                  <Translate>Password is too long</Translate>
-                )}
-              </span>
 
               <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
                 {selectedUser?._id && (
