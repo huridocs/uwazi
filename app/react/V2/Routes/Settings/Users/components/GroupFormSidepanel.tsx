@@ -127,7 +127,7 @@ const GroupFormSidepanel = ({
               />
               <span className="font-bold text-error-700">
                 {errors.name && (
-                  <div className="validation-error">
+                  <div>
                     {errors.name.type === 'required' && <Translate>Name is required</Translate>}
                     {errors.name.type === 'validate' && <Translate>Duplicated name</Translate>}
                     {errors.name.type === 'maxLength' && <Translate>Name is too long</Translate>}
