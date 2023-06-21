@@ -166,7 +166,34 @@ describe('Users', () => {
     });
   });
 
+  describe('unblock user', () => {
+    it('should unblock a user', () => {
+      cy.get('table tbody tr')
+        .eq(3)
+        .within(() => {
+          cy.get('td:nth-child(6) button').click();
+        });
+
+      cy.contains('button', 'Unlock account').click();
+    });
+
+    it('should log in with the blocked user', () => {
+      cy.contains('a', 'Account').click();
+      clearCookiesAndLogin('blocky', '1234');
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Account').click();
+      cy.get('#account-username').should('have.value', 'blocky');
+    });
+  });
+
   describe('bulk actions', () => {
+    it('should log back in as admin', () => {
+      clearCookiesAndLogin();
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      cy.contains('span', 'Users & Groups').click();
+      cy.contains('button', 'Users').click();
+    });
+
     it('bulk delete', () => {
       cy.reload();
       cy.intercept('DELETE', 'api/users*').as('deleteUsers');
@@ -187,6 +214,7 @@ describe('Users', () => {
       cy.reload();
       namesShouldMatch(['admin', 'blocky', 'colla', 'editor']);
     });
+
     it('bulk password reset', () => {
       cy.reload();
       cy.intercept('GET', 'api/usergroups').as('bulkPasswordReset');
@@ -205,6 +233,7 @@ describe('Users', () => {
       cy.contains('button', 'Dismiss').click();
       cy.wait('@bulkPasswordReset');
     });
+
     it('bulk reset 2FA', () => {
       cy.reload();
       cy.intercept('GET', 'api/usergroups').as('bulk2FAReset');
