@@ -4,7 +4,7 @@ import request from 'supertest';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import routes from '../routes';
 
@@ -14,7 +14,7 @@ const factory = getFixturesFactory();
 
 const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
 
-const fixtures = {
+const fixtures: DBFixture = {
   entities: [
     factory.entity(
       'entity1',

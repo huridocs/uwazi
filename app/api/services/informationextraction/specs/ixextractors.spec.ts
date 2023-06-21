@@ -3,13 +3,13 @@ import _ from 'lodash';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import db, { testingDB } from 'api/utils/testing_db';
+import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Extractors } from '../ixextractors';
 
 const fixtureFactory = getFixturesFactory();
 
-const fixtures = {
+const fixtures: DBFixture = {
   settings: [
     {
       languages: [

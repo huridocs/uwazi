@@ -1,6 +1,6 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 
-const settings = [
+const settings: DBFixture['settings'] = [
   {
     languages: [
       {
@@ -24,7 +24,7 @@ const settings = [
 const fixturesOneTenant: DBFixture = {
   settings,
 };
-const otherSettings = [
+const otherSettings: DBFixture['settings'] = [
   {
     _id: db.id(),
     languages: [

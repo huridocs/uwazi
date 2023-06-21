@@ -1,5 +1,7 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
+import { ObjectId } from 'mongodb';
 import { propertyTypes } from 'shared/propertyTypes';
+import { LanguagesListSchema, MetadataSchema } from 'shared/types/commonTypes';
 
 const templateToBeEditedId = db.id();
 const templateToBeDeleted = '589af97080fc0b23471d67f1';
@@ -24,14 +26,18 @@ const propertyC = db.id();
 const propertyD = db.id();
 const pageSharedId = 'pageid';
 
-const languages = [
+const languages: LanguagesListSchema = [
   { key: 'en', label: 'English', default: true },
   { key: 'es', label: 'Spanish' },
   { key: 'pt', label: 'Portugal' },
 ];
 const languageKeys = languages.map(l => l.key);
 
-const createEntitiesInAllLanguages = (baseTitle, template, metadata) =>
+const createEntitiesInAllLanguages = (
+  baseTitle: string,
+  template: ObjectId,
+  metadata: MetadataSchema
+) =>
   languageKeys.map(lKey => ({
     metadata,
     template,
@@ -40,7 +46,7 @@ const createEntitiesInAllLanguages = (baseTitle, template, metadata) =>
     sharedId: `${baseTitle}-sharedId`,
   }));
 
-export default {
+const fixtures: DBFixture = {
   templates: [
     {
       _id: templateToBeEditedId,
@@ -296,6 +302,8 @@ export default {
     }),
   ],
 };
+
+export default fixtures;
 
 export {
   templateToBeEditedId,
