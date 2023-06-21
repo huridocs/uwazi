@@ -49,23 +49,6 @@ describe('I18NApi', () => {
     });
   });
 
-  describe('addEntry()', () => {
-    it('should post the new entry translations', done => {
-      const data = { context: 'System', key: 'search', value: 'Buscar' };
-      const requestParams = new RequestParams(data);
-      I18NApi.addEntry(requestParams)
-        .then(response => {
-          expect(JSON.parse(backend.lastOptions(`${APIURL}translations/addentry`).body)).toEqual(
-            data
-          );
-
-          expect(response).toEqual('ok');
-          done();
-        })
-        .catch(done.fail);
-    });
-  });
-
   describe('addLanguage()', () => {
     it('should post the new language', done => {
       const data = { label: 'Klingon', key: 'kl' };

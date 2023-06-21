@@ -1,6 +1,6 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
-export default {
+const fixtures: DBFixture = {
   settings: [
     {
       _id: db.id(),
@@ -12,3 +12,5 @@ export default {
     },
   ],
 };
+
+export default fixtures;

@@ -15,6 +15,26 @@ describe('BasicReducer', () => {
   });
 
   describe('Update', () => {
+    it('should update passed value in a list, by a custom index', () => {
+      const reducer = createReducer('1', []);
+      const state = reducer(
+        {},
+        actions.set('1', [
+          { index: 1, title: 'test' },
+          { index: 2, title: 'test2' },
+        ])
+      );
+      const newState = reducer(
+        state,
+        actions.update('1', { index: 2, title: 'updatedTitle' }, 'index')
+      );
+
+      expect(newState.toJS()).toEqual([
+        { index: 1, title: 'test' },
+        { index: 2, title: 'updatedTitle' },
+      ]);
+    });
+
     it('should set value passed on the same namespace', () => {
       const reducer1 = createReducer('1', []);
       const reducer2 = createReducer('2', []);

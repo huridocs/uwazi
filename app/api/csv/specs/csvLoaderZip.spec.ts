@@ -8,7 +8,7 @@ import entities from 'api/entities';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 import { CSVLoader } from '../csvLoader';
-import fixtures, { template1Id } from './fixtures';
+import { fixtures, template1Id } from './fixtures';
 
 import { createTestingZip } from './helpers';
 

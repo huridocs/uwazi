@@ -1,8 +1,8 @@
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const templateIndexProblems = db.id();
 
-export const fixtures = {
+const fixtures: DBFixture = {
   entities: [
     {
       _id: db.id(),
@@ -76,3 +76,5 @@ export const fixtures = {
     },
   ],
 };
+
+export { fixtures };

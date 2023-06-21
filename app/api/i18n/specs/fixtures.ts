@@ -1,13 +1,13 @@
 /** @format */
 
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 const englishTranslation = db.id();
 const dictionaryId = db.id();
 
-export default {
+const fixtures: DBFixture = {
   translations: [
     {
       _id: englishTranslation,
@@ -17,6 +17,7 @@ export default {
           _id: db.id(),
           id: 'System',
           label: 'System',
+          type: 'Uwazi UI',
           values: [
             { key: 'Password', value: 'Password' },
             { key: 'Account', value: 'Account' },
@@ -50,8 +51,9 @@ export default {
           type: 'Document',
         },
         {
-          id: dictionaryId,
+          id: dictionaryId.toString(),
           type: 'Dictionary',
+          label: 'Dictionary',
           values: [
             { key: 'dictionary 2', value: 'dictionary 2' },
             { key: 'Password', value: 'Password' },
@@ -74,6 +76,18 @@ export default {
             { key: 'Password', value: 'Contraseña' },
             { key: 'Account', value: 'Cuenta' },
             { key: 'Email', value: 'Correo electronico' },
+            { key: 'Age', value: 'Edad' },
+          ],
+        },
+        {
+          id: dictionaryId.toString(),
+          type: 'Dictionary',
+          label: 'Dictionary',
+          values: [
+            { key: 'dictionary 2', value: 'dictionary 2' },
+            { key: 'Password', value: 'Contraseña' },
+            { key: 'Account', value: 'Cuenta' },
+            { key: 'Email', value: 'E-Mail' },
             { key: 'Age', value: 'Edad' },
           ],
         },
@@ -119,7 +133,6 @@ export default {
         {
           key: 'zh',
           label: 'Chinese',
-          default: true,
         },
       ],
     },
@@ -148,4 +161,5 @@ export default {
   ],
 };
 
+export default fixtures;
 export { entityTemplateId, englishTranslation, documentTemplateId, dictionaryId };
