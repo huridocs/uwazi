@@ -97,7 +97,6 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   result.prettyMessage = error.ajv
     ? ajvPrettifier(result)
     : joiPrettifier(result, obfuscatedRequest);
-  result.message = error.ajv ? result.prettyMessage : result.message;
 
   return result;
 };
