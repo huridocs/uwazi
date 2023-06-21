@@ -38,8 +38,8 @@ const MultiSelect = ({
   const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <>
-      <Popover className="relative rounded-lg border border-gray-50" data-testid="multiselect-comp">
+    <div data-testid="multiselect-comp">
+      <Popover className="relative rounded-lg border border-gray-50">
         <div className="flex justify-between p-2 bg-gray-50 border-b border-gray-50">
           <div className="text-base text-indigo-700">{renderChild(label)}</div>
           <div className="left-0">
@@ -123,7 +123,7 @@ const MultiSelect = ({
             ))
           : renderChild(placeholder, 'text-gray-500')}
       </div>
-    </>
+    </div>
   );
 };
 
