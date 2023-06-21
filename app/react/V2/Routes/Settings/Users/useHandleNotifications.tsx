@@ -61,7 +61,7 @@ const useHandleNotifications = () => {
 
       case 'reset-password':
       case 'bulk-reset-password':
-        text = <Translate>Instruction to reset password sent to user</Translate>;
+        text = <Translate>Instructions to reset the password were sent to the user</Translate>;
         break;
 
       case 'reset-2fa':

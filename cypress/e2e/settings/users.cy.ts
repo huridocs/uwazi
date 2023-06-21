@@ -16,6 +16,7 @@ describe('Users', () => {
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Users & Groups').click();
+    cy.contains('button', 'Users').click();
     cy.injectAxe();
   });
 
@@ -35,94 +36,133 @@ describe('Users', () => {
     namesShouldMatch(titles);
   });
 
-  it('create user', () => {
-    cy.contains('button', 'Add user').click({ force: true });
-    cy.get('aside').within(() => {
-      cy.get('#username').type('User_1');
-      cy.get('#email').type('user@mailer.com');
-      cy.get('#password').type('secret');
-      cy.get('[data-testid="multiselect-comp"]').within(() => {
-        cy.get('button').click();
-        cy.get('ul li')
-          .eq(0)
-          .within(() => {
-            cy.get('input').eq(0).click();
-          });
+  describe('actions', () => {
+    it('create user', () => {
+      cy.contains('button', 'Add user').click({ force: true });
+      cy.get('aside').within(() => {
+        cy.get('#username').type('User_1');
+        cy.get('#email').type('user@mailer.com');
+        cy.get('#password').type('secret');
+        cy.get('[data-testid="multiselect-comp"]').within(() => {
+          cy.get('button').click();
+          cy.get('ul li')
+            .eq(0)
+            .within(() => {
+              cy.get('input').eq(0).click();
+            });
+        });
       });
       cy.contains('button', 'Save').click();
+      cy.contains('span', 'User_1');
+      cy.contains('button', 'Dismiss').click();
     });
-    cy.contains('span', 'Account').click();
-    cy.contains('span', 'Users & Groups').click();
 
-    namesShouldMatch(['Carmen', 'Mike', 'User_1', 'admin', 'blocky', 'colla', 'editor']);
-  });
-
-  it('edit user', () => {
-    cy.intercept('POST', 'api/users').as('editUser');
-    cy.get('table tbody tr')
-      .eq(0)
-      .within(() => {
-        cy.get('td:nth-child(6) button').click();
+    it('edit user', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td:nth-child(6) button').click();
+        });
+      cy.get('aside').within(() => {
+        cy.get('#username').should('have.value', 'Carmen');
+        cy.get('#email').should('have.value', 'carmen@huridocs.org');
+        cy.get('#username').type('_edited');
+        cy.get('#password').type('secret');
       });
-    cy.get('aside').within(() => {
-      cy.get('#username').should('have.value', 'Carmen');
-      cy.get('#email').should('have.value', 'carmen@huridocs.org');
-      cy.get('#username').type('_edited');
-      cy.get('#password').type('secret');
       cy.contains('button', 'Save').click();
+      cy.contains('span', 'Carmen_edited');
+      cy.contains('button', 'Dismiss').click();
     });
-    cy.wait('@editUser');
-    const titles = ['Carmen_edited', 'Mike', 'User_1', 'admin', 'blocky', 'colla', 'editor'];
-    namesShouldMatch(titles);
+
+    it('delete user', () => {
+      cy.get('table tbody tr')
+        .eq(1)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Delete').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('span', 'Mike').should('not.exist');
+      cy.contains('button', 'Dismiss').click();
+    });
+
+    it('should check the changes', () => {
+      const titles = ['Carmen_edited', 'User_1', 'admin', 'blocky', 'colla', 'editor'];
+      namesShouldMatch(titles);
+    });
   });
 
-  it('delete user', () => {
-    cy.intercept('DELETE', 'api/users*').as('deleteUser');
-    cy.get('table tbody tr')
-      .eq(2)
-      .within(() => {
-        cy.get('td input').eq(0).click();
+  describe('form validations', () => {
+    it('check for unique name and email', () => {
+      cy.contains('button', 'Add user').click();
+      cy.get('aside').within(() => {
+        cy.get('#username').type('admin');
+        cy.get('#email').type('admin@uwazi.com');
+        cy.contains('button', 'Save').click();
+        cy.contains('span', 'Duplicated username').should('exist');
+        cy.contains('span', 'Duplicated email').should('exist');
       });
-    cy.contains('button', 'Dismiss').click();
-    cy.contains('button', 'Delete').click();
-    cy.contains('[data-testid="modal"] button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
-    cy.wait('@deleteUser');
-    cy.contains('span', 'Account').click();
-    cy.contains('span', 'Users & Groups').click();
-    const titles = ['Carmen_edited', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
-    namesShouldMatch(titles);
+    });
+
+    it('should check for spaces in the username', () => {
+      cy.get('aside').within(() => {
+        cy.get('#username').type(' some spaces');
+        cy.contains('button', 'Save').click();
+        cy.contains('span', 'Usernames cannot have spaces').should('exist');
+      });
+    });
+
+    it('should not allow usernames that are too short or too long', () => {
+      cy.get('aside').within(() => {
+        cy.get('#username').clear();
+        cy.get('#username').type('Al');
+        cy.contains('span', 'Username is too short').should('exist');
+        cy.get('#username').clear();
+        cy.get('#username').type('LongNameForAUserWhatIsTheAdminThinkingWhenCreatingIt');
+        cy.contains('span', 'Username is too long').should('exist');
+      });
+    });
+
+    it('should not allow very long passwords', () => {
+      cy.get('aside').within(() => {
+        cy.get('#password').type('This passwords has more then 50 chatacters, it should fail.');
+        cy.contains('span', 'Password is too long').should('exist');
+      });
+    });
+
+    it('should required email', () => {
+      cy.get('aside').within(() => {
+        cy.get('#email').clear();
+        cy.contains('span', 'Email is required').should('exist');
+      });
+      cy.contains('button', 'Cancel').click();
+    });
   });
 
-  it('reset password', () => {
-    cy.reload();
-    cy.get('table tbody tr')
-      .eq(0)
-      .within(() => {
-        cy.get('td input').eq(0).click();
-      });
-    cy.contains('button', 'Reset Password').click();
-    cy.contains('[data-testid="modal"] button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
-  });
-  it('Reset 2fa', () => {
-    cy.get('table tbody tr')
-      .eq(0)
-      .within(() => {
-        cy.get('td input').eq(0).click();
-      });
-    cy.contains('button', 'Reset 2FA').click();
-    cy.contains('[data-testid="modal"] button', 'Accept').click();
-    cy.contains('button', 'Dismiss').click();
-  });
-  it('check for unique name and email', () => {
-    cy.contains('button', 'Add user').click({ force: true });
-    cy.get('aside').within(() => {
-      cy.get('#username').type('admin');
-      cy.get('#email').type('admin@uwazi.com');
-      cy.contains('button', 'Save').click();
-      cy.contains('span', 'Duplicated username').should('exist');
-      cy.contains('span', 'Duplicated email').should('exist');
+  describe('reset password and 2fa', () => {
+    it('reset password', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset Password').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('div', 'Instructions to reset the password were sent to the user');
+      cy.contains('button', 'Dismiss').click();
+    });
+
+    it('Reset 2fa', () => {
+      cy.contains('span', 'Password + 2fa');
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Reset 2FA').click();
+      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.contains('span', 'Password + 2fa').should('not.exist');
+      cy.contains('button', 'Dismiss').click();
     });
   });
 
