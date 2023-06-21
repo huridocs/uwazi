@@ -1,160 +1,72 @@
-/* eslint-disable react/no-multi-comp */
-import React, { createRef, useEffect, useRef, useState } from 'react';
-import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import { Translate } from 'app/I18N';
-import { Option, ContextOption } from './SelectTypes';
+import { sortBy } from 'lodash';
+import { usePopper } from 'react-popper';
+import { Popover, Transition } from '@headlessui/react';
+import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
+import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
+
+type Option = { label: string; value: string; selected?: boolean };
 
 interface MultiSelectProps {
   label: String | React.ReactNode;
   options: Option[];
-  onOptionSelected: (options: Option[]) => void;
+  disabled?: boolean;
+  onChange?: (options: Option[]) => any;
   placeholder?: String | React.ReactNode;
 }
-
-interface ContextMenuProps {
-  options: ContextOption[];
-  show: boolean;
-  location: { x: number; y: number };
-  onOptionSelected: (options: ContextOption[]) => void;
-}
-
-const ContextMenuBase = (
-  { options, show, location, onOptionSelected }: ContextMenuProps,
-  ref: any
-) =>
-  show ? (
-    <ul
-      ref={ref}
-      style={{
-        position: 'absolute',
-        top: `${location.y}px`,
-        left: `${location.x}px`,
-        boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1)',
-      }}
-      className="absolute flex flex-col p-4 font-medium bg-white rounded-md min-w-fit"
-    >
-      {options.map((option: ContextOption) => (
-        <li key={option.value} className="py-1">
-          <label className="cursor-pointer">
-            <Checkbox
-              checked={option.selected}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                // @ts-ignore
-                const isChecked = e.target.checked;
-                const currentOptions = [...options].map(opt => {
-                  if (opt.value === option.value) {
-                    return { ...opt, selected: isChecked };
-                  }
-                  return opt;
-                });
-
-                onOptionSelected(currentOptions);
-              }}
-            />
-            <span className="ml-2">{option.label}</span>
-          </label>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <></>
-  );
-
-const ContextMenu = React.forwardRef(ContextMenuBase);
 
 const MultiSelect = ({
   label,
   options,
-  onOptionSelected,
+  disabled,
+  onChange = () => {},
   placeholder = 'No options',
 }: MultiSelectProps) => {
-  const [innerOptions, setInnerOptions] = useState<ContextOption[]>([]);
-  const [menuLocation, setMenuLocation] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [menu, showMenu] = useState(false);
-  const contextMenuRef = useRef<HTMLLIElement>();
-  const buttonRef = createRef<HTMLButtonElement>();
-  const MENU_OFFSET = 15;
+  const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
+  const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
+  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-end',
+  });
 
-  useEffect(() => {
-    setInnerOptions(options.map(opt => ({ ...opt, selected: false })));
-  }, [options]);
-
-  useEffect(() => {
-    const closeMenuOnClickOutside = (e: MouseEvent) => {
-      if (
-        !contextMenuRef.current?.contains(e.target as Node) &&
-        !buttonRef.current?.contains(e.target as Node)
-      ) {
-        showMenu(false);
-      }
-    };
-
-    document.addEventListener('click', closeMenuOnClickOutside);
-    return () => document.removeEventListener('click', closeMenuOnClickOutside);
-  }, []);
-
-  const getSelectedOptions = () => innerOptions.filter(opt => opt.selected);
+  const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <div className="border rounded-lg border-gray-50" data-testid="multiselect-comp">
-      <div className="flex justify-between p-4 border-b border-gray-50 bg-gray-50">
+    <Popover className="relative rounded-lg border border-gray-50" data-testid="multiselect-comp">
+      <div className="flex justify-between p-2 bg-gray-50 border-b border-gray-50">
         <div className="text-base text-indigo-700">{label}</div>
         <div className="left-0">
-          <button
-            type="button"
-            ref={buttonRef}
-            className="text-indigo-700"
-            onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-              setTimeout(() => {
-                // Viewport width
-                // @ts-ignore
-                const totalWidth = e.view.innerWidth;
-                // @ts-ignore
-                const totalHeight = e.view.innerHeight;
-                const contextMenuWidth = contextMenuRef.current?.clientWidth;
-                const contextMenuHeight = contextMenuRef.current?.clientHeight;
-
-                if (!contextMenuHeight || !contextMenuWidth) return;
-
-                let x = e.clientX;
-                let y = e.clientY;
-
-                if (x + contextMenuWidth > totalWidth) {
-                  // Context menu will go out of the viewport
-                  x -= contextMenuWidth + MENU_OFFSET; // Display CM offset towards the view port
-                }
-
-                if (y + contextMenuHeight > totalHeight) {
-                  // Context menu will go out of the viewport
-                  y = -y; // Display CM offset towards the view port
-                }
-                setMenuLocation({ x: x + MENU_OFFSET, y: y + MENU_OFFSET });
-              }, 0);
-              showMenu(!menu);
-            }}
+          <Popover.Button
+            ref={setReferenceElement}
+            className="text-primary-700 disabled:text-primary-300"
+            disabled={disabled}
           >
+            <span className="sr-only">{t('System', 'Select', null, false)}</span>
             <PlusCircleIcon className="w-6 text-lg" />
-          </button>
+          </Popover.Button>
         </div>
       </div>
+
       <div className="flex flex-wrap gap-2 px-5 py-4 min-h-fit">
-        {getSelectedOptions().length > 0 ? (
-          getSelectedOptions().map((option: Option) => (
-            <Pill color="gray" key={option.value} className="flex flex-row">
+        {selectedOptions.length ? (
+          selectedOptions.map((option: Option) => (
+            <Pill color="gray" key={option.value} className="flex flex-row mb-2">
               <span className="flex items-center">{option.label}</span>
               <button
                 type="button"
-                className="content-center justify-center ml-1 font-bold text-gray-400"
+                className="justify-center content-center ml-1 font-bold text-gray-400"
+                disabled={disabled}
                 onClick={() => {
-                  setInnerOptions(
-                    innerOptions.map(opt =>
-                      opt.value === option.value ? { ...opt, selected: false } : opt
-                    )
-                  );
-                  onOptionSelected(getSelectedOptions());
+                  const selected = optionsState.map(opt => {
+                    if (opt.value === option.value) {
+                      return { value: opt.value, label: opt.label };
+                    }
+                    return opt;
+                  });
+                  setOptionsState(selected);
+                  onChange(selected);
                 }}
               >
                 <XMarkIcon className="w-6 text-lg" />
@@ -165,18 +77,49 @@ const MultiSelect = ({
           <Translate className="text-gray-500">{placeholder}</Translate>
         )}
       </div>
-      <ContextMenu
-        ref={contextMenuRef}
-        location={menuLocation}
-        show={menu}
-        options={innerOptions}
-        onOptionSelected={(ops: ContextOption[]) => {
-          setInnerOptions(ops);
-          onOptionSelected(getSelectedOptions());
-        }}
-      />
-    </div>
+
+      <Transition
+        enter="transition duration-100 ease-out"
+        enterFrom="transform scale-95 opacity-0"
+        enterTo="transform scale-100 opacity-100"
+        leave="transition duration-75 ease-out"
+        leaveFrom="transform scale-100 opacity-100"
+        leaveTo="transform scale-95 opacity-0"
+      >
+        <Popover.Panel
+          ref={setPopperElement}
+          style={styles.popper}
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...attributes.popper}
+          className="overflow-y-auto absolute right-8 p-2 max-w-md max-h-56 bg-white rounded shadow-md w-fit"
+          as="ul"
+        >
+          {optionsState.map((option: Option) => (
+            <li key={option.label} className="flex gap-1 py-1 align-top">
+              <label className="cursor-pointer">
+                <Checkbox
+                  checked={option.selected}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const isChecked = e.target.checked;
+                    const selected = optionsState.map(opt => {
+                      if (opt.value === option.value) {
+                        return { ...opt, selected: isChecked };
+                      }
+                      return opt;
+                    });
+                    setOptionsState(selected);
+                    onChange(selected);
+                  }}
+                />
+                <span className="ml-2">{option.label}</span>
+              </label>
+            </li>
+          ))}
+        </Popover.Panel>
+      </Transition>
+    </Popover>
   );
 };
 
+export type { MultiSelectProps };
 export { MultiSelect };
