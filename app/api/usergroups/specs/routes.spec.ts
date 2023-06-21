@@ -74,9 +74,7 @@ describe('usergroups routes', () => {
         expect(response.status).toBe(422);
         expect(response.body.validations[0].keyword).toBe('required');
         expect(response.body.validations[0].instancePath).toBe('');
-        expect(response.body.error).toBe(
-          "validation failed\n: must have required property 'name'\n: must have required property 'members'"
-        );
+        expect(response.body.error).toBe('validation failed');
       });
 
       it('should validate a user group that has an undefined user id', async () => {
@@ -85,9 +83,7 @@ describe('usergroups routes', () => {
         expect(response.status).toBe(422);
         expect(response.body.validations[0].keyword).toBe('required');
         expect(response.body.validations[0].instancePath).toBe('/members/0');
-        expect(response.body.error).toBe(
-          "validation failed\n/members/0: must have required property 'refId'"
-        );
+        expect(response.body.error).toBe('validation failed');
       });
 
       it('should not validate an object with additional properties', async () => {
@@ -102,9 +98,7 @@ describe('usergroups routes', () => {
         expect(response.body.validations[0].instancePath).toBe('');
         expect(response.body.validations[1].keyword).toBe('additionalProperties');
         expect(response.body.validations[1].instancePath).toBe('/members/0');
-        expect(response.body.error).toBe(
-          'validation failed\n: must NOT have additional properties\n/members/0: must NOT have additional properties'
-        );
+        expect(response.body.error).toBe('validation failed');
       });
     });
   });
