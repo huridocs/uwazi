@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import { sortBy } from 'lodash';
+import { isString, sortBy } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover, Transition } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
@@ -16,6 +16,9 @@ interface MultiSelectProps {
   onChange?: (options: Option[]) => any;
   placeholder?: String | React.ReactNode;
 }
+
+const renderChild = (child: string | React.ReactNode, className?: string) =>
+  isString(child) ? <Translate className={className || ''}>{child}</Translate> : child;
 
 const MultiSelect = ({
   label,
@@ -36,7 +39,7 @@ const MultiSelect = ({
   return (
     <Popover className="relative rounded-lg border border-gray-50" data-testid="multiselect-comp">
       <div className="flex justify-between p-2 bg-gray-50 border-b border-gray-50">
-        <div className="text-base text-indigo-700">{label}</div>
+        <div className="text-base text-indigo-700">{renderChild(label)}</div>
         <div className="left-0">
           <Popover.Button
             ref={setReferenceElement}
@@ -50,32 +53,30 @@ const MultiSelect = ({
       </div>
 
       <div className="flex flex-wrap gap-2 px-5 py-4 min-h-fit">
-        {selectedOptions.length ? (
-          selectedOptions.map((option: Option) => (
-            <Pill color="gray" key={option.value} className="flex flex-row mb-2">
-              <span className="flex items-center">{option.label}</span>
-              <button
-                type="button"
-                className="justify-center content-center ml-1 font-bold text-gray-400"
-                disabled={disabled}
-                onClick={() => {
-                  const selected = optionsState.map(opt => {
-                    if (opt.value === option.value) {
-                      return { value: opt.value, label: opt.label };
-                    }
-                    return opt;
-                  });
-                  setOptionsState(selected);
-                  onChange(selected);
-                }}
-              >
-                <XMarkIcon className="w-6 text-lg" />
-              </button>
-            </Pill>
-          ))
-        ) : (
-          <Translate className="text-gray-500">{placeholder}</Translate>
-        )}
+        {selectedOptions.length
+          ? selectedOptions.map((option: Option) => (
+              <Pill color="gray" key={option.value} className="flex flex-row mb-2">
+                <span className="flex items-center">{option.label}</span>
+                <button
+                  type="button"
+                  className="justify-center content-center ml-1 font-bold text-gray-400"
+                  disabled={disabled}
+                  onClick={() => {
+                    const selected = optionsState.map(opt => {
+                      if (opt.value === option.value) {
+                        return { value: opt.value, label: opt.label };
+                      }
+                      return opt;
+                    });
+                    setOptionsState(selected);
+                    onChange(selected);
+                  }}
+                >
+                  <XMarkIcon className="w-6 text-lg" />
+                </button>
+              </Pill>
+            ))
+          : renderChild(placeholder, 'text-gray-500')}
       </div>
 
       <Transition
