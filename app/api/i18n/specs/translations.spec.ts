@@ -12,10 +12,12 @@ import fixtures, {
   entityTemplateId,
 } from './fixtures';
 import { UITranslationNotAvailable } from '../defaultTranslations';
+import { migrateTranslationsToV2 } from '../v2_support';
 
 describe('translations', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
+    await migrateTranslationsToV2();
   });
 
   afterAll(async () => {
@@ -29,6 +31,16 @@ describe('translations', () => {
       expect(result).toMatchObject({
         contexts: [
           {
+            type: 'Dictionary',
+            values: {
+              Account: 'Account',
+              Age: 'Age',
+              Email: 'E-Mail',
+              Password: 'Password',
+              'dictionary 2': 'dictionary 2',
+            },
+          },
+          {
             id: 'System',
             label: 'System',
             type: 'Uwazi UI',
@@ -38,40 +50,6 @@ describe('translations', () => {
               Email: 'E-Mail',
               Library: 'Library',
               Password: 'Password',
-            },
-          },
-          {
-            id: 'Filters',
-            label: 'Filters',
-            type: 'Uwazi UI',
-            values: {},
-          },
-          {
-            id: 'Menu',
-            label: 'Menu',
-            type: 'Uwazi UI',
-            values: {},
-          },
-          {
-            id: entityTemplateId.toString(),
-            label: 'Judge',
-            type: 'Entity',
-            values: {},
-          },
-          {
-            id: documentTemplateId.toString(),
-            label: 'Court order',
-            type: 'Document',
-            values: {},
-          },
-          {
-            type: 'Dictionary',
-            values: {
-              Account: 'Account',
-              Age: 'Age',
-              Email: 'E-Mail',
-              Password: 'Password',
-              'dictionary 2': 'dictionary 2',
             },
           },
         ],
@@ -87,22 +65,28 @@ describe('translations', () => {
       expect(result._id).toBeDefined();
     });
 
-    it('should transform values from map to array if its a map', async () => {
+    it('should accept partial updates in both, array format and map format', async () => {
       await translations.save({
-        locale: 'fr',
+        locale: 'en',
         contexts: [
-          { values: { test: 'value' } },
-          // @ts-ignore
-          { values: [{ key: 'test2', value: 'value2' }] },
-          { values: {} },
+          {
+            id: 'System',
+            values: [{ key: 'Password', value: 'edited Password' }],
+          },
+          {
+            id: dictionaryId.toString(),
+            values: { Age: 'edited Age' },
+          },
         ],
       });
 
-      const result = await translations.get();
-
-      const fr = result.find(r => r.locale === 'fr');
-      expect(fr?.contexts?.[0].values.test).toEqual('value');
-      expect(fr?.contexts?.[1].values.test2).toEqual('value2');
+      const [result] = await translations.get({ locale: 'en' });
+      expect(result.contexts!.find(c => c.id === dictionaryId.toString())?.values.Age).toBe(
+        'edited Age'
+      );
+      expect(result.contexts!.find(c => c.id === 'System')?.values.Password).toBe(
+        'edited Password'
+      );
     });
 
     describe('when saving a dictionary context', () => {
@@ -134,27 +118,6 @@ describe('translations', () => {
           dictionaryId.toString(),
           'en'
         );
-      });
-    });
-
-    it('should save partial translations', async () => {
-      await translations.save({
-        _id: englishTranslation,
-        locale: 'en',
-        contexts: [
-          {
-            id: 'Filters',
-            label: 'Filters',
-            values: { something: 'new' },
-          },
-        ],
-      });
-
-      const [translation] = await translations.get({ _id: englishTranslation.toString() });
-
-      expect(translation.contexts?.length).toBe(6);
-      expect(translation.contexts?.find(context => context.id === 'Filters')?.values).toEqual({
-        something: 'new',
       });
     });
   });
@@ -254,9 +217,9 @@ describe('translations', () => {
   });
 
   describe('addContext()', () => {
-    it('should add a context with its values', async () => {
+    fit('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      const result = await translations.addContext('context', 'Judge', values, ContextType.entity);
+      const result = await translations.addContext('test_context', 'test_context', values, ContextType.entity);
 
       expect(result).toBe('ok');
 

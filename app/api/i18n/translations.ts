@@ -197,33 +197,18 @@ const translationTypeToIndexedTranslation = (translations: EnforcedWithId<Transl
 
 export default {
   prepareContexts,
-  async get(query: { _id?: string; locale?: string; context?: string } = {}, selector = {}) {
-    const alreadyMigrated = await migrateTranslationsToV2();
-    if (alreadyMigrated) {
-      let language = query.locale;
-      if (query._id) {
-        const [oldLanguage] = await model.get({ _id: query._id }, { locale: 1 });
-        language = oldLanguage.locale;
-      }
+  async get(query: { locale?: string; context?: string } = {}) {
+    const language = query.locale;
 
-      if (query.context) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
-      }
-
-      if (language) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
-      }
-
-      return translationTypeToIndexedTranslation(await getTranslationsV2());
+    if (query.context) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
     }
 
-    const { context, ...actualQuery } = query;
-    const translations = await model.get(
-      actualQuery,
-      Object.assign(selector, context ? { contexts: { $elemMatch: { id: context } } } : {})
-    );
+    if (language) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
+    }
 
-    return translationTypeToIndexedTranslation(translations);
+    return translationTypeToIndexedTranslation(await getTranslationsV2());
   },
 
   async oldSave(translation: TranslationType | IndexedTranslations) {

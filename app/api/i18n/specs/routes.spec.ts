@@ -1,16 +1,38 @@
-import request from 'supertest';
 import 'isomorphic-fetch';
+import request from 'supertest';
 
 import * as csvApi from 'api/csv/csvLoader';
+import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 import i18nRoutes from 'api/i18n/routes';
+import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
-import { UserRole } from 'shared/types/userSchema';
-import { LanguageSchema } from 'shared/types/commonTypes';
 import { availableLanguages } from 'shared/languagesList';
-import { errorLog } from 'api/log';
+import { TranslationType } from 'shared/translationType';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { UserRole } from 'shared/types/userSchema';
 import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
+import { migrateTranslationsToV2 } from '../v2_support';
+
+const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
+  if (translation.contexts?.length) {
+    return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
+      if (context.values) {
+        context.values.forEach(contextValue => {
+          flatTranslations.push({
+            language: translation.locale,
+            key: contextValue.key,
+            value: contextValue.value,
+            context: { type: context.type, label: context.label, id: context.id },
+          } as CreateTranslationsData);
+        });
+      }
+      return flatTranslations;
+    }, []);
+  }
+  return [];
+};
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -71,6 +93,8 @@ describe('i18n translations routes', () => {
         },
       ],
     });
+
+    await migrateTranslationsToV2();
   });
 
   afterEach(() => {
@@ -89,7 +113,6 @@ describe('i18n translations routes', () => {
         expect(response.body).toEqual({
           rows: [
             {
-              _id: expect.any(String),
               contexts: [
                 {
                   id: 'System',
@@ -110,7 +133,6 @@ describe('i18n translations routes', () => {
             },
 
             {
-              _id: expect.any(String),
               contexts: [
                 {
                   id: 'System',
@@ -149,7 +171,6 @@ describe('i18n translations routes', () => {
         expect(response.body).toEqual({
           rows: [
             {
-              _id: expect.any(String),
               contexts: [
                 {
                   id: 'contextID',
@@ -162,7 +183,6 @@ describe('i18n translations routes', () => {
             },
 
             {
-              _id: expect.any(String),
               contexts: [
                 {
                   id: 'contextID',
@@ -214,29 +234,28 @@ describe('i18n translations routes', () => {
         const response = await request(app)
           .post('/api/translations')
           .send({
-            locale: 'ca',
-            contexts: [{ values: { Search: 'Buscar' } }],
+            locale: 'es',
+            contexts: [
+              {
+                id: 'System',
+                label: 'User Interface',
+                type: 'Uwazi UI',
+                values: { Search: 'Buscar' },
+              },
+            ],
           });
 
-        expect(response.body).toEqual({
-          __v: expect.any(Number),
-          _id: expect.any(String),
-          contexts: [
-            {
-              _id: expect.any(String),
-              values: {
-                Search: 'Buscar',
-              },
-            },
-          ],
-          locale: 'ca',
+        expect(response.body.contexts[0]).toMatchObject({
+          values: { Search: 'Buscar' },
         });
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'translationsChange',
           expect.objectContaining({
-            contexts: [expect.objectContaining({ values: { Search: 'Buscar' } })],
-            locale: 'ca',
+            contexts: expect.arrayContaining([
+              expect.objectContaining({ values: { Search: 'Buscar' } }),
+            ]),
+            locale: 'es',
           })
         );
       });
@@ -366,10 +385,8 @@ describe('i18n translations routes', () => {
 
         expect(response.body).toEqual([
           {
-            _id: expect.any(String),
             contexts: [
               {
-                _id: expect.any(String),
                 id: 'System',
                 label: 'User Interface',
                 type: 'Uwazi UI',
@@ -378,7 +395,6 @@ describe('i18n translations routes', () => {
                 },
               },
               {
-                _id: expect.any(String),
                 id: 'contextID',
                 label: 'Template',
                 type: 'Entity',

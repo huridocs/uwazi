@@ -651,60 +651,6 @@ describe('translations v2 support', () => {
           ],
         });
       });
-
-      describe('when requesting an _id (old collection)', () => {
-        it('should return the new collection values (old _id means language in the new collection)', async () => {
-          const spanishId = new ObjectId();
-          await testingDB.setupFixturesAndContext({
-            ...fixtures,
-            translations: [
-              {
-                _id: spanishId,
-                locale: 'es',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'System',
-                    type: 'Uwazi UI',
-                    values: [
-                      { key: 'Password', value: 'Contraseña' },
-                      { key: 'Account', value: 'Cuenta' },
-                    ],
-                  },
-                ],
-              },
-              {
-                locale: 'en',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'System',
-                    type: 'Uwazi UI',
-                    values: [
-                      { key: 'Password', value: 'Password' },
-                      { key: 'Account', value: 'Account' },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
-          await translations.get();
-          const [spanish, rest] = await translations.get({ _id: spanishId.toString() });
-          expect(rest).toBeUndefined();
-          expect(spanish).toMatchObject({
-            locale: 'es',
-            contexts: [
-              {
-                id: 'System',
-                label: 'System',
-                type: 'Uwazi UI',
-                values: { Password: 'Contraseña', Account: 'Cuenta' },
-              },
-            ],
-          });
-        });
-      });
     });
   });
 

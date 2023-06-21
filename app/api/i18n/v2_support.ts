@@ -175,10 +175,10 @@ export const updateContextV2 = async (
 
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
-  if (!tenants.current().featureFlags?.translationsV2) {
-    await cleanUpV2Collections(db);
-    return false;
-  }
+  // if (!tenants.current().featureFlags?.translationsV2) {
+  //   await cleanUpV2Collections(db);
+  //   return false;
+  // }
 
   const needsMigration = await db
     .collection('translations_v2_helper')
