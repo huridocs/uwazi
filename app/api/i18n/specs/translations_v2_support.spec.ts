@@ -8,6 +8,7 @@ import { migrateTranslationsToV2 } from '../v2_support';
 import migration from '../../i18n.v2/migrations';
 
 import fixtures, { dictionaryId } from './fixtures';
+import { ContextType } from 'shared/translationSchema';
 
 let db: Db;
 const newTranslationsCollection = 'translations_v2';
@@ -131,6 +132,7 @@ describe('translations v2 support', () => {
     });
 
     it('should save the translations to the new translations collection', async () => {
+      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
       await testingDB.setupFixturesAndContext({
         settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
         translations: [],
@@ -361,7 +363,7 @@ describe('translations v2 support', () => {
         await testingDB.setupFixturesAndContext(fixtures);
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
 
-        await translations.get();
+        await migrateTranslationsToV2();
 
         const translationsMigrated = await db
           .collection(newTranslationsCollection)
@@ -373,9 +375,9 @@ describe('translations v2 support', () => {
       it('should empty the new translations collection', async () => {
         await testingDB.setupFixturesAndContext(fixtures);
 
-        await translations.get();
+        await migrateTranslationsToV2();
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
-        await translations.get();
+        await migrateTranslationsToV2();
 
         const translationsMigrated = await db
           .collection(newTranslationsCollection)
@@ -389,7 +391,7 @@ describe('translations v2 support', () => {
       it('should migrate current translations to the new collection', async () => {
         await testingDB.setupFixturesAndContext(fixtures);
 
-        await translations.get();
+        await migrateTranslationsToV2();
 
         const translationsMigrated = await db
           .collection(newTranslationsCollection)
@@ -788,6 +790,54 @@ describe('translations v2 support', () => {
           },
         ]);
       });
+    });
+  });
+
+  describe('addContext()', () => {
+    it('should add a context with its values', async () => {
+      await testingDB.setupFixturesAndContext(fixtures);
+      await migrateTranslationsToV2();
+
+      const values = { Name: 'Name', Surname: 'Surname' };
+      const result = await translations.addContext('context', 'Judge', values, ContextType.entity);
+
+      expect(result).toBe('ok');
+
+      const newContextTranslations = await db
+        .collection(newTranslationsCollection)
+        .find({ language: { $in: ['es', 'en'] }, 'context.id': 'context' })
+        .sort({ language: 1, key: 1 })
+        .toArray();
+
+      expect(newContextTranslations.filter(t => t.language === 'es')).toMatchObject([
+        {
+          language: 'es',
+          key: 'Name',
+          value: 'Name',
+          context: { type: ContextType.entity, label: 'Judge', id: 'context' },
+        },
+        {
+          language: 'es',
+          key: 'Surname',
+          value: 'Surname',
+          context: { type: ContextType.entity, label: 'Judge', id: 'context' },
+        },
+      ]);
+
+      expect(newContextTranslations.filter(t => t.language === 'en')).toMatchObject([
+        {
+          language: 'en',
+          key: 'Name',
+          value: 'Name',
+          context: { type: ContextType.entity, label: 'Judge', id: 'context' },
+        },
+        {
+          language: 'en',
+          key: 'Surname',
+          value: 'Surname',
+          context: { type: ContextType.entity, label: 'Judge', id: 'context' },
+        },
+      ]);
     });
   });
 });
