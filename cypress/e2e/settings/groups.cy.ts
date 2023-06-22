@@ -73,8 +73,9 @@ describe('Groups', () => {
 
     cy.contains('td', 'Knights of the Zodiac');
     cy.get('tbody > :nth-child(3) > :nth-child(3)').within(() => {
-      cy.get('[data-testid="pill-comp"]').eq(0).contains('span', 'admin');
-      cy.get('[data-testid="pill-comp"]').eq(1).contains('span', 'editor');
+      cy.get('[data-testid="pill-comp"]').eq(0).contains('span', 'Cynthia');
+      cy.get('[data-testid="pill-comp"]').eq(1).contains('span', 'admin');
+      cy.get('[data-testid="pill-comp"]').eq(2).contains('span', 'editor');
     });
 
     const groups = ['Asesores legales', 'Group One', 'Knights of the Zodiac'];
