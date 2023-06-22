@@ -23,6 +23,7 @@ describe('Users', () => {
 
   it('accesibility check', () => {
     cy.get('caption').within(() => cy.contains('span', 'Users'));
+    cy.get('div.tw-content').scrollTo('top');
     cy.checkA11y();
     cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
     cy.contains('button', 'Add user').click();
@@ -39,7 +40,7 @@ describe('Users', () => {
 
   describe('actions', () => {
     it('create user', () => {
-      cy.contains('button', 'Add user').click({ force: true });
+      cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
         cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
