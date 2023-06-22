@@ -242,7 +242,7 @@ export default {
 
   async save(translation: TranslationType | IndexedTranslations) {
     const result = await this.oldSave(translation);
-    await upsertTranslationsV2(result);
+    await upsertTranslationsV2([result]);
     return result;
   },
 
@@ -291,14 +291,18 @@ export default {
       translatedValues.push({ key, value: values[key] });
     });
     const result = await model.get();
-    await Promise.all(
+
+    const savedTranslations = await Promise.all(
       result.map(async translation => {
         // eslint-disable-next-line no-param-reassign
         translation.contexts = translation.contexts || [];
         translation.contexts.push({ id, label: contextName, values: translatedValues, type });
-        return this.save(translation);
+        return this.oldSave(translation);
       })
     );
+
+    await upsertTranslationsV2(savedTranslations);
+
     return 'ok';
   },
 
