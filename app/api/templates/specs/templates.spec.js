@@ -45,6 +45,7 @@ describe('templates', () => {
 
   beforeAll(async () => {
     jest.spyOn(translations, 'addContext').mockImplementation(async () => Promise.resolve());
+    jest.spyOn(translations, 'updateContext').mockImplementation(() => {});
     await db.setupFixturesAndContext(fixtures, elasticIndex);
   });
 
@@ -253,8 +254,7 @@ describe('templates', () => {
         'changed name',
         expectedContext,
         [],
-        { Title: 'Title', 'changed name': 'changed name' },
-        'Entity'
+        { Title: 'Title', 'changed name': 'changed name' }
       );
     });
 
@@ -273,8 +273,7 @@ describe('templates', () => {
         'template to be edited',
         {},
         ['Title'],
-        expectedContext,
-        'Entity'
+        expectedContext
       );
 
       testTemplate.commonProperties[0].label = 'Second New Title';
@@ -288,8 +287,7 @@ describe('templates', () => {
         'template to be edited',
         {},
         ['First New Title'],
-        expectedContext,
-        'Entity'
+        expectedContext
       );
     });
 
@@ -402,8 +400,7 @@ describe('templates', () => {
             'label 3': 'label 3',
             'new title': 'new title',
             'new title label': 'new title label',
-          },
-          'Entity'
+          }
         );
       });
 

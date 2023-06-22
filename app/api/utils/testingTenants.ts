@@ -7,7 +7,6 @@ let mockedTenant: Partial<Tenant>;
 const testingTenants = {
   mockCurrentTenant(tenant: Partial<Tenant>) {
     mockedTenant = tenant;
-    mockedTenant.featureFlags = { translationsV2: true };
     tenants.current = () => <Tenant>mockedTenant;
   },
 

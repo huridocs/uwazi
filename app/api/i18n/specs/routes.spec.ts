@@ -2,37 +2,16 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 
 import * as csvApi from 'api/csv/csvLoader';
-import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 import i18nRoutes from 'api/i18n/routes';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { availableLanguages } from 'shared/languagesList';
-import { TranslationType } from 'shared/translationType';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
 import { migrateTranslationsToV2 } from '../v2_support';
-
-const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
-  if (translation.contexts?.length) {
-    return translation.contexts.reduce<CreateTranslationsData[]>((flatTranslations, context) => {
-      if (context.values) {
-        context.values.forEach(contextValue => {
-          flatTranslations.push({
-            language: translation.locale,
-            key: contextValue.key,
-            value: contextValue.value,
-            context: { type: context.type, label: context.label, id: context.id },
-          } as CreateTranslationsData);
-        });
-      }
-      return flatTranslations;
-    }, []);
-  }
-  return [];
-};
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -322,21 +301,16 @@ describe('i18n translations routes', () => {
                     {
                       key: 'Search',
                       value: 'Search',
-                      _id: expect.anything(),
                     },
                   ],
-                  _id: expect.anything(),
                 },
                 {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1', _id: expect.anything() }],
-                  _id: expect.anything(),
+                  values: [{ key: 'title', value: 'Template 1' }],
                 },
               ],
-              _id: expect.anything(),
-              __v: 0,
             },
           ],
           [
@@ -352,21 +326,16 @@ describe('i18n translations routes', () => {
                     {
                       key: 'Search',
                       value: 'Search',
-                      _id: expect.anything(),
                     },
                   ],
-                  _id: expect.anything(),
                 },
                 {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1', _id: expect.anything() }],
-                  _id: expect.anything(),
+                  values: [{ key: 'title', value: 'Template 1' }],
                 },
               ],
-              _id: expect.anything(),
-              __v: 0,
             },
           ],
           ['updateSettings', newSettings],
@@ -541,7 +510,7 @@ describe('i18n translations routes', () => {
             'translationsChange',
             {
               acknowledged: true,
-              deletedCount: 1,
+              deletedCount: 2,
             },
           ],
         ]);

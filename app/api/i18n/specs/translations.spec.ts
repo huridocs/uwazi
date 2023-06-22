@@ -4,20 +4,14 @@ import thesauri from 'api/thesauri/thesauri.js';
 import { ContextType } from 'shared/translationSchema';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
-import translations from '../translations';
-import fixtures, {
-  dictionaryId,
-  documentTemplateId,
-  englishTranslation,
-  entityTemplateId,
-} from './fixtures';
+import settings from 'api/settings';
 import { UITranslationNotAvailable } from '../defaultTranslations';
-import { migrateTranslationsToV2 } from '../v2_support';
+import translations from '../translations';
+import fixtures, { dictionaryId, englishTranslation } from './fixtures';
 
 describe('translations', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    await migrateTranslationsToV2();
   });
 
   afterAll(async () => {
@@ -61,8 +55,7 @@ describe('translations', () => {
   describe('save()', () => {
     it('should save the translation and return it', async () => {
       const result = await translations.save({ locale: 'fr' });
-
-      expect(result._id).toBeDefined();
+      expect(result.locale).toBe('fr');
     });
 
     it('should accept partial updates in both, array format and map format', async () => {
@@ -94,6 +87,7 @@ describe('translations', () => {
         jest
           .spyOn(thesauri, 'renameThesaurusInMetadata')
           .mockImplementation(async () => Promise.resolve());
+
         await translations.save({
           _id: englishTranslation,
           locale: 'en',
@@ -168,9 +162,9 @@ describe('translations', () => {
         en: { Password: 'Passphrase', Age: 'Years Old' },
       });
 
-      const result = await translations.get();
+      const result = await translations.get({ locale: 'en' });
 
-      expect(result[0].contexts?.[0].values).toMatchObject({
+      expect(result[0].contexts?.[1].values).toMatchObject({
         Password: 'Passphrase',
         Account: 'Account',
         Email: 'E-Mail',
@@ -199,15 +193,16 @@ describe('translations', () => {
         fr: { Password: 'mot de masse', Age: 'âge' },
       });
 
-      const result = await translations.get();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [zh, es, en] = await translations.get();
 
-      expect(result[0].contexts?.[0].values).toMatchObject({
+      expect(en.contexts?.[1].values).toMatchObject({
         Password: 'Passphrase',
         Account: 'Account',
         Email: 'E-Mail',
         Age: 'Years Old',
       });
-      expect(result[1].contexts?.[0].values).toMatchObject({
+      expect(es.contexts?.[1].values).toMatchObject({
         Password: 'Password in Spanish',
         Account: 'Cuenta',
         Email: 'Correo electronico',
@@ -217,16 +212,21 @@ describe('translations', () => {
   });
 
   describe('addContext()', () => {
-    fit('should add a context with its values', async () => {
+    it('should add a context with its values', async () => {
       const values = { Name: 'Name', Surname: 'Surname' };
-      const result = await translations.addContext('test_context', 'test_context', values, ContextType.entity);
+      const result = await translations.addContext(
+        'context_id',
+        'context_name',
+        values,
+        ContextType.entity
+      );
 
       expect(result).toBe('ok');
 
       const translated = await translations.get();
 
-      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].values).toEqual(values);
-      expect(translated.find(t => t.locale === 'en')?.contexts?.[6].type).toEqual(
+      expect(translated.find(t => t.locale === 'en')?.contexts?.[2].values).toEqual(values);
+      expect(translated.find(t => t.locale === 'en')?.contexts?.[2].type).toEqual(
         ContextType.entity
       );
       expect(translated.find(t => t.locale === 'es')?.contexts?.[2].values).toEqual(values);
@@ -244,7 +244,7 @@ describe('translations', () => {
 
       const translated = await translations.get();
 
-      expect(translated[0].contexts?.length).toBe(5);
+      expect(translated[0].contexts?.length).toBe(1);
       expect(translated[1].contexts?.length).toBe(1);
     });
   });
@@ -262,7 +262,7 @@ describe('translations', () => {
       };
 
       const result = await translations.updateContext(
-        'Menu',
+        'System',
         'Menu',
         keyNameChanges,
         deletedProperties,
@@ -273,9 +273,10 @@ describe('translations', () => {
     });
 
     it('should update a context with its values', async () => {
-      const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
+      const keyNameChanges = { Password: 'Pass', Account: 'Acc' };
       const deletedProperties = ['Age'];
       const values = {
+        Pass: 'Pass',
         Email: 'Email',
         Name: 'Names',
         Interface: 'Interfaces',
@@ -295,44 +296,29 @@ describe('translations', () => {
       const en = translated.find(t => t.locale === 'en');
       const es = translated.find(t => t.locale === 'es');
 
-      expect(en?.contexts?.[0].label).toBe('Interface');
-      expect(en?.contexts?.[0].values.Pass).toBe('Pass');
-      expect(en?.contexts?.[0].values.Interface).toBe('Interfaces');
-      expect(es?.contexts?.[0].values.Pass).toBe('Contraseña');
+      expect(en?.contexts?.[1].label).toBe('Interface');
+      expect(en?.contexts?.[1].values.Pass).toBe('Pass');
+      expect(en?.contexts?.[1].values.Interface).toBe('Interfaces');
+      expect(es?.contexts?.[1].values.Pass).toBe('Contraseña');
 
-      expect(en?.contexts?.[0].values.Age).not.toBeDefined();
-      expect(es?.contexts?.[0].values.Age).not.toBeDefined();
-      expect(en?.contexts?.[0].values.System).not.toBeDefined();
-      expect(es?.contexts?.[0].values.System).not.toBeDefined();
+      expect(en?.contexts?.[1].values.Age).not.toBeDefined();
+      expect(es?.contexts?.[1].values.Age).not.toBeDefined();
+      expect(en?.contexts?.[1].values.System).not.toBeDefined();
+      expect(es?.contexts?.[1].values.System).not.toBeDefined();
 
-      expect(en?.contexts?.[0].values.Name).toBe('Names');
-      expect(es?.contexts?.[0].values.Name).toBe('Names');
+      expect(en?.contexts?.[1].values.Name).toBe('Names');
+      expect(es?.contexts?.[1].values.Name).toBe('Names');
     });
   });
 
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
+      await settings.addLanguage({ key: 'fr', label: 'french' });
       await translations.addLanguage('fr');
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
       const defaultTranslation = allTranslations.find(t => t.locale === 'en');
-
-      expect(frTranslation?.contexts?.[0]._id?.toString()).not.toBe(
-        defaultTranslation?.contexts?.[0]._id?.toString()
-      );
-      expect(frTranslation?.contexts?.[1]._id?.toString()).not.toBe(
-        defaultTranslation?.contexts?.[1]._id?.toString()
-      );
-      expect(frTranslation?.contexts?.[2]._id?.toString()).not.toBe(
-        defaultTranslation?.contexts?.[2]._id?.toString()
-      );
-      expect(frTranslation?.contexts?.[3]._id?.toString()).not.toBe(
-        defaultTranslation?.contexts?.[3]._id?.toString()
-      );
-      expect(frTranslation?.contexts?.[4]._id?.toString()).not.toBe(
-        defaultTranslation?.contexts?.[4]._id?.toString()
-      );
 
       expect(frTranslation?.contexts?.[0].values).toEqual(defaultTranslation?.contexts?.[0].values);
       expect(frTranslation?.contexts?.[1].values).toEqual(defaultTranslation?.contexts?.[1].values);
@@ -340,6 +326,7 @@ describe('translations', () => {
 
     describe('when translation already exists', () => {
       it('should not clone it again', async () => {
+        await settings.addLanguage({ key: 'fr', label: 'french' });
         await translations.addLanguage('fr');
         await translations.addLanguage('fr');
         const allTranslations = await translations.get();
@@ -354,11 +341,11 @@ describe('translations', () => {
   describe('removeLanguage', () => {
     it('should remove translation for the language passed', async () => {
       await translations.removeLanguage('es');
-      await translations.removeLanguage('other');
       const allTranslations = await translations.get();
 
       expect(allTranslations.length).toBe(2);
-      expect(allTranslations[0].locale).toBe('en');
+      expect(allTranslations[0].locale).toBe('zh');
+      expect(allTranslations[1].locale).toBe('en');
     });
   });
 

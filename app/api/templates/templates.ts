@@ -89,8 +89,7 @@ const updateTranslation = async (
     template.name,
     updatedLabels,
     deletedPropertiesByLabel,
-    context,
-    ContextType.entity
+    context
   );
 };
 

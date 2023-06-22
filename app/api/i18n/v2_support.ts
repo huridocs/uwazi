@@ -14,21 +14,8 @@ import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslatio
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { EnforcedWithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { tenants } from 'api/tenants';
-import { Db } from 'mongodb';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { IndexedContextValues } from './translations';
-
-const cleanUpV2Collections = async (db: Db) => {
-  try {
-    await db.collection('translations_v2').drop({});
-    await db.collection('translations_v2_helper').drop();
-  } catch (e) {
-    if (e.message !== 'ns not found') {
-      throw e;
-    }
-  }
-};
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
@@ -84,52 +71,49 @@ const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translati
 };
 
 export const createTranslationsV2 = async (translation: TranslationType) => {
-  if (tenants.current().featureFlags?.translationsV2) {
-    const transactionManager = new MongoTransactionManager(getClient());
-    await new CreateTranslationsService(
+  const transactionManager = new MongoTransactionManager(getClient());
+  await new CreateTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      new ValidateTranslationsService(
-        DefaultTranslationsDataSource(transactionManager),
-        DefaultSettingsDataSource(transactionManager)
-      ),
-      transactionManager
-    ).create(flattenTranslations(translation));
-  }
+      DefaultSettingsDataSource(transactionManager)
+    ),
+    transactionManager
+  ).create(flattenTranslations(translation));
 };
 
-export const upsertTranslationsV2 = async (translation: TranslationType) => {
-  if (tenants.current().featureFlags?.translationsV2) {
-    const transactionManager = new MongoTransactionManager(getClient());
-    await new UpsertTranslationsService(
+export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  await new UpsertTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    DefaultSettingsDataSource(transactionManager),
+    new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager),
-      new ValidateTranslationsService(
-        DefaultTranslationsDataSource(transactionManager),
-        DefaultSettingsDataSource(transactionManager)
-      ),
-      transactionManager
-    ).upsert(flattenTranslations(translation));
-  }
+      DefaultSettingsDataSource(transactionManager)
+    ),
+    transactionManager
+  ).upsert(
+    translations.reduce<CreateTranslationsData[]>(
+      (flattened, t) => flattened.concat(flattenTranslations(t)),
+      []
+    )
+  );
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
-  if (tenants.current().featureFlags?.translationsV2) {
-    const transactionManager = new MongoTransactionManager(getClient());
-    await new DeleteTranslationsService(
-      DefaultTranslationsDataSource(transactionManager),
-      transactionManager
-    ).deleteByContextId(contextId);
-  }
+  const transactionManager = new MongoTransactionManager(getClient());
+  await new DeleteTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    transactionManager
+  ).deleteByContextId(contextId);
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
-  if (tenants.current().featureFlags?.translationsV2) {
-    const transactionManager = new MongoTransactionManager(getClient());
-    await new DeleteTranslationsService(
-      DefaultTranslationsDataSource(transactionManager),
-      transactionManager
-    ).deleteByLanguage(language);
-  }
+  const transactionManager = new MongoTransactionManager(getClient());
+  return new DeleteTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    transactionManager
+  ).deleteByLanguage(language);
 };
 
 export const getTranslationsV2ByContext = async (context: string) =>
@@ -159,26 +143,20 @@ export const updateContextV2 = async (
   keysToDelete: string[],
   valueChanges: IndexedContextValues
 ) => {
-  if (tenants.current().featureFlags?.translationsV2) {
-    const transactionManager = new MongoTransactionManager(getClient());
-    await new UpsertTranslationsService(
+  const transactionManager = new MongoTransactionManager(getClient());
+  await new UpsertTranslationsService(
+    DefaultTranslationsDataSource(transactionManager),
+    DefaultSettingsDataSource(transactionManager),
+    new ValidateTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
-      DefaultSettingsDataSource(transactionManager),
-      new ValidateTranslationsService(
-        DefaultTranslationsDataSource(transactionManager),
-        DefaultSettingsDataSource(transactionManager)
-      ),
-      transactionManager
-    ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
-  }
+      DefaultSettingsDataSource(transactionManager)
+    ),
+    transactionManager
+  ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
 };
 
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
-  // if (!tenants.current().featureFlags?.translationsV2) {
-  //   await cleanUpV2Collections(db);
-  //   return false;
-  // }
 
   const needsMigration = await db
     .collection('translations_v2_helper')
