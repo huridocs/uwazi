@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.relationtypes"}],"uuid":"3b24abd008f64555b4dbf69650b94538","collectionName":"relationtypes","type":"collection"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_development.relationtypes"}],"uuid":"60de2474628346ffbb07db31e6270f50","collectionName":"relationtypes","type":"collection"}
