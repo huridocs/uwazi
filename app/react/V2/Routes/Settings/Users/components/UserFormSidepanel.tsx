@@ -283,6 +283,7 @@ const UserFormSidepanel = ({
                   setValue('groups', values, { shouldDirty: true });
                 }}
                 options={multiselectOptions}
+                placeholder="Nothing selected"
               />
             </div>
           </div>

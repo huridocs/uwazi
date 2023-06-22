@@ -152,6 +152,7 @@ const GroupFormSidepanel = ({
               }
               onChange={options => onChange(options)}
               options={availableUsers || []}
+              placeholder="Nothing selected"
             />
           </div>
         </div>
