@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers';
 
@@ -32,7 +33,7 @@ describe('Users', () => {
   });
 
   it('should be sorted by name by default', () => {
-    const titles = ['Carmen', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
+    const titles = ['Carmen', 'Cynthia', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
     namesShouldMatch(titles);
   });
 
@@ -76,18 +77,18 @@ describe('Users', () => {
 
     it('delete user', () => {
       cy.get('table tbody tr')
-        .eq(1)
+        .eq(3)
         .within(() => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Delete').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
-      cy.contains('span', 'Mike').should('not.exist');
+      cy.contains('span', 'User_1').should('not.exist');
       cy.contains('button', 'Dismiss').click();
     });
 
     it('should check the changes', () => {
-      const titles = ['Carmen_edited', 'User_1', 'admin', 'blocky', 'colla', 'editor'];
+      const titles = ['Carmen_edited', 'Cynthia', 'Mike', 'admin', 'blocky', 'colla', 'editor'];
       namesShouldMatch(titles);
     });
   });
@@ -155,13 +156,17 @@ describe('Users', () => {
     it('Reset 2fa', () => {
       cy.contains('span', 'Password + 2fa');
       cy.get('table tbody tr')
-        .eq(0)
+        .eq(4)
         .within(() => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset 2FA').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
-      cy.contains('span', 'Password + 2fa').should('not.exist');
+      cy.get('table tbody tr')
+        .eq(4)
+        .within(() => {
+          cy.contains('span', 'Password + 2fa').should('not.exist');
+        });
       cy.contains('button', 'Dismiss').click();
     });
   });
@@ -169,7 +174,7 @@ describe('Users', () => {
   describe('unblock user', () => {
     it('should unblock a user', () => {
       cy.get('table tbody tr')
-        .eq(3)
+        .eq(4)
         .within(() => {
           cy.get('td:nth-child(6) button').click();
         });
@@ -177,7 +182,7 @@ describe('Users', () => {
       cy.contains('button', 'Unlock account').click();
     });
 
-    it('should log in with the blocked user', () => {
+    it('should log in with the unblocked user', () => {
       cy.contains('a', 'Account').click();
       clearCookiesAndLogin('blocky', '1234');
       cy.contains('a', 'Settings').click();
@@ -194,30 +199,7 @@ describe('Users', () => {
       cy.contains('button', 'Users').click();
     });
 
-    it('bulk delete', () => {
-      cy.reload();
-      cy.intercept('DELETE', 'api/users*').as('deleteUsers');
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
-      cy.get('table tbody tr')
-        .eq(1)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
-      cy.contains('button', 'Delete').click();
-      cy.contains('[data-testid="modal"] button', 'Accept').click();
-      cy.contains('button', 'Dismiss').click();
-      cy.wait('@deleteUsers');
-      cy.reload();
-      namesShouldMatch(['admin', 'blocky', 'colla', 'editor']);
-    });
-
     it('bulk password reset', () => {
-      cy.reload();
-      cy.intercept('GET', 'api/usergroups').as('bulkPasswordReset');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -229,28 +211,74 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset Password').click();
-      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('h1', 'Reset passwords');
+        cy.contains('li', 'Carmen_edited');
+        cy.contains('li', 'Cynthia');
+        cy.contains('button', 'Accept').click();
+      });
+      cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.contains('button', 'Dismiss').click();
-      cy.wait('@bulkPasswordReset');
     });
 
     it('bulk reset 2FA', () => {
-      cy.reload();
-      cy.intercept('GET', 'api/usergroups').as('bulk2FAReset');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
           cy.get('td input').eq(0).click();
         });
       cy.get('table tbody tr')
-        .eq(1)
+        .eq(2)
         .within(() => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset 2FA').click();
-      cy.contains('[data-testid="modal"] button', 'Accept').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('h1', 'Reset 2FA');
+        cy.contains('li', 'Carmen_edited');
+        cy.contains('li', 'Mike');
+        cy.contains('button', 'Accept').click();
+      });
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.contains('span', 'Password + 2fa').should('not.exist');
+        });
+      cy.get('table tbody tr')
+        .eq(1)
+        .within(() => {
+          cy.contains('span', 'Password + 2fa');
+        });
+      cy.get('table tbody tr')
+        .eq(2)
+        .within(() => {
+          cy.contains('span', 'Password + 2fa').should('not.exist');
+        });
       cy.contains('button', 'Dismiss').click();
-      cy.wait('@bulk2FAReset');
+    });
+
+    it('bulk delete', () => {
+      cy.get('table tbody tr')
+        .eq(0)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.get('table tbody tr')
+        .eq(2)
+        .within(() => {
+          cy.get('td input').eq(0).click();
+        });
+      cy.contains('button', 'Delete').click();
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('h1', 'Delete');
+        cy.contains('li', 'Carmen_edited');
+        cy.contains('li', 'Mike');
+        cy.contains('button', 'Accept').click();
+      });
+      cy.contains('span', 'Carmen_edited').should('not.exist');
+      cy.contains('span', 'Mike').should('not.exist');
+      cy.contains('button', 'Dismiss').click();
+      namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
     });
   });
 });
