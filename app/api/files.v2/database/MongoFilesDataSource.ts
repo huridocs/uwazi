@@ -10,9 +10,7 @@ export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implement
     const query = {
       $or: files.map(file => ({ _id: new ObjectId(file._id), entity: file.entity })),
     };
-    const foundFiles = await this.getCollection().countDocuments(query, {
-      session: this.getSession(),
-    });
+    const foundFiles = await this.getCollection().countDocuments(query);
     return foundFiles === files.length;
   }
 }
