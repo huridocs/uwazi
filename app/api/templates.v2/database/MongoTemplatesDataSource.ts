@@ -23,28 +23,25 @@ export class MongoTemplatesDataSource
   private _allTemplatesById?: Record<string, Template>;
 
   getAllRelationshipProperties() {
-    const cursor = this.getCollection().aggregate(
-      [
-        {
-          $match: {
-            'properties.type': 'newRelationship',
-          },
+    const cursor = this.getCollection().aggregate([
+      {
+        $match: {
+          'properties.type': 'newRelationship',
         },
-        { $unwind: '$properties' },
-        {
-          $match: {
-            'properties.type': 'newRelationship',
-          },
+      },
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties.type': 'newRelationship',
         },
-        {
-          $project: {
-            _id: 1,
-            properties: 1,
-          },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
         },
-      ],
-      { session: this.getSession() }
-    );
+      },
+    ]);
 
     return new MongoResultSet(
       cursor,
@@ -62,9 +59,7 @@ export class MongoTemplatesDataSource
 
   async getPropertyByName(name: string) {
     if (!this._nameToPropertyMap) {
-      const templates = await this.getCollection()
-        .find({}, { session: this.getSession() })
-        .toArray();
+      const templates = await this.getCollection().find({}).toArray();
       const properties = templates
         .map(t => t.properties.map(p => TemplateMappers.propertyToApp(p, t._id)) || [])
         .flat();
@@ -78,21 +73,18 @@ export class MongoTemplatesDataSource
   }
 
   getAllProperties() {
-    const cursor = this.getCollection().aggregate(
-      [
-        {
-          $match: {},
+    const cursor = this.getCollection().aggregate([
+      {
+        $match: {},
+      },
+      { $unwind: '$properties' },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
         },
-        { $unwind: '$properties' },
-        {
-          $project: {
-            _id: 1,
-            properties: 1,
-          },
-        },
-      ],
-      { session: this.getSession() }
-    );
+      },
+    ]);
 
     return new MongoResultSet(cursor, template =>
       TemplateMappers.propertyToApp(template.properties, template._id)
@@ -102,16 +94,13 @@ export class MongoTemplatesDataSource
   getTemplatesIdsHavingProperty(propertyName: string) {
     const cursor = this.getCollection().find(
       { 'properties.name': propertyName },
-      { projection: { _id: 1 }, session: this.getSession() }
+      { projection: { _id: 1 } }
     );
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
   getAllTemplatesIds() {
-    const cursor = this.getCollection().find(
-      {},
-      { projection: { _id: 1 }, session: this.getSession() }
-    );
+    const cursor = this.getCollection().find({}, { projection: { _id: 1 } });
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 

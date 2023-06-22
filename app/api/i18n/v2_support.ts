@@ -97,7 +97,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
   }
 };
 
-export const upsertTranslationsV2 = async (translation: TranslationType) => {
+export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
   if (tenants.current().featureFlags?.translationsV2) {
     const transactionManager = new MongoTransactionManager(getClient());
     await new UpsertTranslationsService(
@@ -108,7 +108,12 @@ export const upsertTranslationsV2 = async (translation: TranslationType) => {
         DefaultSettingsDataSource(transactionManager)
       ),
       transactionManager
-    ).upsert(flattenTranslations(translation));
+    ).upsert(
+      translations.reduce<CreateTranslationsData[]>(
+        (flattened, t) => flattened.concat(flattenTranslations(t)),
+        []
+      )
+    );
   }
 };
 
