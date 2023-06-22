@@ -18,7 +18,7 @@ const MembersHeader = () => <Translate>Members</Translate>;
 const ProtectionPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['using2fa']>) => {
   if (cell.getValue()) {
     return (
-      <Pill color="green">
+      <Pill color="green" className="whitespace-nowrap">
         <Translate>Password + 2fa</Translate>
       </Pill>
     );
@@ -57,7 +57,9 @@ const GroupsPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['gr
   <div className="flex gap-1">
     {cell.getValue()?.map(group => (
       <div key={cell.id + group._id}>
-        <Pill color="gray">{group.name}</Pill>
+        <Pill color="gray" className="whitespace-nowrap">
+          {group.name}
+        </Pill>
       </div>
     ))}
   </div>
@@ -74,7 +76,7 @@ const UsernameCell = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['
           // eslint-disable-next-line react/style-prop-object
           style="light"
         >
-          <LockClosedIcon className="w-4 text-red-600" />
+          <LockClosedIcon className="w-4 text-red-600 cursor-pointer" />
         </Tooltip>
       )}
     </div>
