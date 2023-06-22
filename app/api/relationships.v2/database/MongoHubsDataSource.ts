@@ -63,16 +63,13 @@ export class MongoHubsDataSource extends MongoDataSource<HubType> implements Hub
     const existingIds = new Set(existing.map(d => d._id.toString()));
     const toInsert = ids.filter(id => !existingIds.has(id));
     if (toInsert.length > 0) {
-      await collection.insertMany(
-        toInsert.map(id => ({ _id: MongoIdHandler.mapToDb(id) })),
-        { session: this.getSession() }
-      );
+      await collection.insertMany(toInsert.map(id => ({ _id: MongoIdHandler.mapToDb(id) })));
     }
   }
 
   all(): MongoResultSet<HubType, string> {
     this.shouldBeReady();
-    const cursor = this.getCollection().find({}, { session: this.getSession() });
+    const cursor = this.getCollection().find({});
     return new MongoResultSet<HubType, string>(cursor, dbo => dbo._id.toString());
   }
 }

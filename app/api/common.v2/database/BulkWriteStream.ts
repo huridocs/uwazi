@@ -1,34 +1,25 @@
 import {
   AnyBulkWriteOperation,
-  ClientSession,
-  Collection,
   Filter,
   OptionalId,
   UpdateFilter,
   CollationOptions,
   UpdateManyModel,
+  Collection,
+  Document,
 } from 'mongodb';
 
-class BulkWriteStream<CollSchema extends { [key: string]: any }> {
+class BulkWriteStream<CollSchema extends Document> {
   collection: Collection<CollSchema>;
 
   stackLimit: number;
 
   ordered: boolean | undefined;
 
-  session?: ClientSession;
-
   protected actions: Array<AnyBulkWriteOperation<CollSchema>>;
 
-  constructor(
-    collection?: Collection<CollSchema>,
-    session?: ClientSession,
-    stackLimit?: number,
-    ordered?: boolean
-  ) {
-    if (!collection) throw new Error('Collection is required.');
+  constructor(collection: Collection<CollSchema>, stackLimit?: number, ordered?: boolean) {
     this.collection = collection;
-    this.session = session;
     this.actions = [];
     this.stackLimit = stackLimit || 1000;
     this.ordered = ordered;
@@ -40,7 +31,6 @@ class BulkWriteStream<CollSchema extends { [key: string]: any }> {
     if (toPerform.length) {
       await this.collection.bulkWrite(toPerform, {
         ordered: this.ordered,
-        session: this.session,
       });
     }
   }
