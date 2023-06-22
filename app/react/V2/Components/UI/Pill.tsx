@@ -27,10 +27,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
       break;
   }
   return (
-    <span
-      className={`mr-2 px-2.5 py-1 rounded-md whitespace-nowrap ${pillColors} ${className}`}
-      data-testid="pill-comp"
-    >
+    <span className={`px-2.5 py-1 rounded-md ${pillColors} ${className}`} data-testid="pill-comp">
       {children}
     </span>
   );

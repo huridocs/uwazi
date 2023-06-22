@@ -1,8 +1,8 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
+import { Provider } from 'react-redux';
 import { MultiSelect } from 'V2/Components/Forms';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { Provider } from 'react-redux';
 
 const meta: Meta<typeof MultiSelect> = {
   title: 'Forms/MultiSelect',
@@ -16,12 +16,13 @@ const Primary: Story = {
     <Provider store={createStore()}>
       <div className="tw-content">
         <div className="md:w-1/2">
-          <h1>Multiselect component</h1>
+          <h1 className="pb-2">Multiselect component</h1>
           <MultiSelect
             label={args.label}
             options={args.options}
             onChange={args.onChange}
             disabled={args.disabled}
+            placeholder={args.placeholder}
           />
         </div>
       </div>
@@ -55,6 +56,7 @@ const Basic: Story = {
       { label: 'Item with extra extra extra extra extraextraextra long name', value: 'xlItem' },
     ],
     disabled: false,
+    placeholder: 'No groups',
   },
 };
 

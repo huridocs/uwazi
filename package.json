@@ -103,7 +103,7 @@
     "@heroicons/react": "^2.0.16",
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
-    "@popperjs/core": "^2.11.7",
+    "@popperjs/core": "^2.11.8",
     "@remix-run/router": "^1.4.0",
     "@sentry/node": "^7.54.0",
     "@sentry/react": "7.54.0",

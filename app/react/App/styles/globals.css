@@ -1118,10 +1118,6 @@ input:checked + .toggle-bg {
   right: 0px;
 }
 
-.right-8 {
-  right: 2rem;
-}
-
 .-top-3 {
   top: -0.75rem;
 }
@@ -2856,6 +2852,10 @@ input:checked + .toggle-bg {
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem;
 }
 
 .pb-3 {
