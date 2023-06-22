@@ -34,10 +34,9 @@ export class MongoEntitiesDataSource
 
   async entitiesExist(sharedIds: string[]) {
     const languages = await this.settingsDS.getLanguageKeys();
-    const countInExistence = await this.getCollection().countDocuments(
-      { sharedId: { $in: sharedIds } },
-      { session: this.getSession() }
-    );
+    const countInExistence = await this.getCollection().countDocuments({
+      sharedId: { $in: sharedIds },
+    });
     return countInExistence === sharedIds.length * languages.length;
   }
 
@@ -65,29 +64,23 @@ export class MongoEntitiesDataSource
       sharedId: { $in: sharedIds },
     };
     if (language) match.language = language;
-    const cursor = this.getCollection().aggregate<EntityJoinTemplate>(
-      [
-        { $match: match },
-        {
-          $lookup: {
-            from: 'templates',
-            localField: 'template',
-            foreignField: '_id',
-            as: 'joinedTemplate',
-          },
+    const cursor = this.getCollection().aggregate<EntityJoinTemplate>([
+      { $match: match },
+      {
+        $lookup: {
+          from: 'templates',
+          localField: 'template',
+          foreignField: '_id',
+          as: 'joinedTemplate',
         },
-      ],
-      { session: this.getSession() }
-    );
+      },
+    ]);
 
     return new MongoResultSet(cursor, async entity => EntityMappers.toModel(entity));
   }
 
   getIdsByTemplate(templateId: string): ResultSet<string> {
-    const cursor = this.getCollection().find(
-      { template: MongoIdHandler.mapToDb(templateId) },
-      { session: this.getSession() }
-    );
+    const cursor = this.getCollection().find({ template: MongoIdHandler.mapToDb(templateId) });
     return new MongoResultSet(cursor, async entity => entity.sharedId);
   }
 
