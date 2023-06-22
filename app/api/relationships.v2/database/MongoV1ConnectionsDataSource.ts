@@ -29,7 +29,7 @@ export class MongoV1ConnectionsDataSource
   protected collectionName = 'connections';
 
   all(): MongoResultSet<V1ConnectionDBO, V1Connection> {
-    const cursor = this.getCollection().find({}, { session: this.getSession() });
+    const cursor = this.getCollection().find({});
     return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
   }
 
