@@ -110,12 +110,6 @@ const fixtures: DBFixture = {
         },
       ],
     },
-    {
-      _id: db.id(),
-      type: 'translation',
-      locale: 'other',
-      contexts: [],
-    },
   ],
   settings: [
     {
