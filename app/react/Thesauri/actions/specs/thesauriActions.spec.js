@@ -1,5 +1,3 @@
-/** @format */
-
 import configureMockStore from 'redux-mock-store';
 import backend from 'fetch-mock';
 import superagent from 'superagent';
@@ -109,7 +107,11 @@ describe('thesaurisActions', () => {
       mockUpload.emit('response', { text: JSON.stringify(resp), status: 200 });
     });
 
-    it('should notify error if error is returned', done => {
+    it.each`
+      property           | message
+      ${'error'}         | ${'unformatted error'}
+      ${'prettyMessage'} | ${'formatted error'}
+    `('should notify error if error is returned', ({ property, message }, done) => {
       const thesaurus = {};
       const file = {};
       const store = mockStore({});
@@ -118,7 +120,7 @@ describe('thesaurisActions', () => {
       const expectedActions = [
         {
           type: notificationsTypes.NOTIFY,
-          notification: { message: 'some error', type: 'danger', id: 'unique_id' },
+          notification: { message, type: 'danger', id: 'unique_id' },
         },
       ];
 
@@ -128,7 +130,10 @@ describe('thesaurisActions', () => {
         done();
       });
 
-      mockUpload.emit('response', { text: JSON.stringify({ error: 'some error' }), status: 400 });
+      mockUpload.emit('response', {
+        text: JSON.stringify({ [property]: message }),
+        status: 400,
+      });
     });
   });
 
