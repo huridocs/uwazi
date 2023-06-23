@@ -24,19 +24,42 @@ ajv.addKeyword({
   },
 });
 
-const validateUniqeLabels = (values: { label: string }[] | undefined): boolean => {
-  if (!values) return true;
-  const asSet = new Set(values.map(v => v.label));
-  return values.length === asSet.size;
+const getDuplicatedLabels = (values: { label: string }[] | undefined): string[] => {
+  if (!values) return [];
+  const labels = values.map(v => v.label);
+  const asSet: Set<string> = new Set();
+  const duplicated: Set<string> = new Set();
+  labels.forEach(label => {
+    if (asSet.has(label)) {
+      duplicated.add(label);
+    }
+    asSet.add(label);
+  });
+  return Array.from(duplicated);
 };
 
 ajv.addKeyword({
   keyword: 'uniqueLabels',
-  async: true,
-  validate: async (_config: any, thesaurus: ThesaurusSchema) =>
-    !thesaurus.values ||
-    (validateUniqeLabels(thesaurus.values) &&
-      thesaurus.values.every(v => validateUniqeLabels(v.values))),
+  validate: (_config: any, thesaurus: ThesaurusSchema) => {
+    const duplicated = getDuplicatedLabels(thesaurus.values);
+    thesaurus.values?.forEach(v => {
+      duplicated.push(...getDuplicatedLabels(v.values).map(l => `${v.label}/${l}`));
+    });
+    if (duplicated.length > 0) {
+      throw new Ajv.ValidationError([
+        {
+          instancePath: '',
+          schemaPath: '#/uniqueLabels',
+          keyword: 'uniqueLabels',
+          params: {
+            duplicated,
+          },
+          message: `Duplicated labels: ${duplicated.join(', ')}.`,
+        },
+      ]);
+    }
+    return true;
+  },
 });
 
 export const validateThesauri = wrapValidator(ajv.compile(thesaurusSchema));
