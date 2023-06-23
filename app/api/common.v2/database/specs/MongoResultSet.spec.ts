@@ -159,6 +159,43 @@ describe('when built from a $type cursor', () => {
     });
   });
 
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('using forEachBatch(...)', () => {
+    it('should execute the sync callback for every batch', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(4, batch => {
+        visited.push(batch);
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc5', 'doc6'],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should execute the async callback for every batch', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(4, async batch => {
+        visited.push(batch);
+        await new Promise(resolve => {
+          setTimeout(resolve, 2);
+        });
+        visited.push(batch);
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc5', 'doc6'],
+        ['doc5', 'doc6'],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
   describe('when calling first()', () => {
     it('should return the first result and close the cursors', async () => {
       const cursor = buildCursor();
