@@ -1,5 +1,4 @@
 /** @format */
-
 import db from 'api/utils/testing_db';
 
 const entityTemplateId = db.id();
@@ -17,6 +16,7 @@ export default {
           _id: db.id(),
           id: 'System',
           label: 'System',
+          type: 'Uwazi UI',
           values: [
             { key: 'Password', value: 'Password' },
             { key: 'Account', value: 'Account' },
@@ -50,7 +50,7 @@ export default {
           type: 'Document',
         },
         {
-          id: dictionaryId,
+          id: dictionaryId.toString(),
           type: 'Dictionary',
           values: [
             { key: 'dictionary 2', value: 'dictionary 2' },

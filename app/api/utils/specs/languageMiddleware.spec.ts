@@ -1,7 +1,7 @@
 import db from 'api/utils/testing_db';
 import { Request, NextFunction, Response } from 'express';
 import middleware from '../languageMiddleware';
-import fixtures from './languageFixtures.js';
+import fixtures from './languageFixtures';
 
 describe('languageMiddleware', () => {
   let req: Request;

@@ -214,7 +214,7 @@ describe('i18n translations routes', () => {
         const response = await request(app)
           .post('/api/translations')
           .send({
-            locale: 'es',
+            locale: 'ca',
             contexts: [{ values: { Search: 'Buscar' } }],
           });
 
@@ -229,14 +229,14 @@ describe('i18n translations routes', () => {
               },
             },
           ],
-          locale: 'es',
+          locale: 'ca',
         });
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'translationsChange',
           expect.objectContaining({
             contexts: [expect.objectContaining({ values: { Search: 'Buscar' } })],
-            locale: 'es',
+            locale: 'ca',
           })
         );
       });
@@ -249,8 +249,8 @@ describe('i18n translations routes', () => {
         const response = await request(app)
           .post('/api/translations/languages')
           .send([
-            { key: 'ch', label: 'Chinese' },
-            { key: 'jp', label: 'Japanese' },
+            { key: 'zh', label: 'Chinese' },
+            { key: 'ja', label: 'Japanese' },
           ]);
 
         const newSettings = {
@@ -270,12 +270,12 @@ describe('i18n translations routes', () => {
             },
             {
               _id: expect.anything(),
-              key: 'ch',
+              key: 'zh',
               label: 'Chinese',
             },
             {
               _id: expect.anything(),
-              key: 'jp',
+              key: 'ja',
               label: 'Japanese',
             },
           ],
@@ -293,7 +293,7 @@ describe('i18n translations routes', () => {
           [
             'translationsChange',
             {
-              locale: 'ch',
+              locale: 'zh',
               contexts: [
                 {
                   id: 'System',
@@ -323,7 +323,7 @@ describe('i18n translations routes', () => {
           [
             'translationsChange',
             {
-              locale: 'jp',
+              locale: 'ja',
               contexts: [
                 {
                   id: 'System',
