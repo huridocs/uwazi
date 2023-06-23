@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
-import { ResultSet } from '../contracts/ResultSet';
+import { loopCallbackReturn, ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;
@@ -54,18 +54,22 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
-  async forEach(callback: (item: U) => Promise<void> | void) {
-    while (await this.hasNext()) {
+  async forEach(callback: (item: U) => loopCallbackReturn) {
+    let progress = true;
+    while (progress && (await this.hasNext())) {
       const item: U | null = await this.next();
-      await callback(item!);
+      progress = (await callback(item!)) !== false;
     }
+    await this.close();
   }
 
-  async forEachBatch(batchSize: number, callback: (items: U[]) => Promise<void> | void) {
-    while (await this.hasNext()) {
+  async forEachBatch(batchSize: number, callback: (items: U[]) => loopCallbackReturn) {
+    let progress = true;
+    while (progress && (await this.hasNext())) {
       const items: U[] = await this.nextBatch(batchSize);
-      await callback(items);
+      progress = (await callback(items)) !== false;
     }
+    await this.close();
   }
 
   async every(predicate: (item: U) => boolean): Promise<boolean> {

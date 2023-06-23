@@ -157,10 +157,23 @@ describe('when built from a $type cursor', () => {
       ]);
       expect(cursor?.closed).toBe(true);
     });
+
+    it('should allow breaking, when the callback returns false', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[] = [];
+      await resultSet.forEach(item => {
+        visited.push(item);
+        if (item === 'doc2') {
+          return false;
+        }
+      });
+      expect(visited).toEqual(['doc1', 'doc2']);
+      expect(cursor?.closed).toBe(true);
+    });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('using forEachBatch(...)', () => {
+  describe('using forEachBatch(...)', () => {
     it('should execute the sync callback for every batch', async () => {
       const cursor = buildCursor();
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
@@ -191,6 +204,23 @@ describe('when built from a $type cursor', () => {
         ['doc1', 'doc2', 'doc3', 'doc4'],
         ['doc5', 'doc6'],
         ['doc5', 'doc6'],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should allow breaking, when the callback returns false', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(2, batch => {
+        visited.push(batch);
+        if (batch[0] === 'doc3') {
+          return false;
+        }
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2'],
+        ['doc3', 'doc4'],
       ]);
       expect(cursor?.closed).toBe(true);
     });
