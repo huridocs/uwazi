@@ -2,7 +2,7 @@
 const obsoleteTranslationKeys = ['Your account is protected by 2fa.', 'Protect your account'];
 
 export default {
-  delta: 138,
+  delta: 139,
 
   name: 'remove-obsolete-translation-keys',
 
