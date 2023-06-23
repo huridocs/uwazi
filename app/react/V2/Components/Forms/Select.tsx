@@ -3,7 +3,7 @@ import React, { ChangeEventHandler, Ref } from 'react';
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
-  options: { key: string; value: string }[];
+  options: { key: string; value: string; selected?: boolean }[];
   disabled?: boolean;
   hideLabel?: boolean;
   hasErrors?: boolean;
@@ -48,8 +48,8 @@ const Select = React.forwardRef(
             onBlur={onBlur}
             onChange={onChange}
           >
-            {options.map(({ key, value }) => (
-              <option key={key} value={value}>
+            {options.map(({ key, value, selected }) => (
+              <option key={key} value={value} selected={selected}>
                 {value}
               </option>
             ))}

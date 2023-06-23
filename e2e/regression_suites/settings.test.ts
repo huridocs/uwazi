@@ -25,11 +25,6 @@ describe('Settings', () => {
     await disableTransitions();
   });
 
-  it('should display Users', async () => {
-    await selectSettingsPage('Users');
-    await testSettingsContent();
-  });
-
   it('should display Collection', async () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.leafletmap');

@@ -1,4 +1,4 @@
-Key,Russian
+key,value
 % of sentences above threshold,% предложений выше порога
 (view page),(Просмотр страницы)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
@@ -12,6 +12,7 @@ A generated ID will be the default title.,Сгенерированный иде�
 Accept,Принять
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Аккаунт
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
@@ -47,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,Добавить ко всем языкам
 Add to table of contents,Добавить в оглавление
 Add user,Добавить пользователя
-Add users,Добавить пользователей
 add value,add value
 Add/delete users and assign roles,Добавить/удалить пользователей и назначить роли
 Add/edit translations,Добавить / редактировать переводы
@@ -193,7 +193,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -273,7 +272,9 @@ Duplicated username,Продублированное имя пользовате
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,Редактор
 editor,Редактор
 Email,Электронная почта
@@ -349,9 +350,9 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,Группы
 help,помощь
@@ -387,12 +388,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Установите приложение Google Authenticator на своем мобильном устройстве
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,Неверный адрес электронной почты
 Invalid form,Недействительная форма
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
@@ -494,7 +495,6 @@ Name,Имя
 Name is required,Требуется имя
 Name is too long,Имя слишком длинное
 Name is too short,Имя слишком короткое
-Name of the group,Имя группы
 Narrow down your searches,Сузьте область своего поиска
 Narrow your search,Ограничить свой поиск
 Navigate back,Navigate back
@@ -507,6 +507,7 @@ New password,Новый пароль
 New Password,New Password
 New relationship type,New relationship type
 New relationships group,Группа новых взаимосвязей
+New user,New user
 Next,Следующий
 No,Нет
 No attachments,Нет вложений
@@ -535,6 +536,7 @@ No Value,Нет значения
 Non-matching,Non-matching
 Normal view,Нормальный вид
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Здесь ничего нет! Выбранный предметный указатель не задействован для выбранных документов
 Number of sentences above threshold,Количество предложений выше порога
 Obsolete,Obsolete
@@ -567,6 +569,7 @@ Page Javascript,Страница Javascript
 Page name,Page name
 Pages,Страницы
 Password,Пароль
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,Неверный пароль
 Password is too long,Пароль слишком длинный
@@ -693,6 +696,7 @@ Search Tips: one char wildcard,Советы по поиску: использо�
 Search Tips: proximity,Советы по поиску: близость
 Search Tips: wildcard,Советы по поиску: подстановочный знак
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Secret keys,Secret keys
 Select,Select
 Select all,Выбрать все
@@ -861,6 +865,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Неподдерживаемый язык оптического распознавания символов
 Untranslated Terms,Untranslated Terms
 Update,Обновить
@@ -891,12 +896,15 @@ Use,Использовать
 Use as filter,Use as filter
 Use custom landing page,Использовать пользовательскую целевую страницу
 User,Пользователь
+User Action,User Action
 User Role,User Role
 Username,Имя пользователя
 Username is required,Требуется имя пользователя
 Username is too long,Имя пользователя слишком длинное
 Username is too short,Имя пользователя слишком короткое
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Пользователи
+Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,Использовать Google Authenticator
 Uwazi is developed by,Uwazi разработан

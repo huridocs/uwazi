@@ -10,6 +10,7 @@ import { LanguageSchema } from 'shared/types/commonTypes';
 
 export interface GroupMemberSchema {
   refId: string;
+  username: string;
 }
 
 export interface ClientUserGroupSchema extends Omit<UserGroupSchema, '_id' | 'members'> {

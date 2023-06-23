@@ -11,6 +11,8 @@ export interface UserSchema {
   email: string;
   password?: string;
   using2fa?: boolean;
+  accountLocked?: boolean;
+  failedLogins?: number;
   groups?: {
     _id: ObjectIdSchema;
     name: string;

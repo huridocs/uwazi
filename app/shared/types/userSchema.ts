@@ -20,6 +20,8 @@ export const userSchema = {
     email: { type: 'string', minLength: 1 },
     password: { type: 'string', minLength: 1 },
     using2fa: { type: 'boolean' },
+    accountLocked: { type: 'boolean' },
+    failedLogins: { type: 'number' },
     groups: {
       type: 'array',
       items: {

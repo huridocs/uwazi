@@ -12,6 +12,7 @@ A generated ID will be the default title.,생성된 아이디가 기본값으로
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,계정
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
@@ -47,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,모든 언어에 추가
 Add to table of contents,목차에 추가
 Add user,사용자 추가
-Add users,사용자 추가
 add value,add value
 Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
@@ -196,7 +196,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -276,7 +275,9 @@ Duplicated username,사용자 이름 중복
 Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,편집자
 editor,편집자
 Email,이메일
@@ -352,9 +353,9 @@ Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,그룹
 help,도움말
@@ -390,12 +391,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,잘못된 보안문자
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,잘못된 이메일
 Invalid form,잘못된 형식
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
@@ -497,7 +498,6 @@ Name,이름
 Name is required,이름이 필요합니다.
 Name is too long,이름이 너무 깁니다.
 Name is too short,이름이 너무 짧습니다.
-Name of the group,그룹 이름
 Narrow down your searches,검색을 세부화하십시오.
 Narrow your search,상세 검색
 Navigate back,Navigate back
@@ -510,6 +510,7 @@ New password,새 비밀번호
 New Password,New Password
 New relationship type,New relationship type
 New relationships group,새로운 관계 그룹
+New user,New user
 Next,다음
 No,아니오
 No attachments,첨부파일 없음
@@ -538,6 +539,7 @@ No Value,값 없음
 Non-matching,Non-matching
 Normal view,일반 뷰
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,검색 결과 없음. 해당 문서는 선택한 시소러스를 사용하지 않습니다.
 Number of sentences above threshold,임계값 이상 문장 수
 Obsolete,Obsolete
@@ -570,6 +572,7 @@ Page Javascript,페이지 자바스크립트
 Page name,Page name
 Pages,페이지
 Password,비밀번호
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,암호 오류
 Password is too long,암호가 너무 깁니다.
@@ -696,6 +699,7 @@ Search Tips: one char wildcard,검색 팁: one char wildcard
 Search Tips: proximity,검색 팁: 근접성
 Search Tips: wildcard,검색 팁: wildcard
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Secret keys,Secret keys
 Select,Select
 Select all,전체 선택
@@ -864,6 +868,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어
 Untranslated Terms,Untranslated Terms
 Update,업데이트
@@ -894,12 +899,15 @@ Use,사용
 Use as filter,Use as filter
 Use custom landing page,사용자 지정 랜딩 페이지
 User,사용자
+User Action,User Action
 User Role,User Role
 Username,사용자 이름
 Username is required,사용자 이름이 필요합니다.
 Username is too long,사용자 이름이 너무 깁니다.
 Username is too short,사용자 이름이 너무 짧습니다.
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,사용자
+Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,Google Authenticator 사용 중
 Uwazi is developed by,Uwazi 제작 및 개발:

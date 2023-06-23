@@ -12,6 +12,7 @@ A generated ID will be the default title.,سيكون معرف تم إنشاؤه 
 Accept,قبول
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,حساب
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
@@ -47,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,إضافة إلى جميع اللغات
 Add to table of contents,أضف إلى جدول المحتويات
 Add user,إضافة مستخدم
-Add users,إضافة المستخدمين
 add value,add value
 Add/delete users and assign roles,إضافة / حذف المستخدمين وتعيين الأدوار
 Add/edit translations,إضافة / تحرير الترجمات
@@ -195,7 +195,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -275,7 +274,9 @@ Duplicated username,اسم المستخدم مكرر
 Edit,تحرير
 Edit all documents matching this criteria,حرر جميع المستندات المستوفية لهذه المعايير
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,محرر
 editor,محرر
 Email,بريد إلكتروني
@@ -351,9 +352,9 @@ Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,مجموعات
 help,مساعدة
@@ -389,12 +390,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,ثبت تطبيق Google Authenticator على جهازك المحمول
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,بريد إلكتروني غير صحيح
 Invalid form,المدخلات غير صحيحة او غير مكتمله. رجاء التصحيح واعادج المحاولة
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,من الممكن أيضاً كسر التطبيق بسهولة بالغة. اكتب فقط الرمز هنا إذا كنت على دراية تامة بما تفعله
@@ -496,7 +497,6 @@ Name,اسم
 Name is required,الاسم مطلوب
 Name is too long,الاسم طويل جداً
 Name is too short,الاسم قصير جداً
-Name of the group,اسم المجموعة
 Narrow down your searches,ضيق نطاقات بحثك
 Narrow your search,ضيق نطاق بحثك
 Navigate back,Navigate back
@@ -509,6 +509,7 @@ New password,كلمة المرور الجديدة
 New Password,New Password
 New relationship type,New relationship type
 New relationships group,مجموعة علاقات جديدة
+New user,New user
 Next,التالي
 No,لا
 No attachments,لا توجد مرفقات
@@ -537,6 +538,7 @@ No Value,لا قيمة
 Non-matching,Non-matching
 Normal view,معاينة عادية
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,لايوجد شيء لرؤيته هنا! المستندات المختارة لا تستخدم قائمة المفردات المختارة
 Number of sentences above threshold,عدد الجمل أزيد من الحد
 Obsolete,Obsolete
@@ -569,6 +571,7 @@ Page Javascript,صفحة جافا سكريبت
 Page name,Page name
 Pages,الصفحات
 Password,كلمه المرور
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,خطأ كلمة المرور
 Password is too long,كلمة المرور طويلة جداً
@@ -695,6 +698,7 @@ Search Tips: one char wildcard,نصائح البحث: واحد char wildcard
 Search Tips: proximity,بحث نصائح: القرب
 Search Tips: wildcard,نصائح البحث: Wildcard
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Secret keys,Secret keys
 Select,Select
 Select all,اختار الكل
@@ -863,6 +867,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,لغة الOCR غير مدعومة
 Untranslated Terms,Untranslated Terms
 Update,تحديث
@@ -893,12 +898,15 @@ Use,استخدام
 Use as filter,Use as filter
 Use custom landing page,خصص صفحة رئيسية
 User,المستخدم
+User Action,User Action
 User Role,User Role
 Username,اسم المستخدم
 Username is required,اسم المستخدم مطلوب
 Username is too long,اسم المستخدم طويل جداً
 Username is too short,اسم المستخدم قصير جداً
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,المستخدمين
+Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,باستخدام مصادقة جوجل
 Uwazi is developed by,أوازي من إعداد:

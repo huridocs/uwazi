@@ -12,6 +12,7 @@ A generated ID will be the default title.,El ID autogenerado será el título po
 Accept,Aceptar
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
+Account locked,Account locked
 Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo electrónico para desbloquearla.
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Account updated,Account updated
@@ -47,7 +48,6 @@ Add timelink,Añadir línea de tiempo
 Add to all languages,Añadir a todos los idiomas
 Add to table of contents,Añadir a la tabla de contenidos
 Add user,Añadir usuario
-Add users,Añadir usuarios
 add value,añadir valor
 Add/delete users and assign roles,Añadir / Eliminar usuarios y asignar roles
 Add/edit translations,Añadir / editar traducciones
@@ -194,7 +194,6 @@ Created entity coming from a public form,Entidad creada desde un formulario púb
 Created page,Página creada
 Created relation type,Tipo de relación creado
 Created relationship,Relación creada
-Created successfully.,Creado satisfactoriamente.
 Created template,Plantilla creada
 Created thesaurus,Tesauro creado
 Created user group,Grupo de usuarios creado
@@ -274,7 +273,9 @@ Duplicated username,Nombre de usuario duplicado
 Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Editar metadatos de entidades
+Edit user,Edit user
 Editor,Editor
 editor,Editor
 Email,Correo electrónico
@@ -350,9 +351,9 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group created,Grupo creado
-Group deleted,Grupo eliminado
 Group name,Nombre del grupo
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Grupo actualizado
 Groups,Grupos
 help,ayuda
@@ -388,12 +389,12 @@ Install browser extension (dynamic link),Instalar extensión de navegador (enlac
 Install Language(s),Instalar Idioma(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
-Invalid email,Email no válido
 Invalid form,Formulario no válido
 Invalid home page url,URL  de página de inicio no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
@@ -495,7 +496,6 @@ Name,Nombre
 Name is required,Se requiere el nombre
 Name is too long,El nombre es demasiado largo
 Name is too short,El nombre es muy corto
-Name of the group,Nombre del grupo
 Narrow down your searches,Reducir tus búsquedas
 Narrow your search,Reducir tu búsqueda
 Navigate back,Navegar hacia atrás
@@ -508,6 +508,7 @@ New password,Nueva contraseña
 New Password,New Password
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
+New user,New user
 Next,Próximo
 No,No
 No attachments,Sin adjuntos
@@ -536,6 +537,7 @@ No Value,Sin valor
 Non-matching,no coincidente
 Normal view,Vista normal
 Not Found,No encontrado
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
@@ -568,6 +570,7 @@ Page Javascript,Página JavaScript
 Page name,Nombre de la página
 Pages,Páginas
 Password,Contraseña
+Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
 Password Error,¡Error de contraseña! Ambos campos son obligatorios y deben coincidir
 Password is too long,La contraseña es demasiado larga
@@ -647,7 +650,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
-Remote Server Unreachable,Sin conexión con servidor remoto
+Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
 remove icon,eliminar ícono
 Removed language,Idioma eliminado
@@ -694,6 +697,7 @@ Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?""
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
+Security,Security
 Secret keys,Secret keys
 Select,Seleccionar
 Select all,Seleccionar todo
@@ -861,6 +865,7 @@ Unexpected error,Error inesperado
 Uninstall,Desinstalar
 Uninstall language,Desinstalar idioma
 Unlink,Desenlazar
+Unlock account,Unlock account
 Unsupported OCR language,Idioma no soportado para ROC
 Untranslated Terms,Términos sin traducir
 Update,Actualizar
@@ -891,12 +896,15 @@ Use,Usar
 Use as filter,Usar como filtro
 Use custom landing page,Utilizar página de destino personalizada
 User,Usuario
+User Action,User Action
 User Role,User Role
 Username,Nombre de usuario
 Username is required,Se requiere nombre de usuario
 Username is too long,El nombre de usuario es demasiado largo
 Username is too short,El nombre de usuario es demasiado corto
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Usuarios
+Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,Usando Google Authenticator
 Uwazi is developed by,Uwazi es desarrollado por

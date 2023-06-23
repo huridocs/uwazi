@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { HTMLProps, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import { ColumnDef, TableState, Row, Table as TableDef } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { IndeterminateCheckbox } from './IndeterminateCheckbox';
+import { t } from 'app/I18N';
 
 interface TableProps<T> {
   columns: ColumnDef<T, any>[];
@@ -13,6 +13,39 @@ interface TableProps<T> {
   enableSelection?: boolean;
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
 }
+
+const IndeterminateCheckbox = ({
+  indeterminate,
+  className = '',
+  id,
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) => {
+  const ref = useRef<HTMLInputElement>(null!);
+
+  useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate, rest.checked]);
+
+  return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <>
+      <label htmlFor={id} className="sr-only">
+        {id === 'checkbox-header'
+          ? t('System', 'Select all', null, false)
+          : t('System', 'Select', null, false)}
+      </label>
+      <input
+        id={id}
+        type="checkbox"
+        ref={ref}
+        className={`rounded cursor-pointer ${className}`}
+        {...rest}
+      />
+    </>
+  );
+};
 
 const getIcon = (sorting: false | 'asc' | 'desc') => {
   switch (sorting) {
@@ -33,6 +66,7 @@ const CheckBoxHeader = <T,>({ table }: { table: TableDef<T> }) => (
       checked: table.getIsAllRowsSelected(),
       indeterminate: table.getIsSomeRowsSelected(),
       onChange: table.getToggleAllRowsSelectedHandler(),
+      id: 'checkbox-header',
     }}
   />
 );
@@ -45,6 +79,7 @@ const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
       disabled: !row.getCanSelect(),
       indeterminate: row.getIsSomeSelected(),
       onChange: row.getToggleSelectedHandler(),
+      id: row.id,
     }}
   />
 );

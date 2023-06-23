@@ -12,6 +12,7 @@ A generated ID will be the default title.,ID ที่สร้างขึ้�
 Accept,ตกลง
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,บัญชี
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
@@ -47,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,เพิ่มเข้าไปในทุกภาษา
 Add to table of contents,เพิ่มลงในสารบัญ
 Add user,เพิ่มผู้ใช้
-Add users,เพิ่มผู้ใช้
 add value,add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
 Add/edit translations,เพิ่ม / แก้ไขการแปล
@@ -196,7 +196,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -276,7 +275,9 @@ Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Edit,แก้ไข
 Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
 Email,อีเมล
@@ -352,9 +353,9 @@ Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,กลุ่ม
 help,ช่วยเหลือ
@@ -390,12 +391,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,กรุณาติดตั้งแอป Google Authenticator บนอุปกรณ์มือถือของคุณ
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,อีเมลไม่ถูกต้อง
 Invalid form,แบบฟอร์มไม่ถูกต้อง
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
@@ -497,7 +498,6 @@ Name,ชื่อ
 Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
-Name of the group,ชื่อของกลุ่ม
 Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
 Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
@@ -510,6 +510,7 @@ New password,รหัสผ่านใหม่
 New Password,New Password
 New relationship type,New relationship type
 New relationships group,กลุ่มความสัมพันธ์ใหม่
+New user,New user
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา
@@ -538,6 +539,7 @@ No Value,ไม่มีค่า
 Non-matching,Non-matching
 Normal view,มุมมองปกติ
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,ไม่พบข้อมูล! เอกสารที่ถูกเลือกไม่ได้ใช้คำอธิบายกลุ่มคำ
 Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
@@ -570,6 +572,7 @@ Page Javascript,หน้าจาวาสคริปต์
 Page name,Page name
 Pages,หน้า
 Password,รหัสผ่าน
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,รหัสผ่านผิดพลาด
 Password is too long,รหัสผ่านยาวเกินไป
@@ -696,6 +699,7 @@ Search Tips: one char wildcard,เคล็ดลับการค้นหา:
 Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
 Secret keys,Secret keys
 Select,Select
 Select all,เลือกทั้งหมด
@@ -866,6 +870,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
@@ -896,12 +901,15 @@ Use,ใช้
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,ผู้ใช้
+User Action,User Action
 User Role,User Role
 Username,ชื่อผู้ใช้
 Username is required,จำเป็นต้องใส่ชื่อผู้ใช้
 Username is too long,ชื่อผู้ใช้ยาวเกินไป
 Username is too short,ชื่อผู้ใช้สั้นเกินไป
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,ผู้ใช้
+Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,ใช้ Google Authenticator
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย

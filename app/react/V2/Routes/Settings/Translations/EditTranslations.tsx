@@ -325,6 +325,7 @@ const EditTranslations = () => {
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
+
       {showModal && (
         <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
       )}
