@@ -10,6 +10,7 @@ export default {
     const saved = await model.save(ixmodel);
     if (ixmodel.status === ModelStatus.ready) {
       await Suggestions.setObsolete({ extractorId: saved.extractorId });
+      await Suggestions.markSuggestionsWithoutSegmentation({ extractorId: saved.extractorId });
     }
     return saved;
   },
