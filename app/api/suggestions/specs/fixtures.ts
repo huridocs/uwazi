@@ -670,6 +670,20 @@ const fixtures: DBFixture = {
       ],
     },
   ],
+  segmentations: [
+    {
+      _id: factory.id('S1'),
+      fileID: factory.id('F2'),
+      filename: 'documentC.pdf',
+      status: 'failed',
+    },
+    {
+      _id: factory.id('S2'),
+      fileID: factory.id('F3'),
+      filename: 'documentC.pdf',
+      status: 'ready',
+    },
+  ],
 };
 
 export {

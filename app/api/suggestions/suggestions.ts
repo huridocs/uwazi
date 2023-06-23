@@ -13,6 +13,8 @@ import {
 import { EntitySchema } from 'shared/types/entityType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
+import { ObjectId } from 'mongodb';
+import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
 import { registerEventListeners } from './eventListeners';
 import {
   getCurrentValueStage,
@@ -24,7 +26,6 @@ import {
 } from './pipelineStages';
 import { getStats } from './stats';
 import { updateStates } from './updateState';
-import { ObjectId } from 'mongodb';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -206,6 +207,17 @@ const Suggestions = {
 
   setObsolete: async (query: any) =>
     IXSuggestionsModel.updateMany(query, { $set: { state: SuggestionState.obsolete } }),
+
+  markSuggestionsWithoutSegmentation: async (query: any) => {
+    const segmentedFilesIds = await getSegmentedFilesIds();
+    await IXSuggestionsModel.updateMany(
+      {
+        ...query,
+        fileId: { $nin: segmentedFilesIds },
+      },
+      { $set: { state: SuggestionState.error } }
+    );
+  },
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
