@@ -6,8 +6,14 @@ import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/object
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
-import { EntityPointer, Relationship } from '../model/Relationship';
+import { V1Connection, V1ConnectionDisplayed, V1TextReference } from '../model/V1Connection';
+import {
+  EntityPointer,
+  FilePointer,
+  TextReferencePointer,
+  Relationship,
+  Selection,
+} from '../model/Relationship';
 
 const HUB_BATCH_SIZE = 1000;
 
@@ -46,19 +52,6 @@ class RelationshipMatcher {
         this.fieldLibrary[sourceEntityTemplate][relationshipType].has(undefined))
     );
   }
-
-  static transform(first: V1Connection, second: V1Connection, newId: string) {
-    // TODO: rewrite this to include text references
-    const sourcePointer = new EntityPointer(first.entity);
-    const targetPointer = new EntityPointer(second.entity);
-    const relationshipType = second.template;
-    if (!relationshipType) {
-      throw new Error(
-        `A Relationship going from ${first.entity} to ${second.entity} has no template.`
-      );
-    }
-    return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
-  }
 }
 
 class Statistics {
@@ -70,11 +63,14 @@ class Statistics {
 
   usedTextReferences: number = 0;
 
+  errors: number = 0;
+
   constructor() {
     this.total = 0;
     this.used = 0;
     this.totalTextReferences = 0;
     this.usedTextReferences = 0;
+    this.errors = 0;
   }
 
   add(second: Statistics) {
@@ -82,6 +78,7 @@ class Statistics {
     this.used += second.used;
     this.totalTextReferences += second.totalTextReferences;
     this.usedTextReferences += second.usedTextReferences;
+    this.errors += second.errors;
   }
 }
 
@@ -132,7 +129,61 @@ export class MigrationService {
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
-  private transformHub(
+  static transformReference(reference: V1TextReference) {
+    const { text } = reference;
+    const selectionRectangles = reference.selectionRectangles.map(
+      sr => new Selection(parseInt(sr.page, 10), sr.top, sr.left, sr.height, sr.width)
+    );
+    return {
+      text,
+      selectionRectangles,
+    };
+  }
+
+  private async tryInferingFile(connection: V1Connection): Promise<string | null | undefined> {
+    const similarConnections = this.v1ConnectionsDS.getSimilarConnections(connection);
+    const candidate = await similarConnections.find(c => c.hasSameReferenceAs(connection));
+    return candidate ? candidate.file : null;
+  }
+
+  private async transformPointer(v1Connection: V1Connection): Promise<EntityPointer | null> {
+    if (v1Connection.isFilePointer()) {
+      return new FilePointer(v1Connection.entity, v1Connection.file);
+    }
+    if (v1Connection.hasReference()) {
+      const { text, selectionRectangles } = MigrationService.transformReference(
+        v1Connection.reference
+      );
+      const inferredFile = v1Connection.file || (await this.tryInferingFile(v1Connection));
+      if (!inferredFile) {
+        return null;
+      }
+      return new TextReferencePointer(v1Connection.entity, inferredFile, selectionRectangles, text);
+    }
+    return new EntityPointer(v1Connection.entity);
+  }
+
+  private async transform(
+    first: V1Connection,
+    second: V1Connection,
+    newId: string
+  ): Promise<Relationship | null> {
+    const sourcePointer = await this.transformPointer(first);
+    const targetPointer = await this.transformPointer(second);
+    const relationshipType = second.template;
+    if (!relationshipType) {
+      throw new Error(
+        `A Relationship going from ${first.entity} to ${second.entity} has no template.`
+      );
+    }
+    if (!sourcePointer || !targetPointer) {
+      return null;
+    }
+    return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
+  }
+
+  // eslint-disable-next-line max-statements
+  private async transformHub(
     connections: V1ConnectionDisplayed[],
     matcher: RelationshipMatcher,
     transform: boolean = false
@@ -142,21 +193,29 @@ export class MigrationService {
     stats.totalTextReferences = connections.filter(c => c.file).length;
     const usedConnections: Record<string, V1ConnectionDisplayed> = {};
     const transformed: Relationship[] = [];
-    connections.forEach(first => {
-      connections.forEach(second => {
+    const wasNotAbleToReparMissingFile: [V1Connection, V1Connection][] = [];
+    for (let i = 0; i < connections.length; i += 1) {
+      const first = connections[i];
+      for (let j = 0; j < connections.length; j += 1) {
+        const second = connections[j];
         if (first.id !== second.id && matcher.matches(first, second)) {
           usedConnections[first.id] = first;
           usedConnections[second.id] = second;
           if (transform) {
-            transformed.push(
-              RelationshipMatcher.transform(first, second, this.idGenerator.generate())
-            );
+            // eslint-disable-next-line no-await-in-loop
+            const trd = await this.transform(first, second, this.idGenerator.generate());
+            if (trd) {
+              transformed.push(trd);
+            } else {
+              wasNotAbleToReparMissingFile.push([first, second]);
+            }
           }
         }
-      });
-    });
+      }
+    }
     stats.used = Object.keys(usedConnections).length;
     stats.usedTextReferences = Object.values(usedConnections).filter(c => c.file).length;
+    stats.errors = wasNotAbleToReparMissingFile.length;
     return { stats, transformed };
   }
 
@@ -177,15 +236,16 @@ export class MigrationService {
       const connectionGroups = Array.from(Object.values(connectionsGrouped));
       const transformed: Relationship[] = [];
       for (let i = 0; i < connectionGroups.length; i += 1) {
-        const { stats: groupStats, transformed: groupTransformed } = this.transformHub(
-          connectionGroups[i],
-          matcher,
-          transform
-        );
+        // eslint-disable-next-line no-await-in-loop
+        const {
+          stats: groupStats,
+          transformed: groupTransformed,
+          // eslint-disable-next-line no-await-in-loop
+        } = await this.transformHub(connectionGroups[i], matcher, transform);
         stats.add(groupStats);
         transformed.push(...groupTransformed);
       }
-      if (write) {
+      if (write && transformed.length > 0) {
         await this.relationshipsDS.insert(transformed);
       }
     });
@@ -196,13 +256,14 @@ export class MigrationService {
     const matcher = await this.readV1RelationshipFields();
 
     const connected = await this.v1ConnectionsDS.getConnectedToHubs([hubId]).all();
-    const { stats, transformed } = this.transformHub(connected, matcher, true);
+    const { stats, transformed } = await this.transformHub(connected, matcher, true);
 
     return {
       total: stats.total,
       used: stats.used,
       totalTextReferences: stats.totalTextReferences,
       usedTextReferences: stats.usedTextReferences,
+      errors: stats.errors,
       transformed,
       original: connected,
     };
@@ -214,14 +275,11 @@ export class MigrationService {
     const matcher = await this.readV1RelationshipFields();
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
-    const { total, used, totalTextReferences, usedTextReferences } = await this.transformHubs(
-      matcher,
-      transformAndWrite,
-      transformAndWrite
-    );
+    const { total, used, totalTextReferences, usedTextReferences, errors } =
+      await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
 
     await this.hubsDS.drop();
 
-    return { total, used, totalTextReferences, usedTextReferences };
+    return { total, used, totalTextReferences, usedTextReferences, errors };
   }
 }

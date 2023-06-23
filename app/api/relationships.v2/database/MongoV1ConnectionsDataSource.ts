@@ -18,13 +18,8 @@ const mapReference = (dbo: V1ConnectionDBO): V1TextReference | undefined =>
     ? new V1TextReference(
         dbo.reference.text,
         dbo.reference.selectionRectangles.map(
-          (rect): V1SelectionRectangle => ({
-            page: rect.page,
-            top: rect.top,
-            left: rect.left,
-            height: rect.height,
-            width: rect.width,
-          })
+          (rect): V1SelectionRectangle =>
+            new V1SelectionRectangle(rect.page, rect.top, rect.left, rect.height, rect.width)
         )
       )
     : undefined;
@@ -108,5 +103,13 @@ export class MongoV1ConnectionsDataSource
       cursor,
       mapConnectionsWithEntityInfo
     );
+  }
+
+  getSimilarConnections(connection: V1Connection): MongoResultSet<V1ConnectionDBO, V1Connection> {
+    const cursor = this.getCollection().find({
+      entity: connection.entity,
+      template: connection.template ? MongoIdHandler.mapToDb(connection.template) : undefined,
+    });
+    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
   }
 }

@@ -27,6 +27,7 @@ class Selection {
     this.width = width;
   }
 }
+
 abstract class Pointer {
   readonly entity: string;
 
@@ -37,7 +38,7 @@ abstract class Pointer {
 
 class EntityPointer extends Pointer {}
 
-class FilePointer extends Pointer {
+class FilePointer extends EntityPointer {
   readonly file: string;
 
   constructor(entity: string, file: string) {
@@ -85,4 +86,4 @@ class Relationship {
   }
 }
 
-export { Relationship, EntityPointer, TextReferencePointer, Selection };
+export { Relationship, EntityPointer, FilePointer, TextReferencePointer, Selection };

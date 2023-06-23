@@ -19,6 +19,7 @@ type RelationshipType = {
 type MigrationSummaryType = {
   total: number;
   used: number;
+  errors: number;
   totalTextReferences: number;
   usedTextReferences: number;
   time: number;
@@ -44,6 +45,7 @@ type TransformedInfo = {
 type hubTestResult = {
   total: number;
   used: number;
+  errors: number;
   transformed: TransformedInfo[];
   original: OriginalEntityInfo[];
 };
@@ -188,6 +190,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                     this.migrationSummary.usedTextReferences
                   })`}
                 </div>
+                <div>Errors: {this.migrationSummary.errors}</div>
               </div>
             )}
             <br />

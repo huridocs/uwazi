@@ -31,6 +31,7 @@ type V1ConnectionDBOWithEntityInfo = V1ConnectionDBO & {
 export interface V1ConnectionsDataSource {
   all(): ResultSet<V1Connection>;
   getConnectedToHubs(hubIds: string[]): ResultSet<V1ConnectionDisplayed>;
+  getSimilarConnections(connection: V1Connection): ResultSet<V1Connection>;
 }
 
 export type { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo };

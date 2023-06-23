@@ -54,16 +54,26 @@ export default (app: Application) => {
     const timeStart = performance.now();
     const { dryRun } = validateMigration(req.body);
     const service = MigrationService();
-    const { total, used, totalTextReferences, usedTextReferences } = await service.migrate(dryRun);
+    const { total, used, totalTextReferences, usedTextReferences, errors } = await service.migrate(
+      dryRun
+    );
     const timeEnd = performance.now();
     const time = timeEnd - timeStart;
-    res.json({ total, used, totalTextReferences, usedTextReferences, time, dryRun });
+    res.json({ total, used, totalTextReferences, usedTextReferences, errors, time, dryRun });
   });
 
   app.post('/api/v2/relationships/test_one_hub', featureRequired, async (req, res) => {
     const { hubId } = req.body;
-    const { total, used, totalTextReferences, usedTextReferences, transformed, original } =
+    const { total, used, totalTextReferences, usedTextReferences, transformed, original, errors } =
       await MigrationService().testOneHub(hubId);
-    res.json({ total, used, totalTextReferences, usedTextReferences, transformed, original });
+    res.json({
+      total,
+      used,
+      totalTextReferences,
+      usedTextReferences,
+      transformed,
+      original,
+      errors,
+    });
   });
 };

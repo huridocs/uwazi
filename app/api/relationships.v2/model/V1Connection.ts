@@ -17,6 +17,16 @@ class V1SelectionRectangle {
     this.height = height;
     this.width = width;
   }
+
+  isSameRectangleAs(rect: V1SelectionRectangle): boolean {
+    return (
+      this.page === rect.page &&
+      this.top === rect.top &&
+      this.left === rect.left &&
+      this.height === rect.height &&
+      this.width === rect.width
+    );
+  }
 }
 
 class V1TextReference {
@@ -57,6 +67,38 @@ class V1Connection {
     this.template = template;
     this.file = file;
     this.reference = reference;
+  }
+
+  hasFile(): this is V1Connection & { file: string } {
+    return !!this.file;
+  }
+
+  hasReference(): this is V1Connection & { reference: V1TextReference } {
+    return !!this.reference;
+  }
+
+  isFilePointer(): this is V1Connection & { file: string; reference: undefined } {
+    return this.hasFile() && !this.hasReference();
+  }
+
+  hasSameReferenceAs(other: V1Connection): boolean {
+    if (!this.hasReference && !other.hasReference) {
+      return true;
+    }
+    if (this.hasReference() !== other.hasReference()) {
+      return false;
+    }
+    if (this.reference!.text !== other.reference!.text) {
+      return false;
+    }
+    if (
+      this.reference!.selectionRectangles.length !== other.reference!.selectionRectangles.length
+    ) {
+      return false;
+    }
+    return this.reference!.selectionRectangles.every((rect, index) =>
+      rect.isSameRectangleAs(other.reference!.selectionRectangles[index])
+    );
   }
 }
 
