@@ -72,6 +72,22 @@ describe('when built from a $type cursor', () => {
     expect(cursor?.closed).toBe(true);
   });
 
+  describe('using find(...)', () => {
+    it('should return the first result that matches the query', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.find(item => item.startsWith('doc2'))).toBe('doc2');
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should return null if no item matches the query', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.find(item => item.startsWith('notDoc'))).toBe(null);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
   describe('using every(...) to check a predicate against every item', () => {
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();

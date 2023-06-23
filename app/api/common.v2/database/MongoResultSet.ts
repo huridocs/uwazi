@@ -72,36 +72,34 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     await this.close();
   }
 
-  async every(predicate: (item: U) => boolean): Promise<boolean> {
-    let result = true;
-    let counter = 0;
+  async find(predicate: (item: U) => boolean): Promise<U | null> {
+    let result: U | null = null;
 
-    while (await this.hasNext()) {
-      counter += 1;
-      const item = await this.next();
-      if (predicate(item!) === false) {
-        result = false;
-        break;
+    await this.forEach(item => {
+      if (predicate(item!) === true) {
+        result = item;
+        return false;
       }
-    }
+    });
 
-    await this.close();
-    return counter > 0 && result;
+    return result;
+  }
+
+  async every(predicate: (item: U) => boolean): Promise<boolean> {
+    let hasItems = false;
+
+    const result = await this.find(item => {
+      hasItems = true;
+      return predicate(item!) === false;
+    });
+
+    return hasItems && result === null;
   }
 
   async some(predicate: (item: U) => boolean): Promise<boolean> {
-    let result = false;
+    const result = await this.find(predicate);
 
-    while (await this.hasNext()) {
-      const item = await this.next();
-      if (predicate(item!) === true) {
-        result = true;
-        break;
-      }
-    }
-
-    await this.close();
-    return result;
+    return result !== null;
   }
 
   async first() {

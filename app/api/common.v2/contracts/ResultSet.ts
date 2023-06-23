@@ -6,6 +6,7 @@ export interface ResultSet<T> {
   first(): Promise<T | null>;
   forEach(callback: (item: T) => loopCallbackReturn): Promise<void>;
   forEachBatch(batchSize: number, callback: (items: T[]) => loopCallbackReturn): Promise<void>;
+  find(predicate: (item: T) => Promise<boolean> | boolean): Promise<T | null>;
   every(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
   some(predicate: (item: T) => Promise<boolean> | boolean): Promise<boolean>;
 }
