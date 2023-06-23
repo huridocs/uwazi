@@ -19,6 +19,8 @@ type RelationshipType = {
 type MigrationSummaryType = {
   total: number;
   used: number;
+  totalTextReferences: number;
+  usedTextReferences: number;
   time: number;
   dryRun: boolean;
 };
@@ -171,9 +173,21 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 <br />
                 <div>Migration Summary{this.migrationSummary.dryRun ? ' (Dry Run)' : ''}:</div>
                 <div>Time: {formatTime(this.migrationSummary.time)}</div>
-                <div>Total: {this.migrationSummary.total}</div>
-                <div>Used: {this.migrationSummary.used}</div>
-                <div>Unused: {this.migrationSummary.total - this.migrationSummary.used}</div>
+                <div>
+                  Total: {this.migrationSummary.total}
+                  {`(text references: ${this.migrationSummary.totalTextReferences})`}
+                </div>
+                <div>
+                  Used: {this.migrationSummary.used}
+                  {`(${this.migrationSummary.usedTextReferences})`}
+                </div>
+                <div>
+                  Unused: {this.migrationSummary.total - this.migrationSummary.used}
+                  {`(${
+                    this.migrationSummary.totalTextReferences -
+                    this.migrationSummary.usedTextReferences
+                  })`}
+                </div>
               </div>
             )}
             <br />

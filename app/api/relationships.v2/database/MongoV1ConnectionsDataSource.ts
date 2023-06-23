@@ -6,21 +6,38 @@ import {
   V1ConnectionDBO,
   V1ConnectionDBOWithEntityInfo,
 } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
+import {
+  V1Connection,
+  V1ConnectionDisplayed,
+  V1SelectionRectangle,
+  V1TextReference,
+} from '../model/V1Connection';
 
-const mapConnections = (dbo: V1ConnectionDBO): V1Connection => {
-  try {
-    return new V1Connection(
-      dbo._id.toString(),
-      dbo.entity,
-      dbo.hub.toString(),
-      dbo.template?.toString()
-    );
-  } catch (e) {
-    console.log(dbo);
-    throw e;
-  }
-};
+const mapReference = (dbo: V1ConnectionDBO): V1TextReference | undefined =>
+  dbo.reference
+    ? new V1TextReference(
+        dbo.reference.text,
+        dbo.reference.selectionRectangles.map(
+          (rect): V1SelectionRectangle => ({
+            page: rect.page,
+            top: rect.top,
+            left: rect.left,
+            height: rect.height,
+            width: rect.width,
+          })
+        )
+      )
+    : undefined;
+
+const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
+  new V1Connection(
+    dbo._id.toString(),
+    dbo.entity,
+    dbo.hub.toString(),
+    dbo.template?.toString(),
+    dbo.file,
+    mapReference(dbo)
+  );
 
 const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
   new V1ConnectionDisplayed(
@@ -30,7 +47,9 @@ const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1Con
     dbo.template?.toString(),
     dbo.entityTemplateId.toString(),
     dbo.entityTitle,
-    dbo.templateName
+    dbo.templateName,
+    dbo.file,
+    mapReference(dbo)
   );
 
 export class MongoV1ConnectionsDataSource

@@ -60,6 +60,30 @@ class RelationshipMatcher {
   }
 }
 
+class Statistics {
+  total: number = 0;
+
+  used: number = 0;
+
+  totalTextReferences: number = 0;
+
+  usedTextReferences: number = 0;
+
+  constructor() {
+    this.total = 0;
+    this.used = 0;
+    this.totalTextReferences = 0;
+    this.usedTextReferences = 0;
+  }
+
+  add(second: Statistics) {
+    this.total += second.total;
+    this.used += second.used;
+    this.totalTextReferences += second.totalTextReferences;
+    this.usedTextReferences += second.usedTextReferences;
+  }
+}
+
 export class MigrationService {
   private idGenerator: IdGenerator;
 
@@ -112,7 +136,9 @@ export class MigrationService {
     matcher: RelationshipMatcher,
     transform: boolean = false
   ) {
-    const total = connections.length;
+    const stats = new Statistics();
+    stats.total = connections.length;
+    stats.totalTextReferences = connections.filter(c => c.file).length;
     const usedConnections: Record<string, V1ConnectionDisplayed> = {};
     const transformed: Relationship[] = [];
     connections.forEach(first => {
@@ -128,8 +154,9 @@ export class MigrationService {
         }
       });
     });
-    const used = Object.keys(usedConnections).length;
-    return { total, used, transformed };
+    stats.used = Object.keys(usedConnections).length;
+    stats.usedTextReferences = Object.values(usedConnections).filter(c => c.file).length;
+    return { stats, transformed };
   }
 
   private async transformHubs(
@@ -138,8 +165,7 @@ export class MigrationService {
     write: boolean = false
   ) {
     const hubCursor = this.hubsDS.all();
-    let total = 0;
-    let used = 0;
+    const stats = new Statistics();
     await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch => {
       const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
       const connectionsGrouped = objectIndexToArrays(
@@ -150,29 +176,35 @@ export class MigrationService {
       const connectionGroups = Array.from(Object.values(connectionsGrouped));
       const transformed: Relationship[] = [];
       for (let i = 0; i < connectionGroups.length; i += 1) {
-        const {
-          total: groupTotal,
-          used: groupUsed,
-          transformed: groupTransformed,
-        } = this.transformHub(connectionGroups[i], matcher, transform);
-        total += groupTotal;
-        used += groupUsed;
+        const { stats: groupStats, transformed: groupTransformed } = this.transformHub(
+          connectionGroups[i],
+          matcher,
+          transform
+        );
+        stats.add(groupStats);
         transformed.push(...groupTransformed);
       }
       if (write) {
         await this.relationshipsDS.insert(transformed);
       }
     });
-    return { total, used };
+    return stats;
   }
 
   async testOneHub(hubId: string) {
     const matcher = await this.readV1RelationshipFields();
 
     const connected = await this.v1ConnectionsDS.getConnectedToHubs([hubId]).all();
-    const { total, used, transformed } = await this.transformHub(connected, matcher, true);
+    const { stats, transformed } = this.transformHub(connected, matcher, true);
 
-    return { total, used, transformed, original: connected };
+    return {
+      total: stats.total,
+      used: stats.used,
+      totalTextReferences: stats.totalTextReferences,
+      usedTextReferences: stats.usedTextReferences,
+      transformed,
+      original: connected,
+    };
   }
 
   async migrate(dryRun: boolean) {
@@ -181,10 +213,14 @@ export class MigrationService {
     const matcher = await this.readV1RelationshipFields();
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
-    const { total, used } = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
+    const { total, used, totalTextReferences, usedTextReferences } = await this.transformHubs(
+      matcher,
+      transformAndWrite,
+      transformAndWrite
+    );
 
     await this.hubsDS.drop();
 
-    return { total, used };
+    return { total, used, totalTextReferences, usedTextReferences };
   }
 }

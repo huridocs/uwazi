@@ -9,6 +9,17 @@ type V1ConnectionDBO = {
   entity: string;
   hub: ObjectId;
   template?: ObjectId;
+  file?: string;
+  reference?: {
+    text: string;
+    selectionRectangles: {
+      page: string;
+      top: number;
+      left: number;
+      height: number;
+      width: number;
+    }[];
+  };
 };
 
 type V1ConnectionDBOWithEntityInfo = V1ConnectionDBO & {
