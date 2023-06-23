@@ -48,6 +48,7 @@ class RelationshipMatcher {
   }
 
   static transform(first: V1Connection, second: V1Connection, newId: string) {
+    // TODO: rewrite this to include text references
     const sourcePointer = new EntityPointer(first.entity);
     const targetPointer = new EntityPointer(second.entity);
     const relationshipType = second.template;

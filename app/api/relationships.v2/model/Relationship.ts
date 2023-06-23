@@ -37,9 +37,16 @@ abstract class Pointer {
 
 class EntityPointer extends Pointer {}
 
-class TextReferencePointer extends Pointer {
+class FilePointer extends Pointer {
   readonly file: string;
 
+  constructor(entity: string, file: string) {
+    super(entity);
+    this.file = file;
+  }
+}
+
+class TextReferencePointer extends FilePointer {
   readonly selections: Selection[];
 
   readonly text: string;
@@ -48,8 +55,7 @@ class TextReferencePointer extends Pointer {
     if (!selections.length) {
       throw new Error('Text references must have at least 1 selection');
     }
-    super(entity);
-    this.file = file;
+    super(entity, file);
     this.selections = selections;
     this.text = text;
   }

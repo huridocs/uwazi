@@ -55,9 +55,6 @@ class V1Connection {
     this.entity = entity;
     this.hub = hub;
     this.template = template;
-    if ((file && !reference) || (!file && reference)) {
-      throw new Error('File and reference should be both defined or undefined');
-    }
     this.file = file;
     this.reference = reference;
   }
