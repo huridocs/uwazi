@@ -15,7 +15,6 @@ import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
-  AccountSettings,
   CollectionSettings,
   Customisation,
   CustomUploads,
@@ -82,7 +81,6 @@ const getRoutesLayout = (
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
-      <Route path="account2" element={<AccountSettings />} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />

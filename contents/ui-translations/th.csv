@@ -623,7 +623,6 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,ปกป้องบัญชีของคุณ
 Protection,การป้องกัน
 ProTip!,โปรทิป!
 Public Endpoints,Public Endpoints
@@ -954,7 +953,6 @@ You have labeled,คุณได้แยกประเภทแล้ว
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
 You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
-Your account is protected by 2fa.,บัญชีของคุณได้รับการคุ้มครองโดย 2FA
 Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
