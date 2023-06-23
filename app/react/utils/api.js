@@ -48,11 +48,10 @@ function extractMessageFromError(error) {
 
 function extractMessageFromValidation(error) {
   if (!error.json.validations) return error.json.error;
-  return error.json.validations.reduce(
-    (message, validationError) =>
-      `${message} ${validationError.instancePath} ${validationError.message},`,
-    `${error.json.error}: `
-  );
+  return error.json.validations.reduce((message, validationError, index) => {
+    const separator = index < error.json.validations.length - 1 ? ',' : '';
+    return `${message} ${validationError.instancePath} ${validationError.message}${separator}`;
+  }, `${error.json.error}: `);
 }
 
 // eslint-disable-next-line max-statements

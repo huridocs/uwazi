@@ -7,8 +7,8 @@ import { ValidationError } from 'api/common.v2/validation/ValidationError';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
-  if (error.errors && error.errors.length) {
-    error.errors.forEach(oneError => {
+  if (error.validations && error.validations.length) {
+    error.validations.forEach(oneError => {
       errorMessage.push(`${oneError.instancePath}: ${oneError.message}`);
     });
   }
@@ -126,21 +126,6 @@ const sendLog = (data, error, errorOptions) => {
   }
 };
 
-function simplifyError(result, error) {
-  const simplifiedError = { ...result };
-  delete simplifiedError.original;
-
-  if (error instanceof Error) {
-    simplifiedError.prettyMessage = error.message;
-    simplifiedError.error = error.message;
-    delete simplifiedError.message;
-  } else {
-    simplifiedError.prettyMessage = simplifiedError.prettyMessage || error.message;
-  }
-
-  return simplifiedError;
-}
-
 function setRequestId(result) {
   try {
     return { ...result, requestId: appContext.get('requestId') };
@@ -148,6 +133,21 @@ function setRequestId(result) {
     return { ...result, tenantError: err };
   }
 }
+
+const simplifyError = (result, original) => {
+  const processedError = { ...result };
+  delete processedError.original;
+
+  if (original instanceof Error && processedError.code === 500 && original.name !== 'MongoError') {
+    processedError.prettyMessage = original.message;
+    processedError.error = original.message;
+    delete processedError.message;
+  } else {
+    processedError.prettyMessage = processedError.prettyMessage || original.message;
+  }
+
+  return processedError;
+};
 
 const handleError = (_error, { req = {}, uncaught = false, useContext = true } = {}) => {
   const errorData = typeof _error === 'string' ? createError(_error, 500) : _error;
@@ -161,7 +161,9 @@ const handleError = (_error, { req = {}, uncaught = false, useContext = true } =
 
   sendLog(result, error, {});
 
-  return simplifyError(result, error);
+  result = simplifyError(result, error);
+
+  return result;
 };
 
 export { handleError, prettifyError };

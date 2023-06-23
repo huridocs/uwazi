@@ -368,6 +368,7 @@ describe('thesauri', () => {
               { label: 'other_label' },
               { label: 'duplicated_label' },
             ],
+            expectedMessage: 'Duplicated labels: duplicated_label.',
           },
           {
             case: 'group',
@@ -381,14 +382,22 @@ describe('thesauri', () => {
                 ],
               },
             ],
+            expectedMessage: 'Duplicated labels: group/duplicated_label.',
           },
-        ])('should not allow duplication in $case', async ({ values }) => {
+        ])('should not allow duplication in $case', async ({ values, expectedMessage }) => {
           const toSave = { name: 'test_thesaurus', values };
           try {
             await thesauri.save(toSave);
             fail('should throw error');
           } catch (e) {
             expect(e).toBeDefined();
+            expect(e.message).toBe('validation failed');
+            expect(e.ajv).toBe(true);
+            expect(e.errors).toMatchObject([
+              {
+                message: expectedMessage,
+              },
+            ]);
           }
         });
 
