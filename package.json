@@ -338,7 +338,7 @@
     "cypress-plugin-snapshots": "^1.4.4",
     "enzyme": "3.11.0",
     "enzyme-to-json": "^3.6.2",
-    "eslint": "v8.41.0",
+    "eslint": "v8.43.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-import": "v2.27.5",
