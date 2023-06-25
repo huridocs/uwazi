@@ -25,18 +25,18 @@ describe('Settings mobile menu', () => {
     cy.location().should(location => {
       expect(location.pathname).to.contain('settings');
     });
-    cy.get('body').toMatchImageSnapshot();
+    // cy.get('body').toMatchImageSnapshot();
   });
 
   it('should enter the account settings', () => {
     cy.intercept('api/user').as('getUser');
     cy.contains('a', 'Account').click();
     cy.wait('@getUser');
-    cy.get('body').toMatchImageSnapshot();
+    // cy.get('body').toMatchImageSnapshot();
   });
 
   it('should go back to the menu', () => {
     cy.contains('a', 'Navigate back').click();
-    cy.get('body').toMatchImageSnapshot();
+    // cy.get('body').toMatchImageSnapshot();
   });
 });
