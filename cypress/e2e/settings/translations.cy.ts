@@ -16,7 +16,7 @@ describe('Translations', () => {
 
   describe('translations list', () => {
     it('should be accessible', () => {
-      // cy.get('[data-testid=settings-translations]').toMatchImageSnapshot();
+      cy.get('[data-testid=settings-translations]').matchImage();
       cy.checkA11y();
     });
   });
@@ -37,7 +37,7 @@ describe('Translations', () => {
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
-      // cy.get('table').eq(0).toMatchImageSnapshot();
+      cy.get('table').eq(0).matchImage();
     };
 
     it('Should edit a translation', () => {

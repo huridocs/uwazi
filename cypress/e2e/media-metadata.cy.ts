@@ -73,7 +73,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const checkMediaSnapshots = (selector: string) => {
     cy.get(selector).scrollIntoView();
-    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
+    cy.get(selector).matchImage();
   };
 
   const saveEntity = () => {

@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress", "webpack-env"]
+    "types": ["cypress", "@frsource/cypress-plugin-visual-regression-diff", "webpack-env"]
   },
   "include": [
     "./**/*",

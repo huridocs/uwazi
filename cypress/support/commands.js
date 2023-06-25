@@ -35,6 +35,8 @@
 //   }
 // }
 
+import '@frsource/cypress-plugin-visual-regression-diff/dist/support';
+
 Cypress.on('window:before:load', window => {
   window.document.head.insertAdjacentHTML(
     'beforeend',

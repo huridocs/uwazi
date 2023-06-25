@@ -23,10 +23,10 @@ describe('Groups', () => {
   it('accesibility check', () => {
     cy.get('caption').within(() => cy.contains('span', 'Groups'));
     cy.checkA11y();
-    // cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
+    cy.get('div[data-testid="settings-content"]').matchImage();
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
-    // cy.get('aside').toMatchImageSnapshot();
+    cy.get('aside').matchImage();
     cy.checkA11y();
     cy.contains('button', 'Cancel').click();
   });

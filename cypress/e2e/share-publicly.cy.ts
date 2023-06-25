@@ -69,7 +69,7 @@ describe('Permisions system', () => {
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('div.alert', 'Entity created').click();
-      // cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
+      cy.get('aside.metadata-sidepanel.is-active').matchImage();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
 
@@ -108,7 +108,7 @@ describe('Permisions system', () => {
       cy.contains('button', 'Save changes').click();
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.item-document').should('have.length', 3);
-      // cy.get('.item-document').eq(0).toMatchImageSnapshot();
+      cy.get('.item-document').eq(0).matchImage();
     });
   });
 });
