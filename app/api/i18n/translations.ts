@@ -26,6 +26,7 @@ import {
   updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
+import { tenants } from 'api/tenants';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -403,7 +404,12 @@ export default {
 
     const defaultLanguage = await settings.getDefaultLanguage();
 
-    const [defaultTranslation] = await model.get({ locale: defaultLanguage.key });
+    let defaultTranslation: TranslationType;
+    if (tenants.current().featureFlags?.translationsV2) {
+      [defaultTranslation] = await getTranslationsV2ByLanguage(defaultLanguage.key);
+    } else {
+      [defaultTranslation] = await model.get({ locale: defaultLanguage.key });
+    }
 
     const newLanguageTranslations = {
       ...defaultTranslation,
